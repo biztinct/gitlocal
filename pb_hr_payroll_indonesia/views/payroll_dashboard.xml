@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Dashboard view for each country -->
+    <record id="view_payroll_dashboard_vietnam" model="ir.ui.view">
+        <field name="name">Vietnam Payroll Dashboard</field>
+        <field name="model">hr.payslip</field>
+        <field name="arch" type="xml">
+            <form string="Vietnam Payroll Dashboard" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Vietnam Payroll Dashboard</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3><i class="fa fa-users fa-3x text-primary" title="Employee Data"/></h3>
+                                    <h4>Employee Data</h4>
+                                    <p>Import employee data from Zoho</p>
+                                    <button name="%(action_zoho_staging_importer_vietnam)d" 
+                                            type="action" 
+                                            class="btn btn-primary"
+                                            context="{'default_payroll_country': 'VN'}">
+                                        Get Employee Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3><i class="fa fa-table fa-3x text-success" title="Spreadsheet"/></h3>
+                                    <h4>Spreadsheet</h4>
+                                    <p>Edit payroll calculations</p>
+                                    <button name="%(action_vietnam_edit_spreadsheet)d" 
+                                            type="action" 
+                                            class="btn btn-success">
+                                        Edit Spreadsheet
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3><i class="fa fa-download fa-3x text-warning" title="Import Data"/></h3>
+                                    <h4>Import Data</h4>
+                                    <p>Process payroll calculations</p>
+                                    <button name="%(action_vietnam_import_spreadsheet)d" 
+                                            type="action" 
+                                            class="btn btn-warning">
+                                        Import Spreadsheet
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record id="view_payroll_dashboard_indonesia" model="ir.ui.view">
+        <field name="name">Indonesia Payroll Dashboard</field>
+        <field name="model">hr.payslip</field>
+        <field name="arch" type="xml">
+            <form string="Indonesia Payroll Dashboard" create="false" edit="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Indonesia Payroll Dashboard</h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3><i class="fa fa-users fa-3x text-primary"/></h3>
+                                    <h4>Employee Data</h4>
+                                    <p>Import from Zoho</p>
+                                    <button name="%(action_zoho_staging_importer_indonesia)d" 
+                                            type="action" 
+                                            class="btn btn-primary">
+                                        Get Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3><i class="fa fa-table fa-3x text-success"/></h3>
+                                    <h4>Spreadsheet</h4>
+                                    <p>Edit calculations</p>
+                                    <button name="%(action_indonesia_edit_spreadsheet)d" 
+                                            type="action" 
+                                            class="btn btn-success">
+                                        Edit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3><i class="fa fa-download fa-3x text-warning"/></h3>
+                                    <h4>Import</h4>
+                                    <p>Process payroll</p>
+                                    <button name="%(action_indonesia_import_spreadsheet)d" 
+                                            type="action" 
+                                            class="btn btn-warning">
+                                        Import
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h3><i class="fa fa-gift fa-3x text-danger" title="THR Payment"/></h3>
+                                    <h4>THR Payment</h4>
+                                    <p>Religious holiday allowance</p>
+                                    <button name="%(action_thr_payment_wizard)d" 
+                                            type="action" 
+                                            class="btn btn-danger">
+                                        Process THR
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Dashboard Actions -->
+    <record id="action_vietnam_dashboard" model="ir.actions.act_window">
+        <field name="name">Vietnam Payroll</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_vietnam"/>
+        <field name="target">inline</field>
+    </record>
+    
+    <record id="action_indonesia_dashboard" model="ir.actions.act_window">
+        <field name="name">Indonesia Payroll</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_indonesia"/>
+        <field name="target">inline</field>
+    </record>
+    
+    <!-- Add Dashboard menu items -->
+    <menuitem id="menu_vietnam_dashboard"
+              name="Dashboard"
+              parent="menu_vietnam_payroll_root"
+              action="action_vietnam_dashboard"
+              sequence="0"/>
+    
+    <menuitem id="menu_indonesia_dashboard"
+              name="Dashboard"
+              parent="menu_indonesia_payroll_root"
+              action="action_indonesia_dashboard"
+              sequence="0"/>
+    
+</odoo>

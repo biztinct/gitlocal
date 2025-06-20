@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Inherit zoho employee data form to add Indonesia fields -->
+    <record id="view_zoho_employee_data_form_inherit" model="ir.ui.view">
+        <field name="name">zoho.employee.data.form.inherit.indonesia</field>
+        <field name="model">zoho.employee.data</field>
+        <field name="inherit_id" ref="om_hr_payroll.zoho_employee_data_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <group string="Indonesia Payroll" attrs="{'invisible': [('payroll_country', '!=', 'ID')]}">
+                    <group>
+                        <field name="payroll_country" invisible="1"/>
+                        <field name="gross_pay_idn"/>
+                        <field name="pph21"/>
+                        <field name="bpjs_kesehatan_employee"/>
+                        <field name="bpjs_tk_jht_employee"/>
+                        <field name="bpjs_tk_jp_employee"/>
+                        <field name="union_dues"/>
+                        <field name="loan_deductions"/>
+                    </group>
+                    <group>
+                        <field name="bpjs_tk_jht_employer"/>
+                        <field name="bpjs_tk_jkm"/>
+                        <field name="bpjs_tk_jkk"/>
+                        <field name="bpjs_tk_jp_employer"/>
+                        <field name="bpjs_kesehatan_employer"/>
+                        <field name="npwp_number"/>
+                        <field name="bpjs_kesehatan_number"/>
+                        <field name="bpjs_ketenagakerjaan_number"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Inherit zoho staging data form to add Indonesia fields -->
+    <record id="view_zoho_staging_data_form_inherit" model="ir.ui.view">
+        <field name="name">zoho.staging.data.form.inherit.indonesia</field>
+        <field name="model">zoho.staging.data</field>
+        <field name="inherit_id" ref="om_hr_payroll.zoho_staging_data_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <group string="Indonesia Payroll Fields">
+                    <group>
+                        <field name="gross_pay_idn"/>
+                        <field name="pph21"/>
+                        <field name="bpjs_kesehatan_employee"/>
+                        <field name="bpjs_tk_jht_employee"/>
+                        <field name="bpjs_tk_jp_employee"/>
+                        <field name="union_dues"/>
+                        <field name="loan_deductions"/>
+                    </group>
+                    <group>
+                        <field name="bpjs_tk_jht_employer"/>
+                        <field name="bpjs_tk_jkm"/>
+                        <field name="bpjs_tk_jkk"/>
+                        <field name="bpjs_tk_jp_employer"/>
+                        <field name="bpjs_kesehatan_employer"/>
+                        <field name="npwp_number"/>
+                        <field name="bpjs_kesehatan_number"/>
+                        <field name="bpjs_ketenagakerjaan_number"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
