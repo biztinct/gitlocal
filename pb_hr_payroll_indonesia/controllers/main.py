@@ -44,22 +44,13 @@ class PayrollCountrySelector(http.Controller):
         # Store selected country in session only
         request.session['payroll_country'] = country_code
         
-        # Return the appropriate menu action based on country
-        menu_mapping = {
-            'VN': 'pb_hr_payroll_indonesia.menu_vietnam_payroll_root',
-            'ID': 'pb_hr_payroll_indonesia.menu_indonesia_payroll_root',
-            'IN': 'pb_hr_payroll_indonesia.menu_india_payroll_root',
-        }
-        
-        # Dashboard mapping
+        # Return the appropriate dashboard server action based on country
         dashboard_mapping = {
-            'VN': 'pb_hr_payroll_indonesia.action_vietnam_dashboard',
-            'ID': 'pb_hr_payroll_indonesia.action_indonesia_dashboard',
+            'VN': 'pb_hr_payroll_indonesia.action_open_vietnam_dashboard',
+            'ID': 'pb_hr_payroll_indonesia.action_open_indonesia_dashboard',
         }
         
-        menu_id = request.env.ref(menu_mapping.get(country_code))
-        
-        # Try to get dashboard action
+        # Get dashboard server action
         dashboard_action = dashboard_mapping.get(country_code)
         if dashboard_action:
             try:
@@ -72,6 +63,14 @@ class PayrollCountrySelector(http.Controller):
             except:
                 pass
         
+        # Fallback to menu if dashboard action not found
+        menu_mapping = {
+            'VN': 'pb_hr_payroll_indonesia.menu_vietnam_payroll_root',
+            'ID': 'pb_hr_payroll_indonesia.menu_indonesia_payroll_root',
+            'IN': 'pb_hr_payroll_indonesia.menu_india_payroll_root',
+        }
+        
+        menu_id = request.env.ref(menu_mapping.get(country_code))
         return {
             'success': True,
             'menu_id': menu_id.id,

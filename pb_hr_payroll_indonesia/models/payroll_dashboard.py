@@ -4,7 +4,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
-class PayrollDashboard(models.Model):
+class PayrollDashboard(models.Model):  # Changed to Model instead of TransientModel
     _name = 'payroll.dashboard'
     _description = 'Payroll Dashboard'
     
