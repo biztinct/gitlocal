@@ -29,7 +29,7 @@
         <field name="target">self</field>
     </record>
     
-    <!-- Vietnam Specific Actions -->
+    <!-- Vietnam Specific Actions - Updated to not reference missing models -->
     <record id="action_zoho_staging_importer_vietnam" model="ir.actions.act_window">
         <field name="name">Get Employee Data - Vietnam</field>
         <field name="res_model">zoho.staging.importer</field>
@@ -38,36 +38,8 @@
         <field name="context">{'default_payroll_country': 'VN'}</field>
     </record>
     
-    <!-- Placeholder for Vietnam edit spreadsheet action - will be created when spreadsheet exists -->
-    <record id="action_vietnam_edit_spreadsheet" model="ir.actions.server">
-        <field name="name">Edit Vietnam Payroll Spreadsheet</field>
-        <field name="model_id" ref="model_spreadsheet_spreadsheet"/>
-        <field name="state">code</field>
-        <field name="code">
-# This will be configured after spreadsheet is created
-action = {
-    'type': 'ir.actions.client',
-    'tag': 'action_spreadsheet_oca',
-    'params': {
-        'spreadsheet_id': env.ref('__custom__.payrollstaging', raise_if_not_found=False).id if env.ref('__custom__.payrollstaging', raise_if_not_found=False) else False,
-    },
-    'context': {'payroll_country': 'VN'}
-}
-        </field>
-    </record>
-    
-    <record id="action_vietnam_import_spreadsheet" model="ir.actions.server">
-        <field name="name">Import Vietnam Spreadsheet</field>
-        <field name="model_id" ref="model_spreadsheet_spreadsheet"/>
-        <field name="state">code</field>
-        <field name="code">
-spreadsheet = env.ref('__custom__.payrollstaging', raise_if_not_found=False)
-if spreadsheet:
-    action = spreadsheet.with_context(payroll_country='VN').import_json_data()
-else:
-    raise UserError('Vietnam payroll spreadsheet not found. Please create it with external ID __custom__.payrollstaging')
-        </field>
-    </record>
+    <!-- Removed the problematic server actions that reference missing models -->
+    <!-- These will be handled by the payroll.dashboard model methods instead -->
     
     <!-- Indonesia Specific Actions -->
     <record id="action_zoho_staging_importer_indonesia" model="ir.actions.act_window">
@@ -78,123 +50,111 @@ else:
         <field name="context">{'default_payroll_country': 'ID'}</field>
     </record>
     
-    <!-- Placeholder for Indonesia edit spreadsheet action -->
-    <record id="action_indonesia_edit_spreadsheet" model="ir.actions.server">
-        <field name="name">Edit Indonesia Payroll Spreadsheet</field>
-        <field name="model_id" ref="model_spreadsheet_spreadsheet"/>
-        <field name="state">code</field>
-        <field name="code">
-# This will be configured after spreadsheet is created
-action = {
-    'type': 'ir.actions.client',
-    'tag': 'action_spreadsheet_oca',
-    'params': {
-        'spreadsheet_id': env.ref('__custom__.payrollstaging_indonesia', raise_if_not_found=False).id if env.ref('__custom__.payrollstaging_indonesia', raise_if_not_found=False) else False,
-    },
-    'context': {'payroll_country': 'ID'}
-}
-        </field>
-    </record>
-    
-    <record id="action_indonesia_import_spreadsheet" model="ir.actions.server">
-        <field name="name">Import Indonesia Spreadsheet</field>
-        <field name="model_id" ref="model_spreadsheet_spreadsheet"/>
-        <field name="state">code</field>
-        <field name="code">
-spreadsheet = env.ref('__custom__.payrollstaging_indonesia', raise_if_not_found=False)
-if spreadsheet:
-    action = spreadsheet.with_context(payroll_country='ID').import_json_data()
-else:
-    raise UserError('Indonesia payroll spreadsheet not found. Please create it with external ID __custom__.payrollstaging_indonesia')
-        </field>
-    </record>
-    
-    
-    <!-- Placeholder action for India - Define before menu references it -->
-    <record id="action_zoho_staging_importer_india" model="ir.actions.act_window">
-        <field name="name">Get Employee Data - India</field>
-        <field name="res_model">zoho.staging.importer</field>
+    <!-- THR Payment Action for Indonesia -->
+    <record id="action_thr_payment_wizard" model="ir.actions.act_window">
+        <field name="name">THR Payment Wizard</field>
+        <field name="res_model">thr.payment.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="context">{'default_payroll_country': 'IN'}</field>
+        <field name="context">{'default_payroll_country': 'ID'}</field>
     </record>
     
-    <!-- Menu Items (after actions are defined) -->
+    <!-- Main Menu Structure -->
+    <menuitem id="menu_payroll_management_root"
+              name="Payroll Management"
+              sequence="85"
+              groups="om_hr_payroll.group_hr_payroll_user"/>
     
-    <!-- Main Landing Page Menu -->
+    <!-- Country Selection Menu -->
     <menuitem id="menu_payroll_country_selector"
-              name="Payroll Country Selection"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              name="Select Country"
+              parent="menu_payroll_management_root"
               action="action_open_country_selector"
               sequence="0"/>
     
     <!-- Vietnam Payroll Menu Structure -->
     <menuitem id="menu_vietnam_payroll_root"
               name="Vietnam Payroll"
-              parent="om_hr_payroll.menu_hr_payroll_root"
-              groups="group_vietnam_payroll_user"
-              sequence="10"/>
-    
-    <menuitem id="menu_vietnam_get_employee_data"
-              name="Get Employee Data"
-              parent="menu_vietnam_payroll_root"
-              action="action_zoho_staging_importer_vietnam"
-              sequence="1"/>
-    
-    <menuitem id="menu_vietnam_edit_spreadsheet"
-              name="Edit Integrated Spreadsheet"
-              parent="menu_vietnam_payroll_root"
-              action="action_vietnam_edit_spreadsheet"
-              sequence="2"/>
-    
-    <menuitem id="menu_vietnam_import_spreadsheet"
-              name="Import Integrated Spreadsheet"
-              parent="menu_vietnam_payroll_root"
-              action="action_vietnam_import_spreadsheet"
-              sequence="3"/>
+              parent="menu_payroll_management_root"
+              sequence="10"
+              groups="group_vietnam_payroll_user"/>
     
     <!-- Indonesia Payroll Menu Structure -->
     <menuitem id="menu_indonesia_payroll_root"
-              name="Indonesia Payroll"
-              parent="om_hr_payroll.menu_hr_payroll_root"
-              groups="group_indonesia_payroll_user"
-              sequence="20"/>
+              name="Indonesia Payroll" 
+              parent="menu_payroll_management_root"
+              sequence="20"
+              groups="group_indonesia_payroll_user"/>
     
-    <menuitem id="menu_indonesia_get_employee_data"
-              name="Get Employee Data"
-              parent="menu_indonesia_payroll_root"
-              action="action_zoho_staging_importer_indonesia"
-              sequence="1"/>
-    
-    <menuitem id="menu_indonesia_edit_spreadsheet"
-              name="Edit Integrated Spreadsheet"
-              parent="menu_indonesia_payroll_root"
-              action="action_indonesia_edit_spreadsheet"
-              sequence="2"/>
-    
-    <menuitem id="menu_indonesia_import_spreadsheet"
-              name="Import Integrated Spreadsheet"
-              parent="menu_indonesia_payroll_root"
-              action="action_indonesia_import_spreadsheet"
-              sequence="3"/>
-    
-    <menuitem id="menu_indonesia_thr_payment"
-              name="THR Payment"
-              parent="menu_indonesia_payroll_root"
-              action="action_thr_payment_wizard"
-              sequence="10"/>
-    
-    <!-- India Payroll Menu Structure (Placeholder for future) -->
+    <!-- India Payroll Menu Structure -->
     <menuitem id="menu_india_payroll_root"
               name="India Payroll"
-              parent="om_hr_payroll.menu_hr_payroll_root"
-              groups="group_india_payroll_user"
-              sequence="30"/>
+              parent="menu_payroll_management_root"
+              sequence="30"
+              groups="group_india_payroll_user"/>
     
-    <menuitem id="menu_india_get_employee_data"
-              name="Get Employee Data"
+    <!-- Vietnam Submenus -->
+    <menuitem id="menu_vietnam_employees"
+              name="Employees"
+              parent="menu_vietnam_payroll_root"
+              sequence="10"
+              groups="group_vietnam_payroll_user"/>
+    
+    <menuitem id="menu_vietnam_payslips"
+              name="Payslips"
+              parent="menu_vietnam_payroll_root"
+              sequence="20"
+              groups="group_vietnam_payroll_user"/>
+    
+    <menuitem id="menu_vietnam_reports"
+              name="Reports"
+              parent="menu_vietnam_payroll_root"
+              sequence="30"
+              groups="group_vietnam_payroll_user"/>
+    
+    <!-- Indonesia Submenus -->
+    <menuitem id="menu_indonesia_employees"
+              name="Employees"
+              parent="menu_indonesia_payroll_root"
+              sequence="10"
+              groups="group_indonesia_payroll_user"/>
+    
+    <menuitem id="menu_indonesia_payslips"
+              name="Payslips"
+              parent="menu_indonesia_payroll_root"
+              sequence="20"
+              groups="group_indonesia_payroll_user"/>
+    
+    <menuitem id="menu_indonesia_thr"
+              name="THR Payments"
+              parent="menu_indonesia_payroll_root"
+              action="action_thr_payment_wizard"
+              sequence="25"
+              groups="group_indonesia_payroll_user"/>
+    
+    <menuitem id="menu_indonesia_reports"
+              name="Reports"
+              parent="menu_indonesia_payroll_root"
+              sequence="30"
+              groups="group_indonesia_payroll_user"/>
+    
+    <!-- India Submenus -->
+    <menuitem id="menu_india_employees"
+              name="Employees"
               parent="menu_india_payroll_root"
-              action="action_zoho_staging_importer_india"
-              sequence="1"/>
+              sequence="10"
+              groups="group_india_payroll_user"/>
+    
+    <menuitem id="menu_india_payslips"
+              name="Payslips"
+              parent="menu_india_payroll_root"
+              sequence="20"
+              groups="group_india_payroll_user"/>
+    
+    <menuitem id="menu_india_reports"
+              name="Reports"
+              parent="menu_india_payroll_root"
+              sequence="30"
+              groups="group_india_payroll_user"/>
     
 </odoo>

@@ -2,66 +2,98 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+import logging
 import datetime
 
+_logger = logging.getLogger(__name__)
 
-class ZohoTimesheetImporter(models.TransientModel):
-    _inherit = 'zoho.timesheet.importer'
+
+class HrZohoIntegration(models.TransientModel):  # Changed to TransientModel
+    _inherit = 'zoho.staging.importer'
     
-    def _create_or_update_employee(self):
-        """Override to handle country-specific payroll structure"""
-        # Get the selected payroll country from context
-        payroll_country = self.env.context.get('payroll_country', 'VN')
+    def process_employees_for_payroll(self, payroll_country='VN'):
+        """Process employees based on payroll country"""
+        # Get all zoho staging data
+        zoho_employees = self.env['zoho.staging.data'].search([])
         
-        # Fetch all records from zoho.employee.data
-        zoho_employees = self.env['zoho.employee.data'].search([])
+        if not zoho_employees:
+            raise UserError(_('No employee data found. Please import employee data first.'))
+        
+        processed_count = 0
+        error_count = 0
         
         for zoho_employee in zoho_employees:
-            # Update payroll country in zoho employee data
-            zoho_employee.payroll_country = payroll_country
-            
-            employee = self.env['hr.employee'].search([('employee_id', '=', zoho_employee.employee_id)], limit=1)
-            
-            # Validate required fields
-            if not zoho_employee.department:
-                raise ValidationError(f'Department is not specified for the employee with ID {zoho_employee.employee_id}')
-            
-            # Create/update department
-            department = self.env['hr.department'].search([('name', '=', zoho_employee.department)], limit=1)
-            if not department:
-                department = self.env['hr.department'].create({'name': zoho_employee.department})
-            
-            # Create/update job
-            if not zoho_employee.designation:
-                raise ValidationError(f'Designation is not specified for the employee with ID {zoho_employee.employee_id}')
-            
-            job = self.env['hr.job'].search([('name', '=', zoho_employee.designation)], limit=1)
-            if not job:
-                job = self.env['hr.job'].create({
-                    'name': zoho_employee.designation,
-                    'department_id': department.id
-                })
-            
-            # Prepare employee data
-            employee_data = self._prepare_employee_data(zoho_employee, department, job)
-            
-            if employee:
-                employee.write(employee_data)
-            else:
-                new_employee = self.env['hr.employee'].create(employee_data)
-                self._create_employee_contract(new_employee, zoho_employee, payroll_country)
-            
-            # Update existing contract if employee exists
-            if employee and employee.contract_ids:
-                self._update_employee_contract(employee, zoho_employee, payroll_country)
+            try:
+                self._process_single_employee(zoho_employee, payroll_country)
+                processed_count += 1
+            except Exception as e:
+                error_count += 1
+                _logger.error(f"Error processing employee {zoho_employee.employee_id}: {str(e)}")
+                continue
+        
+        return {
+            'processed': processed_count,
+            'errors': error_count,
+            'total': len(zoho_employees)
+        }
     
-    def _prepare_employee_data(self, zoho_employee, department, job):
-        """Prepare employee data dictionary"""
+    def _process_single_employee(self, zoho_employee, payroll_country):
+        """Process a single employee"""
+        # Find or create department
+        department = self._get_or_create_department(zoho_employee.department)
+        
+        # Find or create job position
+        job = self._get_or_create_job(zoho_employee.designation)
+        
+        # Check if employee already exists
+        employee = self.env['hr.employee'].search([
+            ('employee_id', '=', zoho_employee.employee_id)
+        ], limit=1)
+        
+        # Prepare employee data
+        employee_data = self._prepare_employee_data_fixed(zoho_employee, department, job)
+        
+        if employee:
+            # Update existing employee
+            employee.write(employee_data)
+        else:
+            # Create new employee
+            employee = self.env['hr.employee'].create(employee_data)
+            
+            # Create contract for new employee
+            self._create_employee_contract(employee, zoho_employee, payroll_country)
+        
+        return employee
+    
+    def _get_or_create_department(self, department_name):
+        """Get or create department"""
+        if not department_name:
+            department_name = 'Unknown'
+        
+        department = self.env['hr.department'].search([('name', '=', department_name)], limit=1)
+        if not department:
+            department = self.env['hr.department'].create({'name': department_name})
+        
+        return department
+    
+    def _get_or_create_job(self, job_title):
+        """Get or create job position"""
+        if not job_title:
+            job_title = 'Unknown'
+        
+        job = self.env['hr.job'].search([('name', '=', job_title)], limit=1)
+        if not job:
+            job = self.env['hr.job'].create({'name': job_title})
+        
+        return job
+    
+    def _prepare_employee_data_fixed(self, zoho_employee, department, job):
+        """Prepare employee data dictionary - FIXED to remove work_location"""
         return {
             'name': zoho_employee.full_name_vn or zoho_employee.full_name_en,
             'department_id': department.id,
             'work_email': zoho_employee.email,
-            'work_location': zoho_employee.location_name,
+            # REMOVED: 'work_location': zoho_employee.location_name,  # This field doesn't exist
             'job_id': job.id,
             'gender': zoho_employee.gender,
             'org_employee_type': zoho_employee.employee_type,
@@ -70,12 +102,16 @@ class ZohoTimesheetImporter(models.TransientModel):
             'marital': 'single' if zoho_employee.employee_status == 'Single' else 'married',
             'employee_id': zoho_employee.employee_id,
             'full_name_vn': zoho_employee.full_name_vn,
+            # Store location in a custom field if needed, or use address_home_id
+            # 'notes': f"Location: {zoho_employee.location_name}" if zoho_employee.location_name else "",
         }
     
     def _get_salary_structure(self, payroll_country):
         """Get salary structure based on country"""
         if payroll_country == 'ID':
             structure_name = 'Indonesia Salary Structure'
+        elif payroll_country == 'IN':
+            structure_name = 'India Salary Structure'
         else:
             structure_name = 'Vietnam Salary Structure'
         
@@ -94,81 +130,48 @@ class ZohoTimesheetImporter(models.TransientModel):
             raise UserError("No general journal found!")
         
         # Determine contract type
-        contract_type = zoho_employee.employee_type or 'Permanent'
-        existing_contract_type = self.env['hr.contract.type'].search([('name', '=', contract_type)], limit=1)
-        if not existing_contract_type:
-            existing_contract_type = self.env['hr.contract.type'].create({'name': contract_type})
+        contract_type_name = zoho_employee.employee_type or 'Permanent'
+        contract_type = self.env['hr.contract.type'].search([('name', '=', contract_type_name)], limit=1)
+        if not contract_type:
+            contract_type = self.env['hr.contract.type'].create({'name': contract_type_name})
         
+        # Calculate contract dates
+        date_start = zoho_employee.date_of_joining if hasattr(zoho_employee, 'date_of_joining') and zoho_employee.date_of_joining else datetime.date.today()
+        
+        # Prepare contract data
         contract_data = {
-            'name': f"{employee.name} Contract",
+            'name': f"{employee.name} - {payroll_country} Contract",
             'employee_id': employee.id,
-            'date_start': zoho_employee.contract_from or datetime.date(2000, 1, 1),
-            'date_end': zoho_employee.contract_to or datetime.date(2100, 1, 1),
+            'date_start': date_start,
             'state': 'open',
-            'struct_id': salary_structure.id,
-            'wage': zoho_employee.base_salary,
+            'wage': getattr(zoho_employee, 'base_salary', 0) or 0,
+            'type_id': contract_type.id,
             'journal_id': gen_journal.id,
-            'type_id': existing_contract_type.id,
-        }
-        
-        # Add country-specific fields
-        if payroll_country == 'ID':
-            contract_data.update(self._get_indonesia_contract_fields(zoho_employee))
-        else:
-            contract_data.update(self._get_vietnam_contract_fields(zoho_employee))
-        
-        self.env['hr.contract'].create(contract_data)
-    
-    def _update_employee_contract(self, employee, zoho_employee, payroll_country):
-        """Update employee contract with country-specific data"""
-        latest_contract = employee.contract_ids.sorted(lambda c: c.date_start, reverse=True)[0]
-        
-        salary_structure = self._get_salary_structure(payroll_country)
-        
-        contract_data = {
-            'date_start': zoho_employee.contract_from or datetime.date(2000, 1, 1),
-            'date_end': zoho_employee.contract_to or datetime.date(2100, 1, 1),
-            'state': 'open',
             'struct_id': salary_structure.id,
-            'wage': zoho_employee.base_salary,
+            'dependents': getattr(zoho_employee, 'number_of_dependents', 0) or 0,
         }
         
-        # Add country-specific fields
-        if payroll_country == 'ID':
-            contract_data.update(self._get_indonesia_contract_fields(zoho_employee))
-        else:
-            contract_data.update(self._get_vietnam_contract_fields(zoho_employee))
+        # Add location to contract if the field exists
+        if hasattr(self.env['hr.contract']._fields, 'location'):
+            contract_data['location'] = zoho_employee.location_name
         
-        latest_contract.write(contract_data)
+        # Add country-specific contract fields
+        if payroll_country == 'VN':
+            # Vietnam specific fields
+            if hasattr(self.env['hr.contract']._fields, 'tupart'):
+                contract_data['tupart'] = getattr(zoho_employee, 'tu_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'shuipart'):
+                contract_data['shuipart'] = getattr(zoho_employee, 'shui_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'costcenter'):
+                contract_data['costcenter'] = getattr(zoho_employee, 'costcenter', '')
         
-        # Update advantages
-        self._update_contract_advantages(latest_contract, zoho_employee, payroll_country)
-    
-    def _get_indonesia_contract_fields(self, zoho_employee):
-        """Get Indonesia-specific contract fields"""
-        return {
-            'pph21_rate': 5.0,  # Default PPh 21 rate
-            'bpjs_kesehatan_employee': 1.0,
-            'bpjs_kesehatan_employer': 4.0,
-            'bpjs_tk_jht_employee': 2.0,
-            'bpjs_tk_jht_employer': 3.7,
-            'bpjs_tk_jp_employee': 1.0,
-            'bpjs_tk_jp_employer': 2.0,
-            'bpjs_tk_jkm': 0.3,
-            'bpjs_tk_jkk': 0.24,
-            'union_dues': zoho_employee.union_dues or 0,
-            'loan_deduction': zoho_employee.loan_deductions or 0,
-        }
-    
-    def _get_vietnam_contract_fields(self, zoho_employee):
-        """Get Vietnam-specific contract fields"""
-        return {
-            'tupart': zoho_employee.tu_part,
-            'shuipart': zoho_employee.shui_part,
-            'costcenter': zoho_employee.costcenter,
-            'location': zoho_employee.location_name,
-            'dependents': zoho_employee.number_of_dependents,
-        }
+        # Create the contract
+        contract = self.env['hr.contract'].create(contract_data)
+        
+        # Update contract advantages if needed
+        self._update_contract_advantages(contract, zoho_employee, payroll_country)
+        
+        return contract
     
     def _update_contract_advantages(self, contract, zoho_employee, payroll_country):
         """Update contract advantages based on country"""
@@ -185,23 +188,256 @@ class ZohoTimesheetImporter(models.TransientModel):
         for field_name, advantage_name in advantage_mappings:
             value = getattr(zoho_employee, field_name, 0)
             if value:
-                advantage = contract.advantage_ids.filtered(lambda a: a.name == advantage_name)
-                if advantage:
-                    advantage.amount = value
-                else:
-                    contract.advantage_ids = [(0, 0, {
-                        'name': advantage_name,
-                        'amount': value,
-                        'contract_id': contract.id
-                    })]
+                # Check if contract advantages model exists
+                if 'hr.contract.advantage' in self.env:
+                    advantage = contract.advantage_ids.filtered(lambda a: a.name == advantage_name)
+                    if advantage:
+                        advantage.amount = value
+                    else:
+                        contract.advantage_ids = [(0, 0, {
+                            'name': advantage_name,
+                            'amount': value,
+                            'contract_id': contract.id
+                        })]
+
+
+# Remove the problematic SpreadsheetSpreadsheet override
+# The work_location issue should be fixed in the employee creation methods instead
+
+class HrEmployee(models.Model):
+    _inherit = 'hr.employee'
+    
+    @api.model
+    def create(self, vals):
+        """Override create to handle missing work_location field gracefully"""
+        # Remove work_location if it exists in vals but not in model fields
+        if 'work_location' in vals and 'work_location' not in self._fields:
+            _logger.warning("work_location field not found in hr.employee model, removing from values")
+            vals.pop('work_location', None)
+        
+        return super(HrEmployee, self).create(vals)
+    
+    def write(self, vals):
+        """Override write to handle missing work_location field gracefully"""
+        # Remove work_location if it exists in vals but not in model fields
+        if 'work_location' in vals and 'work_location' not in self._fields:
+            _logger.warning("work_location field not found in hr.employee model, removing from values")
+            vals.pop('work_location', None)
+        
+        return super(HrEmployee, self).write(vals)
+    
+    def process_employees_for_payroll(self, payroll_country='VN'):
+        """Process employees based on payroll country"""
+        # Get all zoho staging data
+        zoho_employees = self.env['zoho.staging.data'].search([])
+        
+        if not zoho_employees:
+            raise UserError(_('No employee data found. Please import employee data first.'))
+        
+        processed_count = 0
+        error_count = 0
+        
+        for zoho_employee in zoho_employees:
+            try:
+                self._process_single_employee(zoho_employee, payroll_country)
+                processed_count += 1
+            except Exception as e:
+                error_count += 1
+                _logger.error(f"Error processing employee {zoho_employee.employee_id}: {str(e)}")
+                continue
+        
+        return {
+            'processed': processed_count,
+            'errors': error_count,
+            'total': len(zoho_employees)
+        }
+    
+    def _process_single_employee(self, zoho_employee, payroll_country):
+        """Process a single employee"""
+        # Find or create department
+        department = self._get_or_create_department(zoho_employee.department)
+        
+        # Find or create job position
+        job = self._get_or_create_job(zoho_employee.designation)
+        
+        # Check if employee already exists
+        employee = self.env['hr.employee'].search([
+            ('employee_id', '=', zoho_employee.employee_id)
+        ], limit=1)
+        
+        # Prepare employee data
+        employee_data = self._prepare_employee_data(zoho_employee, department, job)
+        
+        if employee:
+            # Update existing employee
+            employee.write(employee_data)
+        else:
+            # Create new employee
+            employee = self.env['hr.employee'].create(employee_data)
+            
+            # Create contract for new employee
+            self._create_employee_contract(employee, zoho_employee, payroll_country)
+        
+        return employee
+    
+    def _get_or_create_department(self, department_name):
+        """Get or create department"""
+        if not department_name:
+            department_name = 'Unknown'
+        
+        department = self.env['hr.department'].search([('name', '=', department_name)], limit=1)
+        if not department:
+            department = self.env['hr.department'].create({'name': department_name})
+        
+        return department
+    
+    def _get_or_create_job(self, job_title):
+        """Get or create job position"""
+        if not job_title:
+            job_title = 'Unknown'
+        
+        job = self.env['hr.job'].search([('name', '=', job_title)], limit=1)
+        if not job:
+            job = self.env['hr.job'].create({'name': job_title})
+        
+        return job
+    
+    def _prepare_employee_data(self, zoho_employee, department, job):
+        """Prepare employee data dictionary - FIXED to remove work_location"""
+        return {
+            'name': zoho_employee.full_name_vn or zoho_employee.full_name_en,
+            'department_id': department.id,
+            'work_email': zoho_employee.email,
+            # REMOVED: 'work_location': zoho_employee.location_name,  # This field doesn't exist
+            'job_id': job.id,
+            'gender': zoho_employee.gender,
+            'org_employee_type': zoho_employee.employee_type,
+            'birthday': zoho_employee.date_of_birth,
+            'mobile_phone': zoho_employee.mobile,
+            'marital': 'single' if zoho_employee.employee_status == 'Single' else 'married',
+            'employee_id': zoho_employee.employee_id,
+            'full_name_vn': zoho_employee.full_name_vn,
+            # Store location in a custom field if needed, or use address_home_id
+            # 'notes': f"Location: {zoho_employee.location_name}" if zoho_employee.location_name else "",
+        }
+    
+    def _get_salary_structure(self, payroll_country):
+        """Get salary structure based on country"""
+        if payroll_country == 'ID':
+            structure_name = 'Indonesia Salary Structure'
+        elif payroll_country == 'IN':
+            structure_name = 'India Salary Structure'
+        else:
+            structure_name = 'Vietnam Salary Structure'
+        
+        salary_structure = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
+        if not salary_structure:
+            raise UserError(f"Salary structure '{structure_name}' not found!")
+        
+        return salary_structure
+    
+    def _create_employee_contract(self, employee, zoho_employee, payroll_country):
+        """Create employee contract with country-specific structure"""
+        salary_structure = self._get_salary_structure(payroll_country)
+        
+        gen_journal = self.env['account.journal'].search([('type', '=', 'general')], limit=1)
+        if not gen_journal:
+            raise UserError("No general journal found!")
+        
+        # Determine contract type
+        contract_type_name = zoho_employee.employee_type or 'Permanent'
+        contract_type = self.env['hr.contract.type'].search([('name', '=', contract_type_name)], limit=1)
+        if not contract_type:
+            contract_type = self.env['hr.contract.type'].create({'name': contract_type_name})
+        
+        # Calculate contract dates
+        date_start = zoho_employee.date_of_joining if hasattr(zoho_employee, 'date_of_joining') and zoho_employee.date_of_joining else datetime.date.today()
+        
+        # Prepare contract data
+        contract_data = {
+            'name': f"{employee.name} - {payroll_country} Contract",
+            'employee_id': employee.id,
+            'date_start': date_start,
+            'state': 'open',
+            'wage': getattr(zoho_employee, 'base_salary', 0) or 0,
+            'type_id': contract_type.id,
+            'journal_id': gen_journal.id,
+            'struct_id': salary_structure.id,
+            'dependents': getattr(zoho_employee, 'number_of_dependents', 0) or 0,
+        }
+        
+        # Add location to contract if the field exists
+        if hasattr(self.env['hr.contract']._fields, 'location'):
+            contract_data['location'] = zoho_employee.location_name
+        
+        # Add country-specific contract fields
+        if payroll_country == 'VN':
+            # Vietnam specific fields
+            if hasattr(self.env['hr.contract']._fields, 'tupart'):
+                contract_data['tupart'] = getattr(zoho_employee, 'tu_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'shuipart'):
+                contract_data['shuipart'] = getattr(zoho_employee, 'shui_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'costcenter'):
+                contract_data['costcenter'] = getattr(zoho_employee, 'costcenter', '')
+        
+        # Create the contract
+        contract = self.env['hr.contract'].create(contract_data)
+        
+        # Update contract advantages if needed
+        self._update_contract_advantages(contract, zoho_employee, payroll_country)
+        
+        return contract
+    
+    def _update_contract_advantages(self, contract, zoho_employee, payroll_country):
+        """Update contract advantages based on country"""
+        # This method can be extended to handle country-specific advantages
+        advantage_mappings = [
+            ('gas_allowance', 'Gas Allowance'),
+            ('phone_allowance', 'Phone Allowance'),
+            ('meal_allowance', 'Meal Allowance'),
+            ('resp_allowance', 'Responsibility Allowance'),
+            ('park_allowance', 'Parking Allowance'),
+            ('taxi_allowance', 'Taxi Allowance'),
+        ]
+        
+        for field_name, advantage_name in advantage_mappings:
+            value = getattr(zoho_employee, field_name, 0)
+            if value:
+                # Check if contract advantages model exists
+                if 'hr.contract.advantage' in self.env:
+                    advantage = contract.advantage_ids.filtered(lambda a: a.name == advantage_name)
+                    if advantage:
+                        advantage.amount = value
+                    else:
+                        contract.advantage_ids = [(0, 0, {
+                            'name': advantage_name,
+                            'amount': value,
+                            'contract_id': contract.id
+                        })]
 
 
 class SpreadsheetSpreadsheet(models.Model):
     _inherit = 'spreadsheet.spreadsheet'
     
     def import_json_data(self):
-        """Override to handle country-specific spreadsheet"""
-        payroll_country = self.env.context.get('payroll_country', 'VN')
-        
-        # Call parent method with context
-        return super(SpreadsheetSpreadsheet, self.with_context(payroll_country=payroll_country)).import_json_data()
+        """Override to handle country-specific spreadsheet with proper error handling"""
+        try:
+            payroll_country = self.env.context.get('payroll_country', 'VN')
+            
+            # Call parent method with context
+            result = super(SpreadsheetSpreadsheet, self.with_context(payroll_country=payroll_country)).import_json_data()
+            
+            return result
+            
+        except ValueError as e:
+            error_msg = str(e)
+            if 'work_location' in error_msg:
+                raise UserError(_(
+                    "Configuration Error: The 'work_location' field is not available in your system. "
+                    "This has been fixed in the latest version. Please update your module or contact your administrator."
+                ))
+            else:
+                raise UserError(_("Import Error: %s") % error_msg)
+        except Exception as e:
+            _logger.error(f"Error importing spreadsheet data: {str(e)}")
+            raise UserError(_("An error occurred while importing the spreadsheet: %s") % str(e))

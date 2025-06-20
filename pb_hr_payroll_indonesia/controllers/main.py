@@ -37,7 +37,8 @@ class PayrollCountrySelector(http.Controller):
             return {
                 'success': False,
                 'error': 'access_denied',
-                'message': f'You do not have access to {self._get_country_name(country_code)} payroll. Please contact your administrator to request access.'
+                'message': f'You do not have access to {self._get_country_name(country_code)} payroll. '
+                           'Please contact your administrator to request access.'
             }
         
         # Store selected country in session only

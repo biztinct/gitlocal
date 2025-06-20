@@ -37,6 +37,8 @@
         'views/hr_payroll_structure_views.xml',
         'views/zoho_employee_data_views.xml',
         'wizards/thr_payment_wizard_views.xml',
+        'data/payroll_dashboard_data.xml',
+
     ],
     'installable': True,
     'application': False,

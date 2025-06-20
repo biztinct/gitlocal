@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Server actions to ensure dashboard records exist before opening -->
+    <record id="action_open_vietnam_dashboard" model="ir.actions.server">
+        <field name="name">Open Vietnam Dashboard</field>
+        <field name="model_id" ref="model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+# Ensure Vietnam dashboard record exists
+dashboard = env['payroll.dashboard'].search([('country', '=', 'VN')], limit=1)
+if not dashboard:
+    dashboard = env['payroll.dashboard'].create({'country': 'VN'})
+
+# Open the specific record
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Vietnam Payroll Dashboard', 
+    'res_model': 'payroll.dashboard',
+    'view_mode': 'form',
+    'view_id': env.ref('pb_hr_payroll_indonesia.view_payroll_dashboard_vietnam').id,
+    'res_id': dashboard.id,
+    'target': 'current',
+    'context': {'create': False, 'edit': False, 'delete': False}
+}
+        </field>
+    </record>
+    
+    <record id="action_open_indonesia_dashboard" model="ir.actions.server">
+        <field name="name">Open Indonesia Dashboard</field>
+        <field name="model_id" ref="model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+# Ensure Indonesia dashboard record exists
+dashboard = env['payroll.dashboard'].search([('country', '=', 'ID')], limit=1)
+if not dashboard:
+    dashboard = env['payroll.dashboard'].create({'country': 'ID'})
+
+# Open the specific record
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Indonesia Payroll Dashboard',
+    'res_model': 'payroll.dashboard', 
+    'view_mode': 'form',
+    'view_id': env.ref('pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia').id,
+    'res_id': dashboard.id,
+    'target': 'current',
+    'context': {'create': False, 'edit': False, 'delete': False}
+}
+        </field>
+    </record>
+    
+</odoo>
