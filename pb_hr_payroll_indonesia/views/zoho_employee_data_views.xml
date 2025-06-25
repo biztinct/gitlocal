@@ -30,6 +30,28 @@
                         <field name="bpjs_ketenagakerjaan_number"/>
                     </group>
                 </group>
+                <group>
+                    <group string="Enhanced Allowances" name="enhanced_allowances">
+                        <field name="fixed_allowance_1"/>
+                        <field name="fixed_allowance_2"/>
+                        <field name="commission"/>
+                        <field name="sign_on_bonus"/>
+                        <field name="tunjangan_sewa_rumah"/>
+                        <field name="tunjangan_duka"/>
+                        <field name="tunjangan_suka"/>
+                        <field name="severance_appreciation"/>
+                        <field name="lain_lain_allowance"/>
+                    </group>
+                    <group string="Enhanced Deductions" name="enhanced_deductions">
+                        <field name="deduction_1"/>
+                        <field name="deduction_2"/>
+                        <field name="deduction_3"/>
+                        <field name="koperasi"/>
+                        <field name="pinjaman"/>
+                        <field name="cicilan"/>
+                        <field name="lain_lain_deduction"/>
+                    </group>
+                </group>
             </xpath>
         </field>
     </record>
@@ -62,6 +84,29 @@
                         <field name="bpjs_ketenagakerjaan_number"/>
                     </group>
                 </group>
+                <group>
+                    <group string="Enhanced Allowances" name="enhanced_allowances">
+                        <field name="fixed_allowance_1"/>
+                        <field name="fixed_allowance_2"/>
+                        <field name="commission"/>
+                        <field name="sign_on_bonus"/>
+                        <field name="tunjangan_sewa_rumah"/>
+                        <field name="tunjangan_duka"/>
+                        <field name="tunjangan_suka"/>
+                        <field name="severance_appreciation"/>
+                        <field name="lain_lain_allowance"/>
+                    </group>
+                    <group string="Enhanced Deductions" name="enhanced_deductions">
+                        <field name="deduction_1"/>
+                        <field name="deduction_2"/>
+                        <field name="deduction_3"/>
+                        <field name="koperasi"/>
+                        <field name="pinjaman"/>
+                        <field name="cicilan"/>
+                        <field name="lain_lain_deduction"/>
+                    </group>
+                </group>
+
             </xpath>
         </field>
     </record>
