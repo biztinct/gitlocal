@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Payroll Approval Tree View -->
+    <record id="view_payroll_approval_tree" model="ir.ui.view">
+        <field name="name">payroll.analytics.approval.tree</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Approval" create="false" decoration-warning="state == 'ready'" decoration-success="state == 'approved'">
+                <field name="period_name"/>
+                <field name="country"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="total_employees"/>
+                <field name="total_payroll" widget="monetary"/>
+                <field name="variance_percentage" widget="percentage"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'ready'"
+                       decoration-info="state == 'draft'"/>
+                <button name="action_open_dashboard" string="View Dashboard" type="object" icon="fa-dashboard" attrs="{'invisible': [('state', 'not in', ['ready', 'approved'])]}"/>
+                <button name="action_approve_payroll" string="Approve" type="object" icon="fa-check" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'ready')]}" confirm="Are you sure you want to approve this payroll?"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Payroll Approval Search View -->
+    <record id="view_payroll_approval_search" model="ir.ui.view">
+        <field name="name">payroll.analytics.approval.search</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <search string="Search Payroll Approvals">
+                <field name="period_name"/>
+                <field name="country"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <filter string="Ready for Approval" name="ready_for_approval" domain="[('state', '=', 'ready')]"/>
+                <filter string="Approved" name="approved" domain="[('state', '=', 'approved')]"/>
+                <filter string="High Variance" name="high_variance" domain="[('variance_percentage', '&gt;', 15)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country" context="{'group_by': 'country'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Month" name="group_month" context="{'group_by': 'date_from:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Enhanced Analytics Form View for Approval -->
+    <record id="view_payroll_analytics_approval_form" model="ir.ui.view">
+        <field name="name">payroll.analytics.approval.form</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Final Approval" create="false">
+                <header>
+                    <button name="action_approve_payroll" 
+                            type="object" 
+                            string="Final Approve" 
+                            class="oe_highlight btn-success"
+                            states="ready"
+                            confirm="Are you sure you want to approve this payroll? This action will finalize all payslip batches and cannot be undone."/>
+                    <button name="action_export_bank_file" 
+                            type="object" 
+                            string="Export Bank File" 
+                            class="oe_highlight btn-primary"
+                            states="approved"/>
+                    <button name="action_open_dashboard" 
+                            type="object" 
+                            string="Open Dashboard" 
+                            class="btn-info"
+                            states="ready,approved"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_payslip_runs" icon="fa-files-o">
+                            <field string="Payslip Runs" name="payslip_run_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_anomalies" icon="fa-exclamation-triangle">
+                            <field string="Anomalies" name="anomaly_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="period_name" placeholder="Period Name"/>
+                        </h1>
+                        <h2>
+                            <field name="country"/> Payroll Analysis
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group string="Period Information">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="country" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                        <group string="Summary Statistics">
+                            <field name="total_employees"/>
+                            <field name="total_payroll" widget="monetary"/>
+                            <field name="average_salary" widget="monetary"/>
+                            <field name="variance_percentage" widget="percentage"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Quick Overview" name="overview">
+                            <group>
+                                <group string="Employee Metrics">
+                                    <field name="employee_metrics" widget="text" readonly="1"/>
+                                </group>
+                                <group string="Variance Analysis">
+                                    <div class="alert alert-info" attrs="{'invisible': [('variance_percentage', '&gt;', 10)]}">
+                                        <strong>Normal Variance:</strong> Payroll variance is within acceptable range.
+                                    </div>
+                                    <div class="alert alert-warning" attrs="{'invisible': ['|', ('variance_percentage', '&lt;=', 10), ('variance_percentage', '&gt;', 20)]}">
+                                        <strong>Moderate Variance:</strong> Payroll variance requires review.
+                                    </div>
+                                    <div class="alert alert-danger" attrs="{'invisible': [('variance_percentage', '&lt;=', 20)]}">
+                                        <strong>High Variance:</strong> Significant changes detected. Please review carefully.
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Component Analysis" name="components">
+                            <field name="salary_components" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Comparison Data" name="comparison">
+                            <field name="comparison_data" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Anomaly Alerts" name="anomalies">
+                            <field name="anomaly_alerts" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Approval Notes" name="notes">
+                            <group>
+                                <field name="approval_notes" placeholder="Add any notes or comments for this approval..."/>
+                                <field name="approved_by" readonly="1"/>
+                                <field name="approval_date" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Approval Dashboard Action -->
+    <record id="action_payroll_approval_dashboard" model="ir.actions.act_window">
+        <field name="name">Payroll Approval Dashboard</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_payroll_approval_tree"/>
+        <field name="search_view_id" ref="view_payroll_approval_search"/>
+        <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
+        <field name="context">{
+            'search_default_ready_for_approval': 1,
+            'create': False
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payroll batches ready for approval!
+            </p>
+            <p>
+                Payroll analytics records appear here when payslip batches reach Level 2 approval status.
+                Use the dashboard view to get detailed analytics before making final approval decisions.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

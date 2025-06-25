@@ -32,7 +32,7 @@
                                         <i class="fa fa-bar-chart-o"/> Payroll Analytics Dashboard
                                     </h1>
                                     <p class="dashboard-subtitle">
-                                        <span t-field="period_name"/> • Final Approval Review
+                                        <field name="period_name" readonly="1" widget="text"/> • Final Approval Review
                                     </p>
                                 </div>
                                 <div class="col-md-4 text-right">
@@ -96,7 +96,7 @@
                                         </div>
                                         <div class="metric-content">
                                             <h3 class="metric-value">
-                                                <span t-esc="'{:.1f}%'.format(variance_percentage)"/>
+                                                <span t-esc="(variance_percentage * 100).toFixed(1) + '%'"/>
                                             </h3>
                                             <p class="metric-label">Variance vs Last Month</p>
                                         </div>

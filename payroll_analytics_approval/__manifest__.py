@@ -35,16 +35,16 @@
         'pb_hr_payroll_indonesia',
         'web',
         'spreadsheet_oca',
+        'mail',  # Added for messaging/chatter
     ],
     'data': [
-        # Security
+        # Security - Minimal for now
         'security/ir.model.access.csv',
-        'security/payroll_analytics_security.xml',
         
-        # Data
+        # Data - Load after security
         'data/payroll_analytics_data.xml',
         
-        # Views
+        # Views - Core views
         'views/payroll_analytics_dashboard.xml',
         'views/payroll_approval_views.xml',
         'views/payroll_comparison_views.xml',
@@ -58,7 +58,7 @@
         # Reports
         'reports/payroll_analytics_reports.xml',
         
-        # Menu
+        # Menu - Load last
         'views/payroll_analytics_menus.xml',
     ],
     'assets': {
