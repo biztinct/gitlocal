@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Professional Analytics Dashboard View -->
+    <record id="view_payroll_analytics_dashboard" model="ir.ui.view">
+        <field name="name">payroll.analytics.dashboard</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Analytics Dashboard" create="false" edit="false">
+                <header>
+                    <button name="action_approve_payroll" 
+                            type="object" 
+                            string="Final Approve" 
+                            class="oe_highlight btn-success"
+                            states="ready"
+                            confirm="Are you sure you want to approve this payroll? This action cannot be undone."/>
+                    <button name="action_export_bank_file" 
+                            type="object" 
+                            string="Export Bank File" 
+                            class="oe_highlight btn-primary"
+                            states="approved"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                
+                <sheet>
+                    <div class="analytics-dashboard">
+                        <!-- Dashboard Header -->
+                        <div class="dashboard-header">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h1 class="dashboard-title">
+                                        <i class="fa fa-bar-chart-o"/> Payroll Analytics Dashboard
+                                    </h1>
+                                    <p class="dashboard-subtitle">
+                                        <span t-field="period_name"/> • Final Approval Review
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <div class="status-badge">
+                                        <field name="state" widget="badge" 
+                                               decoration-success="state == 'approved'"
+                                               decoration-warning="state == 'ready'"
+                                               decoration-info="state == 'draft'"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Key Metrics Cards -->
+                        <div class="metrics-section">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-employees">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-users"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value"><field name="total_employees"/></h3>
+                                            <p class="metric-label">Total Employees</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-payroll">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-money"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value">
+                                                <field name="total_payroll" widget="monetary"/>
+                                            </h3>
+                                            <p class="metric-label">Total Payroll</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-average">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-calculator"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value">
+                                                <field name="average_salary" widget="monetary"/>
+                                            </h3>
+                                            <p class="metric-label">Average Salary</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <div class="metric-card metric-variance">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-line-chart"/>
+                                        </div>
+                                        <div class="metric-content">
+                                            <h3 class="metric-value">
+                                                <span t-esc="'{:.1f}%'.format(variance_percentage)"/>
+                                            </h3>
+                                            <p class="metric-label">Variance vs Last Month</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Charts Section -->
+                        <div class="charts-section">
+                            <div class="row">
+                                <!-- Component Comparison Chart -->
+                                <div class="col-md-6">
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h4><i class="fa fa-bar-chart"/> Salary Components</h4>
+                                            <p>Total amounts by component</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="componentsChart" width="400" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Month over Month Comparison -->
+                                <div class="col-md-6">
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h4><i class="fa fa-line-chart"/> Month over Month</h4>
+                                            <p>Comparison with previous month</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="comparisonChart" width="400" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Variance Analysis Chart -->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="chart-card">
+                                        <div class="chart-header">
+                                            <h4><i class="fa fa-area-chart"/> Variance Analysis</h4>
+                                            <p>Percentage change from previous month by component</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="varianceChart" width="800" height="300"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Anomaly Alerts Section -->
+                        <div class="alerts-section" t-if="anomaly_alerts">
+                            <div class="section-header">
+                                <h4><i class="fa fa-exclamation-triangle"/> Anomaly Alerts</h4>
+                            </div>
+                            <div id="anomaly-alerts-container">
+                                <!-- Alerts will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Analysis Section -->
+                        <div class="analysis-section">
+                            <div class="section-header">
+                                <h4><i class="fa fa-table"/> Detailed Component Analysis</h4>
+                            </div>
+                            <div class="analysis-table-container">
+                                <table class="table table-striped analysis-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Component</th>
+                                            <th>Current Total</th>
+                                            <th>Previous Total</th>
+                                            <th>Average/Employee</th>
+                                            <th>Variance</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="analysis-table-body">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Decision Support Section -->
+                        <div class="decision-section">
+                            <div class="section-header">
+                                <h4><i class="fa fa-lightbulb-o"/> Decision Support</h4>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="recommendation-card">
+                                        <h5><i class="fa fa-check-circle text-success"/> Recommendations</h5>
+                                        <ul id="recommendations-list">
+                                            <!-- Recommendations will be populated by JavaScript -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="warning-card">
+                                        <h5><i class="fa fa-warning text-warning"/> Things to Review</h5>
+                                        <ul id="warnings-list">
+                                            <!-- Warnings will be populated by JavaScript -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden fields for JavaScript -->
+                        <field name="employee_metrics" invisible="1"/>
+                        <field name="salary_components" invisible="1"/>
+                        <field name="comparison_data" invisible="1"/>
+                        <field name="anomaly_alerts" invisible="1"/>
+                        <field name="country" invisible="1"/>
+                        <field name="date_from" invisible="1"/>
+                        <field name="date_to" invisible="1"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Analytics Form View -->
+    <record id="view_payroll_analytics_form" model="ir.ui.view">
+        <field name="name">payroll.analytics.form</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Analytics">
+                <header>
+                    <button name="action_approve_payroll" 
+                            type="object" 
+                            string="Approve" 
+                            class="oe_highlight"
+                            states="ready"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="period_name"/>
+                            <field name="country"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="total_employees"/>
+                            <field name="total_payroll"/>
+                            <field name="average_salary"/>
+                            <field name="variance_percentage"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Analytics Tree View -->
+    <record id="view_payroll_analytics_tree" model="ir.ui.view">
+        <field name="name">payroll.analytics.tree</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Analytics" create="false">
+                <field name="period_name"/>
+                <field name="country"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="total_employees"/>
+                <field name="total_payroll" widget="monetary"/>
+                <field name="average_salary" widget="monetary"/>
+                <field name="variance_percentage"/>
+                <field name="state" widget="badge" 
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'ready'"
+                       decoration-info="state == 'draft'"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Analytics Action -->
+    <record id="action_payroll_analytics" model="ir.actions.act_window">
+        <field name="name">Payroll Analytics</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_payroll_analytics_tree"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payroll analytics found!
+            </p>
+            <p>
+                Analytics are automatically generated when payslip batches reach Level 2 approval status.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Analytics Dashboard Action -->
+    <record id="action_payroll_analytics_dashboard" model="ir.actions.act_window">
+        <field name="name">Analytics Dashboard</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_analytics_dashboard"/>
+        <field name="target">current</field>
+    </record>
+
+</odoo>
