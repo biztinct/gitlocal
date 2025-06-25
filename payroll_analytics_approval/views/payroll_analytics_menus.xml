@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- Actions for menus -->
+    
+    <!-- Final Approval Action -->
+    <record id="action_payroll_analytics_approval" model="ir.actions.act_window">
+        <field name="name">Payroll Final Approval</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', '=', 'ready')]</field>
+        <field name="context">{
+            'search_default_ready_for_approval': 1,
+            'create': False
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payroll batches ready for final approval!
+            </p>
+            <p>
+                Payroll batches appear here when they reach Level 2 approval status and are ready for final approval.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Analytics Settings Action -->
+    <record id="action_payroll_analytics_settings" model="ir.actions.act_window">
+        <field name="name">Analytics Settings</field>
+        <field name="res_model">payroll.analytics.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{}</field>
+    </record>
+    
+    <!-- Dashboard Integration Menu Items for Country Dashboards -->
+    
+    <!-- Vietnam Dashboard Integration -->
+    <record id="action_vietnam_payroll_approval" model="ir.actions.server">
+        <field name="name">Vietnam Payroll Approval</field>
+        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_open_analytics_dashboard()
+        </field>
+    </record>
+    
+    <record id="action_vietnam_bank_export" model="ir.actions.server">
+        <field name="name">Vietnam Bank Export</field>
+        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_export_bank_file()
+        </field>
+    </record>
+    
+    <!-- Indonesia Dashboard Integration -->
+    <record id="action_indonesia_payroll_approval" model="ir.actions.server">
+        <field name="name">Indonesia Payroll Approval</field>
+        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_open_analytics_dashboard()
+        </field>
+    </record>
+    
+    <record id="action_indonesia_bank_export" model="ir.actions.server">
+        <field name="name">Indonesia Bank Export</field>
+        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_export_bank_file()
+        </field>
+    </record>
+    
+    <!-- India Dashboard Integration -->
+    <record id="action_india_payroll_approval" model="ir.actions.server">
+        <field name="name">India Payroll Approval</field>
+        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_open_analytics_dashboard()
+        </field>
+    </record>
+    
+    <record id="action_india_bank_export" model="ir.actions.server">
+        <field name="name">India Bank Export</field>
+        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.action_export_bank_file()
+        </field>
+    </record>
+
+
+    <!-- Payroll Analytics Root Menu -->
+    <menuitem id="menu_payroll_analytics_root"
+              name="Payroll Analytics"
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              sequence="100"/>
+    
+    <!-- Analytics Dashboard Menu -->
+    <menuitem id="menu_payroll_analytics_dashboard"
+              name="Analytics Dashboard"
+              parent="menu_payroll_analytics_root"
+              action="action_payroll_analytics_dashboard"
+              sequence="10"/>
+    
+    <!-- Payroll Analytics Records Menu -->
+    <menuitem id="menu_payroll_analytics"
+              name="Analytics Records"
+              parent="menu_payroll_analytics_root"
+              action="action_payroll_analytics"
+              sequence="20"/>
+    
+    <!-- Final Approval Menu -->
+    <menuitem id="menu_payroll_final_approval"
+              name="Final Approval"
+              parent="menu_payroll_analytics_root"
+              action="action_payroll_analytics_approval"
+              sequence="30"/>
+    
+    <!-- Bank Export Menu -->
+    <menuitem id="menu_payroll_bank_export"
+              name="Bank Export"
+              parent="menu_payroll_analytics_root"
+              action="action_payroll_bank_export_wizard"
+              sequence="40"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_payroll_analytics_config"
+              name="Configuration"
+              parent="menu_payroll_analytics_root"
+              sequence="50"/>
+    
+    <!-- Analytics Settings Sub-menu -->
+    <menuitem id="menu_payroll_analytics_settings"
+              name="Analytics Settings"
+              parent="menu_payroll_analytics_config"
+              action="action_payroll_analytics_settings"
+              sequence="10"/>
+    
+    <!-- Payroll Comparisons Menu -->
+    <menuitem id="menu_payroll_comparison"
+              name="Payroll Comparisons"
+              parent="menu_payroll_analytics_root"
+              action="action_payroll_comparison"
+              sequence="70"/>
+    
+    <!-- New Comparison Wizard Menu -->
+    <menuitem id="menu_payroll_comparison_wizard"
+              name="New Comparison"
+              parent="menu_payroll_analytics_config"
+              action="action_payroll_comparison_wizard"
+              sequence="20"/>
+    
+    <!-- Bank Export History Menu -->
+    <menuitem id="menu_bank_export_history"
+              name="Export History"
+              parent="menu_payroll_analytics_root"
+              action="action_bank_export_log"
+              sequence="60"/>
+    
+
+    
+</odoo>

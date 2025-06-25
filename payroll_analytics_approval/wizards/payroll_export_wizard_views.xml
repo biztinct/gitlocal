@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Bank Export Wizard Form -->
+    <record id="view_payroll_bank_export_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.bank.export.wizard.form</field>
+        <field name="model">payroll.bank.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Bank File">
+                <div class="alert alert-info" role="alert">
+                    <h4><i class="fa fa-info-circle"/> Bank Export Wizard</h4>
+                    <p>Generate CSV/Excel file for bank salary disbursement. This file contains employee bank details and net pay amounts.</p>
+                </div>
+                
+                <group>
+                    <group>
+                        <field name="country" required="1"/>
+                        <field name="export_format"/>
+                        <field name="include_headers"/>
+                    </group>
+                    <group>
+                        <field name="date_from" required="1"/>
+                        <field name="date_to" required="1"/>
+                        <field name="analytics_id" readonly="1" attrs="{'invisible': [('analytics_id', '=', False)]}"/>
+                    </group>
+                </group>
+                
+                <group string="Export Results" attrs="{'invisible': [('export_file', '=', False)]}">
+                    <field name="export_filename" readonly="1"/>
+                    <field name="export_file" filename="export_filename" readonly="1"/>
+                </group>
+                
+                <footer>
+                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': [('export_file', '!=', False)]}"/>
+                    <button string="Download" name="action_download_export" type="object" class="btn-success" attrs="{'invisible': [('export_file', '=', False)]}"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Bank Export Wizard Action -->
+    <record id="action_payroll_bank_export_wizard" model="ir.actions.act_window">
+        <field name="name">Export Bank File</field>
+        <field name="res_model">payroll.bank.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+    
+</odoo>
