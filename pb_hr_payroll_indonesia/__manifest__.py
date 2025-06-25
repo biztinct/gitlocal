@@ -13,6 +13,9 @@
         - BPJS Ketenagakerjaan (Employment Insurance)
         - Union Dues and other deductions
         - Multi-country payroll structure selection
+        - Enhanced Allowances: Fixed Allowances, Commission, Sign-on Bonus, Tunjangan
+        - Enhanced Deductions: Koperasi, Pinjaman, Cicilan, and other deductions
+        - Automated salary rule generation for payslip processing
     """,
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
@@ -30,6 +33,8 @@
         'data/hr_payroll_structure_data.xml',
         'data/hr_salary_rule_category_data.xml',
         'data/hr_salary_rule_data.xml',
+        'data/enhanced_salary_rules_data.xml',           # NEW: Enhanced salary rules
+        'data/enhanced_advantage_templates_data.xml',    # NEW: Enhanced advantage templates
         'views/payroll_country_selector_template.xml',
         'views/payroll_landing_page_views.xml',
         'views/payroll_dashboard.xml',
@@ -38,7 +43,6 @@
         'views/zoho_employee_data_views.xml',
         'wizards/thr_payment_wizard_views.xml',
         'data/payroll_dashboard_data.xml',
-
     ],
     'installable': True,
     'application': False,
