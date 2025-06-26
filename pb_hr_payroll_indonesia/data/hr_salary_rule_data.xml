@@ -9,11 +9,8 @@
             <field name="sequence">100</field>
             <field name="category_id" ref="categ_indonesia_gross"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-advantages = sum([adv.amount for adv in contract.advantage_ids]) if contract.advantage_ids else 0
-result = contract.wage + advantages
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
         <!-- PPh 21 (Income Tax) -->
@@ -23,13 +20,8 @@ result = contract.wage + advantages
             <field name="sequence">200</field>
             <field name="category_id" ref="categ_indonesia_tax"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-# Simplified PPh 21 calculation - should be replaced with actual tax table
-taxable_income = categories.IDN_GROSS if categories.IDN_GROSS else 0
-pph21_rate = contract.pph21_rate / 100.0 if hasattr(contract, 'pph21_rate') and contract.pph21_rate else 0.05
-result = -taxable_income * pph21_rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
         <!-- BPJS Kesehatan - Employee -->
@@ -39,14 +31,8 @@ result = -taxable_income * pph21_rate
             <field name="sequence">210</field>
             <field name="category_id" ref="categ_indonesia_bpjs"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_kesehatan_employee / 100.0 if hasattr(contract, 'bpjs_kesehatan_employee') and contract.bpjs_kesehatan_employee else 0.01
-max_salary = 12000000  # Max salary cap for BPJS calculation
-calc_base = min(base_salary, max_salary)
-result = -calc_base * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
         <!-- BPJS TK JHT - Employee -->
@@ -56,12 +42,8 @@ result = -calc_base * rate
             <field name="sequence">220</field>
             <field name="category_id" ref="categ_indonesia_bpjs"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_tk_jht_employee / 100.0 if hasattr(contract, 'bpjs_tk_jht_employee') and contract.bpjs_tk_jht_employee else 0.02
-result = -base_salary * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
         <!-- BPJS TK JP - Employee -->
@@ -71,14 +53,8 @@ result = -base_salary * rate
             <field name="sequence">230</field>
             <field name="category_id" ref="categ_indonesia_bpjs"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_tk_jp_employee / 100.0 if hasattr(contract, 'bpjs_tk_jp_employee') and contract.bpjs_tk_jp_employee else 0.01
-max_salary = 9077600  # Max salary cap for JP
-calc_base = min(base_salary, max_salary)
-result = -calc_base * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
         <!-- Union Dues -->
@@ -87,14 +63,9 @@ result = -calc_base * rate
             <field name="code">UNION_DUES</field>
             <field name="sequence">240</field>
             <field name="category_id" ref="categ_indonesia_deductions"/>
-            <field name="condition_select">python</field>
-            <field name="condition_python">
-result = hasattr(contract, 'union_dues') and contract.union_dues and contract.union_dues > 0
-            </field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-result = -contract.union_dues if hasattr(contract, 'union_dues') and contract.union_dues else 0
-            </field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
         <!-- Loan/Co-op Deductions -->
@@ -103,14 +74,9 @@ result = -contract.union_dues if hasattr(contract, 'union_dues') and contract.un
             <field name="code">LOAN_DED</field>
             <field name="sequence">250</field>
             <field name="category_id" ref="categ_indonesia_deductions"/>
-            <field name="condition_select">python</field>
-            <field name="condition_python">
-result = hasattr(contract, 'loan_deduction') and contract.loan_deduction and contract.loan_deduction > 0
-            </field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-result = -contract.loan_deduction if hasattr(contract, 'loan_deduction') and contract.loan_deduction else 0
-            </field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
         <!-- EMPLOYER CONTRIBUTIONS -->
@@ -122,12 +88,8 @@ result = -contract.loan_deduction if hasattr(contract, 'loan_deduction') and con
             <field name="sequence">300</field>
             <field name="category_id" ref="categ_indonesia_employer"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_tk_jht_employer / 100.0 if hasattr(contract, 'bpjs_tk_jht_employer') and contract.bpjs_tk_jht_employer else 0.037
-result = base_salary * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
             <field name="appears_on_payslip">False</field>
         </record>
         
@@ -138,12 +100,8 @@ result = base_salary * rate
             <field name="sequence">310</field>
             <field name="category_id" ref="categ_indonesia_employer"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_tk_jkm / 100.0 if hasattr(contract, 'bpjs_tk_jkm') and contract.bpjs_tk_jkm else 0.003
-result = base_salary * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
             <field name="appears_on_payslip">False</field>
         </record>
         
@@ -154,12 +112,8 @@ result = base_salary * rate
             <field name="sequence">320</field>
             <field name="category_id" ref="categ_indonesia_employer"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_tk_jkk / 100.0 if hasattr(contract, 'bpjs_tk_jkk') and contract.bpjs_tk_jkk else 0.0024
-result = base_salary * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
             <field name="appears_on_payslip">False</field>
         </record>
         
@@ -170,14 +124,8 @@ result = base_salary * rate
             <field name="sequence">330</field>
             <field name="category_id" ref="categ_indonesia_employer"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_tk_jp_employer / 100.0 if hasattr(contract, 'bpjs_tk_jp_employer') and contract.bpjs_tk_jp_employer else 0.02
-max_salary = 9077600  # Max salary cap for JP
-calc_base = min(base_salary, max_salary)
-result = calc_base * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
             <field name="appears_on_payslip">False</field>
         </record>
         
@@ -188,14 +136,8 @@ result = calc_base * rate
             <field name="sequence">340</field>
             <field name="category_id" ref="categ_indonesia_employer"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-base_salary = contract.wage
-rate = contract.bpjs_kesehatan_employer / 100.0 if hasattr(contract, 'bpjs_kesehatan_employer') and contract.bpjs_kesehatan_employer else 0.04
-max_salary = 12000000  # Max salary cap for BPJS calculation
-calc_base = min(base_salary, max_salary)
-result = calc_base * rate
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
             <field name="appears_on_payslip">False</field>
         </record>
         
@@ -206,14 +148,8 @@ result = calc_base * rate
             <field name="sequence">500</field>
             <field name="category_id" ref="om_hr_payroll.ALW"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">
-gross = categories.IDN_GROSS if categories.IDN_GROSS else 0
-tax = categories.IDN_TAX if categories.IDN_TAX else 0
-bpjs = categories.IDN_BPJS if categories.IDN_BPJS else 0
-deductions = categories.IDN_DED if categories.IDN_DED else 0
-result = gross + tax + bpjs + deductions
-            </field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
         </record>
         
     </data>

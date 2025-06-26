@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Indonesia Payslip Report Template -->
+    <template id="report_payslip_indonesia">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Create dictionary from payslip lines for easy access -->
+                        <t t-set="line_dict" t-value="{}"/>
+                        <t t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                            <t t-esc="line_dict.update({line.code: line.total})"/>
+                        </t>
+                        
+                        <!-- Helper function to get line value safely with fallback -->
+                        <t t-set="get_amount" t-value="lambda code: '{:,.0f}'.format(line_dict.get(code, 0))"/>
+                        
+                        <!-- Page styles -->
+                        <style>
+                            .payslip-header {
+                                text-align: center;
+                                margin-bottom: 20px;
+                                padding: 10px;
+                                background-color: #f8f9fa;
+                                border-radius: 5px;
+                            }
+                            .payslip-title {
+                                font-size: 18px;
+                                font-weight: bold;
+                                color: #333;
+                                margin-bottom: 5px;
+                            }
+                            .payslip-period {
+                                font-size: 14px;
+                                color: #666;
+                                font-style: italic;
+                            }
+                            .employee-info {
+                                margin-bottom: 20px;
+                                padding: 15px;
+                                background-color: #f8f9fa;
+                                border-radius: 5px;
+                            }
+                            .employee-info table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+                            .employee-info td {
+                                padding: 5px 10px;
+                                border: none;
+                                font-size: 12px;
+                            }
+                            .payslip-table {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-bottom: 20px;
+                            }
+                            .payslip-table th, .payslip-table td {
+                                border: 1px solid #333;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            .payslip-table th {
+                                background-color: #e9ecef;
+                                font-weight: bold;
+                                text-align: center;
+                                font-size: 14px;
+                            }
+                            .payslip-table td {
+                                font-size: 12px;
+                            }
+                            .amount-cell {
+                                text-align: right;
+                                font-weight: bold;
+                            }
+                            .total-row {
+                                background-color: #f8f9fa;
+                                font-weight: bold;
+                            }
+                            .bank-info {
+                                margin-top: 20px;
+                                padding: 15px;
+                                background-color: #e3f2fd;
+                                border-radius: 5px;
+                                text-align: center;
+                            }
+                            .bank-info table {
+                                width: 100%;
+                                border-collapse: collapse;
+                            }
+                            .bank-info td {
+                                padding: 5px;
+                                font-size: 12px;
+                                text-align: center;
+                            }
+                            .take-home-pay {
+                                font-size: 16px;
+                                font-weight: bold;
+                                color: #2e7d32;
+                            }
+                        </style>
+                        
+                        <!-- Header -->
+                        <div class="payslip-header">
+                            <div class="payslip-title">PAYROLL SLIP</div>
+                            <div class="payslip-period">
+                                <span t-esc="o.date_from.strftime('%B %Y')"/>
+                            </div>
+                        </div>
+                        
+                        <!-- Employee Information -->
+                        <div class="employee-info">
+                            <table>
+                                <tr>
+                                    <td style="width: 15%;"><strong>Emp. No:</strong></td>
+                                    <td style="width: 35%;"><span t-field="o.employee_id.employee_id"/></td>
+                                    <td style="width: 15%;"><strong>Marital Status:</strong></td>
+                                    <td style="width: 35%;"><span t-field="o.employee_id.marital"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Name:</strong></td>
+                                    <td><span t-field="o.employee_id.name"/></td>
+                                    <td><strong>Employment:</strong></td>
+                                    <td>Local</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Grade:</strong></td>
+                                    <td>
+                                        <span t-if="o.employee_id.job_id" t-field="o.employee_id.job_id.name"/>
+                                        <span t-if="not o.employee_id.job_id">Not Available</span>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- Company Name -->
+                        <div style="text-align: center; font-weight: bold; margin-bottom: 20px; font-size: 14px;">
+                            <span t-field="o.company_id.name"/>
+                        </div>
+                        
+                        <!-- Payslip Details Table -->
+                        <table class="payslip-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%;">Income</th>
+                                    <th style="width: 20%;">Amount</th>
+                                    <th style="width: 40%;">Deduction</th>
+                                    <th style="width: 20%;">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Row 1: Basic Salary / BPJS Healthcare (Emp) -->
+                                <tr>
+                                    <td>Basic Salary</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BASIC')"/></td>
+                                    <td>BPJS Healthcare (Emp)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_KES_EMP')"/></td>
+                                </tr>
+                                
+                                <!-- Row 2: Life Insurance / Life insurance -->
+                                <tr>
+                                    <td>Life insurance</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('MIONEFIVE')"/></td>
+                                    <td>Life insurance</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('MIONEFIVE')"/></td>
+                                </tr>
+                                
+                                <!-- Row 3: Work Accident Insurance / Work Accident Insurance -->
+                                <tr>
+                                    <td>Work Accident Insurance</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JKK')"/></td>
+                                    <td>Work Accident Insurance</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JKK')"/></td>
+                                </tr>
+                                
+                                <!-- Row 4: BPJS Healthcare (Comp) / BPJS Healthcare (Comp) -->
+                                <tr>
+                                    <td>BPJS Healthcare (Comp)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_KES_COMP')"/></td>
+                                    <td>BPJS Healthcare (Comp)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_KES_COMP')"/></td>
+                                </tr>
+                                
+                                <!-- Row 5: THR / Old Age Fund (Employee) -->
+                                <tr>
+                                    <td>THR</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('LAINALL')"/></td>
+                                    <td>Old Age Fund (Employee)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JHT_EMP')"/></td>
+                                </tr>
+                                
+                                <!-- Row 6: Old Age Fund (Company) / Pension (Emp) -->
+                                <tr>
+                                    <td>Old Age Fund (Company)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JHT_COMP')"/></td>
+                                    <td>Pension (Emp)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JP_EMP')"/></td>
+                                </tr>
+                                
+                                <!-- Row 7: Pension Fund (Comp) / Old Age Fund (Company) -->
+                                <tr>
+                                    <td>Pension Fund (Comp)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JP_COMP')"/></td>
+                                    <td>Old Age Fund (Company)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JHT_COMP')"/></td>
+                                </tr>
+                                
+                                <!-- Row 8: TAX ALLOWANCE / Pension Fund (Comp) -->
+                                <tr>
+                                    <td>TAX ALLOWANCE</td>
+                                    <td class="amount-cell">0</td>
+                                    <td>Pension Fund (Comp)</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('BPJS_JP_COMP')"/></td>
+                                </tr>
+                                
+                                <!-- Row 9: Empty / Income Tax -->
+                                <tr>
+                                    <td></td>
+                                    <td class="amount-cell"></td>
+                                    <td>Income Tax</td>
+                                    <td class="amount-cell"><span t-esc="get_amount('MONPIT')"/></td>
+                                </tr>
+                                
+                                <!-- Total Row -->
+                                <tr class="total-row">
+                                    <td><strong>Total in IDR</strong></td>
+                                    <td class="amount-cell">
+                                        <t t-set="total_income" t-value="line_dict.get('BASIC', 0) + line_dict.get('MIONEFIVE', 0) + line_dict.get('BPJS_JKK', 0) + line_dict.get('BPJS_KES_COMP', 0) + line_dict.get('LAINALL', 0) + line_dict.get('BPJS_JHT_COMP', 0) + line_dict.get('BPJS_JP_COMP', 0)"/>
+                                        <strong><span t-esc="'{:,.0f}'.format(total_income)"/></strong>
+                                    </td>
+                                    <td class="amount-cell">
+                                        <t t-set="total_deductions" t-value="line_dict.get('BPJS_KES_EMP', 0) + line_dict.get('MIONEFIVE', 0) + line_dict.get('BPJS_JKK', 0) + line_dict.get('BPJS_KES_COMP', 0) + line_dict.get('BPJS_JHT_EMP', 0) + line_dict.get('BPJS_JP_EMP', 0) + line_dict.get('BPJS_JHT_COMP', 0) + line_dict.get('BPJS_JP_COMP', 0) + line_dict.get('MONPIT', 0)"/>
+                                        <strong><span t-esc="'{:,.0f}'.format(total_deductions)"/></strong>
+                                    </td>
+                                    <td class="amount-cell">
+                                        <strong><span t-esc="get_amount('NETPAY')"/></strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <!-- Bank Information and Transfer Details -->
+                        <div class="bank-info">
+                            <table>
+                                <tr>
+                                    <td style="width: 30%; text-align: left;">
+                                        <strong>q.q. <span t-field="o.employee_id.name"/></strong><br/>
+                                        <span t-if="o.employee_id.bank_account_id">
+                                            A/C No. <span t-field="o.employee_id.bank_account_id.acc_number"/>
+                                        </span><br/>
+                                        <span t-if="o.employee_id.bank_account_id">
+                                            <span t-field="o.employee_id.bank_account_id.bank_id.name"/>
+                                        </span>
+                                    </td>
+                                    <td style="width: 40%; text-align: center;">
+                                        <strong>Transfer to</strong>
+                                    </td>
+                                    <td style="width: 30%; text-align: right;">
+                                        <div class="take-home-pay">
+                                            <strong>Take home pay IDR <span t-esc="get_amount('NETPAY')"/></strong>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
