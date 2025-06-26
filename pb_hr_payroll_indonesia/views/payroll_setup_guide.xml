@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Setup Guide -->
+    <!-- Create a dedicated model for the setup guide instead of using res.config.settings -->
     <record id="view_payroll_setup_guide" model="ir.ui.view">
-        <field name="name">payroll.setup.guide</field>
-        <field name="model">res.config.settings</field>
+        <field name="name">payroll.setup.guide.form</field>
+        <field name="model">payroll.setup.guide</field>
         <field name="arch" type="xml">
             <form string="Payroll Setup Guide" create="false" edit="false">
                 <sheet>
@@ -64,7 +64,7 @@
                             </group>
                             
                             <group string="India">
-                                <h4>Coming Soon:</h4>
+                                <h4>Required Components:</h4>
                                 <ul>
                                     <li>Provident Fund (PF)</li>
                                     <li>Employee State Insurance (ESI)</li>
@@ -79,17 +79,17 @@
                                 <h3>Standard Payroll Workflow</h3>
                                 <div class="row">
                                     <div class="col-md-3 text-center">
-                                        <i class="fa fa-flag fa-4x text-primary" title="Select Country"/>
-                                        <h4>1. Select Country</h4>
-                                        <p>Choose payroll country from landing page</p>
-                                    </div>
-                                    <div class="col-md-3 text-center">
-                                        <i class="fa fa-users fa-4x text-success" title="Import Employees"/>
-                                        <h4>2. Import Employees</h4>
+                                        <i class="fa fa-upload fa-4x text-primary" title="Import Data"/>
+                                        <h4>1. Import Data</h4>
                                         <p>Get employee data from Zoho</p>
                                     </div>
                                     <div class="col-md-3 text-center">
-                                        <i class="fa fa-calculator fa-4x text-warning" title="Edit Spreadsheet"/>
+                                        <i class="fa fa-calculator fa-4x text-info" title="Calculate"/>
+                                        <h4>2. Calculate</h4>
+                                        <p>Review calculations in spreadsheet</p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <i class="fa fa-edit fa-4x text-warning" title="Edit Spreadsheet"/>
                                         <h4>3. Edit Spreadsheet</h4>
                                         <p>Review and adjust calculations</p>
                                     </div>
@@ -107,18 +107,20 @@
         </field>
     </record>
     
+    <!-- Create a simple transient model for the guide -->
     <record id="action_payroll_setup_guide" model="ir.actions.act_window">
-        <field name="name">Setup Guide</field>
-        <field name="res_model">res.config.settings</field>
+        <field name="name">Payroll Setup Guide</field>
+        <field name="res_model">payroll.setup.guide</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_payroll_setup_guide"/>
-        <field name="target">inline</field>
+        <field name="target">current</field>
     </record>
     
+    <!-- Move the guide to a dedicated menu under Payroll Management instead of Configuration -->
     <menuitem id="menu_payroll_setup_guide"
-              name="Setup Guide"
-              parent="om_hr_payroll.menu_hr_payroll_configuration"
+              name="📋 Setup Guide"
+              parent="pb_hr_payroll_indonesia.menu_payroll_management_root"
               action="action_payroll_setup_guide"
-              sequence="1"/>
+              sequence="5"/>
     
 </odoo>

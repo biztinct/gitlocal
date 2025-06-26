@@ -13,6 +13,8 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
     _name = 'payroll.bank.export.wizard'
     _description = 'Standalone Bank Export Wizard'
     
+    # Basic wizard fields
+    name = fields.Char(string='Export Name', compute='_compute_name', store=True)
     analytics_id = fields.Many2one('payroll.analytics', string='Analytics')
     country = fields.Selection([
         ('VN', 'Vietnam'),
@@ -27,12 +29,24 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         ('txt', 'Text File')
     ], string='Export Format', default='csv')
     include_header = fields.Boolean(string='Include Headers', default=True)
+    separator = fields.Selection([
+        (',', 'Comma (,)'),
+        (';', 'Semicolon (;)'),
+        ('\t', 'Tab'),
+        ('|', 'Pipe (|)')
+    ], string='Separator', default=',', help="Field separator for CSV files")
     
     # Export file
     export_file = fields.Binary(string='Export File', readonly=True)
     export_filename = fields.Char(string='Filename', readonly=True)
     
-    # Preview fields - THESE WERE MISSING
+    # State field for the wizard workflow
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('done', 'Done')
+    ], default='draft', string='State')
+    
+    # Preview fields
     preview_record_count = fields.Integer(string='Preview Record Count', readonly=True)
     preview_total_amount = fields.Monetary(string='Preview Total Amount', readonly=True, 
                                            currency_field='currency_id')
@@ -62,6 +76,16 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         })
         
         return res
+    
+    @api.depends('country', 'date_from', 'date_to')
+    def _compute_name(self):
+        """Compute display name for the wizard"""
+        for record in self:
+            if record.country and record.date_from and record.date_to:
+                country_name = dict(record._fields['country'].selection).get(record.country, record.country)
+                record.name = f"{country_name} Bank Export ({record.date_from} to {record.date_to})"
+            else:
+                record.name = "Bank Export Wizard"
     
     @api.onchange('date_from', 'date_to', 'country')
     def _onchange_generate_preview(self):
@@ -145,12 +169,66 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         # Update wizard with file
         self.write({
             'export_file': base64.b64encode(file_content),
-            'export_filename': filename
+            'export_filename': filename,
+            'state': 'done'
         })
         
         # Update analytics state if linked
         if self.analytics_id:
             self.analytics_id.write({'state': 'exported'})
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'payroll.bank.export.wizard',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+            'context': self.env.context
+        }
+    
+    def action_download(self):
+        """Download the generated export file - MISSING METHOD THAT CAUSED ERROR"""
+        self.ensure_one()
+        
+        if not self.export_file:
+            raise UserError(_('No export file available. Please generate the export first.'))
+        
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{self._name}/{self.id}/export_file/{self.export_filename}?download=true',
+            'target': 'self',
+        }
+    
+    def action_preview_export(self):
+        """Generate preview of export data"""
+        self.ensure_one()
+        self._generate_preview()
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'payroll.bank.export.wizard',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+            'context': self.env.context
+        }
+    
+    def action_download_export(self):
+        """Download the generated export file"""
+        return self.action_download()
+    
+    def action_reset_wizard(self):
+        """Reset the wizard to initial state"""
+        self.ensure_one()
+        
+        self.write({
+            'export_file': False,
+            'export_filename': False,
+            'preview_record_count': 0,
+            'preview_total_amount': 0,
+            'preview_data': False,
+            'state': 'draft'
+        })
         
         return {
             'type': 'ir.actions.act_window',
@@ -191,9 +269,9 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         output = io.StringIO()
         if data:
             fieldnames = data[0].keys()
-            writer = csv.DictWriter(output, fieldnames=fieldnames)
+            writer = csv.DictWriter(output, fieldnames=fieldnames, delimiter=self.separator)
             
-            if self.include_headers:
+            if self.include_header:
                 writer.writeheader()
             
             for row in data:
@@ -213,60 +291,14 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
     def _create_txt_file(self, data):
         """Create text file"""
         lines = []
-        if self.include_headers and data:
+        separator = '\t' if self.separator == '\t' else self.separator
+        
+        if self.include_header and data:
             headers = list(data[0].keys())
-            lines.append('\t'.join(headers))
+            lines.append(separator.join(headers))
         
         for row in data:
-            lines.append('\t'.join(str(v) for v in row.values()))
+            lines.append(separator.join(str(v) for v in row.values()))
         
         filename = f"bank_export_{self.country}_{self.date_from.strftime('%Y%m%d')}.txt"
         return '\n'.join(lines).encode('utf-8'), filename
-    
-    def action_preview_export(self):
-        """Generate preview of export data"""
-        self.ensure_one()
-        self._generate_preview()
-        
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'payroll.bank.export.wizard',
-            'res_id': self.id,
-            'view_mode': 'form',
-            'target': 'new',
-            'context': self.env.context
-        }
-    
-    def action_download_export(self):
-        """Download the generated export file"""
-        self.ensure_one()
-        
-        if not self.export_file:
-            raise UserError(_('No export file available. Please generate the export first.'))
-        
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/web/content/{self._name}/{self.id}/export_file/{self.export_filename}?download=true',
-            'target': 'self',
-        }
-    
-    def action_reset_wizard(self):
-        """Reset the wizard to initial state"""
-        self.ensure_one()
-        
-        self.write({
-            'export_file': False,
-            'export_filename': False,
-            'preview_record_count': 0,
-            'preview_total_amount': 0,
-            'preview_data': False,
-        })
-        
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'payroll.bank.export.wizard',
-            'res_id': self.id,
-            'view_mode': 'form',
-            'target': 'new',
-            'context': self.env.context
-        }

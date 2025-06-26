@@ -100,6 +100,9 @@ class PayrollDashboard(models.Model):  # Changed to Model instead of TransientMo
                     'Please create it with external ID __custom__.payrollstaging'
                 ))
             
+            # Ensure all employees have Vietnam contracts before import
+            self._ensure_employee_contracts_for_country('VN')
+            
             # Try importing with proper error handling
             try:
                 action = spreadsheet.with_context(payroll_country='VN').import_json_data()
@@ -176,6 +179,9 @@ class PayrollDashboard(models.Model):  # Changed to Model instead of TransientMo
                         'Please create it with external ID __custom__.payrollstaging_indonesia or __custom__.payrollstaging'
                     ))
             
+            # Ensure all employees have Indonesia contracts before import
+            self._ensure_employee_contracts_for_country('ID')
+            
             # Try importing with proper error handling
             try:
                 action = spreadsheet.with_context(payroll_country='ID').import_json_data()
@@ -228,3 +234,178 @@ class PayrollDashboard(models.Model):  # Changed to Model instead of TransientMo
                 raise UserError(_('THR Payment wizard not found. Please contact your administrator.'))
         except Exception as e:
             raise UserError(_('Error opening THR payment: %s') % str(e))
+    
+    def _ensure_employee_contracts_for_country(self, payroll_country):
+        """Ensure all employees have contracts with the correct structure for the selected country"""
+        # Get the correct salary structure for the country
+        salary_structure = self._get_salary_structure_for_country(payroll_country)
+        
+        if not salary_structure:
+            raise UserError(f"Salary structure for {payroll_country} not found! Please create it first.")
+        
+        # Find all zoho employee data
+        zoho_employees = self.env['zoho.employee.data'].search([])
+        
+        updated_count = 0
+        created_count = 0
+        
+        for zoho_employee in zoho_employees:
+            # Find the corresponding HR employee
+            hr_employee = self.env['hr.employee'].search([
+                ('employee_id', '=', zoho_employee.employee_id)
+            ], limit=1)
+            
+            if hr_employee:
+                # Find active contract
+                active_contract = self.env['hr.contract'].search([
+                    ('employee_id', '=', hr_employee.id),
+                    ('state', '=', 'open')
+                ], limit=1)
+                
+                if active_contract:
+                    if active_contract.struct_id.id != salary_structure.id:
+                        # Update contract to use correct structure
+                        active_contract.write({
+                            'struct_id': salary_structure.id,
+                            'name': f"{hr_employee.name} - {payroll_country} Contract"
+                        })
+                        
+                        # Update country-specific fields
+                        self._update_contract_country_fields(active_contract, zoho_employee, payroll_country)
+                        updated_count += 1
+                else:
+                    # Create new contract with correct structure
+                    self._create_contract_for_employee(hr_employee, zoho_employee, payroll_country, salary_structure)
+                    created_count += 1
+        
+        if updated_count > 0 or created_count > 0:
+            self.env.user.notify_info(
+                message=f"Updated {updated_count} contracts and created {created_count} new contracts for {payroll_country}",
+                title="Contract Update Complete"
+            )
+    
+    def _get_salary_structure_for_country(self, payroll_country):
+        """Get salary structure for specific country"""
+        if payroll_country == 'VN':
+            structure_name = 'Vietnam Salary Structure'
+        elif payroll_country == 'ID':
+            structure_name = 'Indonesia Salary Structure'
+        else:
+            return None
+        
+        return self.env['hr.payroll.structure'].search([
+            ('name', '=', structure_name)
+        ], limit=1)
+    
+    def _create_contract_for_employee(self, employee, zoho_employee, payroll_country, salary_structure):
+        """Create a new contract for employee with correct structure"""
+        gen_journal = self.env['account.journal'].search([('type', '=', 'general')], limit=1)
+        if not gen_journal:
+            raise UserError("No general journal found!")
+        
+        # Determine contract type
+        contract_type_name = zoho_employee.employee_type or 'Permanent'
+        contract_type = self.env['hr.contract.type'].search([('name', '=', contract_type_name)], limit=1)
+        if not contract_type:
+            contract_type = self.env['hr.contract.type'].create({'name': contract_type_name})
+        
+        # Calculate contract dates
+        import datetime
+        date_start = zoho_employee.date_of_joining if hasattr(zoho_employee, 'date_of_joining') and zoho_employee.date_of_joining else datetime.date.today()
+        
+        # Prepare contract data
+        contract_data = {
+            'name': f"{employee.name} - {payroll_country} Contract",
+            'employee_id': employee.id,
+            'date_start': date_start,
+            'state': 'open',
+            'wage': getattr(zoho_employee, 'base_salary', 0) or 0,
+            'type_id': contract_type.id,
+            'journal_id': gen_journal.id,
+            'struct_id': salary_structure.id,
+            'dependents': getattr(zoho_employee, 'number_of_dependents', 0) or 0,
+        }
+        
+        # Add location to contract if the field exists
+        if hasattr(self.env['hr.contract']._fields, 'location'):
+            contract_data['location'] = zoho_employee.location_name
+        
+        # Add country-specific contract fields
+        if payroll_country == 'ID':
+            # Indonesia specific fields
+            if hasattr(self.env['hr.contract']._fields, 'pph21_rate'):
+                contract_data['pph21_rate'] = getattr(zoho_employee, 'pph21_rate', 0)
+            
+            # BPJS Employee contributions
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_kesehatan_employee'):
+                contract_data['bpjs_kesehatan_employee'] = getattr(zoho_employee, 'bpjs_kesehatan_employee', 1.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jht_employee'):
+                contract_data['bpjs_tk_jht_employee'] = getattr(zoho_employee, 'bpjs_tk_jht_employee', 2.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jp_employee'):
+                contract_data['bpjs_tk_jp_employee'] = getattr(zoho_employee, 'bpjs_tk_jp_employee', 1.0)
+                
+            # BPJS Employer contributions
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_kesehatan_employer'):
+                contract_data['bpjs_kesehatan_employer'] = getattr(zoho_employee, 'bpjs_kesehatan_employer', 4.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jht_employer'):
+                contract_data['bpjs_tk_jht_employer'] = getattr(zoho_employee, 'bpjs_tk_jht_employer', 3.7)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jp_employer'):
+                contract_data['bpjs_tk_jp_employer'] = getattr(zoho_employee, 'bpjs_tk_jp_employer', 2.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jkm'):
+                contract_data['bpjs_tk_jkm'] = getattr(zoho_employee, 'bpjs_tk_jkm', 0.3)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jkk'):
+                contract_data['bpjs_tk_jkk'] = getattr(zoho_employee, 'bpjs_tk_jkk', 0.24)
+                
+        elif payroll_country == 'VN':
+            # Vietnam specific fields
+            if hasattr(self.env['hr.contract']._fields, 'tupart'):
+                contract_data['tupart'] = getattr(zoho_employee, 'tu_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'shuipart'):
+                contract_data['shuipart'] = getattr(zoho_employee, 'shui_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'costcenter'):
+                contract_data['costcenter'] = getattr(zoho_employee, 'costcenter', '')
+        
+        # Create the contract
+        contract = self.env['hr.contract'].create(contract_data)
+        return contract
+    
+    def _update_contract_country_fields(self, contract, zoho_employee, payroll_country):
+        """Update contract with country-specific fields"""
+        update_data = {}
+        
+        if payroll_country == 'VN':
+            # Vietnam specific fields
+            if hasattr(self.env['hr.contract']._fields, 'tupart'):
+                update_data['tupart'] = getattr(zoho_employee, 'tu_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'shuipart'):
+                update_data['shuipart'] = getattr(zoho_employee, 'shui_part', 'YES')
+            if hasattr(self.env['hr.contract']._fields, 'costcenter'):
+                update_data['costcenter'] = getattr(zoho_employee, 'costcenter', '')
+                
+        elif payroll_country == 'ID':
+            # Indonesia specific fields
+            if hasattr(self.env['hr.contract']._fields, 'pph21_rate'):
+                update_data['pph21_rate'] = getattr(zoho_employee, 'pph21_rate', 0)
+            
+            # BPJS Employee contributions
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_kesehatan_employee'):
+                update_data['bpjs_kesehatan_employee'] = getattr(zoho_employee, 'bpjs_kesehatan_employee', 1.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jht_employee'):
+                update_data['bpjs_tk_jht_employee'] = getattr(zoho_employee, 'bpjs_tk_jht_employee', 2.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jp_employee'):
+                update_data['bpjs_tk_jp_employee'] = getattr(zoho_employee, 'bpjs_tk_jp_employee', 1.0)
+                
+            # BPJS Employer contributions
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_kesehatan_employer'):
+                update_data['bpjs_kesehatan_employer'] = getattr(zoho_employee, 'bpjs_kesehatan_employer', 4.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jht_employer'):
+                update_data['bpjs_tk_jht_employer'] = getattr(zoho_employee, 'bpjs_tk_jht_employer', 3.7)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jp_employer'):
+                update_data['bpjs_tk_jp_employer'] = getattr(zoho_employee, 'bpjs_tk_jp_employer', 2.0)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jkm'):
+                update_data['bpjs_tk_jkm'] = getattr(zoho_employee, 'bpjs_tk_jkm', 0.3)
+            if hasattr(self.env['hr.contract']._fields, 'bpjs_tk_jkk'):
+                update_data['bpjs_tk_jkk'] = getattr(zoho_employee, 'bpjs_tk_jkk', 0.24)
+        
+        if update_data:
+            contract.write(update_data)
