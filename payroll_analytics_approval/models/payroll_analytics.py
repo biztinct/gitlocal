@@ -39,7 +39,15 @@ class PayrollAnalytics(models.Model):
     total_payroll = fields.Float(string='Total Payroll', compute='_compute_analytics', store=True)
     average_salary = fields.Float(string='Average Salary', compute='_compute_analytics', store=True)
     variance_percentage = fields.Float(string='Variance %', compute='_compute_analytics', store=True)
+
+    # Add these missing fields:
+    preview_record_count = fields.Integer(string='Preview Record Count', readonly=True)
+    preview_total_amount = fields.Monetary(string='Preview Total Amount', readonly=True)
     
+    # Make sure you also have the currency field for the monetary field 
+    currency_id = fields.Many2one('res.currency', string='Currency', 
+                                  default=lambda self: self.env.company.currency_id)
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('ready', 'Ready for Approval'),
