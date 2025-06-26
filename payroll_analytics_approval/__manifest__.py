@@ -35,21 +35,22 @@
         'pb_hr_payroll_indonesia',
         'web',
         'spreadsheet_oca',
-        'mail',  # Added for messaging/chatter
     ],
     'data': [
-        # Security - Minimal for now
+        # Security
         'security/ir.model.access.csv',
+        'security/payroll_analytics_security.xml',
         
-        # Data - Load after security
+        # Data
         'data/payroll_analytics_data.xml',
         
-        # Views - Core views
+        # Views
         'views/payroll_analytics_dashboard.xml',
         'views/payroll_approval_views.xml',
         'views/payroll_comparison_views.xml',
         'views/bank_export_views.xml',
         'views/payroll_analytics_templates.xml',
+        'views/dashboard_integration.xml',
         
         # Wizards
         'wizards/payroll_export_wizard_views.xml',
@@ -58,14 +59,21 @@
         # Reports
         'reports/payroll_analytics_reports.xml',
         
-        # Menu - Load last
+        # Menu
         'views/payroll_analytics_menus.xml',
     ],
     'assets': {
         'web.assets_backend': [
+            # CSS Files
             'payroll_analytics_approval/static/src/css/payroll_analytics.css',
+            
+            # JavaScript Files
             'payroll_analytics_approval/static/src/js/payroll_charts.js',
             'payroll_analytics_approval/static/src/js/payroll_dashboard.js',
+        ],
+        'web.assets_frontend': [
+            # Frontend assets if needed
+            'payroll_analytics_approval/static/src/css/payroll_analytics.css',
         ],
     },
     'installable': True,
