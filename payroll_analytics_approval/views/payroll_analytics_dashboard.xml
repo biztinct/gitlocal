@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Professional Analytics Dashboard View -->
+    <!-- Enhanced Analytics Dashboard View with Modern Header -->
     <record id="view_payroll_analytics_dashboard" model="ir.ui.view">
         <field name="name">payroll.analytics.dashboard</field>
         <field name="model">payroll.analytics</field>
         <field name="arch" type="xml">
-            <form string="Payroll Analytics Dashboard" create="false" edit="false">
+            <form string="Payroll Analytics Dashboard" 
+                  create="false" 
+                  edit="false" 
+                  js_class="payroll_analytics_dashboard">
                 <header>
                     <button name="action_approve_payroll" 
                             type="object" 
@@ -23,29 +26,17 @@
                 </header>
                 
                 <sheet>
+                    <!-- Modern Dashboard Header matching country dashboard style -->
+                    <div class="dashboard-header-modern">
+                        <h1 class="dashboard-title-modern">
+                            <field name="period_name" readonly="1"/>
+                        </h1>
+                        <p class="dashboard-subtitle-modern">
+                            Analytics Dashboard • Final Approval Review
+                        </p>
+                    </div>
+                    
                     <div class="analytics-dashboard">
-                        <!-- Dashboard Header -->
-                        <div class="dashboard-header">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <h1 class="dashboard-title">
-                                        <i class="fa fa-bar-chart-o"/> Payroll Analytics Dashboard
-                                    </h1>
-                                    <p class="dashboard-subtitle">
-                                        <field name="period_name" readonly="1" widget="text"/> • Final Approval Review
-                                    </p>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <div class="status-badge">
-                                        <field name="state" widget="badge" 
-                                               decoration-success="state == 'approved'"
-                                               decoration-warning="state == 'ready'"
-                                               decoration-info="state == 'draft'"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <!-- Key Metrics Cards -->
                         <div class="metrics-section">
                             <div class="row">
@@ -55,7 +46,7 @@
                                             <i class="fa fa-users"/>
                                         </div>
                                         <div class="metric-content">
-                                            <h3 class="metric-value"><field name="total_employees"/></h3>
+                                            <h3 class="metric-value"><field name="total_employees" readonly="1"/></h3>
                                             <p class="metric-label">Total Employees</p>
                                         </div>
                                     </div>
@@ -67,9 +58,7 @@
                                             <i class="fa fa-money"/>
                                         </div>
                                         <div class="metric-content">
-                                            <h3 class="metric-value">
-                                                <field name="total_payroll" widget="monetary"/>
-                                            </h3>
+                                            <h3 class="metric-value"><field name="total_payroll" readonly="1" widget="monetary"/></h3>
                                             <p class="metric-label">Total Payroll</p>
                                         </div>
                                     </div>
@@ -81,9 +70,7 @@
                                             <i class="fa fa-calculator"/>
                                         </div>
                                         <div class="metric-content">
-                                            <h3 class="metric-value">
-                                                <field name="average_salary" widget="monetary"/>
-                                            </h3>
+                                            <h3 class="metric-value"><field name="average_salary" readonly="1" widget="monetary"/></h3>
                                             <p class="metric-label">Average Salary</p>
                                         </div>
                                     </div>
@@ -96,7 +83,7 @@
                                         </div>
                                         <div class="metric-content">
                                             <h3 class="metric-value">
-                                                <span t-esc="(variance_percentage * 100).toFixed(1) + '%'"/>
+                                                <field name="variance_percentage" readonly="1" widget="percentage"/>
                                             </h3>
                                             <p class="metric-label">Variance vs Last Month</p>
                                         </div>
@@ -152,7 +139,7 @@
                         </div>
                         
                         <!-- Anomaly Alerts Section -->
-                        <div class="alerts-section" t-if="anomaly_alerts">
+                        <div class="alerts-section">
                             <div class="section-header">
                                 <h4><i class="fa fa-exclamation-triangle"/> Anomaly Alerts</h4>
                             </div>
@@ -224,278 +211,249 @@
         </field>
     </record>
     
-    <!-- Analytics Form View -->
-    <record id="view_payroll_analytics_form" model="ir.ui.view">
-        <field name="name">payroll.analytics.form</field>
-        <field name="model">payroll.analytics</field>
-        <field name="arch" type="xml">
-            <form string="Payroll Analytics">
-                <header>
-                    <button name="action_approve_payroll" 
-                            type="object" 
-                            string="Approve" 
-                            class="oe_highlight"
-                            states="ready"/>
-                    <field name="state" widget="statusbar"/>
-                </header>
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="period_name"/>
-                            <field name="country"/>
-                            <field name="date_from"/>
-                            <field name="date_to"/>
-                        </group>
-                        <group>
-                            <field name="total_employees"/>
-                            <field name="total_payroll"/>
-                            <field name="average_salary"/>
-                            <field name="variance_percentage"/>
-                        </group>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-    
-    <!-- Analytics Tree View -->
-    <record id="view_payroll_analytics_tree" model="ir.ui.view">
-        <field name="name">payroll.analytics.tree</field>
-        <field name="model">payroll.analytics</field>
-        <field name="arch" type="xml">
-            <tree string="Payroll Analytics" create="false">
-                <field name="period_name"/>
-                <field name="country"/>
-                <field name="date_from"/>
-                <field name="date_to"/>
-                <field name="total_employees"/>
-                <field name="total_payroll" widget="monetary"/>
-                <field name="average_salary" widget="monetary"/>
-                <field name="variance_percentage"/>
-                <field name="state" widget="badge" 
-                       decoration-success="state == 'approved'"
-                       decoration-warning="state == 'ready'"
-                       decoration-info="state == 'draft'"/>
-            </tree>
-        </field>
-    </record>
-    
-    <!-- Analytics Action -->
-    <record id="action_payroll_analytics" model="ir.actions.act_window">
-        <field name="name">Payroll Analytics</field>
-        <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_payroll_analytics_tree"/>
-        <field name="context">{}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No payroll analytics found!
-            </p>
-            <p>
-                Analytics are automatically generated when payslip batches reach Level 2 approval status.
-            </p>
-        </field>
-    </record>
-    
-    <!-- Analytics Dashboard Action -->
-    <record id="action_payroll_analytics_dashboard" model="ir.actions.act_window">
-        <field name="name">Analytics Dashboard</field>
-        <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="view_payroll_analytics_dashboard"/>
-        <field name="target">current</field>
-    </record>
+    <!-- Modern Dashboard Header Styles -->
+    <template id="modern_analytics_dashboard_styles" name="Modern Analytics Dashboard Styles">
+        <style>
+            /* Modern Dashboard Header - Matching Country Dashboard Style */
+            .dashboard-header-modern {
+                background: #f8f9fb;
+                padding: 24px;
+                border-radius: 8px;
+                margin-bottom: 24px;
+                border-left: 4px solid #21435F;
+            }
 
+            .dashboard-title-modern {
+                color: #2c3e50;
+                font-size: 28px;
+                font-weight: 600;
+                margin-bottom: 8px;
+                line-height: 1.3;
+            }
 
-<!-- Dashboard Tiles Integration for All Country Dashboards -->
-<!-- Add this to extend existing country dashboard views -->
+            .dashboard-subtitle-modern {
+                color: #6c757d;
+                font-size: 16px;
+                margin: 0;
+                font-weight: 400;
+            }
 
-<!-- Vietnam Dashboard Extension -->
-<record id="view_vietnam_dashboard_analytics_tiles" model="ir.ui.view">
-    <field name="name">Vietnam Dashboard Analytics Tiles</field>
-    <field name="model">payroll.dashboard</field>
-    <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_vietnam"/>
-    <field name="arch" type="xml">
-        <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
-            
-            <!-- Approval Dashboard Tile -->
-            <div class="dashboard-card approval-tile">
-                <div class="card-header">
-                    <i class="fa fa-gavel card-icon"></i>
-                    <div class="card-badge">
-                        <span class="badge badge-warning" id="vn-pending-count">0</span>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h4>Approval Dashboard</h4>
-                    <p class="card-description">Review and approve payroll with detailed analytics</p>
-                    <div class="card-stats">
-                        <span class="stat-label">Pending Approvals</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button name="action_open_approval_dashboard" 
-                            type="object" 
-                            class="btn btn-primary btn-block"
-                            data-country="VN">
-                        <i class="fa fa-dashboard"></i> Open Analytics
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Bank Export Tile -->
-            <div class="dashboard-card export-tile">
-                <div class="card-header">
-                    <i class="fa fa-university card-icon"></i>
-                    <div class="card-badge">
-                        <span class="badge badge-success" id="vn-export-count">0</span>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h4>Bank Export</h4>
-                    <p class="card-description">Export approved payroll for bank disbursement</p>
-                    <div class="card-stats">
-                        <span class="stat-label">Ready for Export</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button name="action_open_bank_export" 
-                            type="object" 
-                            class="btn btn-success btn-block"
-                            data-country="VN">
-                        <i class="fa fa-download"></i> Export CSV
-                    </button>
-                </div>
-            </div>
-            
-        </xpath>
-    </field>
-</record>
+            /* Enhanced Analytics Dashboard Container */
+            .analytics-dashboard {
+                padding: 20px 0;
+            }
 
-<!-- Indonesia Dashboard Extension -->
-<record id="view_indonesia_dashboard_analytics_tiles" model="ir.ui.view">
-    <field name="name">Indonesia Dashboard Analytics Tiles</field>
-    <field name="model">payroll.dashboard</field>
-    <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia"/>
-    <field name="arch" type="xml">
-        <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
-            
-            <!-- Approval Dashboard Tile -->
-            <div class="dashboard-card approval-tile">
-                <div class="card-header">
-                    <i class="fa fa-gavel card-icon"></i>
-                    <div class="card-badge">
-                        <span class="badge badge-warning" id="id-pending-count">0</span>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h4>Approval Dashboard</h4>
-                    <p class="card-description">Review and approve payroll with detailed analytics</p>
-                    <div class="card-stats">
-                        <span class="stat-label">Pending Approvals</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button name="action_open_approval_dashboard" 
-                            type="object" 
-                            class="btn btn-primary btn-block"
-                            data-country="ID">
-                        <i class="fa fa-dashboard"></i> Open Analytics
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Bank Export Tile -->
-            <div class="dashboard-card export-tile">
-                <div class="card-header">
-                    <i class="fa fa-university card-icon"></i>
-                    <div class="card-badge">
-                        <span class="badge badge-success" id="id-export-count">0</span>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h4>Bank Export</h4>
-                    <p class="card-description">Export approved payroll for bank disbursement</p>
-                    <div class="card-stats">
-                        <span class="stat-label">Ready for Export</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button name="action_open_bank_export" 
-                            type="object" 
-                            class="btn btn-success btn-block"
-                            data-country="ID">
-                        <i class="fa fa-download"></i> Export CSV
-                    </button>
-                </div>
-            </div>
-            
-        </xpath>
-    </field>
-</record>
+            /* Metrics Cards */
+            .metrics-section {
+                margin-bottom: 30px;
+            }
 
-<!-- India Dashboard Extension -->
-<record id="view_india_dashboard_analytics_tiles" model="ir.ui.view">
-    <field name="name">India Dashboard Analytics Tiles</field>
-    <field name="model">payroll.dashboard</field>
-    <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_india"/>
-    <field name="arch" type="xml">
-        <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
-            
-            <!-- Approval Dashboard Tile -->
-            <div class="dashboard-card approval-tile">
-                <div class="card-header">
-                    <i class="fa fa-gavel card-icon"></i>
-                    <div class="card-badge">
-                        <span class="badge badge-warning" id="in-pending-count">0</span>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h4>Approval Dashboard</h4>
-                    <p class="card-description">Review and approve payroll with detailed analytics</p>
-                    <div class="card-stats">
-                        <span class="stat-label">Pending Approvals</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button name="action_open_approval_dashboard" 
-                            type="object" 
-                            class="btn btn-primary btn-block"
-                            data-country="IN">
-                        <i class="fa fa-dashboard"></i> Open Analytics
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Bank Export Tile -->
-            <div class="dashboard-card export-tile">
-                <div class="card-header">
-                    <i class="fa fa-university card-icon"></i>
-                    <div class="card-badge">
-                        <span class="badge badge-success" id="in-export-count">0</span>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h4>Bank Export</h4>
-                    <p class="card-description">Export approved payroll for bank disbursement</p>
-                    <div class="card-stats">
-                        <span class="stat-label">Ready for Export</span>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button name="action_open_bank_export" 
-                            type="object" 
-                            class="btn btn-success btn-block"
-                            data-country="IN">
-                        <i class="fa fa-download"></i> Export CSV
-                    </button>
-                </div>
-            </div>
-            
-        </xpath>
-    </field>
-</record>
+            .metric-card {
+                background: white;
+                border-radius: 12px;
+                padding: 25px;
+                text-align: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                margin-bottom: 20px;
+                border-left: 4px solid #21435F;
+                height: 160px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
 
+            .metric-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            }
 
+            .metric-employees { border-left-color: #3498db; }
+            .metric-payroll { border-left-color: #2ecc71; }
+            .metric-average { border-left-color: #f39c12; }
+            .metric-variance { border-left-color: #e74c3c; }
+
+            .metric-icon {
+                font-size: 2em;
+                color: #21435F;
+                margin-bottom: 15px;
+            }
+
+            .metric-value {
+                font-size: 1.8em;
+                font-weight: 700;
+                color: #2c3e50;
+                margin: 10px 0;
+            }
+
+            .metric-label {
+                color: #6c757d;
+                font-size: 14px;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin: 0;
+            }
+
+            /* Charts Section */
+            .charts-section {
+                margin-bottom: 30px;
+            }
+
+            .chart-card {
+                background: white;
+                border-radius: 12px;
+                padding: 25px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                margin-bottom: 20px;
+                transition: transform 0.3s ease;
+                border-left: 4px solid #21435F;
+            }
+
+            .chart-card:hover {
+                transform: translateY(-2px);
+            }
+
+            .chart-header {
+                margin-bottom: 20px;
+                text-align: center;
+                border-bottom: 1px solid #e9ecef;
+                padding-bottom: 15px;
+            }
+
+            .chart-header h4 {
+                color: #2c3e50;
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+
+            .chart-header p {
+                color: #6c757d;
+                margin: 0;
+                font-size: 14px;
+            }
+
+            .chart-container {
+                position: relative;
+                height: 300px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Section Headers */
+            .section-header {
+                background: white;
+                padding: 20px;
+                border-radius: 12px 12px 0 0;
+                border-bottom: 1px solid #e9ecef;
+                border-left: 4px solid #21435F;
+            }
+
+            .section-header h4 {
+                margin: 0;
+                color: #2c3e50;
+                font-weight: 600;
+            }
+
+            /* Alerts Section */
+            .alerts-section {
+                margin-bottom: 30px;
+            }
+
+            #anomaly-alerts-container {
+                background: white;
+                padding: 20px;
+                border-radius: 0 0 12px 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            }
+
+            /* Analysis Section */
+            .analysis-section {
+                margin-bottom: 30px;
+            }
+
+            .analysis-table-container {
+                background: white;
+                padding: 20px;
+                border-radius: 0 0 12px 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                overflow-x: auto;
+            }
+
+            .analysis-table {
+                margin: 0;
+            }
+
+            .analysis-table th {
+                background-color: #f8f9fa;
+                color: #2c3e50;
+                font-weight: 600;
+                border: none;
+                padding: 15px 10px;
+            }
+
+            .analysis-table td {
+                padding: 12px 10px;
+                border: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            /* Decision Support */
+            .decision-section {
+                margin-bottom: 30px;
+            }
+
+            .recommendation-card, .warning-card {
+                background: white;
+                padding: 25px;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                margin-bottom: 20px;
+            }
+
+            .recommendation-card {
+                border-left: 4px solid #2ecc71;
+            }
+
+            .warning-card {
+                border-left: 4px solid #f39c12;
+            }
+
+            .recommendation-card h5,
+            .warning-card h5 {
+                margin-bottom: 15px;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+            /* No Data Messages */
+            .no-data-message {
+                text-align: center;
+                padding: 40px;
+                color: #6c757d;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .dashboard-header-modern {
+                    padding: 20px;
+                }
+
+                .dashboard-title-modern {
+                    font-size: 24px;
+                }
+
+                .metric-card {
+                    margin-bottom: 15px;
+                    height: 140px;
+                }
+
+                .chart-container {
+                    height: 250px;
+                }
+            }
+        </style>
+    </template>
 
 </odoo>

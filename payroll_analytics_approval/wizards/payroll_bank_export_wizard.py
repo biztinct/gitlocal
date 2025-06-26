@@ -1,182 +1,303 @@
-# -*- coding: utf-8 -*-
+# Add these fields and methods to your existing PayrollBankExportWizard model
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import csv
 import io
 import base64
-import logging
-
-_logger = logging.getLogger(__name__)
-
+import json
+from datetime import datetime
 
 class PayrollBankExportWizard(models.TransientModel):
     _name = 'payroll.bank.export.wizard'
-    _description = 'Bank Export Wizard'
+    _description = 'Payroll Bank Export Wizard'
     
-    analytics_id = fields.Many2one('payroll.analytics', string='Analytics')
+    # Basic Information
+    name = fields.Char(
+        string='Export Name', 
+        required=True, 
+        default=lambda self: f"Bank Export {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+    )
+    
+    # Configuration Fields
     country = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
         ('IN', 'India')
     ], string='Country', required=True)
-    date_from = fields.Date(string='Date From', required=True, default=fields.Date.today)
-    date_to = fields.Date(string='Date To', required=True, default=fields.Date.today)
+    
+    analytics_id = fields.Many2one(
+        'payroll.analytics', 
+        string='Analytics Record'
+    )
+    
+    date_from = fields.Date(string='Date From', required=True)
+    date_to = fields.Date(string='Date To', required=True)
+    
+    # Export Settings
     export_format = fields.Selection([
-        ('csv', 'CSV'),
-        ('excel', 'Excel'),
-        ('txt', 'Text File')
-    ], string='Export Format', default='csv')
-    include_headers = fields.Boolean(string='Include Headers', default=True)
+        ('csv', 'CSV File'),
+        ('excel', 'Excel File'),
+        ('txt', 'Text File (Bank Format)')
+    ], string='Export Format', default='csv', required=True)
     
-    # Preview fields - NEW
-    preview_data = fields.Text(string='Preview Data', readonly=True)
-    preview_record_count = fields.Integer(string='Preview Record Count', readonly=True)
-    preview_total_amount = fields.Monetary(string='Preview Total Amount', readonly=True)
+    # NOTE: This should be 'include_header' (singular) not 'include_headers' (plural)
+    include_header = fields.Boolean(
+        string='Include Header Row', 
+        default=True
+    )
     
-    # Export file
+    separator = fields.Selection([
+        (',', 'Comma (,)'),
+        (';', 'Semicolon (;)'),
+        ('|', 'Pipe (|)'),
+        ('\t', 'Tab')
+    ], string='Field Separator', default=',')
+    
+    # Preview and Output
+    preview_data = fields.Text(
+        string='Data Preview', 
+        readonly=True,
+        help="Preview of the export data that will be generated"
+    )
+    
+    # Export Results
     export_file = fields.Binary(string='Export File', readonly=True)
-    export_filename = fields.Char(string='Filename', readonly=True)
+    export_filename = fields.Char(string='Export Filename', readonly=True)
     
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
-    currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
+    # State Management
+    state = fields.Selection([
+        ('draft', 'Configure'),
+        ('done', 'Completed')
+    ], string='State', default='draft')
+    
+    @api.model
+    def _default_name(self):
+        return f"Bank Export {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+    
+    @api.onchange('export_format', 'include_header', 'separator')
+    def _onchange_format_settings(self):
+        """Update preview when format settings change"""
+        self._update_preview_data()
     
     @api.model
     def default_get(self, fields_list):
-        """Set defaults based on context"""
+        """Set defaults and generate preview"""
         res = super().default_get(fields_list)
         
+        # Set defaults from context
         if self.env.context.get('default_country'):
             res['country'] = self.env.context['default_country']
-        
-        # Set current month dates
-        import datetime
-        today = datetime.date.today()
-        first_day = today.replace(day=1)
-        if today.month == 12:
-            last_day = today.replace(year=today.year + 1, month=1, day=1) - datetime.timedelta(days=1)
-        else:
-            last_day = today.replace(month=today.month + 1, day=1) - datetime.timedelta(days=1)
-        
-        res['date_from'] = first_day
-        res['date_to'] = last_day
+        if self.env.context.get('default_analytics_id'):
+            res['analytics_id'] = self.env.context['default_analytics_id']
+        if self.env.context.get('default_date_from'):
+            res['date_from'] = self.env.context['default_date_from']
+        if self.env.context.get('default_date_to'):
+            res['date_to'] = self.env.context['default_date_to']
         
         return res
-
-    def action_preview_export(self):
-        """Preview the export data - NEW METHOD"""
-        self.ensure_one()
+    
+    @api.model
+    def create(self, vals):
+        """Generate preview data on create"""
+        record = super().create(vals)
+        record._update_preview_data()
+        return record
+    
+    def _update_preview_data(self):
+        """Update the preview data field"""
+        if not self.country or not self.date_from or not self.date_to:
+            self.preview_data = "Please configure country and date range to see preview."
+            return
         
         try:
-            # Get payslip data for preview
-            export_data = self._prepare_export_data()
+            # Get sample payslips for preview
+            payslips = self._get_payslips_for_export()
+            
+            if not payslips:
+                self.preview_data = f"No approved payslips found for {self.country} from {self.date_from} to {self.date_to}."
+                return
+            
+            # Generate preview data (limit to first 10 records for performance)
+            sample_payslips = payslips[:10]
+            export_data = self._prepare_export_data(sample_payslips)
             
             if not export_data:
-                raise UserError(_('No payslip data found for the selected period and country.'))
+                self.preview_data = "No data available for export."
+                return
             
-            # Calculate preview statistics
-            total_amount = sum(row.get('Amount', 0) for row in export_data)
-            record_count = len(export_data)
-            
-            # Create preview text (first 10 records)
-            preview_lines = []
-            if self.include_headers and export_data:
-                headers = list(export_data[0].keys())
-                preview_lines.append('\t'.join(headers))
-            
-            for i, row in enumerate(export_data[:10]):  # Show first 10 records
-                preview_lines.append('\t'.join(str(v) for v in row.values()))
-            
-            if len(export_data) > 10:
-                preview_lines.append(f"... and {len(export_data) - 10} more records")
-            
-            # Update preview fields
-            self.write({
-                'preview_data': '\n'.join(preview_lines),
-                'preview_record_count': record_count,
-                'preview_total_amount': total_amount,
-            })
-            
-            return {
-                'type': 'ir.actions.act_window',
-                'res_model': 'payroll.bank.export.wizard',
-                'res_id': self.id,
-                'view_mode': 'form',
-                'target': 'new',
-                'context': self.env.context
-            }
-            
-        except Exception as e:
-            raise UserError(_('Error generating preview: %s') % str(e))
-
-    def action_generate_export(self):
-        """Generate bank export file"""
-        self.ensure_one()
-        
-        try:
-            # Get export data
-            export_data = self._prepare_export_data()
-            
-            if not export_data:
-                raise UserError(_('No payslip data found for the selected period and country.'))
-            
-            # Generate file based on format
+            # Format preview based on export format
             if self.export_format == 'csv':
-                file_content, filename = self._create_csv_file(export_data)
+                preview_text = self._format_csv_preview(export_data)
             elif self.export_format == 'excel':
-                file_content, filename = self._create_excel_file(export_data)
+                preview_text = self._format_excel_preview(export_data)
             else:
-                file_content, filename = self._create_txt_file(export_data)
+                preview_text = self._format_txt_preview(export_data)
             
-            # Update wizard with file
-            self.write({
-                'export_file': base64.b64encode(file_content),
-                'export_filename': filename
-            })
+            # Add summary information
+            total_records = len(payslips)
+            total_amount = sum(data.get('Amount', 0) for data in export_data)
             
-            # Create export log record
-            self._create_export_log(export_data, filename)
+            summary = f"EXPORT SUMMARY:\n"
+            summary += f"Total Records: {total_records}\n"
+            summary += f"Preview Showing: {len(export_data)} records\n"
+            summary += f"Total Amount: {total_amount:,.2f}\n"
+            summary += f"Format: {self.export_format.upper()}\n"
+            summary += f"Date Range: {self.date_from} to {self.date_to}\n"
+            summary += f"Country: {self.country}\n"
+            summary += "\n" + "="*80 + "\n\n"
             
-            # Update analytics state if linked
-            if self.analytics_id:
-                self.analytics_id.write({'state': 'exported'})
-            
-            return {
-                'type': 'ir.actions.act_window',
-                'res_model': 'payroll.bank.export.wizard',
-                'res_id': self.id,
-                'view_mode': 'form',
-                'target': 'new',
-                'context': self.env.context
-            }
+            self.preview_data = summary + preview_text
             
         except Exception as e:
-            raise UserError(_('Error generating export: %s') % str(e))
-
-    def action_download_export(self):
-        """Download the generated export file - NEW METHOD"""
-        self.ensure_one()
+            self.preview_data = f"Error generating preview: {str(e)}"
+    
+    def _format_csv_preview(self, data):
+        """Format data as CSV preview"""
+        if not data:
+            return "No data to preview."
         
-        if not self.export_file:
-            raise UserError(_('No export file available. Please generate the export first.'))
+        output = io.StringIO()
+        fieldnames = list(data[0].keys())
+        writer = csv.DictWriter(output, fieldnames=fieldnames, delimiter=self.separator)
         
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/web/content/payroll.bank.export.wizard/{self.id}/export_file/{self.export_filename}?download=true',
-            'target': 'self',
+        if self.include_header:
+            writer.writeheader()
+        
+        for row in data:
+            writer.writerow(row)
+        
+        return output.getvalue()
+    
+    def _format_excel_preview(self, data):
+        """Format data as Excel preview (tab-separated)"""
+        if not data:
+            return "No data to preview."
+        
+        lines = []
+        
+        if self.include_header and data:
+            headers = list(data[0].keys())
+            lines.append('\t'.join(headers))
+        
+        for row in data:
+            lines.append('\t'.join(str(v) for v in row.values()))
+        
+        return '\n'.join(lines)
+    
+    def _format_txt_preview(self, data):
+        """Format data as fixed-width text preview"""
+        if not data:
+            return "No data to preview."
+        
+        lines = []
+        
+        # Fixed-width format
+        for row in data:
+            line = f"{str(row.get('Employee ID', '')):<12}"
+            line += f"{str(row.get('Employee Name', '')):<30}"
+            line += f"{str(row.get('Account Number', '')):<20}"
+            line += f"{row.get('Amount', 0):>15.2f}"
+            line += f"{str(row.get('Reference', '')):<20}"
+            lines.append(line)
+        
+        # Add header if needed
+        if self.include_header:
+            header = f"{'Employee ID':<12}{'Employee Name':<30}{'Account Number':<20}{'Amount':>15}{'Reference':<20}"
+            separator = "-" * len(header)
+            lines.insert(0, separator)
+            lines.insert(0, header)
+        
+        return '\n'.join(lines)
+    
+    def _get_payslips_for_export(self):
+        """Get payslips for export"""
+        # Map countries to salary structures
+        country_structure_map = {
+            'VN': 'Vietnam Salary Structure',
+            'ID': 'Indonesia Salary Structure',
+            'IN': 'India Salary Structure'
         }
-
-    def action_reset_wizard(self):
-        """Reset wizard to initial state - NEW METHOD"""
+        
+        structure_name = country_structure_map.get(self.country)
+        if not structure_name:
+            return self.env['hr.payslip']
+        
+        structure = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
+        if not structure:
+            return self.env['hr.payslip']
+        
+        # Get approved payslips
+        payslips = self.env['hr.payslip'].search([
+            ('struct_id', '=', structure.id),
+            ('date_from', '>=', self.date_from),
+            ('date_to', '<=', self.date_to),
+            ('state', '=', 'done')
+        ])
+        
+        return payslips
+    
+    def _prepare_export_data(self, payslips):
+        """Prepare data for export"""
+        export_data = []
+        
+        for payslip in payslips:
+            net_pay_line = payslip.line_ids.filtered(lambda l: l.code == 'NETPAY')
+            net_pay = net_pay_line.total if net_pay_line else 0
+            
+            bank_account = payslip.employee_id.bank_account_id
+            
+            export_data.append({
+                'Employee ID': payslip.employee_id.employee_id or '',
+                'Employee Name': payslip.employee_id.name or '',
+                'Bank Name': bank_account.bank_id.name if bank_account and bank_account.bank_id else '',
+                'Account Number': bank_account.acc_number if bank_account else '',
+                'Amount': net_pay,
+                'Currency': payslip.company_id.currency_id.name or '',
+                'Reference': payslip.number or '',
+                'Date': payslip.date_to.strftime('%Y-%m-%d') if payslip.date_to else '',
+                'Department': payslip.employee_id.department_id.name if payslip.employee_id.department_id else '',
+                'Job Position': payslip.employee_id.job_id.name if payslip.employee_id.job_id else ''
+            })
+        
+        return export_data
+    
+    def action_generate_export(self):
+        """Generate the actual export file"""
         self.ensure_one()
         
+        if not self.analytics_id:
+            raise UserError(_('Please select an analytics record to export'))
+        
+        if self.analytics_id.state != 'approved':
+            raise UserError(_('Only approved analytics can be exported'))
+        
+        # Get all payslips for export
+        payslips = self._get_payslips_for_export()
+        
+        if not payslips:
+            raise UserError(_('No payslip data found for the selected period'))
+        
+        # Generate export file
+        export_data = self._prepare_export_data(payslips)
+        
+        if self.export_format == 'csv':
+            file_data, filename = self._generate_csv_export(export_data)
+        elif self.export_format == 'excel':
+            file_data, filename = self._generate_excel_export(export_data)
+        else:
+            file_data, filename = self._generate_txt_export(export_data)
+        
+        # Save file data
         self.write({
-            'preview_data': False,
-            'preview_record_count': 0,
-            'preview_total_amount': 0,
-            'export_file': False,
-            'export_filename': False,
+            'export_file': file_data,
+            'export_filename': filename,
+            'state': 'done'
         })
+        
+        # Mark analytics as exported
+        if self.analytics_id:
+            self.analytics_id.write({'state': 'exported'})
         
         return {
             'type': 'ir.actions.act_window',
@@ -184,105 +305,49 @@ class PayrollBankExportWizard(models.TransientModel):
             'res_id': self.id,
             'view_mode': 'form',
             'target': 'new',
-            'context': self.env.context
         }
-
-    def _prepare_export_data(self):
-        """Prepare data for export"""
-        self.ensure_one()
-        
-        # Get payslip runs for the period
-        payslip_runs = self.env['hr.payslip.run'].search([
-            ('date_start', '>=', self.date_from),
-            ('date_end', '<=', self.date_to),
-            ('state', '=', 'done')
-        ])
-        
-        # Filter by country if needed (this depends on your payroll structure setup)
-        # You might need to adjust this based on how country is determined in your payslips
-        
-        export_data = []
-        
-        for run in payslip_runs:
-            for payslip in run.slip_ids:
-                # Get net pay
-                net_pay_line = payslip.line_ids.filtered(lambda l: l.code == 'NETPAY')
-                net_pay = net_pay_line[0].total if net_pay_line else 0
-                
-                if net_pay <= 0:
-                    continue  # Skip employees with no net pay
-                
-                # Get bank account
-                bank_account = payslip.employee_id.bank_account_id
-                
-                export_data.append({
-                    'Employee ID': payslip.employee_id.employee_id or '',
-                    'Employee Name': payslip.employee_id.name,
-                    'Bank Name': bank_account.bank_id.name if bank_account and bank_account.bank_id else '',
-                    'Account Number': bank_account.acc_number if bank_account else '',
-                    'Amount': net_pay,
-                    'Currency': payslip.company_id.currency_id.name,
-                    'Reference': payslip.number,
-                    'Date': payslip.date_to.strftime('%Y-%m-%d'),
-                    'Department': payslip.employee_id.department_id.name if payslip.employee_id.department_id else '',
-                })
-        
-        return export_data
-
-    def _create_csv_file(self, data):
-        """Create CSV file"""
+    
+    def _generate_csv_export(self, export_data):
+        """Generate CSV export file"""
         output = io.StringIO()
-        if data:
-            fieldnames = data[0].keys()
-            writer = csv.DictWriter(output, fieldnames=fieldnames)
+        if export_data:
+            fieldnames = list(export_data[0].keys())
+            writer = csv.DictWriter(output, fieldnames=fieldnames, delimiter=self.separator)
             
-            if self.include_headers:
+            if self.include_header:
                 writer.writeheader()
             
-            for row in data:
+            for row in export_data:
                 writer.writerow(row)
         
-        filename = f"bank_export_{self.country}_{self.date_from.strftime('%Y%m%d')}.csv"
-        return output.getvalue().encode('utf-8'), filename
-
-    def _create_excel_file(self, data):
-        """Create Excel file (simplified - would need xlsxwriter for full implementation)"""
-        # For now, return CSV with .xlsx extension
-        # In production, implement proper Excel generation
-        content, _ = self._create_csv_file(data)
-        filename = f"bank_export_{self.country}_{self.date_from.strftime('%Y%m%d')}.xlsx"
-        return content, filename
-
-    def _create_txt_file(self, data):
-        """Create text file"""
+        file_content = output.getvalue().encode('utf-8')
+        file_data = base64.b64encode(file_content)
+        filename = f"bank_export_{self.country}_{self.date_from}_{self.date_to}.csv"
+        
+        return file_data, filename
+    
+    def _generate_excel_export(self, export_data):
+        """Generate Excel export file"""
+        # For now, use CSV format with .xlsx extension
+        # In production, implement proper Excel generation with xlsxwriter
+        file_data, _ = self._generate_csv_export(export_data)
+        filename = f"bank_export_{self.country}_{self.date_from}_{self.date_to}.xlsx"
+        return file_data, filename
+    
+    def _generate_txt_export(self, export_data):
+        """Generate text export file"""
         lines = []
-        if self.include_headers and data:
-            headers = list(data[0].keys())
-            lines.append('\t'.join(headers))
         
-        for row in data:
-            lines.append('\t'.join(str(v) for v in row.values()))
+        for row in export_data:
+            line = f"{str(row.get('Employee ID', '')):<12}"
+            line += f"{str(row.get('Employee Name', '')):<30}"
+            line += f"{str(row.get('Account Number', '')):<20}"
+            line += f"{row.get('Amount', 0):>15.2f}"
+            line += f"{str(row.get('Reference', '')):<20}"
+            lines.append(line)
         
-        filename = f"bank_export_{self.country}_{self.date_from.strftime('%Y%m%d')}.txt"
-        return '\n'.join(lines).encode('utf-8'), filename
-
-    def _create_export_log(self, export_data, filename):
-        """Create export log record"""
-        try:
-            total_amount = sum(row.get('Amount', 0) for row in export_data)
-            
-            self.env['bank.export.log'].create({
-                'period_name': f"{self.date_from.strftime('%B %Y')}",
-                'country': self.country,
-                'export_date': fields.Datetime.now(),
-                'total_records': len(export_data),
-                'total_amount': total_amount,
-                'export_format': self.export_format,
-                'filename': filename,
-                'export_file': self.export_file,
-                'export_details': f"Exported {len(export_data)} records with total amount {total_amount}",
-                'created_by': self.env.user.id,
-            })
-        except Exception as e:
-            _logger.warning(f"Could not create export log: {e}")
-            # Don't fail the export if log creation fails
+        file_content = '\n'.join(lines).encode('utf-8')
+        file_data = base64.b64encode(file_content)
+        filename = f"bank_export_{self.country}_{self.date_from}_{self.date_to}.txt"
+        
+        return file_data, filename

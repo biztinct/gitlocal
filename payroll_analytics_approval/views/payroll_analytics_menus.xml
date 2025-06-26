@@ -1,166 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-
-    <!-- Actions for menus -->
     
-    <!-- Final Approval Action -->
-    <record id="action_payroll_analytics_approval" model="ir.actions.act_window">
-        <field name="name">Payroll Final Approval</field>
-        <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('state', '=', 'ready')]</field>
-        <field name="context">{
-            'search_default_ready_for_approval': 1,
-            'create': False
-        }</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                No payroll batches ready for final approval!
-            </p>
-            <p>
-                Payroll batches appear here when they reach Level 2 approval status and are ready for final approval.
-            </p>
-        </field>
-    </record>
-    
-    <!-- Analytics Settings Action -->
-    <record id="action_payroll_analytics_settings" model="ir.actions.act_window">
-        <field name="name">Analytics Settings</field>
-        <field name="res_model">payroll.analytics.settings</field>
-        <field name="view_mode">form</field>
-        <field name="target">current</field>
-        <field name="context">{}</field>
-    </record>
-    
-    <!-- Dashboard Integration Menu Items for Country Dashboards -->
-    
-    <!-- Vietnam Dashboard Integration -->
-    <record id="action_vietnam_payroll_approval" model="ir.actions.server">
-        <field name="name">Vietnam Payroll Approval</field>
-        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
-        <field name="state">code</field>
-        <field name="code">
-            action = model.action_open_analytics_dashboard()
-        </field>
-    </record>
-    
-    <record id="action_vietnam_bank_export" model="ir.actions.server">
-        <field name="name">Vietnam Bank Export</field>
-        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
-        <field name="state">code</field>
-        <field name="code">
-            action = model.action_export_bank_file()
-        </field>
-    </record>
-    
-    <!-- Indonesia Dashboard Integration -->
-    <record id="action_indonesia_payroll_approval" model="ir.actions.server">
-        <field name="name">Indonesia Payroll Approval</field>
-        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
-        <field name="state">code</field>
-        <field name="code">
-            action = model.action_open_analytics_dashboard()
-        </field>
-    </record>
-    
-    <record id="action_indonesia_bank_export" model="ir.actions.server">
-        <field name="name">Indonesia Bank Export</field>
-        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
-        <field name="state">code</field>
-        <field name="code">
-            action = model.action_export_bank_file()
-        </field>
-    </record>
-    
-    <!-- India Dashboard Integration -->
-    <record id="action_india_payroll_approval" model="ir.actions.server">
-        <field name="name">India Payroll Approval</field>
-        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
-        <field name="state">code</field>
-        <field name="code">
-            action = model.action_open_analytics_dashboard()
-        </field>
-    </record>
-    
-    <record id="action_india_bank_export" model="ir.actions.server">
-        <field name="name">India Bank Export</field>
-        <field name="model_id" ref="pb_hr_payroll_indonesia.model_payroll_dashboard"/>
-        <field name="state">code</field>
-        <field name="code">
-            action = model.action_export_bank_file()
-        </field>
-    </record>
-
-
-    <!-- Payroll Analytics Root Menu -->
-    <menuitem id="menu_payroll_analytics_root"
-              name="Payroll Analytics"
-              parent="om_hr_payroll.menu_hr_payroll_root"
-              sequence="100"/>
-    
-    <!-- Analytics Dashboard Menu -->
-    <menuitem id="menu_payroll_analytics_dashboard"
-              name="Analytics Dashboard"
-              parent="menu_payroll_analytics_root"
-              action="action_payroll_analytics_dashboard"
-              sequence="10"/>
-    
-    <!-- Payroll Analytics Records Menu -->
-    <menuitem id="menu_payroll_analytics"
-              name="Analytics Records"
-              parent="menu_payroll_analytics_root"
-              action="action_payroll_analytics"
-              sequence="20"/>
-    
-    <!-- Final Approval Menu -->
-    <menuitem id="menu_payroll_final_approval"
-              name="Final Approval"
-              parent="menu_payroll_analytics_root"
-              action="action_payroll_analytics_approval"
-              sequence="30"/>
-    
-    <!-- Bank Export Menu -->
-    <menuitem id="menu_payroll_bank_export"
-              name="Bank Export"
-              parent="menu_payroll_analytics_root"
-              action="action_payroll_bank_export_wizard"
-              sequence="40"/>
-    
-    <!-- Configuration Menu -->
-    <menuitem id="menu_payroll_analytics_config"
-              name="Configuration"
-              parent="menu_payroll_analytics_root"
+    <!-- Main Root Menu for Payroll Analytics -->
+    <menuitem id="menu_payroll_analytics_root" 
+              name="Payroll Analytics" 
+              web_icon="payroll_analytics_approval,static/description/icon.png"
               sequence="50"/>
     
-    <!-- Analytics Settings Sub-menu -->
-    <menuitem id="menu_payroll_analytics_settings"
-              name="Analytics Settings"
-              parent="menu_payroll_analytics_config"
-              action="action_payroll_analytics_settings"
+    <!-- Analytics Actions -->
+    
+    <!-- Analytics Records Action -->
+    <record id="action_payroll_analytics" model="ir.actions.act_window">
+        <field name="name">Analytics Records</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_payroll_analytics_tree')}),
+                                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_payroll_analytics_form')})]"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No analytics records found!
+            </p>
+            <p>
+                Analytics are automatically generated when payslip batches reach Level 2 approval status.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Analytics Dashboard Action -->
+    <record id="action_payroll_analytics_dashboard_menu" model="ir.actions.act_window">
+        <field name="name">Analytics Dashboard</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_analytics_dashboard"/>
+        <field name="target">current</field>
+        <field name="context">{'create': False, 'edit': False}</field>
+        <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
+    </record>
+    
+    <!-- Approval Queue Action -->
+    <record id="action_payroll_approval_queue" model="ir.actions.act_window">
+        <field name="name">Approval Queue</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                      (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_payroll_approval_kanban')}),
+                                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_payroll_approval_tree')}),
+                                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_payroll_analytics_dashboard')})]"/>
+        <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
+        <field name="context">{'search_default_ready': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payroll analytics ready for approval!
+            </p>
+            <p>
+                Analytics are automatically generated when payslip batches reach Level 2 approval status.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Analytics Comparison Action -->
+    <record id="action_payroll_analytics_comparison" model="ir.actions.act_window">
+        <field name="name">Payroll Comparison</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_group_month': 1}</field>
+        <field name="domain">[]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No analytics data for comparison!
+            </p>
+            <p>
+                Generate analytics data from different periods to compare payroll trends.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Bank Export Action -->
+    <record id="action_payroll_bank_exports" model="ir.actions.act_window">
+        <field name="name">Bank Export History</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('state', 'in', ['approved', 'exported'])]</field>
+        <field name="context">{'search_default_approved': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No approved payroll ready for export!
+            </p>
+            <p>
+                Approved payroll analytics will appear here for bank file generation.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Reports Action -->
+    <record id="action_payroll_analytics_reports" model="ir.actions.act_window">
+        <field name="name">Analytics Reports</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_group_country': 1, 'search_default_group_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No analytics data for reports!
+            </p>
+            <p>
+                Analytics reports provide detailed insights into payroll trends and patterns.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Menu Items -->
+    
+    <!-- Dashboard Menu -->
+    <menuitem id="menu_payroll_analytics_dashboard" 
+              name="Analytics Dashboard" 
+              parent="menu_payroll_analytics_root" 
+              action="action_payroll_analytics_dashboard_menu" 
               sequence="10"/>
     
-    <!-- Payroll Comparisons Menu -->
-    <menuitem id="menu_payroll_comparison"
-              name="Payroll Comparisons"
-              parent="menu_payroll_analytics_root"
-              action="action_payroll_comparison"
-              sequence="70"/>
-    
-    <!-- New Comparison Wizard Menu -->
-    <menuitem id="menu_payroll_comparison_wizard"
-              name="New Comparison"
-              parent="menu_payroll_analytics_config"
-              action="action_payroll_comparison_wizard"
+    <!-- Analytics Records Menu -->
+    <menuitem id="menu_payroll_analytics" 
+              name="Analytics Records" 
+              parent="menu_payroll_analytics_root" 
+              action="action_payroll_analytics" 
               sequence="20"/>
     
-    <!-- Bank Export History Menu -->
-    <menuitem id="menu_bank_export_history"
-              name="Export History"
-              parent="menu_payroll_analytics_root"
-              action="action_bank_export_log"
+    <!-- Approval Queue Menu -->
+    <menuitem id="menu_payroll_approval_queue" 
+              name="Approval Queue" 
+              parent="menu_payroll_analytics_root" 
+              action="action_payroll_approval_queue" 
+              sequence="30"/>
+    
+    <!-- Comparison Menu -->
+    <menuitem id="menu_payroll_comparison" 
+              name="Payroll Comparison" 
+              parent="menu_payroll_analytics_root" 
+              action="action_payroll_analytics_comparison" 
+              sequence="40"/>
+    
+    <!-- Bank Exports Menu -->
+    <menuitem id="menu_payroll_bank_exports" 
+              name="Bank Exports" 
+              parent="menu_payroll_analytics_root" 
+              action="action_payroll_bank_exports" 
+              sequence="50"/>
+    
+    <!-- Reports Menu -->
+    <menuitem id="menu_payroll_analytics_reports" 
+              name="Analytics Reports" 
+              parent="menu_payroll_analytics_root" 
+              action="action_payroll_analytics_reports" 
               sequence="60"/>
     
-
+    <!-- Separator -->
+    <menuitem id="menu_payroll_analytics_separator" 
+              name="Configuration" 
+              parent="menu_payroll_analytics_root" 
+              sequence="100"/>
     
+    <!-- Configuration Menus -->
+    
+    <!-- Analytics Configuration Action -->
+    <record id="action_payroll_analytics_config" model="ir.actions.act_window">
+        <field name="name">Analytics Configuration</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_draft': 1}</field>
+        <field name="domain">[('state', '=', 'draft')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No draft analytics found!
+            </p>
+            <p>
+                Configure analytics settings and review draft analytics before processing.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_payroll_analytics_config" 
+              name="Analytics Configuration" 
+              parent="menu_payroll_analytics_root" 
+              action="action_payroll_analytics_config" 
+              sequence="110"/>
+
 </odoo>

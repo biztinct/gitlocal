@@ -1,6 +1,373 @@
 /* Professional Payroll Analytics CSS */
 
 
+/* Enhanced Payroll Analytics Dashboard Styles */
+
+/* Dashboard Layout */
+.analytics-dashboard {
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.dashboard-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.dashboard-subtitle {
+    color: #7f8c8d;
+    font-size: 16px;
+    margin: 0;
+}
+
+/* Metrics Cards */
+.metrics-section {
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+    border-left: 5px solid #3498db;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.metric-employees { border-left-color: #3498db; }
+.metric-payroll { border-left-color: #2ecc71; }
+.metric-average { border-left-color: #f39c12; }
+.metric-variance { border-left-color: #e74c3c; }
+
+.metric-icon {
+    font-size: 2.5em;
+    color: #bdc3c7;
+    margin-bottom: 15px;
+}
+
+.metric-value {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 10px 0;
+}
+
+.metric-label {
+    color: #7f8c8d;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* Charts Section */
+.charts-section {
+    margin-bottom: 30px;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-2px);
+}
+
+.chart-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.chart-header h4 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.chart-header p {
+    color: #7f8c8d;
+    margin: 0;
+    font-size: 14px;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-data-message {
+    text-align: center;
+    padding: 40px;
+}
+
+/* Alerts Section */
+.alerts-section {
+    margin-bottom: 30px;
+}
+
+.section-header {
+    background: white;
+    padding: 20px;
+    border-radius: 15px 15px 0 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.section-header h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+#anomaly-alerts-container {
+    background: white;
+    padding: 20px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.alert-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 5px solid;
+}
+
+.alert-high { 
+    background-color: #fdf2f2;
+    border-left-color: #e74c3c;
+}
+
+.alert-medium { 
+    background-color: #fef9e7;
+    border-left-color: #f39c12;
+}
+
+.alert-low { 
+    background-color: #f0f9ff;
+    border-left-color: #3498db;
+}
+
+/* Analysis Section */
+.analysis-section {
+    margin-bottom: 30px;
+}
+
+.analysis-table-container {
+    background: white;
+    padding: 20px;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    overflow-x: auto;
+}
+
+.analysis-table {
+    margin: 0;
+}
+
+.analysis-table th {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-weight: 600;
+    border: none;
+    padding: 15px 10px;
+}
+
+.analysis-table td {
+    padding: 12px 10px;
+    border: none;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.variance-positive { color: #27ae60 !important; }
+.variance-negative { color: #e74c3c !important; }
+
+/* Decision Support */
+.decision-section {
+    margin-bottom: 30px;
+}
+
+.recommendation-card, .warning-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.recommendation-card {
+    border-left: 5px solid #2ecc71;
+}
+
+.warning-card {
+    border-left: 5px solid #f39c12;
+}
+
+.recommendation-card h5,
+.warning-card h5 {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+/* Badge Styles */
+.badge-success { background-color: #2ecc71; }
+.badge-warning { background-color: #f39c12; }
+.badge-danger { background-color: #e74c3c; }
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* Dashboard Tiles (for country dashboard integration) */
+.dashboard-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.card-icon {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card-content h3 {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.card-description {
+    color: rgba(255,255,255,0.9);
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.dashboard-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.dashboard-btn:hover {
+    transform: scale(1.02);
+}
+
+.analytics-btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+}
+
+.export-btn {
+    background: linear-gradient(45deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .analytics-dashboard {
+        padding: 10px;
+    }
+    
+    .metric-card {
+        margin-bottom: 15px;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .dashboard-header {
+        text-align: center;
+    }
+    
+    .metric-value {
+        font-size: 1.8em;
+    }
+}
+
+/* Status Badge Styling */
+.status-badge .o_field_widget {
+    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+/* Form Widget Enhancements */
+.o_field_monetary,
+.o_field_percentage {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+/* ACE Editor for JSON Fields */
+.ace_editor {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Notebook Tab Styling */
+.nav-tabs .nav-link {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+}
+
+
 /* Professional Dashboard Title Styling - Theme Color #21435F */
 
 /* Dashboard Header Professional Styling */

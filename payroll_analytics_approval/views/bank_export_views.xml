@@ -20,7 +20,7 @@
                     </group>
                     <group string="File Options">
                         <field name="export_format" widget="radio"/>
-                        <field name="include_headers"/>
+                        <field name="include_header"/>
                         <field name="analytics_id" readonly="1" attrs="{'invisible': [('analytics_id', '=', False)]}"/>
                     </group>
                 </group>
@@ -70,7 +70,7 @@
                     <group>
                         <field name="country" required="1"/>
                         <field name="export_format"/>
-                        <field name="include_headers"/>
+                        <field name="include_header"/>
                     </group>
                     <group>
                         <field name="date_from" required="1"/>
