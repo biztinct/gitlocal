@@ -306,4 +306,196 @@
         <field name="target">current</field>
     </record>
 
+
+<!-- Dashboard Tiles Integration for All Country Dashboards -->
+<!-- Add this to extend existing country dashboard views -->
+
+<!-- Vietnam Dashboard Extension -->
+<record id="view_vietnam_dashboard_analytics_tiles" model="ir.ui.view">
+    <field name="name">Vietnam Dashboard Analytics Tiles</field>
+    <field name="model">payroll.dashboard</field>
+    <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_vietnam"/>
+    <field name="arch" type="xml">
+        <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
+            
+            <!-- Approval Dashboard Tile -->
+            <div class="dashboard-card approval-tile">
+                <div class="card-header">
+                    <i class="fa fa-gavel card-icon"></i>
+                    <div class="card-badge">
+                        <span class="badge badge-warning" id="vn-pending-count">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Approval Dashboard</h4>
+                    <p class="card-description">Review and approve payroll with detailed analytics</p>
+                    <div class="card-stats">
+                        <span class="stat-label">Pending Approvals</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button name="action_open_approval_dashboard" 
+                            type="object" 
+                            class="btn btn-primary btn-block"
+                            data-country="VN">
+                        <i class="fa fa-dashboard"></i> Open Analytics
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bank Export Tile -->
+            <div class="dashboard-card export-tile">
+                <div class="card-header">
+                    <i class="fa fa-university card-icon"></i>
+                    <div class="card-badge">
+                        <span class="badge badge-success" id="vn-export-count">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Bank Export</h4>
+                    <p class="card-description">Export approved payroll for bank disbursement</p>
+                    <div class="card-stats">
+                        <span class="stat-label">Ready for Export</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button name="action_open_bank_export" 
+                            type="object" 
+                            class="btn btn-success btn-block"
+                            data-country="VN">
+                        <i class="fa fa-download"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+            
+        </xpath>
+    </field>
+</record>
+
+<!-- Indonesia Dashboard Extension -->
+<record id="view_indonesia_dashboard_analytics_tiles" model="ir.ui.view">
+    <field name="name">Indonesia Dashboard Analytics Tiles</field>
+    <field name="model">payroll.dashboard</field>
+    <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia"/>
+    <field name="arch" type="xml">
+        <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
+            
+            <!-- Approval Dashboard Tile -->
+            <div class="dashboard-card approval-tile">
+                <div class="card-header">
+                    <i class="fa fa-gavel card-icon"></i>
+                    <div class="card-badge">
+                        <span class="badge badge-warning" id="id-pending-count">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Approval Dashboard</h4>
+                    <p class="card-description">Review and approve payroll with detailed analytics</p>
+                    <div class="card-stats">
+                        <span class="stat-label">Pending Approvals</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button name="action_open_approval_dashboard" 
+                            type="object" 
+                            class="btn btn-primary btn-block"
+                            data-country="ID">
+                        <i class="fa fa-dashboard"></i> Open Analytics
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bank Export Tile -->
+            <div class="dashboard-card export-tile">
+                <div class="card-header">
+                    <i class="fa fa-university card-icon"></i>
+                    <div class="card-badge">
+                        <span class="badge badge-success" id="id-export-count">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Bank Export</h4>
+                    <p class="card-description">Export approved payroll for bank disbursement</p>
+                    <div class="card-stats">
+                        <span class="stat-label">Ready for Export</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button name="action_open_bank_export" 
+                            type="object" 
+                            class="btn btn-success btn-block"
+                            data-country="ID">
+                        <i class="fa fa-download"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+            
+        </xpath>
+    </field>
+</record>
+
+<!-- India Dashboard Extension -->
+<record id="view_india_dashboard_analytics_tiles" model="ir.ui.view">
+    <field name="name">India Dashboard Analytics Tiles</field>
+    <field name="model">payroll.dashboard</field>
+    <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_india"/>
+    <field name="arch" type="xml">
+        <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
+            
+            <!-- Approval Dashboard Tile -->
+            <div class="dashboard-card approval-tile">
+                <div class="card-header">
+                    <i class="fa fa-gavel card-icon"></i>
+                    <div class="card-badge">
+                        <span class="badge badge-warning" id="in-pending-count">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Approval Dashboard</h4>
+                    <p class="card-description">Review and approve payroll with detailed analytics</p>
+                    <div class="card-stats">
+                        <span class="stat-label">Pending Approvals</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button name="action_open_approval_dashboard" 
+                            type="object" 
+                            class="btn btn-primary btn-block"
+                            data-country="IN">
+                        <i class="fa fa-dashboard"></i> Open Analytics
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Bank Export Tile -->
+            <div class="dashboard-card export-tile">
+                <div class="card-header">
+                    <i class="fa fa-university card-icon"></i>
+                    <div class="card-badge">
+                        <span class="badge badge-success" id="in-export-count">0</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <h4>Bank Export</h4>
+                    <p class="card-description">Export approved payroll for bank disbursement</p>
+                    <div class="card-stats">
+                        <span class="stat-label">Ready for Export</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button name="action_open_bank_export" 
+                            type="object" 
+                            class="btn btn-success btn-block"
+                            data-country="IN">
+                        <i class="fa fa-download"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+            
+        </xpath>
+    </field>
+</record>
+
+
+
 </odoo>

@@ -156,7 +156,147 @@
             </form>
         </field>
     </record>
-    
+
+
+    <!-- Enhanced Analytics Form View with Better JSON Display -->
+    <record id="view_payroll_analytics_enhanced_form" model="ir.ui.view">
+        <field name="name">payroll.analytics.enhanced.form</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Analytics" create="false">
+                <header>
+                    <button name="action_approve_payroll" 
+                            type="object" 
+                            string="Final Approve" 
+                            class="oe_highlight btn-success"
+                            states="ready"
+                            confirm="Are you sure you want to approve this payroll? This action will finalize all payslip batches and cannot be undone."/>
+                    <button name="action_export_bank_file" 
+                            type="object" 
+                            string="Export Bank File" 
+                            class="oe_highlight btn-primary"
+                            states="approved"/>
+                    <button name="action_open_dashboard" 
+                            type="object" 
+                            string="Open Dashboard" 
+                            class="btn-info"
+                            states="ready,approved"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_payslip_runs" icon="fa-files-o">
+                            <field string="Payslip Runs" name="payslip_run_count" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_anomalies" icon="fa-exclamation-triangle">
+                            <field string="Anomalies" name="anomaly_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="period_name" placeholder="Period Name"/>
+                        </h1>
+                        <h2>
+                            <field name="country"/> Payroll Analysis
+                        </h2>
+                    </div>
+                    
+                    <group>
+                        <group string="Period Information">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="country" readonly="1"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                        <group string="Summary Statistics">
+                            <field name="total_employees"/>
+                            <field name="total_payroll" widget="monetary"/>
+                            <field name="average_salary" widget="monetary"/>
+                            <field name="variance_percentage" widget="percentage"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Overview" name="overview">
+                            <group>
+                                <group string="Key Metrics">
+                                    <field name="total_employees"/>
+                                    <field name="total_payroll" widget="monetary"/>
+                                    <field name="average_salary" widget="monetary"/>
+                                    <field name="variance_percentage" widget="percentage"/>
+                                </group>
+                                <group string="Changes from Previous Month">
+                                    <field name="employee_change"/>
+                                    <field name="payroll_change" widget="percentage"/>
+                                    <field name="avg_salary_change" widget="percentage"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Employee Metrics" name="employee_metrics">
+                            <div class="alert alert-info">
+                                <h5><i class="fa fa-users"/> Employee Analytics</h5>
+                                <p>Detailed breakdown of employee counts and distribution across payslip runs.</p>
+                            </div>
+                            <group>
+                                <field name="employee_metrics" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Component Analysis" name="components">
+                            <div class="alert alert-success">
+                                <h5><i class="fa fa-pie-chart"/> Salary Components</h5>
+                                <p>Complete breakdown of all salary components including totals, averages, and individual counts.</p>
+                            </div>
+                            <group>
+                                <field name="salary_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Comparison Data" name="comparison">
+                            <div class="alert alert-warning">
+                                <h5><i class="fa fa-bar-chart"/> Month-over-Month Comparison</h5>
+                                <p>Variance analysis comparing current period with previous month including component-wise changes.</p>
+                            </div>
+                            <group>
+                                <field name="comparison_data" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Anomaly Alerts" name="anomalies">
+                            <div class="alert alert-danger">
+                                <h5><i class="fa fa-exclamation-triangle"/> Anomaly Detection</h5>
+                                <p>Automated detection of unusual patterns, high variances, and potential issues requiring attention.</p>
+                            </div>
+                            <group>
+                                <field name="anomaly_alerts" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Approval Notes" name="notes">
+                            <group>
+                                <field name="approval_notes" placeholder="Add any notes or comments for this approval..."/>
+                                <field name="approved_by" readonly="1"/>
+                                <field name="approval_date" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+
+
     <!-- Approval Dashboard Action -->
     <record id="action_payroll_approval_dashboard" model="ir.actions.act_window">
         <field name="name">Payroll Approval Dashboard</field>
