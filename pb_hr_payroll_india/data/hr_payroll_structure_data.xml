@@ -3,6 +3,7 @@
     <data noupdate="1">
         
         <!-- India Salary Structure -->
+        
         <record id="structure_india_employee" model="hr.payroll.structure">
             <field name="name">India Salary Structure</field>
             <field name="code">IND_EMP</field>
@@ -11,14 +12,7 @@
             <field name="parent_id" ref="om_hr_payroll.structure_base"/>
             <field name="note">India Employee Salary Structure with PF, ESI, Professional Tax and Income Tax components</field>
         </record>
-        
-        <!-- Link structure to India spreadsheet -->
-        <record id="structure_india_employee_spreadsheet" model="ir.model.data">
-            <field name="name">structure_india_employee</field>
-            <field name="model">hr.payroll.structure</field>
-            <field name="module">pb_hr_payroll_india</field>
-            <field name="res_id" ref="structure_india_employee"/>
-        </record>
+               
         
     </data>
 </odoo>
