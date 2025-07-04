@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Zoho Employee Data Form View -->
+    <record id="view_zoho_employee_data_form" model="ir.ui.view">
+        <field name="name">zoho.employee.data.form</field>
+        <field name="model">zoho.employee.data</field>
+        <field name="arch" type="xml">
+            <form string="Zoho Employee Data">
+                <header>
+                    <button name="action_create_employee" type="object" string="Create Employee" 
+                            class="btn-primary" attrs="{'invisible': [('processed', '=', True)]}"/>
+                    <button name="action_update_employee" type="object" string="Update Employee" 
+                            class="btn-secondary" attrs="{'invisible': [('employee_id_odoo', '=', False)]}"/>
+                    <field name="employee_status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_view_employee" type="object" 
+                                icon="fa-user" attrs="{'invisible': [('employee_id_odoo', '=', False)]}">
+                            <field string="Employee" name="employee_id_odoo" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Processed" bg_color="bg-success" 
+                            attrs="{'invisible': [('processed', '=', False)]}"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="full_name_en" placeholder="Full Name (English)"/>
+                        </h1>
+                        <h3>
+                            <field name="employee_id" placeholder="Employee ID"/>
+                        </h3>
+                    </div>
+
+                    <group>
+                        <group string="Basic Information">
+                            <field name="full_name_vn"/>
+                            <field name="email"/>
+                            <field name="mobile"/>
+                            <field name="gender"/>
+                            <field name="date_of_birth"/>
+                            <field name="payroll_country"/>
+                        </group>
+                        <group string="Employment Details">
+                            <field name="department"/>
+                            <field name="designation"/>
+                            <field name="employee_type"/>
+                            <field name="location_name"/>
+                            <field name="date_of_joining"/>
+                            <field name="confirmation_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Salary Information">
+                        <group>
+                            <field name="basic_salary"/>
+                        </group>
+                        <group>
+                            <field name="gross_salary"/>
+                        </group>
+                    </group>
+
+                    <group string="Address">
+                        <field name="address" nolabel="1"/>
+                    </group>
+
+                    <group string="Processing Information">
+                        <group>
+                            <field name="processed"/>
+                        </group>
+                        <group>
+                            <field name="processing_notes"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Zoho Employee Data Tree View -->
+    <record id="view_zoho_employee_data_tree" model="ir.ui.view">
+        <field name="name">zoho.employee.data.tree</field>
+        <field name="model">zoho.employee.data</field>
+        <field name="arch" type="xml">
+            <tree string="Zoho Employee Data" decoration-success="processed==True" 
+                  decoration-warning="processed==False">
+                <field name="employee_id"/>
+                <field name="full_name_en"/>
+                <field name="email"/>
+                <field name="department"/>
+                <field name="designation"/>
+                <field name="payroll_country"/>
+                <field name="processed"/>
+                <field name="employee_status"/>
+                <button name="action_create_employee" type="object" string="Create" 
+                        icon="fa-plus" attrs="{'invisible': [('processed', '=', True)]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Zoho Employee Data Search View -->
+    <record id="view_zoho_employee_data_search" model="ir.ui.view">
+        <field name="name">zoho.employee.data.search</field>
+        <field name="model">zoho.employee.data</field>
+        <field name="arch" type="xml">
+            <search string="Zoho Employee Data">
+                <field name="employee_id"/>
+                <field name="full_name_en"/>
+                <field name="email"/>
+                <field name="department"/>
+                <field name="designation"/>
+                <filter string="Unprocessed" name="unprocessed" domain="[('processed', '=', False)]"/>
+                <filter string="Processed" name="processed" domain="[('processed', '=', True)]"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('employee_status', '=', 'active')]"/>
+                <filter string="Inactive" name="inactive" domain="[('employee_status', '=', 'inactive')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country" context="{'group_by': 'payroll_country'}"/>
+                    <filter string="Department" name="group_department" context="{'group_by': 'department'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'employee_status'}"/>
+                    <filter string="Processed" name="group_processed" context="{'group_by': 'processed'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Zoho Employee Data Action -->
+    <record id="action_zoho_employee_data" model="ir.actions.act_window">
+        <field name="name">Zoho Employee Data</field>
+        <field name="res_model">zoho.employee.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_zoho_employee_data_tree"/>
+        <field name="search_view_id" ref="view_zoho_employee_data_search"/>
+        <field name="context">{'search_default_unprocessed': 1}</field>
+    </record>
+
+    <!-- Zoho Staging Importer Form View -->
+    <record id="view_zoho_staging_importer_form" model="ir.ui.view">
+        <field name="name">zoho.staging.importer.form</field>
+        <field name="model">zoho.staging.importer</field>
+        <field name="arch" type="xml">
+            <form string="Import Zoho Employee Data">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Import Employee Data</h1>
+                        <p>Import employees from Zoho staging area to Odoo</p>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="payroll_country"/>
+                        </group>
+                        <group>
+                            <field name="import_mode"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_import_employees" type="object" string="Import Employees" 
+                            class="btn-primary"/>
+                    <button name="action_view_staging_data" type="object" string="View Staging Data" 
+                            class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Zoho Staging Importer Action -->
+    <record id="action_zoho_staging_importer" model="ir.actions.act_window">
+        <field name="name">Import Zoho Employees</field>
+        <field name="res_model">zoho.staging.importer</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_zoho_staging_importer_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

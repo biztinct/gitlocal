@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payroll_dashboard_user,payroll.dashboard.user,model_payroll_dashboard,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_payroll_dashboard_manager,payroll.dashboard.manager,model_payroll_dashboard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_payroll_country_selector_user,payroll.country.selector.user,model_payroll_country_selector,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_country_selector_wizard_user,country.selector.wizard.user,model_country_selector_wizard,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_zoho_employee_data_user,zoho.employee.data.user,model_zoho_employee_data,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_zoho_employee_data_manager,zoho.employee.data.manager,model_zoho_employee_data,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_zoho_staging_importer_user,zoho.staging.importer.user,model_zoho_staging_importer,om_hr_payroll.group_hr_payroll_user,1,1,1,1

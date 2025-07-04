@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Payroll Menu -->
+    <menuitem id="menu_payroll_main" 
+              name="Multi-Country Payroll" 
+              web_icon="pb_hr_payroll_base,static/description/icon.png"
+              sequence="45"/>
+
+    <!-- Dashboard Section -->
+    <menuitem id="menu_payroll_dashboard_section" 
+              name="Dashboard" 
+              parent="menu_payroll_main"
+              sequence="10"/>
+
+    <!-- Country Selection Menu -->
+    <menuitem id="menu_payroll_country_selector" 
+              name="Select Country" 
+              parent="menu_payroll_dashboard_section"
+              action="action_payroll_country_selector"
+              sequence="1"/>
+
+    <!-- Dashboard Menu -->
+    <menuitem id="menu_payroll_dashboard" 
+              name="View Dashboard" 
+              parent="menu_payroll_dashboard_section"
+              action="action_payroll_dashboard_base"
+              sequence="10"/>
+
+    <!-- Employee Management Section -->
+    <menuitem id="menu_payroll_employees" 
+              name="Employees" 
+              parent="menu_payroll_main"
+              sequence="20"/>
+
+    <!-- Employee Action -->
+    <record id="action_hr_employee_payroll" model="ir.actions.act_window">
+        <field name="name">Employees</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_hr_employee_payroll" 
+              name="All Employees" 
+              parent="menu_payroll_employees"
+              action="action_hr_employee_payroll"
+              sequence="10"/>
+
+    <!-- Contracts Action -->
+    <record id="action_hr_contract_payroll" model="ir.actions.act_window">
+        <field name="name">Contracts</field>
+        <field name="res_model">hr.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_hr_contract_payroll" 
+              name="Contracts" 
+              parent="menu_payroll_employees"
+              action="action_hr_contract_payroll"
+              sequence="20"/>
+
+    <!-- Contract Types Menu -->
+    <menuitem id="menu_hr_contract_types" 
+              name="Contract Types" 
+              parent="menu_payroll_employees"
+              action="action_hr_contract_type_enhanced"
+              sequence="30"/>
+
+    <!-- Payslips Section -->
+    <menuitem id="menu_payroll_payslips" 
+              name="Payslips" 
+              parent="menu_payroll_main"
+              sequence="30"/>
+
+    <!-- Payslip Action -->
+    <record id="action_hr_payslip_payroll" model="ir.actions.act_window">
+        <field name="name">Payslips</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_hr_payslip_payroll" 
+              name="All Payslips" 
+              parent="menu_payroll_payslips"
+              action="action_hr_payslip_payroll"
+              sequence="10"/>
+
+    <!-- Payslip Runs Action -->
+    <record id="action_hr_payslip_run_payroll" model="ir.actions.act_window">
+        <field name="name">Payslip Batches</field>
+        <field name="res_model">hr.payslip.run</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_hr_payslip_run_payroll" 
+              name="Payslip Batches" 
+              parent="menu_payroll_payslips"
+              action="action_hr_payslip_run_payroll"
+              sequence="20"/>
+
+    <!-- Zoho Integration Section -->
+    <menuitem id="menu_payroll_zoho" 
+              name="Zoho Integration" 
+              parent="menu_payroll_main"
+              sequence="70"/>
+
+    <!-- Zoho Employee Data Menu -->
+    <menuitem id="menu_zoho_employee_data" 
+              name="Employee Data" 
+              parent="menu_payroll_zoho"
+              action="action_zoho_employee_data"
+              sequence="10"/>
+
+    <!-- Zoho Importer Menu -->
+    <menuitem id="menu_zoho_importer" 
+              name="Import Employees" 
+              parent="menu_payroll_zoho"
+              action="action_zoho_staging_importer"
+              sequence="20"/>
+
+    <!-- Reports Section -->
+    <menuitem id="menu_payroll_reports" 
+              name="Reports" 
+              parent="menu_payroll_main"
+              sequence="80"/>
+
+    <!-- Payroll Analysis Action -->
+    <record id="action_payroll_analysis" model="ir.actions.act_window">
+        <field name="name">Payroll Analysis</field>
+        <field name="res_model">hr.payslip</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="context">{'search_default_group_by_employee': 1}</field>
+    </record>
+
+    <menuitem id="menu_payroll_analysis" 
+              name="Payroll Analysis" 
+              parent="menu_payroll_reports"
+              action="action_payroll_analysis"
+              sequence="10"/>
+
+    <!-- Configuration Section -->
+    <menuitem id="menu_payroll_configuration" 
+              name="Configuration" 
+              parent="menu_payroll_main"
+              sequence="90"/>
+
+    <!-- Salary Structures Menu -->
+    <menuitem id="menu_payroll_structures" 
+              name="Salary Structures" 
+              parent="menu_payroll_configuration"
+              action="action_hr_payroll_structure_base"
+              sequence="10"/>
+
+    <!-- Salary Rules Menu -->
+    <menuitem id="menu_payroll_rules" 
+              name="Salary Rules" 
+              parent="menu_payroll_configuration"
+              action="action_hr_salary_rule_base"
+              sequence="20"/>
+
+    <!-- Salary Rule Categories Menu -->
+    <menuitem id="menu_payroll_rule_categories" 
+              name="Rule Categories" 
+              parent="menu_payroll_configuration"
+              action="action_hr_salary_rule_category_base"
+              sequence="30"/>
+
+    <!-- Work Entry Types Action -->
+    <record id="action_hr_work_entry_type_payroll" model="ir.actions.act_window">
+        <field name="name">Work Entry Types</field>
+        <field name="res_model">hr.work.entry.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem id="menu_work_entry_types" 
+              name="Work Entry Types" 
+              parent="menu_payroll_configuration"
+              action="action_hr_work_entry_type_payroll"
+              sequence="40"/>
+</odoo>
