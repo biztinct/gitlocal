@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Enhanced Contract Types with Payroll Configuration -->
+        <record id="contract_type_vietnam_permanent_monthly" model="hr.contract.type">
+            <field name="name">Vietnam Permanent Monthly</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="payroll_schedule">monthly</field>
+            <field name="wage_calculation">fixed</field>
+            <field name="is_payroll_enabled">True</field>
+        </record>
+
+        <record id="contract_type_vietnam_contract_hourly" model="hr.contract.type">
+            <field name="name">Vietnam Contract Hourly</field>
+            <field name="country_id" ref="base.vn"/>
+            <field name="payroll_schedule">weekly</field>
+            <field name="wage_calculation">hourly</field>
+            <field name="is_payroll_enabled">True</field>
+        </record>
+
+        <record id="contract_type_indonesia_permanent_monthly" model="hr.contract.type">
+            <field name="name">Indonesia Permanent Monthly</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="payroll_schedule">monthly</field>
+            <field name="wage_calculation">fixed</field>
+            <field name="is_payroll_enabled">True</field>
+        </record>
+
+        <record id="contract_type_india_permanent_monthly" model="hr.contract.type">
+            <field name="name">India Permanent Monthly</field>
+            <field name="country_id" ref="base.in"/>
+            <field name="payroll_schedule">monthly</field>
+            <field name="wage_calculation">fixed</field>
+            <field name="is_payroll_enabled">True</field>
+        </record>
+
+        <!-- Demo Salary Rule Categories -->
+        <record id="salary_rule_category_basic_demo" model="hr.salary.rule.category">
+            <field name="name">Basic Salary</field>
+            <field name="code">BASIC</field>
+            <field name="category_type">basic</field>
+            <field name="is_taxable">True</field>
+            <field name="affects_net_salary">True</field>
+            <field name="show_on_payslip">True</field>
+            <field name="display_order">10</field>
+        </record>
+
+        <record id="salary_rule_category_allowances_demo" model="hr.salary.rule.category">
+            <field name="name">Allowances</field>
+            <field name="code">ALW</field>
+            <field name="category_type">allowance</field>
+            <field name="is_taxable">True</field>
+            <field name="affects_net_salary">True</field>
+            <field name="show_on_payslip">True</field>
+            <field name="display_order">20</field>
+        </record>
+
+        <record id="salary_rule_category_deductions_demo" model="hr.salary.rule.category">
+            <field name="name">Deductions</field>
+            <field name="code">DED</field>
+            <field name="category_type">deduction</field>
+            <field name="is_taxable">False</field>
+            <field name="affects_net_salary">True</field>
+            <field name="show_on_payslip">True</field>
+            <field name="display_order">30</field>
+        </record>
+
+        <record id="salary_rule_category_taxes_demo" model="hr.salary.rule.category">
+            <field name="name">Taxes</field>
+            <field name="code">TAX</field>
+            <field name="category_type">tax</field>
+            <field name="is_taxable">False</field>
+            <field name="affects_net_salary">True</field>
+            <field name="show_on_payslip">True</field>
+            <field name="display_order">40</field>
+        </record>
+
+        <!-- Demo Salary Rules - ALL WITH ZERO VALUES -->
+        <record id="salary_rule_basic_vietnam" model="hr.salary.rule">
+            <field name="name">Basic Salary - Vietnam</field>
+            <field name="code">BASIC_VN</field>
+            <field name="category_id" ref="salary_rule_category_basic_demo"/>
+            <field name="sequence">10</field>
+            <field name="payroll_country_code">VN</field>
+            <field name="is_country_specific">True</field>
+            <field name="applies_to">contract_type</field>
+            <field name="contract_type_ids" eval="[(4, ref('contract_type_vietnam_permanent_monthly'))]"/>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="calculation_base">basic</field>
+            <field name="is_allowance">True</field>
+            <field name="report_category">gross_earnings</field>
+        </record>
+
+        <record id="salary_rule_housing_vietnam" model="hr.salary.rule">
+            <field name="name">Housing Allowance - Vietnam</field>
+            <field name="code">HOUSING_VN</field>
+            <field name="category_id" ref="salary_rule_category_allowances_demo"/>
+            <field name="sequence">20</field>
+            <field name="payroll_country_code">VN</field>
+            <field name="is_country_specific">True</field>
+            <field name="applies_to">contract_type</field>
+            <field name="contract_type_ids" eval="[(4, ref('contract_type_vietnam_permanent_monthly'))]"/>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="calculation_base">basic</field>
+            <field name="is_allowance">True</field>
+            <field name="report_category">gross_earnings</field>
+        </record>
+
+        <record id="salary_rule_transport_vietnam" model="hr.salary.rule">
+            <field name="name">Transport Allowance - Vietnam</field>
+            <field name="code">TRANSPORT_VN</field>
+            <field name="category_id" ref="salary_rule_category_allowances_demo"/>
+            <field name="sequence">30</field>
+            <field name="payroll_country_code">VN</field>
+            <field name="is_country_specific">True</field>
+            <field name="applies_to">all</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="calculation_base">basic</field>
+            <field name="is_allowance">True</field>
+            <field name="report_category">gross_earnings</field>
+        </record>
+
+        <record id="salary_rule_social_security_vietnam" model="hr.salary.rule">
+            <field name="name">Social Security - Vietnam</field>
+            <field name="code">SS_VN</field>
+            <field name="category_id" ref="salary_rule_category_deductions_demo"/>
+            <field name="sequence">100</field>
+            <field name="payroll_country_code">VN</field>
+            <field name="is_country_specific">True</field>
+            <field name="is_social_security">True</field>
+            <field name="statutory_rule">True</field>
+            <field name="applies_to">all</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage">0</field>
+            <field name="employee_rate">0</field>
+            <field name="employer_rate">0</field>
+            <field name="calculation_base">gross</field>
+            <field name="is_deduction">True</field>
+            <field name="report_category">deductions</field>
+        </record>
+
+        <record id="salary_rule_pit_vietnam" model="hr.salary.rule">
+            <field name="name">Personal Income Tax - Vietnam</field>
+            <field name="code">PIT_VN</field>
+            <field name="category_id" ref="salary_rule_category_taxes_demo"/>
+            <field name="sequence">200</field>
+            <field name="payroll_country_code">VN</field>
+            <field name="is_country_specific">True</field>
+            <field name="is_tax_rule">True</field>
+            <field name="statutory_rule">True</field>
+            <field name="applies_to">all</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="calculation_base">gross</field>
+            <field name="is_deduction">True</field>
+            <field name="report_category">taxes</field>
+        </record>
+
+        <record id="salary_rule_net_vietnam" model="hr.salary.rule">
+            <field name="name">Net Salary - Vietnam</field>
+            <field name="code">NET_VN</field>
+            <field name="category_id" ref="salary_rule_category_basic_demo"/>
+            <field name="sequence">999</field>
+            <field name="payroll_country_code">VN</field>
+            <field name="is_country_specific">True</field>
+            <field name="applies_to">all</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="calculation_base">gross</field>
+            <field name="report_category">net_pay</field>
+        </record>
+
+        <!-- Demo Payroll Structures - COMPLETE WITH RULES INCLUDED -->
+        <record id="payroll_structure_vietnam_demo" model="hr.payroll.structure">
+            <field name="name">Vietnam Standard Payroll</field>
+            <field name="code">VN_STD</field>
+            <field name="payroll_country_code">VN</field>
+            <field name="schedule_pay">monthly</field>
+            <field name="working_hours_per_day">8</field>
+            <field name="working_days_per_week">5</field>
+            <field name="working_days_per_month">22</field>
+            <field name="tax_calculation_method">progressive</field>
+            <field name="social_security_enabled">True</field>
+            <field name="pension_enabled">True</field>
+            <field name="contract_type_ids" eval="[(4, ref('contract_type_vietnam_permanent_monthly'))]"/>
+            <field name="rule_ids" eval="[
+                (4, ref('salary_rule_basic_vietnam')),
+                (4, ref('salary_rule_housing_vietnam')),
+                (4, ref('salary_rule_transport_vietnam')),
+                (4, ref('salary_rule_social_security_vietnam')),
+                (4, ref('salary_rule_pit_vietnam')),
+                (4, ref('salary_rule_net_vietnam'))
+            ]"/>
+        </record>
+
+        <record id="payroll_structure_indonesia_demo" model="hr.payroll.structure">
+            <field name="name">Indonesia Standard Payroll</field>
+            <field name="code">ID_STD</field>
+            <field name="payroll_country_code">ID</field>
+            <field name="schedule_pay">monthly</field>
+            <field name="working_hours_per_day">8</field>
+            <field name="working_days_per_week">5</field>
+            <field name="working_days_per_month">22</field>
+            <field name="tax_calculation_method">progressive</field>
+            <field name="social_security_enabled">True</field>
+            <field name="pension_enabled">True</field>
+            <field name="contract_type_ids" eval="[(4, ref('contract_type_indonesia_permanent_monthly'))]"/>
+        </record>
+
+        <record id="payroll_structure_india_demo" model="hr.payroll.structure">
+            <field name="name">India Standard Payroll</field>
+            <field name="code">IN_STD</field>
+            <field name="payroll_country_code">IN</field>
+            <field name="schedule_pay">monthly</field>
+            <field name="working_hours_per_day">8</field>
+            <field name="working_days_per_week">5</field>
+            <field name="working_days_per_month">22</field>
+            <field name="tax_calculation_method">progressive</field>
+            <field name="social_security_enabled">True</field>
+            <field name="pension_enabled">True</field>
+            <field name="contract_type_ids" eval="[(4, ref('contract_type_india_permanent_monthly'))]"/>
+        </record>
+
+        <!-- Sample Employee - MINIMAL DATA -->
+        <record id="demo_employee_vietnam" model="hr.employee">
+            <field name="name">Demo Employee Vietnam</field>
+            <field name="work_email">demo.vietnam@company.com</field>
+            <field name="country_id" ref="base.vn"/>
+        </record>
+
+        <!-- Sample Contract - ZERO VALUES -->
+        <record id="demo_contract_vietnam" model="hr.contract">
+            <field name="name">Demo Contract Vietnam</field>
+            <field name="employee_id" ref="demo_employee_vietnam"/>
+            <field name="contract_type_id" ref="contract_type_vietnam_permanent_monthly"/>
+            <field name="struct_id" ref="payroll_structure_vietnam_demo"/>
+            <field name="date_start" eval="(DateTime.today() - relativedelta(months=1)).strftime('%Y-%m-%d')"/>
+            <field name="basic_salary">0</field>
+            <field name="housing_allowance">0</field>
+            <field name="transport_allowance">0</field>
+            <field name="meal_allowance">0</field>
+            <field name="other_allowances">0</field>
+            <field name="tax_exemption_amount">0</field>
+            <field name="wage">0</field>
+            <field name="state">open</field>
+        </record>
+    </data>
+</odoo>

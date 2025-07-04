@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Country-Specific Dashboard Actions -->
+    <record id="action_vietnam_dashboard" model="ir.actions.act_window">
+        <field name="name">Vietnam Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="domain">[('country', '=', 'VN')]</field>
+        <field name="context">{'default_country': 'VN', 'create': False, 'edit': False}</field>
+    </record>
+
+    <record id="action_indonesia_dashboard" model="ir.actions.act_window">
+        <field name="name">Indonesia Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="domain">[('country', '=', 'ID')]</field>
+        <field name="context">{'default_country': 'ID', 'create': False, 'edit': False}</field>
+    </record>
+
+    <record id="action_india_dashboard" model="ir.actions.act_window">
+        <field name="name">India Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="domain">[('country', '=', 'IN')]</field>
+        <field name="context">{'default_country': 'IN', 'create': False, 'edit': False}</field>
+    </record>
+
+    <!-- Country-Specific Employee Views -->
+    <record id="action_vietnam_employees" model="ir.actions.act_window">
+        <field name="name">Vietnam Employees</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('contract_ids.struct_id.payroll_country_code', '=', 'VN')]</field>
+        <field name="context">{'default_country_code': 'VN'}</field>
+    </record>
+
+    <record id="action_indonesia_employees" model="ir.actions.act_window">
+        <field name="name">Indonesia Employees</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('contract_ids.struct_id.payroll_country_code', '=', 'ID')]</field>
+        <field name="context">{'default_country_code': 'ID'}</field>
+    </record>
+
+    <record id="action_india_employees" model="ir.actions.act_window">
+        <field name="name">India Employees</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('contract_ids.struct_id.payroll_country_code', '=', 'IN')]</field>
+        <field name="context">{'default_country_code': 'IN'}</field>
+    </record>
+
+    <!-- Zoho Data by Country -->
+    <record id="action_zoho_vietnam_data" model="ir.actions.act_window">
+        <field name="name">Vietnam Zoho Data</field>
+        <field name="res_model">zoho.employee.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payroll_country', '=', 'VN')]</field>
+        <field name="context">{'default_payroll_country': 'VN'}</field>
+    </record>
+
+    <record id="action_zoho_indonesia_data" model="ir.actions.act_window">
+        <field name="name">Indonesia Zoho Data</field>
+        <field name="res_model">zoho.employee.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payroll_country', '=', 'ID')]</field>
+        <field name="context">{'default_payroll_country': 'ID'}</field>
+    </record>
+
+    <record id="action_zoho_india_data" model="ir.actions.act_window">
+        <field name="name">India Zoho Data</field>
+        <field name="res_model">zoho.employee.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payroll_country', '=', 'IN')]</field>
+        <field name="context">{'default_payroll_country': 'IN'}</field>
+    </record>
+</odoo>

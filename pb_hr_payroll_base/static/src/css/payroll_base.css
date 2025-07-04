@@ -1,0 +1,72 @@
+/* Multi-Country Payroll Base Styles */
+
+.payroll-dashboard {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.payroll-dashboard .card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+}
+
+.payroll-dashboard .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 600;
+}
+
+.payroll-dashboard .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.payroll-dashboard .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.country-selector {
+    text-align: center;
+    padding: 2rem;
+}
+
+.country-selector .radio input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.country-badge {
+    font-size: 1.2em;
+    padding: 0.5rem 1rem;
+}
+
+.stat-card {
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.zoho-staging-table .table {
+    margin-bottom: 0;
+}
+
+.zoho-staging-table .table th {
+    background-color: #f8f9fa;
+    border-top: none;
+}
+
+.processing-status.processed {
+    color: #28a745;
+}
+
+.processing-status.pending {
+    color: #ffc107;
+}
+
+.processing-status.error {
+    color: #dc3545;
+}
