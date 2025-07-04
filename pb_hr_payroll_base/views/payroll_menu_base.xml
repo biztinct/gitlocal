@@ -172,7 +172,11 @@
               action="action_hr_salary_rule_category_base"
               sequence="30"/>
 
-    <!-- Work Entry Types Action -->
+    <!-- 
+    REMOVED: Work Entry Types Action & Menu
+    This was causing the error because hr.work.entry.type model 
+    requires hr_work_entry module which is not installed
+    
     <record id="action_hr_work_entry_type_payroll" model="ir.actions.act_window">
         <field name="name">Work Entry Types</field>
         <field name="res_model">hr.work.entry.type</field>
@@ -186,4 +190,6 @@
               parent="menu_payroll_configuration"
               action="action_hr_work_entry_type_payroll"
               sequence="40"/>
+    -->
+
 </odoo>

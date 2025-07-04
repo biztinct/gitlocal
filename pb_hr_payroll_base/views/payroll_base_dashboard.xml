@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Base Dashboard Form View -->
     <record id="view_payroll_dashboard_form_base" model="ir.ui.view">
         <field name="name">payroll.dashboard.form.base</field>
         <field name="model">payroll.dashboard</field>
@@ -8,11 +7,11 @@
             <form string="Payroll Dashboard" create="false" edit="false" delete="false">
                 <header>
                     <button name="action_get_employee_data" type="object" string="Get Employee Data" 
-                            class="btn-primary" icon="fa-download"/>
+                            class="oe_highlight" icon="fa-download"/>
                     <button name="action_edit_spreadsheet" type="object" string="Edit Spreadsheet" 
-                            class="btn-secondary" icon="fa-table"/>
+                            class="oe_link" icon="fa-table"/>
                     <button name="action_import_spreadsheet" type="object" string="Import Spreadsheet" 
-                            class="btn-info" icon="fa-upload"/>
+                            class="oe_link" icon="fa-upload"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -23,7 +22,7 @@
                             <field name="country" widget="badge" readonly="1"/>
                         </h3>
                     </div>
-                    
+
                     <!-- Statistics Dashboard -->
                     <div class="row">
                         <div class="col-lg-3 col-6">
@@ -90,7 +89,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Quick Actions -->
                     <div class="row mt-3">
                         <div class="col-12">
@@ -101,26 +100,43 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <button name="action_view_employees" type="object" 
+                                            <button name="action_dashboard_view_employees" type="object" 
                                                     string="View Employees" class="btn btn-outline-primary btn-block"
                                                     icon="fa-users"/>
                                         </div>
                                         <div class="col-md-4">
-                                            <button name="action_view_payslips" type="object" 
-                                                    string="View Payslips" class="btn btn-outline-secondary btn-block"
+                                            <button name="action_dashboard_view_payslips" type="object" 
+                                                    string="View Payslips" class="btn btn-outline-secondary btn-block" 
                                                     icon="fa-file-text"/>
                                         </div>
                                         <div class="col-md-4">
-                                            <button name="%(action_payroll_country_selector)d" type="action" 
+                                            <button name="action_open_country_selector" type="object" 
                                                     string="Switch Country" class="btn btn-outline-info btn-block"
                                                     icon="fa-globe"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-md-4">
+                                            <button name="action_dashboard_view_contracts" type="object" 
+                                                    string="View Contracts" class="btn btn-outline-warning btn-block"
+                                                    icon="fa-file-text-o"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button name="action_dashboard_view_structures" type="object" 
+                                                    string="View Structures" class="btn btn-outline-success btn-block"
+                                                    icon="fa-cogs"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <button name="action_dashboard_view_zoho_data" type="object" 
+                                                    string="View Zoho Data" class="btn btn-outline-dark btn-block"
+                                                    icon="fa-database"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Configuration Information -->
                     <group string="Configuration">
                         <group>
@@ -135,7 +151,7 @@
         </field>
     </record>
 
-    <!-- Base Dashboard Tree View -->
+    <!-- Dashboard Tree View -->
     <record id="view_payroll_dashboard_tree_base" model="ir.ui.view">
         <field name="name">payroll.dashboard.tree.base</field>
         <field name="model">payroll.dashboard</field>
