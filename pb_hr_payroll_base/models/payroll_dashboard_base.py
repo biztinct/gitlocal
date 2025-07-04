@@ -54,43 +54,40 @@ class PayrollDashboard(models.Model):
         for record in self:
             currency_code = currency_map.get(record.country)
             if currency_code:
-                record.currency_id = self.env['res.currency'].search([('name', '=', currency_code)], limit=1)
+                currency = self.env['res.currency'].search([('name', '=', currency_code)], limit=1)
+                record.currency_id = currency.id if currency else False
             else:
                 record.currency_id = False
     
     @api.depends('country')
     def _compute_structure(self):
-        """Get salary structure based on country"""
-        structure_map = {
-            'VN': 'Vietnam Salary Structure',
-            'ID': 'Indonesia Salary Structure',
-            'IN': 'India Salary Structure',
-            'SG': 'Singapore Salary Structure',
-            'MY': 'Malaysia Salary Structure',
-        }
+        """Get default payroll structure for country"""
         for record in self:
-            structure_name = structure_map.get(record.country)
-            if structure_name:
-                record.structure_id = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
-            else:
-                record.structure_id = False
+            structure = self.env['hr.payroll.structure'].search([
+                ('payroll_country_code', '=', record.country)
+            ], limit=1)
+            record.structure_id = structure.id if structure else False
     
     def _compute_statistics(self):
         """Compute dashboard statistics"""
         for record in self:
-            # Get country-specific employees based on contract structure
-            if record.structure_id:
-                contracts = self.env['hr.contract'].search([
-                    ('struct_id', '=', record.structure_id.id),
-                    ('state', 'in', ['open', 'pending'])
+            if record.country:
+                # Get employees by country
+                employees = self.env['hr.employee'].search([
+                    ('contract_ids.struct_id.payroll_country_code', '=', record.country)
                 ])
-                employees = contracts.mapped('employee_id')
                 record.total_employees = len(employees)
-                record.active_contracts = len(contracts.filtered(lambda c: c.state == 'open'))
                 
-                # Count pending payslips for this country's employees
+                # Get active contracts by country
+                contracts = self.env['hr.contract'].search([
+                    ('struct_id.payroll_country_code', '=', record.country),
+                    ('state', '=', 'open')
+                ])
+                record.active_contracts = len(contracts)
+                
+                # Get pending payslips by country
                 pending_payslips = self.env['hr.payslip'].search([
-                    ('employee_id', 'in', employees.ids),
+                    ('contract_id.struct_id.payroll_country_code', '=', record.country),
                     ('state', '=', 'draft')
                 ])
                 record.pending_payslips = len(pending_payslips)
@@ -115,12 +112,13 @@ class PayrollDashboard(models.Model):
             'structure': self.structure_id.name if self.structure_id else None,
         }
     
-    # Base actions that can be overridden by country modules
+    # === DASHBOARD ACTIONS - RENAMED TO AVOID CONFLICTS ===
+    
     def action_get_employee_data(self):
-        """Get employee data - to be overridden by country modules"""
+        """Get employee data from external sources"""
         return {
             'type': 'ir.actions.act_window',
-            'name': f'Get Employee Data - {self.country}',
+            'name': f'Import Employee Data - {self.country}',
             'res_model': 'zoho.staging.importer',
             'view_mode': 'form',
             'target': 'new',
@@ -128,85 +126,99 @@ class PayrollDashboard(models.Model):
         }
     
     def action_edit_spreadsheet(self):
-        """Edit spreadsheet - to be overridden by country modules"""
+        """Edit country-specific payroll spreadsheet"""
         try:
+            # Try to find country-specific spreadsheet first
             spreadsheet_id = f'__custom__.payrollstaging_{self.country.lower()}'
             spreadsheet = self.env.ref(spreadsheet_id, raise_if_not_found=False)
-            if not spreadsheet:
-                spreadsheet = self.env.ref('__custom__.payrollstaging', raise_if_not_found=False)
-                if not spreadsheet:
-                    raise UserError(_(f'{self.country} payroll spreadsheet not found.'))
             
-            return spreadsheet.with_context(payroll_country=self.country).open_spreadsheet()
+            if not spreadsheet:
+                # Fallback to generic spreadsheet
+                spreadsheet = self.env.ref('__custom__.payrollstaging', raise_if_not_found=False)
+                
+            if not spreadsheet:
+                raise UserError(_(f'No payroll spreadsheet found for {self.country}. Please contact your administrator.'))
+            
+            return {
+                'type': 'ir.actions.act_window',
+                'name': f'{self.country} Payroll Spreadsheet',
+                'res_model': 'spreadsheet.spreadsheet',
+                'view_mode': 'form',
+                'res_id': spreadsheet.id,
+                'target': 'current'
+            }
         except Exception as e:
-            raise UserError(_('Error opening spreadsheet: %s') % str(e))
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Spreadsheet Not Available'),
+                    'message': _(f'Could not access {self.country} payroll spreadsheet: {str(e)}'),
+                    'type': 'warning',
+                    'sticky': False
+                }
+            }
     
     def action_import_spreadsheet(self):
-        """Import spreadsheet - to be overridden by country modules"""
-        try:
-            return self.with_context(payroll_country=self.country).import_spreadsheet()
-        except Exception as e:
-            raise UserError(_('Error importing spreadsheet: %s') % str(e))
+        """Import data from spreadsheet"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Import {self.country} Payroll Data',
+            'res_model': 'zoho.staging.importer',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_payroll_country': self.country,
+                'default_import_mode': 'both'
+            }
+        }
     
-    def action_view_employees(self):
-        """View employees for this country"""
-        if not self.structure_id:
-            raise UserError(_('No salary structure configured for %s') % self.country)
-        
-        contracts = self.env['hr.contract'].search([
-            ('struct_id', '=', self.structure_id.id)
-        ])
-        employee_ids = contracts.mapped('employee_id').ids
-        
+    def action_dashboard_view_employees(self):
+        """View employees for this country - RENAMED to avoid conflict"""
         return {
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Employees',
             'res_model': 'hr.employee',
             'view_mode': 'tree,form',
-            'domain': [('id', 'in', employee_ids)],
-            'context': {'create': False}
+            'domain': [('contract_ids.struct_id.payroll_country_code', '=', self.country)],
+            'context': {'default_country_code': self.country}
         }
     
-    def action_view_payslips(self):
-        """View payslips for this country"""
-        if not self.structure_id:
-            raise UserError(_('No salary structure configured for %s') % self.country)
-        
-        contracts = self.env['hr.contract'].search([
-            ('struct_id', '=', self.structure_id.id)
-        ])
-        employee_ids = contracts.mapped('employee_id').ids
-        
+    def action_dashboard_view_payslips(self):
+        """View payslips for this country - RENAMED to avoid conflict"""
         return {
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Payslips',
             'res_model': 'hr.payslip',
             'view_mode': 'tree,form',
-            'domain': [('employee_id', 'in', employee_ids)],
+            'domain': [('contract_id.struct_id.payroll_country_code', '=', self.country)],
+            'context': {'default_country_code': self.country}
         }
-    def action_view_employees_by_country(self):
-        """View employees for specific country"""
-        action_map = {
-            'VN': 'pb_hr_payroll_base.action_vietnam_employees',
-            'ID': 'pb_hr_payroll_base.action_indonesia_employees', 
-            'IN': 'pb_hr_payroll_base.action_india_employees',
-        }
-        
-        action_id = action_map.get(self.country)
-        if action_id:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': f'{self.country} Employees',
-                'res_model': 'hr.employee',
-                'view_mode': 'tree,form',
-                'domain': [('contract_ids.struct_id.payroll_country_code', '=', self.country)],
-                'context': {'default_country_code': self.country}
-            }
-        else:
-            return self.action_view_employees()
 
-    def action_view_zoho_data_by_country(self):
-        """View Zoho data for specific country"""
+    def action_dashboard_view_contracts(self):
+        """View contracts for this country"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{self.country} Contracts',
+            'res_model': 'hr.contract',
+            'view_mode': 'tree,form',
+            'domain': [('struct_id.payroll_country_code', '=', self.country)],
+            'context': {'default_country_code': self.country}
+        }
+
+    def action_dashboard_view_structures(self):
+        """View payroll structures for this country"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{self.country} Payroll Structures',
+            'res_model': 'hr.payroll.structure',
+            'view_mode': 'tree,form',
+            'domain': [('payroll_country_code', '=', self.country)],
+            'context': {'default_payroll_country_code': self.country}
+        }
+
+    def action_dashboard_view_zoho_data(self):
+        """View Zoho data for this country"""
         return {
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Zoho Data',
@@ -216,16 +228,13 @@ class PayrollDashboard(models.Model):
             'context': {'default_payroll_country': self.country}
         }
 
-    def action_create_salary_structure(self):
-        """Create country-specific salary structure"""
+    def action_open_country_selector(self):
+        """Open country selector dialog"""
         return {
             'type': 'ir.actions.act_window',
-            'name': f'Create {self.country} Salary Structure',
-            'res_model': 'hr.payroll.structure',
+            'name': 'Select Payroll Country',
+            'res_model': 'payroll.country.selector',
             'view_mode': 'form',
             'target': 'new',
-            'context': {
-                'default_payroll_country_code': self.country,
-                'default_name': f'{self.country} Salary Structure'
-            }
+            'context': {'default_country': self.country}
         }

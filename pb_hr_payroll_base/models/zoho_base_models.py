@@ -46,45 +46,22 @@ class ZohoEmployeeDataBase(models.Model):
     basic_salary = fields.Float('Basic Salary')
     gross_salary = fields.Float('Gross Salary')
     
-    # Country and processing
+    # Country payroll identification
     payroll_country = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
         ('IN', 'India'),
         ('SG', 'Singapore'),
         ('MY', 'Malaysia'),
-    ], string='Payroll Country', required=True, default='VN')
+    ], string='Payroll Country', required=True)
     
+    # Processing status
     processed = fields.Boolean('Processed', default=False)
     processing_notes = fields.Text('Processing Notes')
-    
-    # Relationship to created employee
-    employee_id_odoo = fields.Many2one('hr.employee', string='Odoo Employee', readonly=True)
-    
-    @api.constrains('email')
-    def _check_email(self):
-        """Validate email format"""
-        for record in self:
-            if record.email and '@' not in record.email:
-                raise ValidationError(_('Invalid email format for employee %s') % record.employee_id)
-    
-    @api.constrains('employee_id', 'payroll_country')
-    def _check_unique_employee_id(self):
-        """Ensure employee ID is unique within country"""
-        for record in self:
-            existing = self.search([
-                ('employee_id', '=', record.employee_id),
-                ('payroll_country', '=', record.payroll_country),
-                ('id', '!=', record.id)
-            ])
-            if existing:
-                raise ValidationError(
-                    _('Employee ID %s already exists for %s') % 
-                    (record.employee_id, record.payroll_country)
-                )
+    employee_id_odoo = fields.Many2one('hr.employee', string='Linked Employee')
     
     def name_get(self):
-        """Custom name display"""
+        """Override name_get to show meaningful name"""
         result = []
         for record in self:
             name = f"[{record.employee_id}] {record.full_name_en or record.full_name_vn}"
@@ -150,6 +127,20 @@ class ZohoEmployeeDataBase(models.Model):
                 'processing_notes': f'Update Error: {str(e)}'
             })
             raise UserError(_('Error updating employee: %s') % str(e))
+    
+    def action_view_employee(self):
+        """View the linked Odoo employee - MISSING METHOD ADDED"""
+        if not self.employee_id_odoo:
+            raise UserError(_('No linked employee found. Create employee first.'))
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Employee',
+            'res_model': 'hr.employee',
+            'view_mode': 'form',
+            'res_id': self.employee_id_odoo.id,
+            'target': 'current'
+        }
     
     def _prepare_employee_update_data(self):
         """Prepare data for employee update"""

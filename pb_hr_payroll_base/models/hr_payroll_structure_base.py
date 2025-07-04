@@ -38,6 +38,10 @@ class HrContractType(models.Model):
 class HrPayrollStructure(models.Model):
     _inherit = 'hr.payroll.structure'
     
+    # ADD THE MISSING ACTIVE FIELD
+    active = fields.Boolean('Active', default=True,
+                           help="If unchecked, this payroll structure will be hidden from lists")
+    
     # Country-specific fields
     country_id = fields.Many2one('res.country', string='Country')
     payroll_country_code = fields.Selection([
@@ -65,56 +69,39 @@ class HrPayrollStructure(models.Model):
         ('weekly', 'Weekly'),
         ('bi-weekly', 'Bi-weekly'),
         ('bi-monthly', 'Bi-monthly'),
-    ], string='Scheduled Pay', default='monthly')
+        ('hourly', 'Hourly'),
+        ('daily', 'Daily'),
+    ], string='Pay Frequency', default='monthly')
     
-    # Working time and calendar
-    working_hours_per_day = fields.Float('Working Hours per Day', default=8.0)
-    working_days_per_week = fields.Float('Working Days per Week', default=5.0)
-    working_days_per_month = fields.Float('Working Days per Month', default=22.0)
-    
-    # Tax and social security configuration
     tax_calculation_method = fields.Selection([
-        ('standard', 'Standard Calculation'),
+        ('standard', 'Standard'),
         ('progressive', 'Progressive Tax'),
-        ('flat_rate', 'Flat Rate'),
-        ('custom', 'Custom Calculation'),
-    ], string='Tax Calculation Method', default='standard')
+        ('simplified', 'Simplified'),
+        ('exempt', 'Tax Exempt'),
+    ], string='Tax Calculation', default='standard')
     
-    social_security_enabled = fields.Boolean('Social Security Enabled', default=True)
-    pension_enabled = fields.Boolean('Pension Enabled', default=True)
+    report_template = fields.Many2one('ir.ui.view', string='Payslip Template')
     
-    # Reporting and compliance
-    report_template = fields.Selection([
-        ('standard', 'Standard Report'),
-        ('detailed', 'Detailed Report'),
-        ('summary', 'Summary Report'),
-        ('custom', 'Custom Report'),
-    ], string='Report Template', default='standard')
+    # Working time defaults
+    working_hours_per_day = fields.Float('Working Hours/Day', default=8.0)
+    working_days_per_week = fields.Float('Working Days/Week', default=5.0)
+    working_days_per_month = fields.Float('Working Days/Month', default=22.0)
     
+    # Social benefits
+    social_security_enabled = fields.Boolean('Social Security', default=True)
+    pension_enabled = fields.Boolean('Pension Scheme', default=True)
+    
+    # Compliance and notes
     compliance_notes = fields.Text('Compliance Notes')
     
-    # Statistics
+    # Employee count (computed field)
     employee_count = fields.Integer('Employee Count', compute='_compute_employee_count')
     
-    @api.depends('country_id', 'payroll_country_code')
+    @api.depends('country_id')
     def _compute_currency(self):
-        """Compute currency based on country"""
-        currency_map = {
-            'VN': 'VND',
-            'ID': 'IDR', 
-            'IN': 'INR',
-            'SG': 'SGD',
-            'MY': 'MYR',
-        }
-        
+        """Set currency based on country or company"""
         for record in self:
-            if record.payroll_country_code:
-                currency_code = currency_map.get(record.payroll_country_code)
-                if currency_code:
-                    record.currency_id = self.env['res.currency'].search([('name', '=', currency_code)], limit=1)
-                else:
-                    record.currency_id = False
-            elif record.country_id:
+            if record.country_id and record.country_id.currency_id:
                 record.currency_id = record.country_id.currency_id
             else:
                 record.currency_id = self.env.company.currency_id
@@ -174,16 +161,21 @@ class HrSalaryRule(models.Model):
         ('custom', 'Custom Condition'),
     ], string='Applies To', default='all')
     
+    # Contract type integration
     contract_type_ids = fields.Many2many('hr.contract.type', string='Contract Types',
-                                        help="Rule applies only to these contract types")
+                                        help="Contract types this rule applies to")
     
-    # Tax and deduction settings
+    # Enhanced constraints and configurations
+    statutory_rule = fields.Boolean('Statutory Rule', default=False,
+                                   help="Mark as statutory/legal requirement")
+    
+    # MISSING FIELDS FROM DATA FILE
     is_tax_rule = fields.Boolean('Is Tax Rule', default=False)
     is_social_security = fields.Boolean('Is Social Security', default=False)
     is_allowance = fields.Boolean('Is Allowance', default=False)
     is_deduction = fields.Boolean('Is Deduction', default=False)
     
-    # Calculation parameters
+    # Calculation base for rules
     calculation_base = fields.Selection([
         ('basic', 'Basic Salary'),
         ('gross', 'Gross Salary'),
@@ -192,17 +184,7 @@ class HrSalaryRule(models.Model):
         ('custom', 'Custom Base'),
     ], string='Calculation Base', default='basic')
     
-    # Minimum and maximum amounts
-    min_amount = fields.Float('Minimum Amount', default=0.0)
-    max_amount = fields.Float('Maximum Amount', default=0.0)
-    
-    # Rate and percentage settings
-    employer_rate = fields.Float('Employer Rate (%)', default=0.0)
-    employee_rate = fields.Float('Employee Rate (%)', default=0.0)
-    
-    # Compliance and reporting
-    statutory_rule = fields.Boolean('Statutory Rule', default=False,
-                                  help="Check if this rule is required by law")
+    # Report categorization
     report_category = fields.Selection([
         ('gross_earnings', 'Gross Earnings'),
         ('deductions', 'Deductions'),
@@ -211,22 +193,16 @@ class HrSalaryRule(models.Model):
         ('employer_costs', 'Employer Costs'),
     ], string='Report Category')
     
-    # Advanced conditions
-    condition_select = fields.Selection([
-        ('none', 'Always True'),
-        ('range', 'Range'),
-        ('python', 'Python Expression'),
-        ('custom', 'Custom Function'),
-    ], string='Condition Based on', default='none')
+    # Amount configuration
+    min_amount = fields.Float('Minimum Amount', default=0.0)
+    max_amount = fields.Float('Maximum Amount', default=0.0,
+                             help="0 means no maximum limit")
     
-    condition_python = fields.Text('Python Condition',
-                                 help="Applied this rule for calculation if condition is true")
-    condition_range = fields.Char('Range Based on',
-                                help="Select the range based on the employee's field")
-    condition_range_min = fields.Float('Range From')
-    condition_range_max = fields.Float('Range To')
+    # Rates for social security/benefits
+    employer_rate = fields.Float('Employer Rate (%)', default=0.0)
+    employee_rate = fields.Float('Employee Rate (%)', default=0.0)
     
-    # Amount calculation
+    # Amount computation types
     amount_select = fields.Selection([
         ('fix', 'Fixed Amount'),
         ('percentage', 'Percentage (%)'),
