@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Full-Featured Dashboard Form View -->
     <record id="view_payroll_dashboard_form_base" model="ir.ui.view">
         <field name="name">payroll.dashboard.form.base</field>
         <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
             <form string="Payroll Dashboard" create="false" edit="false" delete="false">
                 <header>
+                    <!-- ✅ All methods now exist in the model -->
                     <button name="action_get_employee_data" type="object" string="Get Employee Data" 
-                            class="oe_highlight" icon="fa-download"/>
+                            class="btn-primary" icon="fa-download"/>
                     <button name="action_edit_spreadsheet" type="object" string="Edit Spreadsheet" 
-                            class="oe_link" icon="fa-table"/>
+                            class="btn-secondary" icon="fa-table"/>
                     <button name="action_import_spreadsheet" type="object" string="Import Spreadsheet" 
-                            class="oe_link" icon="fa-upload"/>
+                            class="btn-info" icon="fa-upload"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -22,7 +24,7 @@
                             <field name="country" widget="badge" readonly="1"/>
                         </h3>
                     </div>
-
+                    
                     <!-- Statistics Dashboard -->
                     <div class="row">
                         <div class="col-lg-3 col-6">
@@ -30,7 +32,7 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <div class="flex-grow-1">
-                                            <h3 class="mb-2"><field name="total_employees" readonly="1"/></h3>
+                                            <h3 class="mb-2"><field name="employee_count" readonly="1"/></h3>
                                             <p class="mb-0">Total Employees</p>
                                         </div>
                                         <div class="align-self-center">
@@ -50,7 +52,7 @@
                                             <p class="mb-0">Active Contracts</p>
                                         </div>
                                         <div class="align-self-center">
-                                            <i class="fa fa-file-text fa-2x"></i>
+                                            <i class="fa fa-file-contract fa-2x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -66,7 +68,7 @@
                                             <p class="mb-0">Pending Payslips</p>
                                         </div>
                                         <div class="align-self-center">
-                                            <i class="fa fa-clock-o fa-2x"></i>
+                                            <i class="fa fa-clock fa-2x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -78,8 +80,10 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <div class="flex-grow-1">
-                                            <h3 class="mb-2"><field name="currency_id" readonly="1"/></h3>
-                                            <p class="mb-0">Currency</p>
+                                            <h3 class="mb-2">
+                                                <field name="total_gross_salary" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                                            </h3>
+                                            <p class="mb-0">Total Gross Salary</p>
                                         </div>
                                         <div class="align-self-center">
                                             <i class="fa fa-money fa-2x"></i>
@@ -89,63 +93,67 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Quick Actions -->
-                    <div class="row mt-3">
+                    
+                    <div class="row mt-4">
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Quick Actions</h5>
+                                    <h5 class="card-title">Country Information</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-md-4">
-                                            <button name="action_dashboard_view_employees" type="object" 
-                                                    string="View Employees" class="btn btn-outline-primary btn-block"
-                                                    icon="fa-users"/>
+                                        <div class="col-md-6">
+                                            <p><strong>Country:</strong> <field name="country" readonly="1"/></p>
+                                            <p><strong>Currency:</strong> <field name="currency_id" readonly="1"/></p>
                                         </div>
-                                        <div class="col-md-4">
-                                            <button name="action_dashboard_view_payslips" type="object" 
-                                                    string="View Payslips" class="btn btn-outline-secondary btn-block" 
-                                                    icon="fa-file-text"/>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button name="action_open_country_selector" type="object" 
-                                                    string="Switch Country" class="btn btn-outline-info btn-block"
-                                                    icon="fa-globe"/>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-md-4">
-                                            <button name="action_dashboard_view_contracts" type="object" 
-                                                    string="View Contracts" class="btn btn-outline-warning btn-block"
-                                                    icon="fa-file-text-o"/>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button name="action_dashboard_view_structures" type="object" 
-                                                    string="View Structures" class="btn btn-outline-success btn-block"
-                                                    icon="fa-cogs"/>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <button name="action_dashboard_view_zoho_data" type="object" 
-                                                    string="View Zoho Data" class="btn btn-outline-dark btn-block"
-                                                    icon="fa-database"/>
+                                        <div class="col-md-6">
+                                            <p><strong>Payroll Structure:</strong> <field name="structure_id" readonly="1"/></p>
+                                            <p><strong>Status:</strong> <field name="active" widget="boolean_toggle" readonly="1"/></p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Configuration Information -->
-                    <group string="Configuration">
-                        <group>
-                            <field name="structure_id" readonly="1"/>
-                        </group>
-                        <group>
-                            <field name="currency_id" readonly="1"/>
-                        </group>
-                    </group>
+                    
+                    <!-- Quick Actions -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Quick Actions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <button name="action_view_employees_by_country" type="object" 
+                                                    class="btn btn-outline-primary btn-block">
+                                                <i class="fa fa-users mr-2"></i>Manage Employees
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button name="action_create_salary_structure" type="object" 
+                                                    class="btn btn-outline-success btn-block">
+                                                <i class="fa fa-plus mr-2"></i>Salary Structure
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button name="action_view_zoho_data_by_country" type="object" 
+                                                    class="btn btn-outline-info btn-block">
+                                                <i class="fa fa-download mr-2"></i>Zoho Data
+                                            </button>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button name="action_view_country_dashboard" type="object" 
+                                                    class="btn btn-outline-secondary btn-block">
+                                                <i class="fa fa-dashboard mr-2"></i>Refresh
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </sheet>
             </form>
         </field>
@@ -156,24 +164,85 @@
         <field name="name">payroll.dashboard.tree.base</field>
         <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
-            <tree string="Payroll Dashboards" create="false" delete="false">
+            <tree string="Payroll Dashboards">
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="country"/>
-                <field name="total_employees"/>
+                <field name="employee_count"/>
                 <field name="active_contracts"/>
                 <field name="pending_payslips"/>
                 <field name="currency_id"/>
+                <field name="active"/>
             </tree>
+        </field>
+    </record>
+
+    <!-- Dashboard Kanban View -->
+    <record id="view_payroll_dashboard_kanban_base" model="ir.ui.view">
+        <field name="name">payroll.dashboard.kanban.base</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="name"/>
+                <field name="country"/>
+                <field name="employee_count"/>
+                <field name="active_contracts"/>
+                <field name="pending_payslips"/>
+                <field name="total_gross_salary"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_card o_kanban_dashboard">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_primary_left">
+                                        <div class="o_primary">
+                                            <span t-esc="record.name.value"/>
+                                        </div>
+                                        <div class="o_secondary">
+                                            <span t-esc="record.country.value"/>
+                                        </div>
+                                    </div>
+                                    <div class="o_kanban_primary_right">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <button type="object" name="action_view_employees_by_country" 
+                                                        class="btn btn-primary btn-sm">
+                                                    <span t-esc="record.employee_count.value"/> Employees
+                                                </button>
+                                            </div>
+                                            <div class="col-6">
+                                                <button type="object" name="action_view_country_dashboard" 
+                                                        class="btn btn-secondary btn-sm">
+                                                    View Dashboard
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 
     <!-- Dashboard Action -->
     <record id="action_payroll_dashboard_base" model="ir.actions.act_window">
-        <field name="name">Payroll Dashboard</field>
+        <field name="name">Payroll Dashboards</field>
         <field name="res_model">payroll.dashboard</field>
-        <field name="view_mode">form,tree</field>
-        <field name="view_id" ref="view_payroll_dashboard_form_base"/>
-        <field name="target">current</field>
-        <field name="context">{'create': False, 'edit': False, 'delete': False}</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="view_payroll_dashboard_kanban_base"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a payroll dashboard
+            </p>
+            <p>
+                Dashboards provide an overview of payroll statistics and quick access to 
+                country-specific payroll management functions.
+            </p>
+        </field>
     </record>
+
 </odoo>

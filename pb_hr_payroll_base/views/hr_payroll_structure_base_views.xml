@@ -77,7 +77,7 @@
                         <group string="Payroll Configuration">
                             <field name="schedule_pay"/>
                             <field name="tax_calculation_method"/>
-                            <field name="report_template"/>
+                            <!--<field name="report_template"/>-->
                         </group>
                         <group string="Working Time Configuration">
                             <field name="working_hours_per_day"/>

@@ -14,7 +14,7 @@
             <field name="implied_ids" eval="[(4, ref('om_hr_payroll.group_hr_payroll_manager')), (4, ref('group_multi_country_payroll_user'))]"/>
         </record>
 
-        <!-- Record Rules -->
+        <!-- Record Rules for pb_hr_payroll_base models only -->
         <record id="payroll_dashboard_rule" model="ir.rule">
             <field name="name">Payroll Dashboard: Access All</field>
             <field name="model_id" ref="model_payroll_dashboard"/>
@@ -22,9 +22,40 @@
             <field name="groups" eval="[(4, ref('group_multi_country_payroll_user'))]"/>
         </record>
 
-        <record id="zoho_employee_data_rule" model="ir.rule">
+        <record id="payroll_country_selector_rule" model="ir.rule">
+            <field name="name">Payroll Country Selector: Access All</field>
+            <field name="model_id" ref="model_payroll_country_selector"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_multi_country_payroll_user'))]"/>
+        </record>
+
+        <!-- ❌ REMOVED: Reference to zoho_employee_data model that belongs to om_hr_payroll -->
+        <!-- <record id="zoho_employee_data_rule" model="ir.rule">
             <field name="name">Zoho Employee Data: Access All</field>
-            <field name="model_id" ref="model_zoho_employee_data"/>
+            <field name="model_id" ref="model_zoho_employee_data"/>  This model is in om_hr_payroll, not here
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_multi_country_payroll_user'))]"/>
+        </record> -->
+
+        <!-- Enhanced Zoho Staging Data Rule - only if we have extended models -->
+        <record id="zoho_staging_data_rule" model="ir.rule">
+            <field name="name">Zoho Staging Data: Multi-Country Access</field>
+            <field name="model_id" ref="om_hr_payroll.model_zoho_staging_data"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_multi_country_payroll_user'))]"/>
+        </record>
+
+        <!-- Wizard Models Security -->
+        <record id="country_selector_wizard_rule" model="ir.rule">
+            <field name="name">Country Selector Wizard: Access All</field>
+            <field name="model_id" ref="model_country_selector_wizard"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_multi_country_payroll_user'))]"/>
+        </record>
+
+        <record id="zoho_staging_import_wizard_rule" model="ir.rule">
+            <field name="name">Zoho Staging Import Wizard: Access All</field>
+            <field name="model_id" ref="model_zoho_staging_import_wizard"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_multi_country_payroll_user'))]"/>
         </record>
