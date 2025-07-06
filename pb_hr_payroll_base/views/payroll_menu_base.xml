@@ -115,7 +115,7 @@
     <menuitem id="menu_zoho_employee_data" 
               name="Employee Data" 
               parent="menu_payroll_zoho"
-              action="action_zoho_employee_data"
+              action="om_hr_payroll.action_zoho_employee_data"
               sequence="10"/>
 
     <!-- Zoho Importer Menu -->

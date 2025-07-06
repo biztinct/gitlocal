@@ -8,43 +8,27 @@
         <field name="model">zoho.staging.data</field>
         <field name="inherit_id" ref="om_hr_payroll.zoho_staging_data_form_view"/>
         <field name="arch" type="xml">
-            <!-- Add multi-country fields at the top -->
-            <xpath expr="//form/sheet" position="before">
-                <header>
-                    <field name="processing_status" widget="statusbar" statusbar_visible="draft,processed,error"/>
-                </header>
-            </xpath>
-            
-            <!-- Add country and processing info at the beginning -->
-            <xpath expr="//form/sheet/group[1]" position="before">
-                <div class="oe_title">
-                    <h1>
-                        <field name="full_name_en" placeholder="Employee Name"/>
-                    </h1>
-                    <h2>
-                        <field name="employee_id" placeholder="Employee ID"/>
-                    </h2>
-                </div>
-                
-                <group string="Multi-Country Processing">
-                    <group>
-                        <field name="payroll_country" widget="selection"/>
-                        <field name="processing_status"/>
-                        <field name="error_message" attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
-                    </group>
-                    <group>
-                        <field name="processed_date" readonly="1"/>
-                        <field name="created_employee_id" readonly="1"/>
-                        <field name="created_contract_id" readonly="1"/>
-                    </group>
-                </group>
-            </xpath>
-            
             <!-- Add country-specific sections -->
+            
             <xpath expr="//notebook" position="inside">
+                <page string="Multi-Country Processing" name="multicountry" >
+                    <group>
+                        <group>
+                            <field name="payroll_country" widget="selection"/>
+                            <field name="processing_status"/>
+                            <field name="error_message" attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
+                        </group>
+                        <group>
+                            <field name="processed_date" readonly="1"/>
+                            <field name="created_employee_id" readonly="1"/>
+                            <field name="created_contract_id" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
                 <page string="Vietnam Specific" name="vietnam" attrs="{'invisible': [('payroll_country', '!=', 'VN')]}">
                     <group>
-                        <group string="Vietnam Tax & Social Security">
+                        <group string="Vietnam Tax &amp; Social Security">
+                            <field name="payroll_country" widget="selection"/>
                             <field name="vn_personal_income_tax"/>
                             <field name="vn_social_insurance_employee"/>
                             <field name="vn_health_insurance_employee"/>
@@ -69,7 +53,7 @@
                 
                 <page string="Indonesia Specific" name="indonesia" attrs="{'invisible': [('payroll_country', '!=', 'ID')]}">
                     <group>
-                        <group string="Indonesia Tax & BPJS">
+                        <group string="Indonesia Tax &amp; BPJS">
                             <field name="id_pph21_tax"/>
                             <field name="id_bpjs_kesehatan_employee"/>
                             <field name="id_bpjs_tk_jht_employee"/>
@@ -95,7 +79,7 @@
                 
                 <page string="India Specific" name="india" attrs="{'invisible': [('payroll_country', '!=', 'IN')]}">
                     <group>
-                        <group string="India Tax & Deductions">
+                        <group string="India Tax &amp; Deductions">
                             <field name="in_income_tax"/>
                             <field name="in_provident_fund_employee"/>
                             <field name="in_esi_employee"/>
@@ -121,6 +105,7 @@
                     <field name="processing_notes" placeholder="Processing notes and logs..."/>
                 </page>
             </xpath>
+ 
         </field>
     </record>
 

@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Zoho Employee Data Form View -->
-    <record id="view_zoho_employee_data_form" model="ir.ui.view">
-        <field name="name">zoho.employee.data.form</field>
-        <field name="model">zoho.employee.data</field>
+    <!-- Zoho Staging Data Form View -->
+    <record id="view_zoho_staging_data_form" model="ir.ui.view">
+        <field name="name">zoho.staging.data.form</field>
+        <field name="model">zoho.staging.data</field>
         <field name="arch" type="xml">
-            <form string="Zoho Employee Data">
+            <form string="Zoho Staging Data">
                 <header>
-                    <button name="action_create_employee" type="object" string="Create Employee" 
-                            class="btn-primary" attrs="{'invisible': [('processed', '=', True)]}"/>
-                    <button name="action_update_employee" type="object" string="Update Employee" 
-                            class="btn-secondary" attrs="{'invisible': [('employee_id_odoo', '=', False)]}"/>
-                    <field name="employee_status" widget="statusbar"/>
+                    <button name="action_process_to_employee" type="object" string="Process to Employee" 
+                            class="btn-primary" attrs="{'invisible': [('processing_status', '=', 'processed')]}"/>
+                    <field name="processing_status" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" name="action_view_employee" type="object" 
-                                icon="fa-user" attrs="{'invisible': [('employee_id_odoo', '=', False)]}">
-                            <field string="Employee" name="employee_id_odoo" widget="statinfo"/>
-                        </button>
+                        <div class="oe_stat_button" attrs="{'invisible': [('created_employee_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="created_employee_id"/>
+                                </span>
+                                <span class="o_stat_text">Employee</span>
+                            </div>
+                        </div>
+                        <div class="oe_stat_button" attrs="{'invisible': [('created_contract_id', '=', False)]}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="created_contract_id"/>
+                                </span>
+                                <span class="o_stat_text">Contract</span>
+                            </div>
+                        </div>
                     </div>
 
                     <widget name="web_ribbon" title="Processed" bg_color="bg-success" 
-                            attrs="{'invisible': [('processed', '=', False)]}"/>
+                            attrs="{'invisible': [('processing_status', '!=', 'processed')]}"/>
+                    <widget name="web_ribbon" title="Error" bg_color="bg-danger" 
+                            attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
 
                     <div class="oe_title">
                         <h1>
@@ -40,100 +52,129 @@
                             <field name="mobile"/>
                             <field name="gender"/>
                             <field name="date_of_birth"/>
-                            <field name="payroll_country"/>
+                            <field name="date_of_joining"/>
                         </group>
-                        <group string="Employment Details">
+                        <group string="Work Information">
                             <field name="department"/>
                             <field name="designation"/>
                             <field name="employee_type"/>
+                            <field name="employee_status"/>
                             <field name="location_name"/>
+                        </group>
+                    </group>
+
+                    <group string="Country &amp; Payroll">
+                        <group>
+                            <field name="payroll_country"/>
+                            <field name="base_salary"/>
+                            <field name="gas_allowance"/>
+                        </group>
+                        <group>
                             <field name="date_of_joining"/>
-                            <field name="confirmation_date"/>
+                            <field name="employee_type"/>
+                            <field name="contract_from"/>
                         </group>
                     </group>
 
-                    <group string="Salary Information">
-                        <group>
-                            <field name="basic_salary"/>
-                        </group>
-                        <group>
-                            <field name="gross_salary"/>
-                        </group>
-                    </group>
-
-                    <group string="Address">
-                        <field name="address" nolabel="1"/>
-                    </group>
-
-                    <group string="Processing Information">
-                        <group>
-                            <field name="processed"/>
-                        </group>
-                        <group>
-                            <field name="processing_notes"/>
-                        </group>
-                    </group>
+                    <notebook>
+                        <page string="Tax &amp; Social Security" name="tax_social">
+                            <group>
+                                <group string="Vietnam" attrs="{'invisible': [('payroll_country', '!=', 'VN')]}">
+                                    <field name="pit_number"/>
+                                    <field name="insurance_book_number"/>
+                                    <field name="bank_account_number_vnd"/>
+                                </group>
+                                <group string="Indonesia" attrs="{'invisible': [('payroll_country', '!=', 'ID')]}">
+                                    <field name="pan_number"/>
+                                    <field name="bank_name"/>
+                                    <field name="bank_branch"/>
+                                </group>
+                                <group string="India" attrs="{'invisible': [('payroll_country', '!=', 'IN')]}">
+                                    <field name="pan_number"/>
+                                    <field name="aadhaar_number"/>
+                                    <field name="uan_number"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Bank Details" name="bank">
+                            <group>
+                                <field name="bank_name"/>
+                                <field name="bank_account_number_vnd"/>
+                                <field name="bank_branch"/>
+                                <field name="bank_code"/>
+                            </group>
+                        </page>
+                        <page string="Processing" name="processing">
+                            <group>
+                                <field name="processed_date"/>
+                                <field name="error_message" attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
     </record>
 
-    <!-- Zoho Employee Data Tree View -->
-    <record id="view_zoho_employee_data_tree" model="ir.ui.view">
-        <field name="name">zoho.employee.data.tree</field>
-        <field name="model">zoho.employee.data</field>
+    <!-- Zoho Staging Data Tree View -->
+    <record id="view_zoho_staging_data_tree" model="ir.ui.view">
+        <field name="name">zoho.staging.data.tree</field>
+        <field name="model">zoho.staging.data</field>
         <field name="arch" type="xml">
-            <tree string="Zoho Employee Data" decoration-success="processed==True" 
-                  decoration-warning="processed==False">
+            <tree string="Zoho Staging Data" decoration-success="processing_status == 'processed'"
+                  decoration-danger="processing_status == 'error'" decoration-info="processing_status == 'processing'">
                 <field name="employee_id"/>
                 <field name="full_name_en"/>
                 <field name="email"/>
                 <field name="department"/>
                 <field name="designation"/>
                 <field name="payroll_country"/>
-                <field name="processed"/>
-                <field name="employee_status"/>
-                <button name="action_create_employee" type="object" string="Create" 
-                        icon="fa-plus" attrs="{'invisible': [('processed', '=', True)]}"/>
+                <field name="processing_status"/>
+                <field name="processed_date"/>
             </tree>
         </field>
     </record>
 
-    <!-- Zoho Employee Data Search View -->
-    <record id="view_zoho_employee_data_search" model="ir.ui.view">
-        <field name="name">zoho.employee.data.search</field>
-        <field name="model">zoho.employee.data</field>
+    <!-- Zoho Staging Data Search View -->
+    <record id="view_zoho_staging_data_search" model="ir.ui.view">
+        <field name="name">zoho.staging.data.search</field>
+        <field name="model">zoho.staging.data</field>
         <field name="arch" type="xml">
-            <search string="Zoho Employee Data">
+            <search string="Search Zoho Staging Data">
                 <field name="employee_id"/>
                 <field name="full_name_en"/>
                 <field name="email"/>
                 <field name="department"/>
                 <field name="designation"/>
-                <filter string="Unprocessed" name="unprocessed" domain="[('processed', '=', False)]"/>
-                <filter string="Processed" name="processed" domain="[('processed', '=', True)]"/>
+                <field name="payroll_country"/>
+                
+                <filter string="Draft" name="draft" domain="[('processing_status', '=', 'draft')]"/>
+                <filter string="Processing" name="processing" domain="[('processing_status', '=', 'processing')]"/>
+                <filter string="Processed" name="processed" domain="[('processing_status', '=', 'processed')]"/>
+                <filter string="Error" name="error" domain="[('processing_status', '=', 'error')]"/>
+                
                 <separator/>
-                <filter string="Active" name="active" domain="[('employee_status', '=', 'active')]"/>
-                <filter string="Inactive" name="inactive" domain="[('employee_status', '=', 'inactive')]"/>
-                <separator/>
-                <group expand="0" string="Group By">
+                <filter string="Vietnam" name="vietnam" domain="[('payroll_country', '=', 'VN')]"/>
+                <filter string="Indonesia" name="indonesia" domain="[('payroll_country', '=', 'ID')]"/>
+                <filter string="India" name="india" domain="[('payroll_country', '=', 'IN')]"/>
+                
+                <group expand="1" string="Group By">
                     <filter string="Country" name="group_country" context="{'group_by': 'payroll_country'}"/>
+                    <filter string="Status" name="group_status" context="{'group_by': 'processing_status'}"/>
                     <filter string="Department" name="group_department" context="{'group_by': 'department'}"/>
-                    <filter string="Status" name="group_status" context="{'group_by': 'employee_status'}"/>
-                    <filter string="Processed" name="group_processed" context="{'group_by': 'processed'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <!-- Zoho Employee Data Action -->
-    <record id="action_zoho_employee_data" model="ir.actions.act_window">
-        <field name="name">Zoho Employee Data</field>
-        <field name="res_model">zoho.employee.data</field>
+    <!-- Zoho Staging Data Action -->
+    <record id="action_zoho_staging_data" model="ir.actions.act_window">
+        <field name="name">Zoho Staging Data</field>
+        <field name="res_model">zoho.staging.data</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_zoho_employee_data_tree"/>
-        <field name="search_view_id" ref="view_zoho_employee_data_search"/>
-        <field name="context">{'search_default_unprocessed': 1}</field>
+        <field name="view_id" ref="view_zoho_staging_data_tree"/>
+        <field name="search_view_id" ref="view_zoho_staging_data_search"/>
+        <field name="context">{'search_default_draft': 1}</field>
     </record>
 
     <!-- Zoho Staging Importer Form View -->
@@ -145,23 +186,22 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>Import Employee Data</h1>
-                        <p>Import employees from Zoho staging area to Odoo</p>
+                        <p>Import employees from Zoho People to staging area</p>
                     </div>
 
                     <group>
                         <group>
                             <field name="payroll_country"/>
+                            <field name="from_date"/>
                         </group>
                         <group>
-                            <field name="import_mode"/>
+                            <field name="to_date"/>
                         </group>
                     </group>
                 </sheet>
                 <footer>
-                    <button name="action_import_employees" type="object" string="Import Employees" 
+                    <button name="import_timesheets" type="object" string="Import Data" 
                             class="btn-primary"/>
-                    <button name="action_view_staging_data" type="object" string="View Staging Data" 
-                            class="btn-secondary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
