@@ -415,7 +415,7 @@ class PayrollDashboard(models.Model):
             'context': {'default_payroll_country': self.country}
         }
     
-    def action_view_payslips_by_country(self):
+def action_view_payslips_by_country(self):
         """View payslips for this country"""
         # Get employees for this country
         contracts = self.env['hr.contract'].search([
@@ -430,12 +430,6 @@ class PayrollDashboard(models.Model):
             'view_mode': 'tree,form',
             'domain': [('employee_id', 'in', employee_ids)] if employee_ids else [('id', '=', False)],
             'context': {'default_country': self.country}
-        }'type': 'ir.actions.act_window',
-            'name': f'{self.name} Dashboard',
-            'res_model': 'payroll.dashboard',
-            'res_id': self.id,
-            'view_mode': 'form',
-            'target': 'current',
         }
 
 class PayrollCountrySelector(models.Model):
