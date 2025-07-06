@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Enhanced Zoho Integration Menu Structure -->
+    
+    <!-- Enhanced Zoho Staging Data Menu -->
+    <menuitem id="menu_zoho_staging_data_enhanced" 
+              name="Staging Data" 
+              parent="menu_payroll_zoho"
+              action="action_zoho_staging_data_enhanced"
+              sequence="30"/>
+
+    <!-- Import Wizard Menu -->
+    <menuitem id="menu_zoho_staging_import" 
+              name="Import Data" 
+              parent="menu_payroll_zoho"
+              action="action_zoho_staging_import_wizard"
+              sequence="40"/>
+
+    <!-- Country-Specific Zoho Menus -->
+    <menuitem id="menu_zoho_by_country" 
+              name="By Country" 
+              parent="menu_payroll_zoho"
+              sequence="50"/>
+
+    <menuitem id="menu_zoho_vietnam" 
+              name="Vietnam Data" 
+              parent="menu_zoho_by_country"
+              action="action_zoho_staging_vietnam"
+              sequence="10"/>
+
+    <menuitem id="menu_zoho_indonesia" 
+              name="Indonesia Data" 
+              parent="menu_zoho_by_country"
+              action="action_zoho_staging_indonesia"
+              sequence="20"/>
+
+    <menuitem id="menu_zoho_india" 
+              name="India Data" 
+              parent="menu_zoho_by_country"
+              action="action_zoho_staging_india"
+              sequence="30"/>
+
+    <!-- Processing Actions -->
+    <record id="action_process_staging_batch" model="ir.actions.server">
+        <field name="name">Process Staging Batch</field>
+        <field name="model_id" ref="model_zoho_staging_data"/>
+        <field name="binding_model_id" ref="model_zoho_staging_data"/>
+        <field name="state">code</field>
+        <field name="code">
+            for record in records:
+                if record.processing_status == 'draft':
+                    record.action_process_to_employee()
+        </field>
+    </record>
+
+    <!-- Dashboard Integration -->
+    <record id="action_payroll_dashboard_country" model="ir.actions.act_window">
+        <field name="name">Country Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Set up country dashboards
+            </p>
+            <p>
+                Create dashboards for each country to track payroll statistics and performance.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_payroll_dashboard_country" 
+              name="Country Dashboards" 
+              parent="menu_payroll_main"
+              action="action_payroll_dashboard_country"
+              sequence="15"/>
+
+    <!-- Country Selector Action -->
+    <record id="action_country_selector_wizard" model="ir.actions.act_window">
+        <field name="name">Select Country</field>
+        <field name="res_model">country.selector.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_country_selector" 
+              name="Country Navigator" 
+              parent="menu_payroll_main"
+              action="action_country_selector_wizard"
+              sequence="5"/>
+
+</odoo>

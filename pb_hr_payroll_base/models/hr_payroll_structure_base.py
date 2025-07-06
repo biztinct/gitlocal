@@ -1,15 +1,19 @@
-# Enhanced models/hr_payroll_structure_base.py - Fixed without Analytics
+# Enhanced models/hr_payroll_structure_base.py
+# Complete multi-country framework without modifying om_hr_payroll
 
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class HrContractType(models.Model):
-    """Extend existing contract type instead of creating new model"""
+    """Extend existing contract type for payroll integration"""
     _inherit = 'hr.contract.type'
     
-    # Add payroll-specific fields to existing contract type
+    # Payroll-specific enhancements
     payroll_schedule = fields.Selection([
         ('monthly', 'Monthly'),
         ('quarterly', 'Quarterly'),
@@ -36,31 +40,46 @@ class HrContractType(models.Model):
                                        help="Enable payroll processing for this contract type")
 
 class HrPayrollStructure(models.Model):
+    """Extend base payroll structure with multi-country support"""
     _inherit = 'hr.payroll.structure'
     
-    # ADD THE MISSING ACTIVE FIELD
+    # === MULTI-COUNTRY EXTENSIONS ===
+    
+    # Core multi-country fields
     active = fields.Boolean('Active', default=True,
                            help="If unchecked, this payroll structure will be hidden from lists")
     
-    # Country-specific fields
-    country_id = fields.Many2one('res.country', string='Country')
+    country_id = fields.Many2one('res.country', string='Country',
+                                help='Country this payroll structure applies to')
+    
     payroll_country_code = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
         ('IN', 'India'),
         ('SG', 'Singapore'),
         ('MY', 'Malaysia'),
-    ], string='Payroll Country')
+        ('US', 'United States'),
+        ('GB', 'United Kingdom'),
+        ('AU', 'Australia'),
+        ('TH', 'Thailand'),
+        ('PH', 'Philippines'),
+    ], string='Payroll Country', help='Country code for payroll processing')
     
-    # Link to contract type instead of separate structure type
-    contract_type_ids = fields.Many2many('hr.contract.type', string='Contract Types',
+    # Currency support
+    currency_id = fields.Many2one('res.currency', string='Currency', 
+                                 compute='_compute_currency', store=True)
+    
+    # Contract type integration (YOUR INNOVATION!)
+    contract_type_ids = fields.Many2many('hr.contract.type', string='Compatible Contract Types',
                                         help="Contract types that can use this payroll structure")
     
-    # Enhanced fields
-    is_base_structure = fields.Boolean('Is Base Structure', default=False)
-    currency_id = fields.Many2one('res.currency', string='Currency', compute='_compute_currency', store=True)
+    # Enhanced configuration
+    is_base_structure = fields.Boolean('Is Base Structure', default=False,
+                                      help='Mark as template for country-specific structures')
     
-    # Payroll configuration
+    sequence = fields.Integer('Sequence', default=10, help="Order of display")
+    
+    # Payroll processing configuration
     schedule_pay = fields.Selection([
         ('monthly', 'Monthly'),
         ('quarterly', 'Quarterly'),
@@ -80,9 +99,16 @@ class HrPayrollStructure(models.Model):
         ('exempt', 'Tax Exempt'),
     ], string='Tax Calculation', default='standard')
     
-    report_template = fields.Many2one('ir.ui.view', string='Payslip Template')
+    # ✅ ADDED THE MISSING FIELD HERE:
+    report_template = fields.Selection([
+        ('standard', 'Standard Report'),
+        ('detailed', 'Detailed Report'),
+        ('summary', 'Summary Report'),
+        ('custom', 'Custom Report'),
+    ], string='Report Template', default='standard',
+       help='Choose the report template for payslip generation')
     
-    # Working time defaults
+    # Working time configuration
     working_hours_per_day = fields.Float('Working Hours/Day', default=8.0)
     working_days_per_week = fields.Float('Working Days/Week', default=5.0)
     working_days_per_month = fields.Float('Working Days/Month', default=22.0)
@@ -91,20 +117,45 @@ class HrPayrollStructure(models.Model):
     social_security_enabled = fields.Boolean('Social Security', default=True)
     pension_enabled = fields.Boolean('Pension Scheme', default=True)
     
-    # Compliance and notes
-    compliance_notes = fields.Text('Compliance Notes')
+    # Compliance and documentation
+    compliance_notes = fields.Text('Compliance Notes',
+                                  help='Legal requirements and compliance notes for this structure')
     
-    # Employee count (computed field)
+    # Statistics
     employee_count = fields.Integer('Employee Count', compute='_compute_employee_count')
     
-    @api.depends('country_id')
+    # State management
+    structure_state = fields.Selection([
+        ('draft', 'Draft'),
+        ('active', 'Active'),
+        ('deprecated', 'Deprecated'),
+        ('archived', 'Archived')
+    ], string='State', default='draft')
+    
+    @api.depends('country_id', 'payroll_country_code')
     def _compute_currency(self):
-        """Set currency based on country or company"""
+        """Compute currency based on country"""
+        currency_map = {
+            'VN': 'VND', 'ID': 'IDR', 'IN': 'INR', 'SG': 'SGD', 'MY': 'MYR',
+            'US': 'USD', 'GB': 'GBP', 'AU': 'AUD', 'TH': 'THB', 'PH': 'PHP'
+        }
+        
         for record in self:
-            if record.country_id and record.country_id.currency_id:
-                record.currency_id = record.country_id.currency_id
+            currency_code = None
+            
+            # Try payroll_country_code first
+            if record.payroll_country_code:
+                currency_code = currency_map.get(record.payroll_country_code)
+            
+            # Fallback to country_id
+            elif record.country_id and record.country_id.currency_id:
+                currency_code = record.country_id.currency_id.name
+            
+            if currency_code:
+                currency = self.env['res.currency'].search([('name', '=', currency_code)], limit=1)
+                record.currency_id = currency.id if currency else False
             else:
-                record.currency_id = self.env.company.currency_id
+                record.currency_id = self.env.company.currency_id.id
 
     def _compute_employee_count(self):
         """Compute number of employees using this structure"""
@@ -137,8 +188,37 @@ class HrPayrollStructure(models.Model):
             if record.working_days_per_month <= 0 or record.working_days_per_month > 31:
                 raise ValidationError(_('Working days per month must be between 1 and 31'))
 
+    @api.model
+    def get_structure_by_country(self, country_code):
+        """Get active payroll structures for a specific country"""
+        return self.search([
+            ('payroll_country_code', '=', country_code),
+            ('active', '=', True),
+            ('structure_state', '=', 'active')
+        ])
+
+    @api.model
+    def create_country_structure(self, country_code, name=None):
+        """Create a new payroll structure for a country"""
+        if not name:
+            country_names = {
+                'VN': 'Vietnam', 'ID': 'Indonesia', 'IN': 'India',
+                'SG': 'Singapore', 'MY': 'Malaysia'
+            }
+            name = f"{country_names.get(country_code, country_code)} Payroll Structure"
+        
+        return self.create({
+            'name': name,
+            'code': f'{country_code}_STD',
+            'payroll_country_code': country_code,
+            'structure_state': 'active'
+        })
+
 class HrSalaryRule(models.Model):
+    """Extend salary rules with multi-country support"""
     _inherit = 'hr.salary.rule'
+    
+    # === MULTI-COUNTRY EXTENSIONS ===
     
     # Country-specific fields
     payroll_country_code = fields.Selection([
@@ -147,6 +227,9 @@ class HrSalaryRule(models.Model):
         ('IN', 'India'),
         ('SG', 'Singapore'),
         ('MY', 'Malaysia'),
+        ('US', 'United States'),
+        ('GB', 'United Kingdom'),
+        ('AU', 'Australia'),
     ], string='Payroll Country')
     
     is_country_specific = fields.Boolean('Country Specific', default=False)
@@ -165,17 +248,17 @@ class HrSalaryRule(models.Model):
     contract_type_ids = fields.Many2many('hr.contract.type', string='Contract Types',
                                         help="Contract types this rule applies to")
     
-    # Enhanced constraints and configurations
+    # Enhanced rule types
     statutory_rule = fields.Boolean('Statutory Rule', default=False,
                                    help="Mark as statutory/legal requirement")
     
-    # MISSING FIELDS FROM DATA FILE
+    # Rule categorization for better organization
     is_tax_rule = fields.Boolean('Is Tax Rule', default=False)
     is_social_security = fields.Boolean('Is Social Security', default=False)
     is_allowance = fields.Boolean('Is Allowance', default=False)
     is_deduction = fields.Boolean('Is Deduction', default=False)
     
-    # Calculation base for rules
+    # Calculation parameters
     calculation_base = fields.Selection([
         ('basic', 'Basic Salary'),
         ('gross', 'Gross Salary'),
@@ -193,16 +276,16 @@ class HrSalaryRule(models.Model):
         ('employer_costs', 'Employer Costs'),
     ], string='Report Category')
     
-    # Amount configuration
+    # Amount constraints
     min_amount = fields.Float('Minimum Amount', default=0.0)
     max_amount = fields.Float('Maximum Amount', default=0.0,
                              help="0 means no maximum limit")
     
-    # Rates for social security/benefits
+    # Enhanced rates
     employer_rate = fields.Float('Employer Rate (%)', default=0.0)
     employee_rate = fields.Float('Employee Rate (%)', default=0.0)
     
-    # Amount computation types
+    # Enhanced amount types (override base if needed)
     amount_select = fields.Selection([
         ('fix', 'Fixed Amount'),
         ('percentage', 'Percentage (%)'),
@@ -217,11 +300,7 @@ class HrSalaryRule(models.Model):
     amount_formula = fields.Char('Formula',
                                 help="Mathematical formula for amount calculation")
     
-    # Quantity and factor
-    quantity = fields.Char('Quantity', default='1.0',
-                          help="Python code to compute the quantity")
-    
-    # Accounting integration - REMOVED ANALYTIC TAGS
+    # Accounting integration
     account_debit = fields.Many2one('account.account', string='Debit Account')
     account_credit = fields.Many2one('account.account', string='Credit Account')
     analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account')
@@ -243,6 +322,7 @@ class HrSalaryRule(models.Model):
                 raise ValidationError(_('Employee rate must be between 0 and 100'))
 
 class HrSalaryRuleCategory(models.Model):
+    """Extend salary rule categories for multi-country support"""
     _inherit = 'hr.salary.rule.category'
     
     # Enhanced category fields
@@ -259,6 +339,7 @@ class HrSalaryRuleCategory(models.Model):
     is_taxable = fields.Boolean('Is Taxable', default=True)
     affects_net_salary = fields.Boolean('Affects Net Salary', default=True)
     
+    # Country-specific categories
     country_specific = fields.Boolean('Country Specific', default=False)
     payroll_country_code = fields.Selection([
         ('VN', 'Vietnam'),
@@ -268,19 +349,20 @@ class HrSalaryRuleCategory(models.Model):
         ('MY', 'Malaysia'),
     ], string='Payroll Country')
     
-    # Reporting and display
+    # Display and reporting
     display_order = fields.Integer('Display Order', default=10)
     show_on_payslip = fields.Boolean('Show on Payslip', default=True)
     show_on_summary = fields.Boolean('Show on Summary', default=True)
     
-    # Description and help
+    # Documentation
     description = fields.Text('Description')
     calculation_note = fields.Text('Calculation Note')
 
 class HrEmployee(models.Model):
+    """Extend employees with payroll country information"""
     _inherit = 'hr.employee'
     
-    # Payroll country for employee
+    # Payroll country computed from contract
     payroll_country = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
@@ -300,9 +382,10 @@ class HrEmployee(models.Model):
                 employee.payroll_country = False
 
 class HrContract(models.Model):
+    """Extend contracts with enhanced payroll integration"""
     _inherit = 'hr.contract'
     
-    # Enhanced contract fields for payroll
+    # Payroll country (computed from structure)
     payroll_country = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
@@ -311,10 +394,9 @@ class HrContract(models.Model):
         ('MY', 'Malaysia'),
     ], string='Payroll Country',
        related='struct_id.payroll_country_code',
-       store=True,
-       readonly=True)
+       store=True, readonly=True)
     
-    # Salary breakdown
+    # Enhanced salary breakdown
     basic_salary = fields.Monetary('Basic Salary', currency_field='currency_id')
     housing_allowance = fields.Monetary('Housing Allowance', currency_field='currency_id')
     transport_allowance = fields.Monetary('Transport Allowance', currency_field='currency_id')
@@ -326,7 +408,7 @@ class HrContract(models.Model):
     social_security_number = fields.Char('Social Security Number')
     tax_identification_number = fields.Char('Tax Identification Number')
     
-    # Working time configuration from contract type
+    # Working time from contract type
     payroll_schedule = fields.Selection([
         ('monthly', 'Monthly'),
         ('quarterly', 'Quarterly'),
@@ -338,9 +420,8 @@ class HrContract(models.Model):
         ('hourly', 'Hourly'),
         ('daily', 'Daily'),
     ], string='Payroll Schedule',
-       related='contract_type_id.payroll_schedule',
-       store=True,
-       readonly=True)
+       related='type_id.payroll_schedule',
+       store=True, readonly=True)
     
     wage_calculation = fields.Selection([
         ('fixed', 'Fixed Salary'),
@@ -349,9 +430,8 @@ class HrContract(models.Model):
         ('piece_rate', 'Piece Rate'),
         ('hybrid', 'Hybrid (Fixed + Variable)'),
     ], string='Wage Calculation',
-       related='contract_type_id.wage_calculation',
-       store=True,
-       readonly=True)
+       related='type_id.wage_calculation',
+       store=True, readonly=True)
     
     @api.depends('basic_salary', 'housing_allowance', 'transport_allowance', 'meal_allowance', 'other_allowances')
     def _compute_total_gross(self):
@@ -361,14 +441,15 @@ class HrContract(models.Model):
                            contract.transport_allowance + contract.meal_allowance + 
                            contract.other_allowances)
 
-    @api.onchange('contract_type_id')
+    @api.onchange('type_id')
     def _onchange_contract_type(self):
         """Update payroll structure options based on contract type"""
-        if self.contract_type_id:
+        if self.type_id:
             # Filter payroll structures that support this contract type
             structures = self.env['hr.payroll.structure'].search([
-                ('contract_type_ids', 'in', self.contract_type_id.id)
+                ('contract_type_ids', 'in', self.type_id.id),
+                ('active', '=', True)
             ])
             if structures:
                 return {'domain': {'struct_id': [('id', 'in', structures.ids)]}}
-        return {'domain': {'struct_id': []}}
+        return {'domain': {'struct_id': [('active', '=', True)]}}

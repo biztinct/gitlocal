@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Enhanced Zoho Staging Data Views - Extends om_hr_payroll base functionality -->
+    
+    <!-- Enhanced Zoho Staging Data Form View - Multi-Country Extension -->
+    <record id="view_zoho_staging_data_form_enhanced" model="ir.ui.view">
+        <field name="name">zoho.staging.data.form.enhanced</field>
+        <field name="model">zoho.staging.data</field>
+        <field name="inherit_id" ref="om_hr_payroll.zoho_staging_data_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add multi-country fields at the top -->
+            <xpath expr="//form/sheet" position="before">
+                <header>
+                    <field name="processing_status" widget="statusbar" statusbar_visible="draft,processed,error"/>
+                </header>
+            </xpath>
+            
+            <!-- Add country and processing info at the beginning -->
+            <xpath expr="//form/sheet/group[1]" position="before">
+                <div class="oe_title">
+                    <h1>
+                        <field name="full_name_en" placeholder="Employee Name"/>
+                    </h1>
+                    <h2>
+                        <field name="employee_id" placeholder="Employee ID"/>
+                    </h2>
+                </div>
+                
+                <group string="Multi-Country Processing">
+                    <group>
+                        <field name="payroll_country" widget="selection"/>
+                        <field name="processing_status"/>
+                        <field name="error_message" attrs="{'invisible': [('processing_status', '!=', 'error')]}"/>
+                    </group>
+                    <group>
+                        <field name="processed_date" readonly="1"/>
+                        <field name="created_employee_id" readonly="1"/>
+                        <field name="created_contract_id" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+            
+            <!-- Add country-specific sections -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Vietnam Specific" name="vietnam" attrs="{'invisible': [('payroll_country', '!=', 'VN')]}">
+                    <group>
+                        <group string="Vietnam Tax & Social Security">
+                            <field name="vn_personal_income_tax"/>
+                            <field name="vn_social_insurance_employee"/>
+                            <field name="vn_health_insurance_employee"/>
+                            <field name="vn_unemployment_insurance_employee"/>
+                            <field name="vn_union_fee"/>
+                        </group>
+                        <group string="Vietnam Employer Contributions">
+                            <field name="vn_social_insurance_employer"/>
+                            <field name="vn_health_insurance_employer"/>
+                            <field name="vn_unemployment_insurance_employer"/>
+                            <field name="vn_accident_insurance"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Vietnam Specific Info">
+                            <field name="vn_tax_code"/>
+                            <field name="vn_social_insurance_number"/>
+                            <field name="vn_id_card_number"/>
+                        </group>
+                    </group>
+                </page>
+                
+                <page string="Indonesia Specific" name="indonesia" attrs="{'invisible': [('payroll_country', '!=', 'ID')]}">
+                    <group>
+                        <group string="Indonesia Tax & BPJS">
+                            <field name="id_pph21_tax"/>
+                            <field name="id_bpjs_kesehatan_employee"/>
+                            <field name="id_bpjs_tk_jht_employee"/>
+                            <field name="id_bpjs_tk_jp_employee"/>
+                        </group>
+                        <group string="Indonesia Employer BPJS">
+                            <field name="id_bpjs_kesehatan_employer"/>
+                            <field name="id_bpjs_tk_jht_employer"/>
+                            <field name="id_bpjs_tk_jp_employer"/>
+                            <field name="id_bpjs_tk_jkm"/>
+                            <field name="id_bpjs_tk_jkk"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Indonesia Specific Info">
+                            <field name="id_npwp_number"/>
+                            <field name="id_bpjs_kesehatan_number"/>
+                            <field name="id_bpjs_ketenagakerjaan_number"/>
+                            <field name="id_ktp_number"/>
+                        </group>
+                    </group>
+                </page>
+                
+                <page string="India Specific" name="india" attrs="{'invisible': [('payroll_country', '!=', 'IN')]}">
+                    <group>
+                        <group string="India Tax & Deductions">
+                            <field name="in_income_tax"/>
+                            <field name="in_provident_fund_employee"/>
+                            <field name="in_esi_employee"/>
+                            <field name="in_professional_tax"/>
+                        </group>
+                        <group string="India Employer Contributions">
+                            <field name="in_provident_fund_employer"/>
+                            <field name="in_esi_employer"/>
+                            <field name="in_gratuity"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="India Specific Info">
+                            <field name="in_pan_number"/>
+                            <field name="in_aadhaar_number"/>
+                            <field name="in_pf_number"/>
+                            <field name="in_esi_number"/>
+                        </group>
+                    </group>
+                </page>
+                
+                <page string="Processing Log" name="processing">
+                    <field name="processing_notes" placeholder="Processing notes and logs..."/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Enhanced Zoho Staging Data Tree View -->
+    <record id="view_zoho_staging_data_tree_enhanced" model="ir.ui.view">
+        <field name="name">zoho.staging.data.tree.enhanced</field>
+        <field name="model">zoho.staging.data</field>
+        <field name="inherit_id" ref="om_hr_payroll.zoho_staging_data_tree_view"/>
+        <field name="arch" type="xml">
+            <!-- Add country and status columns -->
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-success">processing_status=='processed'</attribute>
+                <attribute name="decoration-danger">processing_status=='error'</attribute>
+                <attribute name="decoration-warning">processing_status=='draft'</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='employee_id']" position="after">
+                <field name="payroll_country"/>
+                <field name="processing_status"/>
+            </xpath>
+            
+            <xpath expr="//tree" position="inside">
+                <field name="processed_date"/>
+                <field name="created_employee_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Enhanced Search View for Multi-Country -->
+    <record id="view_zoho_staging_data_search_enhanced" model="ir.ui.view">
+        <field name="name">zoho.staging.data.search.enhanced</field>
+        <field name="model">zoho.staging.data</field>
+        <field name="arch" type="xml">
+            <search string="Zoho Staging Data">
+                <field name="employee_id"/>
+                <field name="full_name_en"/>
+                <field name="full_name_vn"/>
+                <field name="department"/>
+                <field name="designation"/>
+                <field name="payroll_country"/>
+                
+                <filter string="Draft" name="draft" domain="[('processing_status', '=', 'draft')]"/>
+                <filter string="Processed" name="processed" domain="[('processing_status', '=', 'processed')]"/>
+                <filter string="Error" name="error" domain="[('processing_status', '=', 'error')]"/>
+                
+                <separator/>
+                <filter string="Vietnam" name="vietnam" domain="[('payroll_country', '=', 'VN')]"/>
+                <filter string="Indonesia" name="indonesia" domain="[('payroll_country', '=', 'ID')]"/>
+                <filter string="India" name="india" domain="[('payroll_country', '=', 'IN')]"/>
+                
+                <separator/>
+                <filter string="This Month" name="this_month" 
+                        domain="[('create_date', '>=', (context_today() - relativedelta(months=1)).strftime('%Y-%m-01'))]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_by_country" context="{'group_by': 'payroll_country'}"/>
+                    <filter string="Status" name="group_by_status" context="{'group_by': 'processing_status'}"/>
+                    <filter string="Department" name="group_by_department" context="{'group_by': 'department'}"/>
+                    <filter string="Employee Type" name="group_by_type" context="{'group_by': 'employee_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Multi-Country Staging Import Wizard -->
+    <record id="view_zoho_staging_import_wizard" model="ir.ui.view">
+        <field name="name">zoho.staging.import.wizard</field>
+        <field name="model">zoho.staging.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Zoho Staging Data">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Multi-Country Zoho Import</h1>
+                        <p>Import and process employee data for multiple countries</p>
+                    </div>
+
+                    <group>
+                        <group string="Import Configuration">
+                            <field name="import_file" filename="import_filename"/>
+                            <field name="import_filename" invisible="1"/>
+                            <field name="target_country"/>
+                            <field name="import_mode"/>
+                        </group>
+                        <group string="Processing Options">
+                            <field name="auto_create_employees"/>
+                            <field name="auto_create_contracts"/>
+                            <field name="update_existing"/>
+                            <field name="validate_data"/>
+                        </group>
+                    </group>
+
+                    <group string="Country-Specific Mapping" attrs="{'invisible': [('target_country', '=', False)]}">
+                        <field name="country_mapping_ids">
+                            <tree editable="bottom">
+                                <field name="source_field"/>
+                                <field name="target_field"/>
+                                <field name="data_type"/>
+                                <field name="required"/>
+                                <field name="default_value"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_import_data" type="object" string="Import Data" 
+                            class="btn-primary"/>
+                    <button name="action_preview_data" type="object" string="Preview" 
+                            class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Enhanced Actions -->
+    <record id="action_zoho_staging_data_enhanced" model="ir.actions.act_window">
+        <field name="name">Zoho Staging Data (Multi-Country)</field>
+        <field name="res_model">zoho.staging.data</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="view_id" ref="view_zoho_staging_data_tree_enhanced"/>
+        <field name="search_view_id" ref="view_zoho_staging_data_search_enhanced"/>
+        <field name="context">{'search_default_draft': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Import employee data from Zoho
+            </p>
+            <p>
+                Use the import wizard to bring employee data from Zoho into the staging area,
+                then process it to create employees and contracts in Odoo.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_zoho_staging_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Zoho Data</field>
+        <field name="res_model">zoho.staging.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Country-Specific Actions -->
+    <record id="action_zoho_staging_vietnam" model="ir.actions.act_window">
+        <field name="name">Vietnam Staging Data</field>
+        <field name="res_model">zoho.staging.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payroll_country', '=', 'VN')]</field>
+        <field name="context">{'default_payroll_country': 'VN', 'search_default_vietnam': 1}</field>
+    </record>
+
+    <record id="action_zoho_staging_indonesia" model="ir.actions.act_window">
+        <field name="name">Indonesia Staging Data</field>
+        <field name="res_model">zoho.staging.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payroll_country', '=', 'ID')]</field>
+        <field name="context">{'default_payroll_country': 'ID', 'search_default_indonesia': 1}</field>
+    </record>
+
+    <record id="action_zoho_staging_india" model="ir.actions.act_window">
+        <field name="name">India Staging Data</field>
+        <field name="res_model">zoho.staging.data</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('payroll_country', '=', 'IN')]</field>
+        <field name="context">{'default_payroll_country': 'IN', 'search_default_india': 1}</field>
+    </record>
+
+</odoo>
