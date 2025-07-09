@@ -1,133 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Enhanced Contract Type Form View - CORRECTED EXTERNAL ID -->
-    <record id="view_hr_contract_type_form_enhanced" model="ir.ui.view">
-        <field name="name">hr.contract.type.form.enhanced</field>
-        <field name="model">hr.contract.type</field>
-        <field name="inherit_id" ref="hr.hr_contract_type_view_form"/>
-        <field name="arch" type="xml">
-            <field name="name" position="after">
-                <field name="country_id"/>
-                <field name="is_payroll_enabled"/>
-                <field name="payroll_schedule"/>
-                <field name="wage_calculation"/>
-            </field>
-
-        </field>
-    </record>
-
-    <!-- Enhanced Contract Type Tree View -->
-    <record id="view_hr_contract_type_tree_enhanced" model="ir.ui.view">
-        <field name="name">hr.contract.type.tree.enhanced</field>
-        <field name="model">hr.contract.type</field>
-        <field name="arch" type="xml">
-            <tree string="Contract Types">
-                <field name="name"/>
-                <field name="country_id"/>
-                <field name="payroll_schedule"/>
-                <field name="wage_calculation"/>
-                <field name="is_payroll_enabled"/>
-            </tree>
-        </field>
-    </record>
-
-    <!-- Standalone Payroll Structure Form View -->
+    <!-- Enhanced Payroll Structure Form View -->
     <record id="view_hr_payroll_structure_form_base" model="ir.ui.view">
         <field name="name">hr.payroll.structure.form.base</field>
         <field name="model">hr.payroll.structure</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_employee_grade_form"/>
         <field name="arch" type="xml">
-            <form string="Payroll Structure">
-                <sheet>
-                    <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" name="action_view_employees" type="object" icon="fa-users">
-                            <field string="Employees" name="employee_count" widget="statinfo"/>
-                        </button>
-                    </div>
-
-                    <widget name="web_ribbon" title="Base Structure" bg_color="bg-info" 
-                            attrs="{'invisible': [('is_base_structure', '=', False)]}"/>
-
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="Payroll Structure Name"/>
-                        </h1>
-                    </div>
-                    
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="payroll_country_code"/>
+                <field name="country_id"/>
+                <field name="currency_id"/>
+                <field name="is_base_structure"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="schedule_pay"/>
+                <field name="structure_state"/>
+            </xpath>
+            
+            <xpath expr="//notebook" position="inside">
+                <page string="Multi-Country Configuration" name="multi_country">
                     <group>
-                        <group string="Basic Information">
-                            <field name="code"/>
-                            <field name="parent_id"/>
-                            <field name="active"/>
-                        </group>
-                        <group string="Country Configuration">
-                            <field name="country_id"/>
-                            <field name="payroll_country_code"/>
-                            <field name="currency_id"/>
-                            <field name="is_base_structure"/>
-                        </group>
-                    </group>
-
-                    <group string="Contract Type Integration">
-                        <field name="contract_type_ids" widget="many2many_tags" 
-                               options="{'color_field': 'country_id'}"
-                               placeholder="Select contract types that can use this payroll structure"/>
-                    </group>
-
-                    <group>
-                        <group string="Payroll Configuration">
-                            <field name="schedule_pay"/>
-                            <field name="tax_calculation_method"/>
-                            <!--<field name="report_template"/>-->
-                        </group>
-                        <group string="Working Time Configuration">
+                        <group string="Working Time">
                             <field name="working_hours_per_day"/>
                             <field name="working_days_per_week"/>
                             <field name="working_days_per_month"/>
                         </group>
-                    </group>
-
-                    <group>
-                        <group string="Social Benefits">
+                        <group string="Tax and Benefits">
+                            <field name="tax_calculation_method"/>
                             <field name="social_security_enabled"/>
                             <field name="pension_enabled"/>
                         </group>
                     </group>
-
-                    <notebook>
-                        <page string="Salary Rules" name="rules">
-                            <field name="rule_ids">
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle"/>
-                                    <field name="name"/>
-                                    <field name="code"/>
-                                    <field name="category_id"/>
-                                    <field name="payroll_country_code"/>
-                                    <field name="is_country_specific"/>
-                                    <field name="amount_select"/>
-                                    <field name="amount_fix" attrs="{'invisible': [('amount_select', '!=', 'fix')]}"/>
-                                    <field name="amount_percentage" attrs="{'invisible': [('amount_select', '!=', 'percentage')]}"/>
-                                    <field name="statutory_rule"/>
-                                    <field name="active"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Compatible Contract Types" name="contract_types">
-                            <field name="contract_type_ids">
-                                <tree>
-                                    <field name="name"/>
-                                    <field name="country_id"/>
-                                    <field name="payroll_schedule"/>
-                                    <field name="wage_calculation"/>
-                                    <field name="is_payroll_enabled"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Compliance Notes" name="compliance">
-                            <field name="compliance_notes" placeholder="Enter compliance requirements, legal notes, or special considerations for this payroll structure..."/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
+                    <group>
+                        <group string="Analytics">
+                            <field name="employee_count"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                </page>
+                <page string="Contract Types" name="contract_types">
+                    <field name="contract_type_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="country_id"/>
+                            <field name="payroll_schedule"/>
+                            <field name="wage_calculation"/>
+                            <field name="is_payroll_enabled"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Compliance Notes" name="compliance">
+                    <field name="compliance_notes" placeholder="Enter compliance requirements, legal notes, or special considerations for this payroll structure..."/>
+                </page>
+            </xpath>
         </field>
     </record>
 
@@ -135,17 +62,19 @@
     <record id="view_hr_payroll_structure_tree_base" model="ir.ui.view">
         <field name="name">hr.payroll.structure.tree.base</field>
         <field name="model">hr.payroll.structure</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payroll_structure_list_view"/>
         <field name="arch" type="xml">
-            <tree string="Payroll Structures" decoration-info="is_base_structure==True">
-                <field name="name"/>
-                <field name="code"/>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-info">is_base_structure==True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='code']" position="after">
                 <field name="payroll_country_code"/>
                 <field name="currency_id"/>
                 <field name="schedule_pay"/>
                 <field name="employee_count"/>
                 <field name="is_base_structure"/>
                 <field name="active"/>
-            </tree>
+            </xpath>
         </field>
     </record>
 
@@ -153,12 +82,14 @@
     <record id="view_hr_payroll_structure_search_base" model="ir.ui.view">
         <field name="name">hr.payroll.structure.search.base</field>
         <field name="model">hr.payroll.structure</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payroll_structure_filter"/>
         <field name="arch" type="xml">
-            <search string="Payroll Structures">
-                <field name="name"/>
-                <field name="code"/>
+            <xpath expr="//field[@name='name']" position="after">
                 <field name="payroll_country_code"/>
-                <field name="contract_type_ids"/>
+                <field name="currency_id"/>
+                <field name="schedule_pay"/>
+            </xpath>
+            <xpath expr="//search" position="inside">
                 <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                 <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
@@ -167,12 +98,14 @@
                 <group expand="0" string="Group By">
                     <filter string="Country" name="group_country" context="{'group_by': 'payroll_country_code'}"/>
                     <filter string="Schedule" name="group_schedule" context="{'group_by': 'schedule_pay'}"/>
+                    <filter string="Currency" name="group_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'structure_state'}"/>
                 </group>
-            </search>
+            </xpath>
         </field>
     </record>
 
-    <!-- Payroll Structure Action -->
+    <!-- Enhanced Payroll Structure Action -->
     <record id="action_hr_payroll_structure_base" model="ir.actions.act_window">
         <field name="name">Payroll Structures</field>
         <field name="res_model">hr.payroll.structure</field>
@@ -182,163 +115,86 @@
         <field name="context">{'search_default_active': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Create a new salary structure
+                Create a new payroll structure
             </p>
             <p>
-                Salary structures are used to define the rules and categories for payroll calculation.
+                Payroll structures define the salary rules and calculations for employees.
                 You can create country-specific structures for different payroll systems and link them to contract types.
             </p>
         </field>
     </record>
 
-    <!-- Salary Rule Form View -->
+    <!-- Salary Rule Form View Enhancement -->
     <record id="view_hr_salary_rule_form_base" model="ir.ui.view">
         <field name="name">hr.salary.rule.form.base</field>
         <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_salary_rule_form"/>
         <field name="arch" type="xml">
-            <form string="Salary Rule">
-                <sheet>
-                    <widget name="web_ribbon" title="Statutory Rule" bg_color="bg-warning" 
-                            attrs="{'invisible': [('statutory_rule', '=', False)]}"/>
-
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="Salary Rule Name"/>
-                        </h1>
-                    </div>
-                    
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="payroll_country_code"/>
+                <field name="is_country_specific"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="employer_rate"/>
+                <field name="employee_rate"/>
+            </xpath>
+            
+            <xpath expr="//notebook" position="inside">
+                <page string="Enhanced Configuration" name="enhanced_config">
                     <group>
-                        <group string="Basic Information">
-                            <field name="code"/>
-                            <field name="category_id"/>
-                            <field name="sequence"/>
-                            <field name="active"/>
-                        </group>
-                        <group string="Country and Type">
-                            <field name="payroll_country_code"/>
-                            <field name="is_country_specific"/>
-                            <field name="applies_to"/>
-                            <field name="statutory_rule"/>
-                        </group>
-                    </group>
-
-                    <group>
-                        <group string="Rule Classification">
-                            <field name="is_tax_rule"/>
-                            <field name="is_social_security"/>
-                            <field name="is_allowance"/>
-                            <field name="is_deduction"/>
-                            <field name="report_category"/>
-                        </group>
-                        <group string="Calculation Base">
-                            <field name="calculation_base"/>
+                        <group string="Amount Limits">
                             <field name="min_amount"/>
                             <field name="max_amount"/>
                         </group>
+                        <group string="Accounting">
+                            <field name="account_debit"/>
+                            <field name="account_credit"/>
+                            <field name="analytic_account_id"/>
+                        </group>
                     </group>
-
-                    <group string="Contract Type Application" attrs="{'invisible': [('applies_to', '!=', 'contract_type')]}">
-                        <field name="contract_type_ids" widget="many2many_tags" 
-                               placeholder="Select contract types this rule applies to"/>
-                    </group>
-
-                    <notebook>
-                        <page string="Conditions" name="conditions">
-                            <group>
-                                <group string="Condition Settings">
-                                    <field name="condition_select"/>
-                                    <field name="condition_python" attrs="{'invisible': [('condition_select', '!=', 'python')], 'required': [('condition_select', '=', 'python')]}"/>
-                                    <field name="condition_range" attrs="{'invisible': [('condition_select', '!=', 'range')], 'required': [('condition_select', '=', 'range')]}"/>
-                                    <field name="condition_range_min" attrs="{'invisible': [('condition_select', '!=', 'range')], 'required': [('condition_select', '=', 'range')]}"/>
-                                    <field name="condition_range_max" attrs="{'invisible': [('condition_select', '!=', 'range')], 'required': [('condition_select', '=', 'range')]}"/>
-                                </group>
-                            </group>
-                        </page>
-                        <page string="Amount Calculation" name="calculation">
-                            <group>
-                                <group string="Amount Type">
-                                    <field name="amount_select"/>
-                                    <field name="amount_fix" attrs="{'invisible': [('amount_select', '!=', 'fix')], 'required': [('amount_select', '=', 'fix')]}"/>
-                                    <field name="amount_percentage" attrs="{'invisible': [('amount_select', '!=', 'percentage')], 'required': [('amount_select', '=', 'percentage')]}"/>
-                                    <field name="amount_python_compute" attrs="{'invisible': [('amount_select', '!=', 'code')], 'required': [('amount_select', '=', 'code')]}"/>
-                                    <field name="amount_formula" attrs="{'invisible': [('amount_select', '!=', 'formula')], 'required': [('amount_select', '=', 'formula')]}"/>
-                                    <field name="quantity"/>
-                                </group>
-                                <group string="Rates">
-                                    <field name="employer_rate"/>
-                                    <field name="employee_rate"/>
-                                </group>
-                            </group>
-                        </page>
-                        <page string="Accounting" name="accounting">
-                            <group>
-                                <group string="Accounting Configuration">
-                                    <field name="account_debit"/>
-                                    <field name="account_credit"/>
-                                    <field name="analytic_account_id"/>
-                                </group>
-                            </group>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
+                </page>
+            </xpath>
         </field>
     </record>
 
-    <!-- Salary Rule Tree View -->
+    <!-- Salary Rule Tree View Enhancement -->
     <record id="view_hr_salary_rule_tree_base" model="ir.ui.view">
         <field name="name">hr.salary.rule.tree.base</field>
         <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_salary_rule_tree"/>
         <field name="arch" type="xml">
-            <tree string="Salary Rules" decoration-warning="statutory_rule==True" decoration-info="is_country_specific==True">
-                <field name="sequence" widget="handle"/>
-                <field name="name"/>
-                <field name="code"/>
-                <field name="category_id"/>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-info">is_country_specific==True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='code']" position="after">
                 <field name="payroll_country_code"/>
-                <field name="amount_select"/>
-                <field name="amount_fix" attrs="{'invisible': [('amount_select', '!=', 'fix')]}"/>
-                <field name="amount_percentage" attrs="{'invisible': [('amount_select', '!=', 'percentage')]}"/>
-                <field name="applies_to"/>
                 <field name="is_country_specific"/>
-                <field name="statutory_rule"/>
-                <field name="active"/>
-            </tree>
+            </xpath>
         </field>
     </record>
 
-    <!-- Salary Rule Search View -->
+    <!-- Salary Rule Search View Enhancement -->
     <record id="view_hr_salary_rule_search_base" model="ir.ui.view">
         <field name="name">hr.salary.rule.search.base</field>
         <field name="model">hr.salary.rule</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_rule_filter"/>
         <field name="arch" type="xml">
-            <search string="Salary Rules">
-                <field name="name"/>
-                <field name="code"/>
-                <field name="category_id"/>
+            <xpath expr="//field[@name='category_id']" position="after">
                 <field name="payroll_country_code"/>
-                <field name="contract_type_ids"/>
-                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
-                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
-                <separator/>
+            </xpath>
+            
+            <xpath expr="//search" position="inside">
                 <filter string="Country Specific" name="country_specific" domain="[('is_country_specific', '=', True)]"/>
-                <filter string="Statutory Rules" name="statutory" domain="[('statutory_rule', '=', True)]"/>
-                <filter string="Tax Rules" name="tax_rules" domain="[('is_tax_rule', '=', True)]"/>
-                <filter string="Allowances" name="allowances" domain="[('is_allowance', '=', True)]"/>
-                <filter string="Deductions" name="deductions" domain="[('is_deduction', '=', True)]"/>
                 <separator/>
                 <group expand="0" string="Group By">
-                    <filter string="Category" name="group_category" context="{'group_by': 'category_id'}"/>
                     <filter string="Country" name="group_country" context="{'group_by': 'payroll_country_code'}"/>
-                    <filter string="Amount Type" name="group_amount_type" context="{'group_by': 'amount_select'}"/>
-                    <filter string="Applies To" name="group_applies_to" context="{'group_by': 'applies_to'}"/>
-                    <filter string="Report Category" name="group_report_category" context="{'group_by': 'report_category'}"/>
                 </group>
-            </search>
+            </xpath>
         </field>
     </record>
 
-    <!-- Salary Rules Action -->
+    <!-- Enhanced Salary Rules Action -->
     <record id="action_hr_salary_rule_base" model="ir.actions.act_window">
         <field name="name">Salary Rules</field>
         <field name="res_model">hr.salary.rule</field>
@@ -357,106 +213,81 @@
         </field>
     </record>
 
-    <!-- Salary Rule Category Views -->
+    <!-- Salary Rule Category Tree View Enhancement -->
     <record id="view_hr_salary_rule_category_tree_base" model="ir.ui.view">
         <field name="name">hr.salary.rule.category.tree.base</field>
         <field name="model">hr.salary.rule.category</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_salary_rule_category_tree"/>
         <field name="arch" type="xml">
-            <tree string="Salary Rule Categories" decoration-info="country_specific==True">
-                <field name="display_order" widget="handle"/>
-                <field name="name"/>
-                <field name="code"/>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="decoration-info">country_specific==True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='code']" position="after">
                 <field name="category_type"/>
-                <field name="parent_id"/>
                 <field name="payroll_country_code"/>
                 <field name="is_taxable"/>
                 <field name="affects_net_salary"/>
                 <field name="country_specific"/>
                 <field name="show_on_payslip"/>
-            </tree>
+            </xpath>
         </field>
     </record>
 
+    <!-- Salary Rule Category Form View Enhancement -->
     <record id="view_hr_salary_rule_category_form_base" model="ir.ui.view">
         <field name="name">hr.salary.rule.category.form.base</field>
         <field name="model">hr.salary.rule.category</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_salary_rule_category_form"/>
         <field name="arch" type="xml">
-            <form string="Salary Rule Category">
-                <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="name" placeholder="Category Name"/>
-                        </h1>
-                    </div>
-                    
-                    <group>
-                        <group string="Basic Information">
-                            <field name="code"/>
-                            <field name="parent_id"/>
-                            <field name="category_type"/>
-                            <field name="display_order"/>
-                        </group>
-                        <group string="Country Configuration">
-                            <field name="country_specific"/>
-                            <field name="payroll_country_code" attrs="{'invisible': [('country_specific', '=', False)], 'required': [('country_specific', '=', True)]}"/>
-                        </group>
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="category_type"/>
+                <field name="display_order"/>
+            </xpath>
+            
+            <xpath expr="//group[@col='4']" position="after">
+                <group>
+                    <group string="Country Configuration">
+                        <field name="country_specific"/>
+                        <field name="payroll_country_code" attrs="{'invisible': [('country_specific', '=', False)], 'required': [('country_specific', '=', True)]}"/>
                     </group>
-
-                    <group>
-                        <group string="Calculation Settings">
-                            <field name="is_taxable"/>
-                            <field name="affects_net_salary"/>
-                        </group>
-                        <group string="Display Settings">
-                            <field name="show_on_payslip"/>
-                            <field name="show_on_summary"/>
-                        </group>
+                    <group string="Calculation Settings">
+                        <field name="is_taxable"/>
+                        <field name="affects_net_salary"/>
                     </group>
+                </group>
 
-                    <notebook>
-                        <page string="Description" name="description">
-                            <field name="description" placeholder="Describe the purpose and usage of this category..."/>
-                        </page>
-                        <page string="Calculation Notes" name="calculation">
-                            <field name="calculation_note" placeholder="Enter calculation notes, formulas, or special considerations..."/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
+                <group>
+                    <group string="Display Settings">
+                        <field name="show_on_payslip"/>
+                        <field name="show_on_summary"/>
+                    </group>
+                    <group>
+                    </group>
+                </group>
+            </xpath>
+            
+            <xpath expr="//field[@name='note']" position="after">
+                <field name="description" placeholder="Category description..."/>
+                <field name="calculation_note" placeholder="Notes about calculations..."/>
+            </xpath>
         </field>
     </record>
 
-    <!-- Salary Rule Categories Action -->
-    <record id="action_hr_salary_rule_category_base" model="ir.actions.act_window">
-        <field name="name">Salary Rule Categories</field>
-        <field name="res_model">hr.salary.rule.category</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_hr_salary_rule_category_tree_base"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create a new salary rule category
-            </p>
-            <p>
-                Categories help organize salary rules for better management and reporting.
-                You can create country-specific categories for different payroll systems.
-            </p>
-        </field>
-    </record>
+    <!-- Menu Items -->
+    <menuitem id="menu_hr_payroll_base_root" 
+              name="Multi-Country Payroll" 
+              parent="om_hr_payroll.menu_hr_payroll_root" 
+              sequence="1"/>
 
-    <!-- Contract Type Enhanced Action -->
-    <record id="action_hr_contract_type_enhanced" model="ir.actions.act_window">
-        <field name="name">Contract Types (Payroll Enhanced)</field>
-        <field name="res_model">hr.contract.type</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_hr_contract_type_tree_enhanced"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create a new contract type
-            </p>
-            <p>
-                Contract types define the employment relationship and payroll configuration.
-                You can specify payroll schedules, wage calculation methods, and country-specific settings.
-            </p>
-        </field>
-    </record>
+    <menuitem id="menu_hr_payroll_structures_base" 
+              name="Payroll Structures" 
+              action="action_hr_payroll_structure_base" 
+              parent="menu_hr_payroll_base_root" 
+              sequence="10"/>
+
+    <menuitem id="menu_hr_salary_rules_base" 
+              name="Salary Rules" 
+              action="action_hr_salary_rule_base" 
+              parent="menu_hr_payroll_base_root" 
+              sequence="20"/>
 </odoo>

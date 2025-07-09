@@ -12,20 +12,6 @@
               parent="menu_payroll_main"
               sequence="10"/>
 
-    <!-- Country Selection Menu -->
-    <menuitem id="menu_payroll_country_selector" 
-              name="Select Country" 
-              parent="menu_payroll_dashboard_section"
-              action="action_payroll_country_selector"
-              sequence="1"/>
-
-    <!-- Dashboard Menu -->
-    <menuitem id="menu_payroll_dashboard" 
-              name="View Dashboard" 
-              parent="menu_payroll_dashboard_section"
-              action="action_payroll_dashboard_base"
-              sequence="10"/>
-
     <!-- Employee Management Section -->
     <menuitem id="menu_payroll_employees" 
               name="Employees" 
@@ -61,13 +47,6 @@
               parent="menu_payroll_employees"
               action="action_hr_contract_payroll"
               sequence="20"/>
-
-    <!-- Contract Types Menu -->
-    <menuitem id="menu_hr_contract_types" 
-              name="Contract Types" 
-              parent="menu_payroll_employees"
-              action="action_hr_contract_type_enhanced"
-              sequence="30"/>
 
     <!-- Payslips Section -->
     <menuitem id="menu_payroll_payslips" 
@@ -105,25 +84,30 @@
               action="action_hr_payslip_run_payroll"
               sequence="20"/>
 
-    <!-- Zoho Integration Section -->
-    <menuitem id="menu_payroll_zoho" 
-              name="Zoho Integration" 
+    <!-- Configuration Section -->
+    <menuitem id="menu_payroll_configuration" 
+              name="Configuration" 
               parent="menu_payroll_main"
-              sequence="70"/>
+              sequence="90"/>
 
-    <!-- Zoho Employee Data Menu -->
-    <menuitem id="menu_zoho_employee_data" 
-              name="Employee Data" 
-              parent="menu_payroll_zoho"
-              action="om_hr_payroll.action_zoho_employee_data"
+    <!-- Use Standard Odoo Actions for Configuration -->
+    <menuitem id="menu_payroll_structures" 
+              name="Salary Structures" 
+              parent="menu_payroll_configuration"
+              action="om_hr_payroll.action_view_hr_payroll_structure_list_form"
               sequence="10"/>
 
-    <!-- Zoho Importer Menu -->
-    <menuitem id="menu_zoho_importer" 
-              name="Import Employees" 
-              parent="menu_payroll_zoho"
-              action="action_zoho_staging_importer"
+    <menuitem id="menu_payroll_rules" 
+              name="Salary Rules" 
+              parent="menu_payroll_configuration"
+              action="om_hr_payroll.action_salary_rule_form"
               sequence="20"/>
+
+    <menuitem id="menu_payroll_rule_categories" 
+              name="Rule Categories" 
+              parent="menu_payroll_configuration"
+              action="om_hr_payroll.action_hr_salary_rule_category"
+              sequence="30"/>
 
     <!-- Reports Section -->
     <menuitem id="menu_payroll_reports" 
@@ -144,52 +128,5 @@
               parent="menu_payroll_reports"
               action="action_payroll_analysis"
               sequence="10"/>
-
-    <!-- Configuration Section -->
-    <menuitem id="menu_payroll_configuration" 
-              name="Configuration" 
-              parent="menu_payroll_main"
-              sequence="90"/>
-
-    <!-- Salary Structures Menu -->
-    <menuitem id="menu_payroll_structures" 
-              name="Salary Structures" 
-              parent="menu_payroll_configuration"
-              action="action_hr_payroll_structure_base"
-              sequence="10"/>
-
-    <!-- Salary Rules Menu -->
-    <menuitem id="menu_payroll_rules" 
-              name="Salary Rules" 
-              parent="menu_payroll_configuration"
-              action="action_hr_salary_rule_base"
-              sequence="20"/>
-
-    <!-- Salary Rule Categories Menu -->
-    <menuitem id="menu_payroll_rule_categories" 
-              name="Rule Categories" 
-              parent="menu_payroll_configuration"
-              action="action_hr_salary_rule_category_base"
-              sequence="30"/>
-
-    <!-- 
-    REMOVED: Work Entry Types Action & Menu
-    This was causing the error because hr.work.entry.type model 
-    requires hr_work_entry module which is not installed
-    
-    <record id="action_hr_work_entry_type_payroll" model="ir.actions.act_window">
-        <field name="name">Work Entry Types</field>
-        <field name="res_model">hr.work.entry.type</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[]</field>
-        <field name="context">{}</field>
-    </record>
-
-    <menuitem id="menu_work_entry_types" 
-              name="Work Entry Types" 
-              parent="menu_payroll_configuration"
-              action="action_hr_work_entry_type_payroll"
-              sequence="40"/>
-    -->
 
 </odoo>

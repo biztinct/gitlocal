@@ -2,54 +2,26 @@
 <odoo>
     <!-- Enhanced Zoho Integration Menu Structure -->
     
-    <!-- Enhanced Zoho Staging Data Menu -->
-    <menuitem id="menu_zoho_staging_data_enhanced" 
-              name="Staging Data" 
-              parent="menu_payroll_zoho"
-              action="action_zoho_staging_data_enhanced"
-              sequence="30"/>
+    <!-- Make sure the parent menu exists first - Create it if it doesn't exist -->
+    
+    <menuitem id="menu_payroll_zoho" 
+              name="Zoho Integration" 
+              parent="menu_payroll_main"
+              sequence="70"/>
+    
 
-    <!-- Import Wizard Menu -->
-    <menuitem id="menu_zoho_staging_import" 
-              name="Import Data" 
-              parent="menu_payroll_zoho"
-              action="action_zoho_staging_import_wizard"
-              sequence="40"/>
-
-    <!-- Country-Specific Zoho Menus -->
-    <menuitem id="menu_zoho_by_country" 
-              name="By Country" 
-              parent="menu_payroll_zoho"
-              sequence="50"/>
-
-    <menuitem id="menu_zoho_vietnam" 
-              name="Vietnam Data" 
-              parent="menu_zoho_by_country"
-              action="action_zoho_staging_vietnam"
-              sequence="10"/>
-
-    <menuitem id="menu_zoho_indonesia" 
-              name="Indonesia Data" 
-              parent="menu_zoho_by_country"
-              action="action_zoho_staging_indonesia"
-              sequence="20"/>
-
-    <menuitem id="menu_zoho_india" 
-              name="India Data" 
-              parent="menu_zoho_by_country"
-              action="action_zoho_staging_india"
-              sequence="30"/>
 
     <!-- Processing Actions -->
     <record id="action_process_staging_batch" model="ir.actions.server">
         <field name="name">Process Staging Batch</field>
-        <field name="model_id" ref="model_zoho_staging_data"/>
-        <field name="binding_model_id" ref="model_zoho_staging_data"/>
+        <field name="model_id" ref="om_hr_payroll.model_zoho_staging_data"/>
+        <field name="binding_model_id" ref="om_hr_payroll.model_zoho_staging_data"/>
         <field name="state">code</field>
         <field name="code">
             for record in records:
-                if record.processing_status == 'draft':
-                    record.action_process_to_employee()
+                if hasattr(record, 'processing_status') and record.processing_status == 'draft':
+                    if hasattr(record, 'action_process_to_employee'):
+                        record.action_process_to_employee()
         </field>
     </record>
 
