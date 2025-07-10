@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Enhanced Dashboard Form View -->
+    <record id="view_payroll_dashboard_form_enhanced" model="ir.ui.view">
+        <field name="name">payroll.dashboard.form.enhanced</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Dashboard" create="false" edit="false" delete="false">
+                <header>
+                    <button name="action_refresh_metrics" 
+                            string="Refresh Metrics" 
+                            type="object" 
+                            class="oe_highlight"
+                            icon="fa-refresh"/>
+                    <button name="action_get_employee_data" 
+                            string="Import Employees" 
+                            type="object" 
+                            icon="fa-users"/>
+                    <button name="action_edit_spreadsheet" 
+                            string="Edit Spreadsheet" 
+                            type="object" 
+                            icon="fa-table"/>
+                    <button name="action_process_payroll" 
+                            string="Process Payroll" 
+                            type="object" 
+                            class="oe_highlight"
+                            icon="fa-play"/>
+                    <field name="active" invisible="1"/>
+                </header>
+                <sheet>
+                    <style>
+                        .dashboard-enhanced {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            border-radius: 15px;
+                            padding: 30px;
+                            margin: 20px 0;
+                            color: white;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                        }
+                        .metric-card {
+                            background: rgba(255,255,255,0.95);
+                            border-radius: 12px;
+                            padding: 25px;
+                            margin: 10px;
+                            text-align: center;
+                            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+                            transition: transform 0.3s ease, box-shadow 0.3s ease;
+                            min-height: 140px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                        }
+                        .metric-card:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                        }
+                        .metric-icon {
+                            font-size: 48px;
+                            margin-bottom: 15px;
+                            background: linear-gradient(45deg, #667eea, #764ba2);
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            background-clip: text;
+                        }
+                        .metric-value {
+                            font-size: 36px;
+                            font-weight: 700;
+                            color: #2c3e50;
+                            margin-bottom: 8px;
+                        }
+                        .metric-label {
+                            font-size: 14px;
+                            color: #7f8c8d;
+                            font-weight: 500;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                        }
+                        .dashboard-header {
+                            text-align: center;
+                            margin-bottom: 40px;
+                        }
+                        .dashboard-title {
+                            font-size: 42px;
+                            font-weight: 300;
+                            margin-bottom: 10px;
+                            color: white;
+                            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        }
+                        .dashboard-subtitle {
+                            font-size: 18px;
+                            color: rgba(255,255,255,0.9);
+                            font-weight: 300;
+                        }
+                        .action-button {
+                            background: linear-gradient(45deg, #667eea, #764ba2);
+                            border: none;
+                            color: white;
+                            padding: 15px 30px;
+                            border-radius: 8px;
+                            font-size: 16px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            margin: 5px;
+                            min-width: 200px;
+                        }
+                        .action-button:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+                        }
+                        .action-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                            gap: 20px;
+                            margin-top: 30px;
+                        }
+                        .country-flag {
+                            display: inline-block;
+                            margin-right: 10px;
+                            font-size: 24px;
+                        }
+                        .status-indicator {
+                            display: inline-block;
+                            width: 12px;
+                            height: 12px;
+                            border-radius: 50%;
+                            margin-right: 8px;
+                        }
+                        .status-active { background: #27ae60; }
+                        .status-warning { background: #f39c12; }
+                        .status-error { background: #e74c3c; }
+                        .last-updated {
+                            text-align: center;
+                            color: rgba(255,255,255,0.8);
+                            font-size: 14px;
+                            margin-top: 20px;
+                        }
+                    </style>
+                    
+                    <div class="dashboard-enhanced">
+                        <div class="dashboard-header">
+                            <h1 class="dashboard-title">
+                                <span class="country-flag" t-esc="self._get_country_flag()"/>
+                                <field name="name" readonly="1" style="background: none; border: none; color: white; font-size: inherit; font-weight: inherit;"/>
+                            </h1>
+                            <p class="dashboard-subtitle">
+                                Real-time payroll metrics and management
+                            </p>
+                        </div>
+                        
+                        <!-- Metrics Grid -->
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fa fa-users"/>
+                                    </div>
+                                    <div class="metric-value">
+                                        <field name="employee_count"/>
+                                    </div>
+                                    <div class="metric-label">Total Employees</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fa fa-file-text"/>
+                                    </div>
+                                    <div class="metric-value">
+                                        <field name="active_contracts"/>
+                                    </div>
+                                    <div class="metric-label">Active Contracts</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fa fa-clock-o"/>
+                                    </div>
+                                    <div class="metric-value">
+                                        <field name="pending_payslips"/>
+                                    </div>
+                                    <div class="metric-label">Pending Payslips</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-icon">
+                                        <i class="fa fa-money"/>
+                                    </div>
+                                    <div class="metric-value">
+                                        <field name="total_gross_salary" widget="monetary"/>
+                                    </div>
+                                    <div class="metric-label">Total Gross Salary</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions -->
+                        <div class="action-grid">
+                            <button name="action_get_employee_data" type="object" class="action-button">
+                                <i class="fa fa-download"/> Import Employee Data
+                            </button>
+                            <button name="action_edit_spreadsheet" type="object" class="action-button">
+                                <i class="fa fa-table"/> Edit Payroll Spreadsheet
+                            </button>
+                            <button name="action_process_payroll" type="object" class="action-button">
+                                <i class="fa fa-play"/> Process Payroll
+                            </button>
+                            <button name="action_refresh_metrics" type="object" class="action-button">
+                                <i class="fa fa-refresh"/> Refresh Metrics
+                            </button>
+                        </div>
+                        
+                        <div class="last-updated">
+                            <span class="status-indicator status-active"/>
+                            Last updated: <field name="last_updated" widget="datetime"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Configuration Panel -->
+                    <group string="Configuration" class="mt-4">
+                        <group>
+                            <field name="country" readonly="1"/>
+                            <field name="currency_id" readonly="1"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="auto_refresh"/>
+                            <field name="refresh_interval" attrs="{'invisible': [('auto_refresh', '=', False)]}"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Enhanced Kanban View for Country Selection -->
+    <record id="view_payroll_dashboard_kanban_enhanced" model="ir.ui.view">
+        <field name="name">payroll.dashboard.kanban.enhanced</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard_payroll">
+                <field name="name"/>
+                <field name="country"/>
+                <field name="employee_count"/>
+                <field name="active_contracts"/>
+                <field name="pending_payslips"/>
+                <field name="total_gross_salary"/>
+                <field name="currency_id"/>
+                <field name="last_updated"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click payroll-country-card">
+                            <div class="country-card-header">
+                                <div class="country-flag">
+                                    <t t-if="record.country.raw_value == 'VN'">🇻🇳</t>
+                                    <t t-if="record.country.raw_value == 'ID'">🇮🇩</t>
+                                    <t t-if="record.country.raw_value == 'IN'">🇮🇳</t>
+                                    <t t-if="record.country.raw_value == 'SG'">🇸🇬</t>
+                                    <t t-if="record.country.raw_value == 'MY'">🇲🇾</t>
+                                </div>
+                                <div class="country-name">
+                                    <strong t-esc="record.name.value"/>
+                                </div>
+                            </div>
+                            
+                            <div class="country-metrics">
+                                <div class="metric-row">
+                                    <div class="metric-item">
+                                        <span class="metric-icon">👥</span>
+                                        <span class="metric-value" t-esc="record.employee_count.value"/>
+                                        <span class="metric-label">Employees</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-icon">📄</span>
+                                        <span class="metric-value" t-esc="record.active_contracts.value"/>
+                                        <span class="metric-label">Contracts</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-row">
+                                    <div class="metric-item">
+                                        <span class="metric-icon">⏳</span>
+                                        <span class="metric-value" t-esc="record.pending_payslips.value"/>
+                                        <span class="metric-label">Pending</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-icon">💰</span>
+                                        <span class="metric-value" t-esc="record.total_gross_salary.value"/>
+                                        <span class="metric-label" t-esc="record.currency_id.value"/>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="country-actions">
+                                <button name="action_open_country_dashboard" type="object" 
+                                        class="btn btn-primary btn-sm">
+                                    Open Dashboard
+                                </button>
+                            </div>
+                            
+                            <div class="country-footer">
+                                <small>Updated: <t t-esc="record.last_updated.value"/></small>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Analytics Dashboard Form -->
+    <record id="view_payroll_analytics_form_enhanced" model="ir.ui.view">
+        <field name="name">payroll.analytics.form.enhanced</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Analytics">
+                <header>
+                    <button name="action_compute_analytics" 
+                            string="Compute Analytics" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                    <button name="action_approve" 
+                            string="Approve" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'ready')]}"/>
+                    <button name="action_export_analytics" 
+                            string="Export to Excel" 
+                            type="object"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'computing'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,computing,ready,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="period_name" placeholder="e.g., January 2024 - Vietnam"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                            <field name="country_code"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="data_source"/>
+                            <field name="computation_date" readonly="1"/>
+                            <field name="computation_duration" readonly="1" widget="float_time"/>
+                            <field name="is_confidential"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Key Metrics" name="metrics">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <group string="Core Metrics">
+                                        <field name="total_employees"/>
+                                        <field name="total_payroll" widget="monetary"/>
+                                        <field name="average_salary" widget="monetary"/>
+                                        <field name="median_salary" widget="monetary"/>
+                                    </group>
+                                </div>
+                                <div class="col-md-6">
+                                    <group string="Growth Comparison">
+                                        <field name="previous_period_id"/>
+                                        <field name="employee_growth" widget="percentage"/>
+                                        <field name="payroll_growth" widget="percentage"/>
+                                        <field name="average_salary_growth" widget="percentage"/>
+                                    </group>
+                                </div>
+                            </div>
+                        </page>
+                        
+                        <page string="Component Analysis" name="components">
+                            <group>
+                                <field name="salary_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                <field name="deduction_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                <field name="benefit_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Breakdowns" name="breakdowns">
+                            <group>
+                                <field name="department_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                <field name="position_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                <field name="contract_type_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Variance &amp; Alerts" name="variance">
+                            <group>
+                                <field name="anomaly_count"/>
+                                <field name="variance_alerts" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Approval" name="approval">
+                            <group>
+                                <field name="approver_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Analytics Tree View -->
+    <record id="view_payroll_analytics_tree" model="ir.ui.view">
+        <field name="name">payroll.analytics.tree</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Analytics">
+                <field name="period_name"/>
+                <field name="country_code"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="total_employees"/>
+                <field name="total_payroll" widget="monetary"/>
+                <field name="average_salary" widget="monetary"/>
+                <field name="employee_growth" widget="percentage"/>
+                <field name="payroll_growth" widget="percentage"/>
+                <field name="anomaly_count"/>
+                <field name="state" widget="badge" decoration-success="state == 'approved'" 
+                       decoration-warning="state == 'ready'" decoration-info="state == 'computing'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_payroll_dashboard_enhanced" model="ir.actions.act_window">
+        <field name="name">Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">kanban,form,tree</field>
+        <field name="view_id" ref="view_payroll_dashboard_kanban_enhanced"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Welcome to Multi-Country Payroll Management!
+            </p>
+            <p>
+                Select a country to access its payroll dashboard and manage payroll operations.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_payroll_analytics_enhanced" model="ir.actions.act_window">
+        <field name="name">Payroll Analytics</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'create': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No analytics data found!
+            </p>
+            <p>
+                Create your first payroll analytics report to get insights into payroll trends and metrics.
+            </p>
+        </field>
+    </record>
+
+    <!-- Custom CSS for Enhanced UI -->
+    <template id="payroll_dashboard_assets" name="Payroll Dashboard Assets">
+        <link rel="stylesheet" type="text/css" href="/pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css"/>
+        <script type="text/javascript" src="/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js"></script>
+    </template>
+
+</odoo>
