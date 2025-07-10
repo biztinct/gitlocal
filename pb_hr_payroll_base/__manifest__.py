@@ -196,11 +196,12 @@
         
         # Data - Enhanced structures and rules
         'data/payroll_base_data.xml',                            # Existing base data
-        'data/payroll_dashboard_data.xml',                       # NEW: Default dashboard data
         
         # Views - Enhanced models (extends om_hr_payroll models)
         'views/hr_payroll_structure_base_views.xml',             # Existing enhanced views
-        
+
+        'wizards/analytics_wizard_views.xml',                   # NEW: Analytics generation wizard
+                
         # Dashboard System - Enhanced Components
         'views/payroll_base_dashboard.xml',                      # Existing dashboard views
         'views/payroll_dashboard_enhanced_views.xml',            # NEW: Enhanced dashboard views
@@ -220,7 +221,7 @@
         
         # NEW: Enhanced Wizards
         'wizards/payroll_import_wizard_views.xml',              # NEW: Enhanced import wizard
-        'wizards/analytics_wizard_views.xml',                   # NEW: Analytics generation wizard
+
         'wizards/employee_import_wizard_views.xml',             # NEW: Employee import wizard
     ],
     # ❌ REMOVED: demo section - it never existed in your original code

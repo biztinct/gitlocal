@@ -1,4 +1,3 @@
-# pb_hr_payroll_base/__init__.py - FIXED VERSION
 # -*- coding: utf-8 -*-
 
 from . import models
@@ -10,7 +9,6 @@ from odoo import api, SUPERUSER_ID
 
 _logger = logging.getLogger(__name__)
 
-# Keep the existing post_init and cleanup functions
 def _post_init_multi_country_setup(cr, registry):
     """Enhanced post-initialization setup for multi-country payroll framework"""
     try:

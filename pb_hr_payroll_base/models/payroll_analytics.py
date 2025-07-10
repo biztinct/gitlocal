@@ -16,6 +16,7 @@ _logger = logging.getLogger(__name__)
 class PayrollAnalytics(models.Model):
     _name = 'payroll.analytics'
     _description = 'Advanced Payroll Analytics'
+    _inherit = ['mail.thread', 'mail.activity.mixin']  # ✅ ADD THIS LINE
     _order = 'period_start desc'
     _rec_name = 'period_name'
 
@@ -31,7 +32,7 @@ class PayrollAnalytics(models.Model):
         ('IN', 'India'),
         ('SG', 'Singapore'),
         ('MY', 'Malaysia'),
-    ], string='Country', required=True)
+    ], string='Country', required=True, tracking=True)  # ✅ ADD tracking=True
     
     currency_id = fields.Many2one('res.currency', string='Currency', required=True)
     
@@ -68,8 +69,8 @@ class PayrollAnalytics(models.Model):
         ('ready', 'Ready for Review'),
         ('approved', 'Approved'),
         ('archived', 'Archived'),
-    ], default='draft', string='Status')
-    
+    ], default='draft', string='Status', tracking=True)  # ✅ ADD tracking=True
+        
     # Processing Information
     computation_date = fields.Datetime('Computation Date')
     computation_duration = fields.Float('Computation Time (seconds)')
