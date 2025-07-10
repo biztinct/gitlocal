@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Analytics Generation Wizard Form -->
+    <record id="view_analytics_wizard_form" model="ir.ui.view">
+        <field name="name">analytics.wizard.form</field>
+        <field name="model">analytics.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Analytics">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Generate Payroll Analytics</h1>
+                        <h3>Create comprehensive analytics for payroll data</h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Period Configuration">
+                            <field name="period_start" required="1"/>
+                            <field name="period_end" required="1"/>
+                            <field name="period_type"/>
+                            <field name="auto_name" help="Automatically generate period name"/>
+                        </group>
+                        <group string="Country &amp; Scope">
+                            <field name="country_code" required="1"/>
+                            <field name="include_all_employees"/>
+                            <field name="employee_ids" widget="many2many_tags" 
+                                   attrs="{'invisible': [('include_all_employees', '=', True)]}"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Analytics Options">
+                            <field name="include_comparisons"/>
+                            <field name="previous_period_id" 
+                                   attrs="{'invisible': [('include_comparisons', '=', False)]}"/>
+                            <field name="include_anomaly_detection"/>
+                            <field name="anomaly_threshold" 
+                                   attrs="{'invisible': [('include_anomaly_detection', '=', False)]}"/>
+                        </group>
+                        <group string="Component Analysis">
+                            <field name="analyze_salary_components"/>
+                            <field name="analyze_deductions"/>
+                            <field name="analyze_benefits"/>
+                            <field name="include_department_breakdown"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Data Sources">
+                            <field name="data_source"/>
+                            <field name="include_inactive_employees"/>
+                            <field name="payslip_state_filter"/>
+                        </group>
+                        <group string="Output Options">
+                            <field name="auto_approve"/>
+                            <field name="generate_charts"/>
+                            <field name="export_to_excel"/>
+                            <field name="send_notification"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Advanced Settings" name="advanced">
+                            <group>
+                                <group string="Calculation Settings">
+                                    <field name="currency_id"/>
+                                    <field name="exchange_rate_date"/>
+                                    <field name="rounding_precision"/>
+                                </group>
+                                <group string="Performance">
+                                    <field name="batch_size"/>
+                                    <field name="parallel_processing"/>
+                                    <field name="cache_results"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Custom Filters">
+                                <field name="custom_domain" widget="domain" 
+                                       options="{'model': 'hr.payslip', 'in_dialog': true}"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Preview" name="preview">
+                            <div class="alert alert-info">
+                                <strong>Preview:</strong> This will show estimated results based on current configuration.
+                            </div>
+                            <group>
+                                <field name="estimated_employee_count" readonly="1"/>
+                                <field name="estimated_payslip_count" readonly="1"/>
+                                <field name="estimated_processing_time" readonly="1"/>
+                            </group>
+                            
+                            <button name="action_preview_analytics" 
+                                    string="Generate Preview" 
+                                    type="object" 
+                                    class="btn-primary"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_generate_analytics" 
+                            string="Generate Analytics" 
+                            type="object" 
+                            class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Analytics Generation Wizard Action -->
+    <record id="action_analytics_generation_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Analytics</field>
+        <field name="res_model">analytics.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_analytics_wizard_form"/>
+    </record>
+
+</odoo>

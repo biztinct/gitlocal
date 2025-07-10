@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Employee Import Wizard Form -->
+    <record id="view_employee_import_wizard_form" model="ir.ui.view">
+        <field name="name">employee.import.wizard.form</field>
+        <field name="model">employee.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Employee Data">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Import Employee Data</h1>
+                        <h3>Import employee information from external sources</h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Import Source">
+                            <field name="import_source"/>
+                            <field name="country_code" required="1"/>
+                            <field name="data_source_url" 
+                                   attrs="{'invisible': [('import_source', '!=', 'api')], 'required': [('import_source', '=', 'api')]}"/>
+                            <field name="import_file" filename="import_filename"
+                                   attrs="{'invisible': [('import_source', '!=', 'file')], 'required': [('import_source', '=', 'file')]}"/>
+                            <field name="import_filename" invisible="1"/>
+                        </group>
+                        <group string="Processing Options">
+                            <field name="update_existing"/>
+                            <field name="create_contracts"/>
+                            <field name="auto_assign_structure"/>
+                            <field name="send_welcome_email"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Zoho Integration" attrs="{'invisible': [('import_source', '!=', 'zoho')]}">
+                        <group>
+                            <field name="zoho_api_key"/>
+                            <field name="zoho_org_id"/>
+                            <field name="zoho_department_filter"/>
+                        </group>
+                        <group>
+                            <field name="zoho_last_sync_date"/>
+                            <field name="zoho_sync_active_only"/>
+                            <button name="action_test_zoho_connection" 
+                                    string="Test Connection" 
+                                    type="object" 
+                                    class="btn-secondary"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Field Mapping" name="mapping">
+                            <div class="alert alert-info">
+                                <strong>Field Mapping:</strong> Configure how external data maps to Odoo employee fields.
+                            </div>
+                            
+                            <group>
+                                <group string="Basic Information">
+                                    <field name="name_field"/>
+                                    <field name="email_field"/>
+                                    <field name="phone_field"/>
+                                    <field name="employee_number_field"/>
+                                </group>
+                                <group string="Employment Details">
+                                    <field name="department_field"/>
+                                    <field name="job_title_field"/>
+                                    <field name="manager_field"/>
+                                    <field name="join_date_field"/>
+                                </group>
+                            </group>
+                            
+                            <group>
+                                <group string="Personal Information">
+                                    <field name="birthday_field"/>
+                                    <field name="gender_field"/>
+                                    <field name="address_field"/>
+                                    <field name="emergency_contact_field"/>
+                                </group>
+                                <group string="Payroll Information">
+                                    <field name="salary_field"/>
+                                    <field name="currency_field"/>
+                                    <field name="payment_method_field"/>
+                                    <field name="bank_account_field"/>
+                                </group>
+                            </group>
+                            
+                            <field name="custom_field_mappings">
+                                <tree editable="bottom">
+                                    <field name="source_field"/>
+                                    <field name="target_field"/>
+                                    <field name="field_type"/>
+                                    <field name="transformation_rule"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Data Validation" name="validation">
+                            <group>
+                                <group string="Validation Settings">
+                                    <field name="validate_email_format"/>
+                                    <field name="validate_phone_format"/>
+                                    <field name="validate_required_fields"/>
+                                    <field name="validate_duplicate_employees"/>
+                                </group>
+                                <group string="Data Transformation">
+                                    <field name="auto_format_names"/>
+                                    <field name="auto_format_emails"/>
+                                    <field name="normalize_phone_numbers"/>
+                                    <field name="default_country_id"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Custom Validations">
+                                <field name="custom_validation_code" widget="ace" options="{'mode': 'python'}"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Contract Creation" name="contracts" attrs="{'invisible': [('create_contracts', '=', False)]}">
+                            <group>
+                                <group string="Default Contract Settings">
+                                    <field name="default_contract_type"/>
+                                    <field name="default_wage"/>
+                                    <field name="default_currency_id"/>
+                                    <field name="default_working_hours"/>
+                                </group>
+                                <group string="Payroll Structure">
+                                    <field name="payroll_structure_id"/>
+                                    <field name="auto_assign_structure"/>
+                                    <field name="contract_start_date"/>
+                                    <field name="contract_state"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Preview" name="preview">
+                            <div class="alert alert-info">
+                                <strong>Preview:</strong> Shows a sample of employees to be imported.
+                            </div>
+                            
+                            <button name="action_load_preview" 
+                                    string="Load Preview" 
+                                    type="object" 
+                                    class="btn-primary"/>
+                            
+                            <field name="preview_data" readonly="1"/>
+                            
+                            <group>
+                                <field name="preview_employee_count" readonly="1"/>
+                                <field name="preview_new_employees" readonly="1"/>
+                                <field name="preview_existing_employees" readonly="1"/>
+                                <field name="preview_validation_errors" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Import Results" name="results" attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <group>
+                                <group string="Import Statistics">
+                                    <field name="imported_count" readonly="1"/>
+                                    <field name="updated_count" readonly="1"/>
+                                    <field name="failed_count" readonly="1"/>
+                                    <field name="contracts_created" readonly="1"/>
+                                </group>
+                                <group string="Processing Info">
+                                    <field name="start_time" readonly="1"/>
+                                    <field name="end_time" readonly="1"/>
+                                    <field name="processing_duration" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <field name="import_log" readonly="1" widget="text"/>
+                            
+                            <field name="error_details" readonly="1" 
+                                   attrs="{'invisible': [('failed_count', '=', 0)]}"/>
+                        </page>
+                    </notebook>
+                    
+                    <field name="state" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_start_import" 
+                            string="Start Import" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_download_template" 
+                            string="Download Template" 
+                            type="object" 
+                            class="btn-secondary"/>
+                    <button name="action_download_error_report" 
+                            string="Download Error Report" 
+                            type="object" 
+                            class="btn-warning"
+                            attrs="{'invisible': [('failed_count', '=', 0)]}"/>
+                    <button name="action_view_imported_employees" 
+                            string="View Imported Employees" 
+                            type="object" 
+                            class="btn-primary"
+                            attrs="{'invisible': [('imported_count', '=', 0)]}"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Custom Field Mapping Line Form -->
+    <record id="view_custom_field_mapping_form" model="ir.ui.view">
+        <field name="name">custom.field.mapping.form</field>
+        <field name="model">custom.field.mapping</field>
+        <field name="arch" type="xml">
+            <form string="Custom Field Mapping">
+                <group>
+                    <group>
+                        <field name="source_field"/>
+                        <field name="target_field"/>
+                        <field name="field_type"/>
+                    </group>
+                    <group>
+                        <field name="is_required"/>
+                        <field name="transformation_rule"/>
+                        <field name="default_value"/>
+                    </group>
+                </group>
+                
+                <group string="Transformation Examples">
+                    <div class="alert alert-info">
+                        <strong>Transformation Rules Examples:</strong><br/>
+                        • <code>value.upper()</code> - Convert to uppercase<br/>
+                        • <code>value.replace(' ', '_')</code> - Replace spaces with underscores<br/>
+                        • <code>datetime.strptime(value, '%d/%m/%Y')</code> - Parse date format<br/>
+                        • <code>float(value) * 1000</code> - Convert currency units<br/>
+                    </div>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- Employee Import Wizard Action -->
+    <record id="action_employee_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Employees</field>
+        <field name="res_model">employee.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_employee_import_wizard_form"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Default Dashboard Configurations for Supported Countries -->
+        
+        <!-- Vietnam Dashboard -->
+        <record id="dashboard_vietnam" model="payroll.dashboard">
+            <field name="name">Vietnam Payroll Dashboard</field>
+            <field name="country">VN</field>
+            <field name="sequence">10</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+        </record>
+
+        <!-- Indonesia Dashboard -->
+        <record id="dashboard_indonesia" model="payroll.dashboard">
+            <field name="name">Indonesia Payroll Dashboard</field>
+            <field name="country">ID</field>
+            <field name="sequence">20</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+        </record>
+
+        <!-- India Dashboard -->
+        <record id="dashboard_india" model="payroll.dashboard">
+            <field name="name">India Payroll Dashboard</field>
+            <field name="country">IN</field>
+            <field name="sequence">30</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+        </record>
+
+        <!-- Singapore Dashboard -->
+        <record id="dashboard_singapore" model="payroll.dashboard">
+            <field name="name">Singapore Payroll Dashboard</field>
+            <field name="country">SG</field>
+            <field name="sequence">40</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+        </record>
+
+        <!-- Malaysia Dashboard -->
+        <record id="dashboard_malaysia" model="payroll.dashboard">
+            <field name="name">Malaysia Payroll Dashboard</field>
+            <field name="country">MY</field>
+            <field name="sequence">50</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+        </record>
+
+        <!-- Thailand Dashboard -->
+        <record id="dashboard_thailand" model="payroll.dashboard">
+            <field name="name">Thailand Payroll Dashboard</field>
+            <field name="country">TH</field>
+            <field name="sequence">60</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+        </record>
+
+        <!-- Philippines Dashboard -->
+        <record id="dashboard_philippines" model="payroll.dashboard">
+            <field name="name">Philippines Payroll Dashboard</field>
+            <field name="country">PH</field>
+            <field name="sequence">70</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+        </record>
+
+        <!-- Configuration Parameters -->
+        <record id="config_multi_country_enabled" model="ir.config_parameter">
+            <field name="key">payroll.multi_country_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="config_default_country" model="ir.config_parameter">
+            <field name="key">payroll.default_country</field>
+            <field name="value">VN</field>
+        </record>
+
+        <record id="config_dashboard_refresh_interval" model="ir.config_parameter">
+            <field name="key">payroll.dashboard_refresh_interval</field>
+            <field name="value">60</field>
+        </record>
+
+        <record id="config_analytics_auto_generation" model="ir.config_parameter">
+            <field name="key">payroll.analytics_auto_generation</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="config_spreadsheet_integration" model="ir.config_parameter">
+            <field name="key">payroll.spreadsheet_integration</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="config_api_enabled" model="ir.config_parameter">
+            <field name="key">payroll.api_enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <!-- Country-Currency Mapping Data -->
+        <record id="country_currency_vietnam" model="ir.config_parameter">
+            <field name="key">payroll.currency.VN</field>
+            <field name="value">VND</field>
+        </record>
+
+        <record id="country_currency_indonesia" model="ir.config_parameter">
+            <field name="key">payroll.currency.ID</field>
+            <field name="value">IDR</field>
+        </record>
+
+        <record id="country_currency_india" model="ir.config_parameter">
+            <field name="key">payroll.currency.IN</field>
+            <field name="value">INR</field>
+        </record>
+
+        <record id="country_currency_singapore" model="ir.config_parameter">
+            <field name="key">payroll.currency.SG</field>
+            <field name="value">SGD</field>
+        </record>
+
+        <record id="country_currency_malaysia" model="ir.config_parameter">
+            <field name="key">payroll.currency.MY</field>
+            <field name="value">MYR</field>
+        </record>
+
+        <record id="country_currency_thailand" model="ir.config_parameter">
+            <field name="key">payroll.currency.TH</field>
+            <field name="value">THB</field>
+        </record>
+
+        <record id="country_currency_philippines" model="ir.config_parameter">
+            <field name="key">payroll.currency.PH</field>
+            <field name="value">PHP</field>
+        </record>
+
+    </data>
+
+    <!-- Demo/Sample Analytics Data (optional - only loaded in demo mode) -->
+    <data noupdate="1" context="{'install_mode': True}">
+        
+        <!-- Sample Analytics for Vietnam (Previous Month) -->
+        <record id="sample_analytics_vietnam_202401" model="payroll.analytics">
+            <field name="period_name">January 2024 - Vietnam</field>
+            <field name="period_start">2024-01-01</field>
+            <field name="period_end">2024-01-31</field>
+            <field name="country_code">VN</field>
+            <field name="currency_id" ref="base.VND"/>
+            <field name="state">approved</field>
+            <field name="total_employees">25</field>
+            <field name="total_payroll">850000000</field>
+            <field name="average_salary">34000000</field>
+            <field name="median_salary">32000000</field>
+            <field name="employee_growth">8.7</field>
+            <field name="payroll_growth">12.3</field>
+            <field name="average_salary_growth">3.2</field>
+            <field name="anomaly_count">2</field>
+            <field name="computation_date">2024-02-01 09:00:00</field>
+            <field name="computation_duration">45.6</field>
+            <field name="data_source">payslips</field>
+        </record>
+
+        <!-- Sample Analytics for Indonesia (Previous Month) -->
+        <record id="sample_analytics_indonesia_202401" model="payroll.analytics">
+            <field name="period_name">January 2024 - Indonesia</field>
+            <field name="period_start">2024-01-01</field>
+            <field name="period_end">2024-01-31</field>
+            <field name="country_code">ID</field>
+            <field name="currency_id" ref="base.IDR"/>
+            <field name="state">approved</field>
+            <field name="total_employees">32</field>
+            <field name="total_payroll">1200000000</field>
+            <field name="average_salary">37500000</field>
+            <field name="median_salary">35000000</field>
+            <field name="employee_growth">5.2</field>
+            <field name="payroll_growth">7.8</field>
+            <field name="average_salary_growth">2.4</field>
+            <field name="anomaly_count">1</field>
+            <field name="computation_date">2024-02-01 10:30:00</field>
+            <field name="computation_duration">52.3</field>
+            <field name="data_source">payslips</field>
+        </record>
+
+        <!-- Sample Analytics for India (Previous Month) -->
+        <record id="sample_analytics_india_202401" model="payroll.analytics">
+            <field name="period_name">January 2024 - India</field>
+            <field name="period_start">2024-01-01</field>
+            <field name="period_end">2024-01-31</field>
+            <field name="country_code">IN</field>
+            <field name="currency_id" ref="base.INR"/>
+            <field name="state">approved</field>
+            <field name="total_employees">45</field>
+            <field name="total_payroll">18500000</field>
+            <field name="average_salary">411111</field>
+            <field name="median_salary">380000</field>
+            <field name="employee_growth">15.4</field>
+            <field name="payroll_growth">18.7</field>
+            <field name="average_salary_growth">2.9</field>
+            <field name="anomaly_count">3</field>
+            <field name="computation_date">2024-02-01 11:15:00</field>
+            <field name="computation_duration">67.8</field>
+            <field name="data_source">payslips</field>
+        </record>
+
+    </data>
+
+    <!-- Cron Jobs for Automated Tasks -->
+    <data noupdate="1">
+        
+        <!-- Auto-generate Monthly Analytics -->
+        <record id="cron_auto_generate_analytics" model="ir.cron">
+            <field name="name">Auto-Generate Monthly Payroll Analytics</field>
+            <field name="model_id" ref="model_payroll_analytics"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_generate_monthly_analytics()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">months</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active">True</field>
+            <field name="priority">5</field>
+        </record>
+
+        <!-- Refresh Dashboard Metrics -->
+        <record id="cron_refresh_dashboard_metrics" model="ir.cron">
+            <field name="name">Refresh Dashboard Metrics</field>
+            <field name="model_id" ref="model_payroll_dashboard"/>
+            <field name="state">code</field>
+            <field name="code">
+for dashboard in model.search([('auto_refresh', '=', True)]):
+    dashboard._compute_metrics()
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active">True</field>
+            <field name="priority">10</field>
+        </record>
+
+        <!-- Clean Old Analytics Data -->
+        <record id="cron_cleanup_old_analytics" model="ir.cron">
+            <field name="name">Cleanup Old Analytics Data</field>
+            <field name="model_id" ref="model_payroll_analytics"/>
+            <field name="state">code</field>
+            <field name="code">
+# Delete analytics older than 2 years
+cutoff_date = fields.Date.today() - relativedelta(years=2)
+old_analytics = model.search([('period_start', '&lt;', cutoff_date), ('state', '!=', 'approved')])
+old_analytics.unlink()
+            </field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">weeks</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+            <field name="active">True</field>
+            <field name="priority">15</field>
+        </record>
+
+    </data>
+
+    <!-- Menu Actions for Enhanced Dashboard -->
+    <data noupdate="0">
+        
+        <!-- Main Dashboard Action -->
+        <record id="action_payroll_dashboard_main" model="ir.actions.act_window">
+            <field name="name">Payroll Dashboard</field>
+            <field name="res_model">payroll.dashboard</field>
+            <field name="view_mode">kanban,form,tree</field>
+            <field name="context">{
+                'search_default_active': 1,
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Welcome to Multi-Country Payroll Management!
+                </p>
+                <p>
+                    Select a country to access its payroll dashboard and manage payroll operations.
+                    Use the enhanced dashboard to monitor real-time metrics and analytics.
+                </p>
+            </field>
+        </record>
+
+        <!-- Analytics Dashboard Action -->
+        <record id="action_payroll_analytics_main" model="ir.actions.act_window">
+            <field name="name">Payroll Analytics</field>
+            <field name="res_model">payroll.analytics</field>
+            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="context">{
+                'search_default_current_year': 1,
+                'group_by': ['country_code', 'period_start:month'],
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No analytics data found!
+                </p>
+                <p>
+                    Create your first payroll analytics report to get insights into 
+                    payroll trends, employee growth, and compensation analysis.
+                </p>
+            </field>
+        </record>
+
+        <!-- Country Selector Action -->
+        <record id="action_country_selector_main" model="ir.actions.server">
+            <field name="name">Select Payroll Country</field>
+            <field name="model_id" ref="model_payroll_dashboard"/>
+            <field name="state">code</field>
+            <field name="code">
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'payroll_country_selector',
+    'target': 'main',
+}
+            </field>
+        </record>
+
+    </data>
+
+</odoo>

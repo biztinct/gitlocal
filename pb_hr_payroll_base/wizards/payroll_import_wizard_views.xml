@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Payroll Import Wizard Form -->
+    <record id="view_payroll_import_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.import.wizard.form</field>
+        <field name="model">payroll.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Payroll Data">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Import Payroll Data</h1>
+                        <h3>Process and import payroll calculations from spreadsheets</h3>
+                    </div>
+                    
+                    <group>
+                        <group string="Import Configuration">
+                            <field name="country_code" required="1"/>
+                            <field name="import_type"/>
+                            <field name="period_start" required="1"/>
+                            <field name="period_end" required="1"/>
+                        </group>
+                        <group string="File Upload">
+                            <field name="import_file" filename="import_filename" required="1"/>
+                            <field name="import_filename" invisible="1"/>
+                            <field name="file_format"/>
+                            <field name="has_header_row"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Processing Options">
+                            <field name="create_missing_employees"/>
+                            <field name="update_existing_payslips"/>
+                            <field name="validate_data"/>
+                            <field name="auto_confirm_payslips"/>
+                        </group>
+                        <group string="Error Handling">
+                            <field name="skip_errors"/>
+                            <field name="error_threshold"/>
+                            <field name="send_error_report"/>
+                            <field name="error_email_recipients" widget="many2many_tags"
+                                   attrs="{'invisible': [('send_error_report', '=', False)]}"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Field Mapping" name="mapping">
+                            <div class="alert alert-info">
+                                <strong>Field Mapping:</strong> Map your spreadsheet columns to Odoo fields.
+                            </div>
+                            
+                            <group>
+                                <group string="Employee Fields">
+                                    <field name="employee_number_column"/>
+                                    <field name="employee_name_column"/>
+                                    <field name="employee_email_column"/>
+                                    <field name="department_column"/>
+                                </group>
+                                <group string="Payroll Fields">
+                                    <field name="basic_salary_column"/>
+                                    <field name="gross_salary_column"/>
+                                    <field name="net_salary_column"/>
+                                    <field name="deductions_column"/>
+                                </group>
+                            </group>
+                            
+                            <field name="field_mapping_ids">
+                                <tree editable="bottom">
+                                    <field name="column_name"/>
+                                    <field name="odoo_field"/>
+                                    <field name="field_type"/>
+                                    <field name="is_required"/>
+                                    <field name="default_value"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <page string="Data Validation" name="validation">
+                            <group>
+                                <group string="Validation Rules">
+                                    <field name="validate_employee_exists"/>
+                                    <field name="validate_salary_positive"/>
+                                    <field name="validate_dates"/>
+                                    <field name="validate_currency"/>
+                                </group>
+                                <group string="Custom Validations">
+                                    <field name="custom_validation_rules" widget="ace" options="{'mode': 'python'}"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Preview" name="preview">
+                            <div class="alert alert-info">
+                                <strong>Preview:</strong> Shows first 10 rows of your data for validation.
+                            </div>
+                            
+                            <button name="action_preview_import" 
+                                    string="Load Preview" 
+                                    type="object" 
+                                    class="btn-primary"/>
+                            
+                            <field name="preview_data" readonly="1" widget="ace" options="{'mode': 'json'}"/>
+                            
+                            <group>
+                                <field name="preview_employee_count" readonly="1"/>
+                                <field name="preview_total_amount" readonly="1"/>
+                                <field name="preview_validation_errors" readonly="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Processing Log" name="log" attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <field name="processing_log" readonly="1" widget="text"/>
+                            
+                            <group>
+                                <field name="processed_records" readonly="1"/>
+                                <field name="failed_records" readonly="1"/>
+                                <field name="processing_duration" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    
+                    <div class="oe_clear"/>
+                    <field name="state" invisible="1"/>
+                </sheet>
+                <footer>
+                    <button name="action_start_import" 
+                            string="Start Import" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_download_template" 
+                            string="Download Template" 
+                            type="object" 
+                            class="btn-secondary"/>
+                    <button name="action_download_errors" 
+                            string="Download Error Report" 
+                            type="object" 
+                            class="btn-warning"
+                            attrs="{'invisible': [('failed_records', '=', 0)]}"/>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Field Mapping Line Form -->
+    <record id="view_field_mapping_form" model="ir.ui.view">
+        <field name="name">field.mapping.form</field>
+        <field name="model">field.mapping</field>
+        <field name="arch" type="xml">
+            <form string="Field Mapping">
+                <group>
+                    <group>
+                        <field name="column_name"/>
+                        <field name="odoo_field"/>
+                        <field name="field_type"/>
+                    </group>
+                    <group>
+                        <field name="is_required"/>
+                        <field name="default_value"/>
+                        <field name="validation_rule"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- Payroll Import Wizard Action -->
+    <record id="action_payroll_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Payroll Data</field>
+        <field name="res_model">payroll.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_payroll_import_wizard_form"/>
+    </record>
+
+</odoo>

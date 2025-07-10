@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Payroll Analytics Form View -->
+    <record id="view_payroll_analytics_form" model="ir.ui.view">
+        <field name="name">payroll.analytics.form</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Analytics">
+                <header>
+                    <button name="action_compute_analytics" 
+                            string="Compute Analytics" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                    <button name="action_approve" 
+                            string="Approve" 
+                            type="object" 
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'ready')]}"/>
+                    <button name="action_export_analytics" 
+                            string="Export to Excel" 
+                            type="object"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'computing'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,computing,ready,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="period_name" placeholder="e.g., January 2024 - Vietnam"/>
+                        </h1>
+                        <h3>
+                            <span class="country-flag" t-if="record.country_code.raw_value == 'VN'">🇻🇳</span>
+                            <span class="country-flag" t-if="record.country_code.raw_value == 'ID'">🇮🇩</span>
+                            <span class="country-flag" t-if="record.country_code.raw_value == 'IN'">🇮🇳</span>
+                            <span class="country-flag" t-if="record.country_code.raw_value == 'SG'">🇸🇬</span>
+                            <span class="country-flag" t-if="record.country_code.raw_value == 'MY'">🇲🇾</span>
+                            <field name="country_code" readonly="1"/>
+                        </h3>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                            <field name="currency_id"/>
+                            <field name="data_source"/>
+                        </group>
+                        <group>
+                            <field name="computation_date" readonly="1"/>
+                            <field name="computation_duration" readonly="1" widget="float_time"/>
+                            <field name="is_confidential"/>
+                            <field name="previous_period_id"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Key Metrics" name="metrics">
+                            <div class="analytics-dashboard">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="metric-card primary">
+                                            <div class="metric-icon">
+                                                <i class="fa fa-users fa-3x"/>
+                                            </div>
+                                            <div class="metric-content">
+                                                <h3 class="metric-value">
+                                                    <field name="total_employees" readonly="1"/>
+                                                </h3>
+                                                <p class="metric-label">Total Employees</p>
+                                                <span class="metric-growth" attrs="{'invisible': [('employee_growth', '=', 0)]}">
+                                                    <field name="employee_growth" widget="percentage" readonly="1"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="metric-card success">
+                                            <div class="metric-icon">
+                                                <i class="fa fa-money fa-3x"/>
+                                            </div>
+                                            <div class="metric-content">
+                                                <h3 class="metric-value">
+                                                    <field name="total_payroll" widget="monetary" readonly="1"/>
+                                                </h3>
+                                                <p class="metric-label">Total Payroll</p>
+                                                <span class="metric-growth" attrs="{'invisible': [('payroll_growth', '=', 0)]}">
+                                                    <field name="payroll_growth" widget="percentage" readonly="1"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="metric-card info">
+                                            <div class="metric-icon">
+                                                <i class="fa fa-calculator fa-3x"/>
+                                            </div>
+                                            <div class="metric-content">
+                                                <h3 class="metric-value">
+                                                    <field name="average_salary" widget="monetary" readonly="1"/>
+                                                </h3>
+                                                <p class="metric-label">Average Salary</p>
+                                                <span class="metric-growth" attrs="{'invisible': [('average_salary_growth', '=', 0)]}">
+                                                    <field name="average_salary_growth" widget="percentage" readonly="1"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <div class="metric-card warning">
+                                            <div class="metric-icon">
+                                                <i class="fa fa-exclamation-triangle fa-3x"/>
+                                            </div>
+                                            <div class="metric-content">
+                                                <h3 class="metric-value">
+                                                    <field name="anomaly_count" readonly="1"/>
+                                                </h3>
+                                                <p class="metric-label">Anomalies</p>
+                                                <small class="text-muted">Detected Issues</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-4">
+                                    <div class="col-md-6">
+                                        <div class="chart-container">
+                                            <h4>Employee Growth Trend</h4>
+                                            <field name="salary_components" widget="employee_growth_chart" height="300"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="chart-container">
+                                            <h4>Payroll Distribution</h4>
+                                            <field name="deduction_components" widget="salary_distribution_chart" height="300"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </page>
+                        
+                        <page string="Component Analysis" name="components">
+                            <group>
+                                <group string="Salary Components">
+                                    <field name="salary_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                </group>
+                                <group string="Deduction Components">
+                                    <field name="deduction_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                </group>
+                            </group>
+                            
+                            <group>
+                                <group string="Benefit Components">
+                                    <field name="benefit_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                </group>
+                                <group string="Additional Statistics">
+                                    <field name="median_salary" widget="monetary" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="Organizational Analysis" name="organizational">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4>Department Breakdown</h4>
+                                    <field name="department_breakdown" widget="department_comparison_chart" height="400"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4>Position Analysis</h4>
+                                    <field name="position_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-4">
+                                <div class="col-md-12">
+                                    <h4>Contract Type Breakdown</h4>
+                                    <field name="contract_type_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                </div>
+                            </div>
+                        </page>
+                        
+                        <page string="Variance &amp; Alerts" name="variance">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="alert-panel">
+                                        <h4><i class="fa fa-warning text-warning"/> Anomaly Detection</h4>
+                                        <field name="variance_alerts" widget="anomaly_chart" height="300"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="variance-details">
+                                        <h4>Variance Details</h4>
+                                        <field name="variance_alerts" widget="ace" options="{'mode': 'json'}" readonly="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </page>
+                        
+                        <page string="Comparison" name="comparison" attrs="{'invisible': [('previous_period_id', '=', False)]}">
+                            <div class="comparison-section">
+                                <h3>Period-over-Period Comparison</h3>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="comparison-metric">
+                                            <h4>Employee Growth</h4>
+                                            <div class="metric-comparison">
+                                                <span class="current-value">
+                                                    <field name="total_employees" readonly="1"/>
+                                                </span>
+                                                <span class="growth-indicator" 
+                                                      t-attf-class="#{record.employee_growth.raw_value >= 0 and 'positive' or 'negative'}">
+                                                    <field name="employee_growth" widget="percentage" readonly="1"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="comparison-metric">
+                                            <h4>Payroll Growth</h4>
+                                            <div class="metric-comparison">
+                                                <span class="current-value">
+                                                    <field name="total_payroll" widget="monetary" readonly="1"/>
+                                                </span>
+                                                <span class="growth-indicator" 
+                                                      t-attf-class="#{record.payroll_growth.raw_value >= 0 and 'positive' or 'negative'}">
+                                                    <field name="payroll_growth" widget="percentage" readonly="1"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="comparison-metric">
+                                            <h4>Average Salary Growth</h4>
+                                            <div class="metric-comparison">
+                                                <span class="current-value">
+                                                    <field name="average_salary" widget="monetary" readonly="1"/>
+                                                </span>
+                                                <span class="growth-indicator" 
+                                                      t-attf-class="#{record.average_salary_growth.raw_value >= 0 and 'positive' or 'negative'}">
+                                                    <field name="average_salary_growth" widget="percentage" readonly="1"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </page>
+                        
+                        <page string="Approval &amp; Notes" name="approval">
+                            <group>
+                                <group string="Approval Information">
+                                    <field name="approver_ids" widget="many2many_tags"/>
+                                    <field name="is_confidential"/>
+                                </group>
+                                <group string="Processing Information">
+                                    <field name="computation_date" readonly="1"/>
+                                    <field name="computation_duration" readonly="1"/>
+                                    <field name="data_source" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Payroll Analytics Tree View -->
+    <record id="view_payroll_analytics_tree" model="ir.ui.view">
+        <field name="name">payroll.analytics.tree</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Analytics" decoration-success="state == 'approved'" 
+                  decoration-warning="state == 'ready'" decoration-info="state == 'computing'">
+                <field name="period_name"/>
+                <field name="country_code"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="total_employees"/>
+                <field name="total_payroll" widget="monetary"/>
+                <field name="average_salary" widget="monetary"/>
+                <field name="employee_growth" widget="percentage" 
+                       decoration-success="employee_growth > 0" 
+                       decoration-danger="employee_growth &lt; 0"/>
+                <field name="payroll_growth" widget="percentage"
+                       decoration-success="payroll_growth > 0" 
+                       decoration-danger="payroll_growth &lt; 0"/>
+                <field name="anomaly_count" 
+                       decoration-warning="anomaly_count > 0"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Payroll Analytics Search View -->
+    <record id="view_payroll_analytics_search" model="ir.ui.view">
+        <field name="name">payroll.analytics.search</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <search string="Payroll Analytics">
+                <field name="period_name"/>
+                <field name="country_code"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="state"/>
+                
+                <filter string="Current Year" name="current_year" 
+                        domain="[('period_start', '&gt;=', context_today().strftime('%Y-01-01')),
+                                 ('period_start', '&lt;=', context_today().strftime('%Y-12-31'))]"/>
+                <filter string="Last 6 Months" name="last_6_months" 
+                        domain="[('period_start', '&gt;=', (context_today() - relativedelta(months=6)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Ready for Approval" name="ready" 
+                        domain="[('state', '=', 'ready')]"/>
+                <filter string="Approved" name="approved" 
+                        domain="[('state', '=', 'approved')]"/>
+                <filter string="Has Anomalies" name="has_anomalies" 
+                        domain="[('anomaly_count', '>', 0)]"/>
+                <filter string="Confidential" name="confidential" 
+                        domain="[('is_confidential', '=', True)]"/>
+                
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
+                    <filter string="Period" name="group_period" context="{'group_by': 'period_start:month'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Quarter" name="group_quarter" context="{'group_by': 'period_start:quarter'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Payroll Analytics Kanban View -->
+    <record id="view_payroll_analytics_kanban" model="ir.ui.view">
+        <field name="name">payroll.analytics.kanban</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="period_name"/>
+                <field name="country_code"/>
+                <field name="total_employees"/>
+                <field name="total_payroll"/>
+                <field name="average_salary"/>
+                <field name="employee_growth"/>
+                <field name="payroll_growth"/>
+                <field name="anomaly_count"/>
+                <field name="state"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click analytics-kanban-card">
+                            <div class="analytics-card-header">
+                                <div class="country-info">
+                                    <span class="country-flag">
+                                        <t t-if="record.country_code.raw_value == 'VN'">🇻🇳</t>
+                                        <t t-if="record.country_code.raw_value == 'ID'">🇮🇩</t>
+                                        <t t-if="record.country_code.raw_value == 'IN'">🇮🇳</t>
+                                        <t t-if="record.country_code.raw_value == 'SG'">🇸🇬</t>
+                                        <t t-if="record.country_code.raw_value == 'MY'">🇲🇾</t>
+                                    </span>
+                                    <strong t-esc="record.period_name.value"/>
+                                </div>
+                                <div class="state-badge">
+                                    <span t-attf-class="badge badge-#{record.state.raw_value == 'approved' ? 'success' : record.state.raw_value == 'ready' ? 'warning' : 'secondary'}">
+                                        <t t-esc="record.state.value"/>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="analytics-metrics">
+                                <div class="metric-row">
+                                    <div class="metric-item">
+                                        <span class="metric-icon">👥</span>
+                                        <div class="metric-details">
+                                            <span class="metric-value" t-esc="record.total_employees.value"/>
+                                            <span class="metric-label">Employees</span>
+                                            <span t-if="record.employee_growth.raw_value != 0" 
+                                                  t-attf-class="growth-indicator #{record.employee_growth.raw_value >= 0 ? 'positive' : 'negative'}">
+                                                <t t-esc="record.employee_growth.value"/>%
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="metric-item">
+                                        <span class="metric-icon">💰</span>
+                                        <div class="metric-details">
+                                            <span class="metric-value" t-esc="record.total_payroll.value"/>
+                                            <span class="metric-label">Total Payroll</span>
+                                            <span t-if="record.payroll_growth.raw_value != 0" 
+                                                  t-attf-class="growth-indicator #{record.payroll_growth.raw_value >= 0 ? 'positive' : 'negative'}">
+                                                <t t-esc="record.payroll_growth.value"/>%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-row">
+                                    <div class="metric-item">
+                                        <span class="metric-icon">📊</span>
+                                        <div class="metric-details">
+                                            <span class="metric-value" t-esc="record.average_salary.value"/>
+                                            <span class="metric-label">Avg Salary</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="metric-item">
+                                        <span class="metric-icon">⚠️</span>
+                                        <div class="metric-details">
+                                            <span t-attf-class="metric-value #{record.anomaly_count.raw_value > 0 ? 'text-warning' : 'text-success'}" 
+                                                  t-esc="record.anomaly_count.value"/>
+                                            <span class="metric-label">Anomalies</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Payroll Analytics Graph View -->
+    <record id="view_payroll_analytics_graph" model="ir.ui.view">
+        <field name="name">payroll.analytics.graph</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <graph string="Payroll Analytics">
+                <field name="period_start" type="row" interval="month"/>
+                <field name="country_code" type="col"/>
+                <field name="total_payroll" type="measure"/>
+                <field name="total_employees" type="measure"/>
+                <field name="average_salary" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Payroll Analytics Pivot View -->
+    <record id="view_payroll_analytics_pivot" model="ir.ui.view">
+        <field name="name">payroll.analytics.pivot</field>
+        <field name="model">payroll.analytics</field>
+        <field name="arch" type="xml">
+            <pivot string="Payroll Analytics">
+                <field name="country_code" type="row"/>
+                <field name="period_start" type="col" interval="month"/>
+                <field name="total_payroll" type="measure"/>
+                <field name="total_employees" type="measure"/>
+                <field name="average_salary" type="measure"/>
+                <field name="employee_growth" type="measure"/>
+                <field name="payroll_growth" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Analytics Dashboard Action -->
+    <record id="action_payroll_analytics_dashboard" model="ir.actions.act_window">
+        <field name="name">Payroll Analytics Dashboard</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">kanban,tree,form,graph,pivot</field>
+        <field name="view_id" ref="view_payroll_analytics_kanban"/>
+        <field name="context">{
+            'search_default_current_year': 1,
+            'search_default_group_country': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Welcome to Payroll Analytics!
+            </p>
+            <p>
+                Create comprehensive analytics reports to gain insights into your 
+                payroll trends, employee growth, and compensation analysis.
+            </p>
+            <p>
+                <a type="action" name="%(action_analytics_generation_wizard)d" class="btn btn-primary">
+                    Generate Analytics Report
+                </a>
+            </p>
+        </field>
+    </record>
+
+    <!-- Analytics Report Action -->
+    <record id="action_payroll_analytics_report" model="ir.actions.act_window">
+        <field name="name">Analytics Reports</field>
+        <field name="res_model">payroll.analytics</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
+        <field name="context">{
+            'search_default_approved': 1,
+        }</field>
+    </record>
+
+    <!-- Interactive Charts Dashboard Action -->
+    <record id="action_payroll_interactive_charts" model="ir.actions.client">
+        <field name="name">Interactive Analytics Charts</field>
+        <field name="tag">payroll_interactive_charts</field>
+        <field name="target">main</field>
+    </record>
+
+</odoo>
