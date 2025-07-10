@@ -39,7 +39,9 @@ class PayrollDashboard(models.Model):
     pending_payslips = fields.Integer('Pending Payslips', compute='_compute_statistics', store=False)
     total_gross_salary = fields.Float('Total Gross Salary', compute='_compute_statistics', store=False)
     currency_id = fields.Many2one('res.currency', 'Currency', compute='_compute_currency', store=True)
-    structure_id = fields.Many2one('hr.payroll.structure', 'Payroll Structure', compute='_compute_statistics', store=False)
+    # Change the field definition
+    structure_id = fields.Many2one('hr.payroll.structure', 'Payroll Structure', compute='_compute_structure_id', store=False)
+
 
     # === NEW ENHANCED FIELDS ===
     # Country Configuration
@@ -97,8 +99,24 @@ class PayrollDashboard(models.Model):
             else:
                 record.country_id = False
 
+    # Add separate compute method
+    @api.depends('country')
+    def _compute_structure_id(self):
+        """Compute payroll structure for country"""
+        for record in self:
+            if record.country:
+                structure = self.env['hr.payroll.structure'].search([
+                    ('payroll_country_code', '=', record.country),
+                    ('active', '=', True)
+                ], limit=1)
+                record.structure_id = structure.id if structure else False
+            else:
+                record.structure_id = False
+
+
+
     def _compute_statistics(self):
-        """Enhanced compute dashboard statistics - BACKWARD COMPATIBLE with performance improvements"""
+        """Enhanced compute dashboard statistics - FIXED VERSION"""
         for record in self:
             try:
                 # Check if we have cached metrics and they're still fresh
@@ -106,15 +124,16 @@ class PayrollDashboard(models.Model):
                     record._load_cached_metrics()
                     continue
 
-                # Get payroll structure for this country
+                # ALWAYS set structure_id first (this fixes the error)
                 structure = self.env['hr.payroll.structure'].search([
                     ('payroll_country_code', '=', record.country),
                     ('active', '=', True)
                 ], limit=1)
                 
+                # CRITICAL: Always assign structure_id, even if False
+                record.structure_id = structure.id if structure else False
+                
                 if structure:
-                    record.structure_id = structure.id
-                    
                     # Get contracts using this structure
                     contracts = self.env['hr.contract'].search([
                         ('struct_id', '=', structure.id),
@@ -134,7 +153,7 @@ class PayrollDashboard(models.Model):
                     record.pending_payslips = len(pending_payslips)
                     
                 else:
-                    record.structure_id = False
+                    # CRITICAL: Always set all computed fields
                     record.employee_count = 0
                     record.active_contracts = 0
                     record.pending_payslips = 0
@@ -145,7 +164,12 @@ class PayrollDashboard(models.Model):
                 
             except Exception as e:
                 _logger.error(f"Error computing statistics for {record.name}: {str(e)}")
-                record._set_zero_metrics()
+                # CRITICAL: Always set all computed fields, even on error
+                record.structure_id = False
+                record.employee_count = 0
+                record.active_contracts = 0
+                record.pending_payslips = 0
+                record.total_gross_salary = 0.0
 
     def _use_cached_metrics(self):
         """Check if we can use cached metrics"""
@@ -561,22 +585,27 @@ class PayrollDashboard(models.Model):
             if record.refresh_interval < 1:
                 raise ValidationError(_('Refresh interval must be at least 1 minute.'))
 
+    def action_open_country_dashboard(self):
+        """Open country dashboard - Alias for backward compatibility"""
+        return self.action_view_country_dashboard()
 
-# === BACKWARD COMPATIBILITY ALIASES ===
-
-class PayrollCountrySelector(models.Model):
-    """Country Selector - Backward Compatibility"""
-    _name = 'payroll.country.selector'
-    _description = 'Payroll Country Selector'
-    
-    name = fields.Char('Name', default='Country Selector')
-    
-    def action_open_dashboard(self):
-        """Open main dashboard"""
+    def action_export_bank_file(self):
+        """Export bank file for payroll"""
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Payroll Dashboard',
-            'res_model': 'payroll.dashboard',
-            'view_mode': 'kanban,form,tree',
-            'target': 'current',
+            'name': f'Export {self.country} Bank File',
+            'res_model': 'payroll.bank.export.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_country_code': self.country,
+                'default_dashboard_id': self.id,
+            }
         }
+
+    def action_open_analytics_dashboard(self):
+        """Open analytics dashboard"""
+        return self.action_open_analytics()
+    
+
+    

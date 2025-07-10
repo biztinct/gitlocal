@@ -480,9 +480,9 @@
                 payroll trends, employee growth, and compensation analysis.
             </p>
             <p>
-                <a type="action" name="%(action_analytics_generation_wizard)d" class="btn btn-primary">
-                    Generate Analytics Report
-                </a>
+            <a type="action" name="%(pb_hr_payroll_base.action_analytics_generation_wizard)d" class="btn btn-primary">
+                Generate Analytics Report
+            </a>
             </p>
         </field>
     </record>

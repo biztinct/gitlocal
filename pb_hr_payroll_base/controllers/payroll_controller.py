@@ -593,3 +593,66 @@ class PayrollAPIController(http.Controller):
                 json.dumps({'error': str(e)}),
                 headers=[('Content-Type', 'application/json')]
             )
+
+    @http.route('/payroll/country-selector', type='http', auth='user', website=True)
+    def country_selector(self, **kwargs):
+        """Render the country selection landing page"""
+        try:
+            # Get user's groups to show which countries they have access to
+            user = request.env.user
+            
+            # Check access rights for each country
+            access_rights = {
+                'VN': user.has_group('pb_hr_payroll_base.group_payroll_vietnam') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
+                'ID': user.has_group('pb_hr_payroll_base.group_payroll_indonesia') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
+                'IN': user.has_group('pb_hr_payroll_base.group_payroll_india') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
+                'SG': user.has_group('pb_hr_payroll_base.group_payroll_singapore') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
+                'MY': user.has_group('pb_hr_payroll_base.group_payroll_malaysia') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
+            }
+            
+            # Get dashboard data for accessible countries
+            accessible_countries = [country for country, has_access in access_rights.items() if has_access]
+            
+            dashboard_data = []
+            for country in accessible_countries:
+                dashboard = request.env['payroll.dashboard'].search([
+                    ('country', '=', country),
+                    ('active', '=', True)
+                ], limit=1)
+                
+                if not dashboard:
+                    # Create dashboard if it doesn't exist
+                    country_names = {
+                        'VN': 'Vietnam Payroll Dashboard',
+                        'ID': 'Indonesia Payroll Dashboard',
+                        'IN': 'India Payroll Dashboard',
+                        'SG': 'Singapore Payroll Dashboard',
+                        'MY': 'Malaysia Payroll Dashboard',
+                    }
+                    
+                    dashboard = request.env['payroll.dashboard'].create({
+                        'name': country_names.get(country, f'{country} Payroll Dashboard'),
+                        'country': country,
+                        'sequence': 10,
+                        'active': True,
+                    })
+                
+                dashboard_data.append({
+                    'country': country,
+                    'name': dashboard.name,
+                    'id': dashboard.id,
+                })
+            
+            return request.render('pb_hr_payroll_base.payroll_country_selector_template', {
+                'access_rights': access_rights,
+                'dashboards': dashboard_data,
+                'user': user,
+            })
+            
+        except Exception as e:
+            _logger.error(f"Error in country selector: {str(e)}")
+            return request.render('web.http_error', {
+                'status_code': 500,
+                'status_message': 'Internal Server Error',
+                'error_message': 'Unable to load country selector.'
+            })
