@@ -1,0 +1,745 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Enhanced Country Selector with Animated Flags and Permission Checks -->
+    <template id="payroll_country_selector_enhanced" name="Enhanced Payroll Country Selector">
+        <t t-call="website.layout">
+            <t t-set="title">Select Your Payroll Region</t>
+            <t t-set="additional_title">Multi-Country Payroll System</t>
+            
+            <div class="payroll-country-selector-enhanced">
+                <style>
+                    /* Enhanced Country Selector Styling */
+                    .payroll-country-selector-enhanced {
+                        min-height: 100vh;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 40px 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .payroll-country-selector-enhanced::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" patternUnits="userSpaceOnUse" width="50" height="50"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+                        opacity: 0.3;
+                        pointer-events: none;
+                    }
+
+                    .selector-container {
+                        background: rgba(255, 255, 255, 0.95);
+                        backdrop-filter: blur(20px);
+                        border-radius: 24px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+                        max-width: 1100px;
+                        width: 95%;
+                        padding: 50px 40px;
+                        text-align: center;
+                        position: relative;
+                        z-index: 1;
+                    }
+
+                    .selector-title {
+                        color: #2c3e50;
+                        font-size: 3rem;
+                        font-weight: 300;
+                        margin-bottom: 0.5rem;
+                        animation: fadeInDown 0.8s ease-out;
+                        letter-spacing: -1px;
+                    }
+
+                    .selector-subtitle {
+                        color: #7f8c8d;
+                        font-size: 1.2rem;
+                        font-weight: 400;
+                        margin-bottom: 4rem;
+                        animation: fadeInUp 0.8s ease-out;
+                    }
+
+                    @keyframes fadeInDown {
+                        from { opacity: 0; transform: translateY(-30px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(30px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+
+                    /* Enhanced Country Cards Grid */
+                    .countries-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                        gap: 30px;
+                        margin-top: 40px;
+                        animation: fadeIn 1s ease-out 0.4s both;
+                    }
+
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+
+                    /* Enhanced Country Card */
+                    .country-card {
+                        background: white;
+                        border-radius: 20px;
+                        padding: 40px 30px;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                        cursor: pointer;
+                        position: relative;
+                        overflow: hidden;
+                        border: 2px solid transparent;
+                    }
+
+                    .country-card::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    }
+
+                    .country-card:hover::before {
+                        opacity: 1;
+                    }
+
+                    .country-card:hover {
+                        transform: translateY(-15px) scale(1.02);
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                        border-color: #667eea;
+                    }
+
+                    /* Enhanced Flag Animation */
+                    .country-flag-container {
+                        position: relative;
+                        margin-bottom: 25px;
+                    }
+
+                    .country-flag {
+                        font-size: 5rem;
+                        display: block;
+                        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                        transition: all 0.3s ease;
+                        animation: flagFloat 4s ease-in-out infinite;
+                        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+                    }
+
+                    @keyframes flagFloat {
+                        0%, 100% { 
+                            transform: translateY(0px) rotate(0deg); 
+                        }
+                        25% { 
+                            transform: translateY(-8px) rotate(1deg); 
+                        }
+                        50% { 
+                            transform: translateY(-5px) rotate(0deg); 
+                        }
+                        75% { 
+                            transform: translateY(-8px) rotate(-1deg); 
+                        }
+                    }
+
+                    .country-card:hover .country-flag {
+                        animation: flagWave 0.6s ease-in-out infinite;
+                        transform: scale(1.1);
+                    }
+
+                    @keyframes flagWave {
+                        0%, 100% { transform: scale(1.1) rotate(0deg); }
+                        25% { transform: scale(1.15) rotate(2deg); }
+                        75% { transform: scale(1.15) rotate(-2deg); }
+                    }
+
+                    /* Country Name Styling */
+                    .country-name {
+                        color: #2c3e50;
+                        font-size: 1.5rem;
+                        font-weight: 600;
+                        margin-bottom: 15px;
+                        transition: all 0.3s ease;
+                        letter-spacing: 0.5px;
+                        position: relative;
+                    }
+
+                    .country-card:hover .country-name {
+                        color: #667eea;
+                        transform: scale(1.05);
+                    }
+
+                    /* Access Status Indicators */
+                    .access-indicator {
+                        position: absolute;
+                        top: 20px;
+                        right: 20px;
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                        z-index: 2;
+                    }
+
+                    .access-indicator.has-access {
+                        background: linear-gradient(135deg, #27ae60, #2ecc71);
+                        color: white;
+                        animation: pulseGreen 2s infinite;
+                    }
+
+                    .access-indicator.no-access {
+                        background: linear-gradient(135deg, #e74c3c, #c0392b);
+                        color: white;
+                        animation: pulseRed 2s infinite;
+                    }
+
+                    @keyframes pulseGreen {
+                        0% { box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3); }
+                        50% { box-shadow: 0 2px 20px rgba(39, 174, 96, 0.6); }
+                        100% { box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3); }
+                    }
+
+                    @keyframes pulseRed {
+                        0% { box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3); }
+                        50% { box-shadow: 0 2px 20px rgba(231, 76, 60, 0.6); }
+                        100% { box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3); }
+                    }
+
+                    /* Country Description */
+                    .country-description {
+                        color: #7f8c8d;
+                        font-size: 1rem;
+                        margin-bottom: 20px;
+                        line-height: 1.5;
+                    }
+
+                    /* Action Button */
+                    .country-action-btn {
+                        background: linear-gradient(135deg, #667eea, #764ba2);
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                    }
+
+                    .country-action-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+                        background: linear-gradient(135deg, #5a67d8, #6b46c1);
+                    }
+
+                    /* No access button styling - looks disabled but still clickable */
+                    .country-card.no-access .country-action-btn {
+                        background: #bdc3c7;
+                        color: #7f8c8d;
+                        box-shadow: none;
+                        cursor: pointer; /* Still clickable for access requests */
+                    }
+
+                    .country-card.no-access .country-action-btn:hover {
+                        background: #95a5a6;
+                        transform: translateY(-1px);
+                        box-shadow: 0 3px 10px rgba(149, 165, 166, 0.3);
+                    }
+
+                    /* No Access Overlay */
+                    .no-access-overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.7);
+                        color: white;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                        border-radius: 20px;
+                        z-index: 3;
+                    }
+
+                    .country-card.no-access:hover .no-access-overlay {
+                        opacity: 1;
+                    }
+
+                    .no-access-message {
+                        text-align: center;
+                        padding: 20px;
+                    }
+
+                    .no-access-message h4 {
+                        margin-bottom: 10px;
+                        font-size: 1.2rem;
+                    }
+
+                    .no-access-message p {
+                        margin-bottom: 20px;
+                        font-size: 0.9rem;
+                        opacity: 0.9;
+                    }
+
+                    .contact-admin-btn {
+                        background: #e74c3c;
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 20px;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+
+                    .contact-admin-btn:hover {
+                        background: #c0392b;
+                    }
+
+                    /* Click Ripple Effect */
+                    .country-card::after {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 0;
+                        height: 0;
+                        border-radius: 50%;
+                        background: rgba(102, 126, 234, 0.3);
+                        transform: translate(-50%, -50%);
+                        transition: width 0.6s, height 0.6s;
+                        pointer-events: none;
+                    }
+
+                    .country-card.clicked::after {
+                        width: 400px;
+                        height: 400px;
+                    }
+
+                    /* Loading Overlay */
+                    .loading-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(255, 255, 255, 0.95);
+                        display: none;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 9999;
+                        backdrop-filter: blur(5px);
+                    }
+
+                    .loading-overlay.active {
+                        display: flex;
+                    }
+
+                    .loading-content {
+                        text-align: center;
+                    }
+
+                    .spinner {
+                        width: 60px;
+                        height: 60px;
+                        border: 4px solid rgba(102, 126, 234, 0.2);
+                        border-top-color: #667eea;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        margin-bottom: 20px;
+                    }
+
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+
+                    .loading-text {
+                        color: #2c3e50;
+                        font-size: 1.1rem;
+                        font-weight: 500;
+                    }
+
+                    /* Responsive Design */
+                    @media (max-width: 768px) {
+                        .selector-container {
+                            padding: 40px 20px;
+                        }
+
+                        .selector-title {
+                            font-size: 2.2rem;
+                        }
+
+                        .countries-grid {
+                            grid-template-columns: 1fr;
+                            gap: 20px;
+                        }
+
+                        .country-card {
+                            padding: 30px 20px;
+                        }
+
+                        .country-flag {
+                            font-size: 4rem;
+                        }
+                    }
+
+                    /* Disabled state for no access */
+                    .country-card.no-access {
+                        opacity: 0.8;
+                        position: relative;
+                    }
+
+                    .country-card.no-access:hover {
+                        transform: translateY(-5px);
+                        border-color: #e74c3c;
+                    }
+                </style>
+
+                <div class="selector-container">
+                    <h1 class="selector-title">Select Your Payroll Region</h1>
+                    <p class="selector-subtitle">Choose your country to access the appropriate payroll management system</p>
+
+                    <div class="countries-grid">
+                        <!-- Vietnam Card -->
+                        <div class="country-card" data-country="VN" data-has-access="true">
+                            <div class="access-indicator has-access">✓</div>
+                            <div class="country-flag-container">
+                                <span class="country-flag">🇻🇳</span>
+                            </div>
+                            <h3 class="country-name">Vietnam</h3>
+                            <p class="country-description">
+                                Complete payroll management system for Vietnam including VND currency handling and local compliance requirements.
+                            </p>
+                            <button class="country-action-btn" onclick="navigateToCountry('VN')">
+                                Access Dashboard
+                            </button>
+                        </div>
+
+                        <!-- Indonesia Card -->
+                        <div class="country-card" data-country="ID" data-has-access="true">
+                            <div class="access-indicator has-access">✓</div>
+                            <div class="country-flag-container">
+                                <span class="country-flag">🇮🇩</span>
+                            </div>
+                            <h3 class="country-name">Indonesia</h3>
+                            <p class="country-description">
+                                Full-featured Indonesian payroll with BPJS, PPh 21, THR payments, and IDR currency support.
+                            </p>
+                            <button class="country-action-btn" onclick="navigateToCountry('ID')">
+                                Access Dashboard
+                            </button>
+                        </div>
+
+                        <!-- India Card -->
+                        <div class="country-card" data-country="IN" data-has-access="true">
+                            <div class="access-indicator has-access">✓</div>
+                            <div class="country-flag-container">
+                                <span class="country-flag">🇮🇳</span>
+                            </div>
+                            <h3 class="country-name">India</h3>
+                            <p class="country-description">
+                                Comprehensive Indian payroll system with PF, ESI, Professional Tax, and Gratuity calculations.
+                            </p>
+                            <button class="country-action-btn" onclick="navigateToCountry('IN')">
+                                Access Dashboard
+                            </button>
+                        </div>
+
+                        <!-- Singapore Card (No Access Example) -->
+                        <div class="country-card no-access" data-country="SG" data-has-access="false">
+                            <div class="access-indicator no-access">🔒</div>
+                            <div class="country-flag-container">
+                                <span class="country-flag">🇸🇬</span>
+                            </div>
+                            <h3 class="country-name">Singapore</h3>
+                            <p class="country-description">
+                                Singapore payroll system with CPF contributions and SGD currency support. (Coming Soon)
+                            </p>
+                            <button class="country-action-btn" onclick="requestAccess('SG')">
+                                Request Access
+                            </button>
+
+                            <!-- No Access Overlay -->
+                            <div class="no-access-overlay">
+                                <div class="no-access-message">
+                                    <h4>🔒 Access Required</h4>
+                                    <p>You don't have permission to access Singapore payroll system.</p>
+                                    <button class="contact-admin-btn" onclick="requestAccess('SG')">
+                                        Contact Administrator
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Malaysia Card (No Access Example) -->
+                        <div class="country-card no-access" data-country="MY" data-has-access="false">
+                            <div class="access-indicator no-access">🔒</div>
+                            <div class="country-flag-container">
+                                <span class="country-flag">🇲🇾</span>
+                            </div>
+                            <h3 class="country-name">Malaysia</h3>
+                            <p class="country-description">
+                                Malaysian payroll system with EPF, SOCSO, EIS and MYR currency support. (Coming Soon)
+                            </p>
+                            <button class="country-action-btn" onclick="requestAccess('MY')">
+                                Request Access
+                            </button>
+
+                            <!-- No Access Overlay -->
+                            <div class="no-access-overlay">
+                                <div class="no-access-message">
+                                    <h4>🔒 Access Required</h4>
+                                    <p>You don't have permission to access Malaysia payroll system.</p>
+                                    <button class="contact-admin-btn" onclick="requestAccess('MY')">
+                                        Contact Administrator
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading overlay -->
+                <div class="loading-overlay">
+                    <div class="loading-content">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Loading payroll dashboard...</div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Access rights from controller
+                        const accessRights = {
+                            'VN': true,
+                            'ID': true, 
+                            'IN': true,
+                            'SG': false,
+                            'MY': false
+                        };
+
+                        // Initialize country cards based on access rights
+                        document.querySelectorAll('.country-card').forEach(card => {
+                            const country = card.dataset.country;
+                            const hasAccess = accessRights[country];
+                            
+                            card.dataset.hasAccess = hasAccess;
+                            
+                            if (!hasAccess) {
+                                card.classList.add('no-access');
+                                const indicator = card.querySelector('.access-indicator');
+                                indicator.classList.remove('has-access');
+                                indicator.classList.add('no-access');
+                                indicator.innerHTML = '🔒';
+                                
+                                const actionBtn = card.querySelector('.country-action-btn');
+                                actionBtn.textContent = 'Request Access';
+                            }
+                        });
+
+                        // Add click ripple effect
+                        document.querySelectorAll('.country-card').forEach(card => {
+                            card.addEventListener('click', function(e) {
+                                if (!this.classList.contains('no-access')) {
+                                    this.classList.add('clicked');
+                                    setTimeout(() => {
+                                        this.classList.remove('clicked');
+                                    }, 600);
+                                }
+                            });
+                        });
+                    });
+
+                    function navigateToCountry(countryCode) {
+                        const loadingOverlay = document.querySelector('.loading-overlay');
+                        loadingOverlay.classList.add('active');
+                        
+                        // Simulate navigation with loading
+                        setTimeout(() => {
+                            let url;
+                            switch(countryCode) {
+                                case 'VN':
+                                    url = '/web#action=pb_hr_payroll_vietnam.action_payroll_dashboard_vietnam';
+                                    break;
+                                case 'ID':
+                                    url = '/web#action=pb_hr_payroll_indonesia.action_payroll_dashboard_indonesia';
+                                    break;
+                                case 'IN':
+                                    url = '/web#action=pb_hr_payroll_india.action_payroll_dashboard_india';
+                                    break;
+                                default:
+                                    url = '/payroll/dashboard';
+                            }
+                            window.location.href = url;
+                        }, 1500);
+                    }
+
+                    function requestAccess(countryCode) {
+                        // Show popup requesting admin access
+                        const countryNames = {
+                            'SG': 'Singapore',
+                            'MY': 'Malaysia'
+                        };
+                        
+                        const countryName = countryNames[countryCode] || countryCode;
+                        
+                        // Create modal popup
+                        const modal = document.createElement('div');
+                        modal.style.cssText = `
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: rgba(0, 0, 0, 0.8);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            z-index: 10000;
+                        `;
+                        
+                        modal.innerHTML = `
+                            <div style="
+                                background: white;
+                                padding: 40px;
+                                border-radius: 20px;
+                                text-align: center;
+                                max-width: 500px;
+                                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                            ">
+                                <div style="font-size: 3rem; margin-bottom: 20px;">🔐</div>
+                                <h3 style="color: #2c3e50; margin-bottom: 15px;">Access Request</h3>
+                                <p style="color: #7f8c8d; margin-bottom: 30px;">
+                                    You need administrator permission to access the ${countryName} payroll system.
+                                    Please contact your system administrator to request access.
+                                </p>
+                                <div>
+                                    <button onclick="sendAccessRequest('${countryCode}')" style="
+                                        background: #667eea;
+                                        color: white;
+                                        border: none;
+                                        padding: 12px 30px;
+                                        border-radius: 25px;
+                                        font-weight: 600;
+                                        cursor: pointer;
+                                        margin-right: 15px;
+                                    ">Send Request</button>
+                                    <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+                                        background: #bdc3c7;
+                                        color: white;
+                                        border: none;
+                                        padding: 12px 30px;
+                                        border-radius: 25px;
+                                        font-weight: 600;
+                                        cursor: pointer;
+                                    ">Close</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        document.body.appendChild(modal);
+                        
+                        // Close on background click
+                        modal.addEventListener('click', function(e) {
+                            if (e.target === modal) {
+                                modal.remove();
+                            }
+                        });
+                    }
+
+                    function sendAccessRequest(countryCode) {
+                        // Send access request to admin (implement your logic here)
+                        alert(`Access request for ${countryCode} has been sent to the administrator.`);
+                        document.querySelector('[style*="position: fixed"]').remove();
+                    }
+                </script>
+            </div>
+        </t>
+    </template>
+
+    <!-- Enhanced Kanban View for Country Dashboard -->
+    <record id="view_payroll_dashboard_kanban_enhanced" model="ir.ui.view">
+        <field name="name">payroll.dashboard.kanban.enhanced</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="arch" type="xml">
+            <!-- REPLACE WITH THIS: -->
+            <kanban class="o_kanban_dashboard_payroll_enhanced" create="false" edit="false">
+                <field name="name"/>
+                <field name="country"/>
+                <field name="employee_count"/>
+                <field name="total_gross_salary"/>
+                <field name="currency_id"/>
+                <field name="active"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="payroll-country-card-enhanced" t-att-data-country="record.country.raw_value">
+                            <div class="country-card-header-enhanced">
+                                <div class="country-flag-large">
+                                    <t t-if="record.country.raw_value == 'VN'">🇻🇳</t>
+                                    <t t-if="record.country.raw_value == 'ID'">🇮🇩</t>
+                                    <t t-if="record.country.raw_value == 'IN'">🇮🇳</t>
+                                    <t t-if="record.country.raw_value == 'SG'">🇸🇬</t>
+                                    <t t-if="record.country.raw_value == 'MY'">🇲🇾</t>
+                                </div>
+                                <div class="access-status-badge">
+                                    <span class="access-tick">✓</span>
+                                </div>
+                                <h3 class="country-title" t-esc="record.name.value"/>
+                            </div>
+                            
+                            <div class="country-card-content-enhanced">
+                                <div class="country-stats">
+                                    <div class="stat-item">
+                                        <i class="fa fa-users"/>
+                                        <span class="stat-value" t-esc="record.employee_count.value"/>
+                                        <span class="stat-label">Employees</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fa fa-money"/>
+                                        <span class="stat-value" t-esc="record.total_gross_salary.value"/>
+                                        <span class="stat-label">Total Payroll</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="last-updated-enhanced">
+                                    <span class="status-indicator status-active"/>
+                                    Last updated: <t t-esc="record.last_payroll_date.value"/>
+                                </div>
+                            </div>
+                            
+                            <div class="country-card-actions-enhanced">
+                                <!-- REPLACE WITH THIS: -->
+                                <button name="action_view_country_dashboard" type="object" class="btn btn-primary dashboard-access-btn">
+                                    <i class="fa fa-dashboard"/> Access Dashboard
+                                </button>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+</odoo>

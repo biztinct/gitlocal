@@ -1,178 +1,57 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Multi-Country Payroll Base Framework',
-    'version': '16.0.3.0.0',  # Updated version to reflect enhancements
+    'name': 'Payroll Base Framework - Enhanced',
+    'version': '16.0.2.0.0',
     'category': 'Human Resources/Payroll',
-    'summary': 'Enhanced Multi-Country Payroll Framework with Advanced Analytics & Modern Dashboard',
+    'summary': 'Enhanced Multi-Country Payroll Base Framework with Professional Dashboard',
     'description': """
-        Enhanced Multi-Country Payroll Framework
-        =========================================
-        
-        This module provides a comprehensive framework for multi-country payroll management
-        by extending the base om_hr_payroll module WITHOUT modifying it.
-        
-        🌍 CORE STRATEGY:
-        - Extends om_hr_payroll via inheritance
-        - No modifications to base payroll module
-        - Clean, maintainable architecture
-        - Easy country-specific extensions
-        
-        🚀 ENHANCED FEATURES:
-        =====================
-        
-        Advanced Dashboard System:
-        - Real-time metrics computation
-        - Modern responsive UI with animations
-        - Country-specific dashboards with flags
-        - Auto-refresh capabilities
-        - Mobile-first responsive design
-        
-        Professional Analytics Engine:
-        - Comprehensive payroll analytics
-        - Period-over-period comparisons
-        - Anomaly detection and alerts
-        - Department and position breakdowns
-        - Component analysis (salary, deductions, benefits)
-        - Automated monthly analytics generation
-        
-        Enhanced Security Framework:
-        - Granular multi-level access control
-        - Country-based data isolation
-        - Analytics security groups
-        - Audit trail management
-        - Portal employee self-service
-        
-        RESTful API System:
-        - Complete API endpoints for all operations
-        - Real-time metrics API
-        - Employee and payslip management
-        - Bank file export capabilities
-        - Integration-ready architecture
-        
-        Modern UI/UX:
-        - Professional gradient designs
-        - Interactive country selection
-        - Real-time metric counters
-        - Chart.js analytics integration
-        - Accessibility compliant (WCAG 2.1)
-        - Dark mode support
-        
-        Multi-Country Dashboard:
-        - Country selector with visual dashboard
-        - Real-time statistics per country
-        - Professional UI with Bootstrap cards
-        - Quick action buttons for each country
-        
-        Enhanced Payroll Structures:
-        - Country-specific payroll structures
-        - Contract type integration
-        - Multi-currency support
-        - Working time configuration
-        - Tax calculation methods
-        
-        Advanced Salary Rules Engine:
-        - Country-specific salary rules
-        - Contract type conditions
-        - Enhanced calculation methods
-        - Statutory rule marking
-        - Flexible amount constraints
-        
-        Zoho Integration Foundation:
-        - Employee data import framework
-        - Country-specific data mapping
-        - Processing workflow
-        - Error handling and logging
-        
-        🎯 SUPPORTED COUNTRIES:
-        =======================
-        Ready for immediate deployment:
-        - Vietnam (VN) - Progressive PIT, Social Security
-        - Indonesia (ID) - THR, BPJS integration ready
-        - India (IN) - PF, ESI integration ready
-        - Singapore (SG) - Framework ready
-        - Malaysia (MY) - Framework ready
-        - Thailand (TH) - Framework ready
-        - Philippines (PH) - Framework ready
-        
-        Expandable to any country by adding country modules.
-        
-        🏗️ ARCHITECTURE:
-        =================
-        
-        Base Layer (om_hr_payroll):
-        - Untouched base payroll functionality
-        - Core models and workflows
-        - Standard Odoo payroll features
-        
-        Framework Layer (pb_hr_payroll_base):
-        - Multi-country extensions
-        - Advanced dashboard and analytics
-        - Enhanced models via inheritance
-        - RESTful API controllers
-        - Modern UI/UX components
-        
-        Country Layer (pb_hr_payroll_*):
-        - Country-specific salary rules
-        - Local tax calculations
-        - Compliance requirements
-        - Local reporting formats
-        
-        🔧 TECHNICAL EXCELLENCE:
-        ========================
-        - Clean inheritance patterns
-        - No base module modifications
-        - Real-time data computation
-        - Performance optimized queries
-        - Comprehensive error handling
-        - Multi-currency support
-        - API-first architecture
-        - Modern JavaScript framework
-        - CSS Grid/Flexbox layouts
-        - Accessibility features
-        
-        📊 DASHBOARD FEATURES:
-        =====================
-        - Real-time country selection interface
-        - Live employee and contract statistics
-        - Pending payslips monitoring
-        - Total payroll tracking
-        - Currency-aware displays
-        - Quick action buttons
-        - Mobile responsive design
-        - Auto-refresh capabilities
-        
-        📈 ADVANCED ANALYTICS:
-        ======================
-        - Period-based payroll analysis
-        - Growth trend comparisons
-        - Component breakdowns
-        - Anomaly detection
-        - Department analytics
-        - Position-based analysis
-        - Automated reporting
-        - Export capabilities
-        
-        🔐 SECURITY:
-        ============
-        - Multi-level access groups
-        - Country-based record rules
-        - Analytics security
-        - Data isolation by country
-        - Comprehensive audit trails
-        - Permission-based access
-        - Portal integration
-        
-        📈 EXTENSIBILITY:
-        =================
-        - Easy country module creation
-        - Plugin architecture
-        - Hook system for customizations
-        - API-ready for integrations
-        - Spreadsheet integration
-        - Third-party payroll imports
-        
-        This enhanced framework provides enterprise-grade multi-country 
-        payroll capabilities with modern UI/UX and advanced analytics.
+Enhanced Multi-Country Payroll Base Framework
+
+This enhanced module provides a comprehensive base framework for multi-country payroll operations 
+with professional Indonesia-style dashboard integration:
+
+Key Features:
+============
+• Enhanced animated country selector with permission management
+• Professional dashboard styling based on Indonesia theme (#21435F color scheme)
+• Comprehensive analytics integration
+• Multi-level access control with admin request system
+• Responsive design with modern animations
+• Country-specific payroll routing
+• Unified Zoho integration framework
+• Professional chart integration with Chart.js
+
+Enhanced Dashboard Features:
+============================
+• Large animated country flags with hover effects
+• Permission-based access indicators (✓ or 🔒)
+• Ripple click effects and smooth animations
+• Professional color scheme (#21435F - Navy Blue)
+• Mobile-responsive design
+• Loading overlays and progress indicators
+• Admin contact system for access requests
+
+Technical Improvements:
+======================
+• Optimized CSS/JS asset loading
+• Removed unused asset files
+• Consolidated styling from Indonesia module
+• Enhanced JavaScript interactions
+• QWeb template integration
+• Professional animations and transitions
+
+Supported Countries:
+===================
+• Vietnam (🇻🇳) - Full Access
+• Indonesia (🇮🇩) - Full Access  
+• India (🇮🇳) - Full Access
+• Singapore (🇸🇬) - Request Access
+• Malaysia (🇲🇾) - Request Access
+
+Architecture:
+=============
+This base framework extends om_hr_payroll and provides shared components
+for all country-specific modules while maintaining clean separation of concerns.
     """,
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
@@ -180,84 +59,61 @@
         'base',
         'hr',
         'hr_contract',
-        'om_hr_payroll',      # Extends this module via inheritance
-        'spreadsheet_oca',    # For Excel integration
-        'website',           # For portal and web interfaces
-        'account',           # For accounting integration
-        'mail',              # For notifications and tracking
-        'portal',            # For employee self-service
-        'web',               # Added for modern UI components
+        'om_hr_payroll',
+        'web',
+        'website',  # For enhanced web templates
+        'mail',     # REQUIRED: For messaging and notifications (mail.thread support)
     ],
     'data': [
-        # Security - Load First (Critical for multi-country access)
-        'security/payroll_base_security.xml',                    # Existing security file
-        'security/payroll_base_security_enhanced.xml',           # NEW: Enhanced security system
-        'security/ir.model.access.csv',                          # Existing access rights
+        # Security
+        'security/ir.model.access.csv',                         # CREATE if doesn't exist
         
-        # Data - Enhanced structures and rules
-        'data/payroll_base_data.xml',                            # Existing base data
+        # FULL Enhanced Views - Create these files
+        'views/payroll_dashboard_enhanced_views.xml',           # CREATE - Full enhanced dashboard with animations
+        'views/payroll_country_selector_enhanced.xml',          # CREATE - Enhanced country selector
         
-        # Views - Enhanced models (extends om_hr_payroll models)
-        'views/hr_payroll_structure_base_views.xml',             # Existing enhanced views
-
-        'wizards/analytics_wizard_views.xml',                   # NEW: Analytics generation wizard
-                
-        # Dashboard System - Enhanced Components
-        'views/payroll_base_dashboard.xml',                      # Existing dashboard views
-        'views/payroll_dashboard_enhanced_views.xml',            # NEW: Enhanced dashboard views
-        'views/payroll_analytics_views.xml',                     # NEW: Analytics views
-        'views/payroll_country_selector_template.xml',           # Existing country selector
+        # Existing files - uncomment ONLY the ones that exist in your current module
+        # Check your pb_hr_payroll_base/ folder and uncomment only existing files:
         
-        # Zoho Integration Framework
-        'views/zoho_base_views.xml',                            # Existing Zoho views
-        'views/zoho_staging_views.xml',                         # Existing Zoho staging
-        
-        # Additional Actions and Utilities
-        'views/additional_actions.xml',                         # Existing additional actions
-        
-        # Menu System - Load Last
-        'views/payroll_menu_base.xml',                          # Existing main navigation
-        'views/zoho_menu_integration.xml',                      # Existing Zoho menu
-        
-        # NEW: Enhanced Wizards
-        'wizards/payroll_import_wizard_views.xml',              # NEW: Enhanced import wizard
-
-        'wizards/employee_import_wizard_views.xml',             # NEW: Employee import wizard
+        # 'views/payroll_analytics_views.xml',                  # Uncomment if exists
+        # 'views/zoho_base_views.xml',                          # Uncomment if exists
+        # 'views/zoho_staging_views.xml',                       # Uncomment if exists
+        # 'views/zoho_menu_integration.xml',                    # Uncomment if exists
+        # 'views/payroll_menu_base.xml',                        # Uncomment if exists
     ],
-    # ❌ REMOVED: demo section - it never existed in your original code
     'assets': {
         'web.assets_backend': [
-            # Existing CSS
-            'pb_hr_payroll_base/static/src/css/payroll_dashboard.css',           # Existing dashboard CSS
-            'pb_hr_payroll_base/static/src/js/payroll_base.js',                 # Existing base JS
-            'pb_hr_payroll_base/static/src/js/country_selector.js',             # Existing country selector
+            # NEW Enhanced CSS and JS - Create these 2 files
+            'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',  # CREATE THIS FILE
+            'pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js',    # CREATE THIS FILE
             
-            # NEW: Enhanced Assets
-            'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css', # NEW: Enhanced dashboard CSS
-            'pb_hr_payroll_base/static/src/css/payroll_analytics.css',          # NEW: Analytics CSS
-            'pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js',   # NEW: Enhanced dashboard JS
-            'pb_hr_payroll_base/static/src/js/payroll_analytics.js',            # NEW: Analytics JS
-            'pb_hr_payroll_base/static/src/js/payroll_charts.js',               # NEW: Chart integration
+            # Chart.js for analytics
+            'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
+            
+            # OLD FILES REMOVED - Delete these files if they exist:
+            # ❌ 'pb_hr_payroll_base/static/src/css/payroll_dashboard.css'
+            # ❌ 'pb_hr_payroll_base/static/src/css/payroll_analytics.css'
+            # ❌ 'pb_hr_payroll_base/static/src/js/payroll_base.js'
+            # ❌ 'pb_hr_payroll_base/static/src/js/country_selector.js'
+            # ❌ 'pb_hr_payroll_base/static/src/js/payroll_analytics.js'
+            # ❌ 'pb_hr_payroll_base/static/src/js/payroll_charts.js'
         ],
         'web.assets_frontend': [
-            'pb_hr_payroll_base/static/src/css/payroll_portal.css',             # Existing portal CSS
-            'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css', # NEW: Enhanced dashboard for portal
+            # Frontend styling
+            'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',
         ],
+        # Remove QWeb section for now - can add later if needed
+        # 'web.assets_qweb': [
+        #     'pb_hr_payroll_base/static/src/xml/payroll_dashboard_templates.xml',
+        # ],
     },
     'external_dependencies': {
         'python': [
-            'requests',      # NEW: For API integrations
-            'dateutil',      # NEW: For date calculations
+            'requests',      # For API integrations
+            'dateutil',      # For date calculations  
+            # 'pillow',      # Commented out - uncomment if you use image processing
         ],
     },
-    'images': [
-        'static/description/banner.png',
-        'static/description/icon.png',
-        'static/description/architecture.png',
-        'static/description/dashboard_preview.png',
-        'static/description/analytics_preview.png',    # NEW: Analytics preview
-        'static/description/mobile_preview.png',       # NEW: Mobile preview
-    ],
     
     # Module Configuration
     'installable': True,
@@ -265,49 +121,24 @@
     'auto_install': False,
     'license': 'LGPL-3',
     
-    # Pricing and Support
-    'price': 0.00,
-    'currency': 'USD',
-    'support': 'support@yourcompany.com',
+    # Enhanced Module Metadata
+    'sequence': 100,
     
-    # Installation Hooks
-    'post_init_hook': '_post_init_multi_country_setup',           # Existing hook
-    'uninstall_hook': '_cleanup_multi_country_data',             # Existing hook
-    
-    # Module Dependencies and Loading
-    'sequence': 10,  # Load early so country modules can depend on it
-    'category': 'Human Resources/Payroll',
-    
-    # Version and Compatibility
-    'version': '16.0.3.0.0',  # Updated to reflect major enhancements
-    'depends_on_base': True,
-    
-    # Enhanced Multi-Country Framework Metadata
-    'supported_countries': ['VN', 'ID', 'IN', 'SG', 'MY', 'TH', 'PH'],  # Added TH, PH
-    'framework_version': '3.0',  # Updated framework version
-    'architecture': 'inheritance_based_enhanced',  # Enhanced architecture
-    'base_module_modifications': False,
-    
-    # NEW: Enhanced Features Metadata
-    'features': [
-        'real_time_dashboard',
-        'advanced_analytics', 
-        'modern_ui_ux',
-        'restful_api',
-        'mobile_responsive',
-        'accessibility_compliant',
-        'multi_level_security',
-        'auto_refresh',
-        'chart_integration',
-        'bank_export',
-    ],
-    
-    # NEW: Performance and Technical Specs
-    'performance': {
-        'dashboard_load_time': '< 2 seconds',
-        'supports_employees': '10000+',
-        'concurrent_users': '100+',
-        'mobile_optimized': True,
-        'accessibility_level': 'WCAG 2.1 AA',
+    # Asset Optimization Summary
+    'asset_optimization': {
+        'removed_files': [
+            'static/src/css/payroll_dashboard.css',       # Replaced by enhanced version
+            'static/src/css/payroll_analytics.css',       # Moved to analytics module  
+            'static/src/js/payroll_base.js',              # Replaced by enhanced version
+            'static/src/js/country_selector.js',          # Replaced by enhanced version
+            'static/src/js/payroll_analytics.js',         # Moved to analytics module
+            'static/src/js/payroll_charts.js',            # Integrated into enhanced version
+        ],
+        'new_files': [
+            'views/payroll_dashboard_enhanced_views.xml',       # Enhanced dashboard views
+            'views/payroll_country_selector_enhanced.xml',      # Enhanced country selector
+            'static/src/css/payroll_dashboard_enhanced.css',    # Consolidated styling
+            'static/src/js/payroll_dashboard_enhanced.js',      # Consolidated functionality
+        ],
     },
 }

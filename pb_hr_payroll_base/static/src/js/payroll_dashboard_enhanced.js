@@ -1,906 +1,908 @@
-/* Enhanced Payroll Dashboard JavaScript */
-/* pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js */
+/* Enhanced Payroll Dashboard JavaScript - Professional Indonesia Integration */
 
-odoo.define('pb_hr_payroll_base.dashboard_enhanced', function (require) {
-'use strict';
+odoo.define('pb_hr_payroll_base.enhanced_dashboard', function (require) {
+    'use strict';
 
-var AbstractAction = require('web.AbstractAction');
-var core = require('web.core');
-var rpc = require('web.rpc');
-var session = require('web.session');
-var Dialog = require('web.Dialog');
-var framework = require('web.framework');
+    var AbstractAction = require('web.AbstractAction');
+    var core = require('web.core');
+    var framework = require('web.framework');
+    var session = require('web.session');
+    var utils = require('web.utils');
+    var ajax = require('web.ajax');
+    var Dialog = require('web.Dialog');
+    var KanbanController = require('web.KanbanController');
+    var KanbanView = require('web.KanbanView');
+    var viewRegistry = require('web.view_registry');
 
-var QWeb = core.qweb;
-var _t = core._t;
+    var _t = core._t;
+    var QWeb = core.qweb;
 
-/**
- * Enhanced Payroll Dashboard Controller
- */
-var PayrollDashboard = AbstractAction.extend({
-    template: 'payroll_dashboard_enhanced',
-    cssLibs: [
-        '/pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css'
-    ],
-    
-    events: {
-        'click .country-card': '_onCountrySelect',
-        'click .metric-card': '_onMetricClick', 
-        'click .action-button': '_onActionClick',
-        'click .refresh-btn': '_onRefreshClick',
-        'keydown .country-card': '_onCountryKeydown',
-    },
+    /**
+     * Enhanced Payroll Dashboard Controller
+     */
+    var EnhancedDashboardController = KanbanController.extend({
+        className: 'o_kanban_dashboard_payroll_enhanced',
+        
+        events: _.extend({}, KanbanController.prototype.events, {
+            'click .country-card-enhanced': '_onCountryCardClick',
+            'click .dashboard-access-btn': '_onDashboardAccess',
+            'click .request-access-btn': '_onRequestAccess',
+            'mouseenter .payroll-country-card-enhanced': '_onCardHover',
+            'mouseleave .payroll-country-card-enhanced': '_onCardLeave',
+        }),
 
-    init: function (parent, context) {
-        this._super(parent, context);
-        this.dashboards = [];
-        this.accessRights = {};
-        this.refreshInterval = null;
-        this.isLoading = false;
-    },
+        /**
+         * Initialize enhanced dashboard
+         */
+        init: function (parent, model, renderer, params) {
+            this._super.apply(this, arguments);
+            this.accessRights = {};
+            this.countryData = {};
+            this.animationQueue = [];
+        },
 
-    willStart: function () {
-        var self = this;
-        return this._super().then(function () {
-            return self._fetchDashboardData();
-        });
-    },
-
-    start: function () {
-        var self = this;
-        return this._super().then(function () {
-            self._initializeComponents();
-            self._startAutoRefresh();
-            self._bindEvents();
-            self._animateMetrics();
-        });
-    },
-
-    destroy: function () {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-        }
-        this._super();
-    },
-
-    // Data Management
-    _fetchDashboardData: function () {
-        var self = this;
-        return rpc.query({
-            model: 'payroll.dashboard',
-            method: 'get_dashboard_data',
-            args: [],
-        }).then(function (data) {
-            self.dashboards = data;
-            return self._fetchAccessRights();
-        }).catch(function (error) {
-            console.error('Error fetching dashboard data:', error);
-            self._showError(_t('Failed to load dashboard data'));
-        });
-    },
-
-    _fetchAccessRights: function () {
-        var self = this;
-        return rpc.query({
-            route: '/api/payroll/countries',
-            params: {},
-        }).then(function (response) {
-            if (response.success) {
-                self.accessRights = {};
-                response.data.forEach(function (country) {
-                    self.accessRights[country.code] = true;
-                });
-            }
-        }).catch(function (error) {
-            console.warn('Could not fetch access rights:', error);
-            // Fallback: assume access to all countries
-            self.dashboards.forEach(function (dashboard) {
-                self.accessRights[dashboard.country] = true;
+        /**
+         * Start the enhanced dashboard
+         */
+        start: function () {
+            var self = this;
+            return this._super.apply(this, arguments).then(function () {
+                self._loadAccessRights();
+                self._initializeAnimations();
+                self._setupCountryCards();
+                self._loadDashboardData();
             });
-        });
-    },
+        },
 
-    // UI Initialization
-    _initializeComponents: function () {
-        this._renderCountryCards();
-        this._setupTooltips();
-        this._initializeSearch();
-        this._setupAccessibilityFeatures();
-    },
+        /**
+         * Load user access rights for countries
+         */
+        _loadAccessRights: function () {
+            var self = this;
+            return this._rpc({
+                model: 'payroll.dashboard',
+                method: 'get_user_access_rights',
+                args: [session.uid],
+            }).then(function (result) {
+                self.accessRights = result || {};
+                self._updateAccessIndicators();
+            }).catch(function (error) {
+                console.warn('Failed to load access rights:', error);
+                // Default access rights
+                self.accessRights = {
+                    'VN': true,
+                    'ID': true,
+                    'IN': true,
+                    'SG': false,
+                    'MY': false
+                };
+                self._updateAccessIndicators();
+            });
+        },
 
-    _renderCountryCards: function () {
-        var self = this;
-        var $container = this.$('.countries-container');
-        
-        if (!$container.length) {
-            $container = $('<div class="countries-container row">').appendTo(this.$el);
-        }
-        
-        $container.empty();
-        
-        this.dashboards.forEach(function (dashboard) {
-            var hasAccess = self.accessRights[dashboard.country] || false;
-            var $card = self._createCountryCard(dashboard, hasAccess);
-            $container.append($card);
-        });
-    },
-
-    _createCountryCard: function (dashboard, hasAccess) {
-        var flagEmoji = this._getCountryFlag(dashboard.country);
-        var statusClass = this._getStatusClass(dashboard);
-        
-        var $card = $(`
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
-                <div class="payroll-country-card ${hasAccess ? 'has-access' : 'no-access'}" 
-                     data-country="${dashboard.country}"
-                     tabindex="0"
-                     role="button"
-                     aria-label="Open ${dashboard.country_name} payroll dashboard">
-                     
-                    <div class="country-card-header">
-                        <div class="country-flag">${flagEmoji}</div>
-                        <div class="country-name">${dashboard.name}</div>
-                        <span class="status-indicator ${statusClass}"></span>
-                    </div>
+        /**
+         * Update access indicators on country cards
+         */
+        _updateAccessIndicators: function () {
+            var self = this;
+            this.$('.payroll-country-card-enhanced').each(function () {
+                var $card = $(this);
+                var country = $card.data('country');
+                var hasAccess = self.accessRights[country];
+                
+                var $indicator = $card.find('.access-status-badge');
+                var $tick = $card.find('.access-tick');
+                var $btn = $card.find('.dashboard-access-btn');
+                
+                if (hasAccess) {
+                    $card.removeClass('no-access').addClass('has-access');
+                    $indicator.removeClass('no-access').addClass('has-access');
+                    $tick.text('✓');
+                    $btn.prop('disabled', false).text('Access Dashboard');
+                } else {
+                    $card.removeClass('has-access').addClass('no-access');
+                    $indicator.removeClass('has-access').addClass('no-access');
+                    $tick.text('🔒');
+                    $btn.prop('disabled', true).text('Request Access');
                     
-                    <div class="country-metrics">
-                        <div class="metric-row">
-                            <div class="metric-item" title="Total Employees">
-                                <span class="metric-icon">👥</span>
-                                <span class="metric-value" data-count="${dashboard.employee_count}">0</span>
-                                <span class="metric-label">Employees</span>
-                            </div>
-                            <div class="metric-item" title="Active Contracts">
-                                <span class="metric-icon">📄</span>
-                                <span class="metric-value" data-count="${dashboard.active_contracts}">0</span>
-                                <span class="metric-label">Contracts</span>
-                            </div>
-                        </div>
-                        
-                        <div class="metric-row">
-                            <div class="metric-item" title="Pending Payslips">
-                                <span class="metric-icon">⏳</span>
-                                <span class="metric-value" data-count="${dashboard.pending_payslips}">0</span>
-                                <span class="metric-label">Pending</span>
-                            </div>
-                            <div class="metric-item" title="Total Gross Salary">
-                                <span class="metric-icon">💰</span>
-                                <span class="metric-value">${this._formatCurrency(dashboard.total_gross_salary, dashboard.currency)}</span>
-                                <span class="metric-label">${dashboard.currency}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="country-actions">
-                        <button class="btn btn-primary btn-sm" 
-                                ${hasAccess ? '' : 'disabled'}>
-                            ${hasAccess ? 'Open Dashboard' : 'No Access'}
+                    // Add no-access overlay
+                    if (!$card.find('.no-access-overlay').length) {
+                        $card.append(self._createNoAccessOverlay(country));
+                    }
+                }
+            });
+        },
+
+        /**
+         * Create no-access overlay for restricted countries
+         */
+        _createNoAccessOverlay: function (country) {
+            var countryNames = {
+                'SG': 'Singapore',
+                'MY': 'Malaysia',
+                'TH': 'Thailand',
+                'PH': 'Philippines'
+            };
+            
+            var countryName = countryNames[country] || country;
+            
+            return $(`
+                <div class="no-access-overlay">
+                    <div class="no-access-message">
+                        <h4>🔒 Access Required</h4>
+                        <p>You don't have permission to access ${countryName} payroll system.</p>
+                        <button class="contact-admin-btn" data-country="${country}">
+                            Contact Administrator
                         </button>
                     </div>
-                    
-                    <div class="country-footer">
-                        <small>Updated: ${this._formatDateTime(dashboard.last_updated)}</small>
-                    </div>
                 </div>
-            </div>
-        `);
-        
-        return $card;
-    },
+            `);
+        },
 
-    // Event Handlers
-    _onCountrySelect: function (event) {
-        event.preventDefault();
-        var $card = $(event.currentTarget).closest('.payroll-country-card');
-        var country = $card.data('country');
-        
-        if (!this.accessRights[country]) {
-            this._showAccessDenied(country);
-            return;
-        }
-        
-        this._openCountryDashboard(country, $card);
-    },
+        /**
+         * Initialize enhanced animations
+         */
+        _initializeAnimations: function () {
+            var self = this;
+            
+            // Staggered card animations
+            this.$('.payroll-country-card-enhanced').each(function (index) {
+                $(this).css('animation-delay', (index * 0.1) + 's');
+                $(this).addClass('fade-in-enhanced');
+            });
 
-    _onCountryKeydown: function (event) {
-        if (event.keyCode === 13 || event.keyCode === 32) { // Enter or Space
-            event.preventDefault();
-            this._onCountrySelect(event);
-        }
-    },
+            // Flag floating animations with random delays
+            this.$('.country-flag-large').each(function () {
+                var delay = Math.random() * 2;
+                $(this).css('animation-delay', delay + 's');
+            });
 
-    _onMetricClick: function (event) {
-        event.stopPropagation();
-        var $metric = $(event.currentTarget);
-        var metricType = $metric.data('metric');
-        
-        if (metricType) {
-            this._showMetricDetails(metricType);
-        }
-    },
+            // Pulse access indicators
+            setTimeout(function () {
+                self.$('.access-status-badge').addClass('animated-pulse');
+            }, 1000);
+        },
 
-    _onActionClick: function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        
-        var action = $(event.currentTarget).data('action');
-        var country = $(event.currentTarget).closest('.payroll-country-card').data('country');
-        
-        this._executeAction(action, country);
-    },
+        /**
+         * Setup country cards with enhanced interactions
+         */
+        _setupCountryCards: function () {
+            var self = this;
+            
+            // Add click ripple effect
+            this.$('.payroll-country-card-enhanced').on('click', function (e) {
+                if (!$(this).hasClass('no-access')) {
+                    self._addRippleEffect($(this), e);
+                }
+            });
 
-    _onRefreshClick: function (event) {
-        event.preventDefault();
-        this._refreshDashboard();
-    },
+            // Add enhanced hover effects
+            this.$('.payroll-country-card-enhanced').hover(
+                function () {
+                    $(this).addClass('hovered');
+                    $(this).find('.country-flag-large').addClass('flag-wave-active');
+                },
+                function () {
+                    $(this).removeClass('hovered');
+                    $(this).find('.country-flag-large').removeClass('flag-wave-active');
+                }
+            );
 
-    // Dashboard Actions
-    _openCountryDashboard: function (country, $card) {
-        var self = this;
-        
-        // Add loading state
-        $card.addClass('loading');
-        framework.blockUI();
-        
-        rpc.query({
-            route: '/payroll/select-country',
-            params: {
-                country_code: country
-            }
-        }).then(function (response) {
-            if (response.success) {
-                if (response.action === 'dashboard' && response.action_id) {
-                    self.do_action(response.action_id);
-                } else if (response.menu_id) {
-                    self.do_action({
-                        type: 'ir.actions.client',
-                        tag: 'menu',
-                        params: {menu_id: response.menu_id}
+            // Setup contact admin buttons
+            this.$('.contact-admin-btn').on('click', function (e) {
+                e.stopPropagation();
+                var country = $(this).data('country');
+                self._showAccessRequestDialog(country);
+            });
+        },
+
+        /**
+         * Add ripple effect to card
+         */
+        _addRippleEffect: function ($card, event) {
+            var $ripple = $('<div class="ripple-effect"></div>');
+            var cardRect = $card[0].getBoundingClientRect();
+            var x = event.clientX - cardRect.left;
+            var y = event.clientY - cardRect.top;
+            
+            $ripple.css({
+                position: 'absolute',
+                left: x + 'px',
+                top: y + 'px',
+                width: '0',
+                height: '0',
+                borderRadius: '50%',
+                background: 'rgba(102, 126, 234, 0.3)',
+                transform: 'translate(-50%, -50%)',
+                animation: 'ripple-expand 0.6s ease-out',
+                pointerEvents: 'none',
+                zIndex: 10
+            });
+            
+            $card.css('position', 'relative').append($ripple);
+            
+            setTimeout(function () {
+                $ripple.remove();
+            }, 600);
+        },
+
+        /**
+         * Load dashboard data for each country
+         */
+        _loadDashboardData: function () {
+            var self = this;
+            return this._rpc({
+                model: 'payroll.dashboard',
+                method: 'get_dashboard_summary',
+                args: [],
+            }).then(function (data) {
+                self.countryData = data || {};
+                self._updateCountryStats();
+            });
+        },
+
+        /**
+         * Update country statistics on cards
+         */
+        _updateCountryStats: function () {
+            var self = this;
+            _.each(this.countryData, function (data, country) {
+                var $card = self.$('.payroll-country-card-enhanced[data-country="' + country + '"]');
+                if ($card.length) {
+                    $card.find('.stat-value').each(function (index) {
+                        var $stat = $(this);
+                        var value;
+                        switch (index) {
+                            case 0:
+                                value = data.total_employees || 0;
+                                break;
+                            case 1:
+                                value = self._formatCurrency(data.total_payroll || 0, data.currency);
+                                break;
+                        }
+                        self._animateValue($stat, value);
                     });
                 }
-            } else {
-                self._showError(response.message || _t('Failed to open dashboard'));
-            }
-        }).catch(function (error) {
-            console.error('Error opening dashboard:', error);
-            self._showError(_t('Failed to open dashboard'));
-        }).finally(function () {
-            $card.removeClass('loading');
-            framework.unblockUI();
-        });
-    },
-
-    _executeAction: function (action, country) {
-        var actions = {
-            'import_employees': this._importEmployees,
-            'edit_spreadsheet': this._editSpreadsheet,
-            'process_payroll': this._processPayroll,
-            'view_analytics': this._viewAnalytics,
-        };
-        
-        if (actions[action]) {
-            actions[action].call(this, country);
-        }
-    },
-
-    _importEmployees: function (country) {
-        this.do_action({
-            name: _t('Import Employees'),
-            type: 'ir.actions.act_window',
-            res_model: 'zoho.employee.import.wizard',
-            view_mode: 'form',
-            target: 'new',
-            context: {
-                default_country_code: country
-            }
-        });
-    },
-
-    _editSpreadsheet: function (country) {
-        var url = `/payroll/spreadsheet/${country}`;
-        window.open(url, '_blank');
-    },
-
-    _processPayroll: function (country) {
-        this.do_action({
-            name: _t('Process Payroll'),
-            type: 'ir.actions.act_window',
-            res_model: 'payroll.import.wizard',
-            view_mode: 'form',
-            target: 'new',
-            context: {
-                default_country_code: country
-            }
-        });
-    },
-
-    _viewAnalytics: function (country) {
-        this.do_action({
-            name: _t('Payroll Analytics'),
-            type: 'ir.actions.act_window',
-            res_model: 'payroll.analytics',
-            view_mode: 'tree,form',
-            domain: [['country_code', '=', country]],
-            context: {
-                default_country_code: country
-            }
-        });
-    },
-
-    // Auto Refresh
-    _startAutoRefresh: function () {
-        var self = this;
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-        }
-        
-        // Refresh every 5 minutes
-        this.refreshInterval = setInterval(function () {
-            self._refreshDashboard();
-        }, 300000);
-    },
-
-    _refreshDashboard: function () {
-        var self = this;
-        
-        if (this.isLoading) {
-            return;
-        }
-        
-        this.isLoading = true;
-        this._showRefreshIndicator();
-        
-        this._fetchDashboardData().then(function () {
-            self._renderCountryCards();
-            self._animateMetrics();
-            self._showNotification(_t('Dashboard refreshed'), 'success');
-        }).catch(function (error) {
-            self._showError(_t('Failed to refresh dashboard'));
-        }).finally(function () {
-            self.isLoading = false;
-            self._hideRefreshIndicator();
-        });
-    },
-
-    // Animations
-    _animateMetrics: function () {
-        var self = this;
-        
-        this.$('.metric-value[data-count]').each(function () {
-            var $this = $(this);
-            var targetCount = parseInt($this.data('count')) || 0;
-            
-            self._animateCounter($this, 0, targetCount, 1500);
-        });
-    },
-
-    _animateCounter: function ($element, start, end, duration) {
-        var range = end - start;
-        var current = start;
-        var increment = range / (duration / 16);
-        
-        var timer = setInterval(function () {
-            current += increment;
-            if (current >= end) {
-                current = end;
-                clearInterval(timer);
-            }
-            $element.text(Math.floor(current));
-        }, 16);
-    },
-
-    // UI Helpers
-    _setupTooltips: function () {
-        this.$('[title]').tooltip({
-            delay: { show: 500, hide: 100 }
-        });
-    },
-
-    _initializeSearch: function () {
-        var self = this;
-        var $search = $('<input type="text" class="form-control mb-3" placeholder="Search countries...">');
-        
-        $search.on('input', function () {
-            var query = $(this).val().toLowerCase();
-            self._filterCountries(query);
-        });
-        
-        this.$('.countries-container').before($search);
-    },
-
-    _filterCountries: function (query) {
-        this.$('.payroll-country-card').each(function () {
-            var $card = $(this);
-            var countryName = $card.find('.country-name').text().toLowerCase();
-            
-            if (countryName.includes(query) || query === '') {
-                $card.closest('.col-lg-4').show();
-            } else {
-                $card.closest('.col-lg-4').hide();
-            }
-        });
-    },
-
-    _setupAccessibilityFeatures: function () {
-        // Add keyboard navigation
-        this.$('.payroll-country-card').attr('tabindex', '0');
-        
-        // Add ARIA labels
-        this.$('.metric-item').each(function () {
-            var $item = $(this);
-            var label = $item.find('.metric-label').text();
-            var value = $item.find('.metric-value').text();
-            $item.attr('aria-label', `${label}: ${value}`);
-        });
-    },
-
-    // Utility Functions
-    _getCountryFlag: function (countryCode) {
-        var flags = {
-            'VN': '🇻🇳',
-            'ID': '🇮🇩', 
-            'IN': '🇮🇳',
-            'SG': '🇸🇬',
-            'MY': '🇲🇾',
-            'TH': '🇹🇭',
-            'PH': '🇵🇭'
-        };
-        return flags[countryCode] || '🏴';
-    },
-
-    _getStatusClass: function (dashboard) {
-        if (dashboard.pending_payslips > 10) {
-            return 'status-warning';
-        } else if (dashboard.pending_payslips > 0) {
-            return 'status-warning';
-        }
-        return 'status-active';
-    },
-
-    _formatCurrency: function (amount, currency) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: currency || 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(amount);
-    },
-
-    _formatDateTime: function (datetime) {
-        if (!datetime) return 'Never';
-        
-        var date = new Date(datetime);
-        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    },
-
-    // Notification and Error Handling
-    _showNotification: function (message, type) {
-        this.displayNotification({
-            title: type === 'success' ? _t('Success') : _t('Information'),
-            message: message,
-            type: type || 'info',
-            sticky: false
-        });
-    },
-
-    _showError: function (message) {
-        this.displayNotification({
-            title: _t('Error'),
-            message: message,
-            type: 'danger',
-            sticky: true
-        });
-    },
-
-    _showAccessDenied: function (country) {
-        Dialog.alert(this, _t('You do not have access to the %s payroll system. Please contact your administrator.', country), {
-            title: _t('Access Denied')
-        });
-    },
-
-    _showRefreshIndicator: function () {
-        this.$('.refresh-btn').addClass('fa-spin');
-    },
-
-    _hideRefreshIndicator: function () {
-        this.$('.refresh-btn').removeClass('fa-spin');
-    },
-
-    _showMetricDetails: function (metricType) {
-        // Show detailed breakdown of the metric
-        var self = this;
-        
-        rpc.query({
-            route: '/api/payroll/metric-details',
-            params: {
-                metric: metricType
-            }
-        }).then(function (response) {
-            if (response.success) {
-                self._openMetricDialog(metricType, response.data);
-            }
-        }).catch(function (error) {
-            console.error('Error fetching metric details:', error);
-        });
-    },
-
-    _openMetricDialog: function (metricType, data) {
-        var $content = $(`
-            <div class="metric-details">
-                <h4>${metricType} Details</h4>
-                <div class="metric-breakdown">
-                    <!-- Metric breakdown content -->
-                </div>
-            </div>
-        `);
-        
-        Dialog.confirm(this, $content, {
-            title: _t('Metric Details'),
-            size: 'medium'
-        });
-    }
-});
-
-/**
- * Real-time Metrics Widget
- */
-var MetricsWidget = AbstractAction.extend({
-    template: 'payroll_metrics_widget',
-    
-    init: function (parent, options) {
-        this._super(parent, options);
-        this.country = options.country;
-        this.autoRefresh = options.autoRefresh !== false;
-        this.refreshInterval = null;
-    },
-
-    start: function () {
-        var self = this;
-        return this._super().then(function () {
-            self._loadMetrics();
-            if (self.autoRefresh) {
-                self._startAutoRefresh();
-            }
-        });
-    },
-
-    destroy: function () {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-        }
-        this._super();
-    },
-
-    _loadMetrics: function () {
-        var self = this;
-        return rpc.query({
-            route: '/payroll/api/metrics/' + this.country,
-            params: {}
-        }).then(function (response) {
-            if (response.success) {
-                self._updateMetrics(response.data);
-            }
-        });
-    },
-
-    _updateMetrics: function (data) {
-        this.$('.employee-count').text(data.employee_count);
-        this.$('.active-contracts').text(data.active_contracts);
-        this.$('.pending-payslips').text(data.pending_payslips);
-        this.$('.total-salary').text(this._formatCurrency(data.total_gross_salary, data.currency));
-        this.$('.last-updated').text(this._formatDateTime(data.last_updated));
-    },
-
-    _startAutoRefresh: function () {
-        var self = this;
-        this.refreshInterval = setInterval(function () {
-            self._loadMetrics();
-        }, 60000); // Refresh every minute
-    },
-
-    _formatCurrency: function (amount, currency) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: currency || 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(amount);
-    },
-
-    _formatDateTime: function (datetime) {
-        if (!datetime) return 'Never';
-        var date = new Date(datetime);
-        return date.toLocaleString();
-    }
-});
-
-/**
- * Analytics Chart Widget
- */
-var AnalyticsChart = AbstractAction.extend({
-    template: 'payroll_analytics_chart',
-    
-    init: function (parent, options) {
-        this._super(parent, options);
-        this.chartType = options.chartType || 'line';
-        this.country = options.country;
-        this.period = options.period || 'monthly';
-        this.chart = null;
-    },
-
-    start: function () {
-        var self = this;
-        return this._super().then(function () {
-            return self._loadChartData().then(function () {
-                self._renderChart();
             });
-        });
-    },
+        },
 
-    destroy: function () {
-        if (this.chart) {
-            this.chart.destroy();
-        }
-        this._super();
-    },
-
-    _loadChartData: function () {
-        var self = this;
-        return rpc.query({
-            model: 'payroll.analytics',
-            method: 'get_chart_data',
-            args: [this.country, this.period]
-        }).then(function (data) {
-            self.chartData = data;
-        });
-    },
-
-    _renderChart: function () {
-        var self = this;
-        var ctx = this.$('canvas')[0].getContext('2d');
-        
-        // Load Chart.js if not already loaded
-        if (typeof Chart === 'undefined') {
-            this._loadChartJS().then(function () {
-                self._createChart(ctx);
-            });
-        } else {
-            this._createChart(ctx);
-        }
-    },
-
-    _loadChartJS: function () {
-        return new Promise(function (resolve) {
-            var script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
-            script.onload = resolve;
-            document.head.appendChild(script);
-        });
-    },
-
-    _createChart: function (ctx) {
-        var chartConfig = this._getChartConfig();
-        this.chart = new Chart(ctx, chartConfig);
-    },
-
-    _getChartConfig: function () {
-        return {
-            type: this.chartType,
-            data: {
-                labels: this.chartData.labels,
-                datasets: [{
-                    label: 'Payroll Amount',
-                    data: this.chartData.values,
-                    borderColor: 'rgb(102, 126, 234)',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Payroll Analytics - ' + this.country
-                    },
-                    legend: {
-                        display: true
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return new Intl.NumberFormat('en-US', {
-                                    style: 'currency',
-                                    currency: 'USD',
-                                    minimumFractionDigits: 0
-                                }).format(value);
-                            }
-                        }
-                    }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
+        /**
+         * Animate value changes
+         */
+        _animateValue: function ($element, newValue) {
+            var currentValue = parseInt($element.text()) || 0;
+            var targetValue = parseInt(newValue) || 0;
+            
+            if (currentValue === targetValue) return;
+            
+            var steps = 30;
+            var stepValue = (targetValue - currentValue) / steps;
+            var currentStep = 0;
+            
+            var interval = setInterval(function () {
+                currentStep++;
+                currentValue += stepValue;
+                
+                if (currentStep >= steps) {
+                    $element.text(newValue);
+                    clearInterval(interval);
+                } else {
+                    $element.text(Math.round(currentValue));
                 }
+            }, 50);
+        },
+
+        /**
+         * Format currency values
+         */
+        _formatCurrency: function (amount, currency) {
+            currency = currency || 'USD';
+            var formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: currency,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            });
+            return formatter.format(amount);
+        },
+
+        /**
+         * Handle country card click
+         */
+        _onCountryCardClick: function (event) {
+            var $card = $(event.currentTarget);
+            var country = $card.data('country');
+            
+            if ($card.hasClass('no-access')) {
+                this._showAccessRequestDialog(country);
+                return;
             }
-        };
-    }
-});
+            
+            this._navigateToCountryDashboard(country);
+        },
 
-/**
- * Country Selector Widget
- */
-var CountrySelector = AbstractAction.extend({
-    template: 'payroll_country_selector',
-    events: {
-        'click .country-option': '_onCountrySelect',
-        'keydown .country-option': '_onCountryKeydown'
-    },
+        /**
+         * Handle dashboard access button click
+         */
+        _onDashboardAccess: function (event) {
+            event.stopPropagation();
+            var $btn = $(event.currentTarget);
+            var $card = $btn.closest('.payroll-country-card-enhanced');
+            var country = $card.data('country');
+            
+            if ($btn.prop('disabled')) {
+                this._showAccessRequestDialog(country);
+                return;
+            }
+            
+            this._showLoadingOverlay();
+            this._navigateToCountryDashboard(country);
+        },
 
-    init: function (parent, options) {
-        this._super(parent, options);
-        this.selectedCountry = options.selectedCountry;
-        this.availableCountries = options.availableCountries || [];
-        this.accessRights = options.accessRights || {};
-    },
+        /**
+         * Handle access request button click
+         */
+        _onRequestAccess: function (event) {
+            event.stopPropagation();
+            var country = $(event.currentTarget).data('country');
+            this._showAccessRequestDialog(country);
+        },
 
-    start: function () {
-        var self = this;
-        return this._super().then(function () {
-            self._renderCountryOptions();
-            self._setupKeyboardNavigation();
-        });
-    },
+        /**
+         * Navigate to country-specific dashboard
+         */
+        _navigateToCountryDashboard: function (country) {
+            var self = this;
+            var actions = {
+                'VN': 'pb_hr_payroll_vietnam.action_payroll_dashboard_vietnam',
+                'ID': 'pb_hr_payroll_indonesia.action_payroll_dashboard_indonesia',
+                'IN': 'pb_hr_payroll_india.action_payroll_dashboard_india',
+                'SG': 'pb_hr_payroll_singapore.action_payroll_dashboard_singapore',
+                'MY': 'pb_hr_payroll_malaysia.action_payroll_dashboard_malaysia',
+            };
+            
+            var actionXmlId = actions[country];
+            if (!actionXmlId) {
+                this._showErrorDialog('Dashboard not available for ' + country);
+                return;
+            }
+            
+            // Show loading for better UX
+            this._showLoadingOverlay();
+            
+            this._rpc({
+                route: '/web/action/load',
+                params: {
+                    action_id: actionXmlId,
+                }
+            }).then(function (action) {
+                self.do_action(action);
+            }).catch(function (error) {
+                self._hideLoadingOverlay();
+                self._showErrorDialog('Failed to load dashboard: ' + error.message);
+            });
+        },
 
-    _renderCountryOptions: function () {
-        var self = this;
-        var $container = this.$('.country-options');
-        
-        this.availableCountries.forEach(function (country) {
-            var hasAccess = self.accessRights[country.code];
-            var $option = $(`
-                <div class="country-option ${hasAccess ? 'accessible' : 'restricted'}" 
-                     data-country="${country.code}"
-                     tabindex="0"
-                     role="button"
-                     aria-label="Select ${country.name}">
-                    <div class="country-flag">${self._getCountryFlag(country.code)}</div>
-                    <div class="country-info">
-                        <div class="country-name">${country.name}</div>
-                        <div class="access-status">${hasAccess ? 'Accessible' : 'Restricted'}</div>
+        /**
+         * Show access request dialog
+         */
+        _showAccessRequestDialog: function (country) {
+            var self = this;
+            var countryNames = {
+                'VN': 'Vietnam',
+                'ID': 'Indonesia', 
+                'IN': 'India',
+                'SG': 'Singapore',
+                'MY': 'Malaysia',
+                'TH': 'Thailand',
+                'PH': 'Philippines'
+            };
+            
+            var countryName = countryNames[country] || country;
+            
+            var dialog = new Dialog(this, {
+                title: _t('Access Request Required'),
+                size: 'medium',
+                $content: $(QWeb.render('PayrollAccessRequestDialog', {
+                    country: country,
+                    countryName: countryName
+                })),
+                buttons: [
+                    {
+                        text: _t('Send Request'),
+                        classes: 'btn-primary',
+                        close: true,
+                        click: function () {
+                            self._sendAccessRequest(country);
+                        }
+                    },
+                    {
+                        text: _t('Cancel'),
+                        close: true
+                    }
+                ]
+            });
+            
+            dialog.open();
+        },
+
+        /**
+         * Send access request to administrator
+         */
+        _sendAccessRequest: function (country) {
+            var self = this;
+            
+            return this._rpc({
+                model: 'payroll.dashboard',
+                method: 'send_access_request',
+                args: [session.uid, country],
+            }).then(function (result) {
+                if (result.success) {
+                    self._showSuccessNotification(
+                        _t('Access request sent successfully'),
+                        _t('Your request for ' + country + ' payroll access has been sent to the administrator.')
+                    );
+                } else {
+                    self._showErrorDialog(result.message || _t('Failed to send access request'));
+                }
+            }).catch(function (error) {
+                self._showErrorDialog(_t('Error sending access request: ') + error.message);
+            });
+        },
+
+        /**
+         * Show loading overlay
+         */
+        _showLoadingOverlay: function () {
+            var $overlay = $(`
+                <div class="loading-overlay active">
+                    <div class="loading-content">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Loading payroll dashboard...</div>
                     </div>
-                    ${hasAccess ? '<i class="fa fa-check-circle"></i>' : '<i class="fa fa-lock"></i>'}
                 </div>
             `);
             
-            $container.append($option);
-        });
-    },
+            $('body').append($overlay);
+        },
 
-    _onCountrySelect: function (event) {
-        var $option = $(event.currentTarget);
-        var country = $option.data('country');
-        
-        if (!$option.hasClass('accessible')) {
-            this._showAccessDenied(country);
-            return;
-        }
-        
-        this.trigger('country_selected', country);
-    },
+        /**
+         * Hide loading overlay
+         */
+        _hideLoadingOverlay: function () {
+            $('.loading-overlay').removeClass('active').fadeOut(300, function () {
+                $(this).remove();
+            });
+        },
 
-    _onCountryKeydown: function (event) {
-        if (event.keyCode === 13 || event.keyCode === 32) {
-            event.preventDefault();
-            this._onCountrySelect(event);
-        }
-    },
+        /**
+         * Show success notification
+         */
+        _showSuccessNotification: function (title, message) {
+            this.displayNotification({
+                type: 'success',
+                title: title,
+                message: message,
+                sticky: false
+            });
+        },
 
-    _setupKeyboardNavigation: function () {
-        var self = this;
-        this.$('.country-option').on('keydown', function (event) {
-            var $current = $(this);
-            var $options = self.$('.country-option');
-            var currentIndex = $options.index($current);
+        /**
+         * Show error dialog
+         */
+        _showErrorDialog: function (message) {
+            Dialog.alert(this, message, {
+                title: _t('Error'),
+            });
+        },
+
+        /**
+         * Handle card hover
+         */
+        _onCardHover: function (event) {
+            var $card = $(event.currentTarget);
+            $card.addClass('hover-enhanced');
             
-            switch (event.keyCode) {
-                case 38: // Up arrow
-                    event.preventDefault();
-                    if (currentIndex > 0) {
-                        $options.eq(currentIndex - 1).focus();
-                    }
-                    break;
-                case 40: // Down arrow
-                    event.preventDefault();
-                    if (currentIndex < $options.length - 1) {
-                        $options.eq(currentIndex + 1).focus();
-                    }
-                    break;
+            // Trigger flag animation
+            $card.find('.country-flag-large').addClass('flag-hover-active');
+        },
+
+        /**
+         * Handle card leave
+         */
+        _onCardLeave: function (event) {
+            var $card = $(event.currentTarget);
+            $card.removeClass('hover-enhanced');
+            
+            // Stop flag animation
+            $card.find('.country-flag-large').removeClass('flag-hover-active');
+        },
+
+    });
+
+    /**
+     * Enhanced Dashboard View
+     */
+    var EnhancedDashboardView = KanbanView.extend({
+        config: _.extend({}, KanbanView.prototype.config, {
+            Controller: EnhancedDashboardController,
+        }),
+    });
+
+    // Register the enhanced view
+    viewRegistry.add('payroll_dashboard_enhanced', EnhancedDashboardView);
+
+    /**
+     * Enhanced Dashboard Action
+     */
+    var EnhancedDashboardAction = AbstractAction.extend({
+        template: 'PayrollEnhancedDashboard',
+        className: 'o_payroll_enhanced_dashboard',
+
+        events: {
+            'click .country-selector-btn': '_onCountrySelect',
+            'click .analytics-btn': '_onAnalyticsView',
+            'click .refresh-btn': '_onRefreshData',
+        },
+
+        init: function (parent, context) {
+            this._super(parent, context);
+            this.dashboardData = {};
+        },
+
+        start: function () {
+            var self = this;
+            return this._super.apply(this, arguments).then(function () {
+                self._loadDashboardData();
+                self._initializeCharts();
+            });
+        },
+
+        _loadDashboardData: function () {
+            var self = this;
+            return this._rpc({
+                model: 'payroll.dashboard',
+                method: 'get_enhanced_dashboard_data',
+                args: [],
+            }).then(function (data) {
+                self.dashboardData = data;
+                self._updateDashboard();
+            });
+        },
+
+        _updateDashboard: function () {
+            // Update dashboard with new data
+            this._updateMetrics();
+            this._updateCharts();
+            this._updateRecentActivity();
+        },
+
+        _updateMetrics: function () {
+            var data = this.dashboardData;
+            this.$('.metric-employees .metric-value').text(data.total_employees || 0);
+            this.$('.metric-payroll .metric-value').text(this._formatCurrency(data.total_payroll || 0));
+            this.$('.metric-countries .metric-value').text(data.active_countries || 0);
+        },
+
+        _updateCharts: function () {
+            // Implement chart updates
+            if (this.charts) {
+                _.each(this.charts, function (chart) {
+                    chart.destroy();
+                });
             }
-        });
-    },
+            this._initializeCharts();
+        },
 
-    _getCountryFlag: function (countryCode) {
-        var flags = {
-            'VN': '🇻🇳', 'ID': '🇮🇩', 'IN': '🇮🇳',
-            'SG': '🇸🇬', 'MY': '🇲🇾', 'TH': '🇹🇭', 'PH': '🇵🇭'
-        };
-        return flags[countryCode] || '🏴';
-    },
+        _initializeCharts: function () {
+            // Initialize Chart.js charts
+            this.charts = {};
+            this._createPayrollTrendChart();
+            this._createCountryComparisonChart();
+        },
 
-    _showAccessDenied: function (country) {
-        Dialog.alert(this, _t('You do not have access to %s payroll. Please contact your administrator.', country), {
-            title: _t('Access Denied')
-        });
-    }
+        _createPayrollTrendChart: function () {
+            var ctx = this.$('#payrollTrendChart')[0];
+            if (!ctx) return;
+            
+            this.charts.payrollTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: this.dashboardData.trend_labels || [],
+                    datasets: [{
+                        label: 'Total Payroll',
+                        data: this.dashboardData.trend_data || [],
+                        borderColor: '#21435F',
+                        backgroundColor: 'rgba(33, 67, 95, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        },
+
+        _createCountryComparisonChart: function () {
+            var ctx = this.$('#countryComparisonChart')[0];
+            if (!ctx) return;
+            
+            this.charts.countryComparison = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: this.dashboardData.country_labels || [],
+                    datasets: [{
+                        data: this.dashboardData.country_data || [],
+                        backgroundColor: [
+                            '#21435F',
+                            '#336087',
+                            '#4A759B',
+                            '#667eea',
+                            '#764ba2'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        },
+
+        _formatCurrency: function (amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(amount);
+        },
+
+        _onCountrySelect: function (event) {
+            var country = $(event.currentTarget).data('country');
+            // Handle country selection
+        },
+
+        _onAnalyticsView: function () {
+            this.do_action('payroll_analytics_approval.action_payroll_analytics_dashboard');
+        },
+
+        _onRefreshData: function () {
+            this._loadDashboardData();
+        },
+
+    });
+
+    // Register the action
+    core.action_registry.add('payroll_enhanced_dashboard', EnhancedDashboardAction);
+
+    return {
+        EnhancedDashboardController: EnhancedDashboardController,
+        EnhancedDashboardView: EnhancedDashboardView,
+        EnhancedDashboardAction: EnhancedDashboardAction,
+    };
+
 });
 
-/**
- * Payroll Action Executor
- */
-var PayrollActionExecutor = {
-    
-    executeImportEmployees: function (country, context) {
-        return rpc.query({
-            model: 'zoho.employee.import.wizard',
-            method: 'create_and_open',
-            args: [{
-                country_code: country
-            }],
-            context: context || {}
-        });
-    },
-
-    executeProcessPayroll: function (country, context) {
-        return rpc.query({
-            model: 'payroll.import.wizard', 
-            method: 'create_and_open',
-            args: [{
-                country_code: country
-            }],
-            context: context || {}
-        });
-    },
-
-    executeGenerateAnalytics: function (country, periodStart, periodEnd) {
-        return rpc.query({
-            route: '/payroll/api/analytics/generate',
-            params: {
-                country_code: country,
-                period_start: periodStart,
-                period_end: periodEnd
+/* Additional CSS animations for enhanced effects */
+if (typeof document !== 'undefined') {
+    var style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple-expand {
+            to {
+                width: 400px;
+                height: 400px;
+                opacity: 0;
             }
-        });
-    },
-
-    executeExportBankFile: function (country, periodStart, periodEnd) {
-        var url = `/api/payroll/export/bank-file/${country}`;
-        if (periodStart) url += `?period_start=${periodStart}`;
-        if (periodEnd) url += `${periodStart ? '&' : '?'}period_end=${periodEnd}`;
+        }
         
-        window.open(url, '_blank');
-    }
-};
+        .flag-hover-active {
+            animation: flagWaveEnhanced 0.8s ease-in-out infinite !important;
+        }
+        
+        .hover-enhanced {
+            transform: translateY(-10px) scale(1.02) !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .animated-pulse .access-status-badge {
+            animation: accessPulse 2s infinite;
+        }
+        
+        .fade-in-enhanced {
+            animation: fadeInEnhanced 0.6s ease-out forwards;
+            opacity: 0;
+        }
+    `;
+    document.head.appendChild(style);
+}
 
-// Register widgets
-core.action_registry.add('payroll_dashboard_enhanced', PayrollDashboard);
-core.action_registry.add('payroll_metrics_widget', MetricsWidget);
-core.action_registry.add('payroll_analytics_chart', AnalyticsChart);
-core.action_registry.add('payroll_country_selector', CountrySelector);
-
-// Export for use in other modules
-return {
-    PayrollDashboard: PayrollDashboard,
-    MetricsWidget: MetricsWidget,
-    AnalyticsChart: AnalyticsChart,
-    CountrySelector: CountrySelector,
-    PayrollActionExecutor: PayrollActionExecutor
-};
-
-});
+/* QWeb Templates for Enhanced Dashboard */
+if (typeof QWeb !== 'undefined') {
+    QWeb.add_template(`
+        <templates>
+            <!-- Access Request Dialog Template -->
+            <t t-name="PayrollAccessRequestDialog">
+                <div class="access-request-dialog">
+                    <div class="text-center mb-4">
+                        <i class="fa fa-lock fa-4x text-danger mb-3"></i>
+                        <h4>Access Required</h4>
+                        <p class="text-muted">
+                            You need administrator permission to access the <strong t-esc="countryName"/> payroll system.
+                        </p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle mr-2"></i>
+                        Your request will be sent to the system administrator for approval.
+                        You will be notified once access is granted.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="requestReason">Reason for Access (Optional):</label>
+                        <textarea id="requestReason" class="form-control" rows="3" 
+                                  placeholder="Please explain why you need access to this payroll system..."></textarea>
+                    </div>
+                </div>
+            </t>
+            
+            <!-- Enhanced Dashboard Template -->
+            <t t-name="PayrollEnhancedDashboard">
+                <div class="o_payroll_enhanced_dashboard">
+                    <div class="dashboard-header-enhanced">
+                        <div class="container-fluid">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h1 class="dashboard-title-enhanced">Multi-Country Payroll System</h1>
+                                    <p class="dashboard-subtitle-enhanced">Professional payroll management across regions</p>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <button class="btn btn-outline-primary refresh-btn">
+                                        <i class="fa fa-refresh mr-2"></i>Refresh Data
+                                    </button>
+                                    <button class="btn btn-primary analytics-btn ml-2">
+                                        <i class="fa fa-chart-bar mr-2"></i>Analytics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-content-enhanced">
+                        <div class="container-fluid">
+                            <!-- Key Metrics Row -->
+                            <div class="row mb-4">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="metric-card-enhanced metric-employees">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-users"></i>
+                                        </div>
+                                        <div class="metric-value">0</div>
+                                        <div class="metric-label">Total Employees</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="metric-card-enhanced metric-payroll">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-money"></i>
+                                        </div>
+                                        <div class="metric-value">$0</div>
+                                        <div class="metric-label">Total Payroll</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="metric-card-enhanced metric-countries">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-globe"></i>
+                                        </div>
+                                        <div class="metric-value">0</div>
+                                        <div class="metric-label">Active Countries</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="metric-card-enhanced metric-growth">
+                                        <div class="metric-icon">
+                                            <i class="fa fa-trending-up"></i>
+                                        </div>
+                                        <div class="metric-value">0%</div>
+                                        <div class="metric-label">Monthly Growth</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Charts Row -->
+                            <div class="row mb-4">
+                                <div class="col-lg-8 mb-3">
+                                    <div class="chart-card-enhanced">
+                                        <div class="chart-header">
+                                            <h5>Payroll Trend</h5>
+                                            <p class="text-muted">Monthly payroll comparison</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="payrollTrendChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 mb-3">
+                                    <div class="chart-card-enhanced">
+                                        <div class="chart-header">
+                                            <h5>Country Distribution</h5>
+                                            <p class="text-muted">Payroll by country</p>
+                                        </div>
+                                        <div class="chart-container">
+                                            <canvas id="countryComparisonChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Country Selector Row -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="country-selector-enhanced">
+                                        <div class="section-header">
+                                            <h4>Select Country Dashboard</h4>
+                                            <p class="text-muted">Choose your region to access specific payroll features</p>
+                                        </div>
+                                        
+                                        <div class="countries-grid-enhanced">
+                                            <div class="country-card-mini" data-country="VN">
+                                                <div class="country-flag">🇻🇳</div>
+                                                <div class="country-name">Vietnam</div>
+                                                <button class="btn btn-sm btn-primary country-selector-btn" data-country="VN">
+                                                    Access
+                                                </button>
+                                            </div>
+                                            <div class="country-card-mini" data-country="ID">
+                                                <div class="country-flag">🇮🇩</div>
+                                                <div class="country-name">Indonesia</div>
+                                                <button class="btn btn-sm btn-primary country-selector-btn" data-country="ID">
+                                                    Access
+                                                </button>
+                                            </div>
+                                            <div class="country-card-mini" data-country="IN">
+                                                <div class="country-flag">🇮🇳</div>
+                                                <div class="country-name">India</div>
+                                                <button class="btn btn-sm btn-primary country-selector-btn" data-country="IN">
+                                                    Access
+                                                </button>
+                                            </div>
+                                            <div class="country-card-mini no-access" data-country="SG">
+                                                <div class="country-flag">🇸🇬</div>
+                                                <div class="country-name">Singapore</div>
+                                                <button class="btn btn-sm btn-secondary country-selector-btn" data-country="SG" disabled>
+                                                    Request
+                                                </button>
+                                            </div>
+                                            <div class="country-card-mini no-access" data-country="MY">
+                                                <div class="country-flag">🇲🇾</div>
+                                                <div class="country-name">Malaysia</div>
+                                                <button class="btn btn-sm btn-secondary country-selector-btn" data-country="MY" disabled>
+                                                    Request
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </templates>
+    `);
+}
