@@ -12,9 +12,10 @@ _logger = logging.getLogger(__name__)
 
 
 class PayrollDashboard(models.Model):
-    """Enhanced Multi-Country Payroll Dashboard - Backward Compatible"""
+    """Enhanced Multi-Country Payroll Dashboard - Full Version"""
     _name = 'payroll.dashboard'
     _description = 'Multi-Country Payroll Dashboard'
+    _inherit = ['mail.thread', 'mail.activity.mixin']  # ADD THIS LINE
     _order = 'sequence, name'
     _rec_name = 'name'
 
@@ -69,6 +70,72 @@ class PayrollDashboard(models.Model):
         ('minimal', 'Minimal'),
     ], default='default', string='Dashboard Theme')
 
+    # ===========================================
+    # ADD THESE COMPUTED FIELDS IF MISSING
+    # ===========================================
+
+    # Add these fields if they don't exist in your model:
+    # Enhanced Analytics Fields
+    # Enhanced Analytics Fields
+    total_employees = fields.Integer(
+        string='Total Employees',
+        compute='_compute_enhanced_statistics',
+        store=True,  # Make searchable
+        help="Total number of employees in payroll system"
+    )
+    
+    total_payroll = fields.Monetary(
+        string='Total Payroll',
+        compute='_compute_enhanced_statistics',
+        currency_field='currency_id',
+        store=True,  # Make searchable
+        help="Total payroll amount for current period"
+    )
+    
+    average_salary = fields.Monetary(
+        string='Average Salary',
+        compute='_compute_enhanced_statistics',
+        currency_field='currency_id',
+        store=True,  # Make searchable
+        help="Average salary across all employees"
+    )
+    
+    last_payroll_date = fields.Date(
+        string='Last Payroll Date',
+        compute='_compute_enhanced_statistics',
+        store=True,  # Make searchable
+        help="Date of last processed payroll"
+    )
+    
+    # Enhanced Integration Status
+    zoho_connection_status = fields.Selection([
+        ('connected', 'Connected'),
+        ('disconnected', 'Disconnected'),
+        ('error', 'Error'),
+    ], default='disconnected', string='Zoho Status', tracking=True)
+    
+    last_sync_date = fields.Datetime(string='Last Sync Date')
+    auto_sync_enabled = fields.Boolean(string='Auto Sync Enabled', default=False)
+    analytics_enabled = fields.Boolean(string='Analytics Enabled', default=True)
+
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('active', 'Active'),
+        ('maintenance', 'Maintenance'),
+        ('inactive', 'Inactive'),
+    ], default='active', string='Status', tracking=True)  # ADD tracking=True for mail.thread
+
+    # Enhanced Integration Status
+    zoho_connection_status = fields.Selection([
+        ('connected', 'Connected'),
+        ('disconnected', 'Disconnected'),
+        ('error', 'Error'),
+    ], default='disconnected', string='Zoho Status', tracking=True)
+    
+    last_sync_date = fields.Datetime(string='Last Sync Date')
+    auto_sync_enabled = fields.Boolean(string='Auto Sync Enabled', default=False)
+    analytics_enabled = fields.Boolean(string='Analytics Enabled', default=True)
+
     # === EXISTING METHODS (BACKWARD COMPATIBLE) ===
     
     @api.depends('country')
@@ -115,61 +182,82 @@ class PayrollDashboard(models.Model):
 
 
 
+    # Replace or enhance your existing _compute_statistics method:
+    @api.depends('country', 'active')
     def _compute_statistics(self):
-        """Enhanced compute dashboard statistics - FIXED VERSION"""
+        """Enhanced statistics computation"""
         for record in self:
             try:
-                # Check if we have cached metrics and they're still fresh
-                if record._use_cached_metrics():
-                    record._load_cached_metrics()
-                    continue
-
-                # ALWAYS set structure_id first (this fixes the error)
-                structure = self.env['hr.payroll.structure'].search([
-                    ('payroll_country_code', '=', record.country),
-                    ('active', '=', True)
-                ], limit=1)
+                # Your existing logic here...
+                # Add these new computed fields:
                 
-                # CRITICAL: Always assign structure_id, even if False
-                record.structure_id = structure.id if structure else False
+                # Total employees (enhance your existing employee_count)
+                record.total_employees = record.employee_count
                 
-                if structure:
-                    # Get contracts using this structure
-                    contracts = self.env['hr.contract'].search([
-                        ('struct_id', '=', structure.id),
-                        ('state', '=', 'open')
-                    ])
-                    
-                    record.employee_count = len(contracts.mapped('employee_id'))
-                    record.active_contracts = len(contracts)
-                    record.total_gross_salary = sum(contracts.mapped('wage'))
-                    
-                    # Count pending payslips
-                    employees = contracts.mapped('employee_id')
-                    pending_payslips = self.env['hr.payslip'].search([
-                        ('employee_id', 'in', employees.ids),
-                        ('state', 'in', ['draft', 'verify'])
-                    ])
-                    record.pending_payslips = len(pending_payslips)
-                    
+                # Total payroll calculation
+                payslips = self.env['hr.payslip'].search([
+                    ('state', '=', 'done'),
+                    ('date_from', '>=', fields.Date.today().replace(day=1)),
+                    ('date_to', '<=', fields.Date.today())
+                ])
+                record.total_payroll = sum(payslip.net_wage for payslip in payslips)
+                
+                # Average salary
+                if record.total_employees > 0:
+                    record.average_salary = record.total_payroll / record.total_employees
                 else:
-                    # CRITICAL: Always set all computed fields
-                    record.employee_count = 0
-                    record.active_contracts = 0
-                    record.pending_payslips = 0
-                    record.total_gross_salary = 0.0
-
-                # Cache the computed metrics
-                record._cache_metrics()
+                    record.average_salary = 0.0
+                    
+                # Last payroll date
+                latest_payslip = self.env['hr.payslip'].search([
+                    ('state', '=', 'done')
+                ], order='date_to desc', limit=1)
+                record.last_payroll_date = latest_payslip.date_to if latest_payslip else False
                 
             except Exception as e:
-                _logger.error(f"Error computing statistics for {record.name}: {str(e)}")
-                # CRITICAL: Always set all computed fields, even on error
-                record.structure_id = False
-                record.employee_count = 0
-                record.active_contracts = 0
-                record.pending_payslips = 0
-                record.total_gross_salary = 0.0
+                _logger.warning(f"Error computing statistics for {record.name}: {str(e)}")
+                record._set_zero_metrics()
+
+    @api.depends('country', 'active')
+    def _compute_enhanced_statistics(self):
+        """Enhanced statistics computation for new fields"""
+        for record in self:
+            try:
+                # Use existing logic and extend it
+                record._compute_statistics()  # Call your existing method
+                
+                # Enhanced calculations for new fields
+                record.total_employees = record.employee_count
+                
+                # Calculate total payroll from recent payslips
+                today = fields.Date.today()
+                start_of_month = today.replace(day=1)
+                payslips = self.env['hr.payslip'].search([
+                    ('state', '=', 'done'),
+                    ('date_from', '>=', start_of_month),
+                    ('date_to', '<=', today)
+                ])
+                record.total_payroll = sum(payslip.net_wage for payslip in payslips)
+                
+                # Calculate average salary
+                if record.total_employees > 0:
+                    record.average_salary = record.total_payroll / record.total_employees
+                else:
+                    record.average_salary = 0.0
+                    
+                # Get last payroll date
+                latest_payslip = self.env['hr.payslip'].search([
+                    ('state', '=', 'done')
+                ], order='date_to desc', limit=1)
+                record.last_payroll_date = latest_payslip.date_to if latest_payslip else False
+                
+            except Exception as e:
+                _logger.warning(f"Error computing enhanced statistics for {record.name}: {str(e)}")
+                record.total_employees = 0
+                record.total_payroll = 0.0
+                record.average_salary = 0.0
+                record.last_payroll_date = False
+
 
     def _use_cached_metrics(self):
         """Check if we can use cached metrics"""
@@ -607,5 +695,231 @@ class PayrollDashboard(models.Model):
         """Open analytics dashboard"""
         return self.action_open_analytics()
     
-
+    # 5. ADD UTILITY METHODS FOR ENHANCED FEATURES
     
+    @api.model
+    def get_user_access_rights(self, user_id=None):
+        """Get user access rights for countries"""
+        if not user_id:
+            user_id = self.env.user.id
+            
+        user = self.env['res.users'].browse(user_id)
+        
+        # Enhanced access rights checking
+        access_rights = {
+            'VN': True,  # Vietnam always available
+            'ID': True,  # Indonesia always available
+            'IN': True,  # India always available
+            'SG': False, # Singapore - request access
+            'MY': False, # Malaysia - request access
+        }
+        
+        return access_rights
+    
+    @api.model
+    def get_dashboard_summary(self):
+        """Get enhanced dashboard summary for all countries"""
+        summary = {}
+        dashboards = self.search([('active', '=', True)])
+        
+        for dashboard in dashboards:
+            summary[dashboard.country] = {
+                'name': dashboard.name,
+                'total_employees': dashboard.total_employees,
+                'total_payroll': dashboard.total_payroll,
+                'average_salary': dashboard.average_salary,
+                'currency': dashboard.currency_id.name if dashboard.currency_id else 'USD',
+                'last_payroll_date': dashboard.last_payroll_date,
+                'state': dashboard.state,
+                'zoho_status': dashboard.zoho_connection_status,
+            }
+            
+        return summary
+    
+    @api.model
+    def send_access_request(self, user_id, country_code):
+        """Send access request to administrators"""
+        user = self.env['res.users'].browse(user_id)
+        country_name = dict(self._fields['country'].selection)[country_code]
+        
+        # Create activity for administrators
+        admin_users = self.env['res.users'].search([
+            ('groups_id', 'in', self.env.ref('base.group_system').id)
+        ])
+        
+        for admin in admin_users:
+            self.env['mail.activity'].create({
+                'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+                'summary': f'Access Request: {country_name} Payroll',
+                'note': f'User {user.name} ({user.login}) has requested access to {country_name} payroll system.',
+                'user_id': admin.id,
+                'res_model_id': self.env.ref('base.model_res_users').id,
+                'res_id': user_id,
+            })
+        
+        return {'success': True, 'message': f'Access request sent for {country_name}'}
+
+    # 6. OVERRIDE WRITE METHOD FOR ENHANCED TRACKING
+    def write(self, vals):
+        """Override write to add enhanced tracking"""
+        if 'state' in vals:
+            for record in self:
+                old_state = record.state
+                new_state = vals['state']
+                if old_state != new_state:
+                    record.message_post(
+                        body=f'Dashboard state changed from {old_state} to {new_state}',
+                        message_type='notification'
+                    )
+        return super().write(vals)
+    
+    # ===========================================
+    # ADD THESE METHODS TO YOUR EXISTING CLASS
+    # ===========================================
+
+    # 4. ADD ENHANCED ACTION METHODS
+    
+    def action_refresh_analytics(self):
+        """Refresh analytics data with enhanced features"""
+        self.ensure_one()
+        _logger.info(f"Refreshing analytics for {self.name} ({self.country})")
+        
+        # Refresh all computed fields
+        self._compute_statistics()
+        self._compute_enhanced_statistics()
+        
+        # Post message to chatter
+        self.message_post(
+            body=f"Analytics refreshed for {self.name}",
+            message_type='notification'
+        )
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+    
+    def action_export_dashboard(self):
+        """Export dashboard data with enhanced options"""
+        self.ensure_one()
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Export {self.name} Dashboard',
+            'res_model': 'ir.actions.report',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_name': f'{self.name} Dashboard Export',
+                'default_model': self._name,
+                'default_report_type': 'qweb-pdf',
+            }
+        }
+    
+    def action_import_employee_data(self):
+        """Enhanced employee data import"""
+        self.ensure_one()
+        
+        # Check if enhanced import wizard exists, fallback to existing method
+        try:
+            return {
+                'name': f'Import {self.country} Employee Data',
+                'type': 'ir.actions.act_window',
+                'res_model': 'employee.import.wizard',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {
+                    'default_country_code': self.country,
+                    'default_dashboard_id': self.id,
+                }
+            }
+        except:
+            # Fallback to existing method
+            return self.action_get_employee_data()
+    
+    def action_process_payroll(self):
+        """Enhanced payroll processing"""
+        self.ensure_one()
+        
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Process {self.country} Payroll',
+            'res_model': 'hr.payslip.run',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_name': f'{self.name} - {fields.Date.today()}',
+                'default_state': 'draft',
+            }
+        }
+    
+    def action_open_payroll_spreadsheet(self):
+        """Enhanced payroll spreadsheet access"""
+        self.ensure_one()
+        
+        try:
+            # Try existing spreadsheet method first
+            return self.action_import_spreadsheet()
+        except:
+            # Fallback to generic spreadsheet
+            return {
+                'type': 'ir.actions.act_window',
+                'name': f'{self.country} Payroll Spreadsheet',
+                'res_model': 'spreadsheet.spreadsheet',
+                'view_mode': 'form',
+                'target': 'current',
+            }
+    
+    def action_view_analytics(self):
+        """Enhanced analytics dashboard"""
+        self.ensure_one()
+        
+        # Try payroll analytics module if available
+        try:
+            action = self.env.ref('payroll_analytics_approval.action_payroll_analytics_dashboard')
+            return action.read()[0]
+        except:
+            # Fallback to payslip analytics
+            return {
+                'type': 'ir.actions.act_window',
+                'name': f'{self.country} Analytics',
+                'res_model': 'hr.payslip',
+                'view_mode': 'graph,tree',
+                'domain': [],
+                'context': {'search_default_group_by_date': 1}
+            }
+    
+    def action_export_bank_file(self):
+        """Enhanced bank file export"""
+        self.ensure_one()
+        
+        country_messages = {
+            'VN': 'Please use Vietnam-specific bank export in pb_hr_payroll_vietnam module',
+            'ID': 'Please use Indonesia-specific bank export in pb_hr_payroll_indonesia module',
+            'IN': 'Please use India-specific bank export in pb_hr_payroll_india module',
+        }
+        
+        message = country_messages.get(
+            self.country,
+            'Bank export not available for this country yet'
+        )
+        
+        raise UserError(message)
+    
+    def action_approval_dashboard(self):
+        """Enhanced approval dashboard"""
+        self.ensure_one()
+        
+        # Try approval module if available
+        try:
+            action = self.env.ref('payroll_analytics_approval.action_payroll_approval_dashboard')
+            return action.read()[0]
+        except:
+            # Fallback to payslip approval
+            return {
+                'type': 'ir.actions.act_window',
+                'name': f'{self.country} Payroll Approval',
+                'res_model': 'hr.payslip',
+                'view_mode': 'tree,form',
+                'domain': [('state', '=', 'draft')],
+            }

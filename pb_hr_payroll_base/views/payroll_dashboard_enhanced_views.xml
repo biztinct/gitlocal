@@ -1,312 +1,300 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Full Enhanced Dashboard Views with Animations and All Features -->
     
-    <!-- Enhanced Dashboard Form View -->
+    <!-- Enhanced Base Dashboard Form View -->
     <record id="view_payroll_dashboard_form_enhanced" model="ir.ui.view">
         <field name="name">payroll.dashboard.form.enhanced</field>
         <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
-            <form string="Payroll Dashboard" create="false" edit="false" delete="false">
+            <form string="Enhanced Payroll Dashboard" class="payroll_dashboard_enhanced">
+                <!-- Full Enhanced Header -->
                 <header>
-                    <button name="action_refresh_metrics" 
-                            string="Refresh Metrics" 
-                            type="object" 
-                            class="oe_highlight"
-                            icon="fa-refresh"/>
-                    <button name="action_get_employee_data" 
-                            string="Import Employees" 
-                            type="object" 
-                            icon="fa-users"/>
-                    <button name="action_edit_spreadsheet" 
-                            string="Edit Spreadsheet" 
-                            type="object" 
-                            icon="fa-table"/>
-                    <button name="action_process_payroll" 
-                            string="Process Payroll" 
-                            type="object" 
-                            class="oe_highlight"
-                            icon="fa-play"/>
-                    <field name="active" invisible="1"/>
+                    <button string="Refresh Analytics" name="action_refresh_analytics" type="object" class="btn-primary"/>
+                    <button string="Export Report" name="action_export_dashboard" type="object" class="btn-secondary"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,maintenance,inactive"/>
                 </header>
+                
                 <sheet>
-                    <style>
-                        .dashboard-enhanced {
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                            border-radius: 15px;
-                            padding: 30px;
-                            margin: 20px 0;
-                            color: white;
-                            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-                        }
-                        .metric-card {
-                            background: rgba(255,255,255,0.95);
-                            border-radius: 12px;
-                            padding: 25px;
-                            margin: 10px;
-                            text-align: center;
-                            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-                            transition: transform 0.3s ease, box-shadow 0.3s ease;
-                            min-height: 140px;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: center;
-                        }
-                        .metric-card:hover {
-                            transform: translateY(-5px);
-                            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-                        }
-                        .metric-icon {
-                            font-size: 48px;
-                            margin-bottom: 15px;
-                            background: linear-gradient(45deg, #667eea, #764ba2);
-                            -webkit-background-clip: text;
-                            -webkit-text-fill-color: transparent;
-                            background-clip: text;
-                        }
-                        .metric-value {
-                            font-size: 36px;
-                            font-weight: 700;
-                            color: #2c3e50;
-                            margin-bottom: 8px;
-                        }
-                        .metric-label {
-                            font-size: 14px;
-                            color: #7f8c8d;
-                            font-weight: 500;
-                            text-transform: uppercase;
-                            letter-spacing: 1px;
-                        }
-                        .dashboard-header {
-                            text-align: center;
-                            margin-bottom: 40px;
-                        }
-                        .dashboard-title {
-                            font-size: 42px;
-                            font-weight: 300;
-                            margin-bottom: 10px;
-                            color: white;
-                            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        }
-                        .dashboard-subtitle {
-                            font-size: 18px;
-                            color: rgba(255,255,255,0.9);
-                            font-weight: 300;
-                        }
-                        .action-button {
-                            background: linear-gradient(45deg, #667eea, #764ba2);
-                            border: none;
-                            color: white;
-                            padding: 15px 30px;
-                            border-radius: 8px;
-                            font-size: 16px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            transition: all 0.3s ease;
-                            margin: 5px;
-                            min-width: 200px;
-                        }
-                        .action-button:hover {
-                            transform: translateY(-2px);
-                            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-                        }
-                        .action-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                            gap: 20px;
-                            margin-top: 30px;
-                        }
-                        .country-flag {
-                            display: inline-block;
-                            margin-right: 10px;
-                            font-size: 24px;
-                        }
-                        .status-indicator {
-                            display: inline-block;
-                            width: 12px;
-                            height: 12px;
-                            border-radius: 50%;
-                            margin-right: 8px;
-                        }
-                        .status-active { background: #27ae60; }
-                        .status-warning { background: #f39c12; }
-                        .status-error { background: #e74c3c; }
-                        .last-updated {
-                            text-align: center;
-                            color: rgba(255,255,255,0.8);
-                            font-size: 14px;
-                            margin-top: 20px;
-                        }
-                    </style>
-                    
-                    <div class="dashboard-enhanced">
-                        <div class="dashboard-header">
-                            <h1 class="dashboard-title">
-                                <span class="country-flag" t-esc="self._get_country_flag()"/>
-                                <field name="name" readonly="1" style="background: none; border: none; color: white; font-size: inherit; font-weight: inherit;"/>
-                            </h1>
-                            <p class="dashboard-subtitle">
-                                Real-time payroll metrics and management
-                            </p>
-                        </div>
-                        
-                        <!-- Metrics Grid -->
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="metric-card">
-                                    <div class="metric-icon">
-                                        <i class="fa fa-users"/>
-                                    </div>
-                                    <div class="metric-value">
-                                        <field name="employee_count"/>
-                                    </div>
-                                    <div class="metric-label">Total Employees</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="metric-card">
-                                    <div class="metric-icon">
-                                        <i class="fa fa-file-text"/>
-                                    </div>
-                                    <div class="metric-value">
-                                        <field name="active_contracts"/>
-                                    </div>
-                                    <div class="metric-label">Active Contracts</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="metric-card">
-                                    <div class="metric-icon">
-                                        <i class="fa fa-clock-o"/>
-                                    </div>
-                                    <div class="metric-value">
-                                        <field name="pending_payslips"/>
-                                    </div>
-                                    <div class="metric-label">Pending Payslips</div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-3">
-                                <div class="metric-card">
-                                    <div class="metric-icon">
-                                        <i class="fa fa-money"/>
-                                    </div>
-                                    <div class="metric-value">
-                                        <field name="total_gross_salary" widget="monetary"/>
-                                    </div>
-                                    <div class="metric-label">Total Gross Salary</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Quick Actions -->
-                        <div class="action-grid">
-                            <button name="action_get_employee_data" type="object" class="action-button">
-                                <i class="fa fa-download"/> Import Employee Data
-                            </button>
-                            <button name="action_edit_spreadsheet" type="object" class="action-button">
-                                <i class="fa fa-table"/> Edit Payroll Spreadsheet
-                            </button>
-                            <button name="action_process_payroll" type="object" class="action-button">
-                                <i class="fa fa-play"/> Process Payroll
-                            </button>
-                            <button name="action_refresh_metrics" type="object" class="action-button">
-                                <i class="fa fa-refresh"/> Refresh Metrics
-                            </button>
-                        </div>
-                        
-                        <div class="last-updated">
-                            <span class="status-indicator status-active"/>
-                            Last updated: <field name="last_updated" widget="datetime"/>
-                        </div>
+                    <!-- Enhanced Button Box -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_analytics" icon="fa-bar-chart">
+                            <field string="Payslips" name="pending_payslips" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_employees_by_country" icon="fa-users">
+                            <field string="Employees" name="total_employees" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-file-text">
+                            <field string="Contracts" name="active_contracts" widget="statinfo"/>
+                        </button>
                     </div>
-                    
-                    <!-- Configuration Panel -->
-                    <group string="Configuration" class="mt-4">
-                        <group>
-                            <field name="country" readonly="1"/>
-                            <field name="currency_id" readonly="1"/>
-                            <field name="sequence"/>
-                        </group>
-                        <group>
-                            <field name="auto_refresh"/>
-                            <field name="refresh_interval" attrs="{'invisible': [('auto_refresh', '=', False)]}"/>
-                            <field name="active"/>
-                        </group>
-                    </group>
+
+                    <!-- Enhanced Dashboard Header -->
+                    <div class="dashboard-header-enhanced">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h2>Professional Multi-Country Payroll Management System</h2>
+                    </div>
+
+                    <!-- Enhanced Dashboard Content -->
+                    <notebook>
+                        <page string="Dashboard Overview" name="dashboard_overview">
+                            <div class="dashboard-container-enhanced">
+                                
+                                <!-- Enhanced Key Metrics Section with Animations -->
+                                <div class="metrics-grid-enhanced">
+                                    <div class="metric-item-enhanced metric-employees fade-in-enhanced">
+                                        <i class="fa fa-users metric-icon-enhanced"/>
+                                        <div class="metric-value-enhanced"><field name="total_employees" readonly="1"/></div>
+                                        <div class="metric-label-enhanced">Total Employees</div>
+                                    </div>
+                                    
+                                    <div class="metric-item-enhanced metric-payroll fade-in-enhanced">
+                                        <i class="fa fa-money metric-icon-enhanced"/>
+                                        <div class="metric-value-enhanced"><field name="total_payroll" readonly="1"/></div>
+                                        <div class="metric-label-enhanced">Total Payroll</div>
+                                    </div>
+                                    
+                                    <div class="metric-item-enhanced metric-average fade-in-enhanced">
+                                        <i class="fa fa-trending-up metric-icon-enhanced"/>
+                                        <div class="metric-value-enhanced"><field name="average_salary" readonly="1"/></div>
+                                        <div class="metric-label-enhanced">Average Salary</div>
+                                    </div>
+                                    
+                                    <div class="metric-item-enhanced metric-calendar fade-in-enhanced">
+                                        <i class="fa fa-calendar metric-icon-enhanced"/>
+                                        <div class="metric-value-enhanced"><field name="last_payroll_date" readonly="1"/></div>
+                                        <div class="metric-label-enhanced">Last Payroll</div>
+                                    </div>
+                                </div>
+
+                                <!-- Enhanced Action Cards Grid with Animations -->
+                                <div class="dashboard-cards-grid-enhanced">
+                                    
+                                    <!-- Employee Data Management Card -->
+                                    <div class="dashboard-card-enhanced slide-in-left">
+                                        <div class="card-content-enhanced">
+                                            <i class="fa fa-users fa-3x card-icon-enhanced"/>
+                                            <h4 class="card-title-enhanced">Employee Data Management</h4>
+                                            <p class="card-description-enhanced">
+                                                Import and manage employee information from Zoho People system with automated data synchronization and validation.
+                                            </p>
+                                            <button name="action_import_employee_data" type="object" class="dashboard-btn-enhanced">
+                                                <i class="fa fa-download"/> Import Employee Data
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Payroll Processing Card -->
+                                    <div class="dashboard-card-enhanced slide-in-right">
+                                        <div class="card-content-enhanced">
+                                            <i class="fa fa-calculator fa-3x card-icon-enhanced"/>
+                                            <h4 class="card-title-enhanced">Payroll Processing</h4>
+                                            <p class="card-description-enhanced">
+                                                Process monthly payroll with automated calculations, tax deductions, compliance validation, and audit trails.
+                                            </p>
+                                            <button name="action_process_payroll" type="object" class="dashboard-btn-enhanced">
+                                                <i class="fa fa-play"/> Process Payroll
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Payroll Spreadsheet Card -->
+                                    <div class="dashboard-card-enhanced slide-in-left">
+                                        <div class="card-content-enhanced">
+                                            <i class="fa fa-table fa-3x card-icon-enhanced"/>
+                                            <h4 class="card-title-enhanced">Interactive Spreadsheet</h4>
+                                            <p class="card-description-enhanced">
+                                                Access interactive payroll spreadsheet for detailed salary component management, calculations, and data analysis.
+                                            </p>
+                                            <button name="action_open_payroll_spreadsheet" type="object" class="dashboard-btn-enhanced secondary">
+                                                <i class="fa fa-external-link"/> Open Spreadsheet
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Analytics and Reports Card -->
+                                    <div class="dashboard-card-enhanced slide-in-right">
+                                        <div class="card-content-enhanced">
+                                            <i class="fa fa-bar-chart fa-3x card-icon-enhanced"/>
+                                            <h4 class="card-title-enhanced">Advanced Analytics</h4>
+                                            <p class="card-description-enhanced">
+                                                Comprehensive payroll analytics with month-over-month comparisons, trend analysis, and detailed reporting capabilities.
+                                            </p>
+                                            <button name="action_view_analytics" type="object" class="dashboard-btn-enhanced info">
+                                                <i class="fa fa-chart-line"/> View Analytics
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Bank Export Card -->
+                                    <div class="dashboard-card-enhanced slide-in-left">
+                                        <div class="card-content-enhanced">
+                                            <i class="fa fa-bank fa-3x card-icon-enhanced"/>
+                                            <h4 class="card-title-enhanced">Bank File Export</h4>
+                                            <p class="card-description-enhanced">
+                                                Export payroll data to bank format for automated salary disbursement and payment processing with validation.
+                                            </p>
+                                            <button name="action_export_bank_file" type="object" class="dashboard-btn-enhanced success">
+                                                <i class="fa fa-upload"/> Export Bank File
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Approval Workflow Card -->
+                                    <div class="dashboard-card-enhanced slide-in-right">
+                                        <div class="card-content-enhanced">
+                                            <i class="fa fa-check-circle fa-3x card-icon-enhanced"/>
+                                            <h4 class="card-title-enhanced">Approval Workflow</h4>
+                                            <p class="card-description-enhanced">
+                                                Manage payroll approvals with multi-level review process, audit trail tracking, and automated notifications.
+                                            </p>
+                                            <button name="action_approval_dashboard" type="object" class="dashboard-btn-enhanced warning">
+                                                <i class="fa fa-tasks"/> Approval Dashboard
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </page>
+
+                        <page string="Country Configuration" name="country_config">
+                            <group>
+                                <group string="Basic Information">
+                                    <field name="country"/>
+                                    <field name="currency_id"/>
+                                    <field name="active"/>
+                                    <field name="sequence"/>
+                                    <field name="state"/>
+                                </group>
+                                <group string="Enhanced Statistics">
+                                    <field name="total_employees"/>
+                                    <field name="total_payroll"/>
+                                    <field name="average_salary"/>
+                                    <field name="last_payroll_date"/>
+                                </group>
+                            </group>
+                            
+                            <group string="Integration and Analytics">
+                                <group string="Zoho Integration">
+                                    <field name="zoho_connection_status"/>
+                                    <field name="last_sync_date"/>
+                                    <field name="auto_sync_enabled"/>
+                                </group>
+                                
+                                <group string="Analytics Configuration">
+                                    <field name="analytics_enabled"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="System Information" name="system_info">
+                            <group string="Record Information">
+                                <field name="create_date" readonly="1"/>
+                                <field name="write_date" readonly="1"/>
+                                <field name="create_uid" readonly="1"/>
+                                <field name="write_uid" readonly="1"/>
+                            </group>
+                            
+                            <div class="alert alert-info mt-3">
+                                <h5><i class="fa fa-info-circle mr-2"/>Enhanced Payroll Framework</h5>
+                                <p>This enhanced framework provides:</p>
+                                <ul>
+                                    <li>Professional Indonesia theme integration (#21435F color scheme)</li>
+                                    <li>Animated country selector with permission management</li>
+                                    <li>Mobile-responsive design with modern animations</li>
+                                    <li>Optimized asset loading and improved performance</li>
+                                    <li>Multi-country support with extensible architecture</li>
+                                    <li>Advanced analytics and reporting capabilities</li>
+                                </ul>
+                            </div>
+                        </page>
+                    </notebook>
                 </sheet>
+
+                <!-- Enhanced Chatter with Mail Thread Support -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
 
-    <!-- Enhanced Kanban View for Country Selection -->
+    <!-- Enhanced Kanban View with Large Animated Flags -->
     <record id="view_payroll_dashboard_kanban_enhanced" model="ir.ui.view">
         <field name="name">payroll.dashboard.kanban.enhanced</field>
         <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_dashboard_payroll">
+            <kanban class="o_kanban_dashboard_payroll_enhanced" create="false" edit="false">
                 <field name="name"/>
                 <field name="country"/>
-                <field name="employee_count"/>
-                <field name="active_contracts"/>
-                <field name="pending_payslips"/>
-                <field name="total_gross_salary"/>
                 <field name="currency_id"/>
-                <field name="last_updated"/>
+                <field name="active"/>
+                <field name="total_employees"/>
+                <field name="total_payroll"/>
+                <field name="state"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click payroll-country-card">
-                            <div class="country-card-header">
-                                <div class="country-flag">
+                        <div class="payroll-country-card-enhanced fade-in-enhanced" t-att-data-country="record.country.raw_value">
+                            <div class="country-card-header-enhanced">
+                                <!-- Large Animated Country Flag -->
+                                <div class="country-flag-large">
                                     <t t-if="record.country.raw_value == 'VN'">🇻🇳</t>
                                     <t t-if="record.country.raw_value == 'ID'">🇮🇩</t>
                                     <t t-if="record.country.raw_value == 'IN'">🇮🇳</t>
                                     <t t-if="record.country.raw_value == 'SG'">🇸🇬</t>
                                     <t t-if="record.country.raw_value == 'MY'">🇲🇾</t>
+                                    <t t-if="record.country.raw_value == 'TH'">🇹🇭</t>
+                                    <t t-if="record.country.raw_value == 'PH'">🇵🇭</t>
                                 </div>
-                                <div class="country-name">
-                                    <strong t-esc="record.name.value"/>
+                                
+                                <!-- Enhanced Access Status Badge with Animation -->
+                                <div class="access-status-badge">
+                                    <span class="access-tick">✓</span>
+                                </div>
+                                
+                                <!-- Country Title -->
+                                <h3 class="country-title" t-esc="record.name.value"/>
+                                
+                                <!-- State Badge -->
+                                <div class="state-badge">
+                                    <span t-attf-class="badge badge-#{record.state.raw_value == 'active' ? 'success' : record.state.raw_value == 'maintenance' ? 'warning' : 'secondary'}" 
+                                          t-esc="record.state.value"/>
                                 </div>
                             </div>
                             
-                            <div class="country-metrics">
-                                <div class="metric-row">
-                                    <div class="metric-item">
-                                        <span class="metric-icon">👥</span>
-                                        <span class="metric-value" t-esc="record.employee_count.value"/>
-                                        <span class="metric-label">Employees</span>
+                            <!-- Enhanced Country Card Content -->
+                            <div class="country-card-content-enhanced">
+                                <div class="country-stats">
+                                    <div class="stat-item">
+                                        <i class="fa fa-users"/>
+                                        <span class="stat-value" t-esc="record.total_employees.value"/>
+                                        <span class="stat-label">Employees</span>
                                     </div>
-                                    <div class="metric-item">
-                                        <span class="metric-icon">📄</span>
-                                        <span class="metric-value" t-esc="record.active_contracts.value"/>
-                                        <span class="metric-label">Contracts</span>
+                                    <div class="stat-item">
+                                        <i class="fa fa-money"/>
+                                        <span class="stat-value" t-esc="record.total_payroll.value"/>
+                                        <span class="stat-label">Payroll</span>
                                     </div>
                                 </div>
                                 
-                                <div class="metric-row">
-                                    <div class="metric-item">
-                                        <span class="metric-icon">⏳</span>
-                                        <span class="metric-value" t-esc="record.pending_payslips.value"/>
-                                        <span class="metric-label">Pending</span>
-                                    </div>
-                                    <div class="metric-item">
-                                        <span class="metric-icon">💰</span>
-                                        <span class="metric-value" t-esc="record.total_gross_salary.value"/>
-                                        <span class="metric-label" t-esc="record.currency_id.value"/>
-                                    </div>
+                                <div class="last-updated-enhanced">
+                                    <span class="status-indicator status-active"/>
+                                    Enhanced framework with animations
                                 </div>
                             </div>
                             
-                            <div class="country-actions">
-                                <button name="action_open_country_dashboard" type="object" 
-                                        class="btn btn-primary btn-sm">
-                                    Open Dashboard
+                            <!-- Enhanced Action Buttons -->
+                            <div class="country-card-actions-enhanced">
+                                <button name="action_view_country_dashboard" type="object" class="btn btn-primary dashboard-access-btn">
+                                    <i class="fa fa-dashboard"/> Access Dashboard
                                 </button>
-                            </div>
-                            
-                            <div class="country-footer">
-                                <small>Updated: <t t-esc="record.last_updated.value"/></small>
+                                <button name="action_refresh_analytics" type="object" class="btn btn-outline-secondary btn-sm">
+                                    <i class="fa fa-refresh"/> Refresh
+                                </button>
                             </div>
                         </div>
                     </t>
@@ -315,168 +303,108 @@
         </field>
     </record>
 
-    <!-- Analytics Dashboard Form -->
-    <record id="view_payroll_analytics_form_enhanced" model="ir.ui.view">
-        <field name="name">payroll.analytics.form.enhanced</field>
-        <field name="model">payroll.analytics</field>
+    <!-- Enhanced Tree View -->
+    <record id="view_payroll_dashboard_tree_enhanced" model="ir.ui.view">
+        <field name="name">payroll.dashboard.tree.enhanced</field>
+        <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
-            <form string="Payroll Analytics">
-                <header>
-                    <button name="action_compute_analytics" 
-                            string="Compute Analytics" 
-                            type="object" 
-                            class="oe_highlight"
-                            attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
-                    <button name="action_approve" 
-                            string="Approve" 
-                            type="object" 
-                            class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'ready')]}"/>
-                    <button name="action_export_analytics" 
-                            string="Export to Excel" 
-                            type="object"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'computing'])]}"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,computing,ready,approved"/>
-                </header>
-                <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="period_name" placeholder="e.g., January 2024 - Vietnam"/>
-                        </h1>
-                    </div>
-                    
-                    <group>
-                        <group>
-                            <field name="period_start"/>
-                            <field name="period_end"/>
-                            <field name="country_code"/>
-                            <field name="currency_id"/>
-                        </group>
-                        <group>
-                            <field name="data_source"/>
-                            <field name="computation_date" readonly="1"/>
-                            <field name="computation_duration" readonly="1" widget="float_time"/>
-                            <field name="is_confidential"/>
-                        </group>
-                    </group>
-                    
-                    <notebook>
-                        <page string="Key Metrics" name="metrics">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <group string="Core Metrics">
-                                        <field name="total_employees"/>
-                                        <field name="total_payroll" widget="monetary"/>
-                                        <field name="average_salary" widget="monetary"/>
-                                        <field name="median_salary" widget="monetary"/>
-                                    </group>
-                                </div>
-                                <div class="col-md-6">
-                                    <group string="Growth Comparison">
-                                        <field name="previous_period_id"/>
-                                        <field name="employee_growth" widget="percentage"/>
-                                        <field name="payroll_growth" widget="percentage"/>
-                                        <field name="average_salary_growth" widget="percentage"/>
-                                    </group>
-                                </div>
-                            </div>
-                        </page>
-                        
-                        <page string="Component Analysis" name="components">
-                            <group>
-                                <field name="salary_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
-                                <field name="deduction_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
-                                <field name="benefit_components" widget="ace" options="{'mode': 'json'}" readonly="1"/>
-                            </group>
-                        </page>
-                        
-                        <page string="Breakdowns" name="breakdowns">
-                            <group>
-                                <field name="department_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
-                                <field name="position_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
-                                <field name="contract_type_breakdown" widget="ace" options="{'mode': 'json'}" readonly="1"/>
-                            </group>
-                        </page>
-                        
-                        <page string="Variance &amp; Alerts" name="variance">
-                            <group>
-                                <field name="anomaly_count"/>
-                                <field name="variance_alerts" widget="ace" options="{'mode': 'json'}" readonly="1"/>
-                            </group>
-                        </page>
-                        
-                        <page string="Approval" name="approval">
-                            <group>
-                                <field name="approver_ids" widget="many2many_tags"/>
-                            </group>
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="message_ids"/>
-                </div>
-            </form>
-        </field>
-    </record>
-
-    <!-- Analytics Tree View -->
-    <record id="view_payroll_analytics_tree" model="ir.ui.view">
-        <field name="name">payroll.analytics.tree</field>
-        <field name="model">payroll.analytics</field>
-        <field name="arch" type="xml">
-            <tree string="Payroll Analytics">
-                <field name="period_name"/>
-                <field name="country_code"/>
-                <field name="period_start"/>
-                <field name="period_end"/>
+            <tree string="Enhanced Payroll Dashboards" 
+                  decoration-success="state=='active'" 
+                  decoration-warning="state=='maintenance'"
+                  decoration-muted="state=='inactive'">
+                <field name="name"/>
+                <field name="country"/>
                 <field name="total_employees"/>
-                <field name="total_payroll" widget="monetary"/>
-                <field name="average_salary" widget="monetary"/>
-                <field name="employee_growth" widget="percentage"/>
-                <field name="payroll_growth" widget="percentage"/>
-                <field name="anomaly_count"/>
-                <field name="state" widget="badge" decoration-success="state == 'approved'" 
-                       decoration-warning="state == 'ready'" decoration-info="state == 'computing'"/>
+                <field name="total_payroll"/>
+                <field name="state"/>
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="active"/>
+                <field name="write_date" string="Last Modified"/>
             </tree>
         </field>
     </record>
 
-    <!-- Actions -->
-    <record id="action_payroll_dashboard_enhanced" model="ir.actions.act_window">
-        <field name="name">Payroll Dashboard</field>
-        <field name="res_model">payroll.dashboard</field>
-        <field name="view_mode">kanban,form,tree</field>
-        <field name="view_id" ref="view_payroll_dashboard_kanban_enhanced"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Welcome to Multi-Country Payroll Management!
-            </p>
-            <p>
-                Select a country to access its payroll dashboard and manage payroll operations.
-            </p>
+    <!-- Enhanced Search View -->
+    <record id="view_payroll_dashboard_search_enhanced" model="ir.ui.view">
+        <field name="name">payroll.dashboard.search.enhanced</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="arch" type="xml">
+            <search string="Search Enhanced Payroll Dashboards">
+                <field name="name" string="Dashboard Name"/>
+                <field name="country" string="Country"/>
+                <separator/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Inactive" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Active Status" name="state_active" domain="[('state', '=', 'active')]"/>
+                <filter string="Maintenance" name="state_maintenance" domain="[('state', '=', 'maintenance')]"/>
+                <filter string="Has Employees" name="has_employees" domain="[('total_employees', '>', 0)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country" context="{'group_by': 'country'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Currency" name="group_currency" context="{'group_by': 'currency_id'}"/>
+                    <filter string="Status" name="group_active" context="{'group_by': 'active'}"/>
+                </group>
+            </search>
         </field>
     </record>
 
-    <record id="action_payroll_analytics_enhanced" model="ir.actions.act_window">
-        <field name="name">Payroll Analytics</field>
-        <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">tree,form</field>
+    <!-- Enhanced Actions -->
+    <record id="action_payroll_dashboard_enhanced" model="ir.actions.act_window">
+        <field name="name">Enhanced Multi-Country Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="view_payroll_dashboard_kanban_enhanced"/>
         <field name="context">{'create': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No analytics data found!
+                Welcome to Enhanced Multi-Country Payroll System!
             </p>
             <p>
-                Create your first payroll analytics report to get insights into payroll trends and metrics.
+                Create professional dashboards for each country with animated flags, advanced analytics, 
+                and comprehensive payroll management capabilities.
+            </p>
+            <ul>
+                <li>🇻🇳 Vietnam - Full payroll management with VND currency</li>
+                <li>🇮🇩 Indonesia - BPJS, PPh 21, THR payments with IDR currency</li>
+                <li>🇮🇳 India - PF, ESI, Professional Tax with INR currency</li>
+                <li>🇸🇬 Singapore - CPF and SGD support (coming soon)</li>
+                <li>🇲🇾 Malaysia - EPF and MYR support (coming soon)</li>
+            </ul>
+        </field>
+    </record>
+
+    <!-- Enhanced Country Selector Action -->
+    <record id="action_enhanced_country_selector" model="ir.actions.act_window">
+        <field name="name">Enhanced Country Selector</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_payroll_dashboard_kanban_enhanced"/>
+        <field name="target">current</field>
+        <field name="context">{'create': False, 'enhanced_selector': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Select Your Payroll Region
+            </p>
+            <p>
+                Choose your country to access the appropriate payroll dashboard with professional 
+                styling, animations, and country-specific features.
             </p>
         </field>
     </record>
 
-    <!-- Custom CSS for Enhanced UI -->
-    <template id="payroll_dashboard_assets" name="Payroll Dashboard Assets">
-        <link rel="stylesheet" type="text/css" href="/pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css"/>
-        <script type="text/javascript" src="/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js"></script>
-    </template>
+    <!-- Menu Integration -->
+    <menuitem id="menu_payroll_dashboard_enhanced" 
+              name="Enhanced Dashboard" 
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              action="action_payroll_dashboard_enhanced"
+              sequence="5"/>
+
+    <menuitem id="menu_country_selector_enhanced" 
+              name="Country Selector" 
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              action="action_enhanced_country_selector"
+              sequence="3"/>
 
 </odoo>
