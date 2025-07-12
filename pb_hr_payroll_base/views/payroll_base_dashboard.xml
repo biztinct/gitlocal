@@ -32,7 +32,7 @@
                                 <div class="card-body">
                                     <div class="d-flex">
                                         <div class="flex-grow-1">
-                                            <h3 class="mb-2"><field name="employee_count" readonly="1"/></h3>
+                                            <h3 class="mb-2"><field name="total_employees" readonly="1"/></h3>
                                             <p class="mb-0">Total Employees</p>
                                         </div>
                                         <div class="align-self-center">
@@ -81,7 +81,7 @@
                                     <div class="d-flex">
                                         <div class="flex-grow-1">
                                             <h3 class="mb-2">
-                                                <field name="total_gross_salary" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                                                <field name="total_payroll" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
                                             </h3>
                                             <p class="mb-0">Total Gross Salary</p>
                                         </div>
@@ -168,7 +168,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="country"/>
-                <field name="employee_count"/>
+                <field name="total_employees"/>
                 <field name="active_contracts"/>
                 <field name="pending_payslips"/>
                 <field name="currency_id"/>
@@ -185,10 +185,10 @@
             <kanban class="o_kanban_dashboard">
                 <field name="name"/>
                 <field name="country"/>
-                <field name="employee_count"/>
+                <field name="total_employees"/>
                 <field name="active_contracts"/>
                 <field name="pending_payslips"/>
-                <field name="total_gross_salary"/>
+                <field name="total_payroll"/>
                 <field name="currency_id"/>
                 <templates>
                     <t t-name="kanban-box">
@@ -208,7 +208,7 @@
                                             <div class="col-6">
                                                 <button type="object" name="action_view_employees_by_country" 
                                                         class="btn btn-primary btn-sm">
-                                                    <span t-esc="record.employee_count.value"/> Employees
+                                                    <span t-esc="record.total_employees.value"/> Employees
                                                 </button>
                                             </div>
                                             <div class="col-6">

@@ -679,67 +679,6 @@
         </t>
     </template>
 
-    <!-- Enhanced Kanban View for Country Dashboard -->
-    <record id="view_payroll_dashboard_kanban_enhanced" model="ir.ui.view">
-        <field name="name">payroll.dashboard.kanban.enhanced</field>
-        <field name="model">payroll.dashboard</field>
-        <field name="arch" type="xml">
-            <!-- REPLACE WITH THIS: -->
-            <kanban class="o_kanban_dashboard_payroll_enhanced" create="false" edit="false">
-                <field name="name"/>
-                <field name="country"/>
-                <field name="employee_count"/>
-                <field name="total_gross_salary"/>
-                <field name="currency_id"/>
-                <field name="active"/>
-                <templates>
-                    <t t-name="kanban-box">
-                        <div class="payroll-country-card-enhanced" t-att-data-country="record.country.raw_value">
-                            <div class="country-card-header-enhanced">
-                                <div class="country-flag-large">
-                                    <t t-if="record.country.raw_value == 'VN'">🇻🇳</t>
-                                    <t t-if="record.country.raw_value == 'ID'">🇮🇩</t>
-                                    <t t-if="record.country.raw_value == 'IN'">🇮🇳</t>
-                                    <t t-if="record.country.raw_value == 'SG'">🇸🇬</t>
-                                    <t t-if="record.country.raw_value == 'MY'">🇲🇾</t>
-                                </div>
-                                <div class="access-status-badge">
-                                    <span class="access-tick">✓</span>
-                                </div>
-                                <h3 class="country-title" t-esc="record.name.value"/>
-                            </div>
-                            
-                            <div class="country-card-content-enhanced">
-                                <div class="country-stats">
-                                    <div class="stat-item">
-                                        <i class="fa fa-users"/>
-                                        <span class="stat-value" t-esc="record.employee_count.value"/>
-                                        <span class="stat-label">Employees</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <i class="fa fa-money"/>
-                                        <span class="stat-value" t-esc="record.total_gross_salary.value"/>
-                                        <span class="stat-label">Total Payroll</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="last-updated-enhanced">
-                                    <span class="status-indicator status-active"/>
-                                    Last updated: <t t-esc="record.last_payroll_date.value"/>
-                                </div>
-                            </div>
-                            
-                            <div class="country-card-actions-enhanced">
-                                <!-- REPLACE WITH THIS: -->
-                                <button name="action_view_country_dashboard" type="object" class="btn btn-primary dashboard-access-btn">
-                                    <i class="fa fa-dashboard"/> Access Dashboard
-                                </button>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
+
 
 </odoo>

@@ -169,7 +169,7 @@
                                     <field name="state"/>
                                 </group>
                                 <group string="Enhanced Statistics">
-                                    <field name="total_employees"/>
+                                    <field name="employee_count"/>
                                     <field name="total_payroll"/>
                                     <field name="average_salary"/>
                                     <field name="last_payroll_date"/>

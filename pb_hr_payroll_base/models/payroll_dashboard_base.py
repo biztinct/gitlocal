@@ -188,35 +188,52 @@ class PayrollDashboard(models.Model):
         """Enhanced statistics computation"""
         for record in self:
             try:
-                # Your existing logic here...
-                # Add these new computed fields:
+                # Initialize all fields to prevent compute errors
+                record.employee_count = 0
+                record.active_contracts = 0
+                record.pending_payslips = 0
+                record.total_gross_salary = 0.0
                 
-                # Total employees (enhance your existing employee_count)
-                record.total_employees = record.employee_count
+                if not record.country:
+                    continue
+                    
+                # Employee count
+                employees = self.env['hr.employee'].search([
+                    ('active', '=', True)
+                    # Add country filter if you have one
+                ])
+                record.employee_count = len(employees)
                 
-                # Total payroll calculation
+                # Active contracts
+                contracts = self.env['hr.contract'].search([
+                    ('state', '=', 'open')
+                    # Add country filter if you have one
+                ])
+                record.active_contracts = len(contracts)
+                
+                # Pending payslips
                 payslips = self.env['hr.payslip'].search([
+                    ('state', 'in', ['draft', 'verify'])
+                    # Add country filter if you have one
+                ])
+                record.pending_payslips = len(payslips)
+                
+                # Total gross salary
+                done_payslips = self.env['hr.payslip'].search([
                     ('state', '=', 'done'),
                     ('date_from', '>=', fields.Date.today().replace(day=1)),
                     ('date_to', '<=', fields.Date.today())
                 ])
-                record.total_payroll = sum(payslip.net_wage for payslip in payslips)
-                
-                # Average salary
-                if record.total_employees > 0:
-                    record.average_salary = record.total_payroll / record.total_employees
-                else:
-                    record.average_salary = 0.0
-                    
-                # Last payroll date
-                latest_payslip = self.env['hr.payslip'].search([
-                    ('state', '=', 'done')
-                ], order='date_to desc', limit=1)
-                record.last_payroll_date = latest_payslip.date_to if latest_payslip else False
+                record.total_gross_salary = sum(payslip.total_wage or 0 for payslip in done_payslips)
                 
             except Exception as e:
                 _logger.warning(f"Error computing statistics for {record.name}: {str(e)}")
-                record._set_zero_metrics()
+                # Set safe default values
+                record.employee_count = 0
+                record.active_contracts = 0
+                record.pending_payslips = 0
+                record.total_gross_salary = 0.0
+
 
     @api.depends('country', 'active')
     def _compute_enhanced_statistics(self):
