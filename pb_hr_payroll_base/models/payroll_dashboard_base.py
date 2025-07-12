@@ -7,6 +7,7 @@ import json
 import logging
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from pudb import set_trace
 
 _logger = logging.getLogger(__name__)
 
@@ -136,20 +137,73 @@ class PayrollDashboard(models.Model):
     auto_sync_enabled = fields.Boolean(string='Auto Sync Enabled', default=False)
     analytics_enabled = fields.Boolean(string='Analytics Enabled', default=True)
 
+    def debug_currency_issue(self):
+        """Debug currency computation issues"""
+        for record in self:
+            _logger.info(f"=== DEBUG {record.name} ===")
+            _logger.info(f"Country: {record.country}")
+            _logger.info(f"Current currency_id: {record.currency_id}")
+            _logger.info(f"Current currency name: {record.currency_id.name if record.currency_id else 'None'}")
+            _logger.info(f"Current currency symbol: {record.currency_id.symbol if record.currency_id else 'None'}")
+            
+            # Test currency search
+            expected_code = {'VN': 'VND', 'ID': 'IDR', 'IN': 'INR'}.get(record.country, 'USD')
+            found_currency = self.env['res.currency'].search([('name', '=', expected_code)], limit=1)
+            _logger.info(f"Expected currency: {expected_code}")
+            _logger.info(f"Found currency: {found_currency.name if found_currency else 'NOT FOUND'}")
+            
+            # Check all available currencies
+            all_currencies = self.env['res.currency'].search([])
+            currency_names = [c.name for c in all_currencies]
+            _logger.info(f"Available currencies: {currency_names}")
+            
+            # Return message for user
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'Debug Complete',
+                    'message': f'Check logs for {record.name} currency debug info',
+                    'type': 'info',
+                }
+            }
+
+
+
     # === EXISTING METHODS (BACKWARD COMPATIBLE) ===
     
+
     @api.depends('country')
     def _compute_currency(self):
-        """Compute currency based on country - ENHANCED VERSION"""
-        currency_map = {
-            'VN': 'VND', 'ID': 'IDR', 'IN': 'INR', 
-            'SG': 'SGD', 'MY': 'MYR', 'TH': 'THB', 'PH': 'PHP'
-        }
-        
+        """FIXED: Force proper currency assignment"""
         for record in self:
-            currency_code = currency_map.get(record.country, 'USD')
-            currency = self.env['res.currency'].search([('name', '=', currency_code)], limit=1)
-            record.currency_id = currency.id if currency else self.env.company.currency_id.id
+            if not record.country:
+                record.currency_id = self.env.company.currency_id.id
+                continue
+                
+            # Currency mapping
+            currency_map = {
+                'VN': 'VND',  # Vietnamese Dong
+                'ID': 'IDR',  # Indonesian Rupiah  
+                'IN': 'INR',  # Indian Rupee
+                'SG': 'SGD',  # Singapore Dollar
+                'MY': 'MYR',  # Malaysian Ringgit
+                'TH': 'THB',  # Thai Baht
+                'PH': 'PHP'   # Philippine Peso
+            }
+            
+            expected_currency_code = currency_map.get(record.country, 'USD')
+            
+            # Search for the currency
+            currency = self.env['res.currency'].search([('name', '=', expected_currency_code)], limit=1)
+            
+            if currency:
+                # FORCE the assignment - don't just set it, write it
+                record.write({'currency_id': currency.id})
+                _logger.info(f"✅ FORCED currency {expected_currency_code} for {record.country} dashboard")
+            else:
+                record.currency_id = self.env.company.currency_id.id
+                _logger.warning(f"❌ Currency {expected_currency_code} not found for {record.country}")
 
     @api.depends('country')
     def _compute_country_reference(self):

@@ -213,12 +213,6 @@
                     </notebook>
                 </sheet>
 
-                <!-- Enhanced Chatter with Mail Thread Support -->
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
             </form>
         </field>
     </record>
@@ -276,15 +270,25 @@
                                     </div>
                                     <div class="stat-item">
                                         <i class="fa fa-money"/>
-                                        <span class="stat-value" t-esc="record.total_payroll.value"/>
+                                        <span class="stat-value">
+                                            <!-- FIXED: Show correct currency symbol based on country -->
+                                            <t t-if="record.country.raw_value == 'VN'">₫ <t t-esc="record.total_payroll.raw_value"/></t>
+                                            <t t-if="record.country.raw_value == 'ID'">Rp <t t-esc="record.total_payroll.raw_value"/></t>
+                                            <t t-if="record.country.raw_value == 'IN'">₹ <t t-esc="record.total_payroll.raw_value"/></t>
+                                            <t t-if="record.country.raw_value == 'SG'">S$ <t t-esc="record.total_payroll.raw_value"/></t>
+                                            <t t-if="record.country.raw_value == 'MY'">RM <t t-esc="record.total_payroll.raw_value"/></t>
+                                            <t t-if="record.country.raw_value == 'TH'">฿ <t t-esc="record.total_payroll.raw_value"/></t>
+                                            <t t-if="record.country.raw_value == 'PH'">₱ <t t-esc="record.total_payroll.raw_value"/></t>
+                                        </span>
                                         <span class="stat-label">Payroll</span>
                                     </div>
                                 </div>
-                                
+                                <!--
                                 <div class="last-updated-enhanced">
                                     <span class="status-indicator status-active"/>
                                     Enhanced framework with animations
                                 </div>
+                                -->
                             </div>
                             
                             <!-- Enhanced Action Buttons -->
@@ -388,8 +392,7 @@
                 Select Your Payroll Region
             </p>
             <p>
-                Choose your country to access the appropriate payroll dashboard with professional 
-                styling, animations, and country-specific features.
+                Choose your country to access the appropriate payroll dashboard.
             </p>
         </field>
     </record>
