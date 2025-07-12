@@ -307,6 +307,36 @@ odoo.define('pb_hr_payroll_base.enhanced_dashboard', function (require) {
         },
 
         /**
+         * Get correct currency symbol for each country
+         */
+        _getCurrencySymbol: function (country) {
+            var currencySymbols = {
+                'VN': '₫',     // Vietnamese Dong
+                'ID': 'Rp',    // Indonesian Rupiah  
+                'IN': '₹',     // Indian Rupee
+                'SG': 'S$',    // Singapore Dollar
+                'MY': 'RM',    // Malaysian Ringgit
+                'TH': '฿',     // Thai Baht
+                'PH': '₱'      // Philippine Peso
+            };
+            return currencySymbols[country] || '$';
+        },
+
+        /**
+         * FIXED: Format currency with correct symbols per country
+         */
+        _formatCurrencyByCountry: function (amount, country) {
+            var symbol = this._getCurrencySymbol(country);
+            var formattedAmount = new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(amount);
+            
+            return symbol + ' ' + formattedAmount;
+        },
+
+
+        /**
          * Handle country card click
          */
         _onCountryCardClick: function (event) {
