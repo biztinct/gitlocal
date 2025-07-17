@@ -2,78 +2,113 @@
 <odoo>
     <data>
         
-        <!-- Extend Zoho Staging Data Form View for India Components -->
+        <!-- Standalone Zoho Staging Data Form View for India -->
         <record id="view_zoho_staging_data_form_india" model="ir.ui.view">
             <field name="name">zoho.staging.data.form.india</field>
             <field name="model">zoho.staging.data</field>
-            <field name="inherit_id" ref="om_hr_payroll.view_zoho_staging_data_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//group[last()]" position="after">
-                    <group string="India Salary Components" attrs="{'invisible': [('country', '!=', 'IN')]}">
-                        <group string="Allowances">
-                            <field name="basic_salary"/>
-                            <field name="hra"/>
-                            <field name="special_allowance"/>
-                            <field name="books_periodicals"/>
-                            <field name="telephone_internet"/>
-                            <field name="leave_travel_allowance"/>
+                <form string="Zoho Staging Data - India">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="employee_id"/>
+                                <field name="first_name"/>
+                                <field name="last_name"/>
+                                <field name="email"/>
+                            </group>
+                            <group>
+                                <field name="department"/>
+                                <field name="processing_status"/>
+                                <field name="created_employee_id"/>
+                            </group>
                         </group>
-                        <group string="Deductions & Details">
-                            <field name="pf"/>
-                            <field name="prof_tax"/>
-                            <field name="income_tax"/>
-                            <field name="uan_number"/>
-                            <field name="esi_number"/>
-                            <field name="ifsc_code"/>
+                        
+                        <group string="India Salary Components">
+                            <group string="Allowances">
+                                <field name="basic_salary"/>
+                                <field name="hra"/>
+                                <field name="special_allowance"/>
+                                <field name="books_periodicals"/>
+                                <field name="telephone_internet"/>
+                                <field name="leave_travel_allowance"/>
+                            </group>
+                            <group string="Deductions &amp; Details">
+                                <field name="pf"/>
+                                <field name="prof_tax"/>
+                                <field name="income_tax"/>
+                                <field name="uan_number"/>
+                                <field name="esi_number"/>
+                                <field name="ifsc_code"/>
+                            </group>
                         </group>
-                    </group>
-                </xpath>
+                        
+                    </sheet>
+                </form>
             </field>
         </record>
         
-        <!-- Extend Zoho Employee Data Form View for India Components -->
+        <!-- Standalone Zoho Employee Data Form View for India -->
         <record id="view_zoho_employee_data_form_india" model="ir.ui.view">
             <field name="name">zoho.employee.data.form.india</field>
             <field name="model">zoho.employee.data</field>
-            <field name="inherit_id" ref="om_hr_payroll.view_zoho_employee_data_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//group[last()]" position="after">
-                    <group string="India Payroll Calculations" attrs="{'invisible': [('country', '!=', 'IN')]}">
-                        <group string="Salary Components (Calculated)">
-                            <field name="actual_basic_salary"/>
-                            <field name="actual_hra"/>
-                            <field name="actual_special_allowance"/>
-                            <field name="actual_books_periodicals"/>
-                            <field name="actual_telephone_internet"/>
-                            <field name="actual_lta"/>
+                <form string="Zoho Employee Data - India">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="employee_id"/>
+                                <field name="first_name"/>
+                                <field name="last_name"/>
+                                <field name="email"/>
+                            </group>
+                            <group>
+                                <field name="department"/>
+                                <field name="location_name"/>
+                                <field name="date_of_joining"/>
+                            </group>
                         </group>
-                        <group string="Deductions & Contributions (Calculated)">
-                            <field name="actual_pf"/>
-                            <field name="actual_prof_tax"/>
-                            <field name="actual_income_tax"/>
-                            <field name="pf_employer"/>
-                            <field name="esi_employer"/>
+                        
+                        <group string="India Payroll Calculations">
+                            <group string="Salary Components (Calculated)">
+                                <field name="actual_basic_salary"/>
+                                <field name="actual_hra"/>
+                                <field name="actual_special_allowance"/>
+                                <field name="actual_books_periodicals"/>
+                                <field name="actual_telephone_internet"/>
+                                <field name="actual_lta"/>
+                            </group>
+                            <group string="Deductions &amp; Contributions (Calculated)">
+                                <field name="actual_pf"/>
+                                <field name="actual_prof_tax"/>
+                                <field name="actual_income_tax"/>
+                                <field name="pf_employer"/>
+                                <field name="esi_employer"/>
+                            </group>
                         </group>
-                        <group string="Totals" colspan="2">
+                        
+                        <group string="Totals">
                             <group>
                                 <field name="india_gross_pay"/>
                                 <field name="india_total_deductions"/>
                                 <field name="india_net_pay"/>
                             </group>
                         </group>
-                    </group>
-                </xpath>
+                    </sheet>
+                </form>
             </field>
         </record>
         
-        <!-- Extend Zoho Staging Data Tree View for India Components -->
+        <!-- Standalone Zoho Staging Data Tree View for India -->
         <record id="view_zoho_staging_data_tree_india" model="ir.ui.view">
             <field name="name">zoho.staging.data.tree.india</field>
             <field name="model">zoho.staging.data</field>
-            <field name="inherit_id" ref="om_hr_payroll.view_zoho_staging_data_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='base_salary']" position="after">
-                    <!-- India Salary Components -->
+                <tree string="Zoho Staging Data - India">
+                    <field name="employee_id"/>
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="department"/>
                     <field name="basic_salary" optional="hide" string="Basic"/>
                     <field name="hra" optional="hide" string="HRA"/>
                     <field name="special_allowance" optional="hide" string="Special Allow"/>
@@ -84,17 +119,25 @@
                     <field name="prof_tax" optional="hide" string="Prof Tax"/>
                     <field name="income_tax" optional="hide" string="Income Tax"/>
                     <field name="uan_number" optional="hide" string="UAN"/>
-                </xpath>
+                </tree>
             </field>
         </record>
         
-        <!-- Extend Zoho Employee Data Tree View for India Components -->
+        <!-- Standalone Zoho Employee Data Tree View for India -->
         <record id="view_zoho_employee_data_tree_india" model="ir.ui.view">
             <field name="name">zoho.employee.data.tree.india</field>
             <field name="model">zoho.employee.data</field>
-            <field name="inherit_id" ref="om_hr_payroll.view_zoho_employee_data_tree"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='net_pay']" position="after">
+                <tree string="Zoho Employee Data - India">
+                    <field name="employee_id"/>
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="department"/>
+                    <field name="designation"/>
+                    <field name="date_of_joining"/>
+                    <field name="base_salary" optional="hide" string="Base Salary"/>
+                    <field name="net_pay" optional="hide" string="Net Pay"/>
                     <!-- India Calculated Components -->
                     <field name="actual_basic_salary" optional="hide" string="Act Basic"/>
                     <field name="actual_hra" optional="hide" string="Act HRA"/>
@@ -103,7 +146,7 @@
                     <field name="india_gross_pay" optional="hide" string="IN Gross"/>
                     <field name="india_total_deductions" optional="hide" string="IN Deductions"/>
                     <field name="india_net_pay" optional="hide" string="IN Net Pay"/>
-                </xpath>
+                </tree>
             </field>
         </record>
         
@@ -164,17 +207,29 @@
         <record id="view_zoho_staging_data_search_india" model="ir.ui.view">
             <field name="name">zoho.staging.data.search.india</field>
             <field name="model">zoho.staging.data</field>
-            <field name="inherit_id" ref="om_hr_payroll.view_zoho_staging_data_search"/>
             <field name="arch" type="xml">
-                <xpath expr="//group[@string='Group By']" position="inside">
-                    <filter string="UAN Number" name="group_uan" domain="[]" context="{'group_by': 'uan_number'}"/>
-                </xpath>
-                <xpath expr="//field[@name='department']" position="after">
+                <search string="Search India Staging Data">
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="employee_id"/>
+                    <field name="department"/>
+                    <field name="designation"/>
                     <field name="basic_salary"/>
                     <field name="hra"/>
                     <field name="pf"/>
                     <field name="uan_number"/>
-                </xpath>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('employee_status', '=', 'Active')]"/>
+                    <filter string="Inactive" name="inactive" domain="[('employee_status', '=', 'Inactive')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Department" name="group_department" domain="[]" context="{'group_by': 'department'}"/>
+                        <filter string="Designation" name="group_designation" domain="[]" context="{'group_by': 'designation'}"/>
+                        <filter string="Employee Status" name="group_status" domain="[]" context="{'group_by': 'employee_status'}"/>
+                        <filter string="UAN Number" name="group_uan" domain="[]" context="{'group_by': 'uan_number'}"/>
+                    </group>
+                </search>
             </field>
         </record>
         
@@ -182,13 +237,27 @@
         <record id="view_zoho_employee_data_search_india" model="ir.ui.view">
             <field name="name">zoho.employee.data.search.india</field>
             <field name="model">zoho.employee.data</field>
-            <field name="inherit_id" ref="om_hr_payroll.view_zoho_employee_data_search"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='department']" position="after">
+                <search string="Search India Employee Data">
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="employee_id"/>
+                    <field name="department"/>
+                    <field name="designation"/>
                     <field name="actual_basic_salary"/>
                     <field name="india_gross_pay"/>
                     <field name="india_net_pay"/>
-                </xpath>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('employee_status', '=', 'Active')]"/>
+                    <filter string="Inactive" name="inactive" domain="[('employee_status', '=', 'Inactive')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Department" name="group_department" domain="[]" context="{'group_by': 'department'}"/>
+                        <filter string="Designation" name="group_designation" domain="[]" context="{'group_by': 'designation'}"/>
+                        <filter string="Employee Status" name="group_status" domain="[]" context="{'group_by': 'employee_status'}"/>
+                    </group>
+                </search>
             </field>
         </record>
         
@@ -321,40 +390,6 @@
         <record id="action_zoho_employee_data_india" model="ir.actions.act_window">
             <field name="view_mode">kanban,tree,form,pivot</field>
         </record>
-        
-        <!-- Menu Items for India -->
-        <menuitem id="menu_india_staging_data"
-                  name="📊 India Staging Data"
-                  parent="pb_hr_payroll_indonesia.menu_india_payroll_root"
-                  action="action_zoho_staging_data_india"
-                  sequence="35"
-                  groups="pb_hr_payroll_indonesia.group_india_payroll_user"/>
-        
-        <menuitem id="menu_india_employee_data"
-                  name="📈 India Employee Data"
-                  parent="pb_hr_payroll_indonesia.menu_india_payroll_root"
-                  action="action_zoho_employee_data_india"
-                  sequence="40"
-                  groups="pb_hr_payroll_indonesia.group_india_payroll_user"/>
-        
-        <!-- Additional India Reports Menu -->
-        <menuitem id="menu_india_reports_root"
-                  name="📋 Reports"
-                  parent="pb_hr_payroll_indonesia.menu_india_payroll_root"
-                  sequence="50"
-                  groups="pb_hr_payroll_indonesia.group_india_payroll_user"/>
-        
-        <menuitem id="menu_india_staging_reports"
-                  name="Staging Data Analysis"
-                  parent="menu_india_reports_root"
-                  action="action_zoho_staging_data_india"
-                  sequence="10"/>
-        
-        <menuitem id="menu_india_payroll_reports"
-                  name="Payroll Data Analysis"
-                  parent="menu_india_reports_root"
-                  action="action_zoho_employee_data_india"
-                  sequence="20"/>
         
     </data>
 </odoo>

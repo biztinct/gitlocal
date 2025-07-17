@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- Create default dashboard records -->
-        <record id="dashboard_vietnam" model="payroll.dashboard">
-            <field name="country">VN</field>
-        </record>
-        
-        <record id="dashboard_indonesia" model="payroll.dashboard">
+        <!-- Indonesia-specific dashboard record with custom model -->
+        <record id="dashboard_indonesia" model="indonesia.payroll.dashboard">
+            <field name="name">Indonesia Payroll Dashboard</field>
             <field name="country">ID</field>
+            <field name="sequence">20</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+            <!-- Indonesia-specific fields (THR, BPJS, etc.) can be added here -->
         </record>
         
-        <record id="dashboard_india" model="payroll.dashboard">
-            <field name="country">IN</field>
-        </record>
     </data>
 </odoo>

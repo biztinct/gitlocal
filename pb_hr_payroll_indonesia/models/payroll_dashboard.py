@@ -4,16 +4,26 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 
-class PayrollDashboard(models.Model):  # Changed to Model instead of TransientModel
-    _name = 'payroll.dashboard'
-    _description = 'Payroll Dashboard'
+class IndonesiaPayrollDashboard(models.Model):  # Changed to separate model
+    _name = 'indonesia.payroll.dashboard'  # Use separate model name
+    _description = 'Indonesia Payroll Dashboard'
+    _rec_name = 'name'
     
     name = fields.Char('Dashboard Name', compute='_compute_name', store=True)
     country = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
         ('IN', 'India')
-    ], string='Country', default='VN')
+    ], string='Country', default='ID')
+    
+    # Add currency_id field for Indonesia
+    currency_id = fields.Many2one('res.currency', string='Currency', compute='_compute_currency_id', store=True)
+    
+    # Add missing fields to match base model
+    sequence = fields.Integer('Sequence', default=10)
+    active = fields.Boolean('Active', default=True)
+    auto_refresh = fields.Boolean('Auto Refresh', default=True)
+    refresh_interval = fields.Integer('Refresh Interval', default=60)
     
     @api.depends('country')
     def _compute_name(self):
@@ -25,6 +35,22 @@ class PayrollDashboard(models.Model):  # Changed to Model instead of TransientMo
         }
         for record in self:
             record.name = country_names.get(record.country, 'Payroll Dashboard')
+    
+    @api.depends('country')
+    def _compute_currency_id(self):
+        """Compute currency based on country"""
+        currency_map = {
+            'VN': 'VND',  # Vietnamese Dong
+            'ID': 'IDR',  # Indonesian Rupiah
+            'IN': 'INR',  # Indian Rupee
+        }
+        for record in self:
+            if record.country:
+                currency_code = currency_map.get(record.country, 'USD')
+                currency = self.env['res.currency'].search([('name', '=', currency_code)], limit=1)
+                record.currency_id = currency.id if currency else self.env.company.currency_id.id
+            else:
+                record.currency_id = self.env.company.currency_id.id
     
     @api.model
     def get_or_create_dashboard(self, country_code):
@@ -41,7 +67,7 @@ class PayrollDashboard(models.Model):  # Changed to Model instead of TransientMo
         return {
             'type': 'ir.actions.act_window',
             'name': 'Vietnam Payroll Dashboard',
-            'res_model': 'payroll.dashboard',
+            'res_model': 'indonesia.payroll.dashboard',
             'view_mode': 'form',
             'view_id': self.env.ref('pb_hr_payroll_indonesia.view_payroll_dashboard_vietnam').id,
             'res_id': dashboard.id,
@@ -56,13 +82,18 @@ class PayrollDashboard(models.Model):  # Changed to Model instead of TransientMo
         return {
             'type': 'ir.actions.act_window',
             'name': 'Indonesia Payroll Dashboard',
-            'res_model': 'payroll.dashboard',
+            'res_model': 'indonesia.payroll.dashboard',
             'view_mode': 'form',
             'view_id': self.env.ref('pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia').id,
             'res_id': dashboard.id,
             'target': 'current',
             'context': {'default_payroll_country': 'ID'}
         }
+    
+    @api.model
+    def action_open_indonesia_dashboard(self):
+        """Action method to open Indonesia dashboard with record creation"""
+        return self.open_indonesia_dashboard()
     
     # Vietnam Actions
     def action_get_employee_data_vietnam(self):
@@ -409,3 +440,212 @@ class PayrollDashboard(models.Model):  # Changed to Model instead of TransientMo
         
         if update_data:
             contract.write(update_data)
+    
+    # Add computed fields for dashboard statistics
+    total_employees = fields.Integer(
+        string='Total Employees',
+        compute='_compute_dashboard_statistics',
+        store=False
+    )
+    
+    pending_payslips = fields.Integer(
+        string='Pending Payslips',
+        compute='_compute_dashboard_statistics',
+        store=False
+    )
+    
+    active_contracts = fields.Integer(
+        string='Active Contracts',
+        compute='_compute_dashboard_statistics',
+        store=False
+    )
+    
+    total_payroll = fields.Monetary(
+        string='Total Payroll',
+        compute='_compute_dashboard_statistics',
+        currency_field='currency_id',
+        store=False
+    )
+    
+    # Add missing fields to match Vietnam/India pattern
+    average_salary = fields.Monetary(
+        string='Average Salary',
+        compute='_compute_dashboard_statistics',
+        currency_field='currency_id',
+        store=False
+    )
+    
+    last_payroll_date = fields.Date(
+        string='Last Payroll Date',
+        compute='_compute_dashboard_statistics',
+        store=False
+    )
+    
+    @api.depends('country')
+    def _compute_dashboard_statistics(self):
+        """Compute dashboard statistics"""
+        for record in self:
+            try:
+                # Initialize defaults
+                record.total_employees = 0
+                record.pending_payslips = 0
+                record.active_contracts = 0
+                record.total_payroll = 0.0
+                record.average_salary = 0.0
+                record.last_payroll_date = False
+                
+                # Employee count
+                employees = self.env['hr.employee'].search([('active', '=', True)])
+                record.total_employees = len(employees)
+                
+                # Active contracts
+                contracts = self.env['hr.contract'].search([('state', '=', 'open')])
+                record.active_contracts = len(contracts)
+                
+                # Pending payslips
+                payslips = self.env['hr.payslip'].search([('state', 'in', ['draft', 'verify'])])
+                record.pending_payslips = len(payslips)
+                
+                # Total payroll from recent payslips
+                today = fields.Date.today()
+                start_of_month = today.replace(day=1)
+                done_payslips = self.env['hr.payslip'].search([
+                    ('state', '=', 'done'),
+                    ('date_from', '>=', start_of_month),
+                    ('date_to', '<=', today)
+                ])
+                record.total_payroll = sum(payslip.net_wage for payslip in done_payslips)
+                
+                # Calculate average salary
+                if record.total_employees > 0:
+                    record.average_salary = record.total_payroll / record.total_employees
+                else:
+                    record.average_salary = 0.0
+                
+                # Get last payroll date
+                latest_payslip = self.env['hr.payslip'].search([
+                    ('state', '=', 'done')
+                ], order='date_to desc', limit=1)
+                record.last_payroll_date = latest_payslip.date_to if latest_payslip else False
+                
+            except Exception as e:
+                # Set safe defaults on error
+                record.total_employees = 0
+                record.pending_payslips = 0
+                record.active_contracts = 0
+                record.total_payroll = 0.0
+                record.average_salary = 0.0
+                record.last_payroll_date = False
+    
+    # Add the missing action methods that the views are trying to call
+    def action_view_employees_by_country(self):
+        """View employees for this country"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{self.country} Employees',
+            'res_model': 'hr.employee',
+            'view_mode': 'tree,form',
+            'domain': [('active', '=', True)],
+            'context': {'default_country_code': self.country}
+        }
+    
+    def action_view_payslips_by_country(self):
+        """View payslips for this country"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{self.country} Payslips',
+            'res_model': 'hr.payslip',
+            'view_mode': 'tree,form',
+            'domain': [],
+            'context': {'default_country_code': self.country}
+        }
+    
+    def action_view_contracts_by_country(self):
+        """View contracts for this country"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{self.country} Contracts',
+            'res_model': 'hr.contract',
+            'view_mode': 'tree,form',
+            'domain': [('state', '=', 'open')],
+            'context': {'default_country_code': self.country}
+        }
+    
+    def action_get_employee_data(self):
+        """Get employee data - wrapper for country-specific methods"""
+        if self.country == 'VN':
+            return self.action_get_employee_data_vietnam()
+        elif self.country == 'ID':
+            return self.action_get_employee_data_indonesia()
+        else:
+            return self.action_get_employee_data_vietnam()  # Default fallback
+    
+    def action_edit_spreadsheet(self):
+        """Edit spreadsheet - wrapper for country-specific methods"""
+        if self.country == 'VN':
+            return self.action_vietnam_edit_spreadsheet()
+        elif self.country == 'ID':
+            return self.action_indonesia_edit_spreadsheet()
+        else:
+            return self.action_vietnam_edit_spreadsheet()  # Default fallback
+    
+    def action_import_spreadsheet(self):
+        """Import spreadsheet - wrapper for country-specific methods"""
+        if self.country == 'VN':
+            return self.action_vietnam_import_spreadsheet()
+        elif self.country == 'ID':
+            return self.action_indonesia_import_spreadsheet()
+        else:
+            return self.action_vietnam_import_spreadsheet()  # Default fallback
+    
+    def action_view_analytics(self):
+        """View analytics for this country"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{self.country} Analytics',
+            'res_model': 'hr.payslip',
+            'view_mode': 'graph,tree',
+            'domain': [],
+            'context': {'search_default_group_by_date': 1}
+        }
+    
+    def action_export_bank_file(self):
+        """Export bank file for this country"""
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Bank Export',
+                'message': f'Bank export for {self.country} is not implemented yet',
+                'type': 'info',
+            }
+        }
+    
+    def action_process_payroll(self):
+        """Process payroll - wrapper for country-specific methods"""
+        if self.country == 'ID':
+            return self.action_thr_payment()
+        else:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': f'Process {self.country} Payroll',
+                'res_model': 'hr.payslip.run',
+                'view_mode': 'form',
+                'target': 'new',
+                'context': {
+                    'default_name': f'{self.country} Payroll - {fields.Date.today()}',
+                    'default_state': 'draft',
+                }
+            }
+    
+    def action_process_social_insurance(self):
+        """Process social insurance for Vietnam"""
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Social Insurance',
+                'message': 'Social insurance processing for Vietnam is not implemented yet',
+                'type': 'info',
+            }
+        }

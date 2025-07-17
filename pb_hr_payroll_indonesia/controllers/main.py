@@ -14,7 +14,6 @@ class PayrollCountrySelector(http.Controller):
         access_rights = {
             'VN': user.has_group('pb_hr_payroll_indonesia.group_vietnam_payroll_user'),
             'ID': user.has_group('pb_hr_payroll_indonesia.group_indonesia_payroll_user'),
-            'IN': user.has_group('pb_hr_payroll_indonesia.group_india_payroll_user'),
         }
         
         return request.render('pb_hr_payroll_indonesia.payroll_country_selector_template', {
@@ -30,7 +29,6 @@ class PayrollCountrySelector(http.Controller):
         group_mapping = {
             'VN': 'pb_hr_payroll_indonesia.group_vietnam_payroll_user',
             'ID': 'pb_hr_payroll_indonesia.group_indonesia_payroll_user',
-            'IN': 'pb_hr_payroll_indonesia.group_india_payroll_user',
         }
         
         if not user.has_group(group_mapping.get(country_code)):

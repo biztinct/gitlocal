@@ -11,7 +11,6 @@ class ResUsers(models.Model):
         group_mapping = {
             'VN': 'pb_hr_payroll_indonesia.group_vietnam_payroll_user',
             'ID': 'pb_hr_payroll_indonesia.group_indonesia_payroll_user',
-            'IN': 'pb_hr_payroll_indonesia.group_india_payroll_user',
         }
         
         group_xml_id = group_mapping.get(country_code)

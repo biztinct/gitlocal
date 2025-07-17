@@ -4,139 +4,64 @@
         
         <!-- Default Dashboard Configurations for Supported Countries -->
         
-        <!-- Vietnam Dashboard -->
-        <record id="dashboard_vietnam" model="payroll.dashboard">
-            <field name="name">Vietnam Payroll Dashboard</field>
-            <field name="country">VN</field>
-            <field name="sequence">10</field>
-            <field name="active">True</field>
-            <field name="auto_refresh">True</field>
-            <field name="refresh_interval">60</field>
-        </record>
+        <!-- Country-specific dashboards are now handled by respective country modules -->
+        <!-- Vietnam: pb_hr_payroll_vietnam.vietnam_payroll_dashboard -->
+        <!-- Indonesia: pb_hr_payroll_indonesia.dashboard_indonesia -->
+        <!-- India: pb_hr_payroll_india.india_payroll_dashboard -->
 
-        <!-- Indonesia Dashboard -->
-        <record id="dashboard_indonesia" model="payroll.dashboard">
-            <field name="name">Indonesia Payroll Dashboard</field>
-            <field name="country">ID</field>
-            <field name="sequence">20</field>
-            <field name="active">True</field>
-            <field name="auto_refresh">True</field>
-            <field name="refresh_interval">60</field>
-        </record>
-
-        <!-- India Dashboard -->
-        <record id="dashboard_india" model="payroll.dashboard">
-            <field name="name">India Payroll Dashboard</field>
-            <field name="country">IN</field>
-            <field name="sequence">30</field>
-            <field name="active">True</field>
-            <field name="auto_refresh">True</field>
-            <field name="refresh_interval">60</field>
-        </record>
-
-        <!-- Singapore Dashboard -->
-        <record id="dashboard_singapore" model="payroll.dashboard">
-            <field name="name">Singapore Payroll Dashboard</field>
-            <field name="country">SG</field>
-            <field name="sequence">40</field>
-            <field name="active">True</field>
-            <field name="auto_refresh">True</field>
-            <field name="refresh_interval">60</field>
-        </record>
-
-        <!-- Malaysia Dashboard -->
-        <record id="dashboard_malaysia" model="payroll.dashboard">
-            <field name="name">Malaysia Payroll Dashboard</field>
-            <field name="country">MY</field>
-            <field name="sequence">50</field>
-            <field name="active">True</field>
-            <field name="auto_refresh">True</field>
-            <field name="refresh_interval">60</field>
-        </record>
-
-        <!-- Thailand Dashboard -->
-        <record id="dashboard_thailand" model="payroll.dashboard">
-            <field name="name">Thailand Payroll Dashboard</field>
-            <field name="country">TH</field>
-            <field name="sequence">60</field>
-            <field name="active">True</field>
-            <field name="auto_refresh">True</field>
-            <field name="refresh_interval">60</field>
-        </record>
-
-        <!-- Philippines Dashboard -->
-        <record id="dashboard_philippines" model="payroll.dashboard">
-            <field name="name">Philippines Payroll Dashboard</field>
-            <field name="country">PH</field>
-            <field name="sequence">70</field>
-            <field name="active">True</field>
-            <field name="auto_refresh">True</field>
-            <field name="refresh_interval">60</field>
-        </record>
+        <!-- All country-specific dashboards are now created by their respective country modules -->
+        <!-- This ensures no conflicts when country modules install their own dashboards -->
 
         <!-- Configuration Parameters -->
-        <record id="config_multi_country_enabled" model="ir.config_parameter">
-            <field name="key">payroll.multi_country_enabled</field>
-            <field name="value">True</field>
-        </record>
 
-        <record id="config_default_country" model="ir.config_parameter">
-            <field name="key">payroll.default_country</field>
-            <field name="value">VN</field>
-        </record>
 
-        <record id="config_dashboard_refresh_interval" model="ir.config_parameter">
-            <field name="key">payroll.dashboard_refresh_interval</field>
-            <field name="value">60</field>
-        </record>
-
-        <record id="config_analytics_auto_generation" model="ir.config_parameter">
+        <record id="payroll_dashboard_config_analytics_auto_generation" model="ir.config_parameter">
             <field name="key">payroll.analytics_auto_generation</field>
             <field name="value">True</field>
         </record>
 
-        <record id="config_spreadsheet_integration" model="ir.config_parameter">
+        <record id="payroll_dashboard_config_spreadsheet_integration" model="ir.config_parameter">
             <field name="key">payroll.spreadsheet_integration</field>
             <field name="value">True</field>
         </record>
 
-        <record id="config_api_enabled" model="ir.config_parameter">
+        <record id="payroll_dashboard_config_api_enabled" model="ir.config_parameter">
             <field name="key">payroll.api_enabled</field>
             <field name="value">True</field>
         </record>
 
         <!-- Country-Currency Mapping Data -->
-        <record id="country_currency_vietnam" model="ir.config_parameter">
+        <record id="payroll_dashboard_country_currency_vietnam" model="ir.config_parameter">
             <field name="key">payroll.currency.VN</field>
             <field name="value">VND</field>
         </record>
 
-        <record id="country_currency_indonesia" model="ir.config_parameter">
+        <record id="payroll_dashboard_country_currency_indonesia" model="ir.config_parameter">
             <field name="key">payroll.currency.ID</field>
             <field name="value">IDR</field>
         </record>
 
-        <record id="country_currency_india" model="ir.config_parameter">
+        <record id="payroll_dashboard_country_currency_india" model="ir.config_parameter">
             <field name="key">payroll.currency.IN</field>
             <field name="value">INR</field>
         </record>
 
-        <record id="country_currency_singapore" model="ir.config_parameter">
+        <record id="payroll_dashboard_country_currency_singapore" model="ir.config_parameter">
             <field name="key">payroll.currency.SG</field>
             <field name="value">SGD</field>
         </record>
 
-        <record id="country_currency_malaysia" model="ir.config_parameter">
+        <record id="payroll_dashboard_country_currency_malaysia" model="ir.config_parameter">
             <field name="key">payroll.currency.MY</field>
             <field name="value">MYR</field>
         </record>
 
-        <record id="country_currency_thailand" model="ir.config_parameter">
+        <record id="payroll_dashboard_country_currency_thailand" model="ir.config_parameter">
             <field name="key">payroll.currency.TH</field>
             <field name="value">THB</field>
         </record>
 
-        <record id="country_currency_philippines" model="ir.config_parameter">
+        <record id="payroll_dashboard_country_currency_philippines" model="ir.config_parameter">
             <field name="key">payroll.currency.PH</field>
             <field name="value">PHP</field>
         </record>

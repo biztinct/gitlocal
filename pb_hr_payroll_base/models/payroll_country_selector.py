@@ -40,9 +40,9 @@ class PayrollCountrySelector(models.TransientModel):
                     'res_model': 'payroll.dashboard',
                     'view_mode': 'form',
                     'view_id': view_ref.id,
-                    'res_id': dashboard.id,
                     'target': 'current',
-                    'context': {'create': False, 'edit': False, 'delete': False}
+                    'domain': [('country', '=', self.country)],
+                    'context': {'create': False, 'edit': False, 'delete': False, 'default_country': self.country, 'force_view': True}
                 }
             except:
                 _logger.warning(f"Country-specific view {view_id} not found, using base view")
@@ -53,8 +53,9 @@ class PayrollCountrySelector(models.TransientModel):
             'name': f'{self.country} Payroll Dashboard',
             'res_model': 'payroll.dashboard',
             'view_mode': 'form',
-            'res_id': dashboard.id,
             'target': 'current',
+            'domain': [('country', '=', self.country)],
+            'context': {'create': False, 'edit': False, 'delete': False, 'default_country': self.country}
         }
     
     @api.model

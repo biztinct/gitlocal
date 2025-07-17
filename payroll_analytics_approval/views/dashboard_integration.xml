@@ -5,7 +5,7 @@
     <record id="view_payroll_dashboard_vietnam_analytics" model="ir.ui.view">
         <field name="name">Vietnam Payroll Dashboard with Analytics</field>
         <field name="model">payroll.dashboard</field>
-        <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_vietnam"/>
+        <field name="inherit_id" ref="pb_hr_payroll_base.view_payroll_dashboard_form_enhanced"/>
         <field name="arch" type="xml">
             <!-- Add js_class to the form element -->
             <form position="attributes">

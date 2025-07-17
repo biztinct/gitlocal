@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Dashboard view for Indonesia -->
-    <record id="view_payroll_dashboard_indonesia" model="ir.ui.view">
-        <field name="name">Indonesia Payroll Dashboard</field>
-        <field name="model">indonesia.payroll.dashboard</field>
-        <field name="priority">20</field>
+    <!-- Professional Vietnam Dashboard View -->
+    <record id="view_payroll_dashboard_vietnam" model="ir.ui.view">
+        <field name="name">Vietnam Payroll Dashboard Professional</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="priority">10</field>
         <field name="arch" type="xml">
-            <form string="Indonesia Payroll Dashboard" create="false" edit="false" delete="false">
+            <form string="Vietnam Payroll Dashboard" create="false" edit="false" delete="false">
                 <header>
                     <field name="name" invisible="1"/>
                 </header>
@@ -20,19 +20,19 @@
                         <button class="oe_stat_button" type="object" name="action_view_payslips_by_country" icon="fa-file-text">
                             <field string="Payslips" name="pending_payslips" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-dollar">
+                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-dong">
                             <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value">Rp <field name="total_payroll" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
+                                <span class="o_stat_value">₫<field name="total_payroll" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
                                 <span class="o_stat_text">Total Payroll</span>
                             </div>
                         </button>
-                        <button class="oe_stat_button" type="object" name="action_view_analytics" icon="fa-trending-up">
+                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-trending-up">
                             <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value">Rp <field name="average_salary" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
+                                <span class="o_stat_value">₫<field name="average_salary" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
                                 <span class="o_stat_text">Average Salary</span>
                             </div>
                         </button>
-                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-calendar">
+                        <button class="oe_stat_button" type="object" name="action_view_analytics" icon="fa-calendar">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="last_payroll_date" widget="date"/></span>
                                 <span class="o_stat_text">Last Payroll</span>
@@ -81,6 +81,63 @@
                         .dashboard-card:hover {
                             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
                             transform: translateY(-2px);
+                            animation: slideInUp 0.3s ease;
+                        }
+                        
+                        @keyframes slideInUp {
+                            from {
+                                transform: translateY(20px);
+                                opacity: 0.8;
+                            }
+                            to {
+                                transform: translateY(-2px);
+                                opacity: 1;
+                            }
+                        }
+                        
+                        .dashboard-card:nth-child(1) {
+                            animation: fadeInLeft 0.6s ease;
+                        }
+                        
+                        .dashboard-card:nth-child(2) {
+                            animation: fadeInUp 0.6s ease 0.2s both;
+                        }
+                        
+                        .dashboard-card:nth-child(3) {
+                            animation: fadeInRight 0.6s ease 0.4s both;
+                        }
+                        
+                        @keyframes fadeInLeft {
+                            from {
+                                opacity: 0;
+                                transform: translateX(-50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(0);
+                            }
+                        }
+                        
+                        @keyframes fadeInUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                        
+                        @keyframes fadeInRight {
+                            from {
+                                opacity: 0;
+                                transform: translateX(50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(0);
+                            }
                         }
                         .card-icon {
                             color: #21435F;
@@ -124,14 +181,6 @@
                         .dashboard-btn:active {
                             transform: translateY(0);
                         }
-                        .dashboard-btn.thr-special {
-                            background: #6f42c1;
-                        }
-                        .dashboard-btn.thr-special:hover {
-                            background: #5a32a3;
-                            color: white !important;
-                            box-shadow: 0 2px 8px rgba(111,66,193,0.3);
-                        }
                         .row {
                             margin-left: -8px;
                             margin-right: -8px;
@@ -157,8 +206,8 @@
                     
                     <div class="dashboard-container">
                         <div class="dashboard-header">
-                            <h1 class="dashboard-title">Indonesia Payroll Management</h1>
-                            <p class="dashboard-subtitle">Manage payroll operations for Indonesia region</p>
+                            <h1 class="dashboard-title">Vietnam Payroll Management</h1>
+                            <p class="dashboard-subtitle">Manage payroll operations for Vietnam region</p>
                         </div>
                         
                         <!-- First Row: Main Action Cards -->
@@ -168,7 +217,7 @@
                                     <div>
                                         <i class="fa fa-users fa-3x card-icon"/>
                                         <h4 class="card-title">Employee Data</h4>
-                                        <p class="card-description">Import employee information from Zoho People</p>
+                                        <p class="card-description">Import and synchronize employee information from Zoho People system</p>
                                     </div>
                                     <button name="action_get_employee_data" 
                                             type="object" 
@@ -183,7 +232,7 @@
                                     <div>
                                         <i class="fa fa-table fa-3x card-icon"/>
                                         <h4 class="card-title">Payroll spreadsheet</h4>
-                                        <p class="card-description">Edit payroll calculations and salary components</p>
+                                        <p class="card-description">Edit and configure payroll calculations, salary components, and deductions</p>
                                     </div>
                                     <button name="action_edit_spreadsheet" 
                                             type="object" 
@@ -198,7 +247,7 @@
                                     <div>
                                         <i class="fa fa-download fa-3x card-icon"/>
                                         <h4 class="card-title">Process payroll</h4>
-                                        <p class="card-description">Import calculated data and generate payslips</p>
+                                        <p class="card-description">Import calculated payroll data and generate employee payslips</p>
                                     </div>
                                     <button name="action_import_spreadsheet" 
                                             type="object" 
@@ -209,19 +258,19 @@
                             </div>
                         </div>
                         
-                        <!-- Second Row: Additional Action Cards -->
+                        <!-- Second Row: Advanced Features -->
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
-                                        <i class="fa fa-gift fa-3x card-icon"/>
-                                        <h4 class="card-title">THR payments</h4>
-                                        <p class="card-description">Process religious holiday allowance payments</p>
+                                        <i class="fa fa-bank fa-3x card-icon"/>
+                                        <h4 class="card-title">Bank File Export</h4>
+                                        <p class="card-description">Export payroll data to bank format for automated salary disbursement</p>
                                     </div>
-                                    <button name="action_thr_payment" 
+                                    <button name="action_export_bank_file" 
                                             type="object" 
-                                            class="dashboard-btn thr-special">
-                                        Process THR
+                                            class="dashboard-btn">
+                                        Export Bank File
                                     </button>
                                 </div>
                             </div>
@@ -230,19 +279,13 @@
                                 <div class="dashboard-card">
                                     <div>
                                         <i class="fa fa-bar-chart fa-3x card-icon"/>
-                                        <h4 class="card-title">Payroll Analytics</h4>
-                                        <p class="card-description">Review and approve payroll with detailed analytics</p>
-                                        <div class="card-stats">
-                                            <div class="stat-item">
-                                                <i class="fa fa-exclamation-triangle text-warning"></i>
-                                                <span><field name="pending_payslips" readonly="1"/> Pending approvals</span>
-                                            </div>
-                                        </div>
+                                        <h4 class="card-title">Advanced Analytics</h4>
+                                        <p class="card-description">Comprehensive payroll analytics with trend analysis and reporting</p>
                                     </div>
                                     <button name="action_view_analytics" 
                                             type="object" 
                                             class="dashboard-btn">
-                                        <i class="fa fa-bar-chart"></i> Open Analytics
+                                        View Analytics
                                     </button>
                                 </div>
                             </div>
@@ -250,24 +293,19 @@
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
-                                        <i class="fa fa-bank fa-3x card-icon"/>
-                                        <h4 class="card-title">Bank Export</h4>
-                                        <p class="card-description">Export approved payroll data for bank disbursement</p>
-                                        <div class="card-stats">
-                                            <div class="stat-item">
-                                                <i class="fa fa-check-circle text-success"></i>
-                                                <span><field name="active_contracts" readonly="1"/> Ready for export</span>
-                                            </div>
-                                        </div>
+                                        <i class="fa fa-shield fa-3x card-icon"/>
+                                        <h4 class="card-title">Social Insurance</h4>
+                                        <p class="card-description">Process Vietnam social insurance calculations and compliance</p>
                                     </div>
-                                    <button name="action_export_bank_file" 
+                                    <button name="action_process_payroll" 
                                             type="object" 
                                             class="dashboard-btn">
-                                        <i class="fa fa-download"></i> Export Bank File
+                                        Process Social Insurance
                                     </button>
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                 </sheet>
             </form>

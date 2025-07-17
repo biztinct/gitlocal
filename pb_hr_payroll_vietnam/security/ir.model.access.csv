@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vietnam_payroll_user,vietnam.payroll.user,model_vietnam_payroll_dashboard,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_vietnam_payroll_manager,vietnam.payroll.manager,model_vietnam_payroll_dashboard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
