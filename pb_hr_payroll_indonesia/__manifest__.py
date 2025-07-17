@@ -21,28 +21,31 @@
     'website': 'https://www.yourcompany.com',
     'depends': [
         'om_hr_payroll',
+        'pb_hr_payroll_base',  # Add base module dependency
         'spreadsheet_oca',
         'website',  # Added for web templates
     ],
     'data': [
-        # Load groups first (from payroll_menu_structure.xml)
-        'views/payroll_menu_structure.xml',
-        # Then load security (which references the groups)
-        'security/ir.model.access.csv',
-        # Then load other data files
+        # Load data files first
         'data/hr_payroll_structure_data.xml',
         'data/hr_salary_rule_category_data.xml',
         'data/hr_salary_rule_data.xml',
         'data/enhanced_salary_rules_data.xml',           # NEW: Enhanced salary rules
         'data/enhanced_advantage_templates_data.xml',    # NEW: Enhanced advantage templates
+        # Load views (dashboard view must be loaded before menu structure)
+        'views/payroll_dashboard.xml',
         'views/payroll_country_selector_template.xml',
         'views/payroll_landing_page_views.xml',
-        'views/payroll_dashboard.xml',
+        # Load dashboard data BEFORE menu structure
+        'data/payroll_dashboard_data.xml',
+        # Load menu structure (defines security groups)
+        'views/payroll_menu_structure.xml',
+        # Load security AFTER groups are defined
+        'security/ir.model.access.csv',
         'views/payroll_setup_guide.xml',
         'views/hr_payroll_structure_views.xml',
         'views/zoho_employee_data_views.xml',
         'wizards/thr_payment_wizard_views.xml',
-        'data/payroll_dashboard_data.xml',
         'views/contract_updater_views.xml',
         'views/report_payslip_indonesia_template.xml',
         'views/hr_payroll_report_indonesia.xml', 

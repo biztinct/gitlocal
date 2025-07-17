@@ -398,12 +398,6 @@
     </record>
 
     <!-- Menu Integration -->
-    <menuitem id="menu_payroll_dashboard_enhanced" 
-              name="Enhanced Dashboard" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
-              action="action_payroll_dashboard_enhanced"
-              sequence="5"/>
-
     <menuitem id="menu_country_selector_enhanced" 
               name="Country Selector" 
               parent="om_hr_payroll.menu_hr_payroll_root"

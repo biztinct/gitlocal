@@ -34,7 +34,7 @@
                     </div>
                 </sheet>
                 <footer>
-                    <button name="process_gratuity_payment" string="Calculate & Process Gratuity" type="object" class="btn-primary"/>
+                    <button name="process_gratuity_payment" string="Calculate &amp; Process Gratuity" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-default" special="cancel"/>
                 </footer>
             </form>

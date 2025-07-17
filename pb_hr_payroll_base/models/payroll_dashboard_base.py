@@ -379,7 +379,17 @@ class PayrollDashboard(models.Model):
 
     def action_view_country_dashboard(self):
         """Open country-specific dashboard - ENHANCED"""
-        return {
+        # Map countries to their specific dashboard views
+        view_map = {
+            'VN': 'pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam',
+            'ID': 'pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia',
+            'IN': 'pb_hr_payroll_india.view_payroll_dashboard_india',
+            'SG': 'pb_hr_payroll_singapore.view_payroll_dashboard_singapore',
+            'MY': 'pb_hr_payroll_malaysia.view_payroll_dashboard_malaysia',
+        }
+        
+        view_id = view_map.get(self.country)
+        action = {
             'type': 'ir.actions.act_window',
             'name': f'{self.name} Dashboard',
             'res_model': 'payroll.dashboard',
@@ -391,6 +401,17 @@ class PayrollDashboard(models.Model):
                 'dashboard_mode': 'enhanced'
             }
         }
+        
+        # Add specific view if available
+        if view_id:
+            try:
+                view_ref = self.env.ref(view_id)
+                action['view_id'] = view_ref.id
+                _logger.info(f"Using country-specific view {view_id} for {self.country}")
+            except:
+                _logger.warning(f"Country-specific view {view_id} not found for {self.country}, using default")
+        
+        return action
 
     def action_get_employee_data(self):
         """Get employee data - ENHANCED with multiple import options"""
@@ -994,3 +1015,29 @@ class PayrollDashboard(models.Model):
                 'view_mode': 'tree,form',
                 'domain': [('state', '=', 'draft')],
             }
+
+    @api.model
+    def get_or_create_dashboard(self, country_code):
+        """Get or create dashboard for a specific country"""
+        dashboard = self.search([('country', '=', country_code)], limit=1)
+        if not dashboard:
+            # Create dashboard if it doesn't exist
+            country_names = {
+                'VN': 'Vietnam Payroll Dashboard',
+                'ID': 'Indonesia Payroll Dashboard', 
+                'IN': 'India Payroll Dashboard',
+                'SG': 'Singapore Payroll Dashboard',
+                'MY': 'Malaysia Payroll Dashboard',
+                'TH': 'Thailand Payroll Dashboard',
+                'PH': 'Philippines Payroll Dashboard',
+            }
+            
+            dashboard = self.create({
+                'name': country_names.get(country_code, f'{country_code} Payroll Dashboard'),
+                'country': country_code,
+                'sequence': 10,
+                'active': True,
+            })
+            _logger.info(f"Created dashboard for {country_code}")
+        
+        return dashboard

@@ -201,37 +201,24 @@
             <field name="contract_type_ids" eval="[(4, ref('contract_type_india_permanent_monthly'))]"/>
         </record>
 
-        <!-- Demo Dashboard Records -->
-        <record id="payroll_dashboard_vietnam" model="payroll.dashboard">
-            <field name="name">Vietnam Payroll Dashboard</field>
-            <field name="country">VN</field>
-            <field name="sequence">10</field>
-        </record>
-
-        <record id="payroll_dashboard_indonesia" model="payroll.dashboard">
-            <field name="name">Indonesia Payroll Dashboard</field>
-            <field name="country">ID</field>
-            <field name="sequence">20</field>
-        </record>
-
-        <record id="payroll_dashboard_india" model="payroll.dashboard">
-            <field name="name">India Payroll Dashboard</field>
-            <field name="country">IN</field>
-            <field name="sequence">30</field>
-        </record>
+        <!-- Dashboard records are now created by respective country modules -->
+        <!-- Vietnam: pb_hr_payroll_vietnam.vietnam_payroll_dashboard -->
+        <!-- Indonesia: pb_hr_payroll_indonesia.dashboard_indonesia -->
+        <!-- India: pb_hr_payroll_india.india_payroll_dashboard -->
 
         <!-- Configuration Parameters -->
-        <record id="config_multi_country_enabled" model="ir.config_parameter">
+        <!-- Configuration Parameters -->
+        <record id="payroll_base_config_multi_country_enabled" model="ir.config_parameter">
             <field name="key">payroll.multi_country_enabled</field>
             <field name="value">True</field>
         </record>
 
-        <record id="config_default_country" model="ir.config_parameter">
+        <record id="payroll_base_config_default_country" model="ir.config_parameter">
             <field name="key">payroll.default_country</field>
             <field name="value">VN</field>
         </record>
 
-        <record id="config_dashboard_refresh" model="ir.config_parameter">
+        <record id="payroll_base_config_dashboard_refresh" model="ir.config_parameter">
             <field name="key">payroll.dashboard_refresh_interval</field>
             <field name="value">300</field>
         </record>

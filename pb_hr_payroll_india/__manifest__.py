@@ -17,10 +17,8 @@
     'author': 'Your Company',
     'website': 'https://www.yourcompany.com',
     'depends': [
-        'om_hr_payroll',
-        'pb_hr_payroll_indonesia',  # Inherit from Indonesia module for multi-country structure
-        'spreadsheet_oca',
-        'website',
+        'pb_hr_payroll_base',  # Only depend on base module
+        'hr_holidays',
     ],
     'data': [
         # Security
@@ -31,14 +29,18 @@
         'data/hr_salary_rule_category_data.xml',
         #'data/hr_salary_rule_data.xml',
         'data/hr_contract_advantage_template_data.xml',
+        'data/payroll_dashboard_data.xml',
         
-        # Views
+        # Wizards (load before views that reference wizard actions)
+        'wizards/gratuity_payment_wizard_views.xml',
+        
+        # Views (load before menu structure that references views)
         'views/hr_payroll_structure_views.xml',
         'views/payroll_dashboard_india.xml',
         'views/zoho_staging_data_views.xml',
         
-        # Wizards
-        'wizards/gratuity_payment_wizard_views.xml',
+        # Menu Structure (load after views are defined)
+        'views/payroll_menu_structure.xml',
         
         # Reports
         'reports/payslip_report_india.xml',

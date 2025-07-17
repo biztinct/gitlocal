@@ -1,111 +1,382 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Extend India Dashboard with Analytics Integration -->
-    <record id="view_payroll_dashboard_india_analytics" model="ir.ui.view">
-        <field name="name">India Payroll Dashboard with Analytics</field>
+    <!-- Professional India Dashboard View -->
+    <record id="view_payroll_dashboard_india" model="ir.ui.view">
+        <field name="name">India Payroll Dashboard Professional</field>
         <field name="model">payroll.dashboard</field>
-        <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_india"/>
+        <field name="priority">5</field>
         <field name="arch" type="xml">
-            <xpath expr="//div[contains(@class, 'dashboard-card')][last()]" position="after">
-                
-                <!-- Analytics Approval Tile -->
-                <div class="dashboard-card analytics-card">
-                    <div class="card-icon">
-                        <i class="fa fa-line-chart fa-3x text-primary"></i>
+            <form string="India Payroll Dashboard" create="false" edit="false" delete="false">
+                <header>
+                    <field name="name" invisible="1"/>
+                </header>
+                <sheet>
+                    <!-- Enhanced Button Box with Header Tiles - Same as Vietnam -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_employees_by_country" icon="fa-users">
+                            <field string="Employees" name="total_employees" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_payslips_by_country" icon="fa-file-text">
+                            <field string="Payslips" name="pending_payslips" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-inr">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">₹<field name="total_payroll" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
+                                <span class="o_stat_text">Total Payroll</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-trending-up">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">₹<field name="average_salary" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
+                                <span class="o_stat_text">Average Salary</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_analytics" icon="fa-calendar">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="last_payroll_date" widget="date"/></span>
+                                <span class="o_stat_text">Last Payroll</span>
+                            </div>
+                        </button>
                     </div>
-                    <div class="card-content">
-                        <h3>Payroll Analytics</h3>
-                        <p class="card-description">Review and approve payroll with detailed analytics and comparisons</p>
-                        <div class="card-stats">
-                            <span class="stat-item">
-                                <i class="fa fa-exclamation-triangle text-warning"></i>
-                                <span id="india-pending-approvals">Loading...</span> Pending Approvals
-                            </span>
+                    
+                    <style>
+                        .dashboard-container {
+                            background: #f8f9fa;
+                            padding: 24px;
+                            border-radius: 8px;
+                        }
+                        .dashboard-header {
+                            text-align: center;
+                            margin-bottom: 32px;
+                            padding-bottom: 16px;
+                            border-bottom: 2px solid #e9ecef;
+                        }
+                        .dashboard-title {
+                            color: #2c3e50;
+                            font-size: 28px;
+                            font-weight: 600;
+                            margin: 0;
+                            letter-spacing: -0.5px;
+                        }
+                        .dashboard-subtitle {
+                            color: #6c757d;
+                            font-size: 14px;
+                            margin-top: 4px;
+                            font-weight: 400;
+                        }
+                        .dashboard-card {
+                            background: white;
+                            border: 1px solid #e9ecef;
+                            border-radius: 12px;
+                            padding: 24px;
+                            margin-bottom: 16px;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+                            transition: all 0.2s ease;
+                            height: 200px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                        }
+                        .dashboard-card:hover {
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                            transform: translateY(-2px);
+                            animation: slideInUp 0.3s ease;
+                        }
+                        
+                        @keyframes slideInUp {
+                            from {
+                                transform: translateY(20px);
+                                opacity: 0.8;
+                            }
+                            to {
+                                transform: translateY(-2px);
+                                opacity: 1;
+                            }
+                        }
+                        
+                        .dashboard-card:nth-child(1) {
+                            animation: fadeInLeft 0.6s ease;
+                        }
+                        
+                        .dashboard-card:nth-child(2) {
+                            animation: fadeInUp 0.6s ease 0.2s both;
+                        }
+                        
+                        .dashboard-card:nth-child(3) {
+                            animation: fadeInRight 0.6s ease 0.4s both;
+                        }
+                        
+                        @keyframes fadeInLeft {
+                            from {
+                                opacity: 0;
+                                transform: translateX(-50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(0);
+                            }
+                        }
+                        
+                        @keyframes fadeInUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                        
+                        @keyframes fadeInRight {
+                            from {
+                                opacity: 0;
+                                transform: translateX(50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(0);
+                            }
+                        }
+                        .card-icon {
+                            color: #21435F;
+                            margin-bottom: 16px;
+                            display: block;
+                        }
+                        .card-title {
+                            color: #2c3e50;
+                            font-size: 18px;
+                            font-weight: 600;
+                            margin-bottom: 8px;
+                            line-height: 1.3;
+                        }
+                        .card-description {
+                            color: #6c757d;
+                            font-size: 14px;
+                            margin-bottom: 20px;
+                            line-height: 1.4;
+                            flex-grow: 1;
+                        }
+                        .dashboard-btn {
+                            background: #21435F;
+                            border: none;
+                            color: white !important;
+                            padding: 12px 24px;
+                            border-radius: 6px;
+                            font-size: 14px;
+                            font-weight: 500;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                            text-transform: none;
+                            letter-spacing: 0;
+                            width: 100%;
+                        }
+                        .dashboard-btn:hover {
+                            background: #1a3651;
+                            color: white !important;
+                            transform: translateY(-1px);
+                            box-shadow: 0 2px 8px rgba(33,67,95,0.3);
+                        }
+                        .dashboard-btn:active {
+                            transform: translateY(0);
+                        }
+                        .row {
+                            margin-left: -8px;
+                            margin-right: -8px;
+                        }
+                        .col-lg-4 {
+                            padding-left: 8px;
+                            padding-right: 8px;
+                        }
+                        .card-stats {
+                            margin-bottom: 16px;
+                            font-size: 14px;
+                            color: #6c757d;
+                        }
+                        .stat-item {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+                        .stat-item i {
+                            font-size: 16px;
+                        }
+                    </style>
+                    
+                    <div class="dashboard-container">
+                        <div class="dashboard-header">
+                            <h1 class="dashboard-title">India Payroll Management</h1>
+                            <p class="dashboard-subtitle">Manage payroll operations for India region</p>
+                        </div>
+                        
+                        <!-- First Row: Main Action Cards -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-users fa-3x card-icon"/>
+                                        <h4 class="card-title">Employee Data</h4>
+                                        <p class="card-description">Import and synchronize employee information from Zoho People system</p>
+                                    </div>
+                                    <button name="action_get_employee_data" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        Import employee data
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-table fa-3x card-icon"/>
+                                        <h4 class="card-title">Payroll spreadsheet</h4>
+                                        <p class="card-description">Edit and configure payroll calculations, salary components, and deductions</p>
+                                    </div>
+                                    <button name="action_edit_spreadsheet" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        Open spreadsheet
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-download fa-3x card-icon"/>
+                                        <h4 class="card-title">Process payroll</h4>
+                                        <p class="card-description">Import calculated payroll data and generate employee payslips</p>
+                                    </div>
+                                    <button name="action_import_spreadsheet" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        Import and process
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Second Row: Advanced Features -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-bank fa-3x card-icon"/>
+                                        <h4 class="card-title">Bank File Export</h4>
+                                        <p class="card-description">Export payroll data to bank format for automated salary disbursement</p>
+                                    </div>
+                                    <button name="action_export_bank_file" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        Export Bank File
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-bar-chart fa-3x card-icon"/>
+                                        <h4 class="card-title">Advanced Analytics</h4>
+                                        <p class="card-description">Comprehensive payroll analytics with trend analysis and reporting</p>
+                                    </div>
+                                    <button name="action_view_analytics" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        View Analytics
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-check-circle fa-3x card-icon"/>
+                                        <h4 class="card-title">Approval Workflow</h4>
+                                        <p class="card-description">Manage payroll approvals with multi-level review process</p>
+                                    </div>
+                                    <button name="action_process_payroll" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        Manage Approvals
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Second Row: Analytics and Export Cards -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-bar-chart fa-3x card-icon"/>
+                                        <h4 class="card-title">Payroll Analytics</h4>
+                                        <p class="card-description">Review and approve payroll with detailed analytics and comparisons</p>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <i class="fa fa-exclamation-triangle text-warning"></i>
+                                                <span><field name="pending_payslips" readonly="1"/> Pending approvals</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button name="action_view_analytics" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        <i class="fa fa-bar-chart"></i> Open Analytics
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-bank fa-3x card-icon"/>
+                                        <h4 class="card-title">Bank Export</h4>
+                                        <p class="card-description">Export approved payroll data for bank disbursement</p>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <i class="fa fa-check-circle text-success"></i>
+                                                <span><field name="active_contracts" readonly="1"/> Ready for export</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button name="action_export_bank_file" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        <i class="fa fa-download"></i> Export Bank File
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-gift fa-3x card-icon"/>
+                                        <h4 class="card-title">Gratuity Payments</h4>
+                                        <p class="card-description">Process gratuity payments for eligible employees</p>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <i class="fa fa-users text-info"></i>
+                                                <span><field name="total_employees" readonly="1"/> Eligible employees</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button name="action_process_payroll" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        <i class="fa fa-gift"></i> Process Gratuity
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button name="action_open_analytics_dashboard" 
-                            type="object" 
-                            class="dashboard-btn analytics-btn"
-                            data-country="IN">
-                        <i class="fa fa-bar-chart"></i> Open Analytics
-                    </button>
-                </div>
-                
-                <!-- Bank Export Tile -->
-                <div class="dashboard-card export-card">
-                    <div class="card-icon">
-                        <i class="fa fa-bank fa-3x text-success"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Bank Export</h3>
-                        <p class="card-description">Export approved payroll data for bank disbursement</p>
-                        <div class="card-stats">
-                            <span class="stat-item">
-                                <i class="fa fa-check-circle text-success"></i>
-                                <span id="india-ready-exports">Loading...</span> Ready for Export
-                            </span>
-                        </div>
-                    </div>
-                    <button name="action_export_bank_file" 
-                            type="object" 
-                            class="dashboard-btn export-btn"
-                            data-country="IN">
-                        <i class="fa fa-download"></i> Export Bank File
-                    </button>
-                </div>
-                
-                <!-- Gratuity Payment Tile -->
-                <div class="dashboard-card gratuity-card">
-                    <div class="card-icon">
-                        <i class="fa fa-gift fa-3x text-warning"></i>
-                    </div>
-                    <div class="card-content">
-                        <h3>Gratuity Payments</h3>
-                        <p class="card-description">Process gratuity payments for eligible employees</p>
-                        <div class="card-stats">
-                            <span class="stat-item">
-                                <i class="fa fa-users text-info"></i>
-                                <span id="india-gratuity-eligible">Loading...</span> Eligible Employees
-                            </span>
-                        </div>
-                    </div>
-                    <button name="action_process_gratuity" 
-                            type="object" 
-                            class="dashboard-btn gratuity-btn"
-                            data-country="IN">
-                        <i class="fa fa-gift"></i> Process Gratuity
-                    </button>
-                </div>
-                
-            </xpath>
+                </sheet>
+            </form>
         </field>
     </record>
     
-    <!-- Dashboard Action for India -->
-    <record id="action_open_india_dashboard" model="ir.actions.server">
-        <field name="name">Open India Payroll Dashboard</field>
-        <field name="model_id" ref="base.model_res_users"/>
-        <field name="state">code</field>
-        <field name="code">
-action = env.ref('pb_hr_payroll_indonesia.action_payroll_dashboard_india').read()[0]
-action['context'] = {'default_country': 'IN'}
-        </field>
-    </record>
     
-    <!-- Add India to main menu structure -->
-    <menuitem id="menu_india_dashboard"
-              name="Dashboard"
-              parent="pb_hr_payroll_indonesia.menu_india_payroll_root"
-              action="action_open_india_dashboard"
-              sequence="0"/>
-    
-    <!-- Add Gratuity Payment to India menu -->
-    <menuitem id="menu_india_gratuity"
-              name="Gratuity Payments"
-              parent="pb_hr_payroll_indonesia.menu_india_payroll_root"
-              action="action_gratuity_payment_wizard"
-              sequence="25"
-              groups="pb_hr_payroll_indonesia.group_india_payroll_user"/>
     
 </odoo>
