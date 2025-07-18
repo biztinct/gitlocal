@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from . import payroll_dashboard
 from . import hr_payroll_structure
 from . import hr_zoho
 from . import zoho_employee_data
