@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Singapore-specific dashboard record inheriting from base -->
+        <record id="singapore_payroll_dashboard" model="payroll.dashboard">
+            <field name="name">Singapore Payroll Dashboard</field>
+            <field name="country">SG</field>
+            <field name="sequence">40</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+            <!-- Singapore-specific fields (CPF, SDL, etc.) can be added here -->
+        </record>
+    </data>
+</odoo>

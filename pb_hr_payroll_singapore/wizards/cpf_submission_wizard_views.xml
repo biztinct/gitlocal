@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- CPF Submission Wizard Form View -->
+    <record id="view_cpf_submission_wizard_form" model="ir.ui.view">
+        <field name="name">cpf.submission.wizard.form</field>
+        <field name="model">cpf.submission.wizard</field>
+        <field name="arch" type="xml">
+            <form string="CPF Submission Wizard">
+                <header>
+                    <button name="action_generate_cpf_file" type="object" string="Generate CPF File" class="btn-primary"/>
+                    <button name="action_preview_cpf_data" type="object" string="Preview Data" class="btn-secondary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="CPF Submission Name..."/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Submission Details">
+                            <field name="submission_period"/>
+                            <field name="payroll_country"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        
+                        <group string="CPF Summary">
+                            <field name="total_employees" readonly="1"/>
+                            <field name="total_ordinary_wages" readonly="1"/>
+                            <field name="total_cpf_employee" readonly="1"/>
+                            <field name="total_cpf_employer" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info mt-3" attrs="{'invisible': [('total_employees', '=', 0)]}">
+                        <h5><i class="fa fa-info-circle mr-2"/>CPF Submission Information</h5>
+                        <p>This wizard will generate the CPF submission file for Singapore employees for the selected period.</p>
+                        <ul>
+                            <li><strong>Total Employees:</strong> <field name="total_employees" readonly="1"/> employees eligible for CPF</li>
+                            <li><strong>Total Wages:</strong> S$ <field name="total_ordinary_wages" readonly="1"/></li>
+                            <li><strong>Employee CPF:</strong> S$ <field name="total_cpf_employee" readonly="1"/></li>
+                            <li><strong>Employer CPF:</strong> S$ <field name="total_cpf_employer" readonly="1"/></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3" attrs="{'invisible': [('total_employees', '>', 0)]}">
+                        <h5><i class="fa fa-warning mr-2"/>No Data Found</h5>
+                        <p>No processed payslips found for the selected period. Please ensure payslips have been processed and approved before generating CPF submission.</p>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

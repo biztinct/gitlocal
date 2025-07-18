@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Singapore Basic Salary Rules -->
+        <record id="hr_salary_rule_basic_singapore" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">BASIC</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="sequence">1</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="condition_select">none</field>
+        </record>
+        
+        <!-- CPF Employee Contribution -->
+        <record id="hr_salary_rule_cpf_employee_singapore" model="hr.salary.rule">
+            <field name="name">CPF Employee Contribution</field>
+            <field name="code">CPF_EE</field>
+            <field name="category_id" ref="hr_salary_rule_category_cpf_employee"/>
+            <field name="sequence">100</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage">-20.0</field>
+            <field name="condition_select">none</field>
+        </record>
+        
+        <!-- CPF Employer Contribution -->
+        <record id="hr_salary_rule_cpf_employer_singapore" model="hr.salary.rule">
+            <field name="name">CPF Employer Contribution</field>
+            <field name="code">CPF_ER</field>
+            <field name="category_id" ref="hr_salary_rule_category_cpf_employer"/>
+            <field name="sequence">200</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage">17.0</field>
+            <field name="condition_select">none</field>
+        </record>
+    </data>
+</odoo>
