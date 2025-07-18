@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     
-    <!-- Dashboard view for Indonesia -->
+    <!-- Professional Indonesia Dashboard View -->
     <record id="view_payroll_dashboard_indonesia" model="ir.ui.view">
-        <field name="name">Indonesia Payroll Dashboard</field>
-        <field name="model">indonesia.payroll.dashboard</field>
-        <field name="priority">20</field>
+        <field name="name">Indonesia Payroll Dashboard Professional</field>
+        <field name="model">payroll.dashboard</field>
+        <field name="priority">15</field>
         <field name="arch" type="xml">
             <form string="Indonesia Payroll Dashboard" create="false" edit="false" delete="false">
                 <header>
@@ -81,6 +81,63 @@
                         .dashboard-card:hover {
                             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
                             transform: translateY(-2px);
+                            animation: slideInUp 0.3s ease;
+                        }
+                        
+                        @keyframes slideInUp {
+                            from {
+                                transform: translateY(20px);
+                                opacity: 0.8;
+                            }
+                            to {
+                                transform: translateY(-2px);
+                                opacity: 1;
+                            }
+                        }
+                        
+                        .dashboard-card:nth-child(1) {
+                            animation: fadeInLeft 0.6s ease;
+                        }
+                        
+                        .dashboard-card:nth-child(2) {
+                            animation: fadeInUp 0.6s ease 0.2s both;
+                        }
+                        
+                        .dashboard-card:nth-child(3) {
+                            animation: fadeInRight 0.6s ease 0.4s both;
+                        }
+                        
+                        @keyframes fadeInLeft {
+                            from {
+                                opacity: 0;
+                                transform: translateX(-50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(0);
+                            }
+                        }
+                        
+                        @keyframes fadeInUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                        
+                        @keyframes fadeInRight {
+                            from {
+                                opacity: 0;
+                                transform: translateX(50px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(0);
+                            }
                         }
                         .card-icon {
                             color: #21435F;
@@ -123,14 +180,6 @@
                         }
                         .dashboard-btn:active {
                             transform: translateY(0);
-                        }
-                        .dashboard-btn.thr-special {
-                            background: #6f42c1;
-                        }
-                        .dashboard-btn.thr-special:hover {
-                            background: #5a32a3;
-                            color: white !important;
-                            box-shadow: 0 2px 8px rgba(111,66,193,0.3);
                         }
                         .row {
                             margin-left: -8px;
@@ -209,19 +258,19 @@
                             </div>
                         </div>
                         
-                        <!-- Second Row: Additional Action Cards -->
+                        <!-- Second Row: Advanced Features -->
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
-                                        <i class="fa fa-gift fa-3x card-icon"/>
-                                        <h4 class="card-title">THR payments</h4>
-                                        <p class="card-description">Process religious holiday allowance payments</p>
+                                        <i class="fa fa-bank fa-3x card-icon"/>
+                                        <h4 class="card-title">Bank File Export</h4>
+                                        <p class="card-description">Export payroll data to bank format for automated salary disbursement</p>
                                     </div>
-                                    <button name="action_thr_payment" 
+                                    <button name="action_export_bank_file" 
                                             type="object" 
-                                            class="dashboard-btn thr-special">
-                                        Process THR
+                                            class="dashboard-btn">
+                                        Export Bank File
                                     </button>
                                 </div>
                             </div>
@@ -230,8 +279,41 @@
                                 <div class="dashboard-card">
                                     <div>
                                         <i class="fa fa-bar-chart fa-3x card-icon"/>
+                                        <h4 class="card-title">Advanced Analytics</h4>
+                                        <p class="card-description">Comprehensive payroll analytics with trend analysis and reporting</p>
+                                    </div>
+                                    <button name="action_view_analytics" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        View Analytics
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-shield fa-3x card-icon"/>
+                                        <h4 class="card-title">BPJS Management</h4>
+                                        <p class="card-description">Process Indonesia BPJS calculations and compliance</p>
+                                    </div>
+                                    <button name="action_process_payroll" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        Process BPJS
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Third Row: Analytics and Export Cards -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-bar-chart fa-3x card-icon"/>
                                         <h4 class="card-title">Payroll Analytics</h4>
-                                        <p class="card-description">Review and approve payroll with detailed analytics</p>
+                                        <p class="card-description">Review and approve payroll with detailed analytics and comparisons</p>
                                         <div class="card-stats">
                                             <div class="stat-item">
                                                 <i class="fa fa-exclamation-triangle text-warning"></i>
@@ -264,6 +346,27 @@
                                             type="object" 
                                             class="dashboard-btn">
                                         <i class="fa fa-download"></i> Export Bank File
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-gift fa-3x card-icon"/>
+                                        <h4 class="card-title">THR Payments</h4>
+                                        <p class="card-description">Process religious holiday allowance for eligible employees</p>
+                                        <div class="card-stats">
+                                            <div class="stat-item">
+                                                <i class="fa fa-users text-info"></i>
+                                                <span><field name="total_employees" readonly="1"/> Eligible employees</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button name="action_process_payroll" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        <i class="fa fa-gift"></i> Process THR
                                     </button>
                                 </div>
                             </div>

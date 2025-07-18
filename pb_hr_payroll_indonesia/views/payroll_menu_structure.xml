@@ -21,24 +21,25 @@
     <!-- Server Actions for Dashboard (must be defined before menu items reference them) -->
     <record id="action_indonesia_dashboard_window" model="ir.actions.act_window">
         <field name="name">Open Indonesia Payroll Dashboard</field>
-        <field name="res_model">indonesia.payroll.dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_payroll_dashboard_indonesia"/>
         <field name="target">current</field>
-        <field name="context">{'create': False, 'edit': False, 'delete': False}</field>
-        <field name="res_id" ref="dashboard_indonesia"/>
+        <field name="res_id" ref="indonesia_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'ID'}</field>
+        <field name="domain">[('country', '=', 'ID')]</field>
     </record>
     
     <!-- Country Selector Expected Action for Indonesia -->
     <record id="action_payroll_dashboard_indonesia" model="ir.actions.act_window">
-        <field name="name">Indonesia Payroll Dashboard</field>
-        <field name="res_model">indonesia.payroll.dashboard</field>
+        <field name="name">Indonesia Payroll Dashboard Professional</field>
+        <field name="res_model">payroll.dashboard</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_payroll_dashboard_indonesia"/>
         <field name="target">current</field>
-        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'ID'}</field>
+        <field name="res_id" ref="indonesia_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'ID', 'force_view': True}</field>
         <field name="domain">[('country', '=', 'ID')]</field>
-        <field name="res_id" ref="dashboard_indonesia"/>
     </record>
 
     
