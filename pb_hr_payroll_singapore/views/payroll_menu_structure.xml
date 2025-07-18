@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Security Groups for Each Country -->
+    <record id="group_singapore_payroll_user" model="res.groups">
+        <field name="name">Singapore Payroll User</field>
+        <field name="category_id" ref="base.module_category_human_resources_payroll"/>
+        <field name="implied_ids" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user')), (4, ref('pb_hr_payroll_base.group_payroll_singapore'))]"/>
+    </record>
+    
+    
+    <!-- Actions Definition First (before menu items that reference them) -->
+    
+    <!-- Action for Country Selector -->
+    <record id="action_open_country_selector" model="ir.actions.act_url">
+        <field name="name">Select Payroll Country</field>
+        <field name="url">/payroll/country-selector</field>
+        <field name="target">self</field>
+    </record>
+    
+    <!-- Server Actions for Dashboard (must be defined before menu items reference them) -->
+    <record id="action_singapore_dashboard_window" model="ir.actions.act_window">
+        <field name="name">Open Singapore Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_singapore"/>
+        <field name="target">current</field>
+        <field name="res_id" ref="singapore_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'SG'}</field>
+        <field name="domain">[('country', '=', 'SG')]</field>
+    </record>
+    
+    <!-- Country Selector Expected Action for Singapore -->
+    <record id="action_payroll_dashboard_singapore" model="ir.actions.act_window">
+        <field name="name">Singapore Payroll Dashboard Professional</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_singapore"/>
+        <field name="target">current</field>
+        <field name="res_id" ref="singapore_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'SG', 'force_view': True}</field>
+        <field name="domain">[('country', '=', 'SG')]</field>
+    </record>
+
+    
+    <!-- Singapore Specific Actions -->
+    <record id="action_zoho_staging_importer_singapore" model="ir.actions.act_window">
+        <field name="name">Get Employee Data - Singapore</field>
+        <field name="res_model">zoho.staging.importer</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_payroll_country': 'SG'}</field>
+    </record>
+    
+    <!-- Singapore spreadsheet actions -->
+    <record id="action_singapore_edit_spreadsheet" model="ir.actions.server">
+        <field name="name">Edit Singapore Payroll Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+# This will be configured after spreadsheet is created
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'action_spreadsheet_oca',
+    'params': {
+        'spreadsheet_id': env.ref('__custom__.payrollstaging_singapore', raise_if_not_found=False).id if env.ref('__custom__.payrollstaging_singapore', raise_if_not_found=False) else False,
+    },
+    'context': {'payroll_country': 'SG'}
+}
+        </field>
+    </record>
+    
+    <record id="action_singapore_import_spreadsheet" model="ir.actions.server">
+        <field name="name">Import Singapore Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+spreadsheet = env.ref('__custom__.payrollstaging_singapore', raise_if_not_found=False)
+if spreadsheet:
+    action = spreadsheet.with_context(payroll_country='SG').import_json_data()
+else:
+    raise UserError('Singapore payroll spreadsheet not found. Please create it with external ID __custom__.payrollstaging_singapore')
+        </field>
+    </record>
+    
+    <!-- CPF Submission Action for Singapore -->
+    <record id="action_cpf_submission_wizard" model="ir.actions.act_window">
+        <field name="name">CPF Submission Wizard</field>
+        <field name="res_model">cpf.submission.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_payroll_country': 'SG'}</field>
+    </record>
+    
+    <!-- Main Menu Structure -->
+    <menuitem id="menu_payroll_management_root"
+              name="Payroll Management"
+              sequence="85"
+              groups="om_hr_payroll.group_hr_payroll_user"/>
+    
+    <!-- Country Selection Menu -->
+    <menuitem id="menu_payroll_country_selector"
+              name="Select Country"
+              parent="menu_payroll_management_root"
+              action="action_open_country_selector"
+              sequence="0"/>
+    
+    <!-- Add Dashboard menu items with server actions -->
+    
+    <!-- Singapore Payroll Menu Structure -->
+    <menuitem id="menu_singapore_payroll_root"
+              name="Singapore Payroll" 
+              parent="menu_payroll_management_root"
+              sequence="40"
+              groups="group_singapore_payroll_user"/>
+    
+    <menuitem id="menu_singapore_dashboard"
+              name="Dashboard"
+              parent="menu_singapore_payroll_root"
+              action="action_singapore_dashboard_window"
+              sequence="0"/>
+    
+    <!-- Singapore Submenus -->
+    <menuitem id="menu_singapore_employees"
+              name="Employees"
+              parent="menu_singapore_payroll_root"
+              sequence="10"
+              groups="group_singapore_payroll_user"/>
+    
+    <menuitem id="menu_singapore_payslips"
+              name="Payslips"
+              parent="menu_singapore_payroll_root"
+              sequence="20"
+              groups="group_singapore_payroll_user"/>
+    
+    <menuitem id="menu_singapore_cpf"
+              name="CPF Submission"
+              parent="menu_singapore_payroll_root"
+              action="action_cpf_submission_wizard"
+              sequence="25"
+              groups="group_singapore_payroll_user"/>
+    
+    <menuitem id="menu_singapore_reports"
+              name="Reports"
+              parent="menu_singapore_payroll_root"
+              sequence="30"
+              groups="group_singapore_payroll_user"/>
+    
+</odoo>

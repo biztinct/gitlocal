@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Singapore Salary Rule Categories -->
+        <record id="hr_salary_rule_category_cpf_employee" model="hr.salary.rule.category">
+            <field name="name">CPF Employee Contribution</field>
+            <field name="code">CPF_EE</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_cpf_employer" model="hr.salary.rule.category">
+            <field name="name">CPF Employer Contribution</field>
+            <field name="code">CPF_ER</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_income_tax" model="hr.salary.rule.category">
+            <field name="name">Income Tax</field>
+            <field name="code">TAX</field>
+        </record>
+    </data>
+</odoo>

@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_singapore_payroll_user,singapore.payroll.user,model_singapore_payroll_dashboard,om_hr_payroll.group_hr_payroll_user,1,0,0,0
-access_singapore_payroll_manager,singapore.payroll.manager,model_singapore_payroll_dashboard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_cpf_submission_wizard_user,cpf.submission.wizard,model_cpf_submission_wizard,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_cpf_submission_wizard_manager,cpf.submission.wizard,model_cpf_submission_wizard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
