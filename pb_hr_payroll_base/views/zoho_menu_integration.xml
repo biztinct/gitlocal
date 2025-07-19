@@ -6,7 +6,7 @@
     
     <menuitem id="menu_payroll_zoho" 
               name="Zoho Integration" 
-              parent="menu_payroll_main"
+              parent="om_hr_payroll.menu_hr_payroll_root"
               sequence="70"/>
     
 
@@ -40,47 +40,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_payroll_dashboard_country" 
-              name="Country Dashboards" 
-              parent="menu_payroll_main"
-              action="action_payroll_dashboard_country"
-              sequence="15"/>
-
-    <!-- Country Selector Action - Web Based -->
-    <!--
-    <record id="action_country_selector_web" model="ir.actions.act_url">
-        <field name="name">Select Country</field>
-        <field name="url">/payroll/country-selector</field>
-        <field name="target">self</field>
-    </record>
-
-    <menuitem id="menu_country_selector" 
-            name="Country Navigator" 
-            parent="menu_payroll_main"
-            action="action_country_selector_web"
-            sequence="5"/>
--->
-
-<!-- Country Selector Action - Dashboard Kanban (RECOMMENDED) -->
-<record id="action_country_selector_dashboard" model="ir.actions.act_window">
-    <field name="name">Select Country Dashboard</field>
-    <field name="res_model">payroll.dashboard</field>
-    <field name="view_mode">kanban</field>
-    <field name="target">current</field>
-    <field name="context">{'create': False}</field>
-    <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">
-            Welcome to Multi-Country Payroll!
-        </p>
-        <p>
-            Create dashboards for each country to manage payroll operations.
-        </p>
-    </field>
-</record>
-
-<menuitem id="menu_country_selector" 
-          name="Country Navigator" 
-          parent="menu_payroll_main"
-          action="action_country_selector_dashboard"
-          sequence="5"/>
+    <!-- Removed redundant Country Dashboards and Country Navigator menus -->
+    <!-- Individual country dashboards are now properly organized under Dashboard section -->
 </odoo>

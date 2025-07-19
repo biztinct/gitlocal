@@ -5,7 +5,7 @@ from odoo import models, fields, api
 
 class PayrollSetupGuide(models.TransientModel):
     _name = 'payroll.setup.guide'
-    _description = 'Payroll Setup Guide'
+    _description = 'Multi-Country Payroll Setup Guide'
     
     # This is just a guide model, no fields needed
     # The view will show static content

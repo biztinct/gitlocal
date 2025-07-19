@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Main Payroll Menu -->
-    <menuitem id="menu_payroll_main" 
-              name="Multi-Country Payroll" 
-              web_icon="pb_hr_payroll_base,static/description/icon.png"
-              sequence="45"/>
 
     <!-- Dashboard Section -->
     <menuitem id="menu_payroll_dashboard_section" 
               name="Dashboard" 
-              parent="menu_payroll_main"
+              parent="om_hr_payroll.menu_hr_payroll_root"
               sequence="10"/>
 
     <!-- Employee Management Section -->
     <menuitem id="menu_payroll_employees" 
               name="Employees" 
-              parent="menu_payroll_main"
+              parent="om_hr_payroll.menu_hr_payroll_root"
               sequence="20"/>
 
     <!-- Employee Action -->
@@ -51,7 +46,7 @@
     <!-- Payslips Section -->
     <menuitem id="menu_payroll_payslips" 
               name="Payslips" 
-              parent="menu_payroll_main"
+              parent="om_hr_payroll.menu_hr_payroll_root"
               sequence="30"/>
 
     <!-- Payslip Action -->
@@ -84,35 +79,10 @@
               action="action_hr_payslip_run_payroll"
               sequence="20"/>
 
-    <!-- Configuration Section -->
-    <menuitem id="menu_payroll_configuration" 
-              name="Configuration" 
-              parent="menu_payroll_main"
-              sequence="90"/>
-
-    <!-- Use Standard Odoo Actions for Configuration -->
-    <menuitem id="menu_payroll_structures" 
-              name="Salary Structures" 
-              parent="menu_payroll_configuration"
-              action="om_hr_payroll.action_view_hr_payroll_structure_list_form"
-              sequence="10"/>
-
-    <menuitem id="menu_payroll_rules" 
-              name="Salary Rules" 
-              parent="menu_payroll_configuration"
-              action="om_hr_payroll.action_salary_rule_form"
-              sequence="20"/>
-
-    <menuitem id="menu_payroll_rule_categories" 
-              name="Rule Categories" 
-              parent="menu_payroll_configuration"
-              action="om_hr_payroll.action_hr_salary_rule_category"
-              sequence="30"/>
-
     <!-- Reports Section -->
     <menuitem id="menu_payroll_reports" 
               name="Reports" 
-              parent="menu_payroll_main"
+              parent="om_hr_payroll.menu_hr_payroll_root"
               sequence="80"/>
 
     <!-- Payroll Analysis Action -->
@@ -128,5 +98,6 @@
               parent="menu_payroll_reports"
               action="action_payroll_analysis"
               sequence="10"/>
+
 
 </odoo>

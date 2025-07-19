@@ -7,4 +7,3 @@ from . import zoho_staging_data
 from . import hr_payslip
 from . import res_users
 from . import hr_payslip_indonesia
-from . import payroll_setup_guide

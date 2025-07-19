@@ -92,58 +92,19 @@ else:
         <field name="context">{'default_payroll_country': 'SG'}</field>
     </record>
     
-    <!-- Main Menu Structure -->
-    <menuitem id="menu_payroll_management_root"
-              name="Payroll Management"
-              sequence="85"
-              groups="om_hr_payroll.group_hr_payroll_user"/>
-    
-    <!-- Country Selection Menu -->
-    <menuitem id="menu_payroll_country_selector"
-              name="Select Country"
-              parent="menu_payroll_management_root"
-              action="action_open_country_selector"
-              sequence="0"/>
-    
-    <!-- Add Dashboard menu items with server actions -->
-    
-    <!-- Singapore Payroll Menu Structure -->
-    <menuitem id="menu_singapore_payroll_root"
-              name="Singapore Payroll" 
-              parent="menu_payroll_management_root"
-              sequence="40"
-              groups="group_singapore_payroll_user"/>
-    
+    <!-- Singapore Dashboard Menu under base dashboard section -->
     <menuitem id="menu_singapore_dashboard"
-              name="Dashboard"
-              parent="menu_singapore_payroll_root"
+              name="Singapore Dashboard"
+              parent="pb_hr_payroll_base.menu_payroll_dashboard_section"
               action="action_singapore_dashboard_window"
-              sequence="0"/>
-    
-    <!-- Singapore Submenus -->
-    <menuitem id="menu_singapore_employees"
-              name="Employees"
-              parent="menu_singapore_payroll_root"
-              sequence="10"
-              groups="group_singapore_payroll_user"/>
-    
-    <menuitem id="menu_singapore_payslips"
-              name="Payslips"
-              parent="menu_singapore_payroll_root"
-              sequence="20"
-              groups="group_singapore_payroll_user"/>
+              sequence="40"
+              groups="pb_hr_payroll_base.group_payroll_singapore"/>
     
     <menuitem id="menu_singapore_cpf"
-              name="CPF Submission"
-              parent="menu_singapore_payroll_root"
+              name="Singapore CPF Submission"
+              parent="om_hr_payroll.menu_hr_payroll_root"
               action="action_cpf_submission_wizard"
               sequence="25"
-              groups="group_singapore_payroll_user"/>
-    
-    <menuitem id="menu_singapore_reports"
-              name="Reports"
-              parent="menu_singapore_payroll_root"
-              sequence="30"
-              groups="group_singapore_payroll_user"/>
+              groups="pb_hr_payroll_base.group_payroll_singapore"/>
     
 </odoo>

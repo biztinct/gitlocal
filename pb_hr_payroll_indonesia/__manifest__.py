@@ -42,7 +42,6 @@
         'views/payroll_menu_structure.xml',
         # Load security AFTER groups are defined
         'security/ir.model.access.csv',
-        'views/payroll_setup_guide.xml',
         'views/hr_payroll_structure_views.xml',
         'views/zoho_employee_data_views.xml',
         'wizards/thr_payment_wizard_views.xml',
