@@ -85,65 +85,62 @@
     </record>
 
 
-    <!-- Main Root Menu for Payroll Analytics -->
-    <menuitem id="menu_payroll_analytics_root" 
-              name="Payroll Analytics" 
-              web_icon="payroll_analytics_approval,static/description/icon.png"
-              sequence="50"/>
-
+    <!-- Analytics Section under main Payroll menu -->
+    <menuitem id="menu_payroll_analytics" 
+              name="Analytics" 
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              sequence="70"/>
 
      <!-- Approval Queue Menu -->
     <menuitem id="menu_payroll_approval_queue" 
               name="Approval Queue" 
-              parent="menu_payroll_analytics_root" 
+              parent="menu_payroll_analytics" 
               action="action_payroll_approval_queue" 
-              sequence="30"/>
-
+              sequence="10"/>
 
     <!-- Bank Export Menu -->
     <menuitem id="menu_payroll_bank_export"
               name="Bank Export"
-              parent="menu_payroll_analytics_root"
+              parent="menu_payroll_analytics"
               action="action_payroll_bank_export_wizard"
-              sequence="30"
+              sequence="20"
               groups="payroll_analytics_approval.group_payroll_analytics_manager"/>
 
     
 
     
-    <!-- Configuration Menu -->
-    <menuitem id="menu_payroll_analytics_config"
-              name="Configuration"
-              parent="menu_payroll_analytics_root"
-              sequence="50"/>
-    
-    
     <!-- Payroll Comparisons Menu -->
     <menuitem id="menu_payroll_comparison"
               name="Payroll Comparisons"
-              parent="menu_payroll_analytics_root"
+              parent="menu_payroll_analytics"
               action="action_payroll_comparison"
-              sequence="70"/>
+              sequence="30"/>
+
+    <!-- Reports Menu -->
+    <menuitem id="menu_payroll_analytics_reports" 
+              name="Analytics Reports" 
+              parent="menu_payroll_analytics" 
+              action="action_payroll_analytics_reports" 
+              sequence="40"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_payroll_analytics_config"
+              name="Analytics Configuration"
+              parent="menu_payroll_analytics"
+              sequence="50"/>
     
     <!-- New Comparison Wizard Menu -->
     <menuitem id="menu_payroll_comparison_wizard"
               name="New Comparison"
               parent="menu_payroll_analytics_config"
               action="action_payroll_comparison_wizard"
-              sequence="20"/>
-    
+              sequence="10"/>
+
     <!-- Bank Export History Menu -->
     <menuitem id="menu_bank_export_history"
               name="Export History"
-              parent="menu_payroll_analytics_root"
+              parent="menu_payroll_analytics"
               action="action_bank_export_log"
-              sequence="60"/>
-
-    <!-- Reports Menu -->
-    <menuitem id="menu_payroll_analytics_reports" 
-              name="Analytics Reports" 
-              parent="menu_payroll_analytics_root" 
-              action="action_payroll_analytics_reports" 
               sequence="60"/>
 
     <!-- Analytics Configuration Action -->
@@ -163,11 +160,11 @@
         </field>
     </record>
     
-    <!-- Configuration Menu -->
-    <menuitem id="menu_payroll_analytics_config" 
-              name="Analytics Configuration" 
-              parent="menu_payroll_analytics_root" 
+    <!-- Analytics Configuration Menu (duplicate definition) -->
+    <menuitem id="menu_payroll_analytics_config_main" 
+              name="Configuration Management" 
+              parent="menu_payroll_analytics_config" 
               action="action_payroll_analytics_config" 
-              sequence="110"/>
+              sequence="20"/>
 
 </odoo>

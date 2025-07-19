@@ -80,6 +80,7 @@ for all country-specific modules while maintaining clean separation of concerns.
         
         # Views
         'views/payroll_menu_base.xml',                          # Base menu structure - Load first to define parent menus
+        'views/payroll_setup_guide.xml',                        # Setup guide for all countries
         'views/hr_payroll_structure_base_views.xml',            # HR payroll structure base views
         'views/additional_actions.xml',                         # Additional actions
         'views/payroll_base_dashboard.xml',                     # Base dashboard views
