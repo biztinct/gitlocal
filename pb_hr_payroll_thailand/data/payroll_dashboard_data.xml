@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Thailand-specific dashboard record inheriting from base -->
+        <record id="thailand_payroll_dashboard" model="payroll.dashboard">
+            <field name="name">Thailand Payroll Dashboard</field>
+            <field name="country">TH</field>
+            <field name="sequence">50</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+            <!-- Thailand-specific fields (SSF, Provident Fund, etc.) can be added here -->
+        </record>
+    </data>
+</odoo>

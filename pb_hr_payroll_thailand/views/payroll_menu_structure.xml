@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Security Groups for Thailand -->
+    <record id="group_thailand_payroll_user" model="res.groups">
+        <field name="name">Thailand Payroll User</field>
+        <field name="category_id" ref="base.module_category_human_resources_payroll"/>
+        <field name="implied_ids" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user')), (4, ref('pb_hr_payroll_base.group_payroll_thailand'))]"/>
+    </record>
+    
+    <!-- Actions Definition -->
+    <record id="action_open_country_selector" model="ir.actions.act_url">
+        <field name="name">Select Payroll Country</field>
+        <field name="url">/payroll/country-selector</field>
+        <field name="target">self</field>
+    </record>
+    
+    <!-- Thailand Dashboard Actions -->
+    <record id="action_thailand_dashboard_window" model="ir.actions.act_window">
+        <field name="name">Open Thailand Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_thailand"/>
+        <field name="target">current</field>
+        <field name="res_id" ref="thailand_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'TH'}</field>
+        <field name="domain">[('country', '=', 'TH')]</field>
+    </record>
+    
+    <record id="action_payroll_dashboard_thailand" model="ir.actions.act_window">
+        <field name="name">Thailand Payroll Dashboard Professional</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_thailand"/>
+        <field name="target">current</field>
+        <field name="res_id" ref="thailand_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'TH', 'force_view': True}</field>
+        <field name="domain">[('country', '=', 'TH')]</field>
+    </record>
+
+    <!-- Thailand spreadsheet actions -->
+    <record id="action_thailand_edit_spreadsheet" model="ir.actions.server">
+        <field name="name">Edit Thailand Payroll Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'action_spreadsheet_oca',
+    'params': {
+        'spreadsheet_id': env.ref('__custom__.payrollstaging_thailand', raise_if_not_found=False).id if env.ref('__custom__.payrollstaging_thailand', raise_if_not_found=False) else False,
+    },
+    'context': {'payroll_country': 'TH'}
+}
+        </field>
+    </record>
+    
+    <record id="action_thailand_import_spreadsheet" model="ir.actions.server">
+        <field name="name">Import Thailand Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+spreadsheet = env.ref('__custom__.payrollstaging_thailand', raise_if_not_found=False)
+if spreadsheet:
+    action = spreadsheet.with_context(payroll_country='TH').import_json_data()
+else:
+    raise UserError('Thailand payroll spreadsheet not found. Please create it with external ID __custom__.payrollstaging_thailand')
+        </field>
+    </record>
+    
+    <!-- SSF Action for Thailand -->
+    <record id="action_ssf_wizard" model="ir.actions.act_window">
+        <field name="name">Social Security Fund Wizard</field>
+        <field name="res_model">social.security.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_payroll_country': 'TH'}</field>
+    </record>
+    
+    <!-- Main Menu Structure -->
+    <menuitem id="menu_payroll_management_root"
+              name="Payroll Management"
+              sequence="85"
+              groups="om_hr_payroll.group_hr_payroll_user"/>
+    
+    <!-- Country Selection Menu -->
+    <menuitem id="menu_payroll_country_selector"
+              name="Select Country"
+              parent="menu_payroll_management_root"
+              action="action_open_country_selector"
+              sequence="0"/>
+    
+    <!-- Thailand Payroll Menu Structure -->
+    <menuitem id="menu_thailand_payroll_root"
+              name="Thailand Payroll" 
+              parent="menu_payroll_management_root"
+              sequence="50"
+              groups="group_thailand_payroll_user"/>
+    
+    <menuitem id="menu_thailand_dashboard"
+              name="Dashboard"
+              parent="menu_thailand_payroll_root"
+              action="action_thailand_dashboard_window"
+              sequence="0"/>
+    
+    <menuitem id="menu_thailand_ssf"
+              name="SSF Reporting"
+              parent="menu_thailand_payroll_root"
+              action="action_ssf_wizard"
+              sequence="25"
+              groups="group_thailand_payroll_user"/>
+    
+</odoo>

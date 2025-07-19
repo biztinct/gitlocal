@@ -382,7 +382,7 @@ class PayrollAnalytics(models.Model):
         month_start = last_month.replace(day=1)
         
         # Generate for each country
-        countries = ['VN', 'ID', 'IN', 'SG', 'MY']
+        countries = ['VN', 'ID', 'IN', 'SG', 'MY', 'TH']
         
         for country in countries:
             # Check if analytics already exist
