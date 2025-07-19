@@ -290,10 +290,12 @@ class PayrollController(http.Controller):
             accessible_countries.append('SG')
         if user.has_group('pb_hr_payroll_base.group_payroll_malaysia'):
             accessible_countries.append('MY')
+        if user.has_group('pb_hr_payroll_base.group_payroll_thailand'):
+            accessible_countries.append('TH')
         
         # Super users have access to all
         if user.has_group('base.group_system'):
-            accessible_countries = ['VN', 'ID', 'IN', 'SG', 'MY']
+            accessible_countries = ['VN', 'ID', 'IN', 'SG', 'MY', 'TH']
         
         return accessible_countries
 
@@ -309,6 +311,7 @@ class PayrollController(http.Controller):
             'IN': 'India Payroll Dashboard',
             'SG': 'Singapore Payroll Dashboard',
             'MY': 'Malaysia Payroll Dashboard',
+            'TH': 'Thailand Payroll Dashboard',
         }
         
         dashboard = request.env['payroll.dashboard'].create({
@@ -323,7 +326,7 @@ class PayrollController(http.Controller):
         """Get currency for country"""
         currency_map = {
             'VN': 'VND', 'ID': 'IDR', 'IN': 'INR',
-            'SG': 'SGD', 'MY': 'MYR'
+            'SG': 'SGD', 'MY': 'MYR', 'TH': 'THB'
         }
         
         currency_code = currency_map.get(country_code, 'USD')

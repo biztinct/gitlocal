@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Thailand Basic Salary Rules -->
+        <record id="hr_salary_rule_basic_thailand" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">BASIC</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="sequence">1</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+            <field name="condition_select">none</field>
+        </record>
+        
+        <!-- SSF Employee Contribution -->
+        <record id="hr_salary_rule_ssf_employee_thailand" model="hr.salary.rule">
+            <field name="name">SSF Employee Contribution</field>
+            <field name="code">SSF_EE</field>
+            <field name="category_id" ref="hr_salary_rule_category_ssf_employee"/>
+            <field name="sequence">100</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage">-5.0</field>
+            <field name="condition_select">none</field>
+        </record>
+        
+        <!-- SSF Employer Contribution -->
+        <record id="hr_salary_rule_ssf_employer_thailand" model="hr.salary.rule">
+            <field name="name">SSF Employer Contribution</field>
+            <field name="code">SSF_ER</field>
+            <field name="category_id" ref="hr_salary_rule_category_ssf_employer"/>
+            <field name="sequence">200</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage">5.0</field>
+            <field name="condition_select">none</field>
+        </record>
+        
+        <!-- Provident Fund -->
+        <record id="hr_salary_rule_provident_fund_thailand" model="hr.salary.rule">
+            <field name="name">Provident Fund</field>
+            <field name="code">PF</field>
+            <field name="category_id" ref="hr_salary_rule_category_provident_fund"/>
+            <field name="sequence">150</field>
+            <field name="amount_select">percentage</field>
+            <field name="amount_percentage">-3.0</field>
+            <field name="condition_select">none</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Thailand Payroll Structure -->
+        <record id="hr_payroll_structure_thailand" model="hr.payroll.structure">
+            <field name="name">Thailand Salary Structure</field>
+            <field name="code">TH</field>
+            <field name="country_id" ref="base.th"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="parent_id" ref="om_hr_payroll.structure_base"/>
+            <field name="note">Thailand Employee Salary Structure with SSF, Income Tax and Provident Fund components</field>
+        </record>
+        
+        <!-- Link salary rules to structure after both are created -->
+        <record id="hr_payroll_structure_thailand" model="hr.payroll.structure">
+            <field name="rule_ids" eval="[(6, 0, [
+                ref('hr_salary_rule_basic_thailand'),
+                ref('hr_salary_rule_ssf_employee_thailand'),
+                ref('hr_salary_rule_ssf_employer_thailand'),
+                ref('hr_salary_rule_provident_fund_thailand')
+            ])]"/>
+        </record>
+    </data>
+</odoo>

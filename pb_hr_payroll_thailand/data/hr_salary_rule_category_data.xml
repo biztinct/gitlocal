@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Thailand Salary Rule Categories -->
+        <record id="hr_salary_rule_category_ssf_employee" model="hr.salary.rule.category">
+            <field name="name">SSF Employee Contribution</field>
+            <field name="code">SSF_EE</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_ssf_employer" model="hr.salary.rule.category">
+            <field name="name">SSF Employer Contribution</field>
+            <field name="code">SSF_ER</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_income_tax" model="hr.salary.rule.category">
+            <field name="name">Income Tax</field>
+            <field name="code">TAX</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_provident_fund" model="hr.salary.rule.category">
+            <field name="name">Provident Fund</field>
+            <field name="code">PF</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Social Security Wizard Form View -->
+    <record id="view_social_security_wizard_form" model="ir.ui.view">
+        <field name="name">social.security.wizard.form</field>
+        <field name="model">social.security.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Social Security Wizard">
+                <header>
+                    <button name="action_generate_ssf_file" type="object" string="Generate SSF File" class="btn-primary"/>
+                    <button name="action_preview_ssf_data" type="object" string="Preview Data" class="btn-secondary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="SSF Report Name..."/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Submission Details">
+                            <field name="submission_period"/>
+                            <field name="payroll_country"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        
+                        <group string="SSF Summary">
+                            <field name="total_employees" readonly="1"/>
+                            <field name="total_wages" readonly="1"/>
+                            <field name="total_ssf_employee" readonly="1"/>
+                            <field name="total_ssf_employer" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info mt-3" attrs="{'invisible': [('total_employees', '=', 0)]}">
+                        <h5><i class="fa fa-info-circle mr-2"/>SSF Information</h5>
+                        <p>Social Security Fund reporting for Thailand employees.</p>
+                        <ul>
+                            <li><strong>Total Employees:</strong> <field name="total_employees" readonly="1"/> employees eligible for SSF</li>
+                            <li><strong>Total Wages:</strong> ฿ <field name="total_wages" readonly="1"/></li>
+                            <li><strong>Employee SSF:</strong> ฿ <field name="total_ssf_employee" readonly="1"/></li>
+                            <li><strong>Employer SSF:</strong> ฿ <field name="total_ssf_employer" readonly="1"/></li>
+                        </ul>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

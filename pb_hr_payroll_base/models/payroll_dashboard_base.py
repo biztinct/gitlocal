@@ -385,6 +385,7 @@ class PayrollDashboard(models.Model):
             'ID': 'pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia',
             'IN': 'pb_hr_payroll_india.view_payroll_dashboard_india',
             'SG': 'pb_hr_payroll_singapore.view_payroll_dashboard_singapore',
+            'TH': 'pb_hr_payroll_thailand.view_payroll_dashboard_thailand',
             'MY': 'pb_hr_payroll_malaysia.view_payroll_dashboard_malaysia',
         }
         
