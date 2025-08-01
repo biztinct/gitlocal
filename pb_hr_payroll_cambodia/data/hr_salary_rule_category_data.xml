@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cambodia Salary Rule Categories -->
+        <record id="hr_salary_rule_category_nssf_employee" model="hr.salary.rule.category">
+            <field name="name">NSSF Employee Contribution</field>
+            <field name="code">NSSF_EE</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_nssf_employer" model="hr.salary.rule.category">
+            <field name="name">NSSF Employer Contribution</field>
+            <field name="code">NSSF_ER</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_income_tax" model="hr.salary.rule.category">
+            <field name="name">Withholding Tax on Salary</field>
+            <field name="code">WTS</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_fringe_benefits_tax" model="hr.salary.rule.category">
+            <field name="name">Fringe Benefits Tax</field>
+            <field name="code">FBT</field>
+        </record>
+    </data>
+</odoo>

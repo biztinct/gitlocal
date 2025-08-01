@@ -242,6 +242,7 @@
                                     <t t-if="record.country.raw_value == 'SG'">🇸🇬</t>
                                     <t t-if="record.country.raw_value == 'MY'">🇲🇾</t>
                                     <t t-if="record.country.raw_value == 'TH'">🇹🇭</t>
+                                    <t t-if="record.country.raw_value == 'KH'">🇰🇭</t>
                                     <t t-if="record.country.raw_value == 'PH'">🇵🇭</t>
                                 </div>
                                 
@@ -278,6 +279,7 @@
                                             <t t-if="record.country.raw_value == 'SG'">S$ <t t-esc="record.total_payroll.raw_value"/></t>
                                             <t t-if="record.country.raw_value == 'MY'">RM <t t-esc="record.total_payroll.raw_value"/></t>
                                             <t t-if="record.country.raw_value == 'TH'">฿ <t t-esc="record.total_payroll.raw_value"/></t>
+                                            <t t-if="record.country.raw_value == 'KH'">៛ <t t-esc="record.total_payroll.raw_value"/></t>
                                             <t t-if="record.country.raw_value == 'PH'">₱ <t t-esc="record.total_payroll.raw_value"/></t>
                                         </span>
                                         <span class="stat-label">Payroll</span>
@@ -373,8 +375,10 @@
                 <li>🇻🇳 Vietnam - Full payroll management with VND currency</li>
                 <li>🇮🇩 Indonesia - BPJS, PPh 21, THR payments with IDR currency</li>
                 <li>🇮🇳 India - PF, ESI, Professional Tax with INR currency</li>
-                <li>🇸🇬 Singapore - CPF and SGD support (coming soon)</li>
-                <li>🇲🇾 Malaysia - EPF and MYR support (coming soon)</li>
+                <li>🇹🇭 Thailand - SSF, Provident Fund with THB currency</li>
+                <li>🇰🇭 Cambodia - NSSF management with KHR currency</li>
+                <li>🇲🇾 Malaysia - EPF, SOCSO, EIS with MYR currency</li>
+                <li>🇸🇬 Singapore - CPF and SGD support</li>
             </ul>
         </field>
     </record>

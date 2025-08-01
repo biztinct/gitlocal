@@ -422,102 +422,67 @@
                     <p class="selector-subtitle">Choose your country to access the appropriate payroll management system</p>
 
                     <div class="countries-grid">
-                        <!-- Vietnam Card -->
-                        <div class="country-card" data-country="VN" data-has-access="true">
-                            <div class="access-indicator has-access">✓</div>
-                            <div class="country-flag-container">
-                                <span class="country-flag">🇻🇳</span>
-                            </div>
-                            <h3 class="country-name">Vietnam</h3>
-                            <p class="country-description">
-                                Complete payroll management system for Vietnam including VND currency handling and local compliance requirements.
-                            </p>
-                            <button class="country-action-btn" onclick="navigateToCountry('VN')">
-                                Access Dashboard
-                            </button>
-                        </div>
-
-                        <!-- Indonesia Card -->
-                        <div class="country-card" data-country="ID" data-has-access="true">
-                            <div class="access-indicator has-access">✓</div>
-                            <div class="country-flag-container">
-                                <span class="country-flag">🇮🇩</span>
-                            </div>
-                            <h3 class="country-name">Indonesia</h3>
-                            <p class="country-description">
-                                Full-featured Indonesian payroll with BPJS, PPh 21, THR payments, and IDR currency support.
-                            </p>
-                            <button class="country-action-btn" onclick="navigateToCountry('ID')">
-                                Access Dashboard
-                            </button>
-                        </div>
-
-                        <!-- India Card -->
-                        <div class="country-card" data-country="IN" data-has-access="true">
-                            <div class="access-indicator has-access">✓</div>
-                            <div class="country-flag-container">
-                                <span class="country-flag">🇮🇳</span>
-                            </div>
-                            <h3 class="country-name">India</h3>
-                            <p class="country-description">
-                                Comprehensive Indian payroll system with PF, ESI, Professional Tax, and Gratuity calculations.
-                            </p>
-                            <button class="country-action-btn" onclick="navigateToCountry('IN')">
-                                Access Dashboard
-                            </button>
-                        </div>
-
-                        <!-- Singapore Card (No Access Example) -->
-                        <div class="country-card no-access" data-country="SG" data-has-access="false">
-                            <div class="access-indicator no-access">🔒</div>
-                            <div class="country-flag-container">
-                                <span class="country-flag">🇸🇬</span>
-                            </div>
-                            <h3 class="country-name">Singapore</h3>
-                            <p class="country-description">
-                                Singapore payroll system with CPF contributions and SGD currency support. (Coming Soon)
-                            </p>
-                            <button class="country-action-btn" onclick="requestAccess('SG')">
-                                Request Access
-                            </button>
-
-                            <!-- No Access Overlay -->
-                            <div class="no-access-overlay">
-                                <div class="no-access-message">
-                                    <h4>🔒 Access Required</h4>
-                                    <p>You don't have permission to access Singapore payroll system.</p>
-                                    <button class="contact-admin-btn" onclick="requestAccess('SG')">
-                                        Contact Administrator
-                                    </button>
+                        <t t-foreach="dashboards or []" t-as="dashboard">
+                            <t t-set="country_flags" t-value="{
+                                'VN': '🇻🇳',
+                                'ID': '🇮🇩', 
+                                'IN': '🇮🇳',
+                                'SG': '🇸🇬',
+                                'TH': '🇹🇭',
+                                'KH': '🇰🇭',
+                                'MY': '🇲🇾'
+                            }"/>
+                            <t t-set="currency_symbols" t-value="{
+                                'VN': '₫',
+                                'ID': 'Rp',
+                                'IN': '₹', 
+                                'SG': 'S$',
+                                'TH': '฿',
+                                'KH': '៛',
+                                'MY': 'RM'
+                            }"/>
+                            <t t-set="descriptions" t-value="{
+                                'VN': 'Complete payroll management system for Vietnam including VND currency handling and local compliance requirements.',
+                                'ID': 'Full-featured Indonesian payroll with BPJS, PPh 21, THR payments, and IDR currency support.',
+                                'IN': 'Comprehensive Indian payroll system with PF, ESI, Professional Tax, and Gratuity calculations.',
+                                'SG': 'Singapore payroll system with CPF contributions and SGD currency support.',
+                                'TH': 'Thailand payroll system with SSF, Provident Fund and THB currency support.',
+                                'KH': 'Cambodia payroll system with NSSF contributions and KHR currency support.',
+                                'MY': 'Malaysian payroll system with EPF, SOCSO, EIS and MYR currency support.'
+                            }"/>
+                            
+                            <div class="country-card" t-att-data-country="dashboard['country']" data-has-access="true">
+                                <div class="access-indicator has-access">✓</div>
+                                <div class="country-flag-container">
+                                    <span class="country-flag" t-esc="country_flags.get(dashboard['country'], '🏴')"/>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Malaysia Card (No Access Example) -->
-                        <div class="country-card no-access" data-country="MY" data-has-access="false">
-                            <div class="access-indicator no-access">🔒</div>
-                            <div class="country-flag-container">
-                                <span class="country-flag">🇲🇾</span>
-                            </div>
-                            <h3 class="country-name">Malaysia</h3>
-                            <p class="country-description">
-                                Malaysian payroll system with EPF, SOCSO, EIS and MYR currency support. (Coming Soon)
-                            </p>
-                            <button class="country-action-btn" onclick="requestAccess('MY')">
-                                Request Access
-                            </button>
-
-                            <!-- No Access Overlay -->
-                            <div class="no-access-overlay">
-                                <div class="no-access-message">
-                                    <h4>🔒 Access Required</h4>
-                                    <p>You don't have permission to access Malaysia payroll system.</p>
-                                    <button class="contact-admin-btn" onclick="requestAccess('MY')">
-                                        Contact Administrator
-                                    </button>
+                                <h3 class="country-name" t-esc="dashboard['country_name'] or dashboard['name']"/>
+                                <p class="country-description" t-esc="descriptions.get(dashboard['country'], 'Advanced payroll management system.')"/>
+                                
+                                <!-- Payroll Stats Display -->
+                                <div class="payroll-stats-display" style="margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; font-size: 0.9rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span>👥 Employees:</span>
+                                        <strong t-esc="dashboard['employee_count'] or 0"/>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                        <span>💼 Contracts:</span>
+                                        <strong t-esc="dashboard['active_contracts'] or 0"/>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>💰 Total Payroll:</span>
+                                        <strong>
+                                            <t t-esc="currency_symbols.get(dashboard['country'], '$')"/>
+                                            <t t-esc="'{:,.0f}'.format(dashboard['total_gross_salary'] or 0)"/>
+                                        </strong>
+                                    </div>
                                 </div>
+                                
+                                <button class="country-action-btn" t-att-onclick="'navigateToCountry(\'' + dashboard['country'] + '\')'">
+                                    Access Dashboard
+                                </button>
                             </div>
-                        </div>
+                        </t>
                     </div>
                 </div>
 
@@ -532,13 +497,7 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         // Access rights from controller
-                        const accessRights = {
-                            'VN': true,
-                            'ID': true, 
-                            'IN': true,
-                            'SG': false,
-                            'MY': false
-                        };
+                        const accessRights = <t t-raw="json.dumps(access_rights or {})"/>;
 
                         // Initialize country cards based on access rights
                         document.querySelectorAll('.country-card').forEach(card => {
@@ -588,6 +547,15 @@
                                     break;
                                 case 'IN':
                                     url = '/web#action=pb_hr_payroll_india.action_payroll_dashboard_india';
+                                    break;
+                                case 'TH':
+                                    url = '/web#action=pb_hr_payroll_thailand.action_payroll_dashboard_thailand';
+                                    break;
+                                case 'KH':
+                                    url = '/web#action=pb_hr_payroll_cambodia.action_cambodia_dashboard_window';
+                                    break;
+                                case 'MY':
+                                    url = '/web#action=pb_hr_payroll_malaysia.action_malaysia_dashboard_window';
                                     break;
                                 default:
                                     url = '/payroll/dashboard';
@@ -679,6 +647,7 @@
         </t>
     </template>
 
-
+    <!-- Template alias for backward compatibility -->
+    <template id="payroll_country_selector_template" name="Payroll Country Selector (Alias)" inherit_id="payroll_country_selector_enhanced"/>
 
 </odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Malaysia Salary Rule Categories -->
+        <record id="hr_salary_rule_category_epf_employee" model="hr.salary.rule.category">
+            <field name="name">EPF Employee Contribution</field>
+            <field name="code">EPF_EE</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_epf_employer" model="hr.salary.rule.category">
+            <field name="name">EPF Employer Contribution</field>
+            <field name="code">EPF_ER</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_socso_employee" model="hr.salary.rule.category">
+            <field name="name">SOCSO Employee Contribution</field>
+            <field name="code">SOCSO_EE</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_socso_employer" model="hr.salary.rule.category">
+            <field name="name">SOCSO Employer Contribution</field>
+            <field name="code">SOCSO_ER</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_eis_employee" model="hr.salary.rule.category">
+            <field name="name">EIS Employee Contribution</field>
+            <field name="code">EIS_EE</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_eis_employer" model="hr.salary.rule.category">
+            <field name="name">EIS Employer Contribution</field>
+            <field name="code">EIS_ER</field>
+        </record>
+        
+        <record id="hr_salary_rule_category_income_tax" model="hr.salary.rule.category">
+            <field name="name">PCB Income Tax</field>
+            <field name="code">PCB</field>
+        </record>
+    </data>
+</odoo>

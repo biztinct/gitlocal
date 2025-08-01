@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Cambodia Dashboard Actions -->
+    <record id="action_cambodia_dashboard_window" model="ir.actions.act_window">
+        <field name="name">Open Cambodia Payroll Dashboard</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_cambodia"/>
+        <field name="target">current</field>
+        <field name="res_id" ref="cambodia_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'KH'}</field>
+        <field name="domain">[('country', '=', 'KH')]</field>
+    </record>
+    
+    <record id="action_payroll_dashboard_cambodia" model="ir.actions.act_window">
+        <field name="name">Cambodia Payroll Dashboard Professional</field>
+        <field name="res_model">payroll.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_dashboard_cambodia"/>
+        <field name="target">current</field>
+        <field name="res_id" ref="cambodia_payroll_dashboard"/>
+        <field name="context">{'create': False, 'edit': False, 'delete': False, 'default_country': 'KH', 'force_view': True}</field>
+        <field name="domain">[('country', '=', 'KH')]</field>
+    </record>
+
+    <!-- Cambodia spreadsheet actions -->
+    <record id="action_cambodia_edit_spreadsheet" model="ir.actions.server">
+        <field name="name">Edit Cambodia Payroll Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'action_spreadsheet_oca',
+    'params': {
+        'spreadsheet_id': env.ref('__custom__.payrollstaging_cambodia', raise_if_not_found=False).id if env.ref('__custom__.payrollstaging_cambodia', raise_if_not_found=False) else False,
+    },
+    'context': {'payroll_country': 'KH'}
+}
+        </field>
+    </record>
+    
+    <record id="action_cambodia_import_spreadsheet" model="ir.actions.server">
+        <field name="name">Import Cambodia Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+spreadsheet = env.ref('__custom__.payrollstaging_cambodia', raise_if_not_found=False)
+if spreadsheet:
+    action = spreadsheet.with_context(payroll_country='KH').import_json_data()
+else:
+    raise UserError('Cambodia payroll spreadsheet not found. Please create it with external ID __custom__.payrollstaging_cambodia')
+        </field>
+    </record>
+    
+    <!-- NSSF Action for Cambodia -->
+    <record id="action_nssf_wizard" model="ir.actions.act_window">
+        <field name="name">National Social Security Fund Wizard</field>
+        <field name="res_model">nssf.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_payroll_country': 'KH'}</field>
+    </record>
+    
+    <!-- Cambodia Dashboard Menu under base dashboard section -->
+    <menuitem id="menu_cambodia_dashboard"
+              name="Cambodia Dashboard"
+              parent="pb_hr_payroll_base.menu_payroll_dashboard_section"
+              action="action_cambodia_dashboard_window"
+              sequence="60"
+              groups="pb_hr_payroll_base.group_payroll_cambodia"/>
+    
+    <!-- Cambodia NSSF Menu under original Payroll menu -->
+    <menuitem id="menu_cambodia_nssf"
+              name="Cambodia NSSF Reporting"
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              action="action_nssf_wizard"
+              sequence="60"
+              groups="pb_hr_payroll_base.group_payroll_cambodia"/>
+    
+</odoo>

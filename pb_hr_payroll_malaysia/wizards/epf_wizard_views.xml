@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- EPF Wizard View -->
+    <record id="view_epf_wizard_form" model="ir.ui.view">
+        <field name="name">EPF Wizard Form</field>
+        <field name="model">epf.wizard</field>
+        <field name="arch" type="xml">
+            <form string="EPF Processing Wizard">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Malaysia EPF Processing</h1>
+                    </div>
+                    
+                    <group>
+                        <group name="basic_info">
+                            <field name="name"/>
+                            <field name="submission_period"/>
+                            <field name="payroll_country"/>
+                        </group>
+                        <group name="epf_summary">
+                            <field name="total_employees"/>
+                            <field name="total_wages"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                    <group string="EPF &amp; SOCSO Contributions">
+                        <group name="epf_contributions">
+                            <label for="total_epf_employee" string="EPF Contributions"/>
+                            <div>
+                                <field name="total_epf_employee" class="oe_inline"/> (Employee)
+                            </div>
+                            <div>
+                                <field name="total_epf_employer" class="oe_inline"/> (Employer)
+                            </div>
+                        </group>
+                        <group name="socso_contributions">
+                            <label for="total_socso_employee" string="SOCSO Contributions"/>
+                            <div>
+                                <field name="total_socso_employee" class="oe_inline"/> (Employee)
+                            </div>
+                            <div>
+                                <field name="total_socso_employer" class="oe_inline"/> (Employer)
+                            </div>
+                            <label for="total_eis_employee" string="EIS Contributions"/>
+                            <div>
+                                <field name="total_eis_employee" class="oe_inline"/> (Employee)
+                            </div>
+                            <div>
+                                <field name="total_eis_employer" class="oe_inline"/> (Employer)
+                            </div>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info">
+                        <p><strong>EPF Processing Information:</strong></p>
+                        <ul>
+                            <li>Employee Contribution: 11% of monthly wages</li>
+                            <li>Employer Contribution: 12-13% of monthly wages</li>
+                            <li>Minimum wage for EPF: RM 1,000</li>
+                            <li>Maximum wage for EPF: RM 20,000</li>
+                        </ul>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_generate_epf_file" string="Generate EPF File" type="object" class="btn-primary"/>
+                    <button name="action_preview_epf_data" string="Preview Data" type="object" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

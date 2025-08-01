@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="payroll_country_selector_template" name="Payroll Country Selector">
+        <t t-call="web.layout">
+            <t t-set="head">
+                <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+                <style>
+                    /* Global font */
+                    * {
+                        font-family: 'Roboto', sans-serif;
+                    }
+                    
+                    /* Professional gradient background */
+                    .payroll-selector-container {
+                        min-height: 100vh;
+                        background: #f8f9fa;
+                        background-image: 
+                            radial-gradient(circle at 10% 20%, rgba(91, 173, 254, 0.05) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 80%, rgba(91, 173, 254, 0.05) 0%, transparent 50%),
+                            radial-gradient(circle at 40% 40%, rgba(229, 229, 247, 0.1) 0%, transparent 50%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    
+                    /* Subtle animated background pattern */
+                    .payroll-selector-container::before {
+                        content: '';
+                        position: absolute;
+                        width: 200%;
+                        height: 200%;
+                        background-image: 
+                            repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(91, 173, 254, 0.03) 35px, rgba(91, 173, 254, 0.03) 70px);
+                        animation: backgroundMove 30s linear infinite;
+                    }
+                    
+                    @keyframes backgroundMove {
+                        0% { transform: translate(0, 0); }
+                        100% { transform: translate(-50px, -50px); }
+                    }
+                    
+                    .selector-content {
+                        position: relative;
+                        z-index: 1;
+                        text-align: center;
+                        padding: 3rem;
+                        background: white;
+                        border-radius: 20px;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+                        max-width: 1200px;
+                        width: 90%;
+                    }
+                    
+                    .selector-title {
+                        color: #2c3e50;
+                        font-size: 2.5rem;
+                        font-weight: 300;
+                        margin-bottom: 0.5rem;
+                        animation: fadeInDown 0.8s ease-out;
+                        letter-spacing: -0.5px;
+                    }
+                    
+                    .selector-subtitle {
+                        color: #7f8c8d;
+                        font-size: 1.1rem;
+                        font-weight: 400;
+                        margin-bottom: 3rem;
+                        animation: fadeInUp 0.8s ease-out;
+                    }
+                    
+                    @keyframes fadeInDown {
+                        from {
+                            opacity: 0;
+                            transform: translateY(-20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    
+                    @keyframes fadeInUp {
+                        from {
+                            opacity: 0;
+                            transform: translateY(20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    
+                    .flags-container {
+                        display: flex;
+                        gap: 2rem;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                        animation: fadeIn 1s ease-out 0.3s both;
+                    }
+                    
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    
+                    .flag-button {
+                        position: relative;
+                        cursor: pointer;
+                        transition: transform 0.3s ease;
+                        padding: 1rem;
+                        border-radius: 15px;
+                        background: rgba(255, 255, 255, 0.5);
+                    }
+                    
+                    .flag-button:hover {
+                        transform: translateY(-10px);
+                        background: rgba(255, 255, 255, 0.8);
+                    }
+                    
+                    .flag-wrapper {
+                        width: 180px;
+                        height: 135px;
+                        position: relative;
+                        transform-style: preserve-3d;
+                        transform-origin: left center;
+                    }
+                    
+                    .flag {
+                        width: 100%;
+                        height: 100%;
+                        background-size: cover;
+                        background-position: center;
+                        border-radius: 8px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+                        position: relative;
+                        animation: wave 4s ease-in-out infinite;
+                        transform-style: preserve-3d;
+                        overflow: hidden;
+                    }
+                    
+                    /* Subtle wave effect */
+                    @keyframes wave {
+                        0%, 100% {
+                            transform: perspective(600px) rotateY(0deg) rotateX(0deg);
+                        }
+                        25% {
+                            transform: perspective(600px) rotateY(-8deg) rotateX(2deg);
+                        }
+                        50% {
+                            transform: perspective(600px) rotateY(0deg) rotateX(-2deg);
+                        }
+                        75% {
+                            transform: perspective(600px) rotateY(8deg) rotateX(2deg);
+                        }
+                    }
+                    
+                    /* Flag shimmer effect */
+                    .flag::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: -100%;
+                        right: 0;
+                        bottom: 0;
+                        background: linear-gradient(90deg, 
+                            transparent 0%,
+                            rgba(255,255,255,0.2) 50%,
+                            transparent 100%
+                        );
+                        animation: shimmer 3s ease-in-out infinite;
+                        border-radius: 8px;
+                    }
+                    
+                    @keyframes shimmer {
+                        0% { left: -100%; }
+                        50%, 100% { left: 100%; }
+                    }
+                    
+                    .flag-vietnam {
+                        background-image: linear-gradient(to bottom, #da251d 0%, #da251d 100%);
+                        position: relative;
+                    }
+                    
+                    .flag-vietnam::after {
+                        content: '★';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        color: #ffcd00;
+                        font-size: 50px;
+                        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                    }
+                    
+                    .flag-indonesia {
+                        background-image: linear-gradient(to bottom, #ff0000 0%, #ff0000 50%, #ffffff 50%, #ffffff 100%);
+                    }
+                    
+                    .flag-india {
+                        background-image: linear-gradient(to bottom, #ff9933 0%, #ff9933 33.33%, #ffffff 33.33%, #ffffff 66.66%, #138808 66.66%, #138808 100%);
+                        position: relative;
+                    }
+                    
+                    .flag-india::after {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 40px;
+                        height: 40px;
+                        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='20' fill='none' stroke='%23000080' stroke-width='3'/%3E%3Cg stroke='%23000080' stroke-width='2' fill='none'%3E%3Cpath d='M50,30 L50,50'/%3E%3Cpath d='M50,50 L50,70'/%3E%3Cpath d='M30,50 L50,50'/%3E%3Cpath d='M50,50 L70,50'/%3E%3C/g%3E%3Ccircle cx='50' cy='50' r='4' fill='%23000080'/%3E%3C/svg%3E");
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }
+                    
+                    .flag-singapore {
+                        background-image: linear-gradient(to bottom, #ff0000 0%, #ff0000 50%, #ffffff 50%, #ffffff 100%);
+                        position: relative;
+                    }
+                    
+                    .flag-singapore::after {
+                        content: '☪';
+                        position: absolute;
+                        top: 25%;
+                        left: 30%;
+                        color: #ffffff;
+                        font-size: 20px;
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                    }
+                    
+                    .flag-singapore::before {
+                        content: '★★★★★';
+                        position: absolute;
+                        top: 25%;
+                        right: 20%;
+                        color: #ffffff;
+                        font-size: 12px;
+                        letter-spacing: 2px;
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                    }
+                    
+                    .flag-thailand {
+                        background-image: linear-gradient(to bottom, 
+                            #ff0000 0%, #ff0000 16.66%, 
+                            #ffffff 16.66%, #ffffff 33.33%, 
+                            #ff0000 33.33%, #ff0000 50%, 
+                            #000080 50%, #000080 66.66%, 
+                            #ff0000 66.66%, #ff0000 83.33%, 
+                            #ffffff 83.33%, #ffffff 100%);
+                    }
+                    
+                    .flag-malaysia {
+                        background: repeating-linear-gradient(to bottom, 
+                            #ff0000 0%, #ff0000 7.69%, 
+                            #ffffff 7.69%, #ffffff 15.38%);
+                        position: relative;
+                    }
+                    
+                    .flag-malaysia::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 50%;
+                        height: 50%;
+                        background: #000080;
+                    }
+                    
+                    .flag-malaysia::after {
+                        content: '☪★';
+                        position: absolute;
+                        top: 15%;
+                        left: 15%;
+                        color: #ffcd00;
+                        font-size: 20px;
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+                    }
+                    
+                    .flag-cambodia {
+                        background-image: linear-gradient(to bottom, 
+                            #032ea1 0%, #032ea1 25%, 
+                            #e30613 25%, #e30613 75%, 
+                            #032ea1 75%, #032ea1 100%);
+                        position: relative;
+                    }
+                    
+                    .flag-cambodia::after {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        width: 60px;
+                        height: 40px;
+                        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 60'%3E%3Crect x='10' y='20' width='80' height='20' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3Crect x='20' y='15' width='10' height='30' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3Crect x='35' y='10' width='30' height='40' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3Crect x='70' y='15' width='10' height='30' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3Cpolygon points='45,15 50,5 55,15' fill='%23ffffff' stroke='%23000000' stroke-width='1'/%3E%3C/svg%3E");
+                        background-size: contain;
+                        background-repeat: no-repeat;
+                        background-position: center;
+                    }
+                    
+                    .country-name {
+                        margin-top: 1.5rem;
+                        color: #2c3e50;
+                        font-size: 1.1rem;
+                        font-weight: 500;
+                        transition: all 0.3s ease;
+                        letter-spacing: 0.5px;
+                    }
+                    
+                    .flag-button:hover .country-name {
+                        color: #3498db;
+                        transform: scale(1.05);
+                    }
+                    
+                    /* Payroll stats display */
+                    .payroll-stats {
+                        margin-top: 0.5rem;
+                        font-size: 0.9rem;
+                        color: #7f8c8d;
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    }
+                    
+                    .flag-button:hover .payroll-stats {
+                        opacity: 1;
+                    }
+                    
+                    .stat-value {
+                        font-weight: 600;
+                        color: #27ae60;
+                    }
+                    
+                    /* Ripple effect on click */
+                    .flag-button::after {
+                        content: '';
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        width: 0;
+                        height: 0;
+                        border-radius: 50%;
+                        background: rgba(52, 152, 219, 0.3);
+                        transform: translate(-50%, -50%);
+                        transition: width 0.6s, height 0.6s;
+                    }
+                    
+                    .flag-button.clicked::after {
+                        width: 300px;
+                        height: 300px;
+                    }
+                    
+                    /* Access indicators */
+                    .flag-button.no-access {
+                        opacity: 0.7;
+                    }
+                    
+                    .flag-button.no-access .country-name::after {
+                        content: '🔒';
+                        margin-left: 0.5rem;
+                        font-size: 1rem;
+                        opacity: 0.7;
+                    }
+                    
+                    .flag-button.has-access .country-name::after {
+                        content: '✓';
+                        margin-left: 0.5rem;
+                        color: #27ae60;
+                        font-weight: bold;
+                    }
+                    
+                    /* Loading spinner */
+                    .loading-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(255, 255, 255, 0.95);
+                        display: none;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 9999;
+                        backdrop-filter: blur(5px);
+                    }
+                    
+                    .loading-overlay.active {
+                        display: flex;
+                    }
+                    
+                    .spinner {
+                        width: 50px;
+                        height: 50px;
+                        border: 3px solid rgba(52, 152, 219, 0.2);
+                        border-top-color: #3498db;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                    }
+                    
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+                    
+                    /* Responsive design */
+                    @media (max-width: 768px) {
+                        .selector-content {
+                            padding: 2rem;
+                            margin: 1rem;
+                        }
+                        
+                        .selector-title {
+                            font-size: 2rem;
+                        }
+                        
+                        .flags-container {
+                            gap: 1.5rem;
+                        }
+                        
+                        .flag-wrapper {
+                            width: 140px;
+                            height: 105px;
+                        }
+                        
+                        .country-name {
+                            font-size: 1rem;
+                        }
+                    }
+                </style>
+            </t>
+            
+            <div class="payroll-selector-container">
+                <div class="selector-content">
+                    <h1 class="selector-title">Select Your Payroll Region</h1>
+                    <p class="selector-subtitle">Choose your country to access the appropriate payroll system</p>
+                    
+                    <div class="flags-container">
+                        <!-- Vietnam Flag -->
+                        <div class="flag-button has-access" data-country="VN">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-vietnam"></div>
+                            </div>
+                            <div class="country-name">Vietnam</div>
+                            <div class="payroll-stats">
+                                <div class="stat-value">15</div> employees
+                            </div>
+                        </div>
+                        
+                        <!-- Indonesia Flag -->
+                        <div class="flag-button has-access" data-country="ID">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-indonesia"></div>
+                            </div>
+                            <div class="country-name">Indonesia</div>
+                            <div class="payroll-stats">
+                                <div class="stat-value">22</div> employees
+                            </div>
+                        </div>
+                        
+                        <!-- India Flag -->
+                        <div class="flag-button has-access" data-country="IN">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-india"></div>
+                            </div>
+                            <div class="country-name">India</div>
+                            <div class="payroll-stats">
+                                <div class="stat-value">35</div> employees
+                            </div>
+                        </div>
+                        
+                        <!-- Singapore Flag -->
+                        <div class="flag-button has-access" data-country="SG">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-singapore"></div>
+                            </div>
+                            <div class="country-name">Singapore</div>
+                            <div class="payroll-stats">
+                                <div class="stat-value">8</div> employees
+                            </div>
+                        </div>
+                        
+                        <!-- Thailand Flag -->
+                        <div class="flag-button has-access" data-country="TH">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-thailand"></div>
+                            </div>
+                            <div class="country-name">Thailand</div>
+                            <div class="payroll-stats">
+                                <div class="stat-value">12</div> employees
+                            </div>
+                        </div>
+                        
+                        <!-- Cambodia Flag -->
+                        <div class="flag-button has-access" data-country="KH">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-cambodia"></div>
+                            </div>
+                            <div class="country-name">Cambodia</div>
+                            <div class="payroll-stats">
+                                <div class="stat-value">6</div> employees
+                            </div>
+                        </div>
+                        
+                        <!-- Malaysia Flag -->
+                        <div class="flag-button has-access" data-country="MY">
+                            <div class="flag-wrapper">
+                                <div class="flag flag-malaysia"></div>
+                            </div>
+                            <div class="country-name">Malaysia</div>
+                            <div class="payroll-stats">
+                                <div class="stat-value">18</div> employees
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading overlay -->
+            <div class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const flagButtons = document.querySelectorAll('.flag-button');
+                    const loadingOverlay = document.querySelector('.loading-overlay');
+                    
+                    flagButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            // Add clicked animation
+                            this.classList.add('clicked');
+                            
+                            // Show loading
+                            loadingOverlay.classList.add('active');
+                            
+                            const countryCode = this.dataset.country;
+                            
+                            // Redirect to country dashboard
+                            setTimeout(() => {
+                                window.location.href = `/web#action=action_${countryCode.toLowerCase()}_dashboard_window`;
+                            }, 500);
+                        });
+                    });
+                });
+            </script>
+        </t>
+    </template>
+</odoo>

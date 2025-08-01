@@ -28,7 +28,7 @@ class PayrollController(http.Controller):
                 if data['country'] in accessible_countries
             ]
             
-            return request.render('pb_hr_payroll_base.payroll_country_selector_template', {
+            return request.render('pb_hr_payroll_base.payroll_country_selector_enhanced', {
                 'dashboards': accessible_data,
                 'access_rights': {country: True for country in accessible_countries},
                 'user': user,
@@ -195,6 +195,9 @@ class PayrollController(http.Controller):
                 'VN': '/web#action=spreadsheet_oca.action_spreadsheet&model=hr.payslip&country=VN',
                 'ID': '/web#action=spreadsheet_oca.action_spreadsheet&model=hr.payslip&country=ID',
                 'IN': '/web#action=spreadsheet_oca.action_spreadsheet&model=hr.payslip&country=IN',
+                'TH': '/web#action=spreadsheet_oca.action_spreadsheet&model=hr.payslip&country=TH',
+                'KH': '/web#action=spreadsheet_oca.action_spreadsheet&model=hr.payslip&country=KH',
+                'MY': '/web#action=spreadsheet_oca.action_spreadsheet&model=hr.payslip&country=MY',
             }
             
             url = spreadsheet_map.get(country, '/web#action=spreadsheet_oca.action_spreadsheet')
@@ -292,10 +295,12 @@ class PayrollController(http.Controller):
             accessible_countries.append('MY')
         if user.has_group('pb_hr_payroll_base.group_payroll_thailand'):
             accessible_countries.append('TH')
+        if user.has_group('pb_hr_payroll_base.group_payroll_cambodia'):
+            accessible_countries.append('KH')
         
         # Super users have access to all
         if user.has_group('base.group_system'):
-            accessible_countries = ['VN', 'ID', 'IN', 'SG', 'MY', 'TH']
+            accessible_countries = ['VN', 'ID', 'IN', 'SG', 'MY', 'TH', 'KH']
         
         return accessible_countries
 
@@ -312,6 +317,7 @@ class PayrollController(http.Controller):
             'SG': 'Singapore Payroll Dashboard',
             'MY': 'Malaysia Payroll Dashboard',
             'TH': 'Thailand Payroll Dashboard',
+            'KH': 'Cambodia Payroll Dashboard',
         }
         
         dashboard = request.env['payroll.dashboard'].create({
@@ -326,7 +332,8 @@ class PayrollController(http.Controller):
         """Get currency for country"""
         currency_map = {
             'VN': 'VND', 'ID': 'IDR', 'IN': 'INR',
-            'SG': 'SGD', 'MY': 'MYR', 'TH': 'THB'
+            'SG': 'SGD', 'MY': 'MYR', 'TH': 'THB',
+            'KH': 'KHR'
         }
         
         currency_code = currency_map.get(country_code, 'USD')
@@ -611,6 +618,8 @@ class PayrollAPIController(http.Controller):
                 'IN': user.has_group('pb_hr_payroll_base.group_payroll_india') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
                 'SG': user.has_group('pb_hr_payroll_base.group_payroll_singapore') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
                 'MY': user.has_group('pb_hr_payroll_base.group_payroll_malaysia') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
+                'TH': user.has_group('pb_hr_payroll_base.group_payroll_thailand') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
+                'KH': user.has_group('pb_hr_payroll_base.group_payroll_cambodia') or user.has_group('pb_hr_payroll_base.group_payroll_base_manager'),
             }
             
             # Get dashboard data for accessible countries
@@ -631,6 +640,8 @@ class PayrollAPIController(http.Controller):
                         'IN': 'India Payroll Dashboard',
                         'SG': 'Singapore Payroll Dashboard',
                         'MY': 'Malaysia Payroll Dashboard',
+                        'TH': 'Thailand Payroll Dashboard',
+                        'KH': 'Cambodia Payroll Dashboard',
                     }
                     
                     dashboard = request.env['payroll.dashboard'].create({
@@ -646,7 +657,7 @@ class PayrollAPIController(http.Controller):
                     'id': dashboard.id,
                 })
             
-            return request.render('pb_hr_payroll_base.payroll_country_selector_template', {
+            return request.render('pb_hr_payroll_base.payroll_country_selector_enhanced', {
                 'access_rights': access_rights,
                 'dashboards': dashboard_data,
                 'user': user,

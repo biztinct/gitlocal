@@ -29,6 +29,7 @@ class PayrollDashboard(models.Model):
         ('SG', 'Singapore'),
         ('MY', 'Malaysia'),
         ('TH', 'Thailand'),  # NEW: Added Thailand
+        ('KH', 'Cambodia'),  # NEW: Added Cambodia
         ('PH', 'Philippines'),  # NEW: Added Philippines
     ], string='Country', required=True)
     
@@ -189,6 +190,7 @@ class PayrollDashboard(models.Model):
                 'SG': 'SGD',  # Singapore Dollar
                 'MY': 'MYR',  # Malaysian Ringgit
                 'TH': 'THB',  # Thai Baht
+                'KH': 'KHR',  # Cambodian Riel
                 'PH': 'PHP'   # Philippine Peso
             }
             
@@ -210,7 +212,7 @@ class PayrollDashboard(models.Model):
         """Compute country reference field"""
         country_map = {
             'VN': 'VN', 'ID': 'ID', 'IN': 'IN',
-            'SG': 'SG', 'MY': 'MY', 'TH': 'TH', 'PH': 'PH'
+            'SG': 'SG', 'MY': 'MY', 'TH': 'TH', 'KH': 'KH', 'PH': 'PH'
         }
         
         for record in self:
@@ -387,6 +389,7 @@ class PayrollDashboard(models.Model):
             'SG': 'pb_hr_payroll_singapore.view_payroll_dashboard_singapore',
             'TH': 'pb_hr_payroll_thailand.view_payroll_dashboard_thailand',
             'MY': 'pb_hr_payroll_malaysia.view_payroll_dashboard_malaysia',
+            'KH': 'pb_hr_payroll_cambodia.view_payroll_dashboard_cambodia',
         }
         
         view_id = view_map.get(self.country)
@@ -684,7 +687,7 @@ class PayrollDashboard(models.Model):
         """Get emoji flag for country"""
         flags = {
             'VN': '🇻🇳', 'ID': '🇮🇩', 'IN': '🇮🇳',
-            'SG': '🇸🇬', 'MY': '🇲🇾', 'TH': '🇹🇭', 'PH': '🇵🇭'
+            'SG': '🇸🇬', 'MY': '🇲🇾', 'TH': '🇹🇭', 'KH': '🇰🇭', 'PH': '🇵🇭'
         }
         return flags.get(self.country, '🏴')
 
@@ -729,6 +732,7 @@ class PayrollDashboard(models.Model):
             ('SG', 'Singapore Payroll Dashboard'),
             ('MY', 'Malaysia Payroll Dashboard'),
             ('TH', 'Thailand Payroll Dashboard'),
+            ('KH', 'Cambodia Payroll Dashboard'),
             ('PH', 'Philippines Payroll Dashboard'),
         ]
         
@@ -1030,6 +1034,7 @@ class PayrollDashboard(models.Model):
                 'SG': 'Singapore Payroll Dashboard',
                 'MY': 'Malaysia Payroll Dashboard',
                 'TH': 'Thailand Payroll Dashboard',
+                'KH': 'Cambodia Payroll Dashboard',
                 'PH': 'Philippines Payroll Dashboard',
             }
             
