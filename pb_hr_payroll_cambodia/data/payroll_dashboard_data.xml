@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cambodia-specific dashboard record -->
+        <record id="cambodia_payroll_dashboard" model="payroll.dashboard">
+            <field name="name">Cambodia Payroll Dashboard</field>
+            <field name="country">KH</field>
+            <field name="sequence">60</field>
+            <field name="active">True</field>
+            <field name="auto_refresh">True</field>
+            <field name="refresh_interval">60</field>
+            <!-- Cambodia-specific fields (NSSF, WTS, etc.) can be added here -->
+        </record>
+    </data>
+</odoo>

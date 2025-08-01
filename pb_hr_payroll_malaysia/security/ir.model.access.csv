@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_epf_wizard_user,epf.wizard,model_epf_wizard,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_epf_wizard_manager,epf.wizard,model_epf_wizard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_zoho_employee_data_malaysia_user,zoho.employee.data.malaysia,model_zoho_employee_data_malaysia,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_zoho_employee_data_malaysia_manager,zoho.employee.data.malaysia,model_zoho_employee_data_malaysia,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_zoho_staging_data_malaysia_user,zoho.staging.data.malaysia,model_zoho_staging_data_malaysia,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_zoho_staging_data_malaysia_manager,zoho.staging.data.malaysia,model_zoho_staging_data_malaysia,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_payroll_import_wizard_malaysia_user,payroll.import.wizard.malaysia,model_payroll_import_wizard_malaysia,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_payroll_import_wizard_malaysia_manager,payroll.import.wizard.malaysia,model_payroll_import_wizard_malaysia,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
