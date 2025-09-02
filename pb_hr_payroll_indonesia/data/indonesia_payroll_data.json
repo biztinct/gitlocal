@@ -2,7 +2,7 @@
   "version": 12.5,
   "sheets": [
     {
-      "id": "428f2e61-bf7a-4bdd-b230-43069cfa280e",
+      "id": "d7627e7f-a16a-4e18-91fc-2aabbac9e680",
       "name": "Allowance Details",
       "colNumber": 14,
       "rowNumber": 72,
@@ -2833,7 +2833,7 @@
         },
         "L1": {
           "style": 1,
-          "content": "THR Payment"
+          "content": "Thirteenth month salary"
         },
         "L2": {
           "style": 2,
@@ -3493,7 +3493,7 @@
       "isVisible": true
     },
     {
-      "id": "422accc4-98ef-4d15-a78e-05a5bb309c42",
+      "id": "6e936925-aa37-45f5-b0d9-6b219536f191",
       "name": "Earnings Details",
       "colNumber": 27,
       "rowNumber": 117,
@@ -4439,7 +4439,7 @@
         },
         "C1": {
           "style": 4,
-          "content": "Transportation Allowance"
+          "content": "Gas Allowance"
         },
         "C2": {
           "style": 5,
@@ -4898,7 +4898,7 @@
         },
         "D1": {
           "style": 4,
-          "content": "Communication Allowance"
+          "content": "Phone Allowance"
         },
         "D2": {
           "style": 5,
@@ -7232,7 +7232,7 @@
       "isVisible": true
     },
     {
-      "id": "c702c40a-a286-41dd-a6f8-156ffcf2eba0",
+      "id": "b3947927-f5aa-4f59-a152-f691aead38fb",
       "name": "Master lookup",
       "colNumber": 26,
       "rowNumber": 100,
@@ -7387,7 +7387,7 @@
       "isVisible": true
     },
     {
-      "id": "1b8da39a-535e-44d3-9a83-4aa91b19e31b",
+      "id": "c9bca67d-b670-43c9-ac2b-5f976883d37d",
       "name": "TEMPLATE Employee Details",
       "colNumber": 24,
       "rowNumber": 201,
@@ -17056,807 +17056,807 @@
         },
         "M1": {
           "style": 7,
-          "content": "=ODOO.LIST.HEADER(1,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST.HEADER(1,\"insurance_book_number\")"
         },
         "M2": {
           "style": 7,
-          "content": "=ODOO.LIST(1,1,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,1,\"insurance_book_number\")"
         },
         "M3": {
           "style": 7,
-          "content": "=ODOO.LIST(1,2,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,2,\"insurance_book_number\")"
         },
         "M4": {
           "style": 7,
-          "content": "=ODOO.LIST(1,3,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,3,\"insurance_book_number\")"
         },
         "M5": {
           "style": 7,
-          "content": "=ODOO.LIST(1,4,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,4,\"insurance_book_number\")"
         },
         "M6": {
           "style": 7,
-          "content": "=ODOO.LIST(1,5,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,5,\"insurance_book_number\")"
         },
         "M7": {
           "style": 7,
-          "content": "=ODOO.LIST(1,6,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,6,\"insurance_book_number\")"
         },
         "M8": {
           "style": 7,
-          "content": "=ODOO.LIST(1,7,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,7,\"insurance_book_number\")"
         },
         "M9": {
           "style": 7,
-          "content": "=ODOO.LIST(1,8,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,8,\"insurance_book_number\")"
         },
         "M10": {
           "style": 7,
-          "content": "=ODOO.LIST(1,9,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,9,\"insurance_book_number\")"
         },
         "M11": {
           "style": 7,
-          "content": "=ODOO.LIST(1,10,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,10,\"insurance_book_number\")"
         },
         "M12": {
           "style": 7,
-          "content": "=ODOO.LIST(1,11,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,11,\"insurance_book_number\")"
         },
         "M13": {
           "style": 7,
-          "content": "=ODOO.LIST(1,12,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,12,\"insurance_book_number\")"
         },
         "M14": {
           "style": 7,
-          "content": "=ODOO.LIST(1,13,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,13,\"insurance_book_number\")"
         },
         "M15": {
           "style": 7,
-          "content": "=ODOO.LIST(1,14,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,14,\"insurance_book_number\")"
         },
         "M16": {
           "style": 7,
-          "content": "=ODOO.LIST(1,15,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,15,\"insurance_book_number\")"
         },
         "M17": {
           "style": 7,
-          "content": "=ODOO.LIST(1,16,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,16,\"insurance_book_number\")"
         },
         "M18": {
           "style": 7,
-          "content": "=ODOO.LIST(1,17,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,17,\"insurance_book_number\")"
         },
         "M19": {
           "style": 7,
-          "content": "=ODOO.LIST(1,18,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,18,\"insurance_book_number\")"
         },
         "M20": {
           "style": 7,
-          "content": "=ODOO.LIST(1,19,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,19,\"insurance_book_number\")"
         },
         "M21": {
           "style": 7,
-          "content": "=ODOO.LIST(1,20,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,20,\"insurance_book_number\")"
         },
         "M22": {
           "style": 7,
-          "content": "=ODOO.LIST(1,21,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,21,\"insurance_book_number\")"
         },
         "M23": {
           "style": 7,
-          "content": "=ODOO.LIST(1,22,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,22,\"insurance_book_number\")"
         },
         "M24": {
           "style": 7,
-          "content": "=ODOO.LIST(1,23,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,23,\"insurance_book_number\")"
         },
         "M25": {
           "style": 7,
-          "content": "=ODOO.LIST(1,24,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,24,\"insurance_book_number\")"
         },
         "M26": {
           "style": 7,
-          "content": "=ODOO.LIST(1,25,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,25,\"insurance_book_number\")"
         },
         "M27": {
           "style": 7,
-          "content": "=ODOO.LIST(1,26,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,26,\"insurance_book_number\")"
         },
         "M28": {
           "style": 7,
-          "content": "=ODOO.LIST(1,27,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,27,\"insurance_book_number\")"
         },
         "M29": {
           "style": 7,
-          "content": "=ODOO.LIST(1,28,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,28,\"insurance_book_number\")"
         },
         "M30": {
           "style": 7,
-          "content": "=ODOO.LIST(1,29,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,29,\"insurance_book_number\")"
         },
         "M31": {
           "style": 7,
-          "content": "=ODOO.LIST(1,30,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,30,\"insurance_book_number\")"
         },
         "M32": {
           "style": 7,
-          "content": "=ODOO.LIST(1,31,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,31,\"insurance_book_number\")"
         },
         "M33": {
           "style": 7,
-          "content": "=ODOO.LIST(1,32,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,32,\"insurance_book_number\")"
         },
         "M34": {
           "style": 7,
-          "content": "=ODOO.LIST(1,33,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,33,\"insurance_book_number\")"
         },
         "M35": {
           "style": 7,
-          "content": "=ODOO.LIST(1,34,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,34,\"insurance_book_number\")"
         },
         "M36": {
           "style": 7,
-          "content": "=ODOO.LIST(1,35,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,35,\"insurance_book_number\")"
         },
         "M37": {
           "style": 7,
-          "content": "=ODOO.LIST(1,36,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,36,\"insurance_book_number\")"
         },
         "M38": {
           "style": 7,
-          "content": "=ODOO.LIST(1,37,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,37,\"insurance_book_number\")"
         },
         "M39": {
           "style": 7,
-          "content": "=ODOO.LIST(1,38,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,38,\"insurance_book_number\")"
         },
         "M40": {
           "style": 7,
-          "content": "=ODOO.LIST(1,39,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,39,\"insurance_book_number\")"
         },
         "M41": {
           "style": 7,
-          "content": "=ODOO.LIST(1,40,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,40,\"insurance_book_number\")"
         },
         "M42": {
           "style": 7,
-          "content": "=ODOO.LIST(1,41,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,41,\"insurance_book_number\")"
         },
         "M43": {
           "style": 7,
-          "content": "=ODOO.LIST(1,42,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,42,\"insurance_book_number\")"
         },
         "M44": {
           "style": 7,
-          "content": "=ODOO.LIST(1,43,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,43,\"insurance_book_number\")"
         },
         "M45": {
           "style": 7,
-          "content": "=ODOO.LIST(1,44,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,44,\"insurance_book_number\")"
         },
         "M46": {
           "style": 7,
-          "content": "=ODOO.LIST(1,45,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,45,\"insurance_book_number\")"
         },
         "M47": {
           "style": 7,
-          "content": "=ODOO.LIST(1,46,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,46,\"insurance_book_number\")"
         },
         "M48": {
           "style": 7,
-          "content": "=ODOO.LIST(1,47,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,47,\"insurance_book_number\")"
         },
         "M49": {
           "style": 7,
-          "content": "=ODOO.LIST(1,48,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,48,\"insurance_book_number\")"
         },
         "M50": {
           "style": 7,
-          "content": "=ODOO.LIST(1,49,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,49,\"insurance_book_number\")"
         },
         "M51": {
           "style": 7,
-          "content": "=ODOO.LIST(1,50,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,50,\"insurance_book_number\")"
         },
         "M52": {
           "style": 7,
-          "content": "=ODOO.LIST(1,51,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,51,\"insurance_book_number\")"
         },
         "M53": {
           "style": 7,
-          "content": "=ODOO.LIST(1,52,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,52,\"insurance_book_number\")"
         },
         "M54": {
           "style": 7,
-          "content": "=ODOO.LIST(1,53,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,53,\"insurance_book_number\")"
         },
         "M55": {
           "style": 7,
-          "content": "=ODOO.LIST(1,54,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,54,\"insurance_book_number\")"
         },
         "M56": {
           "style": 7,
-          "content": "=ODOO.LIST(1,55,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,55,\"insurance_book_number\")"
         },
         "M57": {
           "style": 7,
-          "content": "=ODOO.LIST(1,56,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,56,\"insurance_book_number\")"
         },
         "M58": {
           "style": 7,
-          "content": "=ODOO.LIST(1,57,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,57,\"insurance_book_number\")"
         },
         "M59": {
           "style": 7,
-          "content": "=ODOO.LIST(1,58,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,58,\"insurance_book_number\")"
         },
         "M60": {
           "style": 7,
-          "content": "=ODOO.LIST(1,59,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,59,\"insurance_book_number\")"
         },
         "M61": {
           "style": 7,
-          "content": "=ODOO.LIST(1,60,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,60,\"insurance_book_number\")"
         },
         "M62": {
           "style": 7,
-          "content": "=ODOO.LIST(1,61,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,61,\"insurance_book_number\")"
         },
         "M63": {
           "style": 7,
-          "content": "=ODOO.LIST(1,62,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,62,\"insurance_book_number\")"
         },
         "M64": {
           "style": 7,
-          "content": "=ODOO.LIST(1,63,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,63,\"insurance_book_number\")"
         },
         "M65": {
           "style": 7,
-          "content": "=ODOO.LIST(1,64,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,64,\"insurance_book_number\")"
         },
         "M66": {
           "style": 7,
-          "content": "=ODOO.LIST(1,65,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,65,\"insurance_book_number\")"
         },
         "M67": {
           "style": 7,
-          "content": "=ODOO.LIST(1,66,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,66,\"insurance_book_number\")"
         },
         "M68": {
           "style": 7,
-          "content": "=ODOO.LIST(1,67,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,67,\"insurance_book_number\")"
         },
         "M69": {
           "style": 7,
-          "content": "=ODOO.LIST(1,68,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,68,\"insurance_book_number\")"
         },
         "M70": {
           "style": 7,
-          "content": "=ODOO.LIST(1,69,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,69,\"insurance_book_number\")"
         },
         "M71": {
           "style": 7,
-          "content": "=ODOO.LIST(1,70,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,70,\"insurance_book_number\")"
         },
         "M72": {
           "style": 7,
-          "content": "=ODOO.LIST(1,71,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,71,\"insurance_book_number\")"
         },
         "M73": {
           "style": 7,
-          "content": "=ODOO.LIST(1,72,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,72,\"insurance_book_number\")"
         },
         "M74": {
           "style": 7,
-          "content": "=ODOO.LIST(1,73,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,73,\"insurance_book_number\")"
         },
         "M75": {
           "style": 7,
-          "content": "=ODOO.LIST(1,74,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,74,\"insurance_book_number\")"
         },
         "M76": {
           "style": 7,
-          "content": "=ODOO.LIST(1,75,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,75,\"insurance_book_number\")"
         },
         "M77": {
           "style": 7,
-          "content": "=ODOO.LIST(1,76,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,76,\"insurance_book_number\")"
         },
         "M78": {
           "style": 7,
-          "content": "=ODOO.LIST(1,77,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,77,\"insurance_book_number\")"
         },
         "M79": {
           "style": 7,
-          "content": "=ODOO.LIST(1,78,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,78,\"insurance_book_number\")"
         },
         "M80": {
           "style": 7,
-          "content": "=ODOO.LIST(1,79,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,79,\"insurance_book_number\")"
         },
         "M81": {
           "style": 7,
-          "content": "=ODOO.LIST(1,80,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,80,\"insurance_book_number\")"
         },
         "M82": {
           "style": 7,
-          "content": "=ODOO.LIST(1,81,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,81,\"insurance_book_number\")"
         },
         "M83": {
           "style": 7,
-          "content": "=ODOO.LIST(1,82,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,82,\"insurance_book_number\")"
         },
         "M84": {
           "style": 7,
-          "content": "=ODOO.LIST(1,83,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,83,\"insurance_book_number\")"
         },
         "M85": {
           "style": 7,
-          "content": "=ODOO.LIST(1,84,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,84,\"insurance_book_number\")"
         },
         "M86": {
           "style": 7,
-          "content": "=ODOO.LIST(1,85,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,85,\"insurance_book_number\")"
         },
         "M87": {
           "style": 7,
-          "content": "=ODOO.LIST(1,86,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,86,\"insurance_book_number\")"
         },
         "M88": {
           "style": 7,
-          "content": "=ODOO.LIST(1,87,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,87,\"insurance_book_number\")"
         },
         "M89": {
           "style": 7,
-          "content": "=ODOO.LIST(1,88,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,88,\"insurance_book_number\")"
         },
         "M90": {
           "style": 7,
-          "content": "=ODOO.LIST(1,89,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,89,\"insurance_book_number\")"
         },
         "M91": {
           "style": 7,
-          "content": "=ODOO.LIST(1,90,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,90,\"insurance_book_number\")"
         },
         "M92": {
           "style": 7,
-          "content": "=ODOO.LIST(1,91,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,91,\"insurance_book_number\")"
         },
         "M93": {
           "style": 7,
-          "content": "=ODOO.LIST(1,92,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,92,\"insurance_book_number\")"
         },
         "M94": {
           "style": 7,
-          "content": "=ODOO.LIST(1,93,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,93,\"insurance_book_number\")"
         },
         "M95": {
           "style": 7,
-          "content": "=ODOO.LIST(1,94,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,94,\"insurance_book_number\")"
         },
         "M96": {
           "style": 7,
-          "content": "=ODOO.LIST(1,95,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,95,\"insurance_book_number\")"
         },
         "M97": {
           "style": 7,
-          "content": "=ODOO.LIST(1,96,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,96,\"insurance_book_number\")"
         },
         "M98": {
           "style": 7,
-          "content": "=ODOO.LIST(1,97,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,97,\"insurance_book_number\")"
         },
         "M99": {
           "style": 7,
-          "content": "=ODOO.LIST(1,98,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,98,\"insurance_book_number\")"
         },
         "M100": {
           "style": 7,
-          "content": "=ODOO.LIST(1,99,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,99,\"insurance_book_number\")"
         },
         "M101": {
           "style": 7,
-          "content": "=ODOO.LIST(1,100,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,100,\"insurance_book_number\")"
         },
         "M102": {
           "style": 7,
-          "content": "=ODOO.LIST(1,101,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,101,\"insurance_book_number\")"
         },
         "M103": {
           "style": 7,
-          "content": "=ODOO.LIST(1,102,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,102,\"insurance_book_number\")"
         },
         "M104": {
           "style": 7,
-          "content": "=ODOO.LIST(1,103,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,103,\"insurance_book_number\")"
         },
         "M105": {
           "style": 7,
-          "content": "=ODOO.LIST(1,104,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,104,\"insurance_book_number\")"
         },
         "M106": {
           "style": 7,
-          "content": "=ODOO.LIST(1,105,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,105,\"insurance_book_number\")"
         },
         "M107": {
           "style": 7,
-          "content": "=ODOO.LIST(1,106,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,106,\"insurance_book_number\")"
         },
         "M108": {
           "style": 7,
-          "content": "=ODOO.LIST(1,107,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,107,\"insurance_book_number\")"
         },
         "M109": {
           "style": 7,
-          "content": "=ODOO.LIST(1,108,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,108,\"insurance_book_number\")"
         },
         "M110": {
           "style": 7,
-          "content": "=ODOO.LIST(1,109,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,109,\"insurance_book_number\")"
         },
         "M111": {
           "style": 7,
-          "content": "=ODOO.LIST(1,110,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,110,\"insurance_book_number\")"
         },
         "M112": {
           "style": 7,
-          "content": "=ODOO.LIST(1,111,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,111,\"insurance_book_number\")"
         },
         "M113": {
           "style": 7,
-          "content": "=ODOO.LIST(1,112,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,112,\"insurance_book_number\")"
         },
         "M114": {
           "style": 7,
-          "content": "=ODOO.LIST(1,113,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,113,\"insurance_book_number\")"
         },
         "M115": {
           "style": 7,
-          "content": "=ODOO.LIST(1,114,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,114,\"insurance_book_number\")"
         },
         "M116": {
           "style": 7,
-          "content": "=ODOO.LIST(1,115,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,115,\"insurance_book_number\")"
         },
         "M117": {
           "style": 7,
-          "content": "=ODOO.LIST(1,116,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,116,\"insurance_book_number\")"
         },
         "M118": {
           "style": 7,
-          "content": "=ODOO.LIST(1,117,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,117,\"insurance_book_number\")"
         },
         "M119": {
           "style": 7,
-          "content": "=ODOO.LIST(1,118,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,118,\"insurance_book_number\")"
         },
         "M120": {
           "style": 7,
-          "content": "=ODOO.LIST(1,119,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,119,\"insurance_book_number\")"
         },
         "M121": {
           "style": 7,
-          "content": "=ODOO.LIST(1,120,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,120,\"insurance_book_number\")"
         },
         "M122": {
           "style": 7,
-          "content": "=ODOO.LIST(1,121,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,121,\"insurance_book_number\")"
         },
         "M123": {
           "style": 7,
-          "content": "=ODOO.LIST(1,122,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,122,\"insurance_book_number\")"
         },
         "M124": {
           "style": 7,
-          "content": "=ODOO.LIST(1,123,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,123,\"insurance_book_number\")"
         },
         "M125": {
           "style": 7,
-          "content": "=ODOO.LIST(1,124,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,124,\"insurance_book_number\")"
         },
         "M126": {
           "style": 7,
-          "content": "=ODOO.LIST(1,125,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,125,\"insurance_book_number\")"
         },
         "M127": {
           "style": 7,
-          "content": "=ODOO.LIST(1,126,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,126,\"insurance_book_number\")"
         },
         "M128": {
           "style": 7,
-          "content": "=ODOO.LIST(1,127,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,127,\"insurance_book_number\")"
         },
         "M129": {
           "style": 7,
-          "content": "=ODOO.LIST(1,128,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,128,\"insurance_book_number\")"
         },
         "M130": {
           "style": 7,
-          "content": "=ODOO.LIST(1,129,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,129,\"insurance_book_number\")"
         },
         "M131": {
           "style": 7,
-          "content": "=ODOO.LIST(1,130,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,130,\"insurance_book_number\")"
         },
         "M132": {
           "style": 7,
-          "content": "=ODOO.LIST(1,131,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,131,\"insurance_book_number\")"
         },
         "M133": {
           "style": 7,
-          "content": "=ODOO.LIST(1,132,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,132,\"insurance_book_number\")"
         },
         "M134": {
           "style": 7,
-          "content": "=ODOO.LIST(1,133,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,133,\"insurance_book_number\")"
         },
         "M135": {
           "style": 7,
-          "content": "=ODOO.LIST(1,134,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,134,\"insurance_book_number\")"
         },
         "M136": {
           "style": 7,
-          "content": "=ODOO.LIST(1,135,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,135,\"insurance_book_number\")"
         },
         "M137": {
           "style": 7,
-          "content": "=ODOO.LIST(1,136,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,136,\"insurance_book_number\")"
         },
         "M138": {
           "style": 7,
-          "content": "=ODOO.LIST(1,137,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,137,\"insurance_book_number\")"
         },
         "M139": {
           "style": 7,
-          "content": "=ODOO.LIST(1,138,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,138,\"insurance_book_number\")"
         },
         "M140": {
           "style": 7,
-          "content": "=ODOO.LIST(1,139,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,139,\"insurance_book_number\")"
         },
         "M141": {
           "style": 7,
-          "content": "=ODOO.LIST(1,140,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,140,\"insurance_book_number\")"
         },
         "M142": {
           "style": 7,
-          "content": "=ODOO.LIST(1,141,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,141,\"insurance_book_number\")"
         },
         "M143": {
           "style": 7,
-          "content": "=ODOO.LIST(1,142,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,142,\"insurance_book_number\")"
         },
         "M144": {
           "style": 7,
-          "content": "=ODOO.LIST(1,143,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,143,\"insurance_book_number\")"
         },
         "M145": {
           "style": 7,
-          "content": "=ODOO.LIST(1,144,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,144,\"insurance_book_number\")"
         },
         "M146": {
           "style": 7,
-          "content": "=ODOO.LIST(1,145,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,145,\"insurance_book_number\")"
         },
         "M147": {
           "style": 7,
-          "content": "=ODOO.LIST(1,146,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,146,\"insurance_book_number\")"
         },
         "M148": {
           "style": 7,
-          "content": "=ODOO.LIST(1,147,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,147,\"insurance_book_number\")"
         },
         "M149": {
           "style": 7,
-          "content": "=ODOO.LIST(1,148,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,148,\"insurance_book_number\")"
         },
         "M150": {
           "style": 7,
-          "content": "=ODOO.LIST(1,149,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,149,\"insurance_book_number\")"
         },
         "M151": {
           "style": 7,
-          "content": "=ODOO.LIST(1,150,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,150,\"insurance_book_number\")"
         },
         "M152": {
           "style": 7,
-          "content": "=ODOO.LIST(1,151,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,151,\"insurance_book_number\")"
         },
         "M153": {
           "style": 7,
-          "content": "=ODOO.LIST(1,152,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,152,\"insurance_book_number\")"
         },
         "M154": {
           "style": 7,
-          "content": "=ODOO.LIST(1,153,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,153,\"insurance_book_number\")"
         },
         "M155": {
           "style": 7,
-          "content": "=ODOO.LIST(1,154,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,154,\"insurance_book_number\")"
         },
         "M156": {
           "style": 7,
-          "content": "=ODOO.LIST(1,155,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,155,\"insurance_book_number\")"
         },
         "M157": {
           "style": 7,
-          "content": "=ODOO.LIST(1,156,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,156,\"insurance_book_number\")"
         },
         "M158": {
           "style": 7,
-          "content": "=ODOO.LIST(1,157,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,157,\"insurance_book_number\")"
         },
         "M159": {
           "style": 7,
-          "content": "=ODOO.LIST(1,158,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,158,\"insurance_book_number\")"
         },
         "M160": {
           "style": 7,
-          "content": "=ODOO.LIST(1,159,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,159,\"insurance_book_number\")"
         },
         "M161": {
           "style": 7,
-          "content": "=ODOO.LIST(1,160,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,160,\"insurance_book_number\")"
         },
         "M162": {
           "style": 7,
-          "content": "=ODOO.LIST(1,161,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,161,\"insurance_book_number\")"
         },
         "M163": {
           "style": 7,
-          "content": "=ODOO.LIST(1,162,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,162,\"insurance_book_number\")"
         },
         "M164": {
           "style": 7,
-          "content": "=ODOO.LIST(1,163,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,163,\"insurance_book_number\")"
         },
         "M165": {
           "style": 7,
-          "content": "=ODOO.LIST(1,164,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,164,\"insurance_book_number\")"
         },
         "M166": {
           "style": 7,
-          "content": "=ODOO.LIST(1,165,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,165,\"insurance_book_number\")"
         },
         "M167": {
           "style": 7,
-          "content": "=ODOO.LIST(1,166,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,166,\"insurance_book_number\")"
         },
         "M168": {
           "style": 7,
-          "content": "=ODOO.LIST(1,167,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,167,\"insurance_book_number\")"
         },
         "M169": {
           "style": 7,
-          "content": "=ODOO.LIST(1,168,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,168,\"insurance_book_number\")"
         },
         "M170": {
           "style": 7,
-          "content": "=ODOO.LIST(1,169,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,169,\"insurance_book_number\")"
         },
         "M171": {
           "style": 7,
-          "content": "=ODOO.LIST(1,170,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,170,\"insurance_book_number\")"
         },
         "M172": {
           "style": 7,
-          "content": "=ODOO.LIST(1,171,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,171,\"insurance_book_number\")"
         },
         "M173": {
           "style": 7,
-          "content": "=ODOO.LIST(1,172,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,172,\"insurance_book_number\")"
         },
         "M174": {
           "style": 7,
-          "content": "=ODOO.LIST(1,173,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,173,\"insurance_book_number\")"
         },
         "M175": {
           "style": 7,
-          "content": "=ODOO.LIST(1,174,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,174,\"insurance_book_number\")"
         },
         "M176": {
           "style": 7,
-          "content": "=ODOO.LIST(1,175,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,175,\"insurance_book_number\")"
         },
         "M177": {
           "style": 7,
-          "content": "=ODOO.LIST(1,176,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,176,\"insurance_book_number\")"
         },
         "M178": {
           "style": 7,
-          "content": "=ODOO.LIST(1,177,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,177,\"insurance_book_number\")"
         },
         "M179": {
           "style": 7,
-          "content": "=ODOO.LIST(1,178,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,178,\"insurance_book_number\")"
         },
         "M180": {
           "style": 7,
-          "content": "=ODOO.LIST(1,179,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,179,\"insurance_book_number\")"
         },
         "M181": {
           "style": 7,
-          "content": "=ODOO.LIST(1,180,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,180,\"insurance_book_number\")"
         },
         "M182": {
           "style": 7,
-          "content": "=ODOO.LIST(1,181,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,181,\"insurance_book_number\")"
         },
         "M183": {
           "style": 7,
-          "content": "=ODOO.LIST(1,182,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,182,\"insurance_book_number\")"
         },
         "M184": {
           "style": 7,
-          "content": "=ODOO.LIST(1,183,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,183,\"insurance_book_number\")"
         },
         "M185": {
           "style": 7,
-          "content": "=ODOO.LIST(1,184,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,184,\"insurance_book_number\")"
         },
         "M186": {
           "style": 7,
-          "content": "=ODOO.LIST(1,185,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,185,\"insurance_book_number\")"
         },
         "M187": {
           "style": 7,
-          "content": "=ODOO.LIST(1,186,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,186,\"insurance_book_number\")"
         },
         "M188": {
           "style": 7,
-          "content": "=ODOO.LIST(1,187,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,187,\"insurance_book_number\")"
         },
         "M189": {
           "style": 7,
-          "content": "=ODOO.LIST(1,188,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,188,\"insurance_book_number\")"
         },
         "M190": {
           "style": 7,
-          "content": "=ODOO.LIST(1,189,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,189,\"insurance_book_number\")"
         },
         "M191": {
           "style": 7,
-          "content": "=ODOO.LIST(1,190,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,190,\"insurance_book_number\")"
         },
         "M192": {
           "style": 7,
-          "content": "=ODOO.LIST(1,191,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,191,\"insurance_book_number\")"
         },
         "M193": {
           "style": 7,
-          "content": "=ODOO.LIST(1,192,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,192,\"insurance_book_number\")"
         },
         "M194": {
           "style": 7,
-          "content": "=ODOO.LIST(1,193,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,193,\"insurance_book_number\")"
         },
         "M195": {
           "style": 7,
-          "content": "=ODOO.LIST(1,194,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,194,\"insurance_book_number\")"
         },
         "M196": {
           "style": 7,
-          "content": "=ODOO.LIST(1,195,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,195,\"insurance_book_number\")"
         },
         "M197": {
           "style": 7,
-          "content": "=ODOO.LIST(1,196,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,196,\"insurance_book_number\")"
         },
         "M198": {
           "style": 7,
-          "content": "=ODOO.LIST(1,197,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,197,\"insurance_book_number\")"
         },
         "M199": {
           "style": 7,
-          "content": "=ODOO.LIST(1,198,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,198,\"insurance_book_number\")"
         },
         "M200": {
           "style": 7,
-          "content": "=ODOO.LIST(1,199,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,199,\"insurance_book_number\")"
         },
         "M201": {
           "style": 7,
-          "content": "=ODOO.LIST(1,200,\"bpjs_kesehatan_number\")"
+          "content": "=ODOO.LIST(1,200,\"insurance_book_number\")"
         },
         "N1": {
           "style": 7,
@@ -21880,807 +21880,807 @@
         },
         "S1": {
           "style": 7,
-          "content": "=ODOO.LIST.HEADER(1,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST.HEADER(1,\"bank_account_number_vnd\")"
         },
         "S2": {
           "style": 7,
-          "content": "=ODOO.LIST(1,1,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,1,\"bank_account_number_vnd\")"
         },
         "S3": {
           "style": 7,
-          "content": "=ODOO.LIST(1,2,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,2,\"bank_account_number_vnd\")"
         },
         "S4": {
           "style": 7,
-          "content": "=ODOO.LIST(1,3,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,3,\"bank_account_number_vnd\")"
         },
         "S5": {
           "style": 7,
-          "content": "=ODOO.LIST(1,4,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,4,\"bank_account_number_vnd\")"
         },
         "S6": {
           "style": 7,
-          "content": "=ODOO.LIST(1,5,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,5,\"bank_account_number_vnd\")"
         },
         "S7": {
           "style": 7,
-          "content": "=ODOO.LIST(1,6,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,6,\"bank_account_number_vnd\")"
         },
         "S8": {
           "style": 7,
-          "content": "=ODOO.LIST(1,7,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,7,\"bank_account_number_vnd\")"
         },
         "S9": {
           "style": 7,
-          "content": "=ODOO.LIST(1,8,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,8,\"bank_account_number_vnd\")"
         },
         "S10": {
           "style": 7,
-          "content": "=ODOO.LIST(1,9,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,9,\"bank_account_number_vnd\")"
         },
         "S11": {
           "style": 7,
-          "content": "=ODOO.LIST(1,10,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,10,\"bank_account_number_vnd\")"
         },
         "S12": {
           "style": 7,
-          "content": "=ODOO.LIST(1,11,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,11,\"bank_account_number_vnd\")"
         },
         "S13": {
           "style": 7,
-          "content": "=ODOO.LIST(1,12,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,12,\"bank_account_number_vnd\")"
         },
         "S14": {
           "style": 7,
-          "content": "=ODOO.LIST(1,13,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,13,\"bank_account_number_vnd\")"
         },
         "S15": {
           "style": 7,
-          "content": "=ODOO.LIST(1,14,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,14,\"bank_account_number_vnd\")"
         },
         "S16": {
           "style": 7,
-          "content": "=ODOO.LIST(1,15,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,15,\"bank_account_number_vnd\")"
         },
         "S17": {
           "style": 7,
-          "content": "=ODOO.LIST(1,16,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,16,\"bank_account_number_vnd\")"
         },
         "S18": {
           "style": 7,
-          "content": "=ODOO.LIST(1,17,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,17,\"bank_account_number_vnd\")"
         },
         "S19": {
           "style": 7,
-          "content": "=ODOO.LIST(1,18,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,18,\"bank_account_number_vnd\")"
         },
         "S20": {
           "style": 7,
-          "content": "=ODOO.LIST(1,19,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,19,\"bank_account_number_vnd\")"
         },
         "S21": {
           "style": 7,
-          "content": "=ODOO.LIST(1,20,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,20,\"bank_account_number_vnd\")"
         },
         "S22": {
           "style": 7,
-          "content": "=ODOO.LIST(1,21,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,21,\"bank_account_number_vnd\")"
         },
         "S23": {
           "style": 7,
-          "content": "=ODOO.LIST(1,22,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,22,\"bank_account_number_vnd\")"
         },
         "S24": {
           "style": 7,
-          "content": "=ODOO.LIST(1,23,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,23,\"bank_account_number_vnd\")"
         },
         "S25": {
           "style": 7,
-          "content": "=ODOO.LIST(1,24,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,24,\"bank_account_number_vnd\")"
         },
         "S26": {
           "style": 7,
-          "content": "=ODOO.LIST(1,25,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,25,\"bank_account_number_vnd\")"
         },
         "S27": {
           "style": 7,
-          "content": "=ODOO.LIST(1,26,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,26,\"bank_account_number_vnd\")"
         },
         "S28": {
           "style": 7,
-          "content": "=ODOO.LIST(1,27,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,27,\"bank_account_number_vnd\")"
         },
         "S29": {
           "style": 7,
-          "content": "=ODOO.LIST(1,28,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,28,\"bank_account_number_vnd\")"
         },
         "S30": {
           "style": 7,
-          "content": "=ODOO.LIST(1,29,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,29,\"bank_account_number_vnd\")"
         },
         "S31": {
           "style": 7,
-          "content": "=ODOO.LIST(1,30,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,30,\"bank_account_number_vnd\")"
         },
         "S32": {
           "style": 7,
-          "content": "=ODOO.LIST(1,31,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,31,\"bank_account_number_vnd\")"
         },
         "S33": {
           "style": 7,
-          "content": "=ODOO.LIST(1,32,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,32,\"bank_account_number_vnd\")"
         },
         "S34": {
           "style": 7,
-          "content": "=ODOO.LIST(1,33,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,33,\"bank_account_number_vnd\")"
         },
         "S35": {
           "style": 7,
-          "content": "=ODOO.LIST(1,34,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,34,\"bank_account_number_vnd\")"
         },
         "S36": {
           "style": 7,
-          "content": "=ODOO.LIST(1,35,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,35,\"bank_account_number_vnd\")"
         },
         "S37": {
           "style": 7,
-          "content": "=ODOO.LIST(1,36,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,36,\"bank_account_number_vnd\")"
         },
         "S38": {
           "style": 7,
-          "content": "=ODOO.LIST(1,37,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,37,\"bank_account_number_vnd\")"
         },
         "S39": {
           "style": 7,
-          "content": "=ODOO.LIST(1,38,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,38,\"bank_account_number_vnd\")"
         },
         "S40": {
           "style": 7,
-          "content": "=ODOO.LIST(1,39,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,39,\"bank_account_number_vnd\")"
         },
         "S41": {
           "style": 7,
-          "content": "=ODOO.LIST(1,40,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,40,\"bank_account_number_vnd\")"
         },
         "S42": {
           "style": 7,
-          "content": "=ODOO.LIST(1,41,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,41,\"bank_account_number_vnd\")"
         },
         "S43": {
           "style": 7,
-          "content": "=ODOO.LIST(1,42,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,42,\"bank_account_number_vnd\")"
         },
         "S44": {
           "style": 7,
-          "content": "=ODOO.LIST(1,43,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,43,\"bank_account_number_vnd\")"
         },
         "S45": {
           "style": 7,
-          "content": "=ODOO.LIST(1,44,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,44,\"bank_account_number_vnd\")"
         },
         "S46": {
           "style": 7,
-          "content": "=ODOO.LIST(1,45,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,45,\"bank_account_number_vnd\")"
         },
         "S47": {
           "style": 7,
-          "content": "=ODOO.LIST(1,46,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,46,\"bank_account_number_vnd\")"
         },
         "S48": {
           "style": 7,
-          "content": "=ODOO.LIST(1,47,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,47,\"bank_account_number_vnd\")"
         },
         "S49": {
           "style": 7,
-          "content": "=ODOO.LIST(1,48,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,48,\"bank_account_number_vnd\")"
         },
         "S50": {
           "style": 7,
-          "content": "=ODOO.LIST(1,49,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,49,\"bank_account_number_vnd\")"
         },
         "S51": {
           "style": 7,
-          "content": "=ODOO.LIST(1,50,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,50,\"bank_account_number_vnd\")"
         },
         "S52": {
           "style": 7,
-          "content": "=ODOO.LIST(1,51,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,51,\"bank_account_number_vnd\")"
         },
         "S53": {
           "style": 7,
-          "content": "=ODOO.LIST(1,52,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,52,\"bank_account_number_vnd\")"
         },
         "S54": {
           "style": 7,
-          "content": "=ODOO.LIST(1,53,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,53,\"bank_account_number_vnd\")"
         },
         "S55": {
           "style": 7,
-          "content": "=ODOO.LIST(1,54,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,54,\"bank_account_number_vnd\")"
         },
         "S56": {
           "style": 7,
-          "content": "=ODOO.LIST(1,55,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,55,\"bank_account_number_vnd\")"
         },
         "S57": {
           "style": 7,
-          "content": "=ODOO.LIST(1,56,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,56,\"bank_account_number_vnd\")"
         },
         "S58": {
           "style": 7,
-          "content": "=ODOO.LIST(1,57,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,57,\"bank_account_number_vnd\")"
         },
         "S59": {
           "style": 7,
-          "content": "=ODOO.LIST(1,58,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,58,\"bank_account_number_vnd\")"
         },
         "S60": {
           "style": 7,
-          "content": "=ODOO.LIST(1,59,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,59,\"bank_account_number_vnd\")"
         },
         "S61": {
           "style": 7,
-          "content": "=ODOO.LIST(1,60,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,60,\"bank_account_number_vnd\")"
         },
         "S62": {
           "style": 7,
-          "content": "=ODOO.LIST(1,61,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,61,\"bank_account_number_vnd\")"
         },
         "S63": {
           "style": 7,
-          "content": "=ODOO.LIST(1,62,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,62,\"bank_account_number_vnd\")"
         },
         "S64": {
           "style": 7,
-          "content": "=ODOO.LIST(1,63,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,63,\"bank_account_number_vnd\")"
         },
         "S65": {
           "style": 7,
-          "content": "=ODOO.LIST(1,64,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,64,\"bank_account_number_vnd\")"
         },
         "S66": {
           "style": 7,
-          "content": "=ODOO.LIST(1,65,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,65,\"bank_account_number_vnd\")"
         },
         "S67": {
           "style": 7,
-          "content": "=ODOO.LIST(1,66,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,66,\"bank_account_number_vnd\")"
         },
         "S68": {
           "style": 7,
-          "content": "=ODOO.LIST(1,67,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,67,\"bank_account_number_vnd\")"
         },
         "S69": {
           "style": 7,
-          "content": "=ODOO.LIST(1,68,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,68,\"bank_account_number_vnd\")"
         },
         "S70": {
           "style": 7,
-          "content": "=ODOO.LIST(1,69,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,69,\"bank_account_number_vnd\")"
         },
         "S71": {
           "style": 7,
-          "content": "=ODOO.LIST(1,70,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,70,\"bank_account_number_vnd\")"
         },
         "S72": {
           "style": 7,
-          "content": "=ODOO.LIST(1,71,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,71,\"bank_account_number_vnd\")"
         },
         "S73": {
           "style": 7,
-          "content": "=ODOO.LIST(1,72,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,72,\"bank_account_number_vnd\")"
         },
         "S74": {
           "style": 7,
-          "content": "=ODOO.LIST(1,73,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,73,\"bank_account_number_vnd\")"
         },
         "S75": {
           "style": 7,
-          "content": "=ODOO.LIST(1,74,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,74,\"bank_account_number_vnd\")"
         },
         "S76": {
           "style": 7,
-          "content": "=ODOO.LIST(1,75,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,75,\"bank_account_number_vnd\")"
         },
         "S77": {
           "style": 7,
-          "content": "=ODOO.LIST(1,76,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,76,\"bank_account_number_vnd\")"
         },
         "S78": {
           "style": 7,
-          "content": "=ODOO.LIST(1,77,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,77,\"bank_account_number_vnd\")"
         },
         "S79": {
           "style": 7,
-          "content": "=ODOO.LIST(1,78,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,78,\"bank_account_number_vnd\")"
         },
         "S80": {
           "style": 7,
-          "content": "=ODOO.LIST(1,79,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,79,\"bank_account_number_vnd\")"
         },
         "S81": {
           "style": 7,
-          "content": "=ODOO.LIST(1,80,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,80,\"bank_account_number_vnd\")"
         },
         "S82": {
           "style": 7,
-          "content": "=ODOO.LIST(1,81,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,81,\"bank_account_number_vnd\")"
         },
         "S83": {
           "style": 7,
-          "content": "=ODOO.LIST(1,82,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,82,\"bank_account_number_vnd\")"
         },
         "S84": {
           "style": 7,
-          "content": "=ODOO.LIST(1,83,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,83,\"bank_account_number_vnd\")"
         },
         "S85": {
           "style": 7,
-          "content": "=ODOO.LIST(1,84,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,84,\"bank_account_number_vnd\")"
         },
         "S86": {
           "style": 7,
-          "content": "=ODOO.LIST(1,85,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,85,\"bank_account_number_vnd\")"
         },
         "S87": {
           "style": 7,
-          "content": "=ODOO.LIST(1,86,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,86,\"bank_account_number_vnd\")"
         },
         "S88": {
           "style": 7,
-          "content": "=ODOO.LIST(1,87,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,87,\"bank_account_number_vnd\")"
         },
         "S89": {
           "style": 7,
-          "content": "=ODOO.LIST(1,88,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,88,\"bank_account_number_vnd\")"
         },
         "S90": {
           "style": 7,
-          "content": "=ODOO.LIST(1,89,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,89,\"bank_account_number_vnd\")"
         },
         "S91": {
           "style": 7,
-          "content": "=ODOO.LIST(1,90,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,90,\"bank_account_number_vnd\")"
         },
         "S92": {
           "style": 7,
-          "content": "=ODOO.LIST(1,91,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,91,\"bank_account_number_vnd\")"
         },
         "S93": {
           "style": 7,
-          "content": "=ODOO.LIST(1,92,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,92,\"bank_account_number_vnd\")"
         },
         "S94": {
           "style": 7,
-          "content": "=ODOO.LIST(1,93,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,93,\"bank_account_number_vnd\")"
         },
         "S95": {
           "style": 7,
-          "content": "=ODOO.LIST(1,94,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,94,\"bank_account_number_vnd\")"
         },
         "S96": {
           "style": 7,
-          "content": "=ODOO.LIST(1,95,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,95,\"bank_account_number_vnd\")"
         },
         "S97": {
           "style": 7,
-          "content": "=ODOO.LIST(1,96,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,96,\"bank_account_number_vnd\")"
         },
         "S98": {
           "style": 7,
-          "content": "=ODOO.LIST(1,97,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,97,\"bank_account_number_vnd\")"
         },
         "S99": {
           "style": 7,
-          "content": "=ODOO.LIST(1,98,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,98,\"bank_account_number_vnd\")"
         },
         "S100": {
           "style": 7,
-          "content": "=ODOO.LIST(1,99,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,99,\"bank_account_number_vnd\")"
         },
         "S101": {
           "style": 7,
-          "content": "=ODOO.LIST(1,100,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,100,\"bank_account_number_vnd\")"
         },
         "S102": {
           "style": 7,
-          "content": "=ODOO.LIST(1,101,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,101,\"bank_account_number_vnd\")"
         },
         "S103": {
           "style": 7,
-          "content": "=ODOO.LIST(1,102,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,102,\"bank_account_number_vnd\")"
         },
         "S104": {
           "style": 7,
-          "content": "=ODOO.LIST(1,103,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,103,\"bank_account_number_vnd\")"
         },
         "S105": {
           "style": 7,
-          "content": "=ODOO.LIST(1,104,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,104,\"bank_account_number_vnd\")"
         },
         "S106": {
           "style": 7,
-          "content": "=ODOO.LIST(1,105,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,105,\"bank_account_number_vnd\")"
         },
         "S107": {
           "style": 7,
-          "content": "=ODOO.LIST(1,106,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,106,\"bank_account_number_vnd\")"
         },
         "S108": {
           "style": 7,
-          "content": "=ODOO.LIST(1,107,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,107,\"bank_account_number_vnd\")"
         },
         "S109": {
           "style": 7,
-          "content": "=ODOO.LIST(1,108,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,108,\"bank_account_number_vnd\")"
         },
         "S110": {
           "style": 7,
-          "content": "=ODOO.LIST(1,109,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,109,\"bank_account_number_vnd\")"
         },
         "S111": {
           "style": 7,
-          "content": "=ODOO.LIST(1,110,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,110,\"bank_account_number_vnd\")"
         },
         "S112": {
           "style": 7,
-          "content": "=ODOO.LIST(1,111,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,111,\"bank_account_number_vnd\")"
         },
         "S113": {
           "style": 7,
-          "content": "=ODOO.LIST(1,112,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,112,\"bank_account_number_vnd\")"
         },
         "S114": {
           "style": 7,
-          "content": "=ODOO.LIST(1,113,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,113,\"bank_account_number_vnd\")"
         },
         "S115": {
           "style": 7,
-          "content": "=ODOO.LIST(1,114,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,114,\"bank_account_number_vnd\")"
         },
         "S116": {
           "style": 7,
-          "content": "=ODOO.LIST(1,115,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,115,\"bank_account_number_vnd\")"
         },
         "S117": {
           "style": 7,
-          "content": "=ODOO.LIST(1,116,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,116,\"bank_account_number_vnd\")"
         },
         "S118": {
           "style": 7,
-          "content": "=ODOO.LIST(1,117,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,117,\"bank_account_number_vnd\")"
         },
         "S119": {
           "style": 7,
-          "content": "=ODOO.LIST(1,118,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,118,\"bank_account_number_vnd\")"
         },
         "S120": {
           "style": 7,
-          "content": "=ODOO.LIST(1,119,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,119,\"bank_account_number_vnd\")"
         },
         "S121": {
           "style": 7,
-          "content": "=ODOO.LIST(1,120,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,120,\"bank_account_number_vnd\")"
         },
         "S122": {
           "style": 7,
-          "content": "=ODOO.LIST(1,121,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,121,\"bank_account_number_vnd\")"
         },
         "S123": {
           "style": 7,
-          "content": "=ODOO.LIST(1,122,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,122,\"bank_account_number_vnd\")"
         },
         "S124": {
           "style": 7,
-          "content": "=ODOO.LIST(1,123,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,123,\"bank_account_number_vnd\")"
         },
         "S125": {
           "style": 7,
-          "content": "=ODOO.LIST(1,124,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,124,\"bank_account_number_vnd\")"
         },
         "S126": {
           "style": 7,
-          "content": "=ODOO.LIST(1,125,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,125,\"bank_account_number_vnd\")"
         },
         "S127": {
           "style": 7,
-          "content": "=ODOO.LIST(1,126,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,126,\"bank_account_number_vnd\")"
         },
         "S128": {
           "style": 7,
-          "content": "=ODOO.LIST(1,127,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,127,\"bank_account_number_vnd\")"
         },
         "S129": {
           "style": 7,
-          "content": "=ODOO.LIST(1,128,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,128,\"bank_account_number_vnd\")"
         },
         "S130": {
           "style": 7,
-          "content": "=ODOO.LIST(1,129,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,129,\"bank_account_number_vnd\")"
         },
         "S131": {
           "style": 7,
-          "content": "=ODOO.LIST(1,130,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,130,\"bank_account_number_vnd\")"
         },
         "S132": {
           "style": 7,
-          "content": "=ODOO.LIST(1,131,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,131,\"bank_account_number_vnd\")"
         },
         "S133": {
           "style": 7,
-          "content": "=ODOO.LIST(1,132,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,132,\"bank_account_number_vnd\")"
         },
         "S134": {
           "style": 7,
-          "content": "=ODOO.LIST(1,133,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,133,\"bank_account_number_vnd\")"
         },
         "S135": {
           "style": 7,
-          "content": "=ODOO.LIST(1,134,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,134,\"bank_account_number_vnd\")"
         },
         "S136": {
           "style": 7,
-          "content": "=ODOO.LIST(1,135,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,135,\"bank_account_number_vnd\")"
         },
         "S137": {
           "style": 7,
-          "content": "=ODOO.LIST(1,136,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,136,\"bank_account_number_vnd\")"
         },
         "S138": {
           "style": 7,
-          "content": "=ODOO.LIST(1,137,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,137,\"bank_account_number_vnd\")"
         },
         "S139": {
           "style": 7,
-          "content": "=ODOO.LIST(1,138,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,138,\"bank_account_number_vnd\")"
         },
         "S140": {
           "style": 7,
-          "content": "=ODOO.LIST(1,139,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,139,\"bank_account_number_vnd\")"
         },
         "S141": {
           "style": 7,
-          "content": "=ODOO.LIST(1,140,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,140,\"bank_account_number_vnd\")"
         },
         "S142": {
           "style": 7,
-          "content": "=ODOO.LIST(1,141,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,141,\"bank_account_number_vnd\")"
         },
         "S143": {
           "style": 7,
-          "content": "=ODOO.LIST(1,142,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,142,\"bank_account_number_vnd\")"
         },
         "S144": {
           "style": 7,
-          "content": "=ODOO.LIST(1,143,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,143,\"bank_account_number_vnd\")"
         },
         "S145": {
           "style": 7,
-          "content": "=ODOO.LIST(1,144,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,144,\"bank_account_number_vnd\")"
         },
         "S146": {
           "style": 7,
-          "content": "=ODOO.LIST(1,145,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,145,\"bank_account_number_vnd\")"
         },
         "S147": {
           "style": 7,
-          "content": "=ODOO.LIST(1,146,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,146,\"bank_account_number_vnd\")"
         },
         "S148": {
           "style": 7,
-          "content": "=ODOO.LIST(1,147,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,147,\"bank_account_number_vnd\")"
         },
         "S149": {
           "style": 7,
-          "content": "=ODOO.LIST(1,148,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,148,\"bank_account_number_vnd\")"
         },
         "S150": {
           "style": 7,
-          "content": "=ODOO.LIST(1,149,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,149,\"bank_account_number_vnd\")"
         },
         "S151": {
           "style": 7,
-          "content": "=ODOO.LIST(1,150,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,150,\"bank_account_number_vnd\")"
         },
         "S152": {
           "style": 7,
-          "content": "=ODOO.LIST(1,151,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,151,\"bank_account_number_vnd\")"
         },
         "S153": {
           "style": 7,
-          "content": "=ODOO.LIST(1,152,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,152,\"bank_account_number_vnd\")"
         },
         "S154": {
           "style": 7,
-          "content": "=ODOO.LIST(1,153,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,153,\"bank_account_number_vnd\")"
         },
         "S155": {
           "style": 7,
-          "content": "=ODOO.LIST(1,154,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,154,\"bank_account_number_vnd\")"
         },
         "S156": {
           "style": 7,
-          "content": "=ODOO.LIST(1,155,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,155,\"bank_account_number_vnd\")"
         },
         "S157": {
           "style": 7,
-          "content": "=ODOO.LIST(1,156,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,156,\"bank_account_number_vnd\")"
         },
         "S158": {
           "style": 7,
-          "content": "=ODOO.LIST(1,157,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,157,\"bank_account_number_vnd\")"
         },
         "S159": {
           "style": 7,
-          "content": "=ODOO.LIST(1,158,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,158,\"bank_account_number_vnd\")"
         },
         "S160": {
           "style": 7,
-          "content": "=ODOO.LIST(1,159,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,159,\"bank_account_number_vnd\")"
         },
         "S161": {
           "style": 7,
-          "content": "=ODOO.LIST(1,160,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,160,\"bank_account_number_vnd\")"
         },
         "S162": {
           "style": 7,
-          "content": "=ODOO.LIST(1,161,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,161,\"bank_account_number_vnd\")"
         },
         "S163": {
           "style": 7,
-          "content": "=ODOO.LIST(1,162,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,162,\"bank_account_number_vnd\")"
         },
         "S164": {
           "style": 7,
-          "content": "=ODOO.LIST(1,163,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,163,\"bank_account_number_vnd\")"
         },
         "S165": {
           "style": 7,
-          "content": "=ODOO.LIST(1,164,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,164,\"bank_account_number_vnd\")"
         },
         "S166": {
           "style": 7,
-          "content": "=ODOO.LIST(1,165,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,165,\"bank_account_number_vnd\")"
         },
         "S167": {
           "style": 7,
-          "content": "=ODOO.LIST(1,166,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,166,\"bank_account_number_vnd\")"
         },
         "S168": {
           "style": 7,
-          "content": "=ODOO.LIST(1,167,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,167,\"bank_account_number_vnd\")"
         },
         "S169": {
           "style": 7,
-          "content": "=ODOO.LIST(1,168,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,168,\"bank_account_number_vnd\")"
         },
         "S170": {
           "style": 7,
-          "content": "=ODOO.LIST(1,169,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,169,\"bank_account_number_vnd\")"
         },
         "S171": {
           "style": 7,
-          "content": "=ODOO.LIST(1,170,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,170,\"bank_account_number_vnd\")"
         },
         "S172": {
           "style": 7,
-          "content": "=ODOO.LIST(1,171,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,171,\"bank_account_number_vnd\")"
         },
         "S173": {
           "style": 7,
-          "content": "=ODOO.LIST(1,172,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,172,\"bank_account_number_vnd\")"
         },
         "S174": {
           "style": 7,
-          "content": "=ODOO.LIST(1,173,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,173,\"bank_account_number_vnd\")"
         },
         "S175": {
           "style": 7,
-          "content": "=ODOO.LIST(1,174,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,174,\"bank_account_number_vnd\")"
         },
         "S176": {
           "style": 7,
-          "content": "=ODOO.LIST(1,175,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,175,\"bank_account_number_vnd\")"
         },
         "S177": {
           "style": 7,
-          "content": "=ODOO.LIST(1,176,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,176,\"bank_account_number_vnd\")"
         },
         "S178": {
           "style": 7,
-          "content": "=ODOO.LIST(1,177,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,177,\"bank_account_number_vnd\")"
         },
         "S179": {
           "style": 7,
-          "content": "=ODOO.LIST(1,178,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,178,\"bank_account_number_vnd\")"
         },
         "S180": {
           "style": 7,
-          "content": "=ODOO.LIST(1,179,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,179,\"bank_account_number_vnd\")"
         },
         "S181": {
           "style": 7,
-          "content": "=ODOO.LIST(1,180,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,180,\"bank_account_number_vnd\")"
         },
         "S182": {
           "style": 7,
-          "content": "=ODOO.LIST(1,181,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,181,\"bank_account_number_vnd\")"
         },
         "S183": {
           "style": 7,
-          "content": "=ODOO.LIST(1,182,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,182,\"bank_account_number_vnd\")"
         },
         "S184": {
           "style": 7,
-          "content": "=ODOO.LIST(1,183,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,183,\"bank_account_number_vnd\")"
         },
         "S185": {
           "style": 7,
-          "content": "=ODOO.LIST(1,184,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,184,\"bank_account_number_vnd\")"
         },
         "S186": {
           "style": 7,
-          "content": "=ODOO.LIST(1,185,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,185,\"bank_account_number_vnd\")"
         },
         "S187": {
           "style": 7,
-          "content": "=ODOO.LIST(1,186,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,186,\"bank_account_number_vnd\")"
         },
         "S188": {
           "style": 7,
-          "content": "=ODOO.LIST(1,187,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,187,\"bank_account_number_vnd\")"
         },
         "S189": {
           "style": 7,
-          "content": "=ODOO.LIST(1,188,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,188,\"bank_account_number_vnd\")"
         },
         "S190": {
           "style": 7,
-          "content": "=ODOO.LIST(1,189,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,189,\"bank_account_number_vnd\")"
         },
         "S191": {
           "style": 7,
-          "content": "=ODOO.LIST(1,190,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,190,\"bank_account_number_vnd\")"
         },
         "S192": {
           "style": 7,
-          "content": "=ODOO.LIST(1,191,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,191,\"bank_account_number_vnd\")"
         },
         "S193": {
           "style": 7,
-          "content": "=ODOO.LIST(1,192,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,192,\"bank_account_number_vnd\")"
         },
         "S194": {
           "style": 7,
-          "content": "=ODOO.LIST(1,193,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,193,\"bank_account_number_vnd\")"
         },
         "S195": {
           "style": 7,
-          "content": "=ODOO.LIST(1,194,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,194,\"bank_account_number_vnd\")"
         },
         "S196": {
           "style": 7,
-          "content": "=ODOO.LIST(1,195,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,195,\"bank_account_number_vnd\")"
         },
         "S197": {
           "style": 7,
-          "content": "=ODOO.LIST(1,196,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,196,\"bank_account_number_vnd\")"
         },
         "S198": {
           "style": 7,
-          "content": "=ODOO.LIST(1,197,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,197,\"bank_account_number_vnd\")"
         },
         "S199": {
           "style": 7,
-          "content": "=ODOO.LIST(1,198,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,198,\"bank_account_number_vnd\")"
         },
         "S200": {
           "style": 7,
-          "content": "=ODOO.LIST(1,199,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,199,\"bank_account_number_vnd\")"
         },
         "S201": {
           "style": 7,
-          "content": "=ODOO.LIST(1,200,\"bank_account_number_idr\")"
+          "content": "=ODOO.LIST(1,200,\"bank_account_number_vnd\")"
         },
         "T1": {
           "style": 7,
@@ -26710,7 +26710,7 @@
       "isVisible": true
     },
     {
-      "id": "f521f1cb-267e-4c36-a5e1-338a8b16aabf",
+      "id": "0f0527c2-0cd3-40ef-9a79-8040548ebdf6",
       "name": "TEMPLATE Master",
       "colNumber": 76,
       "rowNumber": 201,
@@ -32155,7 +32155,7 @@
         },
         "H1": {
           "style": 9,
-          "content": "=ODOO.LIST.HEADER(1,\"transportation_allowance\")"
+          "content": "=ODOO.LIST.HEADER(1,\"gas_allowance\")"
         },
         "H2": {
           "content": "=vlookup(MID($A2,2,LEN($A2))*1,'Earnings Details'!$A$1:$N$311,3,False)"
@@ -32759,7 +32759,7 @@
         },
         "I1": {
           "style": 9,
-          "content": "=ODOO.LIST.HEADER(1,\"communication_allowance\")"
+          "content": "=ODOO.LIST.HEADER(1,\"phone_allowance\")"
         },
         "I2": {
           "content": "=vlookup(MID($A2,2,LEN($A2))*1,'Earnings Details'!$A$1:$N$311,4,False)"
@@ -33967,7 +33967,7 @@
         },
         "K1": {
           "style": 9,
-          "content": "=ODOO.LIST.HEADER(1,\"fixed_allowance_1\")"
+          "content": "=ODOO.LIST.HEADER(1,\"resp_allowance\")"
         },
         "K2": {
           "content": "=vlookup(MID($A2,2,LEN($A2))*1,'Earnings Details'!$A$1:$N$311,6,False)"
@@ -34571,7 +34571,7 @@
         },
         "L1": {
           "style": 9,
-          "content": "=ODOO.LIST.HEADER(1,\"fixed_allowance_2\")"
+          "content": "=ODOO.LIST.HEADER(1,\"park_allowance\")"
         },
         "L2": {
           "content": "=vlookup(MID($A2,2,LEN($A2))*1,'Earnings Details'!$A$1:$N$311,7,False)"
@@ -35175,7 +35175,7 @@
         },
         "M1": {
           "style": 9,
-          "content": "=ODOO.LIST.HEADER(1,\"tunjangan_sewa_rumah\")"
+          "content": "=ODOO.LIST.HEADER(1,\"taxi_allowance\")"
         },
         "M2": {
           "content": "=vlookup(MID($A2,2,LEN($A2))*1,'Earnings Details'!$A$1:$N$311,8,False)"
@@ -51859,7 +51859,7 @@
         },
         "AH1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"thr_payment\")"
+          "content": "=ODOO.LIST.HEADER(1,\"thirteenth_month\")"
         },
         "AH2": {
           "style": 11,
@@ -67939,7 +67939,7 @@
         },
         "BB1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"gross_pay_idn\")"
+          "content": "=ODOO.LIST.HEADER(1,\"actual_totalincome\")"
         },
         "BB2": {
           "style": 11,
@@ -70351,7 +70351,7 @@
         },
         "BE1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"bpjs_kesehatan_employee\")"
+          "content": "=ODOO.LIST.HEADER(1,\"social_ins8\")"
         },
         "BE2": {
           "style": 11,
@@ -71155,7 +71155,7 @@
         },
         "BF1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"bpjs_tk_jht_employee\")"
+          "content": "=ODOO.LIST.HEADER(1,\"med_ins15\")"
         },
         "BF2": {
           "style": 11,
@@ -71959,7 +71959,7 @@
         },
         "BG1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"bpjs_tk_jp_employee\")"
+          "content": "=ODOO.LIST.HEADER(1,\"unemp_ins1\")"
         },
         "BG2": {
           "style": 11,
@@ -72763,7 +72763,7 @@
         },
         "BH1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"bpjs_total_employee\")"
+          "content": "=ODOO.LIST.HEADER(1,\"sihiui_total105\")"
         },
         "BH2": {
           "style": 11,
@@ -73567,7 +73567,7 @@
         },
         "BI1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"union_dues\")"
+          "content": "=ODOO.LIST.HEADER(1,\"etu\")"
         },
         "BI2": {
           "style": 11,
@@ -77387,7 +77387,7 @@
         },
         "BN1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"pph21\")"
+          "content": "=ODOO.LIST.HEADER(1,\"monthly_pit\")"
         },
         "BN2": {
           "style": 11,
@@ -78795,7 +78795,7 @@
         },
         "BP1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"total_deductions\")"
+          "content": "=ODOO.LIST.HEADER(1,\"total_ded\")"
         },
         "BP2": {
           "style": 11,
@@ -79599,7 +79599,7 @@
         },
         "BQ1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"net_pay_idr\")"
+          "content": "=ODOO.LIST.HEADER(1,\"net_pay\")"
         },
         "BQ2": {
           "style": 11,
@@ -82011,7 +82011,7 @@
         },
         "BT1": {
           "style": 10,
-          "content": "=ODOO.LIST.HEADER(1,\"bpjs_tk_jp_employee\")"
+          "content": "=ODOO.LIST.HEADER(1,\"unemp_ins1\")"
         },
         "BT2": {
           "style": 11,
@@ -85227,607 +85227,607 @@
         },
         "BX1": {
           "style": 9,
-          "content": "=ODOO.LIST.HEADER(1,\"cost_center\")"
+          "content": "=ODOO.LIST.HEADER(1,\"costcenter\")"
         },
         "BX2": {
-          "content": "=ODOO.LIST(1,1,\"cost_center\")"
+          "content": "=ODOO.LIST(1,1,\"costcenter\")"
         },
         "BX3": {
-          "content": "=ODOO.LIST(1,2,\"cost_center\")"
+          "content": "=ODOO.LIST(1,2,\"costcenter\")"
         },
         "BX4": {
-          "content": "=ODOO.LIST(1,3,\"cost_center\")"
+          "content": "=ODOO.LIST(1,3,\"costcenter\")"
         },
         "BX5": {
-          "content": "=ODOO.LIST(1,4,\"cost_center\")"
+          "content": "=ODOO.LIST(1,4,\"costcenter\")"
         },
         "BX6": {
-          "content": "=ODOO.LIST(1,5,\"cost_center\")"
+          "content": "=ODOO.LIST(1,5,\"costcenter\")"
         },
         "BX7": {
-          "content": "=ODOO.LIST(1,6,\"cost_center\")"
+          "content": "=ODOO.LIST(1,6,\"costcenter\")"
         },
         "BX8": {
-          "content": "=ODOO.LIST(1,7,\"cost_center\")"
+          "content": "=ODOO.LIST(1,7,\"costcenter\")"
         },
         "BX9": {
-          "content": "=ODOO.LIST(1,8,\"cost_center\")"
+          "content": "=ODOO.LIST(1,8,\"costcenter\")"
         },
         "BX10": {
-          "content": "=ODOO.LIST(1,9,\"cost_center\")"
+          "content": "=ODOO.LIST(1,9,\"costcenter\")"
         },
         "BX11": {
-          "content": "=ODOO.LIST(1,10,\"cost_center\")"
+          "content": "=ODOO.LIST(1,10,\"costcenter\")"
         },
         "BX12": {
-          "content": "=ODOO.LIST(1,11,\"cost_center\")"
+          "content": "=ODOO.LIST(1,11,\"costcenter\")"
         },
         "BX13": {
-          "content": "=ODOO.LIST(1,12,\"cost_center\")"
+          "content": "=ODOO.LIST(1,12,\"costcenter\")"
         },
         "BX14": {
-          "content": "=ODOO.LIST(1,13,\"cost_center\")"
+          "content": "=ODOO.LIST(1,13,\"costcenter\")"
         },
         "BX15": {
-          "content": "=ODOO.LIST(1,14,\"cost_center\")"
+          "content": "=ODOO.LIST(1,14,\"costcenter\")"
         },
         "BX16": {
-          "content": "=ODOO.LIST(1,15,\"cost_center\")"
+          "content": "=ODOO.LIST(1,15,\"costcenter\")"
         },
         "BX17": {
-          "content": "=ODOO.LIST(1,16,\"cost_center\")"
+          "content": "=ODOO.LIST(1,16,\"costcenter\")"
         },
         "BX18": {
-          "content": "=ODOO.LIST(1,17,\"cost_center\")"
+          "content": "=ODOO.LIST(1,17,\"costcenter\")"
         },
         "BX19": {
-          "content": "=ODOO.LIST(1,18,\"cost_center\")"
+          "content": "=ODOO.LIST(1,18,\"costcenter\")"
         },
         "BX20": {
-          "content": "=ODOO.LIST(1,19,\"cost_center\")"
+          "content": "=ODOO.LIST(1,19,\"costcenter\")"
         },
         "BX21": {
-          "content": "=ODOO.LIST(1,20,\"cost_center\")"
+          "content": "=ODOO.LIST(1,20,\"costcenter\")"
         },
         "BX22": {
-          "content": "=ODOO.LIST(1,21,\"cost_center\")"
+          "content": "=ODOO.LIST(1,21,\"costcenter\")"
         },
         "BX23": {
-          "content": "=ODOO.LIST(1,22,\"cost_center\")"
+          "content": "=ODOO.LIST(1,22,\"costcenter\")"
         },
         "BX24": {
-          "content": "=ODOO.LIST(1,23,\"cost_center\")"
+          "content": "=ODOO.LIST(1,23,\"costcenter\")"
         },
         "BX25": {
-          "content": "=ODOO.LIST(1,24,\"cost_center\")"
+          "content": "=ODOO.LIST(1,24,\"costcenter\")"
         },
         "BX26": {
-          "content": "=ODOO.LIST(1,25,\"cost_center\")"
+          "content": "=ODOO.LIST(1,25,\"costcenter\")"
         },
         "BX27": {
-          "content": "=ODOO.LIST(1,26,\"cost_center\")"
+          "content": "=ODOO.LIST(1,26,\"costcenter\")"
         },
         "BX28": {
-          "content": "=ODOO.LIST(1,27,\"cost_center\")"
+          "content": "=ODOO.LIST(1,27,\"costcenter\")"
         },
         "BX29": {
-          "content": "=ODOO.LIST(1,28,\"cost_center\")"
+          "content": "=ODOO.LIST(1,28,\"costcenter\")"
         },
         "BX30": {
-          "content": "=ODOO.LIST(1,29,\"cost_center\")"
+          "content": "=ODOO.LIST(1,29,\"costcenter\")"
         },
         "BX31": {
-          "content": "=ODOO.LIST(1,30,\"cost_center\")"
+          "content": "=ODOO.LIST(1,30,\"costcenter\")"
         },
         "BX32": {
-          "content": "=ODOO.LIST(1,31,\"cost_center\")"
+          "content": "=ODOO.LIST(1,31,\"costcenter\")"
         },
         "BX33": {
-          "content": "=ODOO.LIST(1,32,\"cost_center\")"
+          "content": "=ODOO.LIST(1,32,\"costcenter\")"
         },
         "BX34": {
-          "content": "=ODOO.LIST(1,33,\"cost_center\")"
+          "content": "=ODOO.LIST(1,33,\"costcenter\")"
         },
         "BX35": {
-          "content": "=ODOO.LIST(1,34,\"cost_center\")"
+          "content": "=ODOO.LIST(1,34,\"costcenter\")"
         },
         "BX36": {
-          "content": "=ODOO.LIST(1,35,\"cost_center\")"
+          "content": "=ODOO.LIST(1,35,\"costcenter\")"
         },
         "BX37": {
-          "content": "=ODOO.LIST(1,36,\"cost_center\")"
+          "content": "=ODOO.LIST(1,36,\"costcenter\")"
         },
         "BX38": {
-          "content": "=ODOO.LIST(1,37,\"cost_center\")"
+          "content": "=ODOO.LIST(1,37,\"costcenter\")"
         },
         "BX39": {
-          "content": "=ODOO.LIST(1,38,\"cost_center\")"
+          "content": "=ODOO.LIST(1,38,\"costcenter\")"
         },
         "BX40": {
-          "content": "=ODOO.LIST(1,39,\"cost_center\")"
+          "content": "=ODOO.LIST(1,39,\"costcenter\")"
         },
         "BX41": {
-          "content": "=ODOO.LIST(1,40,\"cost_center\")"
+          "content": "=ODOO.LIST(1,40,\"costcenter\")"
         },
         "BX42": {
-          "content": "=ODOO.LIST(1,41,\"cost_center\")"
+          "content": "=ODOO.LIST(1,41,\"costcenter\")"
         },
         "BX43": {
-          "content": "=ODOO.LIST(1,42,\"cost_center\")"
+          "content": "=ODOO.LIST(1,42,\"costcenter\")"
         },
         "BX44": {
-          "content": "=ODOO.LIST(1,43,\"cost_center\")"
+          "content": "=ODOO.LIST(1,43,\"costcenter\")"
         },
         "BX45": {
-          "content": "=ODOO.LIST(1,44,\"cost_center\")"
+          "content": "=ODOO.LIST(1,44,\"costcenter\")"
         },
         "BX46": {
-          "content": "=ODOO.LIST(1,45,\"cost_center\")"
+          "content": "=ODOO.LIST(1,45,\"costcenter\")"
         },
         "BX47": {
-          "content": "=ODOO.LIST(1,46,\"cost_center\")"
+          "content": "=ODOO.LIST(1,46,\"costcenter\")"
         },
         "BX48": {
-          "content": "=ODOO.LIST(1,47,\"cost_center\")"
+          "content": "=ODOO.LIST(1,47,\"costcenter\")"
         },
         "BX49": {
-          "content": "=ODOO.LIST(1,48,\"cost_center\")"
+          "content": "=ODOO.LIST(1,48,\"costcenter\")"
         },
         "BX50": {
-          "content": "=ODOO.LIST(1,49,\"cost_center\")"
+          "content": "=ODOO.LIST(1,49,\"costcenter\")"
         },
         "BX51": {
-          "content": "=ODOO.LIST(1,50,\"cost_center\")"
+          "content": "=ODOO.LIST(1,50,\"costcenter\")"
         },
         "BX52": {
-          "content": "=ODOO.LIST(1,51,\"cost_center\")"
+          "content": "=ODOO.LIST(1,51,\"costcenter\")"
         },
         "BX53": {
-          "content": "=ODOO.LIST(1,52,\"cost_center\")"
+          "content": "=ODOO.LIST(1,52,\"costcenter\")"
         },
         "BX54": {
-          "content": "=ODOO.LIST(1,53,\"cost_center\")"
+          "content": "=ODOO.LIST(1,53,\"costcenter\")"
         },
         "BX55": {
-          "content": "=ODOO.LIST(1,54,\"cost_center\")"
+          "content": "=ODOO.LIST(1,54,\"costcenter\")"
         },
         "BX56": {
-          "content": "=ODOO.LIST(1,55,\"cost_center\")"
+          "content": "=ODOO.LIST(1,55,\"costcenter\")"
         },
         "BX57": {
-          "content": "=ODOO.LIST(1,56,\"cost_center\")"
+          "content": "=ODOO.LIST(1,56,\"costcenter\")"
         },
         "BX58": {
-          "content": "=ODOO.LIST(1,57,\"cost_center\")"
+          "content": "=ODOO.LIST(1,57,\"costcenter\")"
         },
         "BX59": {
-          "content": "=ODOO.LIST(1,58,\"cost_center\")"
+          "content": "=ODOO.LIST(1,58,\"costcenter\")"
         },
         "BX60": {
-          "content": "=ODOO.LIST(1,59,\"cost_center\")"
+          "content": "=ODOO.LIST(1,59,\"costcenter\")"
         },
         "BX61": {
-          "content": "=ODOO.LIST(1,60,\"cost_center\")"
+          "content": "=ODOO.LIST(1,60,\"costcenter\")"
         },
         "BX62": {
-          "content": "=ODOO.LIST(1,61,\"cost_center\")"
+          "content": "=ODOO.LIST(1,61,\"costcenter\")"
         },
         "BX63": {
-          "content": "=ODOO.LIST(1,62,\"cost_center\")"
+          "content": "=ODOO.LIST(1,62,\"costcenter\")"
         },
         "BX64": {
-          "content": "=ODOO.LIST(1,63,\"cost_center\")"
+          "content": "=ODOO.LIST(1,63,\"costcenter\")"
         },
         "BX65": {
-          "content": "=ODOO.LIST(1,64,\"cost_center\")"
+          "content": "=ODOO.LIST(1,64,\"costcenter\")"
         },
         "BX66": {
-          "content": "=ODOO.LIST(1,65,\"cost_center\")"
+          "content": "=ODOO.LIST(1,65,\"costcenter\")"
         },
         "BX67": {
-          "content": "=ODOO.LIST(1,66,\"cost_center\")"
+          "content": "=ODOO.LIST(1,66,\"costcenter\")"
         },
         "BX68": {
-          "content": "=ODOO.LIST(1,67,\"cost_center\")"
+          "content": "=ODOO.LIST(1,67,\"costcenter\")"
         },
         "BX69": {
-          "content": "=ODOO.LIST(1,68,\"cost_center\")"
+          "content": "=ODOO.LIST(1,68,\"costcenter\")"
         },
         "BX70": {
-          "content": "=ODOO.LIST(1,69,\"cost_center\")"
+          "content": "=ODOO.LIST(1,69,\"costcenter\")"
         },
         "BX71": {
-          "content": "=ODOO.LIST(1,70,\"cost_center\")"
+          "content": "=ODOO.LIST(1,70,\"costcenter\")"
         },
         "BX72": {
-          "content": "=ODOO.LIST(1,71,\"cost_center\")"
+          "content": "=ODOO.LIST(1,71,\"costcenter\")"
         },
         "BX73": {
-          "content": "=ODOO.LIST(1,72,\"cost_center\")"
+          "content": "=ODOO.LIST(1,72,\"costcenter\")"
         },
         "BX74": {
-          "content": "=ODOO.LIST(1,73,\"cost_center\")"
+          "content": "=ODOO.LIST(1,73,\"costcenter\")"
         },
         "BX75": {
-          "content": "=ODOO.LIST(1,74,\"cost_center\")"
+          "content": "=ODOO.LIST(1,74,\"costcenter\")"
         },
         "BX76": {
-          "content": "=ODOO.LIST(1,75,\"cost_center\")"
+          "content": "=ODOO.LIST(1,75,\"costcenter\")"
         },
         "BX77": {
-          "content": "=ODOO.LIST(1,76,\"cost_center\")"
+          "content": "=ODOO.LIST(1,76,\"costcenter\")"
         },
         "BX78": {
-          "content": "=ODOO.LIST(1,77,\"cost_center\")"
+          "content": "=ODOO.LIST(1,77,\"costcenter\")"
         },
         "BX79": {
-          "content": "=ODOO.LIST(1,78,\"cost_center\")"
+          "content": "=ODOO.LIST(1,78,\"costcenter\")"
         },
         "BX80": {
-          "content": "=ODOO.LIST(1,79,\"cost_center\")"
+          "content": "=ODOO.LIST(1,79,\"costcenter\")"
         },
         "BX81": {
-          "content": "=ODOO.LIST(1,80,\"cost_center\")"
+          "content": "=ODOO.LIST(1,80,\"costcenter\")"
         },
         "BX82": {
-          "content": "=ODOO.LIST(1,81,\"cost_center\")"
+          "content": "=ODOO.LIST(1,81,\"costcenter\")"
         },
         "BX83": {
-          "content": "=ODOO.LIST(1,82,\"cost_center\")"
+          "content": "=ODOO.LIST(1,82,\"costcenter\")"
         },
         "BX84": {
-          "content": "=ODOO.LIST(1,83,\"cost_center\")"
+          "content": "=ODOO.LIST(1,83,\"costcenter\")"
         },
         "BX85": {
-          "content": "=ODOO.LIST(1,84,\"cost_center\")"
+          "content": "=ODOO.LIST(1,84,\"costcenter\")"
         },
         "BX86": {
-          "content": "=ODOO.LIST(1,85,\"cost_center\")"
+          "content": "=ODOO.LIST(1,85,\"costcenter\")"
         },
         "BX87": {
-          "content": "=ODOO.LIST(1,86,\"cost_center\")"
+          "content": "=ODOO.LIST(1,86,\"costcenter\")"
         },
         "BX88": {
-          "content": "=ODOO.LIST(1,87,\"cost_center\")"
+          "content": "=ODOO.LIST(1,87,\"costcenter\")"
         },
         "BX89": {
-          "content": "=ODOO.LIST(1,88,\"cost_center\")"
+          "content": "=ODOO.LIST(1,88,\"costcenter\")"
         },
         "BX90": {
-          "content": "=ODOO.LIST(1,89,\"cost_center\")"
+          "content": "=ODOO.LIST(1,89,\"costcenter\")"
         },
         "BX91": {
-          "content": "=ODOO.LIST(1,90,\"cost_center\")"
+          "content": "=ODOO.LIST(1,90,\"costcenter\")"
         },
         "BX92": {
-          "content": "=ODOO.LIST(1,91,\"cost_center\")"
+          "content": "=ODOO.LIST(1,91,\"costcenter\")"
         },
         "BX93": {
-          "content": "=ODOO.LIST(1,92,\"cost_center\")"
+          "content": "=ODOO.LIST(1,92,\"costcenter\")"
         },
         "BX94": {
-          "content": "=ODOO.LIST(1,93,\"cost_center\")"
+          "content": "=ODOO.LIST(1,93,\"costcenter\")"
         },
         "BX95": {
-          "content": "=ODOO.LIST(1,94,\"cost_center\")"
+          "content": "=ODOO.LIST(1,94,\"costcenter\")"
         },
         "BX96": {
-          "content": "=ODOO.LIST(1,95,\"cost_center\")"
+          "content": "=ODOO.LIST(1,95,\"costcenter\")"
         },
         "BX97": {
-          "content": "=ODOO.LIST(1,96,\"cost_center\")"
+          "content": "=ODOO.LIST(1,96,\"costcenter\")"
         },
         "BX98": {
-          "content": "=ODOO.LIST(1,97,\"cost_center\")"
+          "content": "=ODOO.LIST(1,97,\"costcenter\")"
         },
         "BX99": {
-          "content": "=ODOO.LIST(1,98,\"cost_center\")"
+          "content": "=ODOO.LIST(1,98,\"costcenter\")"
         },
         "BX100": {
-          "content": "=ODOO.LIST(1,99,\"cost_center\")"
+          "content": "=ODOO.LIST(1,99,\"costcenter\")"
         },
         "BX101": {
-          "content": "=ODOO.LIST(1,100,\"cost_center\")"
+          "content": "=ODOO.LIST(1,100,\"costcenter\")"
         },
         "BX102": {
-          "content": "=ODOO.LIST(1,101,\"cost_center\")"
+          "content": "=ODOO.LIST(1,101,\"costcenter\")"
         },
         "BX103": {
-          "content": "=ODOO.LIST(1,102,\"cost_center\")"
+          "content": "=ODOO.LIST(1,102,\"costcenter\")"
         },
         "BX104": {
-          "content": "=ODOO.LIST(1,103,\"cost_center\")"
+          "content": "=ODOO.LIST(1,103,\"costcenter\")"
         },
         "BX105": {
-          "content": "=ODOO.LIST(1,104,\"cost_center\")"
+          "content": "=ODOO.LIST(1,104,\"costcenter\")"
         },
         "BX106": {
-          "content": "=ODOO.LIST(1,105,\"cost_center\")"
+          "content": "=ODOO.LIST(1,105,\"costcenter\")"
         },
         "BX107": {
-          "content": "=ODOO.LIST(1,106,\"cost_center\")"
+          "content": "=ODOO.LIST(1,106,\"costcenter\")"
         },
         "BX108": {
-          "content": "=ODOO.LIST(1,107,\"cost_center\")"
+          "content": "=ODOO.LIST(1,107,\"costcenter\")"
         },
         "BX109": {
-          "content": "=ODOO.LIST(1,108,\"cost_center\")"
+          "content": "=ODOO.LIST(1,108,\"costcenter\")"
         },
         "BX110": {
-          "content": "=ODOO.LIST(1,109,\"cost_center\")"
+          "content": "=ODOO.LIST(1,109,\"costcenter\")"
         },
         "BX111": {
-          "content": "=ODOO.LIST(1,110,\"cost_center\")"
+          "content": "=ODOO.LIST(1,110,\"costcenter\")"
         },
         "BX112": {
-          "content": "=ODOO.LIST(1,111,\"cost_center\")"
+          "content": "=ODOO.LIST(1,111,\"costcenter\")"
         },
         "BX113": {
-          "content": "=ODOO.LIST(1,112,\"cost_center\")"
+          "content": "=ODOO.LIST(1,112,\"costcenter\")"
         },
         "BX114": {
-          "content": "=ODOO.LIST(1,113,\"cost_center\")"
+          "content": "=ODOO.LIST(1,113,\"costcenter\")"
         },
         "BX115": {
-          "content": "=ODOO.LIST(1,114,\"cost_center\")"
+          "content": "=ODOO.LIST(1,114,\"costcenter\")"
         },
         "BX116": {
-          "content": "=ODOO.LIST(1,115,\"cost_center\")"
+          "content": "=ODOO.LIST(1,115,\"costcenter\")"
         },
         "BX117": {
-          "content": "=ODOO.LIST(1,116,\"cost_center\")"
+          "content": "=ODOO.LIST(1,116,\"costcenter\")"
         },
         "BX118": {
-          "content": "=ODOO.LIST(1,117,\"cost_center\")"
+          "content": "=ODOO.LIST(1,117,\"costcenter\")"
         },
         "BX119": {
-          "content": "=ODOO.LIST(1,118,\"cost_center\")"
+          "content": "=ODOO.LIST(1,118,\"costcenter\")"
         },
         "BX120": {
-          "content": "=ODOO.LIST(1,119,\"cost_center\")"
+          "content": "=ODOO.LIST(1,119,\"costcenter\")"
         },
         "BX121": {
-          "content": "=ODOO.LIST(1,120,\"cost_center\")"
+          "content": "=ODOO.LIST(1,120,\"costcenter\")"
         },
         "BX122": {
-          "content": "=ODOO.LIST(1,121,\"cost_center\")"
+          "content": "=ODOO.LIST(1,121,\"costcenter\")"
         },
         "BX123": {
-          "content": "=ODOO.LIST(1,122,\"cost_center\")"
+          "content": "=ODOO.LIST(1,122,\"costcenter\")"
         },
         "BX124": {
-          "content": "=ODOO.LIST(1,123,\"cost_center\")"
+          "content": "=ODOO.LIST(1,123,\"costcenter\")"
         },
         "BX125": {
-          "content": "=ODOO.LIST(1,124,\"cost_center\")"
+          "content": "=ODOO.LIST(1,124,\"costcenter\")"
         },
         "BX126": {
-          "content": "=ODOO.LIST(1,125,\"cost_center\")"
+          "content": "=ODOO.LIST(1,125,\"costcenter\")"
         },
         "BX127": {
-          "content": "=ODOO.LIST(1,126,\"cost_center\")"
+          "content": "=ODOO.LIST(1,126,\"costcenter\")"
         },
         "BX128": {
-          "content": "=ODOO.LIST(1,127,\"cost_center\")"
+          "content": "=ODOO.LIST(1,127,\"costcenter\")"
         },
         "BX129": {
-          "content": "=ODOO.LIST(1,128,\"cost_center\")"
+          "content": "=ODOO.LIST(1,128,\"costcenter\")"
         },
         "BX130": {
-          "content": "=ODOO.LIST(1,129,\"cost_center\")"
+          "content": "=ODOO.LIST(1,129,\"costcenter\")"
         },
         "BX131": {
-          "content": "=ODOO.LIST(1,130,\"cost_center\")"
+          "content": "=ODOO.LIST(1,130,\"costcenter\")"
         },
         "BX132": {
-          "content": "=ODOO.LIST(1,131,\"cost_center\")"
+          "content": "=ODOO.LIST(1,131,\"costcenter\")"
         },
         "BX133": {
-          "content": "=ODOO.LIST(1,132,\"cost_center\")"
+          "content": "=ODOO.LIST(1,132,\"costcenter\")"
         },
         "BX134": {
-          "content": "=ODOO.LIST(1,133,\"cost_center\")"
+          "content": "=ODOO.LIST(1,133,\"costcenter\")"
         },
         "BX135": {
-          "content": "=ODOO.LIST(1,134,\"cost_center\")"
+          "content": "=ODOO.LIST(1,134,\"costcenter\")"
         },
         "BX136": {
-          "content": "=ODOO.LIST(1,135,\"cost_center\")"
+          "content": "=ODOO.LIST(1,135,\"costcenter\")"
         },
         "BX137": {
-          "content": "=ODOO.LIST(1,136,\"cost_center\")"
+          "content": "=ODOO.LIST(1,136,\"costcenter\")"
         },
         "BX138": {
-          "content": "=ODOO.LIST(1,137,\"cost_center\")"
+          "content": "=ODOO.LIST(1,137,\"costcenter\")"
         },
         "BX139": {
-          "content": "=ODOO.LIST(1,138,\"cost_center\")"
+          "content": "=ODOO.LIST(1,138,\"costcenter\")"
         },
         "BX140": {
-          "content": "=ODOO.LIST(1,139,\"cost_center\")"
+          "content": "=ODOO.LIST(1,139,\"costcenter\")"
         },
         "BX141": {
-          "content": "=ODOO.LIST(1,140,\"cost_center\")"
+          "content": "=ODOO.LIST(1,140,\"costcenter\")"
         },
         "BX142": {
-          "content": "=ODOO.LIST(1,141,\"cost_center\")"
+          "content": "=ODOO.LIST(1,141,\"costcenter\")"
         },
         "BX143": {
-          "content": "=ODOO.LIST(1,142,\"cost_center\")"
+          "content": "=ODOO.LIST(1,142,\"costcenter\")"
         },
         "BX144": {
-          "content": "=ODOO.LIST(1,143,\"cost_center\")"
+          "content": "=ODOO.LIST(1,143,\"costcenter\")"
         },
         "BX145": {
-          "content": "=ODOO.LIST(1,144,\"cost_center\")"
+          "content": "=ODOO.LIST(1,144,\"costcenter\")"
         },
         "BX146": {
-          "content": "=ODOO.LIST(1,145,\"cost_center\")"
+          "content": "=ODOO.LIST(1,145,\"costcenter\")"
         },
         "BX147": {
-          "content": "=ODOO.LIST(1,146,\"cost_center\")"
+          "content": "=ODOO.LIST(1,146,\"costcenter\")"
         },
         "BX148": {
-          "content": "=ODOO.LIST(1,147,\"cost_center\")"
+          "content": "=ODOO.LIST(1,147,\"costcenter\")"
         },
         "BX149": {
-          "content": "=ODOO.LIST(1,148,\"cost_center\")"
+          "content": "=ODOO.LIST(1,148,\"costcenter\")"
         },
         "BX150": {
-          "content": "=ODOO.LIST(1,149,\"cost_center\")"
+          "content": "=ODOO.LIST(1,149,\"costcenter\")"
         },
         "BX151": {
-          "content": "=ODOO.LIST(1,150,\"cost_center\")"
+          "content": "=ODOO.LIST(1,150,\"costcenter\")"
         },
         "BX152": {
-          "content": "=ODOO.LIST(1,151,\"cost_center\")"
+          "content": "=ODOO.LIST(1,151,\"costcenter\")"
         },
         "BX153": {
-          "content": "=ODOO.LIST(1,152,\"cost_center\")"
+          "content": "=ODOO.LIST(1,152,\"costcenter\")"
         },
         "BX154": {
-          "content": "=ODOO.LIST(1,153,\"cost_center\")"
+          "content": "=ODOO.LIST(1,153,\"costcenter\")"
         },
         "BX155": {
-          "content": "=ODOO.LIST(1,154,\"cost_center\")"
+          "content": "=ODOO.LIST(1,154,\"costcenter\")"
         },
         "BX156": {
-          "content": "=ODOO.LIST(1,155,\"cost_center\")"
+          "content": "=ODOO.LIST(1,155,\"costcenter\")"
         },
         "BX157": {
-          "content": "=ODOO.LIST(1,156,\"cost_center\")"
+          "content": "=ODOO.LIST(1,156,\"costcenter\")"
         },
         "BX158": {
-          "content": "=ODOO.LIST(1,157,\"cost_center\")"
+          "content": "=ODOO.LIST(1,157,\"costcenter\")"
         },
         "BX159": {
-          "content": "=ODOO.LIST(1,158,\"cost_center\")"
+          "content": "=ODOO.LIST(1,158,\"costcenter\")"
         },
         "BX160": {
-          "content": "=ODOO.LIST(1,159,\"cost_center\")"
+          "content": "=ODOO.LIST(1,159,\"costcenter\")"
         },
         "BX161": {
-          "content": "=ODOO.LIST(1,160,\"cost_center\")"
+          "content": "=ODOO.LIST(1,160,\"costcenter\")"
         },
         "BX162": {
-          "content": "=ODOO.LIST(1,161,\"cost_center\")"
+          "content": "=ODOO.LIST(1,161,\"costcenter\")"
         },
         "BX163": {
-          "content": "=ODOO.LIST(1,162,\"cost_center\")"
+          "content": "=ODOO.LIST(1,162,\"costcenter\")"
         },
         "BX164": {
-          "content": "=ODOO.LIST(1,163,\"cost_center\")"
+          "content": "=ODOO.LIST(1,163,\"costcenter\")"
         },
         "BX165": {
-          "content": "=ODOO.LIST(1,164,\"cost_center\")"
+          "content": "=ODOO.LIST(1,164,\"costcenter\")"
         },
         "BX166": {
-          "content": "=ODOO.LIST(1,165,\"cost_center\")"
+          "content": "=ODOO.LIST(1,165,\"costcenter\")"
         },
         "BX167": {
-          "content": "=ODOO.LIST(1,166,\"cost_center\")"
+          "content": "=ODOO.LIST(1,166,\"costcenter\")"
         },
         "BX168": {
-          "content": "=ODOO.LIST(1,167,\"cost_center\")"
+          "content": "=ODOO.LIST(1,167,\"costcenter\")"
         },
         "BX169": {
-          "content": "=ODOO.LIST(1,168,\"cost_center\")"
+          "content": "=ODOO.LIST(1,168,\"costcenter\")"
         },
         "BX170": {
-          "content": "=ODOO.LIST(1,169,\"cost_center\")"
+          "content": "=ODOO.LIST(1,169,\"costcenter\")"
         },
         "BX171": {
-          "content": "=ODOO.LIST(1,170,\"cost_center\")"
+          "content": "=ODOO.LIST(1,170,\"costcenter\")"
         },
         "BX172": {
-          "content": "=ODOO.LIST(1,171,\"cost_center\")"
+          "content": "=ODOO.LIST(1,171,\"costcenter\")"
         },
         "BX173": {
-          "content": "=ODOO.LIST(1,172,\"cost_center\")"
+          "content": "=ODOO.LIST(1,172,\"costcenter\")"
         },
         "BX174": {
-          "content": "=ODOO.LIST(1,173,\"cost_center\")"
+          "content": "=ODOO.LIST(1,173,\"costcenter\")"
         },
         "BX175": {
-          "content": "=ODOO.LIST(1,174,\"cost_center\")"
+          "content": "=ODOO.LIST(1,174,\"costcenter\")"
         },
         "BX176": {
-          "content": "=ODOO.LIST(1,175,\"cost_center\")"
+          "content": "=ODOO.LIST(1,175,\"costcenter\")"
         },
         "BX177": {
-          "content": "=ODOO.LIST(1,176,\"cost_center\")"
+          "content": "=ODOO.LIST(1,176,\"costcenter\")"
         },
         "BX178": {
-          "content": "=ODOO.LIST(1,177,\"cost_center\")"
+          "content": "=ODOO.LIST(1,177,\"costcenter\")"
         },
         "BX179": {
-          "content": "=ODOO.LIST(1,178,\"cost_center\")"
+          "content": "=ODOO.LIST(1,178,\"costcenter\")"
         },
         "BX180": {
-          "content": "=ODOO.LIST(1,179,\"cost_center\")"
+          "content": "=ODOO.LIST(1,179,\"costcenter\")"
         },
         "BX181": {
-          "content": "=ODOO.LIST(1,180,\"cost_center\")"
+          "content": "=ODOO.LIST(1,180,\"costcenter\")"
         },
         "BX182": {
-          "content": "=ODOO.LIST(1,181,\"cost_center\")"
+          "content": "=ODOO.LIST(1,181,\"costcenter\")"
         },
         "BX183": {
-          "content": "=ODOO.LIST(1,182,\"cost_center\")"
+          "content": "=ODOO.LIST(1,182,\"costcenter\")"
         },
         "BX184": {
-          "content": "=ODOO.LIST(1,183,\"cost_center\")"
+          "content": "=ODOO.LIST(1,183,\"costcenter\")"
         },
         "BX185": {
-          "content": "=ODOO.LIST(1,184,\"cost_center\")"
+          "content": "=ODOO.LIST(1,184,\"costcenter\")"
         },
         "BX186": {
-          "content": "=ODOO.LIST(1,185,\"cost_center\")"
+          "content": "=ODOO.LIST(1,185,\"costcenter\")"
         },
         "BX187": {
-          "content": "=ODOO.LIST(1,186,\"cost_center\")"
+          "content": "=ODOO.LIST(1,186,\"costcenter\")"
         },
         "BX188": {
-          "content": "=ODOO.LIST(1,187,\"cost_center\")"
+          "content": "=ODOO.LIST(1,187,\"costcenter\")"
         },
         "BX189": {
-          "content": "=ODOO.LIST(1,188,\"cost_center\")"
+          "content": "=ODOO.LIST(1,188,\"costcenter\")"
         },
         "BX190": {
-          "content": "=ODOO.LIST(1,189,\"cost_center\")"
+          "content": "=ODOO.LIST(1,189,\"costcenter\")"
         },
         "BX191": {
-          "content": "=ODOO.LIST(1,190,\"cost_center\")"
+          "content": "=ODOO.LIST(1,190,\"costcenter\")"
         },
         "BX192": {
-          "content": "=ODOO.LIST(1,191,\"cost_center\")"
+          "content": "=ODOO.LIST(1,191,\"costcenter\")"
         },
         "BX193": {
-          "content": "=ODOO.LIST(1,192,\"cost_center\")"
+          "content": "=ODOO.LIST(1,192,\"costcenter\")"
         },
         "BX194": {
-          "content": "=ODOO.LIST(1,193,\"cost_center\")"
+          "content": "=ODOO.LIST(1,193,\"costcenter\")"
         },
         "BX195": {
-          "content": "=ODOO.LIST(1,194,\"cost_center\")"
+          "content": "=ODOO.LIST(1,194,\"costcenter\")"
         },
         "BX196": {
-          "content": "=ODOO.LIST(1,195,\"cost_center\")"
+          "content": "=ODOO.LIST(1,195,\"costcenter\")"
         },
         "BX197": {
-          "content": "=ODOO.LIST(1,196,\"cost_center\")"
+          "content": "=ODOO.LIST(1,196,\"costcenter\")"
         },
         "BX198": {
-          "content": "=ODOO.LIST(1,197,\"cost_center\")"
+          "content": "=ODOO.LIST(1,197,\"costcenter\")"
         },
         "BX199": {
-          "content": "=ODOO.LIST(1,198,\"cost_center\")"
+          "content": "=ODOO.LIST(1,198,\"costcenter\")"
         },
         "BX200": {
-          "content": "=ODOO.LIST(1,199,\"cost_center\")"
+          "content": "=ODOO.LIST(1,199,\"costcenter\")"
         },
         "BX201": {
-          "content": "=ODOO.LIST(1,200,\"cost_center\")"
+          "content": "=ODOO.LIST(1,200,\"costcenter\")"
         }
       },
       "conditionalFormats": [],
@@ -85935,34 +85935,60 @@
     "1": {
       "columns": [
         "employee_id",
-        "first_name",
-        "last_name",
-        "email",
-        "mobile",
-        "department",
-        "designation",
-        "employee_status",
-        "employee_type",
+        "full_name_vn",
         "date_of_joining",
+        "employee_status",
+        "last_workday",
         "location_name",
         "base_salary",
-        "gross_pay_idn",
-        "tunjangan_sewa_rumah",
-        "transportation_allowance",
+        "gas_allowance",
+        "phone_allowance",
         "meal_allowance",
-        "communication_allowance",
-        "fixed_allowance_1",
-        "fixed_allowance_2",
-        "commission",
+        "resp_allowance",
+        "park_allowance",
+        "taxi_allowance",
+        "standard_whr",
+        "actual_working_hours_incl_paid_leave",
+        "actual_working_hours_excl_paid_leave",
+        "overtime_normal_150_hour",
+        "overtime_weekend_200_hour",
+        "overtime_holiday_300_hour",
+        "nightshift_hour",
+        "overtime_nightshift_210_hour",
+        "overtime_nightshift_270_hour",
+        "overtime_nightshift_390_hour",
+        "other_notcounted",
+        "costcenter",
+        "gross_pay_idn",
         "pph21",
         "bpjs_kesehatan_employee",
         "bpjs_tk_jht_employee",
         "bpjs_tk_jp_employee",
+        "union_dues",
+        "loan_deductions",
+        "bpjs_tk_jht_employer",
+        "bpjs_tk_jkm",
+        "bpjs_tk_jkk",
+        "bpjs_tk_jp_employer",
+        "bpjs_kesehatan_employer",
         "npwp_number",
         "bpjs_kesehatan_number",
-        "union_dues",
+        "bpjs_ketenagakerjaan_number",
+        "fixed_allowance_1",
+        "fixed_allowance_2",
+        "commission",
+        "sign_on_bonus",
+        "tunjangan_sewa_rumah",
+        "tunjangan_duka",
+        "tunjangan_suka",
+        "severance_appreciation",
+        "lain_lain_allowance",
+        "deduction_1",
+        "deduction_2",
+        "deduction_3",
         "koperasi",
         "pinjaman",
+        "cicilan",
         "lain_lain_deduction"
       ],
       "domain": [],
@@ -85970,7 +85996,7 @@
       "context": {},
       "orderBy": [],
       "id": "1",
-      "name": "Indonesia Employee Staging Data",
+      "name": "Employee Staging Data",
       "fieldMatching": {}
     }
   },
