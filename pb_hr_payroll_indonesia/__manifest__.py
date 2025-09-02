@@ -33,13 +33,15 @@
         'data/enhanced_salary_rules_data.xml',           # NEW: Enhanced salary rules
         'data/enhanced_advantage_templates_data.xml',    # NEW: Enhanced advantage templates
         'data/spreadsheet_data.xml',                     # NEW: Indonesia spreadsheet template
-        # Load views (dashboard view must be loaded before menu structure)
+        # Load server actions FIRST (no dependencies)
+        'data/server_actions_data.xml',
+        # Load dashboard views FIRST
         'views/payroll_dashboard.xml',
         'views/payroll_country_selector_template.xml',
         'views/payroll_landing_page_views.xml',
-        # Load dashboard data BEFORE menu structure
+        # Load dashboard data 
         'data/payroll_dashboard_data.xml',
-        # Load menu structure (defines security groups)
+        # Load menu structure AFTER dashboard view (references dashboard view)
         'views/payroll_menu_structure.xml',
         # Load security AFTER groups are defined
         'security/ir.model.access.csv',
