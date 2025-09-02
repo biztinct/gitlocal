@@ -38,6 +38,40 @@
               sequence="30"
               groups="pb_hr_payroll_base.group_payroll_india"/>
     
+    <!-- India spreadsheet actions -->
+    <record id="action_india_edit_spreadsheet" model="ir.actions.server">
+        <field name="name">Edit India Payroll Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+# India-specific spreadsheet configuration
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'action_spreadsheet_oca',
+    'params': {
+        'spreadsheet_id': env.ref('__custom__.payrollstaging_india', raise_if_not_found=False).id if env.ref('__custom__.payrollstaging_india', raise_if_not_found=False) else False,
+    },
+    'context': {'payroll_country': 'IN'}
+}
+        </field>
+    </record>
+    
+    <record id="action_india_import_spreadsheet" model="ir.actions.server">
+        <field name="name">Import India Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+# India spreadsheet import logic
+action = {
+    'type': 'ir.actions.act_window',
+    'res_model': 'payroll.import.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {'default_country': 'IN', 'default_spreadsheet_ref': '__custom__.payrollstaging_india'}
+}
+        </field>
+    </record>
+
     <!-- India Gratuity Menu under original Payroll menu -->
     <menuitem id="menu_india_gratuity"
               name="India Gratuity Payments"

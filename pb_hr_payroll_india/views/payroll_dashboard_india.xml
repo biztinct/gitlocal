@@ -234,8 +234,8 @@
                                         <h4 class="card-title">Payroll spreadsheet</h4>
                                         <p class="card-description">Edit and configure payroll calculations, salary components, and deductions</p>
                                     </div>
-                                    <button name="action_edit_spreadsheet" 
-                                            type="object" 
+                                    <button name="%(action_india_edit_spreadsheet)d" 
+                                            type="action" 
                                             class="dashboard-btn">
                                         Open spreadsheet
                                     </button>

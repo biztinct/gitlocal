@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Indonesia Payroll Spreadsheet Template -->
+        <record id="payrollstaging_indonesia" model="spreadsheet.spreadsheet">
+            <field name="name">Indonesia Payroll Calculations</field>
+        </record>
+        
+    </data>
+</odoo>
+
+<!-- 
+RECOMMENDED SPREADSHEET HEADERS FOR INDONESIA PAYROLL:
+Use these exact field names as column headers in Row 1 of your spreadsheet 
+to ensure proper mapping to employee_staging_data table:
+
+ESSENTIAL EMPLOYEE INFO:
+- employee_id (Employee ID)
+- first_name (First Name)  
+- last_name (Last Name)
+- email (Email)
+- department (Department)
+- designation (Job Title)
+
+CORE SALARY COMPONENTS:
+- base_salary (Basic Salary)
+- gross_pay_idn (Gross Pay IDN)
+
+KEY ALLOWANCES:
+- fixed_allowance_1 (Fixed Allowance 1)
+- fixed_allowance_2 (Fixed Allowance 2) 
+- commission (Commission)
+- tunjangan_sewa_rumah (Housing Allowance)
+- gas_allowance (Transportation)
+- meal_allowance (Meal Allowance)
+- phone_allowance (Communication)
+
+INDONESIA TAX & INSURANCE:
+- pph21 (PPh 21 Income Tax)
+- bpjs_kesehatan_employee (BPJS Health - Employee)
+- bpjs_tk_jht_employee (BPJS Employment JHT - Employee)
+- bpjs_tk_jp_employee (BPJS Pension - Employee)
+
+KEY DEDUCTIONS:
+- union_dues (Union Dues)
+- loan_deductions (Loan/Coop Deductions)
+- koperasi (Cooperative) 
+- pinjaman (Personal Loans)
+- lain_lain_deduction (Other Deductions)
+
+ID NUMBERS:
+- npwp_number (Tax ID/NPWP)
+- bpjs_kesehatan_number (BPJS Health Number)
+- bpjs_ketenagakerjaan_number (BPJS Employment Number)
+
+SAMPLE HEADER ROW:
+employee_id | first_name | last_name | department | base_salary | gross_pay_idn | pph21 | bpjs_kesehatan_employee | npwp_number
+
+-->
