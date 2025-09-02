@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vietnam spreadsheet actions -->
+    <record id="action_vietnam_edit_spreadsheet" model="ir.actions.server">
+        <field name="name">Edit Vietnam Payroll Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+# Vietnam-specific spreadsheet configuration
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'action_spreadsheet_oca',
+    'params': {
+        'spreadsheet_id': env.ref('pb_hr_payroll_vietnam.payrollstaging_vietnam', raise_if_not_found=False).id if env.ref('pb_hr_payroll_vietnam.payrollstaging_vietnam', raise_if_not_found=False) else False,
+    },
+    'context': {'payroll_country': 'VN'}
+}
+        </field>
+    </record>
+    
+    <record id="action_vietnam_import_spreadsheet" model="ir.actions.server">
+        <field name="name">Import Vietnam Spreadsheet</field>
+        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+        <field name="state">code</field>
+        <field name="code">
+# Vietnam spreadsheet import logic
+action = {
+    'type': 'ir.actions.act_window',
+    'res_model': 'payroll.import.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {'default_country': 'VN', 'default_spreadsheet_ref': '__custom__.payrollstaging_vietnam'}
+}
+        </field>
+    </record>
+
+</odoo>

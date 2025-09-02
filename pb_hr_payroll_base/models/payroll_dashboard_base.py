@@ -1047,3 +1047,353 @@ class PayrollDashboard(models.Model):
             _logger.info(f"Created dashboard for {country_code}")
         
         return dashboard
+
+    def action_generate_demo_data(self):
+        """Generate demo employee data for testing - Vietnam and Indonesia"""
+        _logger.info(f"Demo data generation called for country: {self.country}")
+        
+        if self.country not in ['VN', 'ID']:
+            raise UserError(_("Demo data generation is currently only available for Vietnam and Indonesia. Current country: %s") % self.country)
+        
+        # Country-specific names data
+        if self.country == 'VN':
+            # Vietnamese names data
+            first_names = [
+                'Nguyễn Văn', 'Trần Thị', 'Lê Văn', 'Phạm Thị', 'Hoàng Văn', 
+                'Huỳnh Thị', 'Võ Văn', 'Vũ Thị', 'Đặng Văn', 'Bùi Thị',
+                'Đỗ Văn', 'Hồ Thị', 'Ngô Văn', 'Dương Thị', 'Lý Văn',
+                'Trương Thị', 'Tôn Văn', 'Đào Thị', 'Phạm Văn', 'Nguyễn Thị',
+                'Lê Thị', 'Trần Văn', 'Hoàng Thị', 'Huỳnh Văn', 'Võ Thị'
+            ]
+            
+            last_names = [
+                'An', 'Bình', 'Cường', 'Dũng', 'Đức', 'Hải', 'Hùng', 'Khôi', 'Long', 'Minh',
+                'Nam', 'Quang', 'Sơn', 'Thành', 'Tuấn', 'Mai', 'Linh', 'Hương', 'Lan', 'Nhung',
+                'Phương', 'Thảo', 'Thu', 'Trang', 'Yến'
+            ]
+            
+            locations = ['Ho Chi Minh City', 'Hanoi', 'Da Nang', 'Hai Phong', 'Can Tho']
+            country_prefix = "1"  # Vietnam employee IDs start with 1
+        
+        else:  # Indonesia (ID)
+            # Indonesian names data
+            first_names = [
+                'Ahmad', 'Siti', 'Budi', 'Dewi', 'Indra', 'Sri', 'Andi', 'Rina', 'Dedi', 'Maya',
+                'Hendra', 'Lestari', 'Agus', 'Ratna', 'Bambang', 'Endang', 'Darmawan', 'Fitri',
+                'Rahmat', 'Ningsih', 'Kurniawan', 'Sari', 'Wijaya', 'Utami', 'Suryadi'
+            ]
+            
+            last_names = [
+                'Santoso', 'Putri', 'Pratama', 'Wati', 'Gunawan', 'Sari', 'Hidayat', 'Lestari',
+                'Setiawan', 'Dewi', 'Kurniawan', 'Maharani', 'Prasetyo', 'Anggraini', 'Susanto',
+                'Rahayu', 'Budiono', 'Purnama', 'Hartono', 'Safitri', 'Nugraha', 'Permata',
+                'Wahyudi', 'Kartika', 'Saputra'
+            ]
+            
+            locations = ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang', 'Makassar', 'Palembang']
+            country_prefix = "2"  # Indonesia employee IDs start with 2 (2001-2025)
+        
+        departments = [
+            'Accounting', 'Human Resources', 'Information Technology', 'Marketing', 
+            'Sales', 'Operations', 'Finance', 'Customer Service', 'Administration'
+        ]
+        
+        designations = [
+            'Staff', 'Senior Staff', 'Supervisor', 'Team Leader', 'Manager', 
+            'Senior Manager', 'Assistant Manager', 'Specialist', 'Coordinator'
+        ]
+        
+        import random
+        from datetime import datetime, date
+        
+        demo_employees = []
+        existing_emails = set()
+        
+        for i in range(25):
+            first_name = random.choice(first_names)
+            last_name = random.choice(last_names)
+            full_name = f"{first_name} {last_name}"
+            
+            # Generate country-specific employee ID
+            employee_id = f"{country_prefix}{1000 + i + 1}"
+            
+            # Generate unique email based on country
+            if self.country == 'VN':
+                base_email = f"{last_name.lower().replace(' ', '')}.{first_name.lower().replace(' ', '').replace('ễ', 'e').replace('ă', 'a').replace('ư', 'u')}{i+1:02d}"
+                email_domain = "company.com.vn"
+                mobile_prefix = "0"
+                mobile_format = f"{random.randint(90, 99)}{random.randint(1000000, 9999999)}"
+            else:  # Indonesia
+                base_email = f"{first_name.lower().replace(' ', '')}.{last_name.lower().replace(' ', '')}{i+1:02d}"
+                email_domain = "company.co.id"
+                mobile_prefix = "08"
+                mobile_format = f"{random.randint(10000000, 99999999)}"
+            
+            email = f"{base_email}@{email_domain}"
+            
+            # Ensure unique email
+            counter = 1
+            while email in existing_emails:
+                email = f"{base_email}{counter}@{email_domain}"
+                counter += 1
+            existing_emails.add(email)
+            
+            # Generate country-specific employee data
+            if self.country == 'VN':
+                # Vietnam-specific data
+                employee_data = {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'full_name_en': full_name,
+                    'full_name_vn': full_name,
+                    'email': email,
+                    'employee_id': employee_id,
+                    'department': random.choice(departments),
+                    'designation': random.choice(designations),
+                    'employee_status': 'Active',
+                    'location_name': random.choice(locations),
+                    'employee_type': random.choice(['Full-time', 'Part-time', 'Contract']),
+                    'date_of_birth': date(random.randint(1985, 2000), random.randint(1, 12), random.randint(1, 28)),
+                    'mobile': f"{mobile_prefix}{mobile_format}",
+                    'date_of_joining': date(random.randint(2020, 2024), random.randint(1, 12), random.randint(1, 28)),
+                    'gender': random.choice(['male', 'female']),
+                    'number_of_dependents': random.randint(0, 3),
+                    'standard_whr': 40.0,
+                    'actual_working_hours_incl_paid_leave': random.uniform(35.0, 40.0),
+                    'bank_name': random.choice(['Vietcombank', 'BIDV', 'VietinBank', 'Techcombank', 'ACB']),
+                    'bank_account_number_vnd': f"VN{random.randint(1000000000, 9999999999)}",
+                    'insurance_book_number': f"INS{random.randint(100000, 999999)}",
+                    'pit_number': f"PIT{random.randint(100000000, 999999999)}",
+                    'zoho_id': f"ZH{random.randint(10000000, 99999999)}"
+                }
+            else:  # Indonesia
+                # Indonesia-specific data
+                employee_data = {
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'full_name_en': full_name,
+                    'email': email,
+                    'employee_id': employee_id,
+                    'department': random.choice(departments),
+                    'designation': random.choice(designations),
+                    'employee_status': 'Active',
+                    'location_name': random.choice(locations),
+                    'employee_type': random.choice(['Full-time', 'Part-time', 'Contract']),
+                    'date_of_birth': date(random.randint(1985, 2000), random.randint(1, 12), random.randint(1, 28)),
+                    'mobile': f"{mobile_prefix}{mobile_format}",
+                    'date_of_joining': date(random.randint(2020, 2024), random.randint(1, 12), random.randint(1, 28)),
+                    'gender': random.choice(['male', 'female']),
+                    'number_of_dependents': random.randint(0, 3),
+                    'standard_whr': 40.0,
+                    'actual_working_hours_incl_paid_leave': random.uniform(35.0, 40.0),
+                    'bank_name': random.choice(['BCA', 'Mandiri', 'BRI', 'BNI', 'CIMB Niaga']),
+                    'zoho_id': f"ZH{random.randint(10000000, 99999999)}"
+                }
+            demo_employees.append(employee_data)
+        
+        # Clear all existing data from both tables first
+        try:
+            # Delete all records from zoho.employee.data
+            all_employee_data = self.env['zoho.employee.data'].search([])
+            if all_employee_data:
+                all_employee_data.unlink()
+                _logger.info(f"Deleted {len(all_employee_data)} records from zoho.employee.data")
+            
+            # Delete all records from zoho.staging.data  
+            all_staging_data = self.env['zoho.staging.data'].search([])
+            if all_staging_data:
+                all_staging_data.unlink()
+                _logger.info(f"Deleted {len(all_staging_data)} records from zoho.staging.data")
+            
+            # Create fresh demo data in zoho.employee.data model
+            created_count = 0
+            for emp_data in demo_employees:
+                self.env['zoho.employee.data'].create(emp_data)
+                created_count += 1
+            
+            # Create fresh demo data in zoho.staging.data for payroll processing
+            for emp_data in demo_employees:
+                staging_data = emp_data.copy()
+                
+                if self.country == 'VN':
+                    # Vietnam-specific payroll fields
+                    base_salary = random.uniform(10000000, 35000000)  # VND 10M - 35M
+                    gas_allowance = random.uniform(500000, 2000000)   # VND 500K - 2M
+                    phone_allowance = random.uniform(200000, 800000)  # VND 200K - 800K
+                    meal_allowance = random.uniform(730000, 1500000)  # VND 730K - 1.5M
+                    
+                    # Calculate total income
+                    actual_totalincome = (base_salary + gas_allowance + phone_allowance + 
+                                        meal_allowance + random.uniform(1000000, 5000000))
+                    
+                    # Vietnam payroll calculations
+                    social_ins8 = actual_totalincome * 0.08        # 8% social insurance
+                    med_ins15 = actual_totalincome * 0.015         # 1.5% medical insurance  
+                    unemp_ins1 = actual_totalincome * 0.01         # 1% unemployment insurance
+                    sihiui_total105 = social_ins8 + med_ins15 + unemp_ins1  # Total 10.5%
+                    
+                    # Tax calculation (simplified)
+                    dep_amount = emp_data.get('number_of_dependents', 0) * 4400000  # 4.4M per dependent
+                    tax_income = max(0, actual_totalincome - 11000000 - dep_amount)  # 11M personal deduction
+                    monthly_pit = tax_income * 0.1 if tax_income > 0 else 0  # Simplified 10% tax
+                    
+                    total_ded = sihiui_total105 + monthly_pit
+                    net_pay = actual_totalincome - total_ded
+                    
+                    staging_data.update({
+                        # Base salary components
+                        'base_salary': base_salary,
+                        'gas_allowance': gas_allowance,
+                        'phone_allowance': phone_allowance,
+                        'meal_allowance': meal_allowance,
+                        'actual_basicsalary': base_salary,
+                        'actual_gas': gas_allowance,
+                        'actual_phone': phone_allowance,
+                        'actual_meal': meal_allowance,
+                        
+                        # Income totals
+                        'actual_totalincome': actual_totalincome,
+                        
+                        # Insurance deductions (employee portion)
+                        'social_ins8': social_ins8,
+                        'med_ins15': med_ins15,
+                        'unemp_ins1': unemp_ins1,
+                        'sihiui_total105': sihiui_total105,
+                        
+                        # Tax calculations
+                        'dep_amount': dep_amount,
+                        'tax_income': tax_income,
+                        'monthly_pit': monthly_pit,
+                        'total_ded': total_ded,
+                        'net_pay': net_pay,
+                        
+                        # Employer costs
+                        'social_ins175': actual_totalincome * 0.175,  # 17.5% employer social insurance
+                        'med_ins3': actual_totalincome * 0.03,        # 3% employer medical insurance
+                        'sihiui_total215': actual_totalincome * 0.215, # 21.5% employer total
+                        'trade_er2': actual_totalincome * 0.02,       # 2% trade union employer
+                        
+                        # Additional Vietnam fields
+                        'shui_part': 'YES',
+                        'tu_part': 'YES', 
+                        'res_status': 'Resident',
+                        'enroll_tax': 'YES',
+                        'enroll_ins': 'YES',
+                        'emp_bank_accntname': f"{emp_data['first_name']} {emp_data['last_name']}",
+                        
+                        # Bonus fields (some employees get bonuses)
+                        'recog_bonus': random.uniform(0, 5000000) if random.random() > 0.7 else 0,
+                        'other_income': random.uniform(0, 2000000) if random.random() > 0.8 else 0,
+                        'thirteenth_month': base_salary if random.random() > 0.5 else 0,  # 50% chance of 13th month
+                    })
+                    
+                    # Recalculate totals with bonuses
+                    total_bonuses = (staging_data.get('recog_bonus', 0) + 
+                                   staging_data.get('other_income', 0) + 
+                                   staging_data.get('thirteenth_month', 0))
+                    if total_bonuses > 0:
+                        staging_data['actual_totalincome'] += total_bonuses
+                        staging_data['net_pay'] += total_bonuses  # Simplified - bonuses not taxed in demo
+                
+                else:  # Indonesia (ID)
+                    # Indonesia-specific payroll fields using Indonesian salary ranges
+                    base_salary = random.uniform(5000000, 25000000)    # IDR 5M - 25M
+                    fixed_allowance_1 = random.uniform(1000000, 3000000)  # IDR 1M - 3M
+                    fixed_allowance_2 = random.uniform(500000, 2000000)   # IDR 500K - 2M
+                    tunjangan_sewa_rumah = random.uniform(2000000, 8000000)  # IDR 2M - 8M (housing)
+                    gas_allowance = random.uniform(400000, 1500000)    # IDR 400K - 1.5M
+                    meal_allowance = random.uniform(300000, 1000000)   # IDR 300K - 1M
+                    phone_allowance = random.uniform(200000, 500000)   # IDR 200K - 500K
+                    commission = random.uniform(0, 3000000) if random.random() > 0.6 else 0
+                    
+                    # Calculate gross pay IDN
+                    gross_pay_idn = (base_salary + fixed_allowance_1 + fixed_allowance_2 + 
+                                   tunjangan_sewa_rumah + gas_allowance + meal_allowance + 
+                                   phone_allowance + commission)
+                    
+                    # Indonesia BPJS calculations (employee portion)
+                    bpjs_kesehatan_employee = min(gross_pay_idn * 0.01, 80000)  # 1% max 80K
+                    bpjs_tk_jht_employee = gross_pay_idn * 0.02      # 2% JHT (pension)
+                    bpjs_tk_jp_employee = gross_pay_idn * 0.01       # 1% JP (pension)
+                    
+                    # Indonesia PPh21 tax (simplified progressive)
+                    annual_income = gross_pay_idn * 12
+                    ptkp = 54000000 + (emp_data.get('number_of_dependents', 0) * 4500000)  # PTKP + dependents
+                    taxable_income = max(0, annual_income - ptkp)
+                    annual_tax = 0
+                    if taxable_income > 0:
+                        if taxable_income <= 60000000:
+                            annual_tax = taxable_income * 0.05
+                        elif taxable_income <= 250000000:
+                            annual_tax = 60000000 * 0.05 + (taxable_income - 60000000) * 0.15
+                        else:
+                            annual_tax = 60000000 * 0.05 + 190000000 * 0.15 + (taxable_income - 250000000) * 0.25
+                    pph21 = annual_tax / 12  # Monthly PPh21
+                    
+                    # Other deductions
+                    union_dues = random.uniform(25000, 100000) if random.random() > 0.7 else 0
+                    koperasi = random.uniform(50000, 300000) if random.random() > 0.5 else 0
+                    pinjaman = random.uniform(100000, 1000000) if random.random() > 0.3 else 0
+                    lain_lain_deduction = random.uniform(0, 200000) if random.random() > 0.8 else 0
+                    
+                    total_deductions = (bpjs_kesehatan_employee + bpjs_tk_jht_employee + 
+                                      bpjs_tk_jp_employee + pph21 + union_dues + 
+                                      koperasi + pinjaman + lain_lain_deduction)
+                    net_pay = gross_pay_idn - total_deductions
+                    
+                    staging_data.update({
+                        # Base salary components
+                        'base_salary': base_salary,
+                        'gross_pay_idn': gross_pay_idn,
+                        'fixed_allowance_1': fixed_allowance_1,
+                        'fixed_allowance_2': fixed_allowance_2,
+                        'commission': commission,
+                        
+                        # Indonesian allowances  
+                        'tunjangan_sewa_rumah': tunjangan_sewa_rumah,
+                        'gas_allowance': gas_allowance,
+                        'meal_allowance': meal_allowance,
+                        'phone_allowance': phone_allowance,
+                        
+                        # Indonesian tax & insurance (employee portion)
+                        'pph21': pph21,
+                        'bpjs_kesehatan_employee': bpjs_kesehatan_employee,
+                        'bpjs_tk_jht_employee': bpjs_tk_jht_employee,
+                        'bpjs_tk_jp_employee': bpjs_tk_jp_employee,
+                        
+                        # Deductions
+                        'union_dues': union_dues,
+                        'koperasi': koperasi,
+                        'pinjaman': pinjaman,
+                        'lain_lain_deduction': lain_lain_deduction,
+                        
+                        # ID Numbers
+                        'npwp_number': f"{random.randint(10, 99)}.{random.randint(100, 999)}.{random.randint(100, 999)}.{random.randint(1, 9)}-{random.randint(100, 999)}.{random.randint(100, 999)}",
+                        'bpjs_kesehatan_number': f"000{random.randint(10000000, 99999999)}",
+                        'bpjs_ketenagakerjaan_number': f"17{random.randint(100000000, 999999999)}",
+                        
+                        # Net calculation
+                        'net_pay': net_pay,
+                        'total_ded': total_deductions,
+                        'actual_totalincome': gross_pay_idn,
+                    })
+                
+                # Create fresh staging data record
+                self.env['zoho.staging.data'].create(staging_data)
+        
+        except Exception as e:
+            _logger.error(f"Error creating demo data: {str(e)}")
+            raise UserError(_("Error creating demo data: %s") % str(e))
+        
+        country_name = 'Vietnamese' if self.country == 'VN' else 'Indonesian'
+        message = _('Successfully generated fresh demo data for %s %s employees! (All previous data cleared)') % (created_count, country_name)
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': message,
+                'type': 'success',
+                'sticky': False,
+            }
+        }

@@ -4,7 +4,8 @@
         
         <!-- Indonesia Payroll Spreadsheet Template -->
         <record id="payrollstaging_indonesia" model="spreadsheet.spreadsheet">
-            <field name="name">Indonesia Payroll Calculations</field>
+            <field name="name">Indonesia Payroll Staging Data</field>
+            <field name="data" type="base64" file="pb_hr_payroll_indonesia/data/indonesia_payroll_data.json"/>
         </record>
         
     </data>

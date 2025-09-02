@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Vietnam Payroll Spreadsheet Template -->
+        <record id="payrollstaging_vietnam" model="spreadsheet.spreadsheet">
+            <field name="name">Vietnam Payroll Staging Data</field>
+            <field name="data" type="base64" file="pb_hr_payroll_vietnam/data/vietnam_payroll_data.json"/>
+        </record>
+        
+    </data>
+</odoo>

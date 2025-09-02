@@ -371,6 +371,59 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Fourth Row: Demo Features -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="dashboard-card" style="border: 2px solid #dc3545; background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);">
+                                    <div>
+                                        <i class="fa fa-flask fa-3x card-icon" style="color: #dc3545;"/>
+                                        <h4 class="card-title" style="color: #dc3545;">Demo Employee Data</h4>
+                                        <p class="card-description">Generate 25 Indonesian employees with realistic demo data including BPJS and PPh21 calculations</p>
+                                    </div>
+                                    <button name="action_generate_demo_data" 
+                                            type="object" 
+                                            class="dashboard-btn" style="background: #dc3545; border-color: #dc3545;">
+                                        Generate Demo Data
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card" style="opacity: 0.7;">
+                                    <div>
+                                        <i class="fa fa-info-circle fa-3x card-icon" style="color: #6c757d;"/>
+                                        <h4 class="card-title" style="color: #6c757d;">Demo Information</h4>
+                                        <p class="card-description">Demo data includes Indonesian names, BPJS contributions, PPh21 tax, and housing allowances (Tunjangan Sewa Rumah)</p>
+                                    </div>
+                                    <button name="dummy_info_button" 
+                                            type="button" 
+                                            class="dashboard-btn" 
+                                            style="background: #6c757d; cursor: not-allowed;" 
+                                            disabled="disabled">
+                                        Information Only
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card" style="opacity: 0.7;">
+                                    <div>
+                                        <i class="fa fa-lightbulb-o fa-3x card-icon" style="color: #fd7e14;"/>
+                                        <h4 class="card-title" style="color: #fd7e14;">Quick Start</h4>
+                                        <p class="card-description">1. Generate demo data → 2. Open spreadsheet → 3. Process payroll with BPJS calculations</p>
+                                    </div>
+                                    <button name="dummy_guide_button" 
+                                            type="button" 
+                                            class="dashboard-btn" 
+                                            style="background: #fd7e14; color: #212529; cursor: not-allowed;" 
+                                            disabled="disabled">
+                                        Guide Only
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </sheet>
             </form>
