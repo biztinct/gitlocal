@@ -52,49 +52,7 @@
         <field name="context">{'default_payroll_country': 'ID'}</field>
     </record>
     
-    <!-- Indonesia spreadsheet actions -->
-    <record id="action_indonesia_edit_spreadsheet" model="ir.actions.server">
-        <field name="name">Edit Indonesia Payroll Spreadsheet</field>
-        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
-        <field name="state">code</field>
-        <field name="code">
-# Indonesia-specific spreadsheet configuration
-spreadsheet_ref = env.ref('pb_hr_payroll_indonesia.payrollstaging_indonesia', raise_if_not_found=False)
-if not spreadsheet_ref:
-    # Fallback: create a notification if spreadsheet doesn't exist
-    action = {
-        'type': 'ir.actions.client',
-        'tag': 'display_notification',
-        'params': {
-            'message': 'Indonesia payroll spreadsheet not found. Please create the spreadsheet first.',
-            'type': 'warning',
-            'sticky': True,
-        }
-    }
-else:
-    action = {
-        'type': 'ir.actions.client',
-        'tag': 'action_spreadsheet_oca',
-        'params': {
-            'spreadsheet_id': spreadsheet_ref.id,
-        },
-        'context': {'payroll_country': 'ID'}
-    }
-        </field>
-    </record>
-    
-    <record id="action_indonesia_import_spreadsheet" model="ir.actions.server">
-        <field name="name">Import Indonesia Spreadsheet</field>
-        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
-        <field name="state">code</field>
-        <field name="code">
-spreadsheet = env.ref('__custom__.payrollstaging_indonesia', raise_if_not_found=False)
-if spreadsheet:
-    action = spreadsheet.with_context(payroll_country='ID').import_json_data()
-else:
-    raise UserError('Indonesia payroll spreadsheet not found. Please create it with external ID __custom__.payrollstaging_indonesia')
-        </field>
-    </record>
+    <!-- Indonesia spreadsheet actions moved to data/server_actions_data.xml -->
     
     <!-- THR Payment Action for Indonesia -->
     <record id="action_thr_payment_wizard" model="ir.actions.act_window">

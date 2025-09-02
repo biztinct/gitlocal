@@ -23,13 +23,13 @@ class PayrollCountrySelector(models.TransientModel):
         
         # Get the appropriate spreadsheet based on country
         if self.payroll_country == 'ID':
-            spreadsheet = self.env.ref('__custom__.payrollstaging_indonesia', raise_if_not_found=False)
+            spreadsheet = self.env.ref('pb_hr_payroll_indonesia.payrollstaging_indonesia', raise_if_not_found=False)
             if not spreadsheet:
-                raise UserError("Indonesia payroll spreadsheet not found! Please ensure it exists with external ID '__custom__.payrollstaging_indonesia'")
+                raise UserError("Indonesia payroll spreadsheet not found! Please ensure it exists with external ID 'pb_hr_payroll_indonesia.payrollstaging_indonesia'")
         else:
-            spreadsheet = self.env.ref('__custom__.payrollstaging', raise_if_not_found=False)
+            spreadsheet = self.env.ref('pb_hr_payroll_vietnam.payrollstaging_vietnam', raise_if_not_found=False)
             if not spreadsheet:
-                raise UserError("Vietnam payroll spreadsheet not found! Please ensure it exists with external ID '__custom__.payrollstaging'")
+                raise UserError("Vietnam payroll spreadsheet not found! Please ensure it exists with external ID 'pb_hr_payroll_vietnam.payrollstaging_vietnam'")
         
         # Open the spreadsheet directly in edit mode (like Edit Integrated Spreadsheet menu)
         return {
