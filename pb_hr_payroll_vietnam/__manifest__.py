@@ -57,12 +57,14 @@ Supported Features:
         # Security
         'security/ir.model.access.csv',
         
-        # Data files - Vietnam-specific dashboard
+        # Data files - Vietnam-specific dashboard and spreadsheet
         'data/payroll_dashboard_data.xml',
+        'data/spreadsheet_data.xml',                     # Vietnam spreadsheet template
         
-        # Views - Dashboard and Menu Structure
-        'views/payroll_dashboard_vietnam.xml',        # Professional Vietnam dashboard
-        'views/payroll_menu_structure.xml',
+        # Views - Server Actions first, then Dashboard (references actions), then Menu Structure (references view)
+        'views/vietnam_server_actions.xml',           # Server actions (must load first)
+        'views/payroll_dashboard_vietnam.xml',        # Professional Vietnam dashboard 
+        'views/payroll_menu_structure.xml',           # Menu structure references dashboard view
         
         # Note: Data files will be added as needed
         # TODO: Add Vietnam-specific data files:
