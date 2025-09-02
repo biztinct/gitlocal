@@ -234,8 +234,8 @@
                                         <h4 class="card-title">Payroll spreadsheet</h4>
                                         <p class="card-description">Edit payroll calculations and salary components</p>
                                     </div>
-                                    <button name="action_edit_spreadsheet" 
-                                            type="object" 
+                                    <button name="%(action_malaysia_edit_spreadsheet)d" 
+                                            type="action" 
                                             class="dashboard-btn">
                                         Open spreadsheet
                                     </button>
@@ -249,8 +249,8 @@
                                         <h4 class="card-title">Process payroll</h4>
                                         <p class="card-description">Import calculated data and generate payslips</p>
                                     </div>
-                                    <button name="action_import_spreadsheet" 
-                                            type="object" 
+                                    <button name="%(action_malaysia_import_spreadsheet)d" 
+                                            type="action" 
                                             class="dashboard-btn">
                                         Import and process
                                     </button>

@@ -130,9 +130,9 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         
         # Filter by country structure
         country_structure_map = {
-            'VN': 'Vietnam Salary Structure',
-            'ID': 'Indonesia Salary Structure',
-            'IN': 'India Salary Structure'
+            'VN': 'Vietnam Standard Payroll',
+            'ID': 'Indonesia Standard Payroll',
+            'IN': 'India Standard Payroll'
         }
         structure_name = country_structure_map.get(self.country)
         

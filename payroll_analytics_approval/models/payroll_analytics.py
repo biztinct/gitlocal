@@ -139,9 +139,9 @@ class PayrollAnalytics(models.Model):
         """Get payslips for the specific country and period"""
         # Map countries to salary structures
         country_structure_map = {
-            'VN': 'Vietnam Salary Structure',
-            'ID': 'Indonesia Salary Structure',
-            'IN': 'India Salary Structure'
+            'VN': 'Vietnam Standard Payroll',
+            'ID': 'Indonesia Standard Payroll',
+            'IN': 'India Standard Payroll'
         }
         
         structure_name = country_structure_map.get(country)
@@ -345,9 +345,9 @@ class PayrollAnalytics(models.Model):
         
         # Filter by country if needed
         country_structure_map = {
-            'VN': 'Vietnam Salary Structure',
-            'ID': 'Indonesia Salary Structure',
-            'IN': 'India Salary Structure'
+            'VN': 'Vietnam Standard Payroll',
+            'ID': 'Indonesia Standard Payroll',
+            'IN': 'India Standard Payroll'
         }
         structure_name = country_structure_map.get(self.country)
         

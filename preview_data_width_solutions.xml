@@ -1,0 +1,175 @@
+<!-- =================================================================
+     SOLUTION OPTIONS FOR INCREASING PREVIEW_DATA WIDTH
+     ================================================================= -->
+
+<!-- OPTION 1: FULL-WIDTH WITH CUSTOM CSS CLASS (RECOMMENDED) -->
+<!-- Preview Section -->
+<group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}">
+    <div class="alert alert-success">
+        <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+        <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
+    </div>
+    <field name="preview_data" widget="text" readonly="1" 
+           class="o_field_text_full_width" 
+           style="width: 100%; min-width: 800px; min-height: 300px; font-family: monospace;"/>
+</group>
+
+<!-- Add this CSS in your view or as a separate CSS file -->
+<style>
+    .o_field_text_full_width {
+        width: 100% !important;
+        min-width: 800px !important;
+        min-height: 300px !important;
+        max-width: none !important;
+        font-family: 'Courier New', monospace !important;
+        font-size: 12px !important;
+        resize: both !important;
+    }
+    
+    .o_field_text_full_width textarea {
+        width: 100% !important;
+        min-width: 800px !important;
+        min-height: 300px !important;
+        resize: both !important;
+    }
+</style>
+
+<!-- =================================================================== -->
+
+<!-- OPTION 2: REMOVE GROUP STRUCTURE FOR FULL WIDTH -->
+<!-- Preview Section -->
+<separator string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}"/>
+<div attrs="{'invisible': [('preview_data', '=', False)]}">
+    <div class="alert alert-success">
+        <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+        <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
+    </div>
+    <field name="preview_data" widget="text" readonly="1" 
+           nolabel="1"
+           style="width: 100%; min-width: 900px; min-height: 400px; font-family: monospace; font-size: 12px;"/>
+</div>
+
+<!-- =================================================================== -->
+
+<!-- OPTION 3: USE NOTEBOOK PAGE FOR MAXIMUM SPACE -->
+<notebook attrs="{'invisible': [('preview_data', '=', False)]}">
+    <page string="Export Preview" name="preview_page">
+        <div class="alert alert-success">
+            <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+            <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
+        </div>
+        <field name="preview_data" widget="text" readonly="1" 
+               nolabel="1"
+               style="width: 100%; min-width: 1000px; min-height: 500px; font-family: monospace; font-size: 11px; resize: both;"/>
+    </page>
+</notebook>
+
+<!-- =================================================================== -->
+
+<!-- OPTION 4: CUSTOM DIV WITH PRECISE CONTROL -->
+<!-- Preview Section -->
+<group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}" col="1">
+    <div class="alert alert-success">
+        <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+        <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
+    </div>
+    <div style="width: 100%; margin: 10px 0;">
+        <field name="preview_data" widget="text" readonly="1" 
+               nolabel="1"
+               style="width: 100%; min-width: 95vw; min-height: 350px; font-family: 'Courier New', monospace; font-size: 12px; border: 1px solid #ccc; padding: 10px; background-color: #f8f9fa; overflow: auto; white-space: pre; resize: both;"/>
+    </div>
+</group>
+
+<!-- =================================================================== -->
+
+<!-- OPTION 5: FULL VIEWPORT WIDTH WITH SCROLLING -->
+<!-- Preview Section -->
+<group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}">
+    <div class="alert alert-success">
+        <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+        <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
+    </div>
+    <field name="preview_data" widget="html" readonly="1" 
+           style="width: 98vw; min-height: 400px; margin-left: -20px; margin-right: -20px;"/>
+</group>
+
+<!-- And in your model, format preview_data as HTML: -->
+<!-- 
+def format_preview_data(self, data):
+    formatted_data = html.escape(data)  # Escape HTML characters
+    return f"<pre style='font-family: monospace; font-size: 12px; overflow: auto; white-space: pre-wrap;'>{formatted_data}</pre>"
+-->
+
+<!-- =================================================================== -->
+
+<!-- RECOMMENDED SOLUTION: OPTION 1 WITH ENHANCED STYLING -->
+<group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}" col="1">
+    <div class="alert alert-success" style="margin-bottom: 15px;">
+        <h5><i class="fa fa-check-circle"/> Export Preview Ready</h5>
+        <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
+    </div>
+    <div class="preview_data_container">
+        <label class="o_form_label" style="margin-bottom: 8px; display: block; font-weight: bold;">Bank Export Data:</label>
+        <field name="preview_data" widget="text" readonly="1" 
+               nolabel="1"
+               class="preview_data_field"/>
+    </div>
+</group>
+
+<style>
+    .preview_data_container {
+        width: 100%;
+        margin: 10px 0;
+    }
+    
+    .preview_data_field {
+        width: 100% !important;
+        min-width: 900px !important;
+        min-height: 400px !important;
+        max-width: none !important;
+        font-family: 'Courier New', 'Monaco', 'Menlo', monospace !important;
+        font-size: 12px !important;
+        line-height: 1.4 !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 4px !important;
+        padding: 12px !important;
+        background-color: #f8f9fa !important;
+        color: #495057 !important;
+        resize: both !important;
+        overflow: auto !important;
+        white-space: pre !important;
+    }
+    
+    .preview_data_field:focus {
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25) !important;
+    }
+    
+    /* Ensure the field expands in the form */
+    .o_form_sheet .preview_data_container .preview_data_field {
+        width: calc(100% - 0px) !important;
+    }
+</style>
+
+<!-- =================================================================== -->
+<!-- IMPLEMENTATION INSTRUCTIONS:
+     
+     1. CHOOSE OPTION 1 (RECOMMENDED) for best balance of functionality and appearance
+     2. Add the CSS either:
+        - Directly in your view XML (between <style> tags)
+        - In a separate .css file in static/src/css/ 
+        - In your module's assets bundle
+     
+     3. KEY IMPROVEMENTS:
+        • Full width utilization (100% + min-width)
+        • Monospace font for data alignment  
+        • Increased height (400px minimum)
+        • Resizable by user
+        • Better visual styling
+        • Proper scrolling for overflow
+     
+     4. ALTERNATIVE: Use OPTION 3 (Notebook) if you want maximum screen space
+     
+     5. TESTING: After implementation, test with different screen sizes
+     
+     ================================================================= -->

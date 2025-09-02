@@ -32,6 +32,7 @@
         'data/hr_salary_rule_data.xml',
         'data/enhanced_salary_rules_data.xml',           # NEW: Enhanced salary rules
         'data/enhanced_advantage_templates_data.xml',    # NEW: Enhanced advantage templates
+        'data/spreadsheet_data.xml',                     # NEW: Indonesia spreadsheet template
         # Load views (dashboard view must be loaded before menu structure)
         'views/payroll_dashboard.xml',
         'views/payroll_country_selector_template.xml',
