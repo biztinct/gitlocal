@@ -432,22 +432,74 @@ class PayrollDashboard(models.Model):
         }
 
     def action_import_spreadsheet(self):
-        """Import spreadsheet - ENHANCED version"""
+        """Two-step process: Import spreadsheet data, then open Batch Payslip wizard"""
         try:
+            # Step 1: Import spreadsheet data from the integrated payroll
+            # Get the country-specific spreadsheet reference with correct external IDs
+            country_spreadsheet_refs = {
+                'VN': 'pb_hr_payroll_vietnam.payrollstaging_vietnam',
+                'ID': 'pb_hr_payroll_indonesia.payrollstaging_indonesia',
+                'IN': '__custom__.payrollstaging_india',
+                'SG': '__custom__.payrollstaging_singapore',
+                'TH': '__custom__.payrollstaging_thailand',
+                'KH': '__custom__.payrollstaging_cambodia',
+                'MY': '__custom__.payrollstaging_malaysia',
+            }
+            
+            spreadsheet_ref = country_spreadsheet_refs.get(self.country)
+            
+            # Try to get the spreadsheet and import data
+            if spreadsheet_ref:
+                try:
+                    spreadsheet = self.env.ref(spreadsheet_ref, raise_if_not_found=False)
+                    if spreadsheet:
+                        # Import the spreadsheet data (this mimics the menu action)
+                        import_result = spreadsheet.import_json_data()
+                        
+                        # If import was successful or returned True, show success message
+                        if import_result is True or not import_result:
+                            self.env.user.notify_success(
+                                title=_('Import Successful'),
+                                message=_('Spreadsheet data imported successfully for %s') % self.country,
+                                sticky=False
+                            )
+                    else:
+                        self.env.user.notify_warning(
+                            title=_('Spreadsheet Not Found'),
+                            message=_('Spreadsheet reference %s not found for country %s') % (spreadsheet_ref, self.country)
+                        )
+                except Exception as import_error:
+                    _logger.warning(f"Error importing spreadsheet for {self.country}: {import_error}")
+                    self.env.user.notify_warning(
+                        title=_('Import Warning'),
+                        message=_('Spreadsheet import encountered issues: %s') % str(import_error)
+                    )
+            else:
+                self.env.user.notify_info(
+                    title=_('No Spreadsheet Configured'),
+                    message=_('No spreadsheet is configured for country %s. Proceeding to payroll batch creation.') % self.country
+                )
+            
+            # Step 2: Open Batch Payslip wizard regardless of import result
+            current_date = fields.Date.today()
+            month_year = current_date.strftime("%B %Y")
+            
             return {
                 'type': 'ir.actions.act_window',
-                'name': f'Import {self.country} Payroll Data',
-                'res_model': 'payroll.import.wizard',
+                'name': f'Process {self.country} Payroll Batch',
+                'res_model': 'hr.payslip.run',
                 'view_mode': 'form',
-                'target': 'new',
+                'view_id': self.env.ref('om_hr_payroll.hr_payslip_run_form').id,
+                'target': 'current',
                 'context': {
-                    'default_country_code': self.country,
-                    'default_target_country': self.country,
-                    'default_import_mode': 'create_update'
+                    'default_name': f'{self.country} Payroll - {month_year}',
+                    'default_date_start': current_date.replace(day=1),
+                    'default_date_end': current_date,
                 }
             }
+            
         except Exception as e:
-            raise UserError(_('Error importing spreadsheet: %s') % str(e))
+            raise UserError(_('Error in payroll process: %s') % str(e))
 
     def action_view_employees_by_country(self):
         """View employees for this country - ENHANCED"""

@@ -481,10 +481,33 @@ if not isinstance(action, bool):  # Check if action is not a boolean
   <field name="binding_model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
   <field name="state">code</field>
   <field name="code">
-spreadsheet = env.ref('__custom__.payrollstaging')
-action = spreadsheet.import_json_data()
-if not isinstance(action, bool):  # Check if action is not a boolean
-    action['type'] = 'ir.actions.act_window_close'
+# Dynamic spreadsheet detection for multi-country support
+spreadsheet_refs = [
+    'pb_hr_payroll_vietnam.payrollstaging_vietnam',
+    'pb_hr_payroll_indonesia.payrollstaging_indonesia',
+    '__custom__.payrollstaging_india',
+    '__custom__.payrollstaging_singapore', 
+    '__custom__.payrollstaging_thailand',
+    '__custom__.payrollstaging_cambodia',
+    '__custom__.payrollstaging_malaysia',
+    '__custom__.payrollstaging'  # fallback
+]
+
+spreadsheet = None
+for ref in spreadsheet_refs:
+    try:
+        spreadsheet = env.ref(ref, raise_if_not_found=False)
+        if spreadsheet:
+            break
+    except:
+        continue
+
+if spreadsheet:
+    action = spreadsheet.import_json_data()
+    if not isinstance(action, bool):  # Check if action is not a boolean
+        action['type'] = 'ir.actions.act_window_close'
+else:
+    raise ValueError('No valid payroll spreadsheet found. Please ensure at least one country module is installed with spreadsheet data.')
   </field>
 </record>
 

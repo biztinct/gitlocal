@@ -5,3 +5,5 @@ access_payroll_country_selector_user,payroll.country.selector.user,model_payroll
 access_country_selector_wizard_user,country.selector.wizard.user,model_country_selector_wizard,om_hr_payroll.group_hr_payroll_user,1,1,1,1
 access_zoho_staging_import_wizard_user,zoho.staging.import.wizard.user,model_zoho_staging_import_wizard,om_hr_payroll.group_hr_payroll_user,1,1,1,1
 access_zoho_staging_field_mapping_user,zoho.staging.field.mapping.user,model_zoho_staging_field_mapping,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_payroll_import_wizard_user,payroll.import.wizard.user,model_payroll_import_wizard,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_payroll_import_wizard_manager,payroll.import.wizard.manager,model_payroll_import_wizard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
