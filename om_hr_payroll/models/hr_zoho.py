@@ -383,19 +383,48 @@ class ZohoTimesheetImporter(models.TransientModel):
                     raise ValidationError(f'Contract Date To is not specified for the employee with ID {zoho_employee.employee_id} and name {zoho_employee.full_name_vn}. Please update Employee Details worksheet with details and import again')
                 '''
 
-                # When creating/updating contract, use country-specific structure
-                if payroll_country == 'ID':
-                    salary_structure = self.env['hr.payroll.structure'].search([('name', '=', 'Indonesia Salary Structure')], limit=1)
-                else:
-                    salary_structure = self.env['hr.payroll.structure'].search([('name', '=', 'Vietnam Salary Structure')], limit=1)
+                # Use flexible salary structure search with fallbacks
+                country_structure_names = {
+                    'VN': ['Vietnam Salary Structure', 'Vietnam Payroll Structure', 'VN Salary Structure'],
+                    'ID': ['Indonesia Salary Structure', 'Indonesia Payroll Structure', 'ID Salary Structure'],
+                    'IN': ['India Salary Structure', 'India Payroll Structure', 'IN Salary Structure'],
+                    'SG': ['Singapore Salary Structure', 'Singapore Payroll Structure', 'SG Salary Structure'],
+                    'TH': ['Thailand Salary Structure', 'Thailand Payroll Structure', 'TH Salary Structure'],
+                    'KH': ['Cambodia Salary Structure', 'Cambodia Payroll Structure', 'KH Salary Structure'],
+                    'MY': ['Malaysia Salary Structure', 'Malaysia Payroll Structure', 'MY Salary Structure'],
+                }
+                
+                salary_structure = None
+                structure_names = country_structure_names.get(payroll_country, [])
+                
+                # Try to find country-specific structure first
+                for structure_name in structure_names:
+                    salary_structure = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
+                    if salary_structure:
+                        break
+                
+                # If no country-specific structure found, use any available structure as fallback
+                if not salary_structure:
+                    salary_structure = self.env['hr.payroll.structure'].search([], limit=1)
                 
                 if not salary_structure:
-                    raise UserError(f"Salary structure for {payroll_country} not found!")
+                    raise UserError(f"No salary structure found in the system! Please create at least one salary structure.")
 
 
+                # Find or create general journal for payroll accounting
                 gen_journal = self.env['account.journal'].search([('type', '=', 'general')], limit=1)
                 if not gen_journal:
-                    raise UserError("No general journal found!")
+                    # Create a default general journal if none exists
+                    try:
+                        gen_journal = self.env['account.journal'].create({
+                            'name': 'General Journal',
+                            'code': 'GEN',
+                            'type': 'general',
+                        })
+                    except Exception as e:
+                        # If journal creation fails, make it optional for payroll import
+                        _logger.warning(f"Could not create general journal: {e}. Payroll import will continue without journal reference.")
+                        gen_journal = None
 
                 # Determine contract type
                 contract_type = zoho_employee.employee_type or 'Permanent' 
@@ -405,8 +434,8 @@ class ZohoTimesheetImporter(models.TransientModel):
                     # Create a new contract type if it doesn't exist
                     existing_contract_type = self.env['hr.contract.type'].create({'name': contract_type})
 
-                # Create the contract
-                self.env['hr.contract'].create({
+                # Create the contract with conditional journal
+                contract_data = {
                     'name': f"{new_employee.name} Contract",
                     'employee_id': new_employee.id,
                     'date_start': zoho_employee.contract_from or datetime.date(2000, 1, 1),
@@ -416,10 +445,15 @@ class ZohoTimesheetImporter(models.TransientModel):
                     'state': 'open',  # 'open' is typically the state for running contracts
                     'struct_id': salary_structure.id,
                     'wage': zoho_employee.base_salary,
-                    'journal_id' : gen_journal.id,
                     'type_id': existing_contract_type.id,  # Assign the contract type
                     # ... add other contract details if needed ...
-                })
+                }
+                
+                # Add journal only if it exists
+                if gen_journal:
+                    contract_data['journal_id'] = gen_journal.id
+                
+                self.env['hr.contract'].create(contract_data)
 
 
             #Update contract values as per latest from zoho_employee_data

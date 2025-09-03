@@ -5,7 +5,7 @@
     <record id="view_payroll_dashboard_vietnam_analytics" model="ir.ui.view">
         <field name="name">Vietnam Payroll Dashboard with Analytics</field>
         <field name="model">payroll.dashboard</field>
-        <field name="inherit_id" ref="pb_hr_payroll_base.view_payroll_dashboard_form_enhanced"/>
+        <field name="inherit_id" ref="pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam"/>
         <field name="arch" type="xml">
             <!-- Add js_class to the form element -->
             <form position="attributes">
@@ -22,40 +22,58 @@
                 <attribute name="style">color: #2c3e50;</attribute>
             </xpath>
             
-            <!-- Add new tiles after existing dashboard cards - Vietnam uses col-lg-4 -->
-            <xpath expr="//div[@class='row']/div[@class='col-lg-4'][last()]" position="after">
+            <!-- Add new tiles after the third row - Vietnam has 3 rows of cards -->
+            <xpath expr="//div[@class='dashboard-container']/div[@class='row'][3]" position="after">
                 
-                <!-- Analytics Approval Tile - Exact Same Format as Vietnam -->
-                <div class="col-lg-4">
-                    <div class="dashboard-card">
-                        <div>
-                            <i class="fa fa-bar-chart-o fa-3x card-icon"/>
-                            <h4 class="card-title">Approval Dashboard</h4>
-                            <p class="card-description">Review and approve payroll with detailed analytics</p>
+                <!-- Fourth Row: Analytics Features -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="dashboard-card">
+                            <div>
+                                <i class="fa fa-bar-chart-o fa-3x card-icon"/>
+                                <h4 class="card-title">Approval Dashboard</h4>
+                                <p class="card-description">Review and approve payroll with detailed analytics</p>
+                            </div>
+                            <button name="action_open_analytics_dashboard" 
+                                    type="object" 
+                                    class="dashboard-btn"
+                                    data-country="VN">
+                                Open Dashboard
+                            </button>
                         </div>
-                        <button name="action_open_analytics_dashboard" 
-                                type="object" 
-                                class="dashboard-btn"
-                                data-country="VN">
-                            Open Dashboard
-                        </button>
                     </div>
-                </div>
-                
-                <!-- Bank Export Tile - Exact Same Format as Vietnam -->
-                <div class="col-lg-4">
-                    <div class="dashboard-card">
-                        <div>
-                            <i class="fa fa-university fa-3x card-icon"/>
-                            <h4 class="card-title">Bank Export</h4>
-                            <p class="card-description">Export approved payroll data for disbursement</p>
+                    
+                    <div class="col-lg-4">
+                        <div class="dashboard-card">
+                            <div>
+                                <i class="fa fa-university fa-3x card-icon"/>
+                                <h4 class="card-title">Bank Export</h4>
+                                <p class="card-description">Export approved payroll data for disbursement</p>
+                            </div>
+                            <button name="action_export_bank_file" 
+                                    type="object" 
+                                    class="dashboard-btn"
+                                    data-country="VN">
+                                Export Data
+                            </button>
                         </div>
-                        <button name="action_export_bank_file" 
-                                type="object" 
-                                class="dashboard-btn"
-                                data-country="VN">
-                            Export Data
-                        </button>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="dashboard-card" style="opacity: 0.7;">
+                            <div>
+                                <i class="fa fa-info-circle fa-3x card-icon" style="color: #6c757d;"/>
+                                <h4 class="card-title" style="color: #6c757d;">Analytics Info</h4>
+                                <p class="card-description">Additional analytics features will appear here when configured</p>
+                            </div>
+                            <button name="dummy_analytics_button" 
+                                    type="button" 
+                                    class="dashboard-btn" 
+                                    style="background: #6c757d; cursor: not-allowed;" 
+                                    disabled="disabled">
+                                Coming Soon
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -84,40 +102,58 @@
                 <attribute name="style">color: #2c3e50;</attribute>
             </xpath>
             
-            <!-- Add new tiles after existing dashboard cards - Indonesia uses col-lg-3 -->
-            <xpath expr="//div[@class='row']/div[@class='col-lg-3'][last()]" position="after">
+            <!-- Add new tiles after existing dashboard cards - Indonesia uses col-lg-4 -->
+            <xpath expr="//div[@class='dashboard-container']/div[@class='row'][last()]" position="after">
                 
-                <!-- Analytics Approval Tile - Exact Same Format as Indonesia -->
-                <div class="col-lg-3">
-                    <div class="dashboard-card">
-                        <div>
-                            <i class="fa fa-bar-chart-o fa-3x card-icon"/>
-                            <h4 class="card-title">Approval Dashboard</h4>
-                            <p class="card-description">Review and approve payroll with detailed analytics</p>
+                <!-- Analytics Row for Indonesia -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="dashboard-card">
+                            <div>
+                                <i class="fa fa-bar-chart-o fa-3x card-icon"/>
+                                <h4 class="card-title">Approval Dashboard</h4>
+                                <p class="card-description">Review and approve payroll with detailed analytics</p>
+                            </div>
+                            <button name="action_open_analytics_dashboard" 
+                                    type="object" 
+                                    class="dashboard-btn"
+                                    data-country="ID">
+                                Open Dashboard
+                            </button>
                         </div>
-                        <button name="action_open_analytics_dashboard" 
-                                type="object" 
-                                class="dashboard-btn"
-                                data-country="ID">
-                            Open Dashboard
-                        </button>
                     </div>
-                </div>
-                
-                <!-- Bank Export Tile - Exact Same Format as Indonesia -->
-                <div class="col-lg-3">
-                    <div class="dashboard-card">
-                        <div>
-                            <i class="fa fa-university fa-3x card-icon"/>
-                            <h4 class="card-title">Bank Export</h4>
-                            <p class="card-description">Export approved payroll data for disbursement</p>
+                    
+                    <div class="col-lg-4">
+                        <div class="dashboard-card">
+                            <div>
+                                <i class="fa fa-university fa-3x card-icon"/>
+                                <h4 class="card-title">Bank Export</h4>
+                                <p class="card-description">Export approved payroll data for disbursement</p>
+                            </div>
+                            <button name="action_export_bank_file" 
+                                    type="object" 
+                                    class="dashboard-btn"
+                                    data-country="ID">
+                                Export Data
+                            </button>
                         </div>
-                        <button name="action_export_bank_file" 
-                                type="object" 
-                                class="dashboard-btn"
-                                data-country="ID">
-                            Export Data
-                        </button>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="dashboard-card" style="opacity: 0.7;">
+                            <div>
+                                <i class="fa fa-info-circle fa-3x card-icon" style="color: #6c757d;"/>
+                                <h4 class="card-title" style="color: #6c757d;">Analytics Info</h4>
+                                <p class="card-description">Additional analytics features for Indonesia payroll</p>
+                            </div>
+                            <button name="dummy_analytics_button" 
+                                    type="button" 
+                                    class="dashboard-btn" 
+                                    style="background: #6c757d; cursor: not-allowed;" 
+                                    disabled="disabled">
+                                Coming Soon
+                            </button>
+                        </div>
                     </div>
                 </div>
                 

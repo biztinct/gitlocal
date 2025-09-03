@@ -285,15 +285,28 @@ class SpreadsheetSpreadsheet(models.Model):
         # Get payroll country from context
         payroll_country = self.env.context.get('payroll_country', 'VN')
         
-        # Select appropriate spreadsheet based on country
-        if payroll_country == 'ID':
-            spreadsheet = self.env.ref('__custom__.payrollstaging_indonesia', raise_if_not_found=False)
-            if not spreadsheet:
-                raise UserError("Indonesia payroll spreadsheet not found!")
+        # Select appropriate spreadsheet based on country with updated external IDs
+        spreadsheet_refs = {
+            'VN': 'pb_hr_payroll_vietnam.payrollstaging_vietnam',
+            'ID': 'pb_hr_payroll_indonesia.payrollstaging_indonesia', 
+            'IN': '__custom__.payrollstaging_india',
+            'SG': '__custom__.payrollstaging_singapore',
+            'TH': '__custom__.payrollstaging_thailand',
+            'KH': '__custom__.payrollstaging_cambodia',
+            'MY': '__custom__.payrollstaging_malaysia',
+        }
+        
+        spreadsheet_ref = spreadsheet_refs.get(payroll_country)
+        if spreadsheet_ref:
+            spreadsheet = self.env.ref(spreadsheet_ref, raise_if_not_found=False)
         else:
-            spreadsheet = self.env.ref('__custom__.payrollstaging', raise_if_not_found=False)
-            if not spreadsheet:
-                raise UserError("Vietnam payroll spreadsheet not found!")
+            spreadsheet = None
+            
+        if not spreadsheet:
+            # If country-specific spreadsheet not found, try to use the current spreadsheet (self)
+            spreadsheet = self
+            if not spreadsheet.data:
+                raise UserError(f"{payroll_country} payroll spreadsheet not found! Expected reference: {spreadsheet_ref or 'Unknown country'}")
         
         # Continue with existing logic but use selected spreadsheet
         # ... rest of the existing import_json_data code ...
@@ -301,7 +314,7 @@ class SpreadsheetSpreadsheet(models.Model):
         # Make sure to pass payroll_country in context when calling _create_or_update_employee
         self.env['zoho.timesheet.importer'].with_context(payroll_country=payroll_country)._create_or_update_employee()
 
-        data = json.loads(base64.b64decode(self.data).decode("UTF-8"))
+        data = json.loads(base64.b64decode(spreadsheet.data).decode("UTF-8"))
 
         # Delete all existing data from zoho.employee.data
         #self.env['zoho.employee.data'].search([]).unlink()
