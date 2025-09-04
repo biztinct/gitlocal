@@ -43,8 +43,8 @@
             <field name="code">BASIC</field>
             <field name="category_id" ref="om_hr_payroll.BASIC"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = contract.wage</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
         </record>
 
         <record id="hr_rule_taxable" model="hr.salary.rule">
@@ -53,8 +53,8 @@
             <field name="code">GROSS</field>
             <field name="category_id" ref="om_hr_payroll.GROSS"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = categories.BASIC + categories.ALW</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
         </record>
 
 <!--        <record id="hr_rule_unpaid" model="hr.salary.rule">-->
@@ -75,9 +75,8 @@
             <field name="code">HRA</field>
             <field name="category_id" ref="om_hr_payroll.ALW"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = contract.hra</field>
-            <field name="amount_percentage">30</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
         </record>
 
         <record id="hr_rule_da" model="hr.salary.rule">
@@ -86,8 +85,8 @@
             <field name="code">DA</field>
             <field name="category_id" ref="om_hr_payroll.ALW"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = contract.da</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
         </record>
 
         <record id="hr_rule_travel" model="hr.salary.rule">
@@ -96,8 +95,8 @@
             <field name="code">Travel</field>
             <field name="category_id" ref="om_hr_payroll.ALW"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = contract.travel_allowance</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
         </record>
 
         <record id="hr_rule_meal" model="hr.salary.rule">
@@ -106,8 +105,8 @@
             <field name="code">Meal</field>
             <field name="category_id" ref="om_hr_payroll.ALW"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = contract.meal_allowance</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
         </record>
 
         <record id="hr_rule_medical" model="hr.salary.rule">
@@ -116,8 +115,8 @@
             <field name="code">Medical</field>
             <field name="category_id" ref="om_hr_payroll.ALW"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = contract.medical_allowance</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
         </record>
 
         <record id="hr_rule_net" model="hr.salary.rule">
@@ -126,17 +125,120 @@
             <field name="code">NET</field>
             <field name="category_id" ref="om_hr_payroll.NET"/>
             <field name="condition_select">none</field>
-            <field name="amount_select">code</field>
-            <field name="amount_python_compute">result = categories.BASIC + categories.ALW + categories.DED</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
             <field name="register_id" ref="contrib_register_employees"/>
         </record>
 
-        <!-- Salary Structure -->
+        <!-- Vietnam-specific Salary Rules -->
+        <record id="hr_rule_transport_allowance" model="hr.salary.rule">
+            <field name="name">Transport Allowance</field>
+            <field name="sequence" eval="13"/>
+            <field name="code">TRANSPORT</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <record id="hr_rule_social_insurance_employee" model="hr.salary.rule">
+            <field name="name">Social Insurance (Employee)</field>
+            <field name="sequence" eval="101"/>
+            <field name="code">SI_EMP</field>
+            <field name="category_id" ref="om_hr_payroll.DED"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <record id="hr_rule_health_insurance_employee" model="hr.salary.rule">
+            <field name="name">Health Insurance (Employee)</field>
+            <field name="sequence" eval="102"/>
+            <field name="code">HI_EMP</field>
+            <field name="category_id" ref="om_hr_payroll.DED"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <record id="hr_rule_unemployment_insurance_employee" model="hr.salary.rule">
+            <field name="name">Unemployment Insurance (Employee)</field>
+            <field name="sequence" eval="103"/>
+            <field name="code">UI_EMP</field>
+            <field name="category_id" ref="om_hr_payroll.DED"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <record id="hr_rule_personal_income_tax" model="hr.salary.rule">
+            <field name="name">Personal Income Tax</field>
+            <field name="sequence" eval="104"/>
+            <field name="code">PIT</field>
+            <field name="category_id" ref="om_hr_payroll.DED"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <!-- Social Insurance Company Contributions (for analytics) -->
+        <record id="hr_rule_social_insurance_company" model="hr.salary.rule">
+            <field name="name">Social Insurance (Company)</field>
+            <field name="sequence" eval="201"/>
+            <field name="code">SI_COMP</field>
+            <field name="category_id" ref="om_hr_payroll.COMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <record id="hr_rule_health_insurance_company" model="hr.salary.rule">
+            <field name="name">Health Insurance (Company)</field>
+            <field name="sequence" eval="202"/>
+            <field name="code">HI_COMP</field>
+            <field name="category_id" ref="om_hr_payroll.COMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <record id="hr_rule_unemployment_insurance_company" model="hr.salary.rule">
+            <field name="name">Unemployment Insurance (Company)</field>
+            <field name="sequence" eval="203"/>
+            <field name="code">UI_COMP</field>
+            <field name="category_id" ref="om_hr_payroll.COMP"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
+        <!-- Salary Structures -->
 
         <record id="structure_base" model="hr.payroll.structure">
             <field name="code">BASE</field>
             <field name="name">Base for new structures</field>
             <field eval="[(6, 0, [ref('hr_rule_basic'), ref('hr_rule_taxable'),ref('hr_rule_net')])]" name="rule_ids"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="structure_vietnam" model="hr.payroll.structure">
+            <field name="code">VN_STD</field>
+            <field name="name">Vietnam Standard Payroll</field>
+            <field eval="[(6, 0, [
+                ref('hr_rule_basic'), 
+                ref('hr_rule_hra'), 
+                ref('hr_rule_da'), 
+                ref('hr_rule_travel'), 
+                ref('hr_rule_meal'), 
+                ref('hr_rule_medical'),
+                ref('hr_rule_transport_allowance'),
+                ref('hr_rule_taxable'),
+                ref('hr_rule_social_insurance_employee'),
+                ref('hr_rule_health_insurance_employee'),
+                ref('hr_rule_unemployment_insurance_employee'),
+                ref('hr_rule_personal_income_tax'),
+                ref('hr_rule_net')
+            ])]" name="rule_ids"/>
             <field name="company_id" ref="base.main_company"/>
         </record>
 
