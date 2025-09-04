@@ -57,8 +57,17 @@ class PayrollDashboardAnalytics(models.Model):
             ('date_to', '<=', last_day)
         ], limit=1)
         
+        # Force regeneration to get fresh data and debug info
         if analytics:
-            # Open existing analytics dashboard
+            _logger.info(f"Found existing analytics record for {country}, regenerating...")
+            analytics.unlink()
+            analytics = None
+        
+        # Generate new analytics
+        try:
+            analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
+            analytics.write({'state': 'ready'})
+            
             return {
                 'type': 'ir.actions.act_window',
                 'name': f'{country} Payroll Analytics Dashboard',
@@ -69,34 +78,18 @@ class PayrollDashboardAnalytics(models.Model):
                 'target': 'current',
                 'context': {'create': False, 'edit': False}
             }
-        else:
-            # Generate new analytics or show list view
-            try:
-                analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
-                analytics.write({'state': 'ready'})
-                
-                return {
-                    'type': 'ir.actions.act_window',
-                    'name': f'{country} Payroll Analytics Dashboard',
-                    'res_model': 'payroll.analytics',
-                    'res_id': analytics.id,
-                    'view_mode': 'form',
-                    'view_id': self.env.ref('payroll_analytics_approval.view_payroll_analytics_dashboard').id,
-                    'target': 'current',
-                    'context': {'create': False, 'edit': False}
-                }
-            except Exception as e:
-                _logger.error(f"Error generating analytics for {country}: {e}")
-                # Fall back to showing analytics list
-                return {
-                    'type': 'ir.actions.act_window',
-                    'name': f'{country} Payroll Analytics',
-                    'res_model': 'payroll.analytics',
-                    'view_mode': 'tree,form',
-                    'domain': [('country', '=', country)],
-                    'context': {'default_country': country, 'search_default_ready': 1},
-                    'target': 'current',
-                }
+        except Exception as e:
+            _logger.error(f"Error generating analytics for {country}: {e}")
+            # Fall back to showing analytics list
+            return {
+                'type': 'ir.actions.act_window',
+                'name': f'{country} Payroll Analytics',
+                'res_model': 'payroll.analytics',
+                'view_mode': 'tree,form',
+                'domain': [('country', '=', country)],
+                'context': {'default_country': country, 'search_default_ready': 1},
+                'target': 'current',
+            }
     
     def action_export_bank_file(self):
         """Open bank export wizard for approved payroll"""
