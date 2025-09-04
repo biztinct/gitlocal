@@ -141,19 +141,19 @@ class PayrollAnalytics(models.Model):
     
     def _get_payslips_for_period(self, country, date_from, date_to):
         """Get payslips for the specific country and period"""
-        # Map countries to salary structures
+        # Map countries to salary structures (try multiple structure names)
         country_structure_map = {
-            'VN': 'Vietnam Standard Payroll',
-            'ID': 'Indonesia Standard Payroll',
-            'IN': 'India Standard Payroll',
-            'SG': 'Singapore Standard Payroll',
-            'TH': 'Thailand Standard Payroll', 
-            'KH': 'Cambodia Standard Payroll',
-            'MY': 'Malaysia Standard Payroll'
+            'VN': ['Vietnam Standard Payroll', 'Vietnam Full Payroll (Analytics)', 'Base for new structures'],
+            'ID': ['Indonesia Standard Payroll', 'Base for new structures'],
+            'IN': ['India Standard Payroll', 'Base for new structures'],
+            'SG': ['Singapore Standard Payroll', 'Base for new structures'],
+            'TH': ['Thailand Standard Payroll', 'Base for new structures'], 
+            'KH': ['Cambodia Standard Payroll', 'Base for new structures'],
+            'MY': ['Malaysia Standard Payroll', 'Base for new structures']
         }
         
-        structure_name = country_structure_map.get(country)
-        if not structure_name:
+        structure_names = country_structure_map.get(country, [])
+        if not structure_names:
             # Try to find any structure and filter by country if possible
             structures = self.env['hr.payroll.structure'].search([])
             country_structures = structures.filtered(lambda s: country in s.name or country.lower() in s.name.lower())
@@ -161,15 +161,15 @@ class PayrollAnalytics(models.Model):
                 return self.env['hr.payslip']
             structure = country_structures[0]
         else:
-            structure = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
+            # Try each structure name in order
+            structure = None
+            for structure_name in structure_names:
+                structure = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
+                if structure:
+                    break
+            
             if not structure:
-                # Try to find a structure that contains the country name
-                structure = self.env['hr.payroll.structure'].search([('name', 'ilike', country)], limit=1)
-                if not structure:
-                    # Fall back to "Base for new structures" which seems to be the default
-                    structure = self.env['hr.payroll.structure'].search([('name', '=', 'Base for new structures')], limit=1)
-                    if not structure:
-                        return self.env['hr.payslip']
+                return self.env['hr.payslip']
         
         # Get payslips with more flexible search
         _logger.info(f"Searching for payslips with structure: {structure.name} (ID: {structure.id})")
@@ -237,11 +237,30 @@ class PayrollAnalytics(models.Model):
         }
         employee_metrics['average_salary'] = total_payroll / len(payslips) if payslips else 0
         
-        # Salary components analysis
+        # Salary components analysis - dynamically get all components from payslips
         salary_components = {}
-        component_codes = ['BASIC', 'MIONEFIVE', 'BPJS_JKK', 'BPJS_KES_COMP', 'LAINALL', 
-                          'BPJS_JHT_COMP', 'BPJS_JP_COMP', 'BPJS_KES_EMP', 'BPJS_JHT_EMP', 
-                          'BPJS_JP_EMP', 'MONPIT', 'NETPAY']
+        
+        # Country-specific component codes - Updated to match actual Vietnam salary structure
+        country_components = {
+            'VN': ['BASIC', 'HRA', 'DA', 'Travel', 'Meal', 'Medical', 'TRANSPORT', 'GROSS', 
+                   'SI_EMP', 'HI_EMP', 'UI_EMP', 'PIT', 'NET', 'SI_COMP', 'HI_COMP', 'UI_COMP',
+                   'NETPAY'],  # Include both actual structure codes and common variants
+            'ID': ['BASIC', 'MIONEFIVE', 'BPJS_JKK', 'BPJS_KES_COMP', 'LAINALL', 
+                   'BPJS_JHT_COMP', 'BPJS_JP_COMP', 'BPJS_KES_EMP', 'BPJS_JHT_EMP', 
+                   'BPJS_JP_EMP', 'MONPIT', 'NETPAY'],
+            'IN': ['BASIC', 'HRA', 'DA', 'Travel', 'Meal', 'Medical', 'PF_EMP', 'ESI_EMP', 'PT', 'TDS', 'NET']
+        }
+        
+        # Use country-specific components or fall back to all unique codes from payslips
+        component_codes = country_components.get(country, [])
+        if not component_codes:
+            # Fall back to discovering all codes from actual payslip lines
+            all_lines = payslips.mapped('line_ids')
+            component_codes = list(set(all_lines.mapped('code')))
+        
+        # Always include actual codes from payslips to show current data
+        actual_codes = list(set(payslips.mapped('line_ids').mapped('code')))
+        component_codes = list(set(component_codes + actual_codes))
         
         for code in component_codes:
             lines = payslips.mapped('line_ids').filtered(lambda l: l.code == code)
@@ -271,7 +290,31 @@ class PayrollAnalytics(models.Model):
     def _get_component_name(self, code):
         """Get display name for component code"""
         mapping = {
+            # Vietnam components
             'BASIC': 'Basic Salary',
+            'BASIC_VN': 'Basic Salary - Vietnam',
+            'HRA': 'House Rent Allowance',
+            'HOUSING_VN': 'Housing Allowance - Vietnam',
+            'DA': 'Dearness Allowance', 
+            'Travel': 'Travel Allowance',
+            'Meal': 'Meal Allowance',
+            'Medical': 'Medical Allowance',
+            'TRANSPORT': 'Transport Allowance',
+            'TRANSPORT_VN': 'Transport Allowance - Vietnam',
+            'GROSS': 'Gross Salary',
+            'SS_VN': 'Social Security - Vietnam',
+            'SI_EMP': 'Social Insurance (Employee)',
+            'HI_EMP': 'Health Insurance (Employee)',
+            'UI_EMP': 'Unemployment Insurance (Employee)',
+            'PIT': 'Personal Income Tax',
+            'PIT_VN': 'Personal Income Tax - Vietnam',
+            'NET': 'Net Salary',
+            'NET_VN': 'Net Salary - Vietnam',
+            'SI_COMP': 'Social Insurance (Company)',
+            'HI_COMP': 'Health Insurance (Company)',
+            'UI_COMP': 'Unemployment Insurance (Company)',
+            
+            # Indonesia components (for compatibility)
             'MIONEFIVE': 'Life Insurance',
             'BPJS_JKK': 'Work Accident Insurance',
             'BPJS_KES_COMP': 'BPJS Healthcare (Company)',
@@ -282,7 +325,13 @@ class PayrollAnalytics(models.Model):
             'BPJS_JHT_EMP': 'Old Age Fund (Employee)',
             'BPJS_JP_EMP': 'Pension (Employee)',
             'MONPIT': 'Income Tax',
-            'NETPAY': 'Net Pay'
+            'NETPAY': 'Net Pay',
+            
+            # India components (for compatibility)
+            'PF_EMP': 'Provident Fund (Employee)',
+            'ESI_EMP': 'Employee State Insurance',
+            'PT': 'Professional Tax',
+            'TDS': 'Tax Deducted at Source'
         }
         return mapping.get(code, code)
     
