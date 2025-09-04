@@ -16,7 +16,8 @@
         'hr_contract',
         'hr_holidays',
         'spreadsheet_oca',
-        'web_notify'
+        'web_notify',
+        'account'
     ],
     'data': [
         'security/hr_payroll_security.xml',
