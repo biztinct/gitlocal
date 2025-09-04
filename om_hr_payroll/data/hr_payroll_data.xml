@@ -3,6 +3,40 @@
 
     <data noupdate="0">
 
+        <!-- Payroll Chart of Accounts -->
+        <record id="account_payroll_salaries" model="account.account" forcecreate="True">
+            <field name="code">520001</field>
+            <field name="name">Salaries Expense</field>
+            <field name="account_type">expense</field>
+            <field name="reconcile">False</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="account_payroll_allowances" model="account.account" forcecreate="True">
+            <field name="code">520002</field>
+            <field name="name">Allowances Expense</field>
+            <field name="account_type">expense</field>
+            <field name="reconcile">False</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="account_salary_payable" model="account.account" forcecreate="True">
+            <field name="code">210001</field>
+            <field name="name">Salary Payable</field>
+            <field name="account_type">liability_current</field>
+            <field name="reconcile">True</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="account_payroll_clearing" model="account.account" forcecreate="True">
+            <field name="code">210002</field>
+            <field name="name">Payroll Clearing Account</field>
+            <field name="account_type">liability_current</field>
+            <field name="reconcile">True</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <!-- Salary Rules (accounting fields handled by om_hr_payroll_account module) -->
         <record id="hr_rule_basic" model="hr.salary.rule">
             <field name="name">Basic Salary</field>
             <field name="sequence" eval="1"/>

@@ -411,20 +411,29 @@ class ZohoTimesheetImporter(models.TransientModel):
                     raise UserError(f"No salary structure found in the system! Please create at least one salary structure.")
 
 
-                # Find or create general journal for payroll accounting
-                gen_journal = self.env['account.journal'].search([('type', '=', 'general')], limit=1)
-                if not gen_journal:
-                    # Create a default general journal if none exists
+                # Find or create salary journal for payroll accounting (om_hr_payroll_account extension)
+                salary_journal = self.env['account.journal'].search([
+                    ('type', '=', 'general'),
+                    '|', 
+                    ('name', 'ilike', 'salary'),
+                    ('name', 'ilike', 'payroll')
+                ], limit=1)
+                
+                if not salary_journal:
+                    # Try to find any general journal
+                    salary_journal = self.env['account.journal'].search([('type', '=', 'general')], limit=1)
+                
+                if not salary_journal:
+                    # Create a salary journal if none exists
                     try:
-                        gen_journal = self.env['account.journal'].create({
-                            'name': 'General Journal',
-                            'code': 'GEN',
+                        salary_journal = self.env['account.journal'].create({
+                            'name': 'Salary Journal',
+                            'code': 'SAL',
                             'type': 'general',
                         })
                     except Exception as e:
-                        # If journal creation fails, make it optional for payroll import
-                        _logger.warning(f"Could not create general journal: {e}. Payroll import will continue without journal reference.")
-                        gen_journal = None
+                        _logger.warning(f"Could not create salary journal: {e}. Contract will be created without journal reference.")
+                        salary_journal = None
 
                 # Determine contract type
                 contract_type = zoho_employee.employee_type or 'Permanent' 
@@ -434,14 +443,12 @@ class ZohoTimesheetImporter(models.TransientModel):
                     # Create a new contract type if it doesn't exist
                     existing_contract_type = self.env['hr.contract.type'].create({'name': contract_type})
 
-                # Create the contract with conditional journal
+                # Create the contract with salary journal (om_hr_payroll_account extension)
                 contract_data = {
                     'name': f"{new_employee.name} Contract",
                     'employee_id': new_employee.id,
                     'date_start': zoho_employee.contract_from or datetime.date(2000, 1, 1),
                     'date_end': zoho_employee.contract_to or datetime.date(2100, 1, 1),
-                    #'date_start': datetime.date(2000, 1, 1),
-                    #'date_end': datetime.date(2100, 1, 1),
                     'state': 'open',  # 'open' is typically the state for running contracts
                     'struct_id': salary_structure.id,
                     'wage': zoho_employee.base_salary,
@@ -449,9 +456,9 @@ class ZohoTimesheetImporter(models.TransientModel):
                     # ... add other contract details if needed ...
                 }
                 
-                # Add journal only if it exists
-                if gen_journal:
-                    contract_data['journal_id'] = gen_journal.id
+                # Add journal_id if salary journal exists (om_hr_payroll_account extension)
+                if salary_journal:
+                    contract_data['journal_id'] = salary_journal.id
                 
                 self.env['hr.contract'].create(contract_data)
 
@@ -514,6 +521,6 @@ class ZohoTimesheetImporter(models.TransientModel):
                         advantage_line.write({'amount': amount})
                     else:
                         latest_contract.write({
-                            'advantage_ids': [(0, 0, {'advantage_template_code': code, 'amount': amount})]
+                            'advantages_ids': [(0, 0, {'advantage_template_code': code, 'amount': amount})]
                         })
 
