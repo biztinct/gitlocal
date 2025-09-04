@@ -13,10 +13,34 @@ class PayrollDashboardAnalytics(models.Model):
     
     def action_open_analytics_dashboard(self):
         """Open analytics dashboard for the country"""
-        country = self.country
+        # Handle both direct calls and web calls
+        try:
+            # If called as method on recordset, get country from record
+            if self and hasattr(self, 'country') and self.country:
+                country = self.country
+            else:
+                # If called from web interface or as model method, try context
+                country = self.env.context.get('default_country')
+                if not country:
+                    # Try to get from active record if available
+                    active_id = self.env.context.get('active_id')
+                    if active_id:
+                        dashboard_record = self.browse(active_id)
+                        if dashboard_record.exists() and dashboard_record.country:
+                            country = dashboard_record.country
+            
+            # If still no country, try to infer from user access or default to VN
+            if not country:
+                # Default to Vietnam for now, or could be made configurable
+                country = 'VN'
+                _logger.warning("No country specified, defaulting to VN")
+                
+        except Exception as e:
+            _logger.error(f"Error getting country in action_open_analytics_dashboard: {e}")
+            country = 'VN'  # Fallback
         
         if not country:
-            raise UserError(_('Country not specified'))
+            raise UserError(_('Unable to determine country for analytics dashboard'))
         
         # Get current month analytics
         today = datetime.date.today()
@@ -76,10 +100,29 @@ class PayrollDashboardAnalytics(models.Model):
     
     def action_export_bank_file(self):
         """Open bank export wizard for approved payroll"""
-        country = self.country
+        # Handle both direct calls and web calls - same logic as analytics
+        try:
+            if self and hasattr(self, 'country') and self.country:
+                country = self.country
+            else:
+                country = self.env.context.get('default_country')
+                if not country:
+                    active_id = self.env.context.get('active_id')
+                    if active_id:
+                        dashboard_record = self.browse(active_id)
+                        if dashboard_record.exists() and dashboard_record.country:
+                            country = dashboard_record.country
+            
+            if not country:
+                country = 'VN'  # Fallback
+                _logger.warning("No country specified in export, defaulting to VN")
+                
+        except Exception as e:
+            _logger.error(f"Error getting country in action_export_bank_file: {e}")
+            country = 'VN'
         
         if not country:
-            raise UserError(_('Country not specified'))
+            raise UserError(_('Unable to determine country for bank export'))
         
         # Check if there are approved analytics for export
         approved_analytics = self.env['payroll.analytics'].search([

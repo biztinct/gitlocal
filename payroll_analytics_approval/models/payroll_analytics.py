@@ -25,7 +25,11 @@ class PayrollAnalytics(models.Model):
     country = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
-        ('IN', 'India')
+        ('IN', 'India'),
+        ('SG', 'Singapore'),
+        ('TH', 'Thailand'),
+        ('KH', 'Cambodia'),
+        ('MY', 'Malaysia')
     ], string='Country', required=True)
     
     # Analytics Data (JSON fields for flexibility)
@@ -141,16 +145,28 @@ class PayrollAnalytics(models.Model):
         country_structure_map = {
             'VN': 'Vietnam Standard Payroll',
             'ID': 'Indonesia Standard Payroll',
-            'IN': 'India Standard Payroll'
+            'IN': 'India Standard Payroll',
+            'SG': 'Singapore Standard Payroll',
+            'TH': 'Thailand Standard Payroll', 
+            'KH': 'Cambodia Standard Payroll',
+            'MY': 'Malaysia Standard Payroll'
         }
         
         structure_name = country_structure_map.get(country)
         if not structure_name:
-            return self.env['hr.payslip']
-        
-        structure = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
-        if not structure:
-            return self.env['hr.payslip']
+            # Try to find any structure and filter by country if possible
+            structures = self.env['hr.payroll.structure'].search([])
+            country_structures = structures.filtered(lambda s: country in s.name or country.lower() in s.name.lower())
+            if not country_structures:
+                return self.env['hr.payslip']
+            structure = country_structures[0]
+        else:
+            structure = self.env['hr.payroll.structure'].search([('name', '=', structure_name)], limit=1)
+            if not structure:
+                # Try to find a structure that contains the country name
+                structure = self.env['hr.payroll.structure'].search([('name', 'ilike', country)], limit=1)
+                if not structure:
+                    return self.env['hr.payslip']
         
         # Get payslips
         payslips = self.env['hr.payslip'].search([
@@ -159,6 +175,9 @@ class PayrollAnalytics(models.Model):
             ('date_to', '<=', date_to),
             ('state', 'in', ['level2', 'done'])
         ])
+        
+        _logger.info(f"Found {len(payslips)} payslips for country {country} with structure {structure.name}")
+        _logger.info(f"Payslip states: {[p.state for p in payslips]}")
         
         return payslips
     
@@ -347,7 +366,11 @@ class PayrollAnalytics(models.Model):
         country_structure_map = {
             'VN': 'Vietnam Standard Payroll',
             'ID': 'Indonesia Standard Payroll',
-            'IN': 'India Standard Payroll'
+            'IN': 'India Standard Payroll',
+            'SG': 'Singapore Standard Payroll',
+            'TH': 'Thailand Standard Payroll',
+            'KH': 'Cambodia Standard Payroll',
+            'MY': 'Malaysia Standard Payroll'
         }
         structure_name = country_structure_map.get(self.country)
         
