@@ -212,6 +212,16 @@
             <field name="amount_fix">0.00</field>
         </record>
 
+        <record id="hr_rule_total_cost_employer" model="hr.salary.rule">
+            <field name="name">Total Cost to Employer</field>
+            <field name="sequence" eval="300"/>
+            <field name="code">TCTE</field>
+            <field name="category_id" ref="om_hr_payroll.GROSS"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0.00</field>
+        </record>
+
         <!-- Salary Structures -->
 
         <record id="structure_base" model="hr.payroll.structure">
@@ -237,7 +247,11 @@
                 ref('hr_rule_health_insurance_employee'),
                 ref('hr_rule_unemployment_insurance_employee'),
                 ref('hr_rule_personal_income_tax'),
-                ref('hr_rule_net')
+                ref('hr_rule_net'),
+                ref('hr_rule_social_insurance_company'),
+                ref('hr_rule_health_insurance_company'),
+                ref('hr_rule_unemployment_insurance_company'),
+                ref('hr_rule_total_cost_employer')
             ])]" name="rule_ids"/>
             <field name="company_id" ref="base.main_company"/>
         </record>

@@ -18,6 +18,7 @@ class PayrollAnalytics(models.Model):
     _name = 'payroll.analytics'
     _description = 'Payroll Analytics Dashboard'
     _rec_name = 'period_name'
+    _order = 'date_from desc, id desc'
     
     period_name = fields.Char(string='Period', required=True)
     date_from = fields.Date(string='Date From', required=True)
@@ -80,23 +81,60 @@ class PayrollAnalytics(models.Model):
                 if record.comparison_data:
                     comparison = json.loads(record.comparison_data)
                     current_total = record.total_payroll
+                    prev_total = comparison.get('previous_month_total', 0)
                     
-                    if comparison.get('previous_month_total', 0) > 0:
-                        prev_total = comparison['previous_month_total']
-                        record.variance_percentage = ((current_total - prev_total) / prev_total) * 100
-                    elif current_total > 0:
-                        # If there's current data but no previous data, show 100% increase
+                    _logger.info(f"Variance calculation for record {record.id}: current={current_total}, previous={prev_total}")
+                    
+                    if prev_total > 0 and current_total > 0:
+                        # Both values exist - calculate actual variance
+                        variance = ((current_total - prev_total) / prev_total) * 100
+                        record.variance_percentage = round(variance, 2)
+                        _logger.info(f"Calculated variance: {variance}%")
+                    elif current_total > 0 and prev_total == 0:
+                        # Current data exists but no previous data - new period
                         record.variance_percentage = 100.0
-                    else:
-                        # Both are zero or no data
+                        _logger.info("New period - variance set to 100%")
+                    elif current_total == prev_total and current_total > 0:
+                        # Same values - no change
                         record.variance_percentage = 0.0
+                        _logger.info("Same values - variance set to 0%")
+                    else:
+                        # Default case - no meaningful comparison
+                        record.variance_percentage = 0.0
+                        _logger.info("Default case - variance set to 0%")
+                else:
+                    # No comparison data
+                    record.variance_percentage = 0.0
+                    _logger.info("No comparison data - variance set to 0%")
                         
             except (json.JSONDecodeError, TypeError, KeyError) as e:
                 _logger.warning(f"Error computing analytics for record {record.id}: {e}")
     
     def action_open_dashboard(self):
-        """Open analytics dashboard for this record"""
+        """Open analytics dashboard for this record - regenerate with current data"""
         self.ensure_one()
+        
+        # Regenerate analytics with current payslip data to ensure accuracy
+        _logger.info(f"Refreshing analytics data for record {self.id} - {self.period_name}")
+        
+        # Get current payslips for this period
+        payslips = self._get_payslips_for_period(self.country, self.date_from, self.date_to)
+        _logger.info(f"Found {len(payslips)} current payslips for {self.country} {self.date_from}-{self.date_to}")
+        
+        # Regenerate analytics data
+        analytics_data = self._generate_analytics_data(payslips, self.country, self.date_from, self.date_to)
+        
+        # Update this record with fresh data
+        self.write(analytics_data)
+        
+        # Force computation of stored fields
+        self.invalidate_cache()
+        self._compute_analytics()
+        
+        # Commit the transaction to ensure data is saved
+        self.env.cr.commit()
+        
+        _logger.info(f"Updated analytics: {self.total_employees} employees, {self.total_payroll} total payroll")
         
         return {
             'type': 'ir.actions.act_window',
@@ -106,7 +144,11 @@ class PayrollAnalytics(models.Model):
             'view_mode': 'form',
             'view_id': self.env.ref('payroll_analytics_approval.view_payroll_analytics_dashboard').id,
             'target': 'current',
-            'context': {'create': False, 'edit': False}
+            'context': {
+                'create': False, 
+                'edit': False,
+                'force_refresh': True  # Signal to refresh dashboard
+            }
         }
     
     @api.model
@@ -120,24 +162,43 @@ class PayrollAnalytics(models.Model):
         # Generate analytics data
         analytics_data = self._generate_analytics_data(payslips, country, date_from, date_to)
         
-        # Check if analytics already exists
-        existing = self.search([
+        # Check if analytics already exists - find ALL duplicates, not just first one
+        existing_records = self.search([
             ('country', '=', country),
             ('date_from', '=', date_from),
             ('date_to', '=', date_to)
-        ], limit=1)
+        ])
         
-        if existing:
+        if existing_records:
+            # If multiple records exist, delete all but keep the most recent one
+            if len(existing_records) > 1:
+                _logger.info(f"Found {len(existing_records)} duplicate analytics records for {country} {date_from}-{date_to}")
+                # Sort by ID (most recent) and keep the last one
+                records_to_delete = existing_records.sorted('id')[:-1]  # All except the last one
+                _logger.info(f"Deleting {len(records_to_delete)} duplicate records")
+                records_to_delete.unlink()
+                # Keep the newest record
+                existing = existing_records.sorted('id')[-1]
+            else:
+                existing = existing_records[0]
+            
+            # Update the existing record with fresh data
             existing.write(analytics_data)
+            existing.invalidate_cache()  # Force refresh
+            existing._compute_analytics()  # Recalculate stored fields
+            _logger.info(f"Updated existing analytics record {existing.id} for {country}")
             return existing
         else:
+            # Create new record
             analytics_data.update({
                 'period_name': period_name,
                 'country': country,
                 'date_from': date_from,
                 'date_to': date_to
             })
-            return self.create(analytics_data)
+            new_record = self.create(analytics_data)
+            _logger.info(f"Created new analytics record {new_record.id} for {country}")
+            return new_record
     
     def _get_payslips_for_period(self, country, date_from, date_to):
         """Get payslips for the specific country and period"""
@@ -227,8 +288,33 @@ class PayrollAnalytics(models.Model):
                 'anomaly_alerts': json.dumps([])
             }
         
-        # Employee metrics
-        total_payroll = sum(payslips.mapped('line_ids').filtered(lambda l: l.code == 'NETPAY').mapped('total'))
+        # Employee metrics - Calculate Total Cost to Employer (TCTE)
+        # Priority order: TCTE > Sum of specific components > Sum of all positive
+        tcte_lines = payslips.mapped('line_ids').filtered(lambda l: l.code == 'TCTE')
+        
+        if tcte_lines and sum(tcte_lines.mapped('total')) > 0:
+            # Use TCTE if it exists and has value
+            total_payroll = sum(tcte_lines.mapped('total'))
+            _logger.info(f"Using TCTE values: {total_payroll}")
+        else:
+            # Calculate total cost by adding NET + Company contributions
+            net_lines = payslips.mapped('line_ids').filtered(lambda l: l.code in ['NET', 'NETPAY'])
+            company_lines = payslips.mapped('line_ids').filtered(lambda l: l.code in ['SI_COMP', 'HI_COMP', 'UI_COMP'])
+            
+            net_total = sum(net_lines.mapped('total')) if net_lines else 0
+            company_total = sum(company_lines.mapped('total')) if company_lines else 0
+            
+            if net_total > 0:
+                total_payroll = net_total + company_total
+                _logger.info(f"Calculated TCTE: NET ({net_total}) + Company contributions ({company_total}) = {total_payroll}")
+            else:
+                # Final fallback: sum all positive components except deductions
+                positive_lines = payslips.mapped('line_ids').filtered(
+                    lambda l: l.total > 0 and l.code not in ['PIT', 'SI_EMP', 'HI_EMP', 'UI_EMP']
+                )
+                total_payroll = sum(positive_lines.mapped('total'))
+                _logger.info(f"Using sum of positive components (excluding deductions): {total_payroll}")
+        
         employee_metrics = {
             'total_employees': len(payslips),
             'total_payroll': total_payroll,
@@ -244,11 +330,11 @@ class PayrollAnalytics(models.Model):
         country_components = {
             'VN': ['BASIC', 'HRA', 'DA', 'Travel', 'Meal', 'Medical', 'TRANSPORT', 'GROSS', 
                    'SI_EMP', 'HI_EMP', 'UI_EMP', 'PIT', 'NET', 'SI_COMP', 'HI_COMP', 'UI_COMP',
-                   'NETPAY'],  # Include both actual structure codes and common variants
+                   'NETPAY', 'TCTE'],  # Include TCTE - Total Cost to Employer
             'ID': ['BASIC', 'MIONEFIVE', 'BPJS_JKK', 'BPJS_KES_COMP', 'LAINALL', 
                    'BPJS_JHT_COMP', 'BPJS_JP_COMP', 'BPJS_KES_EMP', 'BPJS_JHT_EMP', 
-                   'BPJS_JP_EMP', 'MONPIT', 'NETPAY'],
-            'IN': ['BASIC', 'HRA', 'DA', 'Travel', 'Meal', 'Medical', 'PF_EMP', 'ESI_EMP', 'PT', 'TDS', 'NET']
+                   'BPJS_JP_EMP', 'MONPIT', 'NETPAY', 'TCTE'],
+            'IN': ['BASIC', 'HRA', 'DA', 'Travel', 'Meal', 'Medical', 'PF_EMP', 'ESI_EMP', 'PT', 'TDS', 'NET', 'TCTE']
         }
         
         # Use country-specific components or fall back to all unique codes from payslips
@@ -313,6 +399,7 @@ class PayrollAnalytics(models.Model):
             'SI_COMP': 'Social Insurance (Company)',
             'HI_COMP': 'Health Insurance (Company)',
             'UI_COMP': 'Unemployment Insurance (Company)',
+            'TCTE': 'Total Cost to Employer',
             
             # Indonesia components (for compatibility)
             'MIONEFIVE': 'Life Insurance',
@@ -337,13 +424,15 @@ class PayrollAnalytics(models.Model):
     
     def _get_historical_comparison(self, country, current_date, current_components):
         """Get historical data for comparison with improved variance calculation"""
-        # Get previous month
-        prev_month = current_date - relativedelta(months=1)
+        # Get previous month data more precisely
+        prev_month_start = current_date - relativedelta(months=1)
+        
+        # Find the previous month analytics with more specific search
         prev_analytics = self.search([
             ('country', '=', country),
-            ('date_from', '>=', prev_month),
-            ('date_from', '<', current_date)
-        ], limit=1)
+            ('date_from', '>=', prev_month_start.replace(day=1)),
+            ('date_from', '<', current_date.replace(day=1))
+        ], order='date_from desc', limit=1)
         
         comparison = {
             'previous_month': {},
@@ -352,46 +441,68 @@ class PayrollAnalytics(models.Model):
             'previous_month_total': 0
         }
         
-        if prev_analytics and prev_analytics.salary_components:
-            try:
-                prev_components = json.loads(prev_analytics.salary_components)
-                prev_total = 0
-                
-                for code, current in current_components.items():
-                    current_total = current['total']
+        _logger.info(f"Looking for previous month analytics for {country}, current date: {current_date}")
+        
+        if prev_analytics:
+            _logger.info(f"Found previous analytics: {prev_analytics.period_name} with {prev_analytics.total_payroll} total payroll")
+            
+            if prev_analytics.salary_components:
+                try:
+                    prev_components = json.loads(prev_analytics.salary_components)
                     
-                    if code in prev_components:
-                        prev_total_comp = prev_components[code]['total']
-                        prev_total += prev_total_comp
+                    # Calculate totals properly
+                    current_total_payroll = sum(comp['total'] for comp in current_components.values())
+                    prev_total_payroll = sum(comp['total'] for comp in prev_components.values()) if prev_components else 0
+                    
+                    # Use the stored total_payroll from the previous record if available
+                    if prev_analytics.total_payroll > 0:
+                        prev_total_payroll = prev_analytics.total_payroll
+                    
+                    _logger.info(f"Current total: {current_total_payroll}, Previous total: {prev_total_payroll}")
+                    
+                    # Calculate individual component variances
+                    for code, current in current_components.items():
+                        current_total = current['total']
                         
-                        # Safe variance calculation
-                        if prev_total_comp > 0:
-                            variance = ((current_total - prev_total_comp) / prev_total_comp) * 100
-                        elif current_total > 0:
-                            variance = 100.0  # New component with value
+                        if code in prev_components:
+                            prev_total_comp = prev_components[code]['total']
+                            
+                            # Safe variance calculation per component
+                            if prev_total_comp > 0:
+                                variance = ((current_total - prev_total_comp) / prev_total_comp) * 100
+                            elif current_total > 0:
+                                variance = 100.0  # New component with value
+                            else:
+                                variance = 0.0  # Both zero
+                            
+                            comparison['previous_month'][code] = prev_components[code]
+                            comparison['variance'][code] = round(variance, 2)
                         else:
-                            variance = 0.0  # Both zero
+                            # New component not in previous month
+                            comparison['variance'][code] = 100.0 if current_total > 0 else 0.0
+                    
+                    # Set the correct previous month total
+                    comparison['previous_month_total'] = prev_total_payroll
+                    
+                    # Overall variance calculation with proper totals
+                    if prev_total_payroll > 0:
+                        overall_variance = ((current_total_payroll - prev_total_payroll) / prev_total_payroll) * 100
+                        _logger.info(f"Overall variance calculation: ({current_total_payroll} - {prev_total_payroll}) / {prev_total_payroll} * 100 = {overall_variance}%")
                         
-                        comparison['previous_month'][code] = prev_components[code]
-                        comparison['variance'][code] = round(variance, 2)
+                        if overall_variance > 5:
+                            comparison['trend'] = 'increasing'
+                        elif overall_variance < -5:
+                            comparison['trend'] = 'decreasing'
                     else:
-                        # New component
-                        comparison['variance'][code] = 100.0 if current_total > 0 else 0.0
+                        # No previous data or previous total is zero
+                        overall_variance = 100.0 if current_total_payroll > 0 else 0.0
+                        _logger.info(f"No previous payroll data, variance set to: {overall_variance}%")
                 
-                comparison['previous_month_total'] = prev_total
-                
-                # Overall trend calculation
-                current_total = sum(comp['total'] for comp in current_components.values())
-                
-                if prev_total > 0:
-                    overall_variance = ((current_total - prev_total) / prev_total) * 100
-                    if overall_variance > 5:
-                        comparison['trend'] = 'increasing'
-                    elif overall_variance < -5:
-                        comparison['trend'] = 'decreasing'
-                
-            except Exception as e:
-                _logger.error(f"Error in historical comparison: {e}")
+                except Exception as e:
+                    _logger.error(f"Error in historical comparison: {e}")
+                    comparison['previous_month_total'] = 0
+            else:
+                _logger.warning(f"Previous analytics found but no salary_components data")
                 comparison['previous_month_total'] = 0
         else:
             # No previous data - mark as new
@@ -509,6 +620,60 @@ class PayrollAnalytics(models.Model):
                 'default_analytics_id': self.id,
             }
         }
+    
+    def action_refresh_analytics(self):
+        """Refresh analytics data for records in list view"""
+        for record in self:
+            # Get current payslips for this period
+            payslips = record._get_payslips_for_period(record.country, record.date_from, record.date_to)
+            
+            # Regenerate analytics data
+            analytics_data = record._generate_analytics_data(payslips, record.country, record.date_from, record.date_to)
+            
+            # Update record with fresh data
+            record.write(analytics_data)
+            
+            _logger.info(f"Refreshed analytics for {record.period_name}: {record.total_employees} employees")
+        
+        # Force refresh the view
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
+    
+    @api.model
+    def search(self, domain, offset=0, limit=None, order=None, count=False):
+        """Override search to auto-refresh analytics when accessed via Approval Queue"""
+        # Check if this search is from the Approval Queue (has auto_refresh_analytics context)
+        if self.env.context.get('auto_refresh_analytics'):
+            # First get the records with normal search
+            records = super().search(domain, offset=offset, limit=limit, order=order, count=count)
+            
+            # If we're getting actual records (not just count)
+            if not count and records:
+                _logger.info(f"Auto-refreshing {len(records)} analytics records from Approval Queue")
+                
+                # Refresh each record with current data
+                for record in records:
+                    try:
+                        # Get current payslips for this period
+                        payslips = record._get_payslips_for_period(record.country, record.date_from, record.date_to)
+                        
+                        if payslips:
+                            # Regenerate analytics data
+                            analytics_data = record._generate_analytics_data(payslips, record.country, record.date_from, record.date_to)
+                            
+                            # Update record with fresh data (without triggering write hooks)
+                            record.sudo().write(analytics_data)
+                            
+                            _logger.info(f"Auto-refreshed {record.period_name}: {record.total_employees} employees, {record.total_payroll} total payroll")
+                    except Exception as e:
+                        _logger.warning(f"Error auto-refreshing analytics record {record.id}: {e}")
+                
+                # Invalidate cache to ensure fresh data display
+                records.invalidate_cache()
+            
+            return records
+        else:
+            # Normal search without auto-refresh
+            return super().search(domain, offset=offset, limit=limit, order=order, count=count)
     
     @api.model
     def get_analytics_stats(self, country):

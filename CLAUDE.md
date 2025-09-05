@@ -797,3 +797,410 @@ python -m odoo -c odoo.conf -d database -u pb_hr_payroll_[country]
 ```
 
 This comprehensive guide ensures consistent, professional implementation of new country modules following the established architectural patterns and design principles.
+
+# 🔧 **SALARY COMPONENT MAPPING & REFACTORING DOCUMENTATION**
+
+## **Problem Analysis (2024) - Spreadsheet Import Mapping Issues**
+
+### **Root Cause Identified:**
+The spreadsheet import system has **critical misalignment** between salary codes, data models, and country-specific implementations. This causes salary components to show 0.00 values after import despite successful data processing.
+
+### **Current Architecture Analysis:**
+
+#### **Data Flow Overview:**
+```
+Spreadsheet Import → zoho.employee.data → update_payslip_lines_from_zoho_data() → Payslip Lines
+```
+
+#### **Key Components:**
+1. **Salary Rule Definitions** (`/om_hr_payroll/data/hr_payroll_data.xml`)
+2. **Field Mapping Logic** (`/om_hr_payroll/models/hr_payslip.py`)
+3. **Data Storage Model** (`/om_hr_payroll/models/hr_zoho.py`)
+4. **Import Process** (`/spreadsheet_oca/models/spreadsheet_spreadsheet.py`)
+
+## **Component Misalignment Issues**
+
+### **Vietnam Salary Structure vs. Mapping Disconnect:**
+
+#### **Salary Rules Defined (16 components):**
+- `BASIC, HRA, DA, Travel, Meal, Medical, TRANSPORT, GROSS`
+- `SI_EMP, HI_EMP, UI_EMP, PIT, NET`
+- `SI_COMP, HI_COMP, UI_COMP`
+
+#### **Actual Salary Codes in System (58+ codes):**
+```
+SEVAPP, LAINALL, DEDUC1, DEDUC2, NET_VN, DEDUC3, CICIL, LAINDED, KOPER, PINJAM,
+BASIC_VN, HOUSING_VN, Meal, Medical, Travel, TRANSPORT_VN, PIT_VN, SS_VN, 
+HI_EMP, UI_EMP, TRANSPORT, PIT, HI_COMP, UI_COMP, SI_EMP, BASIC, SI_COMP,
+CPF_EE, SSF_EE, CPF_ER, NET, PF, SSF_ER, FIXALL1, GROSS, TUNJSK, HRA, DA,
+IDN_GROSS, PPH21, BPJS_KES_EMP, BPJS_JHT_EMP, BPJS_JP_EMP, UNION_DUES, 
+LOAN_DED, BPJS_JHT_COMP, BPJS_JKM, BPJS_JKK, BPJS_JP_COMP, BPJS_KES_COMP,
+FIXALL2, COMMIS, SIGBON, TUNJSR, TUNJDK
+```
+
+#### **Current Field Mapping (Only ~30 mappings):**
+```python
+# /om_hr_payroll/models/hr_payslip.py - update_payslip_lines_from_zoho_data()
+field_mapping = {
+    'ACTBASE': 'actual_basicsalary',
+    'MIONEFIVE': 'med_ins15',         # Indonesia legacy
+    'NETPAY': 'net_pay',              # Generic
+    'MONPIT': 'monthly_pit',          # Vietnam PIT
+    # MISSING: BASIC_VN, HOUSING_VN, TRANSPORT_VN, PIT_VN, SS_VN, NET_VN, etc.
+}
+```
+
+### **The Gap:**
+- **Missing Vietnam Mappings**: 40+ Vietnam codes not mapped
+- **Country Code Inconsistency**: Mixed naming patterns (BASIC vs BASIC_VN)
+- **Field Alignment**: zoho.employee.data fields don't match salary codes
+- **Legacy vs New**: Old Indonesia codes mixed with new Vietnam codes
+
+## **Country-Specific Salary Code Analysis**
+
+### **Vietnam (VN) Pattern:**
+```
+Primary Codes: BASIC_VN, HOUSING_VN, TRANSPORT_VN, PIT_VN, SS_VN, NET_VN
+Generic Codes: BASIC, HRA, DA, Travel, Meal, Medical, TRANSPORT, GROSS, NET
+Insurance Codes: SI_EMP, HI_EMP, UI_EMP, SI_COMP, HI_COMP, UI_COMP
+```
+
+### **Indonesia (ID) Pattern:**
+```
+Legacy Codes: MIONEFIVE, LAINALL, BPJS_KES_EMP, BPJS_JHT_EMP, PPH21
+New Structure: Should follow BASIC_ID, BPJS_KES_ID, BPJS_JHT_ID pattern
+```
+
+### **Multi-Country Codes:**
+```
+Generic: BASIC, GROSS, NET, PF, UNION_DUES, LOAN_DED
+Singapore: CPF_EE, CPF_ER, SDL_SG
+Thailand: SSF_EE, SSF_ER, PF_TH
+Indonesia: BPJS_*, PPH21, IDN_GROSS
+```
+
+## **Refactoring Strategy**
+
+### **Phase 1: Country-Specific Architecture**
+
+#### **1.1 Standardized Code Patterns**
+Implement consistent salary code structure:
+```
+Country Format: [COMPONENT]_[COUNTRY_CODE]
+Examples:
+- Vietnam: BASIC_VN, HOUSING_VN, TRANSPORT_VN, PIT_VN, SS_VN
+- Indonesia: BASIC_ID, BPJS_KES_ID, BPJS_JHT_ID, PPH21_ID  
+- India: BASIC_IN, PF_IN, ESI_IN, TDS_IN
+- Singapore: BASIC_SG, CPF_EE_SG, SDL_SG
+- Thailand: BASIC_TH, SSF_EE_TH, PF_TH
+- Cambodia: BASIC_KH, NSSF_KH
+- Malaysia: BASIC_MY, EPF_MY, SOCSO_MY
+```
+
+#### **1.2 Dynamic Country Detection**
+Country-aware mapping implementation:
+```python
+def get_country_field_mapping(self, country_code):
+    """Return country-specific field mappings"""
+    mappings = {
+        'VN': self._get_vietnam_mapping(),
+        'ID': self._get_indonesia_mapping(),
+        'IN': self._get_india_mapping(),
+        'SG': self._get_singapore_mapping(),
+        'TH': self._get_thailand_mapping(),
+        'KH': self._get_cambodia_mapping(),
+        'MY': self._get_malaysia_mapping(),
+    }
+    return mappings.get(country_code, self._get_default_mapping())
+```
+
+### **Phase 2: Data Model Alignment**
+
+#### **2.1 ZohoEmployeeData Model Extensions**
+Country-specific field additions:
+```python
+class ZohoEmployeeData(models.Model):
+    _name = 'zoho.employee.data'
+    
+    # Vietnam-specific salary components
+    basic_vn = fields.Float(string="Basic Salary (VN)")
+    housing_vn = fields.Float(string="Housing Allowance (VN)")
+    transport_vn = fields.Float(string="Transport Allowance (VN)")
+    pit_vn = fields.Float(string="Personal Income Tax (VN)")
+    ss_vn = fields.Float(string="Social Security (VN)")
+    net_vn = fields.Float(string="Net Pay (VN)")
+    
+    # Indonesia-specific salary components
+    basic_id = fields.Float(string="Basic Salary (ID)")
+    bpjs_kes_id = fields.Float(string="BPJS Healthcare (ID)")
+    bpjs_jht_id = fields.Float(string="BPJS JHT (ID)")
+    pph21_id = fields.Float(string="PPh21 Tax (ID)")
+    
+    # Other countries...
+    basic_in = fields.Float(string="Basic Salary (IN)")
+    pf_in = fields.Float(string="Provident Fund (IN)")
+    
+    # Generic calculated fields (existing - keep for compatibility)
+    actual_basicsalary = fields.Float(string="Actual basic salary")
+    monthly_pit = fields.Float(string="Monthly PIT")
+    net_pay = fields.Float(string="Net pay")
+```
+
+#### **2.2 Salary Rule Structure Alignment**
+Ensure salary rules match actual codes:
+```xml
+<!-- Vietnam Country-Specific Rules -->
+<record id="hr_rule_basic_vn" model="hr.salary.rule">
+    <field name="code">BASIC_VN</field>
+    <field name="name">Basic Salary (Vietnam)</field>
+    <field name="sequence" eval="1"/>
+    <field name="category_id" ref="om_hr_payroll.BASIC"/>
+    <field name="amount_select">fix</field>
+    <field name="amount_fix">0.00</field>
+</record>
+
+<record id="hr_rule_housing_vn" model="hr.salary.rule">
+    <field name="code">HOUSING_VN</field>
+    <field name="name">Housing Allowance (Vietnam)</field>
+    <field name="sequence" eval="3"/>
+    <field name="category_id" ref="om_hr_payroll.ALW"/>
+    <field name="amount_select">fix</field>
+    <field name="amount_fix">0.00</field>
+</record>
+```
+
+### **Phase 3: Comprehensive Field Mapping**
+
+#### **3.1 Complete Vietnam Mapping**
+Map all Vietnam salary codes:
+```python
+def _get_vietnam_mapping(self):
+    """Complete Vietnam salary code to field mapping"""
+    return {
+        # Country-specific codes
+        'BASIC_VN': 'basic_vn',
+        'HOUSING_VN': 'housing_vn', 
+        'TRANSPORT_VN': 'transport_vn',
+        'PIT_VN': 'pit_vn',
+        'SS_VN': 'ss_vn',
+        'NET_VN': 'net_vn',
+        
+        # Generic codes used in Vietnam
+        'BASIC': 'actual_basicsalary',
+        'HRA': 'actual_gas',           # Housing = Gas allowance
+        'TRANSPORT': 'actual_taxi',    # Transport = Taxi allowance
+        'PIT': 'monthly_pit',
+        'NET': 'net_pay',
+        
+        # Insurance codes  
+        'SI_EMP': 'social_ins8',
+        'HI_EMP': 'med_ins15',
+        'UI_EMP': 'unemp_ins1',
+        'SI_COMP': 'social_ins175',
+        'HI_COMP': 'med_ins3',
+        'UI_COMP': 'unemp_ins1',
+        
+        # Deduction codes
+        'DEDUC1': 'deduc1_amount',
+        'DEDUC2': 'deduc2_amount', 
+        'DEDUC3': 'deduc3_amount',
+        
+        # Other Vietnam-specific codes
+        'SEVAPP': 'sevapp_amount',
+        'LAINALL': 'lainall_amount',
+        'CICIL': 'cicil_amount',
+        'LAINDED': 'lainded_amount',
+        'KOPER': 'koper_amount',
+        'PINJAM': 'pinjam_amount',
+    }
+```
+
+#### **3.2 Indonesia Mapping**
+```python
+def _get_indonesia_mapping(self):
+    """Complete Indonesia salary code to field mapping"""
+    return {
+        # Legacy codes (maintain compatibility)
+        'MIONEFIVE': 'med_ins15',
+        'LAINALL': 'lainall_amount',
+        
+        # BPJS codes
+        'BPJS_KES_EMP': 'bpjs_kes_emp',
+        'BPJS_JHT_EMP': 'bpjs_jht_emp', 
+        'BPJS_JP_EMP': 'bpjs_jp_emp',
+        'BPJS_KES_COMP': 'bpjs_kes_comp',
+        'BPJS_JHT_COMP': 'bpjs_jht_comp',
+        'BPJS_JP_COMP': 'bpjs_jp_comp',
+        'BPJS_JKM': 'bpjs_jkm',
+        'BPJS_JKK': 'bpjs_jkk',
+        
+        # Tax and other codes
+        'PPH21': 'pph21_amount',
+        'IDN_GROSS': 'idn_gross_amount',
+        'UNION_DUES': 'union_dues',
+        'LOAN_DED': 'loan_deduction',
+    }
+```
+
+#### **3.3 Legacy Compatibility Layer**
+```python
+def _get_legacy_mapping(self):
+    """Maintain backward compatibility with existing codes"""
+    return {
+        # Keep all existing mappings
+        'ACTBASE': 'actual_basicsalary',
+        'NETPAY': 'net_pay',
+        'MONPIT': 'monthly_pit',
+        'TOTDEDU': 'total_ded',
+        'SIEIGHT': 'social_ins8',
+        'EMPTU': 'etu',
+        # ... all current mappings preserved
+    }
+```
+
+### **Phase 4: Enhanced Import Process**
+
+#### **4.1 Country-Aware Import Logic**
+```python
+def import_json_data(self):
+    """Enhanced import with country detection"""
+    # Get country context
+    payroll_country = self.env.context.get('payroll_country', 'VN')
+    
+    # Load country-specific mappings
+    salary_field_mappings = self._get_country_salary_mappings(payroll_country)
+    
+    # Process spreadsheet data with country-aware field mapping
+    for salary_code, amount in salary_data.items():
+        field_name = salary_field_mappings.get(salary_code)
+        if field_name:
+            field_value_dict[field_name] = amount
+        else:
+            _logger.warning(f"Unmapped salary code for {payroll_country}: {salary_code}")
+```
+
+#### **4.2 Validation and Error Handling**
+```python
+def _validate_salary_codes(self, salary_codes, country_code):
+    """Validate salary codes against country expectations"""
+    expected_codes = self._get_expected_codes_for_country(country_code)
+    actual_codes = set(salary_codes)
+    
+    missing_codes = expected_codes - actual_codes
+    unmapped_codes = actual_codes - expected_codes
+    
+    if missing_codes:
+        _logger.warning(f"Missing expected {country_code} codes: {missing_codes}")
+    
+    if unmapped_codes:
+        _logger.warning(f"Unmapped {country_code} codes: {unmapped_codes}")
+    
+    return len(missing_codes) == 0
+```
+
+### **Phase 5: Analytics Integration**
+
+#### **5.1 Country-Specific Component Recognition**
+```python
+def _generate_analytics_data(self, payslips, country, date_from, date_to):
+    """Enhanced analytics with full country code support"""
+    
+    # Get comprehensive country-specific component codes
+    country_components = {
+        'VN': ['BASIC', 'BASIC_VN', 'HOUSING_VN', 'TRANSPORT_VN', 'PIT_VN', 
+               'SS_VN', 'NET_VN', 'SI_EMP', 'HI_EMP', 'UI_EMP', 'SI_COMP', 
+               'HI_COMP', 'UI_COMP', 'SEVAPP', 'LAINALL', 'DEDUC1', 'DEDUC2', 'DEDUC3'],
+               
+        'ID': ['BASIC', 'MIONEFIVE', 'BPJS_KES_EMP', 'BPJS_JHT_EMP', 'BPJS_JP_EMP',
+               'BPJS_KES_COMP', 'BPJS_JHT_COMP', 'BPJS_JP_COMP', 'PPH21', 'IDN_GROSS',
+               'UNION_DUES', 'LOAN_DED', 'LAINALL'],
+               
+        'IN': ['BASIC', 'HRA', 'DA', 'PF_EMP', 'ESI_EMP', 'PT', 'TDS', 'NET'],
+        # ... other countries
+    }
+    
+    # Include both country-specific and generic codes
+    component_codes = country_components.get(country, [])
+    
+    # Always include generic codes for compatibility
+    generic_codes = ['BASIC', 'GROSS', 'NET', 'NETPAY']
+    all_codes = list(set(component_codes + generic_codes))
+    
+    return all_codes
+```
+
+## **Implementation Roadmap**
+
+### **Pre-Refactoring Audit:**
+- [ ] **Code Inventory**: Document all 58+ salary codes by country
+- [ ] **Field Mapping Audit**: Map current zoho.employee.data field usage  
+- [ ] **Rule Usage Analysis**: Identify actually used vs. defined salary rules
+- [ ] **Data Flow Testing**: Test current import → payslip → analytics process
+
+### **Phase 1 Implementation:**
+- [ ] **Extend ZohoEmployeeData**: Add country-specific fields for all codes
+- [ ] **Create Country Mappings**: Implement country-specific mapping methods
+- [ ] **Update Salary Rules**: Align rule definitions with actual code usage
+- [ ] **Add Country Detection**: Implement country detection in import process
+
+### **Phase 2 Implementation:**  
+- [ ] **Complete Vietnam Mapping**: All 58+ codes mapped and tested
+- [ ] **Indonesia Compatibility**: Maintain legacy + new code support
+- [ ] **Validation Layer**: Add salary code validation and error handling
+- [ ] **Analytics Update**: Recognize all new country-specific codes
+
+### **Phase 3 Implementation:**
+- [ ] **Other Countries**: Extend to India, Singapore, Thailand, Cambodia, Malaysia
+- [ ] **Migration Scripts**: Convert existing data to new field structure
+- [ ] **Performance Optimization**: Optimize field mapping and import speed
+- [ ] **Automated Testing**: Create comprehensive test suite for all countries
+
+### **Post-Implementation:**
+- [ ] **Data Migration**: Migrate existing zoho.employee.data records
+- [ ] **Documentation**: Update user guides and technical documentation
+- [ ] **Training**: Create country-specific configuration guides
+- [ ] **Monitoring**: Implement logging for unmapped codes and errors
+
+## **Benefits of This Refactoring**
+
+### **Technical Benefits:**
+- **Scalable Architecture**: Easy addition of new countries and salary codes
+- **Maintainable Code**: Clear separation of country-specific logic
+- **Data Integrity**: Comprehensive validation and error handling
+- **Performance**: Optimized field mapping and reduced query complexity
+
+### **Business Benefits:**
+- **Accurate Payroll**: All salary components properly calculated and displayed
+- **Complete Analytics**: Full visibility into salary breakdowns by country
+- **Compliance Ready**: Support for country-specific tax and insurance requirements
+- **Future-Proof**: Architecture supports expansion to new regions
+
+### **Operational Benefits:**
+- **Reduced Errors**: Automated validation catches mapping issues
+- **Faster Implementation**: Standardized patterns for new countries  
+- **Better Monitoring**: Comprehensive logging and error reporting
+- **Easier Maintenance**: Clear separation of concerns and documentation
+
+## **Critical Success Factors**
+
+### **Data Integrity:**
+- Ensure no data loss during field mapping migration
+- Maintain backward compatibility with existing processes
+- Validate all salary code mappings before go-live
+
+### **Performance:**
+- Optimize field mapping queries for large datasets
+- Implement caching for frequently accessed country mappings
+- Monitor import processing time and memory usage
+
+### **User Experience:**
+- Ensure seamless transition for existing users
+- Provide clear error messages for mapping issues
+- Maintain existing analytics dashboard functionality
+
+### **Maintainability:**
+- Document all country-specific mapping decisions
+- Create clear guidelines for adding new salary codes
+- Implement automated tests for all country mappings
+
+This comprehensive refactoring will transform the payroll system into a robust, country-aware platform that properly handles all salary components and provides accurate analytics across all supported regions.
