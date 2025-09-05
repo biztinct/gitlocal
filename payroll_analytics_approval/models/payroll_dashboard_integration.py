@@ -42,13 +42,38 @@ class PayrollDashboardAnalytics(models.Model):
         if not country:
             raise UserError(_('Unable to determine country for analytics dashboard'))
         
-        # Get current month analytics
-        today = datetime.date.today()
-        first_day = today.replace(day=1)
-        if today.month == 12:
-            last_day = today.replace(year=today.year + 1, month=1, day=1) - datetime.timedelta(days=1)
+        # Get date range from most recent Level 2 payslip batch (not all payslips)
+        level2_batches = self.env['hr.payslip.run'].search([
+            ('state', '=', 'level2')
+        ], order='date_start desc', limit=1)
+        
+        if level2_batches:
+            # Use the most recent Level 2 batch date range
+            recent_batch = level2_batches[0]
+            first_day = recent_batch.date_start
+            last_day = recent_batch.date_end
+            _logger.info(f"Using most recent Level 2 batch: {recent_batch.name} ({first_day} to {last_day})")
         else:
-            last_day = today.replace(month=today.month + 1, day=1) - datetime.timedelta(days=1)
+            # Fallback to individual Level 2 payslips if no batches found
+            level2_payslips = self.env['hr.payslip'].search([
+                ('state', '=', 'level2')
+            ], order='date_from desc', limit=1)
+            
+            if level2_payslips:
+                # Use the most recent payslip's month only
+                recent_payslip = level2_payslips[0]
+                first_day = recent_payslip.date_from
+                last_day = recent_payslip.date_to
+                _logger.info(f"Using most recent Level 2 payslip date range: {first_day} to {last_day}")
+            else:
+                # Final fallback to current month
+                today = datetime.date.today()
+                first_day = today.replace(day=1)
+                if today.month == 12:
+                    last_day = today.replace(year=today.year + 1, month=1, day=1) - datetime.timedelta(days=1)
+                else:
+                    last_day = today.replace(month=today.month + 1, day=1) - datetime.timedelta(days=1)
+                _logger.warning(f"No Level 2 payslips found, using current month: {first_day} to {last_day}")
         
         # Search for existing analytics
         analytics = self.env['payroll.analytics'].search([
@@ -67,6 +92,10 @@ class PayrollDashboardAnalytics(models.Model):
         try:
             analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
             analytics.write({'state': 'ready'})
+            
+            # Force computation of stored fields to ensure fresh data
+            analytics.invalidate_cache()
+            analytics._compute_analytics()
             
             return {
                 'type': 'ir.actions.act_window',

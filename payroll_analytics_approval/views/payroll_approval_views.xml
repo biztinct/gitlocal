@@ -55,7 +55,8 @@
                   decoration-info="state == 'draft'" 
                   decoration-warning="state == 'ready'" 
                   decoration-success="state == 'approved'"
-                  decoration-muted="state == 'exported'">
+                  decoration-muted="state == 'exported'"
+                  default_order="date_from desc, id desc">
                 
                 <field name="period_name"/>
                 <field name="country"/>
@@ -90,6 +91,13 @@
                         class="btn-info"
                         icon="fa-download"
                         states="approved"/>
+                        
+                <button name="action_refresh_analytics" 
+                        type="object" 
+                        string="Refresh Data" 
+                        class="btn-secondary"
+                        icon="fa-refresh"
+                        help="Update analytics with current payslip data"/>
             </tree>
         </field>
     </record>
@@ -190,7 +198,7 @@
         </field>
     </record>
     
-    <!-- Approval Dashboard Action -->
+    <!-- Approval Dashboard Action with Auto-Refresh -->
     <record id="action_payroll_approval_dashboard" model="ir.actions.act_window">
         <field name="name">Payroll Approval Dashboard</field>
         <field name="res_model">payroll.analytics</field>
@@ -200,7 +208,8 @@
                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('view_payroll_approval_tree')}),
                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_payroll_analytics_dashboard')})]"/>
         <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
-        <field name="context">{'search_default_ready': 1}</field>
+        <field name="context">{'search_default_ready': 1, 'auto_refresh_analytics': 1}</field>
+        <field name="limit">50</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No payroll analytics ready for approval!

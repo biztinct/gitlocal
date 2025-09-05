@@ -143,7 +143,57 @@ class HrPayslip(models.Model):
     
     #Biztinct
     def action_payslip_level1_done(self):
-        return self.write({'state': 'level2'})
+        result = self.write({'state': 'level2'})
+        
+        # Auto-generate analytics when payslips reach Level 2
+        if self.env['ir.config_parameter'].sudo().get_param('payroll_analytics_approval.auto_generate', 'True') == 'True':
+            self._auto_generate_analytics_on_level2()
+        
+        return result
+    
+    def _auto_generate_analytics_on_level2(self):
+        """Auto-generate analytics when payslips reach Level 2 state"""
+        try:
+            # Only generate analytics if we have the analytics module installed
+            if 'payroll.analytics' not in self.env:
+                return
+            
+            # Get the country from the payslip structure or fallback
+            country = 'VN'  # Default to Vietnam, can be enhanced to detect from structure
+            
+            # Get date range from current payslips (only this specific set, not all Level 2)
+            payslip_dates = [slip.date_from for slip in self] + [slip.date_to for slip in self]
+            if payslip_dates:
+                # Group payslips by month to avoid cross-month analytics
+                payslips_by_month = {}
+                for slip in self:
+                    month_key = (slip.date_from.year, slip.date_from.month)
+                    if month_key not in payslips_by_month:
+                        payslips_by_month[month_key] = []
+                    payslips_by_month[month_key].append(slip)
+                
+                # Generate separate analytics for each month
+                for month_key, month_payslips in payslips_by_month.items():
+                    first_day = min([slip.date_from for slip in month_payslips])
+                    last_day = max([slip.date_to for slip in month_payslips])
+                    
+                    # Generate analytics for this specific month and country
+                    analytics_model = self.env['payroll.analytics']
+                    existing_analytics = analytics_model.search([
+                        ('country', '=', country),
+                        ('date_from', '=', first_day),
+                        ('date_to', '=', last_day)
+                    ], limit=1)
+                    
+                    if not existing_analytics:
+                        analytics = analytics_model.generate_analytics(country, first_day, last_day)
+                        analytics.write({'state': 'ready'})
+                    
+        except Exception as e:
+            # Don't fail payslip approval if analytics generation fails
+            import logging
+            _logger = logging.getLogger(__name__)
+            _logger.warning(f"Failed to auto-generate analytics on Level 2: {e}")
 
     #Biztinct
     def action_payslip_level2_done(self):
@@ -893,7 +943,46 @@ class HrPayslipRun(models.Model):
     def action_payslip_run_level1_done(self):
         for line in self.slip_ids:
             line.action_payslip_level1_done()
-        return self.write({'state': 'level2'})
+        
+        result = self.write({'state': 'level2'})
+        
+        # Auto-generate analytics for the entire batch when it reaches Level 2
+        if self.env['ir.config_parameter'].sudo().get_param('payroll_analytics_approval.auto_generate', 'True') == 'True':
+            self._auto_generate_batch_analytics_on_level2()
+        
+        return result
+    
+    def _auto_generate_batch_analytics_on_level2(self):
+        """Auto-generate analytics when payslip batch reaches Level 2 state"""
+        try:
+            # Only generate analytics if we have the analytics module installed
+            if 'payroll.analytics' not in self.env:
+                return
+            
+            # Get the country from payslips or fallback
+            country = 'VN'  # Default to Vietnam, can be enhanced to detect from payslip structures
+            
+            # Use batch date range
+            first_day = self.date_start
+            last_day = self.date_end
+            
+            # Generate analytics for this period and country
+            analytics_model = self.env['payroll.analytics']
+            existing_analytics = analytics_model.search([
+                ('country', '=', country),
+                ('date_from', '=', first_day),
+                ('date_to', '=', last_day)
+            ], limit=1)
+            
+            if not existing_analytics:
+                analytics = analytics_model.generate_analytics(country, first_day, last_day)
+                analytics.write({'state': 'ready'})
+                
+        except Exception as e:
+            # Don't fail batch approval if analytics generation fails
+            import logging
+            _logger = logging.getLogger(__name__)
+            _logger.warning(f"Failed to auto-generate batch analytics on Level 2: {e}")
 
     def action_payslip_run_level2_done(self):
         for line in self.slip_ids:

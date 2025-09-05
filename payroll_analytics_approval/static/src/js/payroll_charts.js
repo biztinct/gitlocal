@@ -15,13 +15,47 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             this._super.apply(this, arguments);
             this.charts = {};
             this.chartJSLoaded = false;
+            this._lastRecordId = null; // Track record changes for navigation detection
         },
 
         start: function () {
             var self = this;
             return this._super.apply(this, arguments).then(function () {
                 if (self.modelName === 'payroll.analytics') {
+                    // Check if this is a forced refresh from action_open_dashboard
+                    var forceRefresh = self.initialState && self.initialState.context && self.initialState.context.force_refresh;
+                    if (forceRefresh) {
+                        console.log('Force refresh detected from action_open_dashboard');
+                    }
+                    
                     self._initializeDashboard();
+                    
+                    // Set up navigation event listeners
+                    self._setupNavigationListeners();
+                }
+            });
+        },
+
+        _setupNavigationListeners: function() {
+            var self = this;
+            
+            // Listen for browser navigation events that could change the record
+            window.addEventListener('popstate', function() {
+                if (self.modelName === 'payroll.analytics') {
+                    console.log('Browser navigation detected, refreshing dashboard...');
+                    setTimeout(() => {
+                        self._setupDashboard();
+                    }, 500);
+                }
+            });
+            
+            // Listen for hash changes that could indicate record navigation
+            window.addEventListener('hashchange', function() {
+                if (self.modelName === 'payroll.analytics') {
+                    console.log('URL hash changed, refreshing dashboard...');
+                    setTimeout(() => {
+                        self._setupDashboard();
+                    }, 500);
                 }
             });
         },
@@ -64,8 +98,51 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             });
         },
 
+        _destroyAllCharts: function() {
+            var self = this;
+            console.log('Destroying existing charts...');
+            
+            // Destroy existing charts to prevent conflicts
+            Object.keys(this.charts).forEach(function (key) {
+                if (self.charts[key]) {
+                    try {
+                        self.charts[key].destroy();
+                        console.log('Destroyed chart:', key);
+                    } catch (e) {
+                        console.warn('Error destroying chart:', key, e);
+                    }
+                }
+            });
+            this.charts = {};
+            
+            // Also clear canvas elements to ensure clean state
+            var canvases = ['componentsChart', 'comparisonChart', 'varianceChart'];
+            canvases.forEach(function(canvasId) {
+                var canvas = document.getElementById(canvasId);
+                if (canvas) {
+                    // Clear the canvas
+                    var ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+                    // Remove any chart.js attached properties
+                    if (canvas.chart) {
+                        try {
+                            canvas.chart.destroy();
+                        } catch (e) {
+                            console.warn('Error destroying canvas chart:', e);
+                        }
+                        delete canvas.chart;
+                    }
+                }
+            });
+        },
+
         _setupDashboard: function () {
             var self = this;
+            
+            // Destroy existing charts first to prevent memory leaks and display issues
+            this._destroyAllCharts();
             
             // Wait a bit for DOM to be ready
             setTimeout(function() {
@@ -455,6 +532,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var varianceData = [];
             var colors = [];
 
+            var hasNonZeroVariance = false;
+            
             Object.keys(components).forEach(function (code) {
                 var component = components[code];
                 if (component && component.total && component.total > 0) {
@@ -462,29 +541,48 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     
                     var variance = 0;
                     if (comparison && comparison.variance && comparison.variance[code] !== undefined) {
-                        variance = comparison.variance[code];
+                        variance = parseFloat(comparison.variance[code]) || 0;
                     }
                     
-                    // Handle special case where variance is 100% (new component)
-                    if (variance === 100 && (!comparison.previous_month || !comparison.previous_month[code])) {
-                        variance = 0; // Don't show 100% for truly new components in variance chart
+                    // Track if we have any meaningful variance
+                    if (Math.abs(variance) > 0.1) {
+                        hasNonZeroVariance = true;
                     }
                     
                     varianceData.push(variance);
                     
-                    // Color based on variance
-                    if (variance > 10) {
+                    // Color based on variance with more sensitive thresholds
+                    if (variance > 5) {
                         colors.push('rgba(76, 175, 80, 0.8)'); // Green for positive
-                    } else if (variance < -10) {
+                    } else if (variance < -5) {
                         colors.push('rgba(244, 67, 54, 0.8)'); // Red for negative
+                    } else if (Math.abs(variance) > 0.1) {
+                        colors.push('rgba(255, 193, 7, 0.8)'); // Yellow for small changes
                     } else {
-                        colors.push('rgba(149, 165, 166, 0.8)'); // Gray for neutral
+                        colors.push('rgba(149, 165, 166, 0.8)'); // Gray for no change
                     }
                 }
             });
 
             if (varianceData.length === 0) {
                 this._showNoDataForChart('varianceChart');
+                return;
+            }
+            
+            // If all variances are zero or very small, show a "no variance" message
+            if (!hasNonZeroVariance) {
+                var container = document.getElementById('varianceChart');
+                if (container) {
+                    container.style.display = 'none';
+                    var parent = container.parentElement;
+                    if (parent) {
+                        parent.innerHTML = '<div class="no-variance-message text-center p-4">' +
+                            '<i class="fa fa-info-circle fa-2x text-muted mb-2"></i>' +
+                            '<h5 class="text-muted">No Significant Variance</h5>' +
+                            '<p class="text-muted">Current month values are similar to previous month</p>' +
+                            '</div>';
+                    }
+                }
                 return;
             }
 
@@ -797,9 +895,70 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             }
         },
 
+        // Method to handle record navigation (arrow keys, next/prev buttons)
+        _onNavigationChanged: function() {
+            this._super.apply(this, arguments);
+            // Re-initialize dashboard when navigating between records
+            if (this.modelName === 'payroll.analytics') {
+                console.log('Navigation detected, refreshing dashboard...');
+                setTimeout(() => {
+                    this._setupDashboard();
+                }, 200); // Slightly longer delay for navigation
+            }
+        },
+
+        // Override update method to detect record changes
+        _update: function() {
+            var result = this._super.apply(this, arguments);
+            // Check if we're on analytics dashboard and record has changed
+            if (this.modelName === 'payroll.analytics') {
+                var currentRecordId = this.renderer && this.renderer.state && this.renderer.state.res_id;
+                if (currentRecordId !== this._lastRecordId) {
+                    console.log('Record changed from', this._lastRecordId, 'to', currentRecordId, '- refreshing dashboard');
+                    this._lastRecordId = currentRecordId;
+                    // Refresh dashboard after a short delay to ensure DOM is updated
+                    setTimeout(() => {
+                        this._setupDashboard();
+                    }, 300);
+                }
+            }
+            return result;
+        },
+
         // Method to refresh dashboard data
         refreshDashboard: function() {
             this._setupDashboard();
+        },
+
+        // Override reload method to refresh dashboard after reload
+        reload: function() {
+            var self = this;
+            var result = this._super.apply(this, arguments);
+            // If this is analytics dashboard, refresh after reload
+            if (this.modelName === 'payroll.analytics') {
+                result.then(function() {
+                    console.log('Dashboard reloaded, refreshing charts...');
+                    setTimeout(() => {
+                        self._setupDashboard();
+                    }, 400);
+                });
+            }
+            return result;
+        },
+
+        // Override _confirmSave to refresh dashboard after any data changes
+        _confirmSave: function() {
+            var self = this;
+            var result = this._super.apply(this, arguments);
+            if (this.modelName === 'payroll.analytics') {
+                result.then(function() {
+                    console.log('Data saved, refreshing dashboard...');
+                    setTimeout(() => {
+                        self._setupDashboard();
+                    }, 300);
+                });
+            }
+            return result;
         },
 
         // Cleanup method
