@@ -703,102 +703,95 @@ if not isinstance(action, bool):  # Check if action is not a boolean
             <field name="name">hr.payslip.run.kanban</field>
             <field name="model">hr.payslip.run</field>
             <field name="arch" type="xml">
-                <kanban class="o_kanban_mobile" default_order="date_end desc">
+                <kanban default_group_by="state" class="o_kanban_small_column" default_order="date_end desc">
+                    <field name="name"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="state"/>
+                    <field name="credit_note"/>
+                    
                     <templates>
                         <t t-name="kanban-box">
-                            <!-- Apply conditional styling using complete t tags -->
-                            <t t-if="record.state.raw_value == 'draft'">
-                                <div class="oe_kanban_content oe_kanban_global_click card shadow-sm" 
-                                    style="background-color: #FFFDD0; border: 3px solid black;">
-                                    <!-- Header Section -->
-                                    <div class="card-header text-black" style="font-size: 18px; font-weight: bold;">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>
+                            <div class="oe_kanban_global_click">
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
                                                 <field name="name"/>
                                             </strong>
-                                            <span class="badge badge-light">
-                                                <field name="state"/>
-                                            </span>
+                                            <div class="o_kanban_record_subtitle">
+                                                <i class="fa fa-calendar"></i> <field name="date_start"/> to <field name="date_end"/>
+                                            </div>
+                                        </div>
+                                        <div class="o_dropdown_kanban dropdown">
+                                            <a class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" role="button" aria-label="Dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span class="fa fa-ellipsis-v" aria-hidden="true"/>
+                                            </a>
+                                            <div class="dropdown-menu" role="menu">
+                                                <a t-if="record.state.raw_value == 'draft'" 
+                                                   name="%(action_hr_payslip_by_employees)d" 
+                                                   type="action" 
+                                                   class="dropdown-item">Generate Payslips</a>
+                                                <a t-if="record.state.raw_value == 'draft'" 
+                                                   name="done_payslip_run" 
+                                                   type="object" 
+                                                   class="dropdown-item">Submit for Approval</a>
+                                                <a t-if="record.state.raw_value == 'level1'" 
+                                                   name="action_payslip_run_level1_done" 
+                                                   type="object" 
+                                                   class="dropdown-item">Level 1 Approve</a>
+                                                <a t-if="record.state.raw_value == 'level2'" 
+                                                   name="action_payslip_run_level2_done" 
+                                                   type="object" 
+                                                   class="dropdown-item">Level 2 Approve</a>
+                                            </div>
                                         </div>
                                     </div>
-                                    <!-- Body Section -->
-                                    <div class="card-body">
-                                        <p>
-                                            <i class="fa fa-calendar"></i>   <field name="date_start"/> - <field name="date_end"/>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </t>
-                            <t t-elif="record.state.raw_value == 'level1'">
-                                <div class="oe_kanban_content oe_kanban_global_click card shadow-sm" 
-                                    style="background-color: #cceeff; border: 3px solid black;">
-                                    <!-- Header Section -->
-                                    <div class="card-header text-black" style="font-size: 18px; font-weight: bold;">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>
-                                                <field name="name"/>
-                                            </strong>
-                                            <span class="badge badge-light">
-                                                <field name="state"/>
-                                            </span>
+                                    
+                                    <div class="o_kanban_record_body">
+                                        <div class="row" t-if="record.state.raw_value != 'draft'">
+                                            <div class="col-6">
+                                                <div class="o_field_widget">
+                                                    <strong><field name="slip_ids" widget="many2many_counter"/></strong> Payslips
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="o_field_widget">
+                                                    <t t-if="record.credit_note.raw_value">
+                                                        <span class="badge badge-warning">Credit Note</span>
+                                                    </t>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <!-- Body Section -->
-                                    <div class="card-body">
-                                        <p>
-                                            <i class="fa fa-calendar"></i>   <field name="date_start"/> - <field name="date_end"/>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </t>
-                            <t t-elif="record.state.raw_value == 'level2'">
-                                <div class="oe_kanban_content oe_kanban_global_click card shadow-sm" 
-                                    style="background-color: #E6E6FA; border: 3px solid black;">
-                                    <!-- Header Section -->
-                                    <div class="card-header text-black" style="font-size: 18px; font-weight: bold;">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>
-                                                <field name="name"/>
-                                            </strong>
-                                            <span class="badge badge-light">
-                                                <field name="state"/>
-                                            </span>
+                                    
+                                    <div class="o_kanban_record_bottom mt-2">
+                                        <div class="oe_kanban_bottom_left">
+                                            <field name="state" widget="priority"/>
+                                        </div>
+                                        <div class="oe_kanban_bottom_right">
+                                            <button t-if="record.state.raw_value == 'draft'" 
+                                                    name="%(action_hr_payslip_by_employees)d" 
+                                                    type="action" 
+                                                    class="btn btn-primary btn-sm">
+                                                <i class="fa fa-plus"/> Generate
+                                            </button>
+                                            <button t-if="record.state.raw_value == 'level1'" 
+                                                    name="action_payslip_run_level1_done" 
+                                                    type="object" 
+                                                    class="btn btn-success btn-sm">
+                                                <i class="fa fa-check"/> Approve
+                                            </button>
+                                            <button t-if="record.state.raw_value == 'level2'" 
+                                                    name="action_payslip_run_level2_done" 
+                                                    type="object" 
+                                                    class="btn btn-success btn-sm">
+                                                <i class="fa fa-check-circle"/> Final Approve
+                                            </button>
                                         </div>
                                     </div>
-                                    <!-- Body Section -->
-                                    <div class="card-body">
-                                        <p>
-                                            <i class="fa fa-calendar"></i>   <field name="date_start"/> - <field name="date_end"/>
-                                        </p>
-                                    </div>
-
                                 </div>
-                            </t>
-                            <t t-elif="record.state.raw_value == 'done'">
-                                <div class="oe_kanban_content oe_kanban_global_click card shadow-sm" 
-                                    style="background-color: #e6ffe6; border: 3px solid black;">
-                                    <!-- Header Section -->
-                                    <div class="card-header text-black" style="font-size: 18px; font-weight: bold;">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>
-                                                <field name="name"/>
-                                            </strong>
-                                            <span class="badge badge-light">
-                                                <field name="state"/>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <!-- Body Section -->
-                                    <div class="card-body">
-                                        <p>
-                                            <i class="fa fa-calendar"></i>   <field name="date_start"/> - <field name="date_end"/>
-                                        </p>
-                                    </div>
-
-                                </div>
-                            </t>
+                            </div>
                         </t>
                     </templates>
                 </kanban>

@@ -88,7 +88,7 @@ class PayrollDashboardAnalytics(models.Model):
             analytics.unlink()
             analytics = None
         
-        # Generate new analytics
+        # Generate new analytics for this country/period
         try:
             analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
             analytics.write({'state': 'ready'})
@@ -97,28 +97,27 @@ class PayrollDashboardAnalytics(models.Model):
             analytics.invalidate_cache()
             analytics._compute_analytics()
             
-            return {
-                'type': 'ir.actions.act_window',
-                'name': f'{country} Payroll Analytics Dashboard',
-                'res_model': 'payroll.analytics',
-                'res_id': analytics.id,
-                'view_mode': 'form',
-                'view_id': self.env.ref('payroll_analytics_approval.view_payroll_analytics_dashboard').id,
-                'target': 'current',
-                'context': {'create': False, 'edit': False}
-            }
+            _logger.info(f"Generated analytics {analytics.id} for {country}, opening Approval Queue")
+            
         except Exception as e:
             _logger.error(f"Error generating analytics for {country}: {e}")
-            # Fall back to showing analytics list
-            return {
-                'type': 'ir.actions.act_window',
-                'name': f'{country} Payroll Analytics',
-                'res_model': 'payroll.analytics',
-                'view_mode': 'tree,form',
-                'domain': [('country', '=', country)],
-                'context': {'default_country': country, 'search_default_ready': 1},
-                'target': 'current',
-            }
+            # Continue to show Approval Queue even if generation fails
+        
+        # Always open Approval Queue Kanban view instead of specific dashboard
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{country} Payroll Approval Queue',
+            'res_model': 'payroll.analytics',
+            'view_mode': 'kanban',
+            'view_id': self.env.ref('payroll_analytics_approval.view_payroll_approval_kanban').id,
+            'domain': [('country', '=', country), ('state', 'in', ['ready', 'approved'])],
+            'context': {
+                'default_country': country, 
+                'search_default_ready': 1,
+                'auto_refresh_analytics': 1
+            },
+            'target': 'current',
+        }
     
     def action_export_bank_file(self):
         """Open bank export wizard for approved payroll"""
