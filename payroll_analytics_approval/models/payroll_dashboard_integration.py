@@ -82,26 +82,33 @@ class PayrollDashboardAnalytics(models.Model):
             ('date_to', '<=', last_day)
         ], limit=1)
         
-        # Force regeneration to get fresh data and debug info
+        # Check if existing analytics should be preserved
         if analytics:
-            _logger.info(f"Found existing analytics record for {country}, regenerating...")
-            analytics.unlink()
-            analytics = None
+            if analytics.state == 'approved':
+                _logger.info(f"Found existing APPROVED analytics record for {country}, preserving state...")
+                # Don't delete approved records - just refresh data without changing state
+                payslips = analytics._get_payslips_for_period(country, first_day, last_day)
+                analytics._generate_analytics_data(payslips, country, first_day, last_day)
+            else:
+                _logger.info(f"Found existing analytics record for {country} in {analytics.state} state, regenerating...")
+                analytics.unlink()
+                analytics = None
         
-        # Generate new analytics for this country/period
-        try:
-            analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
-            analytics.write({'state': 'ready'})
-            
-            # Force computation of stored fields to ensure fresh data
-            analytics.invalidate_cache()
-            analytics._compute_analytics()
-            
-            _logger.info(f"Generated analytics {analytics.id} for {country}, opening Approval Queue")
-            
-        except Exception as e:
-            _logger.error(f"Error generating analytics for {country}: {e}")
-            # Continue to show Approval Queue even if generation fails
+        # Generate new analytics only if no existing record or existing was not approved
+        if not analytics:
+            try:
+                analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
+                analytics.write({'state': 'ready'})
+                
+                # Force computation of stored fields to ensure fresh data
+                analytics.invalidate_cache()
+                analytics._compute_analytics()
+                
+                _logger.info(f"Generated analytics {analytics.id} for {country}, opening Approval Queue")
+                
+            except Exception as e:
+                _logger.error(f"Error generating analytics for {country}: {e}")
+                # Continue to show Approval Queue even if generation fails
         
         # Always open Approval Queue Kanban view instead of specific dashboard
         return {

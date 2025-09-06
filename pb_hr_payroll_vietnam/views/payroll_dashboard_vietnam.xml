@@ -20,7 +20,7 @@
                         <button class="oe_stat_button" type="object" name="action_view_payslips_by_country" icon="fa-file-text">
                             <field string="Payslips" name="pending_payslips" widget="statinfo"/>
                         </button>
-                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-dong">
+                        <button class="oe_stat_button" type="object" name="action_view_payslips_by_country" icon="fa-dong">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value">₫<field name="total_payroll" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
                                 <span class="o_stat_text">Total Payroll</span>
@@ -210,23 +210,8 @@
                             <p class="dashboard-subtitle">Manage payroll operations for Vietnam region</p>
                         </div>
                         
-                        <!-- First Row: Main Action Cards -->
+                        <!-- First Row: Core Payroll Workflow -->
                         <div class="row">
-                            <div class="col-lg-4">
-                                <div class="dashboard-card">
-                                    <div>
-                                        <i class="fa fa-users fa-3x card-icon"/>
-                                        <h4 class="card-title">Employee Data</h4>
-                                        <p class="card-description">Import and synchronize employee information from Zoho People system</p>
-                                    </div>
-                                    <button name="action_get_employee_data" 
-                                            type="object" 
-                                            class="dashboard-btn">
-                                        Import employee data
-                                    </button>
-                                </div>
-                            </div>
-                            
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
@@ -256,15 +241,80 @@
                                     </button>
                                 </div>
                             </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-list-alt fa-3x card-icon"/>
+                                        <h4 class="card-title">Payslip Batch</h4>
+                                        <p class="card-description">Manage payslip batches and bulk payroll processing</p>
+                                    </div>
+                                    <button name="%(action_vietnam_payslip_batch_kanban)d" 
+                                            type="action" 
+                                            class="dashboard-btn">
+                                        View Payslip Batches
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Second Row: Data Management Cards -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-users fa-3x card-icon"/>
+                                        <h4 class="card-title">Employees</h4>
+                                        <p class="card-description">View and manage employee records in kanban view</p>
+                                    </div>
+                                    <button name="%(action_vietnam_employees_kanban)d" 
+                                            type="action" 
+                                            class="dashboard-btn">
+                                        View Employees
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-file-text-o fa-3x card-icon"/>
+                                        <h4 class="card-title">Contracts</h4>
+                                        <p class="card-description">Manage employee contracts and salary structures</p>
+                                    </div>
+                                    <button name="%(action_vietnam_contracts_kanban)d" 
+                                            type="action" 
+                                            class="dashboard-btn">
+                                        View Contracts
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card" style="opacity: 0.7;">
+                                    <div>
+                                        <i class="fa fa-users fa-3x card-icon" style="color: #6c757d;"/>
+                                        <h4 class="card-title" style="color: #6c757d;">Employee Data</h4>
+                                        <p class="card-description">Import and synchronize employee information from Zoho People system</p>
+                                    </div>
+                                    <button name="dummy_employee_data_button" 
+                                            type="button" 
+                                            class="dashboard-btn" 
+                                            style="background: #6c757d; cursor: not-allowed;" 
+                                            disabled="disabled">
+                                        Disabled
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                         
-                        <!-- Second Row: Advanced Features -->
+                        <!-- Third Row: Advanced Features -->
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
                                         <i class="fa fa-bank fa-3x card-icon"/>
-                                        <h4 class="card-title">Bank File Export</h4>
+                                        <h4 class="card-title">Bank Export</h4>
                                         <p class="card-description">Export payroll data to bank format for automated salary disbursement</p>
                                     </div>
                                     <button name="action_export_bank_file" 
@@ -276,37 +326,28 @@
                             </div>
                             
                             <div class="col-lg-4">
-                                <div class="dashboard-card">
+                                <div class="dashboard-card" style="opacity: 0.7;">
                                     <div>
-                                        <i class="fa fa-bar-chart fa-3x card-icon"/>
-                                        <h4 class="card-title">Advanced Analytics</h4>
+                                        <i class="fa fa-bar-chart fa-3x card-icon" style="color: #6c757d;"/>
+                                        <h4 class="card-title" style="color: #6c757d;">Advanced Analytics</h4>
                                         <p class="card-description">Comprehensive payroll analytics with trend analysis and reporting</p>
                                     </div>
-                                    <button name="action_view_analytics" 
-                                            type="object" 
-                                            class="dashboard-btn">
-                                        View Analytics
+                                    <button name="dummy_analytics_button" 
+                                            type="button" 
+                                            class="dashboard-btn" 
+                                            style="background: #6c757d; cursor: not-allowed;" 
+                                            disabled="disabled">
+                                        Coming Soon
                                     </button>
                                 </div>
                             </div>
                             
                             <div class="col-lg-4">
-                                <div class="dashboard-card">
-                                    <div>
-                                        <i class="fa fa-shield fa-3x card-icon"/>
-                                        <h4 class="card-title">Social Insurance</h4>
-                                        <p class="card-description">Process Vietnam social insurance calculations and compliance</p>
-                                    </div>
-                                    <button name="action_process_payroll" 
-                                            type="object" 
-                                            class="dashboard-btn">
-                                        Process Social Insurance
-                                    </button>
-                                </div>
+                                <!-- Empty space - Social Insurance tile removed -->
                             </div>
                         </div>
                         
-                        <!-- Third Row: Demo Features -->
+                        <!-- Fourth Row: Demo Features -->
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="dashboard-card" style="border: 2px solid #28a745; background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);">

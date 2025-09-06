@@ -404,7 +404,7 @@
     <!-- Menu Integration -->
     <menuitem id="menu_country_selector_enhanced" 
               name="Country Selector" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               action="action_enhanced_country_selector"
               sequence="3"/>
 

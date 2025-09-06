@@ -299,15 +299,36 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
         _finalApprove: function () {
             var self = this;
             
+            // Disable the button to prevent multiple clicks
+            self.$('#final-approve-btn').prop('disabled', true).text('Processing...');
+            
             rpc.query({
                 model: 'payroll.analytics',
                 method: 'action_approve_payroll',
                 args: [[this.analyticsId]],
             }).then(function (result) {
-                self._showNotification('Payroll approved successfully', 'success');
-                location.reload();
+                // Check if we got an action back from server
+                if (result && result.type === 'ir.actions.act_window') {
+                    // Show success message if provided
+                    if (result.context && result.context.success_message) {
+                        self._showNotification(result.context.success_message, 'success');
+                    }
+                    
+                    // Execute the action to refresh the view
+                    self.do_action(result);
+                } else {
+                    // Fallback - show notification and force reload
+                    self._showNotification('Payroll approved successfully! Refreshing page...', 'success');
+                    
+                    setTimeout(function () {
+                        window.location.reload(true);
+                    }, 1500);
+                }
             }).catch(function (error) {
-                self._showNotification('Error approving payroll: ' + error.message, 'danger');
+                // Re-enable the button on error
+                self.$('#final-approve-btn').prop('disabled', false).text('FINAL APPROVE');
+                self._showNotification('Error approving payroll: ' + error.message.data.message, 'danger');
+                console.error('Approval error:', error);
             });
         },
 

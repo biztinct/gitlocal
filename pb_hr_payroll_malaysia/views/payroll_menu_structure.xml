@@ -74,7 +74,7 @@ else:
     <!-- Malaysia EPF Menu under original Payroll menu -->
     <menuitem id="menu_malaysia_epf"
               name="Malaysia EPF Reporting"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               action="action_epf_wizard"
               sequence="70"
               groups="pb_hr_payroll_base.group_payroll_malaysia"/>

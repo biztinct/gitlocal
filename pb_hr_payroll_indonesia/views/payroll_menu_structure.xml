@@ -74,7 +74,7 @@
     <!-- Indonesia THR Menu under original Payroll menu -->
     <menuitem id="menu_indonesia_thr"
               name="Indonesia THR Payments"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               action="action_thr_payment_wizard"
               sequence="25"
               groups="pb_hr_payroll_base.group_payroll_indonesia"/>

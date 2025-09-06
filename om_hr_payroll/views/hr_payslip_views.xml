@@ -703,7 +703,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
             <field name="name">hr.payslip.run.kanban</field>
             <field name="model">hr.payslip.run</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="state" class="o_kanban_small_column" default_order="date_end desc">
+                <kanban default_group_by="state" class="o_kanban_small_column" default_order="date_end desc" create="true" quick_create="false">
                     <field name="name"/>
                     <field name="date_start"/>
                     <field name="date_end"/>

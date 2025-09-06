@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Dashboard Section -->
+    <!-- PayrollBackup Root Menu - For Super Admins Only -->
+    <menuitem id="menu_payroll_backup_root"
+              name="PayrollBackup"
+              sequence="51"
+              groups="pb_hr_payroll_base.group_payroll_super_admin"
+              web_icon="om_hr_payroll,static/description/icon.png"/>
+
+    <!-- Override Main Payroll Menu to Show Country Selector Only -->
+    <record id="om_hr_payroll.menu_hr_payroll_root" model="ir.ui.menu">
+        <field name="action" ref="action_enhanced_country_selector"/>
+    </record>
+
+    <!-- Dashboard Section - moved to PayrollBackup -->
     <menuitem id="menu_payroll_dashboard_section" 
               name="Dashboard" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="menu_payroll_backup_root"
               sequence="10"/>
 
-    <!-- Employee Management Section -->
+    <!-- Employee Management Section - moved to PayrollBackup -->
     <menuitem id="menu_payroll_employees" 
               name="Employees" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="menu_payroll_backup_root"
               sequence="20"/>
 
     <!-- Employee Action -->
@@ -43,10 +55,10 @@
               action="action_hr_contract_payroll"
               sequence="20"/>
 
-    <!-- Payslips Section -->
+    <!-- Payslips Section - moved to PayrollBackup -->
     <menuitem id="menu_payroll_payslips" 
               name="Payslips" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="menu_payroll_backup_root"
               sequence="30"/>
 
     <!-- Payslip Action -->
@@ -79,10 +91,10 @@
               action="action_hr_payslip_run_payroll"
               sequence="20"/>
 
-    <!-- Reports Section -->
+    <!-- Reports Section - moved to PayrollBackup -->
     <menuitem id="menu_payroll_reports" 
               name="Reports" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="menu_payroll_backup_root"
               sequence="80"/>
 
     <!-- Payroll Analysis Action -->
