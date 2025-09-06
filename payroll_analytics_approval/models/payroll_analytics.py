@@ -668,37 +668,12 @@ class PayrollAnalytics(models.Model):
         """Override search to auto-refresh analytics when accessed via Approval Queue"""
         # Check if this search is from the Approval Queue (has auto_refresh_analytics context)
         if self.env.context.get('auto_refresh_analytics'):
-            # First get the records with normal search
-            records = super().search(domain, offset=offset, limit=limit, order=order, count=count)
-            
-            # If we're getting actual records (not just count)
-            if not count and records:
-                _logger.info(f"Auto-refreshing {len(records)} analytics records from Approval Queue")
-                
-                # Refresh each record with current data
-                for record in records:
-                    try:
-                        # Get current payslips for this period
-                        payslips = record._get_payslips_for_period(record.country, record.date_from, record.date_to)
-                        
-                        if payslips:
-                            # Regenerate analytics data
-                            analytics_data = record._generate_analytics_data(payslips, record.country, record.date_from, record.date_to)
-                            
-                            # Update record with fresh data (without triggering write hooks)
-                            record.sudo().write(analytics_data)
-                            
-                            _logger.info(f"Auto-refreshed {record.period_name}: {record.total_employees} employees, {record.total_payroll} total payroll")
-                    except Exception as e:
-                        _logger.warning(f"Error auto-refreshing analytics record {record.id}: {e}")
-                
-                # Invalidate cache to ensure fresh data display
-                records.invalidate_cache()
-            
-            return records
-        else:
-            # Normal search without auto-refresh
-            return super().search(domain, offset=offset, limit=limit, order=order, count=count)
+            # For faster loading, disable auto-refresh and just return records
+            # Analytics are generated/refreshed when dashboard is opened instead
+            _logger.info("Approval Queue accessed - skipping auto-refresh for performance")
+        
+        # Always use standard search for best performance
+        return super().search(domain, offset=offset, limit=limit, order=order, count=count)
     
     @api.model
     def get_analytics_stats(self, country):

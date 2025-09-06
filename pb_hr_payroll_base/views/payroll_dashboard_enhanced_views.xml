@@ -16,18 +16,6 @@
                 </header>
                 
                 <sheet>
-                    <!-- Enhanced Button Box -->
-                    <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_view_analytics" icon="fa-bar-chart">
-                            <field string="Payslips" name="pending_payslips" widget="statinfo"/>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_view_employees_by_country" icon="fa-users">
-                            <field string="Employees" name="total_employees" widget="statinfo"/>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-file-text">
-                            <field string="Contracts" name="active_contracts" widget="statinfo"/>
-                        </button>
-                    </div>
 
                     <!-- Enhanced Dashboard Header -->
                     <div class="dashboard-header-enhanced">
