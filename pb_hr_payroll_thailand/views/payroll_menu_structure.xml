@@ -88,7 +88,7 @@ else:
     <!-- Thailand SSF Menu under original Payroll menu -->
     <menuitem id="menu_thailand_ssf"
               name="Thailand SSF Reporting"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               action="action_ssf_wizard"
               sequence="25"
               groups="pb_hr_payroll_base.group_payroll_thailand"/>

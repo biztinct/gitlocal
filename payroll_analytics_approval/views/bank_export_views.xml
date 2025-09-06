@@ -26,22 +26,26 @@
                 </group>
                 
                 <!-- Preview Section -->
-                <group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}">
-                    <div class="alert alert-success">
-                        <h5><i class="fa fa-check"/> Export Preview Ready</h5>
-                        <p>Found <strong><field name="preview_record_count" readonly="1"/></strong> employees with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong></p>
-                    </div>
-                    <field name="preview_data" widget="text" readonly="1"/>
-                </group>
+                        <group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}">
+                            <div class="alert alert-success" colspan="2">
+                                <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+                                <p>
+                                    Found <strong><field name="preview_record_count" readonly="1"/></strong> employees 
+                                    with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong>
+                                </p>
+                            </div>
+                            <field name="preview_data" widget="text" readonly="1" colspan="2"/>
+                        </group>
+
                 
                 <!-- Export Results -->
                 <group string="Export Results" attrs="{'invisible': [('export_file', '=', False)]}">
-                    <div class="alert alert-success">
+                    <div class="alert alert-success" colspan="2">
                         <h5><i class="fa fa-download"/> Export Complete</h5>
                         <p>Bank export file has been generated successfully. Click download to save the file.</p>
                     </div>
-                    <field name="export_filename" readonly="1"/>
-                    <field name="export_file" filename="export_filename" readonly="1"/>
+                    <field name="export_filename" readonly="1" colspan="2"/>
+                    <field name="export_file" filename="export_filename" readonly="1" colspan="2"/>
                 </group>
                 
                 <footer>
@@ -80,8 +84,8 @@
                 </group>
                 
                 <group string="Export Results" attrs="{'invisible': [('export_file', '=', False)]}">
-                    <field name="export_filename" readonly="1"/>
-                    <field name="export_file" filename="export_filename" readonly="1"/>
+                    <field name="export_filename" readonly="1" colspan="2"/>
+                    <field name="export_file" filename="export_filename" readonly="1" colspan="2"/>
                 </group>
                 
                 <footer>

@@ -52,8 +52,7 @@
         'views/payroll_analytics_templates.xml',
         'views/dashboard_integration.xml',
         
-        # Wizards
-        'wizards/payroll_export_wizard_views.xml',
+        # Wizards  
         'wizards/payroll_comparison_wizard_views.xml',
         
         # Reports

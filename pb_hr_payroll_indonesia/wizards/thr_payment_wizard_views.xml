@@ -40,7 +40,7 @@
     
     <menuitem id="menu_thr_payment"
               name="THR Payment"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               action="action_thr_payment_wizard"
               sequence="15"/>
     

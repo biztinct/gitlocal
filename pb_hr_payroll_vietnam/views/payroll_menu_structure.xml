@@ -39,10 +39,10 @@
               groups="pb_hr_payroll_base.group_payroll_vietnam"/>
     
 
-    <!-- Vietnam Social Insurance Menu under original Payroll menu -->
+    <!-- Vietnam Social Insurance Menu - moved to PayrollBackup -->
     <menuitem id="menu_vietnam_social_insurance"
               name="Vietnam Social Insurance"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               sequence="25"
               groups="pb_hr_payroll_base.group_payroll_vietnam"/>
     

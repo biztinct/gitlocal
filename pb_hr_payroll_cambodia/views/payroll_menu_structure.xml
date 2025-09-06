@@ -74,7 +74,7 @@ else:
     <!-- Cambodia NSSF Menu under original Payroll menu -->
     <menuitem id="menu_cambodia_nssf"
               name="Cambodia NSSF Reporting"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               action="action_nssf_wizard"
               sequence="60"
               groups="pb_hr_payroll_base.group_payroll_cambodia"/>

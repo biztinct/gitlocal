@@ -99,21 +99,44 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
             # Get payslips for preview
             payslips = self._get_payslips_for_export()
             
-            # Calculate totals
-            total_amount = 0
-            preview_lines = []
+            if not payslips:
+                self.preview_record_count = 0
+                self.preview_total_amount = 0
+                self.preview_data = "No approved payslips found for the selected period and country."
+                return
             
-            for payslip in payslips:
-                net_pay_line = payslip.line_ids.filtered(lambda l: l.code == 'NETPAY')
-                net_pay = net_pay_line[0].total if net_pay_line else 0
-                total_amount += net_pay
+            # Generate full export data for preview
+            export_data = self._prepare_export_data(payslips)
+            
+            # Calculate totals
+            total_amount = sum(row['Amount'] for row in export_data)
+            
+            # Create formatted preview text
+            preview_lines = []
+            if export_data:
+                # Add header
+                headers = list(export_data[0].keys())
+                preview_lines.append(" | ".join(headers))
+                preview_lines.append("-" * 80)
                 
-                preview_lines.append(f"{payslip.employee_id.name}: {net_pay}")
+                # Add data rows (limit to first 10)
+                for row in export_data[:10]:
+                    formatted_row = []
+                    for key, value in row.items():
+                        if key == 'Amount':
+                            formatted_row.append(f"{value:,.2f}")
+                        else:
+                            formatted_row.append(str(value)[:15])  # Limit length for display
+                    preview_lines.append(" | ".join(formatted_row))
+                
+                # Add summary
+                if len(export_data) > 10:
+                    preview_lines.append(f"... and {len(export_data) - 10} more records")
             
             # Update preview fields
             self.preview_record_count = len(payslips)
             self.preview_total_amount = total_amount
-            self.preview_data = '\n'.join(preview_lines[:10])  # Show first 10 lines
+            self.preview_data = '\n'.join(preview_lines)
             
         except Exception as e:
             self.preview_record_count = 0
@@ -244,8 +267,32 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         export_data = []
         
         for payslip in payslips:
-            net_pay_line = payslip.line_ids.filtered(lambda l: l.code == 'NETPAY')
-            net_pay = net_pay_line[0].total if net_pay_line else 0
+            # Debug: log available payslip lines
+            _logger.info(f"Payslip {payslip.number} for {payslip.employee_id.name}")
+            _logger.info(f"Available payslip lines: {[(line.code, line.name, line.total) for line in payslip.line_ids]}")
+            
+            # Try different net pay codes
+            net_pay_line = payslip.line_ids.filtered(lambda l: l.code in ['NETPAY', 'NET', 'NETSALARY', 'net_pay', 'NET_SALARY'])
+            if not net_pay_line:
+                # If no net pay line found, calculate from gross minus deductions
+                gross_lines = payslip.line_ids.filtered(lambda l: l.category_id.code in ['GROSS', 'gross'])
+                deduction_lines = payslip.line_ids.filtered(lambda l: l.category_id.code in ['DED', 'DEDUCTION', 'deduction'])
+                gross_total = sum(gross_lines.mapped('total'))
+                deduction_total = sum(deduction_lines.mapped('total'))
+                net_pay = gross_total - deduction_total
+                _logger.info(f"Calculated net pay: {gross_total} - {deduction_total} = {net_pay}")
+            else:
+                net_pay = net_pay_line[0].total
+                _logger.info(f"Found net pay line {net_pay_line[0].code}: {net_pay}")
+            
+            # If still zero, try to get basic salary or any positive amount
+            if net_pay == 0:
+                all_positive_lines = payslip.line_ids.filtered(lambda l: l.total > 0)
+                if all_positive_lines:
+                    net_pay = sum(all_positive_lines.mapped('total'))
+                    _logger.info(f"Using sum of positive lines as net pay: {net_pay}")
+                else:
+                    _logger.warning(f"No positive salary lines found for {payslip.employee_id.name}")
             
             bank_account = payslip.employee_id.bank_account_id
             

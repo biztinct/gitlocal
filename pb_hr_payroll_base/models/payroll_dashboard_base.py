@@ -39,7 +39,7 @@ class PayrollDashboard(models.Model):
     # === EXISTING COMPUTED FIELDS (BACKWARD COMPATIBLE) ===
     employee_count = fields.Integer('Employee Count', compute='_compute_statistics', store=False)
     active_contracts = fields.Integer('Active Contracts', compute='_compute_statistics', store=False)
-    pending_payslips = fields.Integer('Pending Payslips', compute='_compute_statistics', store=False)
+    pending_payslips = fields.Integer('Pending Payslips', compute='_compute_enhanced_statistics', store=False)
     total_gross_salary = fields.Float('Total Gross Salary', compute='_compute_statistics', store=False)
     currency_id = fields.Many2one('res.currency', 'Currency', compute='_compute_currency', store=True)
     # Change the field definition
@@ -293,20 +293,31 @@ class PayrollDashboard(models.Model):
 
     @api.depends('country', 'active')
     def _compute_enhanced_statistics(self):
-        """Enhanced statistics computation for new fields"""
+        """Enhanced statistics computation for new fields - COUNTRY SPECIFIC"""
         for record in self:
             try:
                 # Use existing logic and extend it
                 record._compute_statistics()  # Call your existing method
                 
-                # Enhanced calculations for new fields
-                record.total_employees = record.employee_count
+                # Get country-specific employees through contracts - ACTIVE CONTRACTS ONLY
+                contracts = self.env['hr.contract'].search([
+                    ('struct_id.payroll_country_code', '=', record.country),
+                    ('state', '=', 'open')  # Only active contracts
+                ])
+                employee_ids = contracts.mapped('employee_id').ids
                 
-                # Calculate total payroll from recent payslips
+                # Remove duplicates and get unique employees
+                unique_employee_ids = list(set(employee_ids)) if employee_ids else []
+                
+                # Enhanced calculations for new fields - COUNTRY SPECIFIC
+                record.total_employees = len(unique_employee_ids) if unique_employee_ids else 0
+                
+                # Calculate total payroll from recent payslips FOR THIS COUNTRY
                 today = fields.Date.today()
                 start_of_month = today.replace(day=1)
                 payslips = self.env['hr.payslip'].search([
                     ('state', '=', 'done'),
+                    ('employee_id', 'in', unique_employee_ids if unique_employee_ids else []),
                     ('date_from', '>=', start_of_month),
                     ('date_to', '<=', today)
                 ])
@@ -318,18 +329,27 @@ class PayrollDashboard(models.Model):
                 else:
                     record.average_salary = 0.0
                     
-                # Get last payroll date
+                # Get last payroll date FOR THIS COUNTRY
                 latest_payslip = self.env['hr.payslip'].search([
-                    ('state', '=', 'done')
+                    ('state', '=', 'done'),
+                    ('employee_id', 'in', unique_employee_ids if unique_employee_ids else [])
                 ], order='date_to desc', limit=1)
                 record.last_payroll_date = latest_payslip.date_to if latest_payslip else False
                 
+                # Count pending payslips FOR THIS COUNTRY
+                pending_payslips = self.env['hr.payslip'].search_count([
+                    ('state', 'in', ['draft', 'verify']),
+                    ('employee_id', 'in', unique_employee_ids if unique_employee_ids else [])
+                ])
+                record.pending_payslips = pending_payslips
+                
             except Exception as e:
-                _logger.warning(f"Error computing enhanced statistics for {record.name}: {str(e)}")
+                _logger.warning(f"Error computing enhanced statistics for {record.country}: {str(e)}")
                 record.total_employees = 0
                 record.total_payroll = 0.0
                 record.average_salary = 0.0
                 record.last_payroll_date = False
+                record.pending_payslips = 0
 
 
     def _use_cached_metrics(self):
@@ -432,7 +452,7 @@ class PayrollDashboard(models.Model):
         }
 
     def action_import_spreadsheet(self):
-        """Two-step process: Import spreadsheet data, then open Batch Payslip wizard"""
+        """Import spreadsheet data only - does NOT create batch payslips"""
         try:
             # Step 1: Import spreadsheet data from the integrated payroll
             # Get the country-specific spreadsheet reference with correct external IDs
@@ -477,24 +497,18 @@ class PayrollDashboard(models.Model):
             else:
                 self.env.user.notify_info(
                     title=_('No Spreadsheet Configured'),
-                    message=_('No spreadsheet is configured for country %s. Proceeding to payroll batch creation.') % self.country
+                    message=_('No spreadsheet is configured for country %s. Import skipped.') % self.country
                 )
             
-            # Step 2: Open Batch Payslip wizard regardless of import result
-            current_date = fields.Date.today()
-            month_year = current_date.strftime("%B %Y")
-            
+            # Step 2: Just show success notification - DO NOT auto-create batch payslips
             return {
-                'type': 'ir.actions.act_window',
-                'name': f'Process {self.country} Payroll Batch',
-                'res_model': 'hr.payslip.run',
-                'view_mode': 'form',
-                'view_id': self.env.ref('om_hr_payroll.hr_payslip_run_form').id,
-                'target': 'current',
-                'context': {
-                    'default_name': f'{self.country} Payroll - {month_year}',
-                    'default_date_start': current_date.replace(day=1),
-                    'default_date_end': current_date,
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Import Completed'),
+                    'message': _('Payroll data import completed successfully. Use "View Payslip Batches" to create batches when ready.'),
+                    'type': 'success',
+                    'sticky': False,
                 }
             }
             
@@ -524,11 +538,12 @@ class PayrollDashboard(models.Model):
                     }
                 }
         
-        # Get contracts using this country's structure
+        # Get contracts using this country's structure - ACTIVE ONLY
         contracts = self.env['hr.contract'].search([
-            ('struct_id.payroll_country_code', '=', self.country)
+            ('struct_id.payroll_country_code', '=', self.country),
+            ('state', '=', 'open')  # Only active contracts
         ])
-        employee_ids = contracts.mapped('employee_id').ids
+        employee_ids = list(set(contracts.mapped('employee_id').ids))  # Unique employees
         
         if not employee_ids:
             return {
@@ -611,17 +626,18 @@ class PayrollDashboard(models.Model):
             'name': f'{self.country} Contracts',
             'res_model': 'hr.contract',
             'view_mode': 'tree,form',
-            'domain': [('payroll_country', '=', self.country)],
-            'context': {'default_payroll_country': self.country}
+            'domain': [('struct_id.payroll_country_code', '=', self.country)],
+            'context': {'default_country_code': self.country}
         }
 
     def action_view_payslips_by_country(self):
         """View payslips for this country"""
-        # Get employees for this country
+        # Get employees for this country - ACTIVE ONLY
         contracts = self.env['hr.contract'].search([
-            ('struct_id.payroll_country_code', '=', self.country)
+            ('struct_id.payroll_country_code', '=', self.country),
+            ('state', '=', 'open')  # Only active contracts
         ])
-        employee_ids = contracts.mapped('employee_id').ids
+        employee_ids = list(set(contracts.mapped('employee_id').ids))  # Unique employees
         
         return {
             'type': 'ir.actions.act_window',

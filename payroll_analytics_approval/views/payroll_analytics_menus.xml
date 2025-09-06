@@ -85,10 +85,10 @@
     </record>
 
 
-    <!-- Analytics Section under main Payroll menu -->
+    <!-- Analytics Section - moved to PayrollBackup -->
     <menuitem id="menu_payroll_analytics" 
               name="Analytics" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               sequence="70"/>
 
      <!-- Approval Queue Menu -->

@@ -102,7 +102,7 @@ else:
     
     <menuitem id="menu_singapore_cpf"
               name="Singapore CPF Submission"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               action="action_cpf_submission_wizard"
               sequence="25"
               groups="pb_hr_payroll_base.group_payroll_singapore"/>

@@ -6,7 +6,7 @@
     
     <menuitem id="menu_payroll_zoho" 
               name="Zoho Integration" 
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="pb_hr_payroll_base.menu_payroll_backup_root"
               sequence="70"/>
     
 

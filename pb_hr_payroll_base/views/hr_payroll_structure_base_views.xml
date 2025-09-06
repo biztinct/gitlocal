@@ -276,7 +276,7 @@
     <!-- Menu Items -->
     <menuitem id="menu_hr_payroll_base_root" 
               name="Multi-Country Payroll" 
-              parent="om_hr_payroll.menu_hr_payroll_root" 
+              parent="pb_hr_payroll_base.menu_payroll_backup_root" 
               sequence="1"/>
 
     <menuitem id="menu_hr_payroll_structures_base" 

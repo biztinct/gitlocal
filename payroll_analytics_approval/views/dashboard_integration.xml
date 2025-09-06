@@ -46,15 +46,15 @@
                     <div class="col-lg-4">
                         <div class="dashboard-card">
                             <div>
-                                <i class="fa fa-university fa-3x card-icon"/>
-                                <h4 class="card-title">Bank Export</h4>
-                                <p class="card-description">Export approved payroll data for disbursement</p>
+                                <i class="fa fa-line-chart fa-3x card-icon"/>
+                                <h4 class="card-title">Payroll Comparisons</h4>
+                                <p class="card-description">Compare payroll data across periods and analyze trends</p>
                             </div>
-                            <button name="action_export_bank_file" 
+                            <button name="action_view_analytics" 
                                     type="object" 
                                     class="dashboard-btn"
                                     context="{'default_country': 'VN'}">
-                                Export Data
+                                View Comparisons
                             </button>
                         </div>
                     </div>
@@ -126,15 +126,15 @@
                     <div class="col-lg-4">
                         <div class="dashboard-card">
                             <div>
-                                <i class="fa fa-university fa-3x card-icon"/>
-                                <h4 class="card-title">Bank Export</h4>
-                                <p class="card-description">Export approved payroll data for disbursement</p>
+                                <i class="fa fa-line-chart fa-3x card-icon"/>
+                                <h4 class="card-title">Payroll Comparisons</h4>
+                                <p class="card-description">Compare payroll data across periods and analyze trends</p>
                             </div>
-                            <button name="action_export_bank_file" 
+                            <button name="action_view_analytics" 
                                     type="object" 
                                     class="dashboard-btn"
                                     context="{'default_country': 'ID'}">
-                                Export Data
+                                View Comparisons
                             </button>
                         </div>
                     </div>
