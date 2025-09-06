@@ -10,6 +10,12 @@
             <form string="Cambodia Payroll Dashboard" create="false" edit="false" delete="false">
                 <header>
                     <field name="name" invisible="1"/>
+                    <!-- Hide smart button fields -->
+                    <field name="total_employees" invisible="1"/>
+                    <field name="pending_payslips" invisible="1"/>
+                    <field name="total_payroll" invisible="1"/>
+                    <field name="average_salary" invisible="1"/>
+                    <field name="last_payroll_date" invisible="1"/>
                 </header>
                 <sheet>
                     
