@@ -12,33 +12,6 @@
                     <field name="name" invisible="1"/>
                 </header>
                 <sheet>
-                    <!-- Enhanced Button Box with Header Tiles -->
-                    <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_view_employees_by_country" icon="fa-users">
-                            <field string="Employees" name="total_employees" widget="statinfo"/>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_view_payslips_by_country" icon="fa-file-text">
-                            <field string="Payslips" name="pending_payslips" widget="statinfo"/>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-dollar">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value">Rp <field name="total_payroll" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
-                                <span class="o_stat_text">Total Payroll</span>
-                            </div>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_view_analytics" icon="fa-trending-up">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value">Rp <field name="average_salary" widget="monetary" options="{'currency_field': 'currency_id', 'no_symbol': True}"/></span>
-                                <span class="o_stat_text">Average Salary</span>
-                            </div>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_view_contracts_by_country" icon="fa-calendar">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value"><field name="last_payroll_date" widget="date"/></span>
-                                <span class="o_stat_text">Last Payroll</span>
-                            </div>
-                        </button>
-                    </div>
                     
                     <style>
                         .dashboard-container {

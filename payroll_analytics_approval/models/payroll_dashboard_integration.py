@@ -42,73 +42,79 @@ class PayrollDashboardAnalytics(models.Model):
         if not country:
             raise UserError(_('Unable to determine country for analytics dashboard'))
         
-        # Get date range from most recent Level 2 payslip batch (not all payslips)
+        # Get ALL Level 2 payslip batches and create separate analytics for each
         level2_batches = self.env['hr.payslip.run'].search([
             ('state', '=', 'level2')
-        ], order='date_start desc', limit=1)
+        ], order='date_start desc')  # Most recent first for better UX
+        
+        generated_analytics = []
         
         if level2_batches:
-            # Use the most recent Level 2 batch date range
-            recent_batch = level2_batches[0]
-            first_day = recent_batch.date_start
-            last_day = recent_batch.date_end
-            _logger.info(f"Using most recent Level 2 batch: {recent_batch.name} ({first_day} to {last_day})")
-        else:
-            # Fallback to individual Level 2 payslips if no batches found
-            level2_payslips = self.env['hr.payslip'].search([
-                ('state', '=', 'level2')
-            ], order='date_from desc', limit=1)
+            _logger.info(f"Found {len(level2_batches)} Level 2 batches to process for {country}")
             
-            if level2_payslips:
-                # Use the most recent payslip's month only
-                recent_payslip = level2_payslips[0]
-                first_day = recent_payslip.date_from
-                last_day = recent_payslip.date_to
-                _logger.info(f"Using most recent Level 2 payslip date range: {first_day} to {last_day}")
+            # Process each Level 2 batch separately
+            for batch in level2_batches:
+                batch_first_day = batch.date_start
+                batch_last_day = batch.date_end
+                
+                _logger.info(f"Processing Level 2 batch: {batch.name} ({batch_first_day} to {batch_last_day})")
+                
+                # Search for existing analytics for this specific batch period
+                existing_analytics = self.env['payroll.analytics'].search([
+                    ('country', '=', country),
+                    ('date_from', '=', batch_first_day),
+                    ('date_to', '=', batch_last_day)
+                ], limit=1)
+                
+                # Check if existing analytics should be preserved
+                if existing_analytics:
+                    if existing_analytics.state == 'approved':
+                        _logger.info(f"Found existing APPROVED analytics for batch {batch.name}, preserving state...")
+                        # Don't delete approved records - just refresh data without changing state
+                        payslips = existing_analytics._get_payslips_for_period(country, batch_first_day, batch_last_day)
+                        existing_analytics._generate_analytics_data(payslips, country, batch_first_day, batch_last_day)
+                        generated_analytics.append(existing_analytics)
+                    else:
+                        _logger.info(f"Found existing analytics for batch {batch.name} in {existing_analytics.state} state, regenerating...")
+                        existing_analytics.unlink()
+                        existing_analytics = None
+                
+                # Generate new analytics only if no existing approved record
+                if not existing_analytics:
+                    try:
+                        new_analytics = self.env['payroll.analytics'].generate_analytics(country, batch_first_day, batch_last_day)
+                        new_analytics.write({'state': 'ready'})
+                        
+                        # Force computation of stored fields to ensure fresh data
+                        new_analytics.invalidate_cache()
+                        new_analytics._compute_analytics()
+                        
+                        generated_analytics.append(new_analytics)
+                        _logger.info(f"Generated analytics {new_analytics.id} for batch {batch.name}")
+                        
+                    except Exception as e:
+                        _logger.error(f"Error generating analytics for batch {batch.name}: {e}")
+            
+            _logger.info(f"Successfully processed {len(generated_analytics)} analytics records for {country}")
+            
+        else:
+            # Fallback to current month if no Level 2 batches found
+            _logger.warning(f"No Level 2 batches found for {country}, using current month fallback")
+            today = datetime.date.today()
+            first_day = today.replace(day=1)
+            if today.month == 12:
+                last_day = today.replace(year=today.year + 1, month=1, day=1) - datetime.timedelta(days=1)
             else:
-                # Final fallback to current month
-                today = datetime.date.today()
-                first_day = today.replace(day=1)
-                if today.month == 12:
-                    last_day = today.replace(year=today.year + 1, month=1, day=1) - datetime.timedelta(days=1)
-                else:
-                    last_day = today.replace(month=today.month + 1, day=1) - datetime.timedelta(days=1)
-                _logger.warning(f"No Level 2 payslips found, using current month: {first_day} to {last_day}")
-        
-        # Search for existing analytics
-        analytics = self.env['payroll.analytics'].search([
-            ('country', '=', country),
-            ('date_from', '>=', first_day),
-            ('date_to', '<=', last_day)
-        ], limit=1)
-        
-        # Check if existing analytics should be preserved
-        if analytics:
-            if analytics.state == 'approved':
-                _logger.info(f"Found existing APPROVED analytics record for {country}, preserving state...")
-                # Don't delete approved records - just refresh data without changing state
-                payslips = analytics._get_payslips_for_period(country, first_day, last_day)
-                analytics._generate_analytics_data(payslips, country, first_day, last_day)
-            else:
-                _logger.info(f"Found existing analytics record for {country} in {analytics.state} state, regenerating...")
-                analytics.unlink()
-                analytics = None
-        
-        # Generate new analytics only if no existing record or existing was not approved
-        if not analytics:
+                last_day = today.replace(month=today.month + 1, day=1) - datetime.timedelta(days=1)
+            
             try:
                 analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
                 analytics.write({'state': 'ready'})
-                
-                # Force computation of stored fields to ensure fresh data
                 analytics.invalidate_cache()
                 analytics._compute_analytics()
-                
-                _logger.info(f"Generated analytics {analytics.id} for {country}, opening Approval Queue")
-                
+                generated_analytics.append(analytics)
             except Exception as e:
-                _logger.error(f"Error generating analytics for {country}: {e}")
-                # Continue to show Approval Queue even if generation fails
+                _logger.error(f"Error generating fallback analytics for {country}: {e}")
         
         # Always open Approval Queue Kanban view instead of specific dashboard
         return {
