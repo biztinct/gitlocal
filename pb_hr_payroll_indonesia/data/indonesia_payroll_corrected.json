@@ -1,0 +1,1079 @@
+{
+  "version": 12.5,
+  "sheets": [
+    {
+      "id": "96ce3955-5893-4daa-8e8b-b36376de0ea4",
+      "name": "Indonesia Payroll Data",
+      "colNumber": 46,
+      "rowNumber": 72,
+      "rows": {},
+      "cols": {
+        "1": {
+          "size": 150
+        },
+        "2": {
+          "size": 200
+        }
+      },
+      "merges": [],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"employee_id\")"
+        },
+        "B1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"employee_name\")"
+        },
+        "C1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"department\")"
+        },
+        "D1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"position\")"
+        },
+        "E1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"join_date\")"
+        },
+        "F1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"employee_status\")"
+        },
+        "G1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"base_salary\")"
+        },
+        "H1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"grade_level\")"
+        },
+        "I1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_gas\")"
+        },
+        "J1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_phone\")"
+        },
+        "K1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_meal\")"
+        },
+        "L1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_taxi\")"
+        },
+        "M1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"fixed_allowance_1\")"
+        },
+        "N1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"fixed_allowance_2\")"
+        },
+        "O1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"tunjangan_sewa_rumah\")"
+        },
+        "P1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"standard_hours\")"
+        },
+        "Q1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_hours\")"
+        },
+        "R1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"overtime_hours\")"
+        },
+        "S1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"holiday_hours\")"
+        },
+        "T1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_basic_salary\")"
+        },
+        "U1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_gas_allowance\")"
+        },
+        "V1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_phone_allowance\")"
+        },
+        "W1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"actual_meal_allowance\")"
+        },
+        "X1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"commission\")"
+        },
+        "Y1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"sign_on_bonus\")"
+        },
+        "Z1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"total_overtime_amount\")"
+        },
+        "AA1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"calculated_gross_pay\")"
+        },
+        "AB1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"calculated_bpjs_health_emp\")"
+        },
+        "AC1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"calculated_bpjs_jht_emp\")"
+        },
+        "AD1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"calculated_bpjs_jp_emp\")"
+        },
+        "AE1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"calculated_pph21\")"
+        },
+        "AF1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"koperasi\")"
+        },
+        "AG1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"pinjaman\")"
+        },
+        "AH1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"total_deductions\")"
+        },
+        "AI1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"net_pay\")"
+        },
+        "AJ1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"calculated_bpjs_health_empr\")"
+        },
+        "AK1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"calculated_bpjs_jht_empr\")"
+        },
+        "AL1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"bpjs_tk_jkk\")"
+        },
+        "AM1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"bpjs_tk_jkm\")"
+        },
+        "AN1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"bpjs_tk_jp_employer\")"
+        },
+        "AO1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"employer_total\")"
+        },
+        "A2": {
+          "style": 2,
+          "content": "11675"
+        },
+        "B2": {
+          "style": 2,
+          "content": "Ahmad Suharto"
+        },
+        "C2": {
+          "style": 2,
+          "content": "0"
+        },
+        "D2": {
+          "style": 2,
+          "content": "0"
+        },
+        "E2": {
+          "style": 2,
+          "content": "0"
+        },
+        "F2": {
+          "style": 2,
+          "content": "0"
+        },
+        "G2": {
+          "style": 2,
+          "content": "8000000"
+        },
+        "H2": {
+          "style": 2,
+          "content": "0"
+        },
+        "I2": {
+          "style": 2,
+          "content": "600000"
+        },
+        "J2": {
+          "style": 2,
+          "content": "200000"
+        },
+        "K2": {
+          "style": 2,
+          "content": "500000"
+        },
+        "L2": {
+          "style": 2,
+          "content": "0"
+        },
+        "M2": {
+          "style": 2,
+          "content": "0"
+        },
+        "N2": {
+          "style": 2,
+          "content": "0"
+        },
+        "O2": {
+          "style": 2,
+          "content": "2000000"
+        },
+        "P2": {
+          "style": 2,
+          "content": "173"
+        },
+        "Q2": {
+          "style": 2,
+          "content": "173"
+        },
+        "R2": {
+          "style": 2,
+          "content": "0"
+        },
+        "S2": {
+          "style": 2,
+          "content": "0"
+        },
+        "T2": {
+          "style": 3,
+          "content": "=ROUND(G2*Q2/P2,0)"
+        },
+        "U2": {
+          "style": 3,
+          "content": "=ROUND(I2*Q2/P2,0)"
+        },
+        "V2": {
+          "style": 3,
+          "content": "=ROUND(J2*Q2/P2,0)"
+        },
+        "W2": {
+          "style": 3,
+          "content": "=ROUND(K2*Q2/P2,0)"
+        },
+        "X2": {
+          "style": 2,
+          "content": "0"
+        },
+        "Y2": {
+          "style": 2,
+          "content": "0"
+        },
+        "Z2": {
+          "style": 3,
+          "content": "=ROUND((G2/P2)*R2*1.5,0)"
+        },
+        "AA2": {
+          "style": 3,
+          "content": "=SUM(T2:Z2)+O2"
+        },
+        "AB2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,12000000)*0.01,0)"
+        },
+        "AC2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,8939700)*0.02,0)"
+        },
+        "AD2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,8939700)*0.01,0)"
+        },
+        "AE2": {
+          "style": 3,
+          "content": "=ROUND(MAX(0,((AA2*12-54000000-6000000)*0.05/12)),0)"
+        },
+        "AF2": {
+          "style": 2,
+          "content": "0"
+        },
+        "AG2": {
+          "style": 2,
+          "content": "0"
+        },
+        "AH2": {
+          "style": 3,
+          "content": "=SUM(AB2:AG2)"
+        },
+        "AI2": {
+          "style": 3,
+          "content": "=AA2-AH2"
+        },
+        "AJ2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,12000000)*0.04,0)"
+        },
+        "AK2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,8939700)*0.037,0)"
+        },
+        "AL2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,8939700)*0.0024,0)"
+        },
+        "AM2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,8939700)*0.003,0)"
+        },
+        "AN2": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA2,8939700)*0.02,0)"
+        },
+        "AO2": {
+          "style": 3,
+          "content": "=SUM(AJ2:AN2)"
+        },
+        "A3": {
+          "style": 2,
+          "content": "11674"
+        },
+        "B3": {
+          "style": 2,
+          "content": "Siti Nurhaliza"
+        },
+        "C3": {
+          "style": 2,
+          "content": "0"
+        },
+        "D3": {
+          "style": 2,
+          "content": "0"
+        },
+        "E3": {
+          "style": 2,
+          "content": "0"
+        },
+        "F3": {
+          "style": 2,
+          "content": "0"
+        },
+        "G3": {
+          "style": 2,
+          "content": "7500000"
+        },
+        "H3": {
+          "style": 2,
+          "content": "0"
+        },
+        "I3": {
+          "style": 2,
+          "content": "600000"
+        },
+        "J3": {
+          "style": 2,
+          "content": "200000"
+        },
+        "K3": {
+          "style": 2,
+          "content": "500000"
+        },
+        "L3": {
+          "style": 2,
+          "content": "0"
+        },
+        "M3": {
+          "style": 2,
+          "content": "0"
+        },
+        "N3": {
+          "style": 2,
+          "content": "0"
+        },
+        "O3": {
+          "style": 2,
+          "content": "2000000"
+        },
+        "P3": {
+          "style": 2,
+          "content": "173"
+        },
+        "Q3": {
+          "style": 2,
+          "content": "173"
+        },
+        "R3": {
+          "style": 2,
+          "content": "0"
+        },
+        "S3": {
+          "style": 2,
+          "content": "0"
+        },
+        "T3": {
+          "style": 3,
+          "content": "=ROUND(G3*Q3/P3,0)"
+        },
+        "U3": {
+          "style": 3,
+          "content": "=ROUND(I3*Q3/P3,0)"
+        },
+        "V3": {
+          "style": 3,
+          "content": "=ROUND(J3*Q3/P3,0)"
+        },
+        "W3": {
+          "style": 3,
+          "content": "=ROUND(K3*Q3/P3,0)"
+        },
+        "X3": {
+          "style": 2,
+          "content": "0"
+        },
+        "Y3": {
+          "style": 2,
+          "content": "0"
+        },
+        "Z3": {
+          "style": 3,
+          "content": "=ROUND((G3/P3)*R3*1.5,0)"
+        },
+        "AA3": {
+          "style": 3,
+          "content": "=SUM(T3:Z3)+O3"
+        },
+        "AB3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,12000000)*0.01,0)"
+        },
+        "AC3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,8939700)*0.02,0)"
+        },
+        "AD3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,8939700)*0.01,0)"
+        },
+        "AE3": {
+          "style": 3,
+          "content": "=ROUND(MAX(0,((AA3*12-54000000-6000000)*0.05/12)),0)"
+        },
+        "AF3": {
+          "style": 2,
+          "content": "0"
+        },
+        "AG3": {
+          "style": 2,
+          "content": "0"
+        },
+        "AH3": {
+          "style": 3,
+          "content": "=SUM(AB3:AG3)"
+        },
+        "AI3": {
+          "style": 3,
+          "content": "=AA3-AH3"
+        },
+        "AJ3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,12000000)*0.04,0)"
+        },
+        "AK3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,8939700)*0.037,0)"
+        },
+        "AL3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,8939700)*0.0024,0)"
+        },
+        "AM3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,8939700)*0.003,0)"
+        },
+        "AN3": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA3,8939700)*0.02,0)"
+        },
+        "AO3": {
+          "style": 3,
+          "content": "=SUM(AJ3:AN3)"
+        },
+        "A4": {
+          "style": 2,
+          "content": "539"
+        },
+        "B4": {
+          "style": 2,
+          "content": "Budi Santoso"
+        },
+        "C4": {
+          "style": 2,
+          "content": "0"
+        },
+        "D4": {
+          "style": 2,
+          "content": "0"
+        },
+        "E4": {
+          "style": 2,
+          "content": "0"
+        },
+        "F4": {
+          "style": 2,
+          "content": "0"
+        },
+        "G4": {
+          "style": 2,
+          "content": "6000000"
+        },
+        "H4": {
+          "style": 2,
+          "content": "0"
+        },
+        "I4": {
+          "style": 2,
+          "content": "600000"
+        },
+        "J4": {
+          "style": 2,
+          "content": "200000"
+        },
+        "K4": {
+          "style": 2,
+          "content": "500000"
+        },
+        "L4": {
+          "style": 2,
+          "content": "0"
+        },
+        "M4": {
+          "style": 2,
+          "content": "0"
+        },
+        "N4": {
+          "style": 2,
+          "content": "0"
+        },
+        "O4": {
+          "style": 2,
+          "content": "2000000"
+        },
+        "P4": {
+          "style": 2,
+          "content": "173"
+        },
+        "Q4": {
+          "style": 2,
+          "content": "173"
+        },
+        "R4": {
+          "style": 2,
+          "content": "0"
+        },
+        "S4": {
+          "style": 2,
+          "content": "0"
+        },
+        "T4": {
+          "style": 3,
+          "content": "=ROUND(G4*Q4/P4,0)"
+        },
+        "U4": {
+          "style": 3,
+          "content": "=ROUND(I4*Q4/P4,0)"
+        },
+        "V4": {
+          "style": 3,
+          "content": "=ROUND(J4*Q4/P4,0)"
+        },
+        "W4": {
+          "style": 3,
+          "content": "=ROUND(K4*Q4/P4,0)"
+        },
+        "X4": {
+          "style": 2,
+          "content": "0"
+        },
+        "Y4": {
+          "style": 2,
+          "content": "0"
+        },
+        "Z4": {
+          "style": 3,
+          "content": "=ROUND((G4/P4)*R4*1.5,0)"
+        },
+        "AA4": {
+          "style": 3,
+          "content": "=SUM(T4:Z4)+O4"
+        },
+        "AB4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,12000000)*0.01,0)"
+        },
+        "AC4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,8939700)*0.02,0)"
+        },
+        "AD4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,8939700)*0.01,0)"
+        },
+        "AE4": {
+          "style": 3,
+          "content": "=ROUND(MAX(0,((AA4*12-54000000-6000000)*0.05/12)),0)"
+        },
+        "AF4": {
+          "style": 2,
+          "content": "0"
+        },
+        "AG4": {
+          "style": 2,
+          "content": "0"
+        },
+        "AH4": {
+          "style": 3,
+          "content": "=SUM(AB4:AG4)"
+        },
+        "AI4": {
+          "style": 3,
+          "content": "=AA4-AH4"
+        },
+        "AJ4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,12000000)*0.04,0)"
+        },
+        "AK4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,8939700)*0.037,0)"
+        },
+        "AL4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,8939700)*0.0024,0)"
+        },
+        "AM4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,8939700)*0.003,0)"
+        },
+        "AN4": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA4,8939700)*0.02,0)"
+        },
+        "AO4": {
+          "style": 3,
+          "content": "=SUM(AJ4:AN4)"
+        },
+        "A5": {
+          "style": 2,
+          "content": "347"
+        },
+        "B5": {
+          "style": 2,
+          "content": "Maya Indira"
+        },
+        "C5": {
+          "style": 2,
+          "content": "0"
+        },
+        "D5": {
+          "style": 2,
+          "content": "0"
+        },
+        "E5": {
+          "style": 2,
+          "content": "0"
+        },
+        "F5": {
+          "style": 2,
+          "content": "0"
+        },
+        "G5": {
+          "style": 2,
+          "content": "9000000"
+        },
+        "H5": {
+          "style": 2,
+          "content": "0"
+        },
+        "I5": {
+          "style": 2,
+          "content": "600000"
+        },
+        "J5": {
+          "style": 2,
+          "content": "200000"
+        },
+        "K5": {
+          "style": 2,
+          "content": "500000"
+        },
+        "L5": {
+          "style": 2,
+          "content": "0"
+        },
+        "M5": {
+          "style": 2,
+          "content": "0"
+        },
+        "N5": {
+          "style": 2,
+          "content": "0"
+        },
+        "O5": {
+          "style": 2,
+          "content": "2000000"
+        },
+        "P5": {
+          "style": 2,
+          "content": "173"
+        },
+        "Q5": {
+          "style": 2,
+          "content": "173"
+        },
+        "R5": {
+          "style": 2,
+          "content": "0"
+        },
+        "S5": {
+          "style": 2,
+          "content": "0"
+        },
+        "T5": {
+          "style": 3,
+          "content": "=ROUND(G5*Q5/P5,0)"
+        },
+        "U5": {
+          "style": 3,
+          "content": "=ROUND(I5*Q5/P5,0)"
+        },
+        "V5": {
+          "style": 3,
+          "content": "=ROUND(J5*Q5/P5,0)"
+        },
+        "W5": {
+          "style": 3,
+          "content": "=ROUND(K5*Q5/P5,0)"
+        },
+        "X5": {
+          "style": 2,
+          "content": "0"
+        },
+        "Y5": {
+          "style": 2,
+          "content": "0"
+        },
+        "Z5": {
+          "style": 3,
+          "content": "=ROUND((G5/P5)*R5*1.5,0)"
+        },
+        "AA5": {
+          "style": 3,
+          "content": "=SUM(T5:Z5)+O5"
+        },
+        "AB5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,12000000)*0.01,0)"
+        },
+        "AC5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,8939700)*0.02,0)"
+        },
+        "AD5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,8939700)*0.01,0)"
+        },
+        "AE5": {
+          "style": 3,
+          "content": "=ROUND(MAX(0,((AA5*12-54000000-6000000)*0.05/12)),0)"
+        },
+        "AF5": {
+          "style": 2,
+          "content": "0"
+        },
+        "AG5": {
+          "style": 2,
+          "content": "0"
+        },
+        "AH5": {
+          "style": 3,
+          "content": "=SUM(AB5:AG5)"
+        },
+        "AI5": {
+          "style": 3,
+          "content": "=AA5-AH5"
+        },
+        "AJ5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,12000000)*0.04,0)"
+        },
+        "AK5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,8939700)*0.037,0)"
+        },
+        "AL5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,8939700)*0.0024,0)"
+        },
+        "AM5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,8939700)*0.003,0)"
+        },
+        "AN5": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA5,8939700)*0.02,0)"
+        },
+        "AO5": {
+          "style": 3,
+          "content": "=SUM(AJ5:AN5)"
+        },
+        "A6": {
+          "style": 2,
+          "content": "11673"
+        },
+        "B6": {
+          "style": 2,
+          "content": "Rizki Pratama"
+        },
+        "C6": {
+          "style": 2,
+          "content": "0"
+        },
+        "D6": {
+          "style": 2,
+          "content": "0"
+        },
+        "E6": {
+          "style": 2,
+          "content": "0"
+        },
+        "F6": {
+          "style": 2,
+          "content": "0"
+        },
+        "G6": {
+          "style": 2,
+          "content": "5500000"
+        },
+        "H6": {
+          "style": 2,
+          "content": "0"
+        },
+        "I6": {
+          "style": 2,
+          "content": "600000"
+        },
+        "J6": {
+          "style": 2,
+          "content": "200000"
+        },
+        "K6": {
+          "style": 2,
+          "content": "500000"
+        },
+        "L6": {
+          "style": 2,
+          "content": "0"
+        },
+        "M6": {
+          "style": 2,
+          "content": "0"
+        },
+        "N6": {
+          "style": 2,
+          "content": "0"
+        },
+        "O6": {
+          "style": 2,
+          "content": "2000000"
+        },
+        "P6": {
+          "style": 2,
+          "content": "173"
+        },
+        "Q6": {
+          "style": 2,
+          "content": "173"
+        },
+        "R6": {
+          "style": 2,
+          "content": "0"
+        },
+        "S6": {
+          "style": 2,
+          "content": "0"
+        },
+        "T6": {
+          "style": 3,
+          "content": "=ROUND(G6*Q6/P6,0)"
+        },
+        "U6": {
+          "style": 3,
+          "content": "=ROUND(I6*Q6/P6,0)"
+        },
+        "V6": {
+          "style": 3,
+          "content": "=ROUND(J6*Q6/P6,0)"
+        },
+        "W6": {
+          "style": 3,
+          "content": "=ROUND(K6*Q6/P6,0)"
+        },
+        "X6": {
+          "style": 2,
+          "content": "0"
+        },
+        "Y6": {
+          "style": 2,
+          "content": "0"
+        },
+        "Z6": {
+          "style": 3,
+          "content": "=ROUND((G6/P6)*R6*1.5,0)"
+        },
+        "AA6": {
+          "style": 3,
+          "content": "=SUM(T6:Z6)+O6"
+        },
+        "AB6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,12000000)*0.01,0)"
+        },
+        "AC6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,8939700)*0.02,0)"
+        },
+        "AD6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,8939700)*0.01,0)"
+        },
+        "AE6": {
+          "style": 3,
+          "content": "=ROUND(MAX(0,((AA6*12-54000000-6000000)*0.05/12)),0)"
+        },
+        "AF6": {
+          "style": 2,
+          "content": "0"
+        },
+        "AG6": {
+          "style": 2,
+          "content": "0"
+        },
+        "AH6": {
+          "style": 3,
+          "content": "=SUM(AB6:AG6)"
+        },
+        "AI6": {
+          "style": 3,
+          "content": "=AA6-AH6"
+        },
+        "AJ6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,12000000)*0.04,0)"
+        },
+        "AK6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,8939700)*0.037,0)"
+        },
+        "AL6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,8939700)*0.0024,0)"
+        },
+        "AM6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,8939700)*0.003,0)"
+        },
+        "AN6": {
+          "style": 3,
+          "content": "=ROUND(MIN(AA6,8939700)*0.02,0)"
+        },
+        "AO6": {
+          "style": 3,
+          "content": "=SUM(AJ6:AN6)"
+        }
+      }
+    }
+  ],
+  "entities": {},
+  "styles": {
+    "1": {
+      "bold": true,
+      "fillColor": "#134F5C",
+      "textColor": "#FFFFFF"
+    },
+    "2": {
+      "textColor": "#000000"
+    },
+    "3": {
+      "textColor": "#0066CC"
+    }
+  },
+  "formats": {},
+  "borders": {},
+  "lists": {
+    "1": {
+      "columns": [
+        "employee_id",
+        "employee_name",
+        "department",
+        "position",
+        "join_date",
+        "employee_status",
+        "base_salary",
+        "grade_level",
+        "actual_gas",
+        "actual_phone",
+        "actual_meal",
+        "actual_taxi",
+        "fixed_allowance_1",
+        "fixed_allowance_2",
+        "tunjangan_sewa_rumah",
+        "standard_hours",
+        "actual_hours",
+        "overtime_hours",
+        "holiday_hours",
+        "actual_basic_salary",
+        "actual_gas_allowance",
+        "actual_phone_allowance",
+        "actual_meal_allowance",
+        "commission",
+        "sign_on_bonus",
+        "total_overtime_amount",
+        "calculated_gross_pay",
+        "calculated_bpjs_health_emp",
+        "calculated_bpjs_jht_emp",
+        "calculated_bpjs_jp_emp",
+        "calculated_pph21",
+        "koperasi",
+        "pinjaman",
+        "total_deductions",
+        "net_pay",
+        "calculated_bpjs_health_empr",
+        "calculated_bpjs_jht_empr",
+        "bpjs_tk_jkk",
+        "bpjs_tk_jkm",
+        "bpjs_tk_jp_employer",
+        "employer_total"
+      ],
+      "domain": [],
+      "model": "zoho.staging.data",
+      "context": {},
+      "orderBy": [],
+      "id": "1",
+      "name": "Indonesia Employee Staging Data",
+      "fieldMatching": {}
+    }
+  },
+  "listNextId": 2,
+  "chartOdooMenusReferences": {}
+}
