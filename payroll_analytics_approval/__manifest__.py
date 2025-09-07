@@ -32,7 +32,7 @@
         'hr',
         'hr_contract', 
         'om_hr_payroll',
-        'pb_hr_payroll_indonesia',
+        'pb_hr_payroll_base',  # Required for payroll.dashboard model
         'web',
         'spreadsheet_oca',
     ],
@@ -50,7 +50,6 @@
         'views/payroll_comparison_views.xml',
         'views/bank_export_views.xml',
         'views/payroll_analytics_templates.xml',
-        'views/dashboard_integration.xml',
         
         # Wizards  
         'wizards/payroll_comparison_wizard_views.xml',

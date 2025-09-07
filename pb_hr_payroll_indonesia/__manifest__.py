@@ -24,6 +24,7 @@
         'pb_hr_payroll_base',  # Add base module dependency
         'spreadsheet_oca',
         'website',  # Added for web templates
+        'payroll_analytics_approval',
     ],
     'data': [
         # Load data files first
@@ -52,6 +53,7 @@
         'views/report_payslip_indonesia_template.xml',
         'views/hr_payroll_report_indonesia.xml', 
         'views/payslip_print_wizard_views.xml',
+        'views/payroll_analytics_integration.xml',    # Analytics integration (when payroll_analytics_approval is installed)
     ],
     'installable': True,
     'application': False,

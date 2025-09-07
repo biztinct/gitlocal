@@ -313,6 +313,7 @@ class HrPayslip(models.Model):
             )
             if zoho_data:
                 field_mapping = {
+               # Vietnam/Generic mappings (existing)
                'ACTBASE': 'actual_basicsalary',
                 'ACTGAZ': 'actual_gas',
                 'ACTPHONE': 'actual_phone',
@@ -350,6 +351,23 @@ class HrPayslip(models.Model):
                 'SIHIUIT': 'sihiui_total215',
                 'TUERTWO': 'trade_er2',
                 'TCTE': 'total_cte',
+                
+                # Indonesia-specific mappings for spreadsheet headers
+                'BASIC_SALARY': 'actual_basic_salary',
+                'GAS_ALLOWANCE': 'actual_gas_allowance', 
+                'PHONE_ALLOWANCE': 'actual_phone_allowance',
+                'MEAL_ALLOWANCE': 'actual_meal_allowance',
+                'BPJS_KES_EMP': 'calculated_bpjs_health_emp',
+                'BPJS_JHT_EMP': 'calculated_bpjs_jht_emp',
+                'BPJS_JP_EMP': 'calculated_bpjs_jp_emp',
+                'BPJS_KES_COMP': 'calculated_bpjs_health_comp',
+                'BPJS_JHT_COMP': 'calculated_bpjs_jht_comp',
+                'BPJS_JP_COMP': 'calculated_bpjs_jp_comp',
+                'PPH21_TAX': 'calculated_pph21_tax',
+                'GROSS_PAY': 'calculated_gross_pay',
+                'NET_PAY': 'calculated_net_pay',
+                'TOTAL_DEDUCTIONS': 'calculated_total_deductions',
+                'OVERTIME_AMOUNT': 'total_overtime_amount',
                 }
                 for line in payslip.line_ids:
                     zoho_field = field_mapping.get(line.code)

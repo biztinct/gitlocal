@@ -152,5 +152,106 @@
             <field name="amount_fix">0</field>
         </record>
         
+        <!-- Additional salary rules for spreadsheet mapping -->
+        
+        <!-- Basic Salary -->
+        <record id="rule_indonesia_basic_salary" model="hr.salary.rule">
+            <field name="name">Basic Salary</field>
+            <field name="code">BASIC_SALARY</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="om_hr_payroll.BASIC"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Gas Allowance -->
+        <record id="rule_indonesia_gas_allowance" model="hr.salary.rule">
+            <field name="name">Gas Allowance</field>
+            <field name="code">GAS_ALLOWANCE</field>
+            <field name="sequence">20</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Phone Allowance -->
+        <record id="rule_indonesia_phone_allowance" model="hr.salary.rule">
+            <field name="name">Phone Allowance</field>
+            <field name="code">PHONE_ALLOWANCE</field>
+            <field name="sequence">25</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Meal Allowance -->
+        <record id="rule_indonesia_meal_allowance" model="hr.salary.rule">
+            <field name="name">Meal Allowance</field>
+            <field name="code">MEAL_ALLOWANCE</field>
+            <field name="sequence">30</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Gross Pay -->
+        <record id="rule_indonesia_gross_pay" model="hr.salary.rule">
+            <field name="name">Gross Pay</field>
+            <field name="code">GROSS_PAY</field>
+            <field name="sequence">99</field>
+            <field name="category_id" ref="om_hr_payroll.GROSS"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Overtime Amount -->
+        <record id="rule_indonesia_overtime_amount" model="hr.salary.rule">
+            <field name="name">Total Overtime Amount</field>
+            <field name="code">OVERTIME_AMOUNT</field>
+            <field name="sequence">45</field>
+            <field name="category_id" ref="om_hr_payroll.ALW"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- PPh21 Tax (alternative code) -->
+        <record id="rule_indonesia_pph21_tax" model="hr.salary.rule">
+            <field name="name">PPh21 Tax</field>
+            <field name="code">PPH21_TAX</field>
+            <field name="sequence">205</field>
+            <field name="category_id" ref="categ_indonesia_tax"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Total Deductions -->
+        <record id="rule_indonesia_total_deductions" model="hr.salary.rule">
+            <field name="name">Total Deductions</field>
+            <field name="code">TOTAL_DEDUCTIONS</field>
+            <field name="sequence">299</field>
+            <field name="category_id" ref="om_hr_payroll.DED"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
+        <!-- Net Pay -->
+        <record id="rule_indonesia_net_pay" model="hr.salary.rule">
+            <field name="name">Net Pay</field>
+            <field name="code">NET_PAY</field>
+            <field name="sequence">300</field>
+            <field name="category_id" ref="om_hr_payroll.NET"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">fix</field>
+            <field name="amount_fix">0</field>
+        </record>
+        
     </data>
 </odoo>
