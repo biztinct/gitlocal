@@ -25,20 +25,20 @@
                         
                         <group string="India Salary Components">
                             <group string="Allowances">
-                                <field name="basic_salary"/>
+                                <field name="base_salary" string="Basic Salary"/>
                                 <field name="hra"/>
                                 <field name="special_allowance"/>
-                                <field name="books_periodicals"/>
-                                <field name="telephone_internet"/>
-                                <field name="leave_travel_allowance"/>
+                                <field name="books_allowance"/>
+                                <field name="phone_allowance" string="Phone Allowance"/>
+                                <field name="lta"/>
                             </group>
                             <group string="Deductions &amp; Details">
-                                <field name="pf"/>
-                                <field name="prof_tax"/>
+                                <field name="pf_employee"/>
+                                <field name="professional_tax"/>
                                 <field name="income_tax"/>
                                 <field name="uan_number"/>
                                 <field name="esi_number"/>
-                                <field name="ifsc_code"/>
+                                <field name="pf_number"/>
                             </group>
                         </group>
                         
@@ -68,29 +68,30 @@
                             </group>
                         </group>
                         
-                        <group string="India Payroll Calculations">
-                            <group string="Salary Components (Calculated)">
-                                <field name="actual_basic_salary"/>
-                                <field name="actual_hra"/>
-                                <field name="actual_special_allowance"/>
-                                <field name="actual_books_periodicals"/>
-                                <field name="actual_telephone_internet"/>
-                                <field name="actual_lta"/>
+                        <group string="India Payroll Components">
+                            <group string="Salary Components">
+                                <field name="base_salary" string="Basic Salary"/>
+                                <field name="hra"/>
+                                <field name="special_allowance"/>
+                                <field name="books_allowance"/>
+                                <field name="lta"/>
+                                <field name="medical_allowance"/>
                             </group>
-                            <group string="Deductions &amp; Contributions (Calculated)">
-                                <field name="actual_pf"/>
-                                <field name="actual_prof_tax"/>
-                                <field name="actual_income_tax"/>
+                            <group string="Deductions &amp; Contributions">
+                                <field name="pf_employee"/>
+                                <field name="esi_employee"/>
+                                <field name="professional_tax"/>
+                                <field name="income_tax"/>
                                 <field name="pf_employer"/>
                                 <field name="esi_employer"/>
                             </group>
                         </group>
                         
-                        <group string="Totals">
+                        <group string="India Compliance">
                             <group>
-                                <field name="india_gross_pay"/>
-                                <field name="india_total_deductions"/>
-                                <field name="india_net_pay"/>
+                                <field name="gratuity"/>
+                                <field name="pan_number"/>
+                                <field name="aadhaar_number"/>
                             </group>
                         </group>
                     </sheet>
@@ -109,14 +110,14 @@
                     <field name="last_name"/>
                     <field name="email"/>
                     <field name="department"/>
-                    <field name="basic_salary" optional="hide" string="Basic"/>
+                    <field name="base_salary" optional="hide" string="Basic"/>
                     <field name="hra" optional="hide" string="HRA"/>
                     <field name="special_allowance" optional="hide" string="Special Allow"/>
-                    <field name="books_periodicals" optional="hide" string="Books"/>
-                    <field name="telephone_internet" optional="hide" string="Tel/Internet"/>
-                    <field name="leave_travel_allowance" optional="hide" string="LTA"/>
-                    <field name="pf" optional="hide" string="PF"/>
-                    <field name="prof_tax" optional="hide" string="Prof Tax"/>
+                    <field name="books_allowance" optional="hide" string="Books"/>
+                    <field name="phone_allowance" optional="hide" string="Phone"/>
+                    <field name="lta" optional="hide" string="LTA"/>
+                    <field name="pf_employee" optional="hide" string="PF"/>
+                    <field name="professional_tax" optional="hide" string="Prof Tax"/>
                     <field name="income_tax" optional="hide" string="Income Tax"/>
                     <field name="uan_number" optional="hide" string="UAN"/>
                 </tree>
@@ -138,14 +139,14 @@
                     <field name="date_of_joining"/>
                     <field name="base_salary" optional="hide" string="Base Salary"/>
                     <field name="net_pay" optional="hide" string="Net Pay"/>
-                    <!-- India Calculated Components -->
-                    <field name="actual_basic_salary" optional="hide" string="Act Basic"/>
-                    <field name="actual_hra" optional="hide" string="Act HRA"/>
-                    <field name="actual_pf" optional="hide" string="Act PF"/>
-                    <field name="actual_prof_tax" optional="hide" string="Act Prof Tax"/>
-                    <field name="india_gross_pay" optional="hide" string="IN Gross"/>
-                    <field name="india_total_deductions" optional="hide" string="IN Deductions"/>
-                    <field name="india_net_pay" optional="hide" string="IN Net Pay"/>
+                    <!-- India Components -->
+                    <field name="hra" optional="hide" string="HRA"/>
+                    <field name="special_allowance" optional="hide" string="Special Allow"/>
+                    <field name="pf_employee" optional="hide" string="PF Employee"/>
+                    <field name="professional_tax" optional="hide" string="Prof Tax"/>
+                    <field name="gross_salary" optional="hide" string="Gross"/>
+                    <field name="total_deductions" optional="hide" string="Deductions"/>
+                    <field name="net_pay" optional="hide" string="Net Pay"/>
                 </tree>
             </field>
         </record>
@@ -161,16 +162,15 @@
                     <field name="employee_type" type="col"/>
                     <field name="employee_status" type="col"/>
                     <!-- India Salary Components as Measures -->
-                    <field name="basic_salary" type="measure"/>
+                    <field name="base_salary" type="measure"/>
                     <field name="hra" type="measure"/>
                     <field name="special_allowance" type="measure"/>
-                    <field name="books_periodicals" type="measure"/>
-                    <field name="telephone_internet" type="measure"/>
-                    <field name="leave_travel_allowance" type="measure"/>
-                    <field name="pf" type="measure"/>
-                    <field name="prof_tax" type="measure"/>
+                    <field name="books_allowance" type="measure"/>
+                    <field name="phone_allowance" type="measure"/>
+                    <field name="lta" type="measure"/>
+                    <field name="pf_employee" type="measure"/>
+                    <field name="professional_tax" type="measure"/>
                     <field name="income_tax" type="measure"/>
-                    <field name="base_salary" type="measure"/>
                 </pivot>
             </field>
         </record>
@@ -184,21 +184,21 @@
                     <field name="department" type="row"/>
                     <field name="designation" type="row"/>
                     <field name="employee_type" type="col"/>
-                    <!-- India Calculated Components as Measures -->
-                    <field name="actual_basic_salary" type="measure"/>
-                    <field name="actual_hra" type="measure"/>
-                    <field name="actual_special_allowance" type="measure"/>
-                    <field name="actual_books_periodicals" type="measure"/>
-                    <field name="actual_telephone_internet" type="measure"/>
-                    <field name="actual_lta" type="measure"/>
-                    <field name="actual_pf" type="measure"/>
-                    <field name="actual_prof_tax" type="measure"/>
-                    <field name="actual_income_tax" type="measure"/>
+                    <!-- India Components as Measures -->
+                    <field name="base_salary" type="measure"/>
+                    <field name="hra" type="measure"/>
+                    <field name="special_allowance" type="measure"/>
+                    <field name="books_allowance" type="measure"/>
+                    <field name="lta" type="measure"/>
+                    <field name="medical_allowance" type="measure"/>
+                    <field name="pf_employee" type="measure"/>
+                    <field name="professional_tax" type="measure"/>
+                    <field name="income_tax" type="measure"/>
                     <field name="pf_employer" type="measure"/>
                     <field name="esi_employer" type="measure"/>
-                    <field name="india_gross_pay" type="measure"/>
-                    <field name="india_total_deductions" type="measure"/>
-                    <field name="india_net_pay" type="measure"/>
+                    <field name="gross_salary" type="measure"/>
+                    <field name="total_deductions" type="measure"/>
+                    <field name="net_pay" type="measure"/>
                 </pivot>
             </field>
         </record>
@@ -215,9 +215,9 @@
                     <field name="employee_id"/>
                     <field name="department"/>
                     <field name="designation"/>
-                    <field name="basic_salary"/>
+                    <field name="base_salary"/>
                     <field name="hra"/>
-                    <field name="pf"/>
+                    <field name="pf_employee"/>
                     <field name="uan_number"/>
                     <separator/>
                     <filter string="Active" name="active" domain="[('employee_status', '=', 'Active')]"/>
@@ -245,9 +245,9 @@
                     <field name="employee_id"/>
                     <field name="department"/>
                     <field name="designation"/>
-                    <field name="actual_basic_salary"/>
-                    <field name="india_gross_pay"/>
-                    <field name="india_net_pay"/>
+                    <field name="base_salary"/>
+                    <field name="gross_salary"/>
+                    <field name="net_pay"/>
                     <separator/>
                     <filter string="Active" name="active" domain="[('employee_status', '=', 'Active')]"/>
                     <filter string="Inactive" name="inactive" domain="[('employee_status', '=', 'Inactive')]"/>
@@ -304,9 +304,9 @@
                     <field name="full_name_en"/>
                     <field name="department"/>
                     <field name="designation"/>
-                    <field name="basic_salary"/>
+                    <field name="base_salary"/>
                     <field name="hra"/>
-                    <field name="pf"/>
+                    <field name="pf_employee"/>
                     <field name="uan_number"/>
                     <templates>
                         <t t-name="kanban-box">
@@ -327,9 +327,9 @@
                                         </span>
                                     </div>
                                     <ul>
-                                        <li><strong>Basic:</strong> ₹<field name="basic_salary"/></li>
+                                        <li><strong>Basic:</strong> ₹<field name="base_salary"/></li>
                                         <li><strong>HRA:</strong> ₹<field name="hra"/></li>
-                                        <li><strong>PF:</strong> ₹<field name="pf"/></li>
+                                        <li><strong>PF:</strong> ₹<field name="pf_employee"/></li>
                                         <li><strong>UAN:</strong> <field name="uan_number"/></li>
                                     </ul>
                                 </div>
@@ -348,10 +348,10 @@
                 <kanban>
                     <field name="full_name_en"/>
                     <field name="department"/>
-                    <field name="india_gross_pay"/>
-                    <field name="india_net_pay"/>
-                    <field name="actual_basic_salary"/>
-                    <field name="actual_pf"/>
+                    <field name="gross_salary"/>
+                    <field name="net_pay"/>
+                    <field name="base_salary"/>
+                    <field name="pf_employee"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_card oe_kanban_global_click">
@@ -368,10 +368,10 @@
                                         </span>
                                     </div>
                                     <ul>
-                                        <li><strong>Gross Pay:</strong> ₹<field name="india_gross_pay"/></li>
-                                        <li><strong>Net Pay:</strong> ₹<field name="india_net_pay"/></li>
-                                        <li><strong>Basic:</strong> ₹<field name="actual_basic_salary"/></li>
-                                        <li><strong>PF:</strong> ₹<field name="actual_pf"/></li>
+                                        <li><strong>Gross Pay:</strong> ₹<field name="gross_salary"/></li>
+                                        <li><strong>Net Pay:</strong> ₹<field name="net_pay"/></li>
+                                        <li><strong>Basic:</strong> ₹<field name="base_salary"/></li>
+                                        <li><strong>PF:</strong> ₹<field name="pf_employee"/></li>
                                     </ul>
                                 </div>
                             </div>

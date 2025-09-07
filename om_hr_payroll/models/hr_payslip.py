@@ -369,33 +369,24 @@ class HrPayslip(models.Model):
                 'TOTAL_DEDUCTIONS': 'calculated_total_deductions',
                 'OVERTIME_AMOUNT': 'total_overtime_amount',
                 
-                # India-specific mappings for spreadsheet headers
-                'BASIC': 'basic_salary',
-                'HRA': 'hra',
-                'SPECIAL_ALLOWANCE': 'special_allowance',
-                'BOOKS_PERIODICALS': 'books_periodicals',
-                'TELEPHONE_INTERNET': 'telephone_internet',
-                'LEAVE_TRAVEL_ALLOWANCE': 'leave_travel_allowance',
-                'MEDICAL_ALLOWANCE': 'medical_allowance',
-                'TRANSPORT_ALLOWANCE': 'transport_allowance',
-                'MEAL_ALLOWANCE': 'meal_allowance',
-                'PERFORMANCE_BONUS': 'performance_bonus',
-                'OTHER_ALLOWANCES': 'other_allowances',
-                'IND_GROSS': 'gross_salary',
-                'PF': 'pf_employee',
-                'PF_EMPLOYEE': 'pf_employee',
-                'ESI_EMPLOYEE': 'esi_employee',
-                'PROF_TAX': 'professional_tax',
-                'INCOME_TAX': 'income_tax',
-                'LOAN_DEDUCTION': 'loan_deduction',
-                'ADVANCE_DEDUCTION': 'advance_deduction',
-                'OTHER_DEDUCTIONS': 'other_deductions',
-                'TOTAL_DEDUCTIONS': 'total_deductions',
-                'NETPAY': 'net_pay',
-                'PF_EMPLOYER': 'pf_employer',
-                'ESI_EMPLOYER': 'esi_employer',
-                'TOTAL_EMPLOYER_CONTRIB': 'total_employer_contrib',
-                'GRATUITY': 'gratuity',
+                # India-specific mappings (optimized to reuse existing fields)
+                'BASIC': 'base_salary',  # Reuse existing base_salary field
+                'BASIC_SALARY': 'base_salary',  # Reuse existing base_salary field  
+                'HRA': 'hra',  # India-specific field
+                'SPECIAL_ALLOWANCE': 'special_allowance',  # India-specific field
+                'BOOKS_ALLOWANCE': 'books_allowance',  # India-specific field
+                'LTA': 'lta',  # India-specific field  
+                'MEDICAL_ALLOWANCE': 'meal_allowance',  # Reuse existing meal_allowance
+                'TRANSPORT_ALLOWANCE': 'taxi_allowance',  # Reuse existing taxi_allowance
+                'PHONE_ALLOWANCE': 'phone_allowance',  # Reuse existing phone_allowance
+                'OTHER_ALLOWANCES': 'other_income',  # Reuse existing other_income
+                'PF_EMPLOYEE': 'pf_employee',  # India-specific field
+                'ESI_EMPLOYEE': 'esi_employee',  # India-specific field
+                'PROFESSIONAL_TAX': 'professional_tax',  # India-specific field
+                'INCOME_TAX': 'income_tax',  # India-specific field
+                'PF_EMPLOYER': 'pf_employer',  # India-specific field
+                'ESI_EMPLOYER': 'esi_employer',  # India-specific field
+                'GRATUITY': 'gratuity',  # India-specific field
                 }
                 for line in payslip.line_ids:
                     zoho_field = field_mapping.get(line.code)

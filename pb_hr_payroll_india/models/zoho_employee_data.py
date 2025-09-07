@@ -6,35 +6,31 @@ from odoo import api, fields, models
 class ZohoEmployeeData(models.Model):
     _inherit = 'zoho.employee.data'
     
-    # India specific fields - Basic Components
-    basic_salary = fields.Float(string='Basic Salary')
-    hra = fields.Float(string='House Rent Allowance (HRA)')
-    special_allowance = fields.Float(string='Special Allowance')
+    # ===== INDIA-SPECIFIC PAYROLL FIELDS =====
+    # Note: Reusing existing base_salary field instead of basic_salary to avoid duplication
+    # Note: Using existing allowance fields where possible (gas_allowance, phone_allowance, etc.)
     
-    # Additional India Allowances
-    books_periodicals = fields.Float(string='Books and Periodicals')
-    telephone_internet = fields.Float(string='Telephone and Internet')
-    leave_travel_allowance = fields.Float(string='Leave Travel Allowance (LTA)')
-    medical_allowance = fields.Float(string='Medical Allowance')
-    transport_allowance = fields.Float(string='Transport Allowance')
-    meal_allowance = fields.Float(string='Meal Allowance')
-    performance_bonus = fields.Float(string='Performance Bonus')
-    other_allowances = fields.Float(string='Other Allowances')
+    # India-Specific Basic Components
+    hra = fields.Float(string='House Rent Allowance (HRA)')  # India-specific HRA component
+    special_allowance = fields.Float(string='Special Allowance')  # India-specific special allowance
     
-    # Employee Deductions
-    pf_employee = fields.Float(string='Provident Fund (Employee)')
-    esi_employee = fields.Float(string='ESI (Employee)')
-    professional_tax = fields.Float(string='Professional Tax')
-    income_tax = fields.Float(string='Income Tax (TDS)')
-    loan_deduction = fields.Float(string='Loan Deduction')
-    advance_deduction = fields.Float(string='Advance Deduction')
-    other_deductions = fields.Float(string='Other Deductions')
+    # India-Specific Additional Allowances (only essential ones)
+    books_allowance = fields.Float(string='Books & Periodicals')  # India-specific: Reimbursable books allowance
+    lta = fields.Float(string='Leave Travel Allowance (LTA)')  # India-specific: Tax-exempt travel allowance
+    medical_allowance = fields.Float(string='Medical Allowance')  # India-specific: Medical reimbursement
     
-    # Employer Contributions
-    pf_employer = fields.Float(string='Provident Fund (Employer)')
-    esi_employer = fields.Float(string='ESI (Employer)')
-    total_employer_contrib = fields.Float(string='Total Employer Contributions')
-    gratuity = fields.Float(string='Gratuity')
+    # India Statutory Deductions (Employee)
+    pf_employee = fields.Float(string='PF - Employee (12%)')  # India-specific: Provident Fund employee contribution
+    esi_employee = fields.Float(string='ESI - Employee (0.75%)')  # India-specific: ESI employee contribution  
+    professional_tax = fields.Float(string='Professional Tax')  # India-specific: State-wise professional tax
+    income_tax = fields.Float(string='Income Tax/TDS')  # India-specific: Tax deducted at source
+    
+    # India Statutory Contributions (Employer)
+    pf_employer = fields.Float(string='PF - Employer (12%)')  # India-specific: Provident Fund employer contribution
+    esi_employer = fields.Float(string='ESI - Employer (3.25%)')  # India-specific: ESI employer contribution
+    
+    # India Benefits and Compliance
+    gratuity = fields.Float(string='Gratuity Provision')  # India-specific: Gratuity as per Payment of Gratuity Act
     
     # Indian ID Numbers
     pan_number = fields.Char(string='PAN Number', help='Permanent Account Number')
