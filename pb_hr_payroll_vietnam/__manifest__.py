@@ -52,6 +52,7 @@ Supported Features:
     'depends': [
         'pb_hr_payroll_base',
         'hr_holidays',
+        'payroll_analytics_approval',
     ],
     'data': [
         # Security
@@ -65,6 +66,7 @@ Supported Features:
         'views/vietnam_server_actions.xml',           # Server actions (must load first)
         'views/payroll_dashboard_vietnam.xml',        # Professional Vietnam dashboard 
         'views/payroll_menu_structure.xml',           # Menu structure references dashboard view
+        'views/payroll_analytics_integration.xml',    # Analytics integration (when payroll_analytics_approval is installed)
         
         # Note: Data files will be added as needed
         # TODO: Add Vietnam-specific data files:

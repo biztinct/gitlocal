@@ -42,6 +42,33 @@ class ZohoStagingData(models.Model):
     pinjaman = fields.Float(string='Pinjaman')
     cicilan = fields.Float(string='Cicilan')
     lain_lain_deduction = fields.Float(string='Lain-lain (Deduction)')
+    
+    # CALCULATED FIELDS FROM SPREADSHEET - Indonesia Specific (MISSING - ADDING NOW)
+    calculated_gross_pay = fields.Float(string='Calculated Gross Pay')
+    total_overtime_amount = fields.Float(string='Total Overtime Amount')
+    
+    # Map existing BPJS fields to match spreadsheet headers (MISSING - ADDING NOW)
+    calculated_bpjs_health_emp = fields.Float(string='Calculated BPJS Health (Employee)', related='bpjs_kesehatan_employee', store=True)
+    calculated_bpjs_jht_emp = fields.Float(string='Calculated BPJS JHT (Employee)', related='bpjs_tk_jht_employee', store=True)
+    calculated_bpjs_jp_emp = fields.Float(string='Calculated BPJS JP (Employee)', related='bpjs_tk_jp_employee', store=True)
+    calculated_bpjs_health_comp = fields.Float(string='Calculated BPJS Health (Company)', related='bpjs_kesehatan_employer', store=True)
+    calculated_bpjs_jht_comp = fields.Float(string='Calculated BPJS JHT (Company)', related='bpjs_tk_jht_employer', store=True)
+    calculated_bpjs_jp_comp = fields.Float(string='Calculated BPJS JP (Company)', related='bpjs_tk_jp_employer', store=True)
+    calculated_pph21_tax = fields.Float(string='Calculated PPh21 Tax', related='pph21', store=True)
+    
+    # Base fields mapping for Indonesia (MISSING - ADDING NOW)
+    actual_basic_salary = fields.Float(string='Actual Basic Salary', related='actual_basicsalary', store=True)
+    actual_gas_allowance = fields.Float(string='Actual Gas Allowance', related='actual_gas', store=True)
+    actual_phone_allowance = fields.Float(string='Actual Phone Allowance', related='actual_phone', store=True)
+    actual_meal_allowance = fields.Float(string='Actual Meal Allowance', related='actual_meal', store=True)
+    calculated_net_pay = fields.Float(string='Calculated Net Pay', related='net_pay', store=True)
+    calculated_total_deductions = fields.Float(string='Calculated Total Deductions', related='total_ded', store=True)
+    
+    # Additional fields needed by spreadsheet (different naming patterns)
+    calculated_bpjs_health_empr = fields.Float(string='Calculated BPJS Health (Employer)', related='bpjs_kesehatan_employer', store=True)
+    calculated_bpjs_jht_empr = fields.Float(string='Calculated BPJS JHT (Employer)', related='bpjs_tk_jht_employer', store=True)
+    total_deductions = fields.Float(string='Total Deductions', related='total_ded', store=True)
+    calculated_pph21 = fields.Float(string='Calculated PPh21', related='pph21', store=True)
 
 
 class ZohoStagingImporter(models.TransientModel):
