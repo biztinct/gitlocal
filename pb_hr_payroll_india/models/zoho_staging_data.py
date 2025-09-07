@@ -24,6 +24,23 @@ class ZohoStagingData(models.Model):
     esi_number = fields.Char(string="ESI Number")
     ifsc_code = fields.Char(string="IFSC Code")
     
+    # Additional India fields to match spreadsheet
+    other_allowances = fields.Float(string='Other Allowances')
+    pf_employee = fields.Float(string='Provident Fund (Employee)')
+    esi_employee = fields.Float(string='ESI (Employee)')
+    other_deductions = fields.Float(string='Other Deductions')
+    pf_employer = fields.Float(string='Provident Fund (Employer)')
+    esi_employer = fields.Float(string='ESI (Employer)')
+    gratuity = fields.Float(string='Gratuity')
+    pan_number = fields.Char(string='PAN Number')
+    aadhaar_number = fields.Char(string='Aadhaar Number')
+    pf_number = fields.Char(string='PF Number')
+    
+    # Calculated totals
+    gross_salary = fields.Float(string='Gross Salary')
+    total_deductions = fields.Float(string='Total Deductions')
+    net_pay = fields.Float(string='Net Pay')
+    
     def get_india_salary_components(self):
         """Return dictionary of India salary components for this employee"""
         return {

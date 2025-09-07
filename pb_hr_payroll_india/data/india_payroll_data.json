@@ -1,0 +1,8775 @@
+{
+  "version": 12.5,
+  "sheets": [
+    {
+      "id": "b5fb180c-e879-4843-a035-79c59e826989",
+      "name": "India Allowance Details",
+      "colNumber": 20,
+      "rowNumber": 72,
+      "rows": {},
+      "cols": {},
+      "merges": [],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "content": "Employee ID"
+        },
+        "A2": {
+          "style": 2,
+          "content": "IND001"
+        },
+        "A3": {
+          "style": 2,
+          "content": "IND002"
+        },
+        "A4": {
+          "style": 2,
+          "content": "IND003"
+        },
+        "A5": {
+          "style": 2,
+          "content": "IND004"
+        },
+        "A6": {
+          "style": 2,
+          "content": "IND005"
+        },
+        "A7": {
+          "style": 2,
+          "content": "11500"
+        },
+        "A8": {
+          "style": 2,
+          "content": "11672"
+        },
+        "A9": {
+          "style": 2,
+          "content": "11664"
+        },
+        "A10": {
+          "style": 2,
+          "content": "0"
+        },
+        "A11": {
+          "style": 2,
+          "content": "11667"
+        },
+        "A12": {
+          "style": 2,
+          "content": "4047"
+        },
+        "A13": {
+          "style": 2,
+          "content": "11368"
+        },
+        "A14": {
+          "style": 2,
+          "content": "258"
+        },
+        "A15": {
+          "style": 2,
+          "content": "11671"
+        },
+        "A16": {
+          "style": 2,
+          "content": "11485"
+        },
+        "A17": {
+          "style": 2,
+          "content": "11669"
+        },
+        "A18": {
+          "style": 2,
+          "content": "11513"
+        },
+        "A19": {
+          "style": 2,
+          "content": "504"
+        },
+        "A20": {
+          "style": 2,
+          "content": "11396"
+        },
+        "A21": {
+          "style": 2,
+          "content": "11400"
+        },
+        "A22": {
+          "style": 2,
+          "content": "11094"
+        },
+        "A23": {
+          "style": 2,
+          "content": "11318"
+        },
+        "A24": {
+          "style": 2,
+          "content": "11090"
+        },
+        "A25": {
+          "style": 2,
+          "content": "7143"
+        },
+        "A26": {
+          "style": 2,
+          "content": "11662"
+        },
+        "A27": {
+          "style": 2,
+          "content": "391"
+        },
+        "A28": {
+          "style": 2,
+          "content": "8189"
+        },
+        "A29": {
+          "style": 2,
+          "content": "8023"
+        },
+        "A30": {
+          "style": 2,
+          "content": "4045"
+        },
+        "A31": {
+          "style": 2,
+          "content": "4049"
+        },
+        "A32": {
+          "style": 2,
+          "content": "657"
+        },
+        "A33": {
+          "style": 2,
+          "content": "11670"
+        },
+        "A34": {
+          "style": 2,
+          "content": "11450"
+        },
+        "A35": {
+          "style": 2,
+          "content": "11508"
+        },
+        "A36": {
+          "style": 2,
+          "content": "11643"
+        },
+        "A37": {
+          "style": 2,
+          "content": "11611"
+        },
+        "A38": {
+          "style": 2,
+          "content": "438"
+        },
+        "A39": {
+          "style": 2,
+          "content": "11156"
+        },
+        "A40": {
+          "style": 2,
+          "content": "11128"
+        },
+        "A41": {
+          "style": 2,
+          "content": "441"
+        },
+        "A42": {
+          "style": 2,
+          "content": "24"
+        },
+        "A43": {
+          "style": 2,
+          "content": "23"
+        },
+        "A44": {
+          "style": 2,
+          "content": "242"
+        },
+        "A45": {
+          "style": 2,
+          "content": "336"
+        },
+        "A46": {
+          "style": 2,
+          "content": "272"
+        },
+        "A47": {
+          "style": 2,
+          "content": "11358"
+        },
+        "A48": {
+          "style": 2,
+          "content": "11141"
+        },
+        "A49": {
+          "style": 2,
+          "content": "5037"
+        },
+        "A50": {
+          "style": 2,
+          "content": "8877"
+        },
+        "A51": {
+          "style": 2,
+          "content": "646"
+        },
+        "A52": {
+          "style": 2,
+          "content": "11663"
+        },
+        "A53": {
+          "style": 2,
+          "content": "11194"
+        },
+        "A54": {
+          "style": 2,
+          "content": "11188"
+        },
+        "A55": {
+          "style": 2,
+          "content": "11647"
+        },
+        "A56": {
+          "style": 2,
+          "content": "11585"
+        },
+        "A57": {
+          "style": 2,
+          "content": "11510"
+        },
+        "A58": {
+          "style": 2,
+          "content": "96"
+        },
+        "A59": {
+          "style": 2,
+          "content": "11587"
+        },
+        "A60": {
+          "style": 2,
+          "content": "8201"
+        },
+        "A61": {
+          "style": 2,
+          "content": "548"
+        },
+        "A62": {
+          "style": 2,
+          "content": "11414"
+        },
+        "A63": {
+          "style": 2,
+          "content": "8832"
+        },
+        "A64": {
+          "style": 2,
+          "content": "509"
+        },
+        "A65": {
+          "style": 2,
+          "content": "71"
+        },
+        "A66": {
+          "style": 2,
+          "content": "1"
+        },
+        "A67": {
+          "style": 2,
+          "content": "353"
+        },
+        "A68": {
+          "style": 2,
+          "content": "11666"
+        },
+        "A69": {
+          "style": 2,
+          "content": "11458"
+        },
+        "A70": {
+          "style": 2,
+          "content": "11644"
+        },
+        "A71": {
+          "style": 3,
+          "content": "11458"
+        },
+        "A72": {
+          "style": 3,
+          "content": "101010"
+        },
+        "B1": {
+          "style": 1,
+          "content": "Recognition Bonus"
+        },
+        "B2": {
+          "style": 2,
+          "content": "25000"
+        },
+        "B3": {
+          "style": 2,
+          "content": "22500"
+        },
+        "B4": {
+          "style": 2,
+          "content": "30000"
+        },
+        "B5": {
+          "style": 2,
+          "content": "20000"
+        },
+        "B6": {
+          "style": 2,
+          "content": "27500"
+        },
+        "B7": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B8": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B9": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B10": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B11": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B12": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B13": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B14": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B15": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B16": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B17": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B18": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B19": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B20": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B21": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B22": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B23": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B24": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B25": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B26": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B27": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B28": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B29": {
+          "style": 2,
+          "content": "9000"
+        },
+        "B30": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B31": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B32": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B33": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B34": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B35": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B36": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B37": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B38": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B39": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B40": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B41": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B42": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B43": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B44": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B45": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B46": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B47": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B48": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B49": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B50": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B51": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B52": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B53": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B54": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B55": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B56": {
+          "style": 2,
+          "content": "9000"
+        },
+        "B57": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B58": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B59": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B60": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B61": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B62": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B63": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B64": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B65": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B66": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B67": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B68": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B69": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B70": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B71": {
+          "style": 2,
+          "content": "5000"
+        },
+        "B72": {
+          "style": 2,
+          "content": "5000"
+        },
+        "C1": {
+          "style": 1,
+          "content": "Other Income"
+        },
+        "C2": {
+          "style": 2,
+          "content": "2000"
+        },
+        "C3": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C4": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C5": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C6": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C7": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C8": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C9": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C10": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C11": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C12": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C13": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C14": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C15": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C16": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C17": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C18": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C19": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C20": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C21": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C22": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C23": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C24": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C25": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C26": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C27": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C28": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C29": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C30": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C31": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C32": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C33": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C34": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C35": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C36": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C37": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C38": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C39": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C40": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C41": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C42": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C43": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C44": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C45": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C46": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C47": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C48": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C49": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C50": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C51": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C52": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C53": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C54": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C55": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C56": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C57": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C58": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C59": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C60": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C61": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C62": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C63": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C64": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C65": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C66": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C67": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C68": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C69": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C70": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C71": {
+          "style": 2,
+          "content": "6000"
+        },
+        "C72": {
+          "style": 2,
+          "content": "6000"
+        },
+        "D1": {
+          "style": 1,
+          "content": "Paid leave unused"
+        },
+        "D2": {
+          "style": 2,
+          "content": "3000"
+        },
+        "D3": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D4": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D5": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D6": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D7": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D8": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D9": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D10": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D11": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D12": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D13": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D14": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D15": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D16": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D17": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D18": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D19": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D20": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D21": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D22": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D23": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D24": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D25": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D26": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D27": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D28": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D29": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D30": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D31": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D32": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D33": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D34": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D35": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D36": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D37": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D38": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D39": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D40": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D41": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D42": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D43": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D44": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D45": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D46": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D47": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D48": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D49": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D50": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D51": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D52": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D53": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D54": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D55": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D56": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D57": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D58": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D59": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D60": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D61": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D62": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D63": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D64": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D65": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D66": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D67": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D68": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D69": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D70": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D71": {
+          "style": 2,
+          "content": "7000"
+        },
+        "D72": {
+          "style": 2,
+          "content": "7000"
+        },
+        "E1": {
+          "style": 1,
+          "content": "Books & Periodicals"
+        },
+        "E2": {
+          "style": 2,
+          "content": "1200"
+        },
+        "E3": {
+          "style": 2,
+          "content": "1200"
+        },
+        "E4": {
+          "style": 2,
+          "content": "1200"
+        },
+        "E5": {
+          "style": 2,
+          "content": "1200"
+        },
+        "E6": {
+          "style": 2,
+          "content": "1200"
+        },
+        "E7": {
+          "style": 2
+        },
+        "E8": {
+          "style": 2
+        },
+        "E9": {
+          "style": 2
+        },
+        "E10": {
+          "style": 2
+        },
+        "E11": {
+          "style": 2
+        },
+        "E12": {
+          "style": 2
+        },
+        "E13": {
+          "style": 2
+        },
+        "E14": {
+          "style": 2
+        },
+        "E15": {
+          "style": 2
+        },
+        "E16": {
+          "style": 2
+        },
+        "E17": {
+          "style": 2
+        },
+        "E18": {
+          "style": 2
+        },
+        "E19": {
+          "style": 2
+        },
+        "E20": {
+          "style": 2
+        },
+        "E21": {
+          "style": 2
+        },
+        "E22": {
+          "style": 2
+        },
+        "E23": {
+          "style": 2
+        },
+        "E24": {
+          "style": 2
+        },
+        "E25": {
+          "style": 2
+        },
+        "E26": {
+          "style": 2
+        },
+        "E27": {
+          "style": 2
+        },
+        "E28": {
+          "style": 2
+        },
+        "E29": {
+          "style": 2
+        },
+        "E30": {
+          "style": 2,
+          "content": "539"
+        },
+        "E31": {
+          "style": 2
+        },
+        "E32": {
+          "style": 2
+        },
+        "E33": {
+          "style": 2
+        },
+        "E34": {
+          "style": 2
+        },
+        "E35": {
+          "style": 2
+        },
+        "E36": {
+          "style": 2
+        },
+        "E37": {
+          "style": 2
+        },
+        "E38": {
+          "style": 2
+        },
+        "E39": {
+          "style": 2
+        },
+        "E40": {
+          "style": 2
+        },
+        "E41": {
+          "style": 2
+        },
+        "E42": {
+          "style": 2
+        },
+        "E43": {
+          "style": 2
+        },
+        "E44": {
+          "style": 2
+        },
+        "E45": {
+          "style": 2
+        },
+        "E46": {
+          "style": 2
+        },
+        "E47": {
+          "style": 2
+        },
+        "E48": {
+          "style": 2
+        },
+        "E49": {
+          "style": 2
+        },
+        "E50": {
+          "style": 2
+        },
+        "E51": {
+          "style": 2
+        },
+        "E52": {
+          "style": 2
+        },
+        "E53": {
+          "style": 2
+        },
+        "E54": {
+          "style": 2
+        },
+        "E55": {
+          "style": 2
+        },
+        "E56": {
+          "style": 2
+        },
+        "E57": {
+          "style": 2,
+          "content": "539"
+        },
+        "E58": {
+          "style": 2
+        },
+        "E59": {
+          "style": 2
+        },
+        "E60": {
+          "style": 2
+        },
+        "E61": {
+          "style": 2
+        },
+        "E62": {
+          "style": 2
+        },
+        "E63": {
+          "style": 2
+        },
+        "E64": {
+          "style": 2
+        },
+        "E65": {
+          "style": 2
+        },
+        "E66": {
+          "style": 2
+        },
+        "E67": {
+          "style": 2
+        },
+        "E68": {
+          "style": 2
+        },
+        "E69": {
+          "style": 2
+        },
+        "E70": {
+          "style": 2
+        },
+        "E71": {
+          "style": 2
+        },
+        "E72": {
+          "style": 2
+        },
+        "F1": {
+          "style": 1,
+          "content": "Phone & Internet"
+        },
+        "F2": {
+          "style": 2,
+          "content": "2000"
+        },
+        "F3": {
+          "style": 2,
+          "content": "2000"
+        },
+        "F4": {
+          "style": 2,
+          "content": "2000"
+        },
+        "F5": {
+          "style": 2,
+          "content": "2000"
+        },
+        "F6": {
+          "style": 2,
+          "content": "2000"
+        },
+        "F7": {
+          "style": 2
+        },
+        "F8": {
+          "style": 2
+        },
+        "F9": {
+          "style": 2
+        },
+        "F10": {
+          "style": 2
+        },
+        "F11": {
+          "style": 2
+        },
+        "F12": {
+          "style": 2
+        },
+        "F13": {
+          "style": 2
+        },
+        "F14": {
+          "style": 2
+        },
+        "F15": {
+          "style": 2
+        },
+        "F16": {
+          "style": 2
+        },
+        "F17": {
+          "style": 2
+        },
+        "F18": {
+          "style": 2
+        },
+        "F19": {
+          "style": 2
+        },
+        "F20": {
+          "style": 2
+        },
+        "F21": {
+          "style": 2
+        },
+        "F22": {
+          "style": 2
+        },
+        "F23": {
+          "style": 2
+        },
+        "F24": {
+          "style": 2
+        },
+        "F25": {
+          "style": 2
+        },
+        "F26": {
+          "style": 2
+        },
+        "F27": {
+          "style": 2
+        },
+        "F28": {
+          "style": 2
+        },
+        "F29": {
+          "style": 2
+        },
+        "F30": {
+          "style": 2
+        },
+        "F31": {
+          "style": 2
+        },
+        "F32": {
+          "style": 2
+        },
+        "F33": {
+          "style": 2
+        },
+        "F34": {
+          "style": 2
+        },
+        "F35": {
+          "style": 2
+        },
+        "F36": {
+          "style": 2
+        },
+        "F37": {
+          "style": 2
+        },
+        "F38": {
+          "style": 2
+        },
+        "F39": {
+          "style": 2
+        },
+        "F40": {
+          "style": 2
+        },
+        "F41": {
+          "style": 2
+        },
+        "F42": {
+          "style": 2
+        },
+        "F43": {
+          "style": 2
+        },
+        "F44": {
+          "style": 2
+        },
+        "F45": {
+          "style": 2
+        },
+        "F46": {
+          "style": 2
+        },
+        "F47": {
+          "style": 2
+        },
+        "F48": {
+          "style": 2
+        },
+        "F49": {
+          "style": 2
+        },
+        "F50": {
+          "style": 2
+        },
+        "F51": {
+          "style": 2
+        },
+        "F52": {
+          "style": 2
+        },
+        "F53": {
+          "style": 2
+        },
+        "F54": {
+          "style": 2
+        },
+        "F55": {
+          "style": 2
+        },
+        "F56": {
+          "style": 2
+        },
+        "F57": {
+          "style": 2
+        },
+        "F58": {
+          "style": 2
+        },
+        "F59": {
+          "style": 2
+        },
+        "F60": {
+          "style": 2
+        },
+        "F61": {
+          "style": 2
+        },
+        "F62": {
+          "style": 2
+        },
+        "F63": {
+          "style": 2
+        },
+        "F64": {
+          "style": 2
+        },
+        "F65": {
+          "style": 2
+        },
+        "F66": {
+          "style": 2
+        },
+        "F67": {
+          "style": 2
+        },
+        "F68": {
+          "style": 2
+        },
+        "F69": {
+          "style": 2
+        },
+        "F70": {
+          "style": 2
+        },
+        "F71": {
+          "style": 2
+        },
+        "F72": {
+          "style": 2
+        },
+        "G1": {
+          "style": 1,
+          "content": "LTA"
+        },
+        "G2": {
+          "style": 2,
+          "content": "8000"
+        },
+        "G3": {
+          "style": 2,
+          "content": "7200"
+        },
+        "G4": {
+          "style": 2,
+          "content": "9600"
+        },
+        "G5": {
+          "style": 2,
+          "content": "6400"
+        },
+        "G6": {
+          "style": 2,
+          "content": "8800"
+        },
+        "G7": {
+          "style": 2
+        },
+        "G8": {
+          "style": 2
+        },
+        "G9": {
+          "style": 2
+        },
+        "G10": {
+          "style": 2
+        },
+        "G11": {
+          "style": 2
+        },
+        "G12": {
+          "style": 2
+        },
+        "G13": {
+          "style": 2
+        },
+        "G14": {
+          "style": 2
+        },
+        "G15": {
+          "style": 2
+        },
+        "G16": {
+          "style": 2
+        },
+        "G17": {
+          "style": 2
+        },
+        "G18": {
+          "style": 2
+        },
+        "G19": {
+          "style": 2
+        },
+        "G20": {
+          "style": 2
+        },
+        "G21": {
+          "style": 2
+        },
+        "G22": {
+          "style": 2
+        },
+        "G23": {
+          "style": 2
+        },
+        "G24": {
+          "style": 2
+        },
+        "G25": {
+          "style": 2
+        },
+        "G26": {
+          "style": 2
+        },
+        "G27": {
+          "style": 2
+        },
+        "G28": {
+          "style": 2
+        },
+        "G29": {
+          "style": 2
+        },
+        "G30": {
+          "style": 2
+        },
+        "G31": {
+          "style": 2
+        },
+        "G32": {
+          "style": 2
+        },
+        "G33": {
+          "style": 2
+        },
+        "G34": {
+          "style": 2
+        },
+        "G35": {
+          "style": 2
+        },
+        "G36": {
+          "style": 2
+        },
+        "G37": {
+          "style": 2
+        },
+        "G38": {
+          "style": 2
+        },
+        "G39": {
+          "style": 2
+        },
+        "G40": {
+          "style": 2
+        },
+        "G41": {
+          "style": 2
+        },
+        "G42": {
+          "style": 2
+        },
+        "G43": {
+          "style": 2
+        },
+        "G44": {
+          "style": 2
+        },
+        "G45": {
+          "style": 2
+        },
+        "G46": {
+          "style": 2
+        },
+        "G47": {
+          "style": 2
+        },
+        "G48": {
+          "style": 2
+        },
+        "G49": {
+          "style": 2
+        },
+        "G50": {
+          "style": 2
+        },
+        "G51": {
+          "style": 2
+        },
+        "G52": {
+          "style": 2
+        },
+        "G53": {
+          "style": 2
+        },
+        "G54": {
+          "style": 2
+        },
+        "G55": {
+          "style": 2
+        },
+        "G56": {
+          "style": 2
+        },
+        "G57": {
+          "style": 2
+        },
+        "G58": {
+          "style": 2
+        },
+        "G59": {
+          "style": 2
+        },
+        "G60": {
+          "style": 2
+        },
+        "G61": {
+          "style": 2
+        },
+        "G62": {
+          "style": 2
+        },
+        "G63": {
+          "style": 2
+        },
+        "G64": {
+          "style": 2
+        },
+        "G65": {
+          "style": 2
+        },
+        "G66": {
+          "style": 2
+        },
+        "G67": {
+          "style": 2
+        },
+        "G68": {
+          "style": 2
+        },
+        "G69": {
+          "style": 2
+        },
+        "G70": {
+          "style": 2
+        },
+        "G71": {
+          "style": 2
+        },
+        "G72": {
+          "style": 2
+        },
+        "H1": {
+          "style": 1,
+          "content": "Medical Allowance"
+        },
+        "H2": {
+          "style": 2,
+          "content": "3000"
+        },
+        "H3": {
+          "style": 2,
+          "content": "3000"
+        },
+        "H4": {
+          "style": 2,
+          "content": "3000"
+        },
+        "H5": {
+          "style": 2,
+          "content": "3000"
+        },
+        "H6": {
+          "style": 2,
+          "content": "3000"
+        },
+        "H7": {
+          "style": 2
+        },
+        "H8": {
+          "style": 2
+        },
+        "H9": {
+          "style": 2
+        },
+        "H10": {
+          "style": 2
+        },
+        "H11": {
+          "style": 2
+        },
+        "H12": {
+          "style": 2
+        },
+        "H13": {
+          "style": 2
+        },
+        "H14": {
+          "style": 2
+        },
+        "H15": {
+          "style": 2
+        },
+        "H16": {
+          "style": 2
+        },
+        "H17": {
+          "style": 2
+        },
+        "H18": {
+          "style": 2
+        },
+        "H19": {
+          "style": 2
+        },
+        "H20": {
+          "style": 2
+        },
+        "H21": {
+          "style": 2
+        },
+        "H22": {
+          "style": 2
+        },
+        "H23": {
+          "style": 2
+        },
+        "H24": {
+          "style": 2
+        },
+        "H25": {
+          "style": 2
+        },
+        "H26": {
+          "style": 2
+        },
+        "H27": {
+          "style": 2
+        },
+        "H28": {
+          "style": 2
+        },
+        "H29": {
+          "style": 2
+        },
+        "H30": {
+          "style": 2
+        },
+        "H31": {
+          "style": 2
+        },
+        "H32": {
+          "style": 2
+        },
+        "H33": {
+          "style": 2
+        },
+        "H34": {
+          "style": 2
+        },
+        "H35": {
+          "style": 2
+        },
+        "H36": {
+          "style": 2
+        },
+        "H37": {
+          "style": 2
+        },
+        "H38": {
+          "style": 2
+        },
+        "H39": {
+          "style": 2
+        },
+        "H40": {
+          "style": 2
+        },
+        "H41": {
+          "style": 2
+        },
+        "H42": {
+          "style": 2
+        },
+        "H43": {
+          "style": 2
+        },
+        "H44": {
+          "style": 2
+        },
+        "H45": {
+          "style": 2
+        },
+        "H46": {
+          "style": 2
+        },
+        "H47": {
+          "style": 2
+        },
+        "H48": {
+          "style": 2
+        },
+        "H49": {
+          "style": 2
+        },
+        "H50": {
+          "style": 2
+        },
+        "H51": {
+          "style": 2
+        },
+        "H52": {
+          "style": 2
+        },
+        "H53": {
+          "style": 2
+        },
+        "H54": {
+          "style": 2
+        },
+        "H55": {
+          "style": 2
+        },
+        "H56": {
+          "style": 2
+        },
+        "H57": {
+          "style": 2
+        },
+        "H58": {
+          "style": 2
+        },
+        "H59": {
+          "style": 2
+        },
+        "H60": {
+          "style": 2
+        },
+        "H61": {
+          "style": 2
+        },
+        "H62": {
+          "style": 2
+        },
+        "H63": {
+          "style": 2
+        },
+        "H64": {
+          "style": 2
+        },
+        "H65": {
+          "style": 2
+        },
+        "H66": {
+          "style": 2
+        },
+        "H67": {
+          "style": 2
+        },
+        "H68": {
+          "style": 2
+        },
+        "H69": {
+          "style": 2
+        },
+        "H70": {
+          "style": 2
+        },
+        "H71": {
+          "style": 2
+        },
+        "H72": {
+          "style": 2
+        },
+        "I1": {
+          "style": 1,
+          "content": "Transport Allowance"
+        },
+        "I2": {
+          "style": 2,
+          "content": "4000"
+        },
+        "I3": {
+          "style": 2,
+          "content": "4000"
+        },
+        "I4": {
+          "style": 2,
+          "content": "4000"
+        },
+        "I5": {
+          "style": 2,
+          "content": "4000"
+        },
+        "I6": {
+          "style": 2,
+          "content": "4000"
+        },
+        "I7": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I8": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I9": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I10": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I11": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I12": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I13": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I14": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I15": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I16": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I17": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I18": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I19": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I20": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I21": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I22": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I23": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I24": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I25": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I26": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I27": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I28": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I29": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I30": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I31": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I32": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I33": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I34": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I35": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I36": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I37": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I38": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I39": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I40": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I41": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I42": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I43": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I44": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I45": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I46": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I47": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I48": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I49": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I50": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I51": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I52": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I53": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I54": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I55": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I56": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I57": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I58": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I59": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I60": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I61": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I62": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I63": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I64": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I65": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I66": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I67": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I68": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I69": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I70": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I71": {
+          "style": 2,
+          "content": "YES"
+        },
+        "I72": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J1": {
+          "style": 1,
+          "content": "Meal Allowance"
+        },
+        "J2": {
+          "style": 2,
+          "content": "2000"
+        },
+        "J3": {
+          "style": 2,
+          "content": "2000"
+        },
+        "J4": {
+          "style": 2,
+          "content": "2000"
+        },
+        "J5": {
+          "style": 2,
+          "content": "2000"
+        },
+        "J6": {
+          "style": 2,
+          "content": "2000"
+        },
+        "J7": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J8": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J9": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J10": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J11": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J12": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J13": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J14": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J15": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J16": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J17": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J18": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J19": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J20": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J21": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J22": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J23": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J24": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J25": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J26": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J27": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J28": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J29": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J30": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J31": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J32": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J33": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J34": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J35": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J36": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J37": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J38": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J39": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J40": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J41": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J42": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J43": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J44": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J45": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J46": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J47": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J48": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J49": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J50": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J51": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J52": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J53": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J54": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J55": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J56": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J57": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J58": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J59": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J60": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J61": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J62": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J63": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J64": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J65": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J66": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J67": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J68": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J69": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J70": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J71": {
+          "style": 2,
+          "content": "YES"
+        },
+        "J72": {
+          "style": 2,
+          "content": "YES"
+        },
+        "K1": {
+          "style": 1,
+          "content": "Performance Bonus"
+        },
+        "K2": {
+          "style": 2,
+          "content": "5000"
+        },
+        "K3": {
+          "style": 2,
+          "content": "4500"
+        },
+        "K4": {
+          "style": 2,
+          "content": "6000"
+        },
+        "K5": {
+          "style": 2,
+          "content": "4000"
+        },
+        "K6": {
+          "style": 2,
+          "content": "5500"
+        },
+        "K7": {
+          "style": 2
+        },
+        "K8": {
+          "style": 2
+        },
+        "K9": {
+          "style": 2
+        },
+        "K10": {
+          "style": 2
+        },
+        "K11": {
+          "style": 2
+        },
+        "K12": {
+          "style": 2
+        },
+        "K13": {
+          "style": 2
+        },
+        "K14": {
+          "style": 2
+        },
+        "K15": {
+          "style": 2
+        },
+        "K16": {
+          "style": 2
+        },
+        "K17": {
+          "style": 2
+        },
+        "K18": {
+          "style": 2
+        },
+        "K19": {
+          "style": 2
+        },
+        "K20": {
+          "style": 2
+        },
+        "K21": {
+          "style": 2
+        },
+        "K22": {
+          "style": 2
+        },
+        "K23": {
+          "style": 2
+        },
+        "K24": {
+          "style": 2
+        },
+        "K25": {
+          "style": 2
+        },
+        "K26": {
+          "style": 2
+        },
+        "K27": {
+          "style": 2
+        },
+        "K28": {
+          "style": 2
+        },
+        "K29": {
+          "style": 2
+        },
+        "K30": {
+          "style": 2
+        },
+        "K31": {
+          "style": 2
+        },
+        "K32": {
+          "style": 2
+        },
+        "K33": {
+          "style": 2
+        },
+        "K34": {
+          "style": 2
+        },
+        "K35": {
+          "style": 2
+        },
+        "K36": {
+          "style": 2
+        },
+        "K37": {
+          "style": 2
+        },
+        "K38": {
+          "style": 2
+        },
+        "K39": {
+          "style": 2
+        },
+        "K40": {
+          "style": 2
+        },
+        "K41": {
+          "style": 2
+        },
+        "K42": {
+          "style": 2
+        },
+        "K43": {
+          "style": 2
+        },
+        "K44": {
+          "style": 2
+        },
+        "K45": {
+          "style": 2
+        },
+        "K46": {
+          "style": 2
+        },
+        "K47": {
+          "style": 2
+        },
+        "K48": {
+          "style": 2
+        },
+        "K49": {
+          "style": 2
+        },
+        "K50": {
+          "style": 2
+        },
+        "K51": {
+          "style": 2
+        },
+        "K52": {
+          "style": 2
+        },
+        "K53": {
+          "style": 2
+        },
+        "K54": {
+          "style": 2
+        },
+        "K55": {
+          "style": 2
+        },
+        "K56": {
+          "style": 2
+        },
+        "K57": {
+          "style": 2
+        },
+        "K58": {
+          "style": 2
+        },
+        "K59": {
+          "style": 2
+        },
+        "K60": {
+          "style": 2
+        },
+        "K61": {
+          "style": 2
+        },
+        "K62": {
+          "style": 2
+        },
+        "K63": {
+          "style": 2
+        },
+        "K64": {
+          "style": 2
+        },
+        "K65": {
+          "style": 2
+        },
+        "K66": {
+          "style": 2
+        },
+        "K67": {
+          "style": 2
+        },
+        "K68": {
+          "style": 2
+        },
+        "K69": {
+          "style": 2
+        },
+        "K70": {
+          "style": 2
+        },
+        "K71": {
+          "style": 2
+        },
+        "K72": {
+          "style": 2
+        },
+        "L1": {
+          "style": 1,
+          "content": "Gross Pay"
+        },
+        "L2": {
+          "style": 2,
+          "content": "=A2+B2+C2+D2+E2+F2+G2+H2+I2+J2+K2"
+        },
+        "L3": {
+          "style": 2,
+          "content": "=A3+B3+C3+D3+E3+F3+G3+H3+I3+J3+K3"
+        },
+        "L4": {
+          "style": 2,
+          "content": "=A4+B4+C4+D4+E4+F4+G4+H4+I4+J4+K4"
+        },
+        "L5": {
+          "style": 2,
+          "content": "=A5+B5+C5+D5+E5+F5+G5+H5+I5+J5+K5"
+        },
+        "L6": {
+          "style": 2,
+          "content": "=A6+B6+C6+D6+E6+F6+G6+H6+I6+J6+K6"
+        },
+        "L7": {
+          "style": 2
+        },
+        "L8": {
+          "style": 2
+        },
+        "L9": {
+          "style": 2
+        },
+        "L10": {
+          "style": 2
+        },
+        "L11": {
+          "style": 2
+        },
+        "L12": {
+          "style": 2
+        },
+        "L13": {
+          "style": 2
+        },
+        "L14": {
+          "style": 2
+        },
+        "L15": {
+          "style": 2
+        },
+        "L16": {
+          "style": 2
+        },
+        "L17": {
+          "style": 2
+        },
+        "L18": {
+          "style": 2
+        },
+        "L19": {
+          "style": 2
+        },
+        "L20": {
+          "style": 2
+        },
+        "L21": {
+          "style": 2
+        },
+        "L22": {
+          "style": 2
+        },
+        "L23": {
+          "style": 2
+        },
+        "L24": {
+          "style": 2
+        },
+        "L25": {
+          "style": 2
+        },
+        "L26": {
+          "style": 2
+        },
+        "L27": {
+          "style": 2
+        },
+        "L28": {
+          "style": 2
+        },
+        "L29": {
+          "style": 2
+        },
+        "L30": {
+          "style": 2
+        },
+        "L31": {
+          "style": 2
+        },
+        "L32": {
+          "style": 2
+        },
+        "L33": {
+          "style": 2
+        },
+        "L34": {
+          "style": 2
+        },
+        "L35": {
+          "style": 2
+        },
+        "L36": {
+          "style": 2
+        },
+        "L37": {
+          "style": 2
+        },
+        "L38": {
+          "style": 2
+        },
+        "L39": {
+          "style": 2
+        },
+        "L40": {
+          "style": 2
+        },
+        "L41": {
+          "style": 2
+        },
+        "L42": {
+          "style": 2
+        },
+        "L43": {
+          "style": 2
+        },
+        "L44": {
+          "style": 2
+        },
+        "L45": {
+          "style": 2
+        },
+        "L46": {
+          "style": 2
+        },
+        "L47": {
+          "style": 2
+        },
+        "L48": {
+          "style": 2
+        },
+        "L49": {
+          "style": 2
+        },
+        "L50": {
+          "style": 2
+        },
+        "L51": {
+          "style": 2
+        },
+        "L52": {
+          "style": 2
+        },
+        "L53": {
+          "style": 2
+        },
+        "L54": {
+          "style": 2
+        },
+        "L55": {
+          "style": 2
+        },
+        "L56": {
+          "style": 2
+        },
+        "L57": {
+          "style": 2
+        },
+        "L58": {
+          "style": 2
+        },
+        "L59": {
+          "style": 2
+        },
+        "L60": {
+          "style": 2
+        },
+        "L61": {
+          "style": 2
+        },
+        "L62": {
+          "style": 2
+        },
+        "L63": {
+          "style": 2
+        },
+        "L64": {
+          "style": 2
+        },
+        "L65": {
+          "style": 2
+        },
+        "L66": {
+          "style": 2
+        },
+        "L67": {
+          "style": 2
+        },
+        "L68": {
+          "style": 2
+        },
+        "L69": {
+          "style": 2
+        },
+        "L70": {
+          "style": 2
+        },
+        "L71": {
+          "style": 2
+        },
+        "L72": {
+          "style": 2
+        },
+        "M1": {
+          "style": 1,
+          "content": "PF Employee"
+        },
+        "M2": {
+          "style": 2,
+          "content": "=MIN(A2*0.12,1800)"
+        },
+        "M3": {
+          "style": 2,
+          "content": "=MIN(A3*0.12,1800)"
+        },
+        "M4": {
+          "style": 2,
+          "content": "=MIN(A4*0.12,1800)"
+        },
+        "M5": {
+          "style": 2,
+          "content": "=MIN(A5*0.12,1800)"
+        },
+        "M6": {
+          "style": 2,
+          "content": "=MIN(A6*0.12,1800)"
+        },
+        "M7": {
+          "style": 2
+        },
+        "M8": {
+          "style": 2
+        },
+        "M9": {
+          "style": 2
+        },
+        "M10": {
+          "style": 2
+        },
+        "M11": {
+          "style": 2
+        },
+        "M12": {
+          "style": 2
+        },
+        "M13": {
+          "style": 2
+        },
+        "M14": {
+          "style": 2
+        },
+        "M15": {
+          "style": 2
+        },
+        "M16": {
+          "style": 2
+        },
+        "M17": {
+          "style": 2
+        },
+        "M18": {
+          "style": 2
+        },
+        "M19": {
+          "style": 2
+        },
+        "M20": {
+          "style": 2
+        },
+        "M21": {
+          "style": 2
+        },
+        "M22": {
+          "style": 2
+        },
+        "M23": {
+          "style": 2
+        },
+        "M24": {
+          "style": 2
+        },
+        "M25": {
+          "style": 2
+        },
+        "M26": {
+          "style": 2
+        },
+        "M27": {
+          "style": 2
+        },
+        "M28": {
+          "style": 2
+        },
+        "M29": {
+          "style": 2
+        },
+        "M30": {
+          "style": 2
+        },
+        "M31": {
+          "style": 2
+        },
+        "M32": {
+          "style": 2
+        },
+        "M33": {
+          "style": 2
+        },
+        "M34": {
+          "style": 2
+        },
+        "M35": {
+          "style": 2
+        },
+        "M36": {
+          "style": 2
+        },
+        "M37": {
+          "style": 2
+        },
+        "M38": {
+          "style": 2
+        },
+        "M39": {
+          "style": 2
+        },
+        "M40": {
+          "style": 2
+        },
+        "M41": {
+          "style": 2
+        },
+        "M42": {
+          "style": 2
+        },
+        "M43": {
+          "style": 2
+        },
+        "M44": {
+          "style": 2
+        },
+        "M45": {
+          "style": 2
+        },
+        "M46": {
+          "style": 2
+        },
+        "M47": {
+          "style": 2
+        },
+        "M48": {
+          "style": 2
+        },
+        "M49": {
+          "style": 2
+        },
+        "M50": {
+          "style": 2
+        },
+        "M51": {
+          "style": 2
+        },
+        "M52": {
+          "style": 2
+        },
+        "M53": {
+          "style": 2
+        },
+        "M54": {
+          "style": 2
+        },
+        "M55": {
+          "style": 2
+        },
+        "M56": {
+          "style": 2
+        },
+        "M57": {
+          "style": 2
+        },
+        "M58": {
+          "style": 2
+        },
+        "M59": {
+          "style": 2
+        },
+        "M60": {
+          "style": 2
+        },
+        "M61": {
+          "style": 2
+        },
+        "M62": {
+          "style": 2
+        },
+        "M63": {
+          "style": 2
+        },
+        "M64": {
+          "style": 2
+        },
+        "M65": {
+          "style": 2
+        },
+        "M66": {
+          "style": 2
+        },
+        "M67": {
+          "style": 2
+        },
+        "M68": {
+          "style": 2
+        },
+        "M69": {
+          "style": 2
+        },
+        "M70": {
+          "style": 2
+        },
+        "M71": {
+          "style": 2
+        },
+        "M72": {
+          "style": 2
+        },
+        "N1": {
+          "style": 1,
+          "content": "ESI Employee"
+        },
+        "N2": {
+          "style": 2,
+          "content": "=IF(L2<=25000,L2*0.0075,0)"
+        },
+        "N3": {
+          "style": 2,
+          "content": "=IF(L3<=25000,L3*0.0075,0)"
+        },
+        "N4": {
+          "style": 2,
+          "content": "=IF(L4<=25000,L4*0.0075,0)"
+        },
+        "N5": {
+          "style": 2,
+          "content": "=IF(L5<=25000,L5*0.0075,0)"
+        },
+        "N6": {
+          "style": 2,
+          "content": "=IF(L6<=25000,L6*0.0075,0)"
+        },
+        "N7": {
+          "style": 2
+        },
+        "N8": {
+          "style": 2
+        },
+        "N9": {
+          "style": 2
+        },
+        "N10": {
+          "style": 2
+        },
+        "N11": {
+          "style": 2
+        },
+        "N12": {
+          "style": 2
+        },
+        "N13": {
+          "style": 2
+        },
+        "N14": {
+          "style": 2
+        },
+        "N15": {
+          "style": 2
+        },
+        "N16": {
+          "style": 2
+        },
+        "N17": {
+          "style": 2
+        },
+        "N18": {
+          "style": 2
+        },
+        "N19": {
+          "style": 2
+        },
+        "N20": {
+          "style": 2
+        },
+        "N21": {
+          "style": 2
+        },
+        "N22": {
+          "style": 2
+        },
+        "N23": {
+          "style": 2
+        },
+        "N24": {
+          "style": 2
+        },
+        "N25": {
+          "style": 2
+        },
+        "N26": {
+          "style": 2
+        },
+        "N27": {
+          "style": 2
+        },
+        "N28": {
+          "style": 2
+        },
+        "N29": {
+          "style": 2
+        },
+        "N30": {
+          "style": 2
+        },
+        "N31": {
+          "style": 2
+        },
+        "N32": {
+          "style": 2
+        },
+        "N33": {
+          "style": 2
+        },
+        "N34": {
+          "style": 2
+        },
+        "N35": {
+          "style": 2
+        },
+        "N36": {
+          "style": 2
+        },
+        "N37": {
+          "style": 2
+        },
+        "N38": {
+          "style": 2
+        },
+        "N39": {
+          "style": 2
+        },
+        "N40": {
+          "style": 2
+        },
+        "N41": {
+          "style": 2
+        },
+        "N42": {
+          "style": 2
+        },
+        "N43": {
+          "style": 2
+        },
+        "N44": {
+          "style": 2
+        },
+        "N45": {
+          "style": 2
+        },
+        "N46": {
+          "style": 2
+        },
+        "N47": {
+          "style": 2
+        },
+        "N48": {
+          "style": 2
+        },
+        "N49": {
+          "style": 2
+        },
+        "N50": {
+          "style": 2
+        },
+        "N51": {
+          "style": 2
+        },
+        "N52": {
+          "style": 2
+        },
+        "N53": {
+          "style": 2
+        },
+        "N54": {
+          "style": 2
+        },
+        "N55": {
+          "style": 2
+        },
+        "N56": {
+          "style": 2
+        },
+        "N57": {
+          "style": 2
+        },
+        "N58": {
+          "style": 2
+        },
+        "N59": {
+          "style": 2
+        },
+        "N60": {
+          "style": 2
+        },
+        "N61": {
+          "style": 2
+        },
+        "N62": {
+          "style": 2
+        },
+        "N63": {
+          "style": 2
+        },
+        "N64": {
+          "style": 2
+        },
+        "N65": {
+          "style": 2
+        },
+        "N66": {
+          "style": 2
+        },
+        "N67": {
+          "style": 2
+        },
+        "N68": {
+          "style": 2
+        },
+        "N69": {
+          "style": 2
+        },
+        "N70": {
+          "style": 2
+        },
+        "N71": {
+          "style": 2
+        },
+        "N72": {
+          "style": 2
+        },
+        "O1": {
+          "style": 1,
+          "content": "Professional Tax"
+        },
+        "P1": {
+          "style": 1,
+          "content": "Income Tax"
+        },
+        "Q1": {
+          "style": 1,
+          "content": "Total Deductions"
+        },
+        "R1": {
+          "style": 1,
+          "content": "Net Pay"
+        },
+        "S1": {
+          "style": 1,
+          "content": "PF Employer"
+        },
+        "T1": {
+          "style": 1,
+          "content": "ESI Employer"
+        },
+        "O2": {
+          "style": 2,
+          "content": "=IF(L2<=15000,0,IF(L2<=20000,150,200))"
+        },
+        "P2": {
+          "style": 2,
+          "content": "=IF(L2>50000,(L2-50000)*0.1,0)"
+        },
+        "Q2": {
+          "style": 2,
+          "content": "=M2+N2+O2+P2"
+        },
+        "R2": {
+          "style": 2,
+          "content": "=L2-Q2"
+        },
+        "S2": {
+          "style": 2,
+          "content": "=A2*0.12"
+        },
+        "T2": {
+          "style": 2,
+          "content": "=IF(L2<=25000,L2*0.0325,0)"
+        },
+        "O3": {
+          "style": 2,
+          "content": "=IF(L3<=15000,0,IF(L3<=20000,150,200))"
+        },
+        "P3": {
+          "style": 2,
+          "content": "=IF(L3>50000,(L3-50000)*0.1,0)"
+        },
+        "Q3": {
+          "style": 2,
+          "content": "=M3+N3+O3+P3"
+        },
+        "R3": {
+          "style": 2,
+          "content": "=L3-Q3"
+        },
+        "S3": {
+          "style": 2,
+          "content": "=A3*0.12"
+        },
+        "T3": {
+          "style": 2,
+          "content": "=IF(L3<=25000,L3*0.0325,0)"
+        },
+        "O4": {
+          "style": 2,
+          "content": "=IF(L4<=15000,0,IF(L4<=20000,150,200))"
+        },
+        "P4": {
+          "style": 2,
+          "content": "=IF(L4>50000,(L4-50000)*0.1,0)"
+        },
+        "Q4": {
+          "style": 2,
+          "content": "=M4+N4+O4+P4"
+        },
+        "R4": {
+          "style": 2,
+          "content": "=L4-Q4"
+        },
+        "S4": {
+          "style": 2,
+          "content": "=A4*0.12"
+        },
+        "T4": {
+          "style": 2,
+          "content": "=IF(L4<=25000,L4*0.0325,0)"
+        },
+        "O5": {
+          "style": 2,
+          "content": "=IF(L5<=15000,0,IF(L5<=20000,150,200))"
+        },
+        "P5": {
+          "style": 2,
+          "content": "=IF(L5>50000,(L5-50000)*0.1,0)"
+        },
+        "Q5": {
+          "style": 2,
+          "content": "=M5+N5+O5+P5"
+        },
+        "R5": {
+          "style": 2,
+          "content": "=L5-Q5"
+        },
+        "S5": {
+          "style": 2,
+          "content": "=A5*0.12"
+        },
+        "T5": {
+          "style": 2,
+          "content": "=IF(L5<=25000,L5*0.0325,0)"
+        },
+        "O6": {
+          "style": 2,
+          "content": "=IF(L6<=15000,0,IF(L6<=20000,150,200))"
+        },
+        "P6": {
+          "style": 2,
+          "content": "=IF(L6>50000,(L6-50000)*0.1,0)"
+        },
+        "Q6": {
+          "style": 2,
+          "content": "=M6+N6+O6+P6"
+        },
+        "R6": {
+          "style": 2,
+          "content": "=L6-Q6"
+        },
+        "S6": {
+          "style": 2,
+          "content": "=A6*0.12"
+        },
+        "T6": {
+          "style": 2,
+          "content": "=IF(L6<=25000,L6*0.0325,0)"
+        }
+      },
+      "conditionalFormats": [],
+      "figures": [],
+      "filterTables": [],
+      "areGridLinesVisible": true,
+      "isVisible": true
+    },
+    {
+      "id": "b27b8532-1d1f-4c41-98ff-d4bfa924baa5",
+      "name": "India Earnings Details",
+      "colNumber": 27,
+      "rowNumber": 117,
+      "rows": {},
+      "cols": {},
+      "merges": [],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"employee_id\")"
+        },
+        "A2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"employee_id\")"
+        },
+        "A3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"employee_id\")"
+        },
+        "A4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"employee_id\")"
+        },
+        "A5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"employee_id\")"
+        },
+        "A6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"employee_id\")"
+        },
+        "A7": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,6,\"employee_id\")"
+        },
+        "A8": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,7,\"employee_id\")"
+        },
+        "A9": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,8,\"employee_id\")"
+        },
+        "A10": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,9,\"employee_id\")"
+        },
+        "A11": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,10,\"employee_id\")"
+        },
+        "A12": {
+          "style": 5,
+          "content": "20"
+        },
+        "A13": {
+          "style": 5,
+          "content": "740"
+        },
+        "A14": {
+          "style": 5,
+          "content": "474"
+        },
+        "A15": {
+          "style": 5,
+          "content": "10164"
+        },
+        "A16": {
+          "style": 5,
+          "content": "10165"
+        },
+        "A17": {
+          "style": 5,
+          "content": "618"
+        },
+        "A18": {
+          "style": 5,
+          "content": "481"
+        },
+        "A19": {
+          "style": 5,
+          "content": "445"
+        },
+        "A20": {
+          "style": 5,
+          "content": "448"
+        },
+        "A21": {
+          "style": 5,
+          "content": "452"
+        },
+        "A22": {
+          "style": 5,
+          "content": "429"
+        },
+        "A23": {
+          "style": 5,
+          "content": "350"
+        },
+        "A24": {
+          "style": 5,
+          "content": "355"
+        },
+        "A25": {
+          "style": 5,
+          "content": "356"
+        },
+        "A26": {
+          "style": 5,
+          "content": "359"
+        },
+        "A27": {
+          "style": 5,
+          "content": "270"
+        },
+        "A28": {
+          "style": 5,
+          "content": "216"
+        },
+        "A29": {
+          "style": 5,
+          "content": "107"
+        },
+        "A30": {
+          "style": 5,
+          "content": "108"
+        },
+        "A31": {
+          "style": 5,
+          "content": "112"
+        },
+        "A32": {
+          "style": 5,
+          "content": "113"
+        },
+        "A33": {
+          "style": 5,
+          "content": "11443"
+        },
+        "A34": {
+          "style": 5,
+          "content": "729"
+        },
+        "A35": {
+          "style": 5,
+          "content": "460"
+        },
+        "A36": {
+          "style": 5,
+          "content": "462"
+        },
+        "A37": {
+          "style": 5,
+          "content": "463"
+        },
+        "A38": {
+          "style": 5,
+          "content": "442"
+        },
+        "A39": {
+          "style": 5,
+          "content": "449"
+        },
+        "A40": {
+          "style": 5,
+          "content": "376"
+        },
+        "A41": {
+          "style": 5,
+          "content": "233"
+        },
+        "A42": {
+          "style": 5,
+          "content": "228"
+        },
+        "A43": {
+          "style": 5,
+          "content": "122"
+        },
+        "A44": {
+          "style": 5,
+          "content": "539"
+        },
+        "A45": {
+          "style": 5,
+          "content": "347"
+        },
+        "A46": {
+          "style": 5,
+          "content": "11673"
+        },
+        "A47": {
+          "style": 5,
+          "content": "11500"
+        },
+        "A48": {
+          "style": 5,
+          "content": "11672"
+        },
+        "A49": {
+          "style": 5,
+          "content": "11664"
+        },
+        "A50": {
+          "style": 5,
+          "content": "0"
+        },
+        "A51": {
+          "style": 5,
+          "content": "11667"
+        },
+        "A52": {
+          "style": 5,
+          "content": "4047"
+        },
+        "A53": {
+          "style": 5,
+          "content": "7135"
+        },
+        "A54": {
+          "style": 5,
+          "content": "11368"
+        },
+        "A55": {
+          "style": 5,
+          "content": "258"
+        },
+        "A56": {
+          "style": 5,
+          "content": "11671"
+        },
+        "A57": {
+          "style": 5,
+          "content": "11485"
+        },
+        "A58": {
+          "style": 5,
+          "content": "11669"
+        },
+        "A59": {
+          "style": 5,
+          "content": "11513"
+        },
+        "A60": {
+          "style": 5,
+          "content": "504"
+        },
+        "A61": {
+          "style": 5,
+          "content": "5136"
+        },
+        "A62": {
+          "style": 5,
+          "content": "11396"
+        },
+        "A63": {
+          "style": 5,
+          "content": "11400"
+        },
+        "A64": {
+          "style": 5,
+          "content": "11094"
+        },
+        "A65": {
+          "style": 5,
+          "content": "11318"
+        },
+        "A66": {
+          "style": 5,
+          "content": "11090"
+        },
+        "A67": {
+          "style": 5,
+          "content": "7143"
+        },
+        "A68": {
+          "style": 5,
+          "content": "11662"
+        },
+        "A69": {
+          "style": 5,
+          "content": "11661"
+        },
+        "A70": {
+          "style": 5,
+          "content": "391"
+        },
+        "A71": {
+          "style": 5,
+          "content": "8189"
+        },
+        "A72": {
+          "style": 5,
+          "content": "8023"
+        },
+        "A73": {
+          "style": 5,
+          "content": "4045"
+        },
+        "A74": {
+          "style": 5,
+          "content": "4049"
+        },
+        "A75": {
+          "style": 5,
+          "content": "657"
+        },
+        "A76": {
+          "style": 5,
+          "content": "11670"
+        },
+        "A77": {
+          "style": 5,
+          "content": "11450"
+        },
+        "A78": {
+          "style": 5,
+          "content": "11508"
+        },
+        "A79": {
+          "style": 5,
+          "content": "11643"
+        },
+        "A80": {
+          "style": 5,
+          "content": "11611"
+        },
+        "A81": {
+          "style": 5,
+          "content": "438"
+        },
+        "A82": {
+          "style": 5,
+          "content": "11156"
+        },
+        "A83": {
+          "style": 5,
+          "content": "11128"
+        },
+        "A84": {
+          "style": 5,
+          "content": "441"
+        },
+        "A85": {
+          "style": 5,
+          "content": "24"
+        },
+        "A86": {
+          "style": 5,
+          "content": "23"
+        },
+        "A87": {
+          "style": 5,
+          "content": "242"
+        },
+        "A88": {
+          "style": 5,
+          "content": "336"
+        },
+        "A89": {
+          "style": 5,
+          "content": "272"
+        },
+        "A90": {
+          "style": 5,
+          "content": "11358"
+        },
+        "A91": {
+          "style": 5,
+          "content": "11660"
+        },
+        "A92": {
+          "style": 5,
+          "content": "11141"
+        },
+        "A93": {
+          "style": 5,
+          "content": "5037"
+        },
+        "A94": {
+          "style": 5,
+          "content": "8877"
+        },
+        "A95": {
+          "style": 5,
+          "content": "646"
+        },
+        "A96": {
+          "style": 5,
+          "content": "11663"
+        },
+        "A97": {
+          "style": 5,
+          "content": "11194"
+        },
+        "A98": {
+          "style": 5,
+          "content": "11023"
+        },
+        "A99": {
+          "style": 5,
+          "content": "11188"
+        },
+        "A100": {
+          "style": 5,
+          "content": "11647"
+        },
+        "A101": {
+          "style": 5,
+          "content": "11585"
+        },
+        "A102": {
+          "style": 5,
+          "content": "11510"
+        },
+        "A103": {
+          "style": 5,
+          "content": "96"
+        },
+        "A104": {
+          "style": 5,
+          "content": "11587"
+        },
+        "A105": {
+          "style": 5,
+          "content": "8201"
+        },
+        "A106": {
+          "style": 5,
+          "content": "548"
+        },
+        "A107": {
+          "style": 5,
+          "content": "11414"
+        },
+        "A108": {
+          "style": 5,
+          "content": "8832"
+        },
+        "A109": {
+          "style": 5,
+          "content": "8836"
+        },
+        "A110": {
+          "style": 5,
+          "content": "509"
+        },
+        "A111": {
+          "style": 5,
+          "content": "71"
+        },
+        "A112": {
+          "style": 5,
+          "content": "1"
+        },
+        "A113": {
+          "style": 5,
+          "content": "353"
+        },
+        "A114": {
+          "style": 5,
+          "content": "11666"
+        },
+        "A115": {
+          "style": 5,
+          "content": "11458"
+        },
+        "A116": {
+          "style": 5,
+          "content": "11644"
+        },
+        "A117": {
+          "style": 5,
+          "content": "101010"
+        },
+        "B1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"basic_salary\")"
+        },
+        "B2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"basic_salary\")"
+        },
+        "B3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"basic_salary\")"
+        },
+        "B4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"basic_salary\")"
+        },
+        "B5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"basic_salary\")"
+        },
+        "B6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"basic_salary\")"
+        },
+        "B7": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,6,\"basic_salary\")"
+        },
+        "B8": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,7,\"basic_salary\")"
+        },
+        "B9": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,8,\"basic_salary\")"
+        },
+        "B10": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,9,\"basic_salary\")"
+        },
+        "B11": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,10,\"basic_salary\")"
+        },
+        "B12": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B13": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B14": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B15": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B16": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B17": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B18": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B19": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B20": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B21": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B22": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B23": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B24": {
+          "style": 5,
+          "content": "300000"
+        },
+        "B25": {
+          "style": 5,
+          "content": "400000"
+        },
+        "B26": {
+          "style": 5,
+          "content": "500000"
+        },
+        "B27": {
+          "style": 5,
+          "content": "600000"
+        },
+        "B28": {
+          "style": 5,
+          "content": "700000"
+        },
+        "B29": {
+          "style": 5,
+          "content": "800000"
+        },
+        "B30": {
+          "style": 5,
+          "content": "900000"
+        },
+        "B31": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B32": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B33": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B34": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B35": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B36": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B37": {
+          "style": 5,
+          "content": "300000"
+        },
+        "B38": {
+          "style": 5,
+          "content": "400000"
+        },
+        "B39": {
+          "style": 5,
+          "content": "500000"
+        },
+        "B40": {
+          "style": 5,
+          "content": "600000"
+        },
+        "B41": {
+          "style": 5,
+          "content": "700000"
+        },
+        "B42": {
+          "style": 5,
+          "content": "800000"
+        },
+        "B43": {
+          "style": 5,
+          "content": "900000"
+        },
+        "B44": {
+          "style": 5,
+          "content": "7000000"
+        },
+        "B45": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B46": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B47": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B48": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B49": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B50": {
+          "style": 5,
+          "content": "1600000"
+        },
+        "B51": {
+          "style": 5,
+          "content": "1700000"
+        },
+        "B52": {
+          "style": 5,
+          "content": "1800000"
+        },
+        "B53": {
+          "style": 5,
+          "content": "1900000"
+        },
+        "B54": {
+          "style": 5,
+          "content": "2000000"
+        },
+        "B55": {
+          "style": 5,
+          "content": "2100000"
+        },
+        "B56": {
+          "style": 5,
+          "content": "2200000"
+        },
+        "B57": {
+          "style": 5,
+          "content": "300000"
+        },
+        "B58": {
+          "style": 5,
+          "content": "400000"
+        },
+        "B59": {
+          "style": 5,
+          "content": "500000"
+        },
+        "B60": {
+          "style": 5,
+          "content": "600000"
+        },
+        "B61": {
+          "style": 5,
+          "content": "700000"
+        },
+        "B62": {
+          "style": 5,
+          "content": "800000"
+        },
+        "B63": {
+          "style": 5,
+          "content": "900000"
+        },
+        "B64": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B65": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B66": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B67": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B68": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B69": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B70": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B71": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B72": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B73": {
+          "style": 5,
+          "content": "100000"
+        },
+        "B74": {
+          "style": 5,
+          "content": "200000"
+        },
+        "B75": {
+          "style": 5,
+          "content": "300000"
+        },
+        "B76": {
+          "style": 5,
+          "content": "400000"
+        },
+        "B77": {
+          "style": 5,
+          "content": "500000"
+        },
+        "B78": {
+          "style": 5,
+          "content": "600000"
+        },
+        "B79": {
+          "style": 5,
+          "content": "700000"
+        },
+        "B80": {
+          "style": 5,
+          "content": "800000"
+        },
+        "B81": {
+          "style": 5,
+          "content": "900000"
+        },
+        "B82": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B83": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B84": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B85": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B86": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B87": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B88": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B89": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B90": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B91": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B92": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B93": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B94": {
+          "style": 5,
+          "content": "300000"
+        },
+        "B95": {
+          "style": 5,
+          "content": "400000"
+        },
+        "B96": {
+          "style": 5,
+          "content": "500000"
+        },
+        "B97": {
+          "style": 5,
+          "content": "600000"
+        },
+        "B98": {
+          "style": 5,
+          "content": "700000"
+        },
+        "B99": {
+          "style": 5,
+          "content": "800000"
+        },
+        "B100": {
+          "style": 5,
+          "content": "900000"
+        },
+        "B101": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B102": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B103": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B104": {
+          "style": 5,
+          "content": "1300000"
+        },
+        "B105": {
+          "style": 5,
+          "content": "1400000"
+        },
+        "B106": {
+          "style": 5,
+          "content": "1500000"
+        },
+        "B107": {
+          "style": 5,
+          "content": "300000"
+        },
+        "B108": {
+          "style": 5,
+          "content": "400000"
+        },
+        "B109": {
+          "style": 5,
+          "content": "500000"
+        },
+        "B110": {
+          "style": 5,
+          "content": "600000"
+        },
+        "B111": {
+          "style": 5,
+          "content": "700000"
+        },
+        "B112": {
+          "style": 5,
+          "content": "800000"
+        },
+        "B113": {
+          "style": 5,
+          "content": "900000"
+        },
+        "B114": {
+          "style": 5,
+          "content": "1000000"
+        },
+        "B115": {
+          "style": 5,
+          "content": "1100000"
+        },
+        "B116": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "B117": {
+          "style": 5,
+          "content": "1200000"
+        },
+        "C1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"hra\")"
+        },
+        "C2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"hra\")"
+        },
+        "C3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"hra\")"
+        },
+        "C4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"hra\")"
+        },
+        "C5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"hra\")"
+        },
+        "C6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"hra\")"
+        },
+        "C7": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,6,\"hra\")"
+        },
+        "C8": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,7,\"hra\")"
+        },
+        "C9": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,8,\"hra\")"
+        },
+        "C10": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,9,\"hra\")"
+        },
+        "C11": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,10,\"hra\")"
+        },
+        "C12": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C13": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C14": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C15": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C16": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C17": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C18": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C19": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C20": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C21": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C22": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C23": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C24": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C25": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C26": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C27": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C28": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C29": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C30": {
+          "style": 5
+        },
+        "C31": {
+          "style": 5
+        },
+        "C32": {
+          "style": 5
+        },
+        "C33": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C34": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C35": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C36": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C37": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C38": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C39": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C40": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C41": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C42": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C43": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C44": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C45": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C46": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C47": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C48": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C49": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C50": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C51": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C52": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C53": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C54": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C55": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C56": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C57": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C58": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C59": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C60": {
+          "style": 5
+        },
+        "C61": {
+          "style": 5
+        },
+        "C62": {
+          "style": 5
+        },
+        "C63": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C64": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C65": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C66": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C67": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C68": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C69": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C70": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C71": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C72": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C73": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C74": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C75": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C76": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C77": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C78": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C79": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C80": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C81": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C82": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C83": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C84": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C85": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C86": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C87": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C88": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C89": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C90": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C91": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C92": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C93": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C94": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C95": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C96": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C97": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C98": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C99": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C100": {
+          "style": 5
+        },
+        "C101": {
+          "style": 5
+        },
+        "C102": {
+          "style": 5
+        },
+        "C103": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C104": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C105": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C106": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C107": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C108": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C109": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C110": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C111": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C112": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C113": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C114": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C115": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C116": {
+          "style": 5,
+          "content": "2000"
+        },
+        "C117": {
+          "style": 5,
+          "content": "2000"
+        },
+        "D1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"special_allowance\")"
+        },
+        "D2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"special_allowance\")"
+        },
+        "D3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"special_allowance\")"
+        },
+        "D4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"special_allowance\")"
+        },
+        "D5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"special_allowance\")"
+        },
+        "D6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"special_allowance\")"
+        },
+        "D7": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,6,\"special_allowance\")"
+        },
+        "D8": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,7,\"special_allowance\")"
+        },
+        "D9": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,8,\"special_allowance\")"
+        },
+        "D10": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,9,\"special_allowance\")"
+        },
+        "D11": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,10,\"special_allowance\")"
+        },
+        "D12": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D13": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D14": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D15": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D16": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D17": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D18": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D19": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D20": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D21": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D22": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D23": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D24": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D25": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D26": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D27": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D28": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D29": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D30": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D31": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D32": {
+          "style": 5
+        },
+        "D33": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D34": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D35": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D36": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D37": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D38": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D39": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D40": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D41": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D42": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D43": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D44": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D45": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D46": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D47": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D48": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D49": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D50": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D51": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D52": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D53": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D54": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D55": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D56": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D57": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D58": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D59": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D60": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D61": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D62": {
+          "style": 5
+        },
+        "D63": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D64": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D65": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D66": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D67": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D68": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D69": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D70": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D71": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D72": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D73": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D74": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D75": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D76": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D77": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D78": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D79": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D80": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D81": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D82": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D83": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D84": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D85": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D86": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D87": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D88": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D89": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D90": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D91": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D92": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D93": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D94": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D95": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D96": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D97": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D98": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D99": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D100": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D101": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D102": {
+          "style": 5
+        },
+        "D103": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D104": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D105": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D106": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D107": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D108": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D109": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D110": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D111": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D112": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D113": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D114": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D115": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D116": {
+          "style": 5,
+          "content": "3000"
+        },
+        "D117": {
+          "style": 5,
+          "content": "3000"
+        },
+        "E1": {
+          "style": 1,
+          "content": "Books & Periodicals"
+        },
+        "E2": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E3": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E4": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E5": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E6": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E7": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E8": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E9": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E10": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E11": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E12": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E13": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E14": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E15": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E16": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E17": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E18": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E19": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E20": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E21": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E22": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E23": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E24": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E25": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E26": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E27": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E28": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E29": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E30": {
+          "style": 5
+        },
+        "E31": {
+          "style": 5
+        },
+        "E32": {
+          "style": 5
+        },
+        "E33": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E34": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E35": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E36": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E37": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E38": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E39": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E40": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E41": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E42": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E43": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E44": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E45": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E46": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E47": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E48": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E49": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E50": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E51": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E52": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E53": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E54": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E55": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E56": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E57": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E58": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E59": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E60": {
+          "style": 5
+        },
+        "E61": {
+          "style": 5
+        },
+        "E62": {
+          "style": 5
+        },
+        "E63": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E64": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E65": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E66": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E67": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E68": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E69": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E70": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E71": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E72": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E73": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E74": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E75": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E76": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E77": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E78": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E79": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E80": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E81": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E82": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E83": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E84": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E85": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E86": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E87": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E88": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E89": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E90": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E91": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E92": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E93": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E94": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E95": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E96": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E97": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E98": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E99": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E100": {
+          "style": 5
+        },
+        "E101": {
+          "style": 5
+        },
+        "E102": {
+          "style": 5
+        },
+        "E103": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E104": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E105": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E106": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E107": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E108": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E109": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E110": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E111": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E112": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E113": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E114": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E115": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E116": {
+          "style": 5,
+          "content": "4000"
+        },
+        "E117": {
+          "style": 5,
+          "content": "4000"
+        },
+        "F1": {
+          "style": 1,
+          "content": "Phone & Internet"
+        },
+        "F2": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F3": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F4": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F5": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F6": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F7": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F8": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F9": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F10": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F11": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F12": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F13": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F14": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F15": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F16": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F17": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F18": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F19": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F20": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F21": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F22": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F23": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F24": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F25": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F26": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F27": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F28": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F29": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F30": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F31": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F32": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F33": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F34": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F35": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F36": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F37": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F38": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F39": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F40": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F41": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F42": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F43": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F44": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F45": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F46": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F47": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F48": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F49": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F50": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F51": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F52": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F53": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F54": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F55": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F56": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F57": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F58": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F59": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F60": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F61": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F62": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F63": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F64": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F65": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F66": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F67": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F68": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F69": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F70": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F71": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F72": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F73": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F74": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F75": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F76": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F77": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F78": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F79": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F80": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F81": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F82": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F83": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F84": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F85": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F86": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F87": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F88": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F89": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F90": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F91": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F92": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F93": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F94": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F95": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F96": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F97": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F98": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F99": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F100": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F101": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F102": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F103": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F104": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F105": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F106": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F107": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F108": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F109": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F110": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F111": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F112": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F113": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F114": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F115": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F116": {
+          "style": 5,
+          "content": "5000"
+        },
+        "F117": {
+          "style": 5,
+          "content": "5000"
+        },
+        "G1": {
+          "style": 1,
+          "content": "LTA"
+        },
+        "G2": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G3": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G4": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G5": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G6": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G7": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G8": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G9": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G10": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G11": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G12": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G13": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G14": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G15": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G16": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G17": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G18": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G19": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G20": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G21": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G22": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G23": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G24": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G25": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G26": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G27": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G28": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G29": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G30": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G31": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G32": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G33": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G34": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G35": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G36": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G37": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G38": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G39": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G40": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G41": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G42": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G43": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G44": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G45": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G46": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G47": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G48": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G49": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G50": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G51": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G52": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G53": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G54": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G55": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G56": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G57": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G58": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G59": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G60": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G61": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G62": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G63": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G64": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G65": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G66": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G67": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G68": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G69": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G70": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G71": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G72": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G73": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G74": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G75": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G76": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G77": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G78": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G79": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G80": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G81": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G82": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G83": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G84": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G85": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G86": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G87": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G88": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G89": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G90": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G91": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G92": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G93": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G94": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G95": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G96": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G97": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G98": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G99": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G100": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G101": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G102": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G103": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G104": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G105": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G106": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G107": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G108": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G109": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G110": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G111": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G112": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G113": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G114": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G115": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G116": {
+          "style": 5,
+          "content": "6000"
+        },
+        "G117": {
+          "style": 5,
+          "content": "6000"
+        },
+        "H1": {
+          "style": 1,
+          "content": "Medical Allowance"
+        },
+        "H2": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H3": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H4": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H5": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H6": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H7": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H8": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H9": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H10": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H11": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H12": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H13": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H14": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H15": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H16": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H17": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H18": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H19": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H20": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H21": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H22": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H23": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H24": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H25": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H26": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H27": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H28": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H29": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H30": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H31": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H32": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H33": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H34": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H35": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H36": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H37": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H38": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H39": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H40": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H41": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H42": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H43": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H44": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H45": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H46": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H47": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H48": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H49": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H50": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H51": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H52": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H53": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H54": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H55": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H56": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H57": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H58": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H59": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H60": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H61": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H62": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H63": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H64": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H65": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H66": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H67": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H68": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H69": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H70": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H71": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H72": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H73": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H74": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H75": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H76": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H77": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H78": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H79": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H80": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H81": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H82": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H83": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H84": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H85": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H86": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H87": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H88": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H89": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H90": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H91": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H92": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H93": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H94": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H95": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H96": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H97": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H98": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H99": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H100": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H101": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H102": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H103": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H104": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H105": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H106": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H107": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H108": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H109": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H110": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H111": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H112": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H113": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H114": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H115": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H116": {
+          "style": 5,
+          "content": "7000"
+        },
+        "H117": {
+          "style": 5,
+          "content": "7000"
+        },
+        "I1": {
+          "style": 1,
+          "content": "Transport Allowance"
+        },
+        "J1": {
+          "style": 1,
+          "content": "Meal Allowance"
+        },
+        "K1": {
+          "style": 1,
+          "content": "Performance Bonus"
+        },
+        "L1": {
+          "style": 1,
+          "content": "Gross Earnings"
+        },
+        "L2": {
+          "style": 2,
+          "content": "=B2+C2+D2+E2+F2+G2+H2+I2+J2+K2"
+        },
+        "L3": {
+          "style": 2,
+          "content": "=B3+C3+D3+E3+F3+G3+H3+I3+J3+K3"
+        },
+        "L4": {
+          "style": 2,
+          "content": "=B4+C4+D4+E4+F4+G4+H4+I4+J4+K4"
+        },
+        "L5": {
+          "style": 2,
+          "content": "=B5+C5+D5+E5+F5+G5+H5+I5+J5+K5"
+        },
+        "L6": {
+          "style": 2,
+          "content": "=B6+C6+D6+E6+F6+G6+H6+I6+J6+K6"
+        },
+        "L7": {
+          "style": 2,
+          "content": "=B7+C7+D7+E7+F7+G7+H7+I7+J7+K7"
+        },
+        "L8": {
+          "style": 2,
+          "content": "=B8+C8+D8+E8+F8+G8+H8+I8+J8+K8"
+        },
+        "L9": {
+          "style": 2,
+          "content": "=B9+C9+D9+E9+F9+G9+H9+I9+J9+K9"
+        },
+        "L10": {
+          "style": 2,
+          "content": "=B10+C10+D10+E10+F10+G10+H10+I10+J10+K10"
+        },
+        "L11": {
+          "style": 2,
+          "content": "=B11+C11+D11+E11+F11+G11+H11+I11+J11+K11"
+        }
+      },
+      "conditionalFormats": [],
+      "figures": [],
+      "filterTables": [],
+      "areGridLinesVisible": true,
+      "isVisible": true
+    },
+    {
+      "id": "1af8ac2e-b0d2-4b2d-9e10-e75a2e2bb976",
+      "name": "India Master Lookup",
+      "colNumber": 26,
+      "rowNumber": 100,
+      "rows": {},
+      "cols": {},
+      "merges": [],
+      "cells": {
+        "A1": {
+          "style": 2,
+          "content": "Taxable income",
+          "border": 1
+        },
+        "A2": {
+          "content": "0",
+          "border": 1
+        },
+        "A3": {
+          "content": "5000000",
+          "border": 1
+        },
+        "A4": {
+          "content": "10000000",
+          "border": 1
+        },
+        "A5": {
+          "content": "18000000",
+          "border": 1
+        },
+        "A6": {
+          "content": "32000000",
+          "border": 1
+        },
+        "A7": {
+          "content": "52000000",
+          "border": 1
+        },
+        "A8": {
+          "content": "80000000",
+          "border": 1
+        },
+        "B1": {
+          "style": 2,
+          "content": " PIT Rate ",
+          "border": 1
+        },
+        "B2": {
+          "format": 1,
+          "content": "0.05",
+          "border": 1
+        },
+        "B3": {
+          "format": 1,
+          "content": "0.1",
+          "border": 1
+        },
+        "B4": {
+          "format": 1,
+          "content": "0.15",
+          "border": 1
+        },
+        "B5": {
+          "format": 1,
+          "content": "0.2",
+          "border": 1
+        },
+        "B6": {
+          "format": 1,
+          "content": "0.25",
+          "border": 1
+        },
+        "B7": {
+          "format": 1,
+          "content": "0.3",
+          "border": 1
+        },
+        "B8": {
+          "format": 1,
+          "content": "0.35",
+          "border": 1
+        },
+        "C1": {
+          "style": 2,
+          "content": " PIT Deduct ",
+          "border": 1
+        },
+        "C2": {
+          "content": "0",
+          "border": 1
+        },
+        "C3": {
+          "content": "250000",
+          "border": 1
+        },
+        "C4": {
+          "content": "750000",
+          "border": 1
+        },
+        "C5": {
+          "content": "1650000",
+          "border": 1
+        },
+        "C6": {
+          "content": "3250000",
+          "border": 1
+        },
+        "C7": {
+          "content": "5850000",
+          "border": 1
+        },
+        "C8": {
+          "content": "9850000",
+          "border": 1
+        },
+        "A9": {
+          "border": 2
+        },
+        "B9": {
+          "border": 2
+        },
+        "C9": {
+          "border": 2
+        },
+        "D1": {
+          "border": 3
+        },
+        "D2": {
+          "border": 3
+        },
+        "D3": {
+          "border": 3
+        },
+        "D4": {
+          "border": 3
+        },
+        "D5": {
+          "border": 3
+        },
+        "D6": {
+          "border": 3
+        },
+        "D7": {
+          "border": 3
+        },
+        "D8": {
+          "border": 3
+        }
+      },
+      "conditionalFormats": [],
+      "figures": [],
+      "filterTables": [],
+      "areGridLinesVisible": true,
+      "isVisible": true
+    },
+    {
+      "id": "3a4446dd-81d9-4eab-9a66-6a2a41d0ca5a",
+      "name": "TEMPLATE India Employee Details",
+      "colNumber": 20,
+      "rowNumber": 201,
+      "rows": {},
+      "cols": {
+        "2": {
+          "size": 85
+        },
+        "3": {
+          "size": 254
+        },
+        "5": {
+          "size": 198
+        },
+        "13": {
+          "size": 129
+        }
+      },
+      "merges": [],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"employee_id\")"
+        },
+        "B1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"basic_salary\")"
+        },
+        "C1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"hra\")"
+        },
+        "D1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"special_allowance\")"
+        },
+        "E1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"books_periodicals\")"
+        },
+        "F1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"telephone_internet\")"
+        },
+        "G1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"leave_travel_allowance\")"
+        },
+        "H1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"medical_allowance\")"
+        },
+        "I1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"transport_allowance\")"
+        },
+        "J1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"meal_allowance\")"
+        },
+        "K1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"performance_bonus\")"
+        },
+        "L1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"gross_salary\")"
+        },
+        "M1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"pf_employee\")"
+        },
+        "N1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"esi_employee\")"
+        },
+        "O1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"professional_tax\")"
+        },
+        "P1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"income_tax\")"
+        },
+        "Q1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"total_deductions\")"
+        },
+        "R1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"net_pay\")"
+        },
+        "S1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"pf_employer\")"
+        },
+        "T1": {
+          "style": 1,
+          "content": "=ODOO.LIST.HEADER(1,\"esi_employer\")"
+        },
+        "A2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"employee_id\")"
+        },
+        "B2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"basic_salary\")"
+        },
+        "C2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"hra\")"
+        },
+        "D2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"special_allowance\")"
+        },
+        "E2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"books_periodicals\")"
+        },
+        "F2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"telephone_internet\")"
+        },
+        "G2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"leave_travel_allowance\")"
+        },
+        "H2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"medical_allowance\")"
+        },
+        "I2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"transport_allowance\")"
+        },
+        "J2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"meal_allowance\")"
+        },
+        "K2": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,1,\"performance_bonus\")"
+        },
+        "L2": {
+          "style": 3,
+          "content": "=B2+C2+D2+E2+F2+G2+H2+I2+J2+K2"
+        },
+        "M2": {
+          "style": 3,
+          "content": "=MIN(B2*0.12,1800)"
+        },
+        "N2": {
+          "style": 3,
+          "content": "=IF(L2<=25000,L2*0.0075,0)"
+        },
+        "O2": {
+          "style": 3,
+          "content": "=IF(L2<=15000,0,IF(L2<=20000,150,200))"
+        },
+        "P2": {
+          "style": 3,
+          "content": "=IF(L2>50000,(L2-50000)*0.1,0)"
+        },
+        "Q2": {
+          "style": 4,
+          "content": "=M2+N2+O2+P2"
+        },
+        "R2": {
+          "style": 4,
+          "content": "=L2-Q2"
+        },
+        "S2": {
+          "style": 3,
+          "content": "=B2*0.12"
+        },
+        "T2": {
+          "style": 3,
+          "content": "=IF(L2<=25000,L2*0.0325,0)"
+        },
+        "A3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"employee_id\")"
+        },
+        "B3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"basic_salary\")"
+        },
+        "C3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"hra\")"
+        },
+        "D3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"special_allowance\")"
+        },
+        "E3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"books_periodicals\")"
+        },
+        "F3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"telephone_internet\")"
+        },
+        "G3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"leave_travel_allowance\")"
+        },
+        "H3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"medical_allowance\")"
+        },
+        "I3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"transport_allowance\")"
+        },
+        "J3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"meal_allowance\")"
+        },
+        "K3": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,2,\"performance_bonus\")"
+        },
+        "L3": {
+          "style": 3,
+          "content": "=B3+C3+D3+E3+F3+G3+H3+I3+J3+K3"
+        },
+        "M3": {
+          "style": 3,
+          "content": "=MIN(B3*0.12,1800)"
+        },
+        "N3": {
+          "style": 3,
+          "content": "=IF(L3<=25000,L3*0.0075,0)"
+        },
+        "O3": {
+          "style": 3,
+          "content": "=IF(L3<=15000,0,IF(L3<=20000,150,200))"
+        },
+        "P3": {
+          "style": 3,
+          "content": "=IF(L3>50000,(L3-50000)*0.1,0)"
+        },
+        "Q3": {
+          "style": 4,
+          "content": "=M3+N3+O3+P3"
+        },
+        "R3": {
+          "style": 4,
+          "content": "=L3-Q3"
+        },
+        "S3": {
+          "style": 3,
+          "content": "=B3*0.12"
+        },
+        "T3": {
+          "style": 3,
+          "content": "=IF(L3<=25000,L3*0.0325,0)"
+        },
+        "A4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"employee_id\")"
+        },
+        "B4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"basic_salary\")"
+        },
+        "C4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"hra\")"
+        },
+        "D4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"special_allowance\")"
+        },
+        "E4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"books_periodicals\")"
+        },
+        "F4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"telephone_internet\")"
+        },
+        "G4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"leave_travel_allowance\")"
+        },
+        "H4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"medical_allowance\")"
+        },
+        "I4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"transport_allowance\")"
+        },
+        "J4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"meal_allowance\")"
+        },
+        "K4": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,3,\"performance_bonus\")"
+        },
+        "L4": {
+          "style": 3,
+          "content": "=B4+C4+D4+E4+F4+G4+H4+I4+J4+K4"
+        },
+        "M4": {
+          "style": 3,
+          "content": "=MIN(B4*0.12,1800)"
+        },
+        "N4": {
+          "style": 3,
+          "content": "=IF(L4<=25000,L4*0.0075,0)"
+        },
+        "O4": {
+          "style": 3,
+          "content": "=IF(L4<=15000,0,IF(L4<=20000,150,200))"
+        },
+        "P4": {
+          "style": 3,
+          "content": "=IF(L4>50000,(L4-50000)*0.1,0)"
+        },
+        "Q4": {
+          "style": 4,
+          "content": "=M4+N4+O4+P4"
+        },
+        "R4": {
+          "style": 4,
+          "content": "=L4-Q4"
+        },
+        "S4": {
+          "style": 3,
+          "content": "=B4*0.12"
+        },
+        "T4": {
+          "style": 3,
+          "content": "=IF(L4<=25000,L4*0.0325,0)"
+        },
+        "A5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"employee_id\")"
+        },
+        "B5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"basic_salary\")"
+        },
+        "C5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"hra\")"
+        },
+        "D5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"special_allowance\")"
+        },
+        "E5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"books_periodicals\")"
+        },
+        "F5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"telephone_internet\")"
+        },
+        "G5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"leave_travel_allowance\")"
+        },
+        "H5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"medical_allowance\")"
+        },
+        "I5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"transport_allowance\")"
+        },
+        "J5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"meal_allowance\")"
+        },
+        "K5": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,4,\"performance_bonus\")"
+        },
+        "L5": {
+          "style": 3,
+          "content": "=B5+C5+D5+E5+F5+G5+H5+I5+J5+K5"
+        },
+        "M5": {
+          "style": 3,
+          "content": "=MIN(B5*0.12,1800)"
+        },
+        "N5": {
+          "style": 3,
+          "content": "=IF(L5<=25000,L5*0.0075,0)"
+        },
+        "O5": {
+          "style": 3,
+          "content": "=IF(L5<=15000,0,IF(L5<=20000,150,200))"
+        },
+        "P5": {
+          "style": 3,
+          "content": "=IF(L5>50000,(L5-50000)*0.1,0)"
+        },
+        "Q5": {
+          "style": 4,
+          "content": "=M5+N5+O5+P5"
+        },
+        "R5": {
+          "style": 4,
+          "content": "=L5-Q5"
+        },
+        "S5": {
+          "style": 3,
+          "content": "=B5*0.12"
+        },
+        "T5": {
+          "style": 3,
+          "content": "=IF(L5<=25000,L5*0.0325,0)"
+        },
+        "A6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"employee_id\")"
+        },
+        "B6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"basic_salary\")"
+        },
+        "C6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"hra\")"
+        },
+        "D6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"special_allowance\")"
+        },
+        "E6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"books_periodicals\")"
+        },
+        "F6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"telephone_internet\")"
+        },
+        "G6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"leave_travel_allowance\")"
+        },
+        "H6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"medical_allowance\")"
+        },
+        "I6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"transport_allowance\")"
+        },
+        "J6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"meal_allowance\")"
+        },
+        "K6": {
+          "style": 2,
+          "content": "=ODOO.LIST(1,5,\"performance_bonus\")"
+        },
+        "L6": {
+          "style": 3,
+          "content": "=B6+C6+D6+E6+F6+G6+H6+I6+J6+K6"
+        },
+        "M6": {
+          "style": 3,
+          "content": "=MIN(B6*0.12,1800)"
+        },
+        "N6": {
+          "style": 3,
+          "content": "=IF(L6<=25000,L6*0.0075,0)"
+        },
+        "O6": {
+          "style": 3,
+          "content": "=IF(L6<=15000,0,IF(L6<=20000,150,200))"
+        },
+        "P6": {
+          "style": 3,
+          "content": "=IF(L6>50000,(L6-50000)*0.1,0)"
+        },
+        "Q6": {
+          "style": 4,
+          "content": "=M6+N6+O6+P6"
+        },
+        "R6": {
+          "style": 4,
+          "content": "=L6-Q6"
+        },
+        "S6": {
+          "style": 3,
+          "content": "=B6*0.12"
+        },
+        "T6": {
+          "style": 3,
+          "content": "=IF(L6<=25000,L6*0.0325,0)"
+        }
+      },
+      "conditionalFormats": [],
+      "figures": [],
+      "filterTables": [],
+      "areGridLinesVisible": true,
+      "isVisible": true
+    },
+    {
+      "id": "fe47c4b1-4463-48f6-8656-a3e905d8d00a",
+      "name": "TEMPLATE India Master",
+      "colNumber": 20,
+      "rowNumber": 201,
+      "rows": {},
+      "cols": {
+        "1": {
+          "size": 218
+        },
+        "13": {
+          "size": 173
+        }
+      },
+      "merges": [],
+      "cells": {
+        "A1": {
+          "style": 1,
+          "content": "Employee ID"
+        },
+        "B1": {
+          "style": 1,
+          "content": "Full Name"
+        },
+        "C1": {
+          "style": 1,
+          "content": "Department"
+        },
+        "D1": {
+          "style": 1,
+          "content": "Designation"
+        },
+        "E1": {
+          "style": 1,
+          "content": "Date of Joining"
+        },
+        "F1": {
+          "style": 1,
+          "content": "PAN Number"
+        },
+        "G1": {
+          "style": 1,
+          "content": "Aadhaar Number"
+        },
+        "H1": {
+          "style": 1,
+          "content": "PF Number"
+        },
+        "I1": {
+          "style": 1,
+          "content": "ESI Number"
+        },
+        "J1": {
+          "style": 1,
+          "content": "Bank Account"
+        },
+        "K1": {
+          "style": 1,
+          "content": "IFSC Code"
+        },
+        "L1": {
+          "style": 1,
+          "content": "Location"
+        },
+        "M1": {
+          "style": 1,
+          "content": "State"
+        },
+        "N1": {
+          "style": 1,
+          "content": "Professional Tax State"
+        },
+        "O1": {
+          "style": 1,
+          "content": "Employee Type"
+        },
+        "P1": {
+          "style": 1,
+          "content": "Contract Type"
+        },
+        "Q1": {
+          "style": 1,
+          "content": "Basic Salary"
+        },
+        "R1": {
+          "style": 1,
+          "content": "HRA Rate"
+        },
+        "S1": {
+          "style": 1,
+          "content": "PF Applicable"
+        },
+        "T1": {
+          "style": 1,
+          "content": "ESI Applicable"
+        },
+        "A2": {
+          "style": 2,
+          "content": "IND001"
+        },
+        "B2": {
+          "style": 2,
+          "content": "Rajesh Kumar"
+        },
+        "C2": {
+          "style": 2,
+          "content": "IT"
+        },
+        "D2": {
+          "style": 2,
+          "content": "Software Engineer"
+        },
+        "E2": {
+          "style": 2,
+          "content": "01-Apr-2020"
+        },
+        "F2": {
+          "style": 2,
+          "content": "ABCDE1234F"
+        },
+        "G2": {
+          "style": 2,
+          "content": "1234-5678-9012"
+        },
+        "H2": {
+          "style": 2,
+          "content": "DL/12345/67890"
+        },
+        "I2": {
+          "style": 2,
+          "content": "1234567890"
+        },
+        "J2": {
+          "style": 2,
+          "content": "12345678901234"
+        },
+        "K2": {
+          "style": 2,
+          "content": "SBIN0001234"
+        },
+        "L2": {
+          "style": 2,
+          "content": "Delhi"
+        },
+        "M2": {
+          "style": 2,
+          "content": "Delhi"
+        },
+        "N2": {
+          "style": 2,
+          "content": "Delhi"
+        },
+        "O2": {
+          "style": 2,
+          "content": "Permanent"
+        },
+        "P2": {
+          "style": 2,
+          "content": "Full Time"
+        },
+        "Q2": {
+          "style": 2,
+          "content": "50000"
+        },
+        "R2": {
+          "style": 2,
+          "content": "0.5"
+        },
+        "S2": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "T2": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "A3": {
+          "style": 2,
+          "content": "IND002"
+        },
+        "B3": {
+          "style": 2,
+          "content": "Priya Sharma"
+        },
+        "C3": {
+          "style": 2,
+          "content": "HR"
+        },
+        "D3": {
+          "style": 2,
+          "content": "HR Manager"
+        },
+        "E3": {
+          "style": 2,
+          "content": "15-Mar-2019"
+        },
+        "F3": {
+          "style": 2,
+          "content": "FGHIJ5678K"
+        },
+        "G3": {
+          "style": 2,
+          "content": "2345-6789-0123"
+        },
+        "H3": {
+          "style": 2,
+          "content": "MH/23456/78901"
+        },
+        "I3": {
+          "style": 2,
+          "content": "2345678901"
+        },
+        "J3": {
+          "style": 2,
+          "content": "23456789012345"
+        },
+        "K3": {
+          "style": 2,
+          "content": "HDFC0002345"
+        },
+        "L3": {
+          "style": 2,
+          "content": "Mumbai"
+        },
+        "M3": {
+          "style": 2,
+          "content": "Maharashtra"
+        },
+        "N3": {
+          "style": 2,
+          "content": "Maharashtra"
+        },
+        "O3": {
+          "style": 2,
+          "content": "Permanent"
+        },
+        "P3": {
+          "style": 2,
+          "content": "Full Time"
+        },
+        "Q3": {
+          "style": 2,
+          "content": "45000"
+        },
+        "R3": {
+          "style": 2,
+          "content": "0.5"
+        },
+        "S3": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "T3": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "A4": {
+          "style": 2,
+          "content": "IND003"
+        },
+        "B4": {
+          "style": 2,
+          "content": "Amit Singh"
+        },
+        "C4": {
+          "style": 2,
+          "content": "Finance"
+        },
+        "D4": {
+          "style": 2,
+          "content": "Accountant"
+        },
+        "E4": {
+          "style": 2,
+          "content": "10-Jan-2021"
+        },
+        "F4": {
+          "style": 2,
+          "content": "KLMNO9012P"
+        },
+        "G4": {
+          "style": 2,
+          "content": "3456-7890-1234"
+        },
+        "H4": {
+          "style": 2,
+          "content": "KA/34567/89012"
+        },
+        "I4": {
+          "style": 2,
+          "content": "3456789012"
+        },
+        "J4": {
+          "style": 2,
+          "content": "34567890123456"
+        },
+        "K4": {
+          "style": 2,
+          "content": "ICIC0003456"
+        },
+        "L4": {
+          "style": 2,
+          "content": "Bangalore"
+        },
+        "M4": {
+          "style": 2,
+          "content": "Karnataka"
+        },
+        "N4": {
+          "style": 2,
+          "content": "Karnataka"
+        },
+        "O4": {
+          "style": 2,
+          "content": "Permanent"
+        },
+        "P4": {
+          "style": 2,
+          "content": "Full Time"
+        },
+        "Q4": {
+          "style": 2,
+          "content": "60000"
+        },
+        "R4": {
+          "style": 2,
+          "content": "0.5"
+        },
+        "S4": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "T4": {
+          "style": 2,
+          "content": "No"
+        },
+        "A5": {
+          "style": 2,
+          "content": "IND004"
+        },
+        "B5": {
+          "style": 2,
+          "content": "Sunita Gupta"
+        },
+        "C5": {
+          "style": 2,
+          "content": "Sales"
+        },
+        "D5": {
+          "style": 2,
+          "content": "Sales Executive"
+        },
+        "E5": {
+          "style": 2,
+          "content": "05-May-2022"
+        },
+        "F5": {
+          "style": 2,
+          "content": "PQRST2345U"
+        },
+        "G5": {
+          "style": 2,
+          "content": "4567-8901-2345"
+        },
+        "H5": {
+          "style": 2,
+          "content": "TN/45678/90123"
+        },
+        "I5": {
+          "style": 2,
+          "content": "4567890123"
+        },
+        "J5": {
+          "style": 2,
+          "content": "45678901234567"
+        },
+        "K5": {
+          "style": 2,
+          "content": "AXIS0004567"
+        },
+        "L5": {
+          "style": 2,
+          "content": "Chennai"
+        },
+        "M5": {
+          "style": 2,
+          "content": "Tamil Nadu"
+        },
+        "N5": {
+          "style": 2,
+          "content": "Tamil Nadu"
+        },
+        "O5": {
+          "style": 2,
+          "content": "Permanent"
+        },
+        "P5": {
+          "style": 2,
+          "content": "Full Time"
+        },
+        "Q5": {
+          "style": 2,
+          "content": "40000"
+        },
+        "R5": {
+          "style": 2,
+          "content": "0.5"
+        },
+        "S5": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "T5": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "A6": {
+          "style": 2,
+          "content": "IND005"
+        },
+        "B6": {
+          "style": 2,
+          "content": "Vikram Patel"
+        },
+        "C6": {
+          "style": 2,
+          "content": "IT"
+        },
+        "D6": {
+          "style": 2,
+          "content": "Team Lead"
+        },
+        "E6": {
+          "style": 2,
+          "content": "20-Feb-2020"
+        },
+        "F6": {
+          "style": 2,
+          "content": "UVWXY6789Z"
+        },
+        "G6": {
+          "style": 2,
+          "content": "5678-9012-3456"
+        },
+        "H6": {
+          "style": 2,
+          "content": "GJ/56789/01234"
+        },
+        "I6": {
+          "style": 2,
+          "content": "5678901234"
+        },
+        "J6": {
+          "style": 2,
+          "content": "56789012345678"
+        },
+        "K6": {
+          "style": 2,
+          "content": "SBI0005678"
+        },
+        "L6": {
+          "style": 2,
+          "content": "Ahmedabad"
+        },
+        "M6": {
+          "style": 2,
+          "content": "Gujarat"
+        },
+        "N6": {
+          "style": 2,
+          "content": "Gujarat"
+        },
+        "O6": {
+          "style": 2,
+          "content": "Permanent"
+        },
+        "P6": {
+          "style": 2,
+          "content": "Full Time"
+        },
+        "Q6": {
+          "style": 2,
+          "content": "55000"
+        },
+        "R6": {
+          "style": 2,
+          "content": "0.5"
+        },
+        "S6": {
+          "style": 2,
+          "content": "Yes"
+        },
+        "T6": {
+          "style": 2,
+          "content": "No"
+        }
+      },
+      "conditionalFormats": [],
+      "figures": [],
+      "filterTables": [],
+      "areGridLinesVisible": true,
+      "isVisible": true
+    }
+  ],
+  "entities": {},
+  "styles": {
+    "1": {
+      "fillColor": "#F5F5F5",
+      "textColor": "#2E7D32",
+      "fontSize": 12,
+      "bold": true,
+      "border": "1px solid #CCCCCC"
+    },
+    "2": {
+      "fillColor": "#FFFFFF",
+      "textColor": "#333333",
+      "fontSize": 11,
+      "border": "1px solid #E0E0E0"
+    },
+    "3": {
+      "fillColor": "#F8F9FA",
+      "textColor": "#1976D2",
+      "fontSize": 11,
+      "bold": false
+    },
+    "4": {
+      "fillColor": "#E8F5E8",
+      "textColor": "#2E7D32",
+      "fontSize": 11,
+      "bold": true
+    },
+    "5": {
+      "fillColor": "#FAFAFA",
+      "textColor": "#333333",
+      "fontSize": 11
+    },
+    "6": {
+      "bold": true,
+      "fillColor": "#FF6B35"
+    },
+    "7": {
+      "bold": true,
+      "fillColor": "#FF6B35",
+      "textColor": "#FF0000"
+    },
+    "8": {
+      "bold": true,
+      "fillColor": "#FF6B35",
+      "textColor": "#FF0000"
+    },
+    "9": {
+      "bold": true,
+      "fillColor": "#FF6B35",
+      "textColor": "#000000"
+    },
+    "10": {
+      "bold": true,
+      "fillColor": "#FF6B35",
+      "textColor": "#FF0000"
+    },
+    "11": {
+      "fillColor": "#FF6B35",
+      "textColor": "#FF0000"
+    }
+  },
+  "formats": {
+    "1": "0%"
+  },
+  "borders": {
+    "1": {
+      "top": [
+        "thin",
+        "#000"
+      ],
+      "bottom": [
+        "thin",
+        "#000"
+      ],
+      "left": [
+        "thin",
+        "#000"
+      ],
+      "right": [
+        "thin",
+        "#000"
+      ]
+    },
+    "2": {
+      "top": [
+        "thin",
+        "#000"
+      ]
+    },
+    "3": {
+      "left": [
+        "thin",
+        "#000"
+      ]
+    }
+  },
+  "revisionId": "6369f78e-ea52-4343-9613-3cad0cd0b3a1",
+  "uniqueFigureIds": true,
+  "odooVersion": 5,
+  "globalFilters": [],
+  "pivots": {},
+  "pivotNextId": 1,
+  "lists": {
+    "1": {
+      "columns": [
+        "employee_id",
+        "full_name_vn",
+        "date_of_joining",
+        "employee_status",
+        "last_workday",
+        "location_name",
+        "basic_salary",
+        "gas_allowance",
+        "phone_allowance",
+        "meal_allowance",
+        "resp_allowance",
+        "park_allowance",
+        "taxi_allowance",
+        "standard_whr",
+        "actual_working_hours_incl_paid_leave",
+        "actual_working_hours_excl_paid_leave",
+        "overtime_normal_150_hour",
+        "overtime_weekend_200_hour",
+        "overtime_holiday_300_hour",
+        "nightshift_hour",
+        "overtime_nightshift_210_hour",
+        "overtime_nightshift_270_hour",
+        "overtime_nightshift_390_hour",
+        "other_notcounted",
+        "costcenter"
+      ],
+      "domain": [],
+      "model": "zoho.staging.data",
+      "context": {},
+      "orderBy": [],
+      "id": "1",
+      "name": "India Employee Staging Data",
+      "fieldMatching": {}
+    }
+  },
+  "listNextId": 2,
+  "chartOdooMenusReferences": {}
+}

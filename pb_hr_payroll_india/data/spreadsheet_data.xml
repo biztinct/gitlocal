@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- India Payroll Spreadsheet Template -->
+        <record id="payrollstaging_india" model="spreadsheet.spreadsheet">
+            <field name="name">India Payroll Staging Data</field>
+            <field name="data" type="base64" file="pb_hr_payroll_india/data/india_payroll_data.json"/>
+        </record>
+        
+    </data>
+</odoo>
+
+<!-- 
+INDIA PAYROLL FIELDS:
+
+🇮🇳 INDIA-SPECIFIC FIELDS:
+- basic_salary (Basic Salary)
+- hra (House Rent Allowance)
+- special_allowance (Special Allowance)
+- pf_employee (Provident Fund - Employee)
+- esi_employee (ESI - Employee)  
+- professional_tax (Professional Tax)
+- income_tax (Income Tax/TDS)
+- pf_employer (Provident Fund - Employer)
+- esi_employer (ESI - Employer)
+- gratuity (Gratuity)
+- pan_number (PAN Number)
+- aadhaar_number (Aadhaar Number)
+- pf_number (PF Number)
+- esi_number (ESI Number)
+
+USAGE EXAMPLES:
+=ODOO.LIST.HEADER(1,"basic_salary")
+=ODOO.LIST.HEADER(1,"hra")
+=ODOO.LIST.HEADER(1,"pf_employee")
+=ODOO.LIST.HEADER(1,"income_tax")
+
+=ODOO.LIST(1,1,"basic_salary")
+=ODOO.LIST(1,2,"hra")
+
+Total fields available: India-specific payroll components
+-->
