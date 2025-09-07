@@ -6,40 +6,37 @@ from odoo import api, fields, models, _
 class ZohoStagingData(models.Model):
     _inherit = 'zoho.staging.data'
     
-    # India Specific Salary Components
-    basic_salary = fields.Float(string="Basic Salary")
-    hra = fields.Float(string="House Rent Allowance (HRA)")
-    special_allowance = fields.Float(string="Special Allowance")
-    books_periodicals = fields.Float(string="Books and Periodicals")
-    telephone_internet = fields.Float(string="Telephone and Internet")
-    leave_travel_allowance = fields.Float(string="Leave Travel Allowance (LTA)")
+    # ===== INDIA-SPECIFIC STAGING FIELDS =====
+    # Note: Reusing existing base_salary instead of basic_salary
+    # Note: Using existing meal_allowance, phone_allowance where applicable
     
-    # India Deductions
-    pf = fields.Float(string="Provident Fund (PF)")
-    prof_tax = fields.Float(string="Professional Tax")
-    income_tax = fields.Float(string="Income Tax (TDS)")
+    # India Core Salary Components
+    hra = fields.Float(string="House Rent Allowance (HRA)")  # India-specific: HRA component
+    special_allowance = fields.Float(string="Special Allowance")  # India-specific: Special allowance
     
-    # India Employee Details
-    uan_number = fields.Char(string="UAN Number")
-    esi_number = fields.Char(string="ESI Number")
-    ifsc_code = fields.Char(string="IFSC Code")
+    # India Additional Allowances (reuse existing where possible)
+    # Note: books_allowance reuses existing bonus fields structure
+    # Note: lta uses existing travel allowance concept
+    books_allowance = fields.Float(string="Books & Periodicals")  # India-specific: Educational allowance
+    lta = fields.Float(string="Leave Travel Allowance")  # India-specific: LTA benefit
+    # Note: medical_allowance reuses meal_allowance concept but with different purpose
     
-    # Additional India fields to match spreadsheet
-    other_allowances = fields.Float(string='Other Allowances')
-    pf_employee = fields.Float(string='Provident Fund (Employee)')
-    esi_employee = fields.Float(string='ESI (Employee)')
-    other_deductions = fields.Float(string='Other Deductions')
-    pf_employer = fields.Float(string='Provident Fund (Employer)')
-    esi_employer = fields.Float(string='ESI (Employer)')
-    gratuity = fields.Float(string='Gratuity')
-    pan_number = fields.Char(string='PAN Number')
-    aadhaar_number = fields.Char(string='Aadhaar Number')
-    pf_number = fields.Char(string='PF Number')
+    # India Statutory Deductions
+    pf_employee = fields.Float(string="PF Employee (12%)")  # India-specific: Employee PF contribution  
+    esi_employee = fields.Float(string="ESI Employee (0.75%)")  # India-specific: Employee ESI contribution
+    professional_tax = fields.Float(string="Professional Tax")  # India-specific: State professional tax
+    income_tax = fields.Float(string="Income Tax/TDS")  # India-specific: Income tax deduction
     
-    # Calculated totals
-    gross_salary = fields.Float(string='Gross Salary')
-    total_deductions = fields.Float(string='Total Deductions')
-    net_pay = fields.Float(string='Net Pay')
+    # India Employer Contributions  
+    pf_employer = fields.Float(string="PF Employer (12%)")  # India-specific: Employer PF contribution
+    esi_employer = fields.Float(string="ESI Employer (3.25%)")  # India-specific: Employer ESI contribution
+    
+    # India Compliance Fields
+    gratuity_provision = fields.Float(string="Gratuity Provision")  # India-specific: Gratuity calculation
+    
+    # India Employee ID Numbers (Note: uan_number and aadhaar_number already exist in base model)
+    esi_number = fields.Char(string="ESI Number")  # India-specific: ESI registration number
+    pf_number = fields.Char(string="PF Number")  # India-specific: PF account number
     
     def get_india_salary_components(self):
         """Return dictionary of India salary components for this employee"""
