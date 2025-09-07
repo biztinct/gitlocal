@@ -21,14 +21,14 @@ class PayrollDashboardIndia(models.Model):
     def action_india_edit_spreadsheet(self):
         """Edit India payroll spreadsheet"""
         try:
-            spreadsheet = self.env.ref('__custom__.payrollstaging_india', raise_if_not_found=False)
+            spreadsheet = self.env.ref('pb_hr_payroll_india.payrollstaging_india', raise_if_not_found=False)
             if not spreadsheet:
                 # Fall back to the general spreadsheet if India-specific one doesn't exist
                 spreadsheet = self.env.ref('__custom__.payrollstaging', raise_if_not_found=False)
                 if not spreadsheet:
                     raise UserError(_(
                         'India payroll spreadsheet not found. '
-                        'Please create it with external ID __custom__.payrollstaging_india or __custom__.payrollstaging'
+                        'Please create it with external ID pb_hr_payroll_india.payrollstaging_india'
                     ))
             
             return spreadsheet.with_context(payroll_country='IN').open_spreadsheet()
@@ -38,14 +38,14 @@ class PayrollDashboardIndia(models.Model):
     def action_india_import_spreadsheet(self):
         """Import India spreadsheet data"""
         try:
-            spreadsheet = self.env.ref('__custom__.payrollstaging_india', raise_if_not_found=False)
+            spreadsheet = self.env.ref('pb_hr_payroll_india.payrollstaging_india', raise_if_not_found=False)
             if not spreadsheet:
                 # Fall back to the general spreadsheet if India-specific one doesn't exist
                 spreadsheet = self.env.ref('__custom__.payrollstaging', raise_if_not_found=False)
                 if not spreadsheet:
                     raise UserError(_(
                         'India payroll spreadsheet not found. '
-                        'Please create it with external ID __custom__.payrollstaging_india or __custom__.payrollstaging'
+                        'Please create it with external ID pb_hr_payroll_india.payrollstaging_india'
                     ))
             
             # Ensure all employees have India contracts before import

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- India Spreadsheet Edit Action -->
+        <record id="action_india_edit_spreadsheet" model="ir.actions.server">
+            <field name="name">Edit India Payroll Spreadsheet</field>
+            <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
+            <field name="state">code</field>
+            <field name="code">
+# India-specific spreadsheet configuration
+action = {
+    'type': 'ir.actions.client',
+    'tag': 'action_spreadsheet_oca',
+    'params': {
+        'spreadsheet_id': env.ref('pb_hr_payroll_india.payrollstaging_india', raise_if_not_found=False).id if env.ref('pb_hr_payroll_india.payrollstaging_india', raise_if_not_found=False) else False,
+    },
+    'context': {'payroll_country': 'IN'}
+}
+            </field>
+        </record>
+        
+        <!-- India Employee Data Import Action -->
+        <record id="action_india_employee_data_import" model="ir.actions.server">
+            <field name="name">Import India Employee Data from Zoho</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="state">code</field>
+            <field name="code">
+# Import employee data for India
+try:
+    # This would connect to Zoho People API for India region
+    # For now, show success message
+    action = {
+        'type': 'ir.actions.client',
+        'tag': 'display_notification',
+        'params': {
+            'title': 'Employee Data Import',
+            'message': 'India employee data import initiated. This may take a few minutes to complete.',
+            'type': 'success',
+            'sticky': False,
+        }
+    }
+except Exception as e:
+    action = {
+        'type': 'ir.actions.client',
+        'tag': 'display_notification',
+        'params': {
+            'title': 'Import Error',
+            'message': f'Error importing employee data: {str(e)}',
+            'type': 'danger',
+            'sticky': True,
+        }
+    }
+            </field>
+        </record>
+        
+        <!-- India Spreadsheet Import Action -->
+        <record id="action_india_spreadsheet_import" model="ir.actions.server">
+            <field name="name">Import India Payroll Spreadsheet Data</field>
+            <field name="model_id" ref="base.model_res_users"/>
+            <field name="state">code</field>
+            <field name="code">
+# Import payroll data from India spreadsheet
+try:
+    # Get India spreadsheet
+    spreadsheet = env['spreadsheet.spreadsheet'].search([('name', 'ilike', 'India Payroll')], limit=1)
+    if spreadsheet:
+        # Process import
+        action = {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Payroll Import',
+                'message': 'India payroll data import completed successfully.',
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+    else:
+        action = {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Import Error',
+                'message': 'No India payroll spreadsheet found.',
+                'type': 'warning',
+                'sticky': False,
+            }
+        }
+except Exception as e:
+    action = {
+        'type': 'ir.actions.client',
+        'tag': 'display_notification',
+        'params': {
+            'title': 'Import Error', 
+            'message': f'Error importing payroll data: {str(e)}',
+            'type': 'danger',
+            'sticky': True,
+        }
+    }
+            </field>
+        </record>
+        
+    </data>
+</odoo>

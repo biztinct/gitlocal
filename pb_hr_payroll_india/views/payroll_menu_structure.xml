@@ -38,23 +38,7 @@
               sequence="30"
               groups="pb_hr_payroll_base.group_payroll_india"/>
     
-    <!-- India spreadsheet actions -->
-    <record id="action_india_edit_spreadsheet" model="ir.actions.server">
-        <field name="name">Edit India Payroll Spreadsheet</field>
-        <field name="model_id" ref="spreadsheet_oca.model_spreadsheet_spreadsheet"/>
-        <field name="state">code</field>
-        <field name="code">
-# India-specific spreadsheet configuration
-action = {
-    'type': 'ir.actions.client',
-    'tag': 'action_spreadsheet_oca',
-    'params': {
-        'spreadsheet_id': env.ref('__custom__.payrollstaging_india', raise_if_not_found=False).id if env.ref('__custom__.payrollstaging_india', raise_if_not_found=False) else False,
-    },
-    'context': {'payroll_country': 'IN'}
-}
-        </field>
-    </record>
+    <!-- India spreadsheet actions - removed duplicate, now defined in server actions file -->
     
     <record id="action_india_import_spreadsheet" model="ir.actions.server">
         <field name="name">Import India Spreadsheet</field>

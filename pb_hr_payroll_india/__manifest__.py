@@ -19,6 +19,7 @@
     'depends': [
         'pb_hr_payroll_base',  # Only depend on base module
         'hr_holidays',
+        'payroll_analytics_approval',  # Add analytics dependency like other countries
     ],
     'data': [
         # Security
@@ -30,6 +31,10 @@
         #'data/hr_salary_rule_data.xml',
         'data/hr_contract_advantage_template_data.xml',
         'data/payroll_dashboard_data.xml',
+        'data/spreadsheet_data.xml',  # NEW: India spreadsheet data
+        
+        # Server Actions (load first - no dependencies)
+        'views/india_server_actions.xml',  # NEW: Server actions for India
         
         # Wizards (load before views that reference wizard actions)
         'wizards/gratuity_payment_wizard_views.xml',
@@ -38,6 +43,7 @@
         'views/hr_payroll_structure_views.xml',
         'views/payroll_dashboard_india.xml',
         'views/zoho_staging_data_views.xml',
+        'views/payroll_analytics_integration.xml',  # NEW: Analytics integration
         
         # Menu Structure (load after views are defined)
         'views/payroll_menu_structure.xml',
