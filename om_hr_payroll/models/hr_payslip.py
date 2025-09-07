@@ -368,6 +368,23 @@ class HrPayslip(models.Model):
                 'NET_PAY': 'calculated_net_pay',
                 'TOTAL_DEDUCTIONS': 'calculated_total_deductions',
                 'OVERTIME_AMOUNT': 'total_overtime_amount',
+                
+                # India-specific mappings for spreadsheet headers
+                'BASIC_SALARY': 'basic_salary',
+                'HRA': 'hra',
+                'SPECIAL_ALLOWANCE': 'special_allowance',
+                'OTHER_ALLOWANCES': 'other_allowances',
+                'GROSS_SALARY': 'gross_salary',
+                'PF_EMPLOYEE': 'pf_employee',
+                'ESI_EMPLOYEE': 'esi_employee',
+                'PROFESSIONAL_TAX': 'professional_tax',
+                'INCOME_TAX': 'income_tax',
+                'OTHER_DEDUCTIONS': 'other_deductions',
+                'TOTAL_DEDUCTIONS': 'total_deductions',
+                'NET_PAY': 'net_pay',
+                'PF_EMPLOYER': 'pf_employer',
+                'ESI_EMPLOYER': 'esi_employer',
+                'GRATUITY': 'gratuity',
                 }
                 for line in payslip.line_ids:
                     zoho_field = field_mapping.get(line.code)
