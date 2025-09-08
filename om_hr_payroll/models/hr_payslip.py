@@ -367,26 +367,7 @@ class HrPayslip(models.Model):
                 'GROSS_PAY': 'calculated_gross_pay',
                 'NET_PAY': 'calculated_net_pay',
                 'TOTAL_DEDUCTIONS': 'calculated_total_deductions',
-                'OVERTIME_AMOUNT': 'total_overtime_amount',
-                
-                # India-specific mappings (optimized to reuse existing fields)
-                'BASIC': 'base_salary',  # Reuse existing base_salary field
-                'BASIC_SALARY': 'base_salary',  # Reuse existing base_salary field  
-                'HRA': 'hra',  # India-specific field
-                'SPECIAL_ALLOWANCE': 'special_allowance',  # India-specific field
-                'BOOKS_ALLOWANCE': 'books_allowance',  # India-specific field
-                'LTA': 'lta',  # India-specific field  
-                'MEDICAL_ALLOWANCE': 'meal_allowance',  # Reuse existing meal_allowance
-                'TRANSPORT_ALLOWANCE': 'taxi_allowance',  # Reuse existing taxi_allowance
-                'PHONE_ALLOWANCE': 'phone_allowance',  # Reuse existing phone_allowance
-                'OTHER_ALLOWANCES': 'other_income',  # Reuse existing other_income
-                'PF_EMPLOYEE': 'pf_employee',  # India-specific field
-                'ESI_EMPLOYEE': 'esi_employee',  # India-specific field
-                'PROFESSIONAL_TAX': 'professional_tax',  # India-specific field
-                'INCOME_TAX': 'income_tax',  # India-specific field
-                'PF_EMPLOYER': 'pf_employer',  # India-specific field
-                'ESI_EMPLOYER': 'esi_employer',  # India-specific field
-                'GRATUITY': 'gratuity',  # India-specific field
+                'OVERTIME_AMOUNT': 'total_overtime_amount'
                 }
                 for line in payslip.line_ids:
                     zoho_field = field_mapping.get(line.code)
