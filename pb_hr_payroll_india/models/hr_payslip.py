@@ -101,66 +101,67 @@ class HrPayslip(models.Model):
         
         return super(HrPayslip, self).compute_sheet()
 
-    def update_payslip_lines_from_zoho_data(self, payslip):
+    def apply_india_payroll_data(self, payslip):
         """
-        India-specific override: Use India field mappings only for India payslips.
-        For all other payslips, use the parent method.
+        Apply India-specific payroll data to payslip.
+        This method can be called explicitly for India payrolls without interfering with analytics.
         """
-        # Check if this is an India payslip by examining the structure
-        is_india_payslip = (payslip.struct_id and 
-                           'india' in payslip.struct_id.name.lower()) or \
-                          self.env.context.get('payroll_country') == 'IN'
+        zoho_data = self.env['zoho.employee.data'].search(
+            [('employee_id', '=', payslip.employee_id.employee_id)]
+        )
         
-        if not is_india_payslip:
-            # Use parent method for non-India payslips (preserves Vietnam/Indonesia functionality)
-            return super().update_payslip_lines_from_zoho_data(payslip)
+        if not zoho_data:
+            return {'success': False, 'message': 'No Zoho employee data found'}
         
-        # India-specific processing only
-        payroll_from_spreadsheet = self.env['ir.config_parameter'].sudo().get_param('payroll_from_spreadsheet')
-        if payroll_from_spreadsheet == 'True':
-            zoho_data = self.env['zoho.employee.data'].search(
-                [('employee_id', '=', payslip.employee_id.employee_id)]
-            )
-            if zoho_data:
-                # India-specific field mapping (completely isolated)
-                india_field_mapping = {
-                    # ===== INDIA-SPECIFIC PAYROLL MAPPINGS =====
-                    # Basic salary components
-                    'BASIC': 'base_salary',  # Reuse existing base_salary field
-                    'BASIC_SALARY': 'base_salary',  # Alternative basic salary code
-                    
-                    # India allowances
-                    'HRA': 'hra',  # India-specific: House Rent Allowance
-                    'SPECIAL_ALLOWANCE': 'special_allowance',  # India-specific allowance
-                    'BOOKS_ALLOWANCE': 'books_allowance',  # India-specific: Books/education allowance
-                    'LTA': 'lta',  # India-specific: Leave Travel Allowance
-                    'MEDICAL_ALLOWANCE': 'meal_allowance',  # Reuse existing meal_allowance
-                    'TRANSPORT_ALLOWANCE': 'taxi_allowance',  # Reuse existing taxi_allowance
-                    'PHONE_ALLOWANCE': 'phone_allowance',  # Reuse existing phone_allowance
-                    'OTHER_ALLOWANCES': 'other_income',  # Reuse existing other_income
-                    
-                    # India deductions (employee contributions)
-                    'PF_EMPLOYEE': 'pf_employee',  # India-specific: PF employee (12%)
-                    'ESI_EMPLOYEE': 'esi_employee',  # India-specific: ESI employee (0.75%)
-                    'PROFESSIONAL_TAX': 'professional_tax',  # India-specific: Professional tax
-                    'INCOME_TAX': 'income_tax',  # India-specific: Income tax (TDS)
-                    
-                    # India employer contributions
-                    'PF_EMPLOYER': 'pf_employer',  # India-specific: PF employer (12%)
-                    'ESI_EMPLOYER': 'esi_employer',  # India-specific: ESI employer (3.25%)
-                    'GRATUITY': 'gratuity_provision',  # India-specific: Gratuity provision
-                    
-                    # Generic mappings for India compatibility
-                    'GROSS': 'gross_salary',
-                    'NET': 'net_pay',
-                    'NETPAY': 'net_pay',
-                }
-                
-                # Apply India-specific field mapping
-                for line in payslip.line_ids:
-                    zoho_field = india_field_mapping.get(line.code)
-                    if zoho_field and hasattr(zoho_data, zoho_field):
-                        line.amount = getattr(zoho_data, zoho_field) or 0.0
+        # India-specific field mapping (completely isolated)
+        india_field_mapping = {
+            # ===== INDIA-SPECIFIC PAYROLL MAPPINGS =====
+            # Basic salary components
+            'BASIC': 'base_salary',  # Reuse existing base_salary field
+            'BASIC_SALARY': 'base_salary',  # Alternative basic salary code
+            
+            # India allowances
+            'HRA': 'hra',  # India-specific: House Rent Allowance
+            'SPECIAL_ALLOWANCE': 'special_allowance',  # India-specific allowance
+            'BOOKS_ALLOWANCE': 'books_allowance',  # India-specific: Books/education allowance
+            'LTA': 'lta',  # India-specific: Leave Travel Allowance
+            'MEDICAL_ALLOWANCE': 'meal_allowance',  # Reuse existing meal_allowance
+            'TRANSPORT_ALLOWANCE': 'taxi_allowance',  # Reuse existing taxi_allowance
+            'PHONE_ALLOWANCE': 'phone_allowance',  # Reuse existing phone_allowance
+            'OTHER_ALLOWANCES': 'other_income',  # Reuse existing other_income
+            
+            # India deductions (employee contributions)
+            'PF_EMPLOYEE': 'pf_employee',  # India-specific: PF employee (12%)
+            'ESI_EMPLOYEE': 'esi_employee',  # India-specific: ESI employee (0.75%)
+            'PROFESSIONAL_TAX': 'professional_tax',  # India-specific: Professional tax
+            'INCOME_TAX': 'income_tax',  # India-specific: Income tax (TDS)
+            
+            # India employer contributions
+            'PF_EMPLOYER': 'pf_employer',  # India-specific: PF employer (12%)
+            'ESI_EMPLOYER': 'esi_employer',  # India-specific: ESI employer (3.25%)
+            'GRATUITY': 'gratuity_provision',  # India-specific: Gratuity provision
+            
+            # Generic mappings for India compatibility
+            'GROSS': 'gross_salary',
+            'NET': 'net_pay',
+            'NETPAY': 'net_pay',
+        }
+        
+        updated_lines = 0
+        # Apply India-specific field mapping
+        for line in payslip.line_ids:
+            zoho_field = india_field_mapping.get(line.code)
+            if zoho_field and hasattr(zoho_data, zoho_field):
+                old_amount = line.amount
+                new_amount = getattr(zoho_data, zoho_field) or 0.0
+                line.amount = new_amount
+                updated_lines += 1
+        
+        return {
+            'success': True, 
+            'updated_lines': updated_lines,
+            'message': f'Updated {updated_lines} payslip lines with India-specific data'
+        }
 
 
 class HrContract(models.Model):
