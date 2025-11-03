@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- India Payroll Processor Wizard Form -->
+    <record id="view_india_payroll_processor_form" model="ir.ui.view">
+        <field name="name">India Payroll Processor</field>
+        <field name="model">india.payroll.processor</field>
+        <field name="arch" type="xml">
+            <form string="India Payroll Data Processor">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="process_mode" widget="radio" options="{'horizontal': true}"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Payslips to Process" attrs="{'invisible': [('process_mode', '!=', 'selected')]}">
+                            <field name="payslip_ids" widget="many2many_tags" 
+                                   domain="[('struct_id.name', 'ilike', 'india')]"
+                                   attrs="{'required': [('process_mode', '=', 'selected')]}"/>
+                        </group>
+                        
+                        <group string="Processing Options">
+                            <field name="auto_compute"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>What this does:</strong>
+                        <ul>
+                            <li>Applies India-specific salary component mappings to payslips</li>
+                            <li>Maps spreadsheet data to India payroll fields (HRA, PF, ESI, etc.)</li>
+                            <li>Only processes payslips with "India Salary Structure"</li>
+                            <li>Does not affect Vietnam or Indonesia payroll processing</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('process_mode', '!=', 'all_draft')]}">
+                        <strong>Warning:</strong> This will process ALL draft payslips. Make sure you want to apply India data to all of them.
+                    </div>
+                    
+                </sheet>
+                <footer>
+                    <button string="Preview Changes" name="action_preview_changes" type="object" class="btn-secondary"/>
+                    <button string="Process Payrolls" name="action_process_india_payrolls" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for India Payroll Processor -->
+    <record id="action_india_payroll_processor" model="ir.actions.act_window">
+        <field name="name">Process India Payroll Data</field>
+        <field name="res_model">india.payroll.processor</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_process_mode': 'selected'}</field>
+    </record>
+
+    <!-- Menu item for India Payroll Processor -->
+    <menuitem id="menu_india_payroll_processor"
+              name="Process India Payroll"
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              action="action_india_payroll_processor"
+              sequence="85"
+              groups="pb_hr_payroll_base.group_payroll_india"/>
+
+</odoo>

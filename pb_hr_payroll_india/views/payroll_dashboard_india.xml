@@ -189,23 +189,8 @@
                             <p class="dashboard-subtitle">Manage payroll operations for India region</p>
                         </div>
                         
-                        <!-- First Row: Main Action Cards -->
+                        <!-- First Row: Core Payroll Workflow -->
                         <div class="row">
-                            <div class="col-lg-4">
-                                <div class="dashboard-card">
-                                    <div>
-                                        <i class="fa fa-users fa-3x card-icon"/>
-                                        <h4 class="card-title">Employee Data</h4>
-                                        <p class="card-description">Import and synchronize employee information from Zoho People system</p>
-                                    </div>
-                                    <button name="action_get_employee_data" 
-                                            type="object" 
-                                            class="dashboard-btn">
-                                        Import employee data
-                                    </button>
-                                </div>
-                            </div>
-                            
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
@@ -235,15 +220,30 @@
                                     </button>
                                 </div>
                             </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-users fa-3x card-icon"/>
+                                        <h4 class="card-title">Employee Data</h4>
+                                        <p class="card-description">Import and synchronize employee information from Zoho People system</p>
+                                    </div>
+                                    <button name="action_get_employee_data" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        Import employee data
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <!-- Second Row: Advanced Features -->
+
+                        <!-- Second Row: Data Management Cards -->
                         <div class="row">
                             <div class="col-lg-4">
                                 <div class="dashboard-card">
                                     <div>
                                         <i class="fa fa-bank fa-3x card-icon"/>
-                                        <h4 class="card-title">Bank File Export</h4>
+                                        <h4 class="card-title">Bank Export</h4>
                                         <p class="card-description">Export payroll data to bank format for automated salary disbursement</p>
                                     </div>
                                     <button name="action_export_bank_file" 
@@ -269,13 +269,78 @@
                                 </div>
                             </div>
                             
+                            <div class="col-lg-4">
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-cogs fa-3x card-icon"/>
+                                        <h4 class="card-title">India Data Processing</h4>
+                                        <p class="card-description">Apply India-specific payroll mappings with HRA, PF, ESI components to payslips</p>
+                                    </div>
+                                    <button name="%(action_india_payroll_processor)d" 
+                                            type="action" 
+                                            class="dashboard-btn">
+                                        Process India Data
+                                    </button>
+                                </div>
+                            </div>
                         </div>
+                        
+                        <!-- Third Row: Demo Features -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="dashboard-card" style="border: 2px solid #28a745; background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);">
+                                    <div>
+                                        <i class="fa fa-flask fa-3x card-icon" style="color: #28a745;"/>
+                                        <h4 class="card-title" style="color: #28a745;">Demo Employee Data</h4>
+                                        <p class="card-description">Generate 25 Indian employees with realistic demo data for testing purposes</p>
+                                    </div>
+                                    <button name="%(action_demo_data_generator_india)d" 
+                                            type="action" 
+                                            class="dashboard-btn" style="background: #28a745; border-color: #28a745;">
+                                        Generate Demo Data
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card" style="opacity: 0.7;">
+                                    <div>
+                                        <i class="fa fa-info-circle fa-3x card-icon" style="color: #6c757d;"/>
+                                        <h4 class="card-title" style="color: #6c757d;">Demo Information</h4>
+                                        <p class="card-description">Demo data includes Indian names, HRA, PF, ESI calculations, and compliance data for testing</p>
+                                    </div>
+                                    <button name="dummy_info_button" 
+                                            type="button" 
+                                            class="dashboard-btn" 
+                                            style="background: #6c757d; cursor: not-allowed;" 
+                                            disabled="disabled">
+                                        Information Only
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-4">
+                                <div class="dashboard-card" style="opacity: 0.7;">
+                                    <div>
+                                        <i class="fa fa-lightbulb-o fa-3x card-icon" style="color: #ffc107;"/>
+                                        <h4 class="card-title" style="color: #ffc107;">Quick Start Guide</h4>
+                                        <p class="card-description">1. Generate demo data → 2. Process India data → 3. Open spreadsheet → 4. Process payroll</p>
+                                    </div>
+                                    <button name="dummy_guide_button" 
+                                            type="button" 
+                                            class="dashboard-btn" 
+                                            style="background: #ffc107; color: #212529; cursor: not-allowed;" 
+                                            disabled="disabled">
+                                        Guide Only
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </sheet>
             </form>
         </field>
     </record>
-    
-    
     
 </odoo>

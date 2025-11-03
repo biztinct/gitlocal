@@ -85,31 +85,6 @@ class PayrollDashboardIndia(models.Model):
         except Exception as e:
             raise UserError(_('Unexpected error importing spreadsheet: %s') % str(e))
     
-    def action_open_analytics_dashboard(self):
-        """Open analytics dashboard for India"""
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Analytics Dashboard'),
-                'message': _('Analytics dashboard functionality will be implemented soon'),
-                'type': 'info',
-                'sticky': False,
-            }
-        }
-    
-    def action_export_bank_file(self):
-        """Export bank file for India"""
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Bank Export'),
-                'message': _('Bank export functionality will be implemented soon'),
-                'type': 'info',
-                'sticky': False,
-            }
-        }
     
     def action_process_gratuity(self):
         """Process gratuity payment for India"""

@@ -38,6 +38,8 @@
         
         # Wizards (load before views that reference wizard actions)
         'wizards/gratuity_payment_wizard_views.xml',
+        'wizards/india_payroll_processor_views.xml',  # NEW: India payroll processor
+        'wizards/demo_data_generator_views.xml',  # NEW: India demo data generator
         
         # Views (load before menu structure that references views)
         'views/hr_payroll_structure_views.xml',

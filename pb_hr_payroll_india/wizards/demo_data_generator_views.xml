@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Demo Data Generator Form View -->
+    <record id="view_demo_data_generator_india_form" model="ir.ui.view">
+        <field name="name">India Demo Data Generator</field>
+        <field name="model">demo.data.generator.india</field>
+        <field name="arch" type="xml">
+            <form string="Generate India Demo Data">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <i class="fa fa-flask" style="color: #28a745;"/> India Demo Employee Data Generator
+                        </h1>
+                        <p>Generate realistic demo employees with India-specific payroll data for testing purposes</p>
+                    </div>
+                    
+                    <group>
+                        <group string="Employee Generation">
+                            <field name="employee_count" widget="integer"/>
+                            <field name="include_payroll_data"/>
+                        </group>
+                        
+                        <group string="Salary Configuration (INR)">
+                            <field name="salary_range_min" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="salary_range_max" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Location Settings">
+                        <field name="location_ids" widget="many2many_tags"/>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <h4><i class="fa fa-info-circle"/> What this generates:</h4>
+                        <ul>
+                            <li><strong>Employee Records:</strong> HR employees with Indian names and details</li>
+                            <li><strong>India Payroll Components:</strong> HRA, Special Allowance, Medical, Transport allowances</li>
+                            <li><strong>India Deductions:</strong> PF (12%), ESI (0.75%), Professional Tax, Income Tax</li>
+                            <li><strong>Employer Contributions:</strong> PF (12%), ESI (3.25%), Gratuity provision</li>
+                            <li><strong>Compliance Data:</strong> PAN, Aadhaar, ESI, PF numbers</li>
+                            <li><strong>Contracts:</strong> With India Salary Structure</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('employee_count', '&lt;', 50)]}">
+                        <strong>Performance Note:</strong> Generating more than 50 employees may take some time.
+                    </div>
+                    
+                </sheet>
+                <footer>
+                    <button string="Generate Demo Data" name="action_generate_demo_data" type="object" class="btn-primary" confirm="This will create demo employee records. Continue?"/>
+                    <button string="Clear Existing Demo Data" name="action_clear_demo_data" type="object" class="btn-secondary" confirm="This will permanently delete existing India demo data. Are you sure?"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action for Demo Data Generator -->
+    <record id="action_demo_data_generator_india" model="ir.actions.act_window">
+        <field name="name">Generate India Demo Data</field>
+        <field name="res_model">demo.data.generator.india</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
