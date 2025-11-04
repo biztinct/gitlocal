@@ -40,25 +40,30 @@
         # Security
         'security/ir.model.access.csv',
         'security/payroll_analytics_security.xml',
-        
+
         # Data
         'data/payroll_analytics_data.xml',
-        
+
         # Views
         'views/payroll_analytics_dashboard.xml',
         'views/payroll_approval_views.xml',
         'views/payroll_comparison_views.xml',
         'views/bank_export_views.xml',
         'views/payroll_analytics_templates.xml',
-        
-        # Wizards  
+
+        # Wizards
         'wizards/payroll_comparison_wizard_views.xml',
-        
+
         # Reports
         'reports/payroll_analytics_reports.xml',
-        
+
         # Menu
         'views/payroll_analytics_menus.xml',
+
+        # Translations
+        'i18n/payroll_analytics_approval.pot',
+        'i18n/vi_VN.po',
+        'i18n/km_KH.po',
     ],
     'assets': {
         'web.assets_backend': [

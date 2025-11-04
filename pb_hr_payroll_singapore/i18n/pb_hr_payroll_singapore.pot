@@ -1,0 +1,108 @@
+# Translation template for pb_hr_payroll_singapore.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_singapore package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_singapore 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_singapore
+#: model:ir.ui.view,string:pb_hr_payroll_singapore.view_payroll_dashboard_singapore
+msgid "Singapore Payroll Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_singapore.menu_singapore_dashboard
+msgid "Singapore Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_singapore.menu_singapore_cpf
+msgid "Singapore CPF Submission"
+msgstr ""
+
+#: field:hr.payslip,singapore_cpf_employee:0
+msgid "CPF - Employee"
+msgstr ""
+
+#: field:hr.payslip,singapore_cpf_company:0
+msgid "CPF - Company"
+msgstr ""
+
+#: field:hr.payslip,singapore_sdl:0
+msgid "Skills Development Levy"
+msgstr ""
+
+#: field:hr.payslip,singapore_fwl:0
+msgid "Foreign Worker Levy"
+msgstr ""
+
+#: button:hr.payslip,action_compute_singapore_tax:0
+msgid "Compute Singapore Tax"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Singapore Payslip"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Singapore Salary Rules"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Singapore CPF Components"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_singapore/models/hr_payslip_singapore.py:50
+msgid "Singapore tax computed successfully"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_singapore/models/hr_payslip_singapore.py:60
+msgid "Error computing Singapore tax: %s"
+msgstr ""
+
+#: help:hr.payslip,singapore_cpf_employee:0
+msgid "CPF contribution deducted from employee salary"
+msgstr ""
+
+#: help:hr.payslip,singapore_cpf_company:0
+msgid "CPF contribution paid by company"
+msgstr ""
+
+#: help:hr.payslip,singapore_sdl:0
+msgid "0.25% Skills Development Levy (if payroll > S$30,000 annually)"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_singapore.group_singapore_payroll_officer
+msgid "Singapore Payroll Officer"
+msgstr ""
+
+#: button:payroll.dashboard,action_process_singapore_payroll:0
+msgid "Process Singapore Payroll"
+msgstr ""
+
+#: button:payroll.dashboard,action_submit_cpf:0
+msgid "Submit CPF"
+msgstr ""
+
+#: button:payroll.dashboard,action_export_singapore_data:0
+msgid "Export Singapore Data"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Singapore Payroll Management System"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "CPF Management and Submission"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "SDL and FWL Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr ""

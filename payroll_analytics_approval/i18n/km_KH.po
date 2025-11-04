@@ -1,0 +1,145 @@
+# Khmer translation for payroll_analytics_approval.
+# Copyright (C) 2024
+# This file is distributed under the same license as the payroll_analytics_approval package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: payroll_analytics_approval 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Khmer Team\n"
+"Language-Team: Khmer\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: payroll_analytics_approval
+#: model:ir.ui.view,string:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Payroll Analytics Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងការវិភាគប៉ាវរូល"
+
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics
+msgid "Analytics"
+msgstr "ការវិភាគ"
+
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_approval_queue
+msgid "Approval Queue"
+msgstr "ឈរឈរលម្អិតលម្អិតផ្ទាល់ខ្លួន"
+
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_bank_export
+msgid "Bank Export"
+msgstr "នាំចេញលម្អិតលម្អិតធនាគារ"
+
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_comparisons
+msgid "Payroll Comparisons"
+msgstr "ការប្រៀបធៀបប៉ាវរូល"
+
+#: field:payroll.analytics,period_name:0
+msgid "Period Name"
+msgstr "ឈ្មោះរយៈពេល"
+
+#: field:payroll.analytics,country:0
+msgid "Country"
+msgstr "देश"
+
+#: field:payroll.analytics,state:0
+msgid "Status"
+msgstr "ស្ថានភាព"
+
+#: field:payroll.analytics,total_employees:0
+msgid "Total Employees"
+msgstr "សរុបនិយោជក"
+
+#: field:payroll.analytics,total_payroll:0
+msgid "Total Payroll"
+msgstr "សរុបប៉ាវរូល"
+
+#: field:payroll.analytics,average_salary:0
+msgid "Average Salary"
+msgstr "រយៈពេលមធ្យមលម្អិត"
+
+#: field:payroll.analytics,variance_percentage:0
+msgid "Variance %"
+msgstr "ភាពខុសប្លែក %"
+
+#: button:payroll.analytics,action_open_dashboard:0
+msgid "Open Dashboard"
+msgstr "បើកផ្ទាំងគ្រប់គ្រង"
+
+#: button:payroll.analytics,action_approve_payroll:0
+msgid "Approve Payroll"
+msgstr "ឯកសារលម្អិតលម្អិតផ្ទាល់ខ្លួន"
+
+#: button:payroll.analytics,action_export_bank_file:0
+msgid "Export Bank File"
+msgstr "នាំចេញឯកសារលម្អិតលម្អិតធនាគារ"
+
+#: button:payroll.analytics,action_refresh_analytics:0
+msgid "Refresh Data"
+msgstr "ធ្វើឱ្យទិន្នន័យស្វាគមន៍ម្ដងទៀត"
+
+#: view:payroll.analytics:0
+msgid "Draft"
+msgstr "ច្របាប់"
+
+#: view:payroll.analytics:0
+msgid "Ready for Approval"
+msgstr "ត្រៀមរួចលើយក"
+
+#: view:payroll.analytics:0
+msgid "Approved"
+msgstr "ឯកសារលម្អិតលម្អិតផ្ទាល់ខ្លួន"
+
+#: view:payroll.analytics:0
+msgid "Exported"
+msgstr "នាំចេញ"
+
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:80
+msgid "Payroll Approved"
+msgstr "ឯកសារលម្អិតលម្អិតផ្ទាល់ខ្លួន"
+
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:81
+msgid "Payroll has been successfully approved and is ready for export."
+msgstr "ឯកសារលម្អិតលម្អិតផ្ទាល់ខ្លួនបានដោយជោគជ័យ ហើយត្រៀមរួចលើយក។"
+
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:95
+msgid "Bank File Exported"
+msgstr "នាំចេញឯកសារលម្អិតលម្អិតធនាគារ"
+
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:96
+msgid "Bank file has been successfully exported."
+msgstr "ឯកសារលម្អិតលម្អិតធនាគារបានដោយជោគជ័យ។"
+
+#: res.groups,name:payroll_analytics_approval.group_payroll_approver
+msgid "Payroll Approver"
+msgstr "អ្នកលម្អិតលម្អិតផ្ទាល់ខ្លួនលម្អិតលម្អិត"
+
+#: res.groups,name:payroll_analytics_approval.group_payroll_bank_officer
+msgid "Payroll Bank Officer"
+msgstr "មន្ត្រីលម្អិតលម្អិតធនាគារលម្អិតលម្អិត"
+
+#: dashboard.payroll:0
+msgid "Payroll Approval Management"
+msgstr "គ្រប់គ្រងឯកសារលម្អិតលម្អិតផ្ទាល់ខ្លួន"
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Approval Queue"
+msgstr "ឈរឈរលម្អិតលម្អិតផ្ទាល់ខ្លួនប្រចាំខែ"
+
+#: dashboard.payroll:0
+msgid "Variance Analysis and Alerts"
+msgstr "ការវិភាគភាពខុសប្លែក និង ការរំលឹក"
+
+#: dashboard.payroll:0
+msgid "Bank File Generation and Export"
+msgstr "ការបង្កើត និង នាំចេញឯកសារលម្អិតលម្អិតធនាគារ"
+
+#: dashboard.payroll:0
+msgid "Payroll Comparison Reports"
+msgstr "របាយការណ៍ការប្រៀបធៀបលម្អិតលម្អិត"
+
+#: dashboard.payroll:0
+msgid "Analytics and Insights"
+msgstr "ការវិភាគ និង ព័ត៌មាន"

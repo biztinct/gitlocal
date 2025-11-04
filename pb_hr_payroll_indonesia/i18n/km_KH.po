@@ -1,0 +1,125 @@
+# Khmer translation for pb_hr_payroll_indonesia.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_indonesia package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_indonesia 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Khmer Team\n"
+"Language-Team: Khmer\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_indonesia
+#: model:ir.ui.view,string:pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia
+msgid "Indonesia Payroll Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប៉ាវរូលឥណ្ឌូនេស៊ី"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_indonesia.menu_indonesia_dashboard
+msgid "Indonesia Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងឥណ្ឌូនេស៊ី"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_indonesia.menu_indonesia_thr
+msgid "Indonesia THR Payments"
+msgstr "ការបង់ THR ឥណ្ឌូនេស៊ី"
+
+#: field:hr.payslip,indonesia_bpjs_kes_emp:0
+msgid "BPJS Kesehatan - Employee"
+msgstr "BPJS Kesehatan - និយោជក"
+
+#: field:hr.payslip,indonesia_bpjs_kes_comp:0
+msgid "BPJS Kesehatan - Company"
+msgstr "BPJS Kesehatan - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,indonesia_bpjs_jht_emp:0
+msgid "BPJS Ketenagakerjaan JHT - Employee"
+msgstr "BPJS Ketenagakerjaan JHT - និយោជក"
+
+#: field:hr.payslip,indonesia_bpjs_jht_comp:0
+msgid "BPJS Ketenagakerjaan JHT - Company"
+msgstr "BPJS Ketenagakerjaan JHT - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,indonesia_pph21:0
+msgid "PPh 21 Income Tax"
+msgstr "ពន្ធលម្អិតលម្អិត PPh 21"
+
+#: field:hr.payslip,indonesia_thr:0
+msgid "THR (Religious Allowance)"
+msgstr "THR (ឧបត្ថម្ភសាសនា)"
+
+#: button:hr.payslip,action_compute_indonesia_tax:0
+msgid "Compute Indonesia Tax"
+msgstr "គណនាពន្ធឥណ្ឌូនេស៊ី"
+
+#: view:hr.payslip:0
+msgid "Indonesia Payslip"
+msgstr "ឯកសារប៉ាវរូលឥណ្ឌូនេស៊ី"
+
+#: view:hr.payslip:0
+msgid "Indonesia Salary Rules"
+msgstr "ច្បាប់លម្អិតលម្អិតឥណ្ឌូនេស៊ី"
+
+#: view:hr.payslip:0
+msgid "Indonesia BPJS Components"
+msgstr "សមាសភាគ BPJS ឥណ្ឌូនេស៊ី"
+
+#: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:50
+msgid "Indonesia tax computed successfully"
+msgstr "ពន្ធឥណ្ឌូនេស៊ីបានគណនាដោយជោគជ័យ"
+
+#: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:60
+msgid "Error computing Indonesia tax: %s"
+msgstr "កំហុសក្នុងការគណនាពន្ធឥណ្ឌូនេស៊ី៖ %s"
+
+#: help:hr.payslip,indonesia_bpjs_kes_emp:0
+msgid "Employee contribution to BPJS Kesehatan (Health Insurance)"
+msgstr "ការរួមបង្កើតនិយោជកដល់ BPJS Kesehatan (ការធានារ៉ាប់រងសុខភាព)"
+
+#: help:hr.payslip,indonesia_bpjs_kes_comp:0
+msgid "Company contribution to BPJS Kesehatan (Health Insurance)"
+msgstr "ការរួមបង្កើតក្រុមហ៊ុនដល់ BPJS Kesehatan (ការធានារ៉ាប់រងសុខភាព)"
+
+#: help:hr.payslip,indonesia_bpjs_jht_emp:0
+msgid "Employee contribution to BPJS JHT (Retirement Fund)"
+msgstr "ការរួមបង្កើតនិយោជកដល់ BPJS JHT (មូលនិធិសោយលាជived)"
+
+#: res.groups,name:pb_hr_payroll_indonesia.group_indonesia_payroll_officer
+msgid "Indonesia Payroll Officer"
+msgstr "មន្ត្រីប៉ាវរូលឥណ្ឌូនេស៊ី"
+
+#: button:payroll.dashboard,action_process_indonesia_payroll:0
+msgid "Process Indonesia Payroll"
+msgstr "ដំណើរការប៉ាវរូលឥណ្ឌូនេស៊ី"
+
+#: button:payroll.dashboard,action_process_thr:0
+msgid "Process THR Payments"
+msgstr "ដំណើរការការបង់ THR"
+
+#: button:payroll.dashboard,action_export_indonesia_data:0
+msgid "Export Indonesia Data"
+msgstr "នាំចេញទិន្នន័យឥណ្ឌូនេស៊ី"
+
+#: dashboard.payroll:0
+msgid "Indonesia Payroll Management System"
+msgstr "ប្រព័ន្ធគ្រប់គ្រងប៉ាវរូលឥណ្ឌូនេស៊ី"
+
+#: dashboard.payroll:0
+msgid "BPJS Kesehatan Management"
+msgstr "គ្រប់គ្រង BPJS Kesehatan"
+
+#: dashboard.payroll:0
+msgid "BPJS Ketenagakerjaan Management"
+msgstr "គ្រប់គ្រង BPJS Ketenagakerjaan"
+
+#: dashboard.payroll:0
+msgid "PPh 21 Tax Processing"
+msgstr "ដំណើរការពន្ធ PPh 21"
+
+#: dashboard.payroll:0
+msgid "THR Calculation and Payment"
+msgstr "ការគណនា និង ការបង់ THR"

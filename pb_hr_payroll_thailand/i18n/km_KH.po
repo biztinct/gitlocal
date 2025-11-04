@@ -1,0 +1,125 @@
+# Khmer translation for pb_hr_payroll_thailand.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_thailand package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_thailand 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Khmer Team\n"
+"Language-Team: Khmer\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_thailand
+#: model:ir.ui.view,string:pb_hr_payroll_thailand.view_payroll_dashboard_thailand
+msgid "Thailand Payroll Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប៉ាវរូលប្រទេសថៃ"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_thailand.menu_thailand_dashboard
+msgid "Thailand Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប្រទេសថៃ"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_thailand.menu_thailand_ssf
+msgid "Thailand SSF Reporting"
+msgstr "របាយការណ៍ SSF ប្រទេសថៃ"
+
+#: field:hr.payslip,thailand_ssf_employee:0
+msgid "SSF - Employee"
+msgstr "SSF - និយោជក"
+
+#: field:hr.payslip,thailand_ssf_company:0
+msgid "SSF - Company"
+msgstr "SSF - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,thailand_pf_employee:0
+msgid "Provident Fund - Employee"
+msgstr "មូលនិធិលម្អិតលម្អិត - និយោជក"
+
+#: field:hr.payslip,thailand_pf_company:0
+msgid "Provident Fund - Company"
+msgstr "មូលនិធិលម្អិតលម្អិត - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,thailand_wcf:0
+msgid "Workmen's Compensation Fund"
+msgstr "មូលនិធិលម្អិតលម្អិតអ្នកលម្អិតលម្អិត"
+
+#: button:hr.payslip,action_compute_thailand_tax:0
+msgid "Compute Thailand Tax"
+msgstr "គណនាពន្ធប្រទេសថៃ"
+
+#: view:hr.payslip:0
+msgid "Thailand Payslip"
+msgstr "ឯកសារប៉ាវរូលប្រទេសថៃ"
+
+#: view:hr.payslip:0
+msgid "Thailand Salary Rules"
+msgstr "ច្បាប់លម្អិតលម្អិតប្រទេសថៃ"
+
+#: view:hr.payslip:0
+msgid "Thailand Insurance Components"
+msgstr "សមាសភាគការធានារ៉ាប់រងប្រទេសថៃ"
+
+#: code:addons/pb_hr_payroll_thailand/models/hr_payslip_thailand.py:50
+msgid "Thailand tax computed successfully"
+msgstr "ពន្ធប្រទេសថៃបានគណនាដោយជោគជ័យ"
+
+#: code:addons/pb_hr_payroll_thailand/models/hr_payslip_thailand.py:60
+msgid "Error computing Thailand tax: %s"
+msgstr "កំហុសក្នុងការគណនាពន្ធប្រទេសថៃ៖ %s"
+
+#: help:hr.payslip,thailand_ssf_employee:0
+msgid "Social Security Fund contribution deducted from employee"
+msgstr "ការរួមបង្កើតមូលនិធិសន្សរាងគ្រប់គ្រងបច្ចេកទេសត្រូវបានកាត់ចេញពីនិយោជក"
+
+#: help:hr.payslip,thailand_ssf_company:0
+msgid "Social Security Fund contribution paid by company"
+msgstr "ការរួមបង្កើតមូលនិធិសន្សរាងគ្រប់គ្រងបច្ចេកទេសត្រូវបានបង់ដោយក្រុមហ៊ុន"
+
+#: help:hr.payslip,thailand_pf_employee:0
+msgid "Employee provident fund contribution"
+msgstr "ការរួមបង្កើតមូលនិធិលម្អិតលម្អិតនិយោជក"
+
+#: help:hr.payslip,thailand_pf_company:0
+msgid "Company provident fund contribution"
+msgstr "ការរួមបង្កើតមូលនិធិលម្អិតលម្អិតក្រុមហ៊ុន"
+
+#: res.groups,name:pb_hr_payroll_thailand.group_thailand_payroll_officer
+msgid "Thailand Payroll Officer"
+msgstr "មន្ត្រីប៉ាវរូលប្រទេសថៃ"
+
+#: button:payroll.dashboard,action_process_thailand_payroll:0
+msgid "Process Thailand Payroll"
+msgstr "ដំណើរការប៉ាវរូលប្រទេសថៃ"
+
+#: button:payroll.dashboard,action_submit_ssf:0
+msgid "Submit SSF Report"
+msgstr "ដាក់ស្នើរបាយការណ៍ SSF"
+
+#: button:payroll.dashboard,action_export_thailand_data:0
+msgid "Export Thailand Data"
+msgstr "នាំចេញទិន្នន័យប្រទេសថៃ"
+
+#: dashboard.payroll:0
+msgid "Thailand Payroll Management System"
+msgstr "ប្រព័ន្ធគ្រប់គ្រងប៉ាវរូលប្រទេសថៃ"
+
+#: dashboard.payroll:0
+msgid "SSF Management and Reporting"
+msgstr "គ្រប់គ្រង និង របាយការណ៍ SSF"
+
+#: dashboard.payroll:0
+msgid "Provident Fund Management"
+msgstr "គ្រប់គ្រងមូលនិធិលម្អិតលម្អិត"
+
+#: dashboard.payroll:0
+msgid "Workmen's Compensation Fund"
+msgstr "មូលនិធិលម្អិតលម្អិតអ្នកលម្អិតលម្អិត"
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr "ដំណើរការប៉ាវរូលប្រចាំខែ"

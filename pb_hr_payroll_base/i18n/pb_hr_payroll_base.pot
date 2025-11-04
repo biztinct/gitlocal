@@ -1,0 +1,324 @@
+# Translation template for pb_hr_payroll_base.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_base package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_base 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_base
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:75
+msgid "Import Successful"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:76
+msgid "Spreadsheet data imported successfully for %s"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:90
+msgid "Spreadsheet Not Found"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:91
+msgid "Spreadsheet reference %s not found for country %s"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:100
+msgid "Import Warning"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:101
+msgid "Spreadsheet import encountered issues: %s"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:105
+msgid "No Spreadsheet Configured"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:106
+msgid "No spreadsheet is configured for country %s. Import skipped."
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:115
+msgid "Import Completed"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:116
+msgid "Payroll data import completed successfully. Use \"View Payslip Batches\" to create batches when ready."
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:145
+msgid "Error in payroll process: %s"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:160
+msgid "No Employees Found"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:161
+msgid "Please create payroll structures and contracts first."
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:60
+msgid "Analytics Computed"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:61
+msgid "Analytics have been successfully computed."
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:40
+msgid "This record has already been processed"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:50
+msgid "Error processing data: %s"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/hr_payroll_structure_base.py:20
+msgid "Unable to view employees. Please try again."
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:35
+msgid "This record has already been processed"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:45
+msgid "Error processing data: %s"
+msgstr ""
+
+#: model:ir.ui.view,string:pb_hr_payroll_base.view_payroll_dashboard_base
+msgid "Payroll Dashboard"
+msgstr ""
+
+#: field:payroll.dashboard,country:0
+msgid "Country"
+msgstr ""
+
+#: field:payroll.dashboard,total_employees:0
+msgid "Total Employees"
+msgstr ""
+
+#: field:payroll.dashboard,total_payroll:0
+msgid "Total Payroll"
+msgstr ""
+
+#: field:payroll.dashboard,average_salary:0
+msgid "Average Salary"
+msgstr ""
+
+#: field:payroll.dashboard,pending_payslips:0
+msgid "Pending Payslips"
+msgstr ""
+
+#: field:payroll.dashboard,last_import_date:0
+msgid "Last Import Date"
+msgstr ""
+
+#: field:payroll.dashboard,spreadsheet_url:0
+msgid "Spreadsheet URL"
+msgstr ""
+
+#: field:payroll.dashboard,auto_refresh:0
+msgid "Auto Refresh"
+msgstr ""
+
+#: field:payroll.dashboard,refresh_interval:0
+msgid "Refresh Interval (minutes)"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:200
+msgid "Refresh interval must be at least 1 minute."
+msgstr ""
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:210
+msgid "A dashboard for %s already exists"
+msgstr ""
+
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_view_payroll_dashboard
+msgid "Payroll Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_dashboard
+msgid "Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_setup_guide
+msgid "Setup Guide"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_dashboard_section
+msgid "Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_employees
+msgid "Employees"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_payslips
+msgid "Payslips"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_reports
+msgid "Reports"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_configuration
+msgid "Configuration"
+msgstr ""
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__name
+msgid "Name"
+msgstr ""
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__active
+msgid "Active"
+msgstr ""
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__sequence
+msgid "Sequence"
+msgstr ""
+
+#: button:payroll.dashboard,action_import_spreadsheet_data:0
+msgid "Import Spreadsheet Data"
+msgstr ""
+
+#: button:payroll.dashboard,action_refresh_dashboard:0
+msgid "Refresh Dashboard"
+msgstr ""
+
+#: button:payroll.dashboard,action_view_employees_by_country:0
+msgid "View Employees"
+msgstr ""
+
+#: button:payroll.dashboard,action_view_payslips_by_country:0
+msgid "View Payslips"
+msgstr ""
+
+#: button:payroll.dashboard,action_view_contracts_by_country:0
+msgid "View Contracts"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_user
+msgid "Payroll User"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_officer
+msgid "Payroll Officer"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_manager
+msgid "Payroll Manager"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_super_admin
+msgid "Payroll Super Admin"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_vietnam
+msgid "Vietnam Payroll Access"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_cambodia
+msgid "Cambodia Payroll Access"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_india
+msgid "India Payroll Access"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_indonesia
+msgid "Indonesia Payroll Access"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_malaysia
+msgid "Malaysia Payroll Access"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_singapore
+msgid "Singapore Payroll Access"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_thailand
+msgid "Thailand Payroll Access"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_analytics_user
+msgid "Analytics User"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_analytics_manager
+msgid "Analytics Manager"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_integration_user
+msgid "Integration User"
+msgstr ""
+
+#: help:payroll.dashboard,auto_refresh:0
+msgid "Enable automatic dashboard refresh at specified intervals"
+msgstr ""
+
+#: help:payroll.dashboard,refresh_interval:0
+msgid "Number of minutes between automatic refreshes (minimum 1)"
+msgstr ""
+
+#: button:payroll.dashboard,action_open_zoho_integration:0
+msgid "Zoho Integration"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Multi-Country Payroll Setup Guide"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Step 1: Create Spreadsheets"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Step 2: Import Employee Data"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Step 3: Run Payroll"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Required Components"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Employee Data"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Import employee information from Zoho People"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Salary Rules"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Configure country-specific salary components"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Payroll Structure"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Define payroll structures for different roles"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Payroll Processing"
+msgstr ""
+
+#: view:payroll.dashboard:0
+msgid "Process and generate payslips"
+msgstr ""

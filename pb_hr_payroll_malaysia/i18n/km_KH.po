@@ -1,0 +1,121 @@
+# Khmer translation for pb_hr_payroll_malaysia.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_malaysia package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_malaysia 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Khmer Team\n"
+"Language-Team: Khmer\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_malaysia
+#: model:ir.ui.view,string:pb_hr_payroll_malaysia.view_payroll_dashboard_malaysia
+msgid "Malaysia Payroll Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប៉ាវរូលម៉ាឡេស៊ី"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_malaysia.menu_malaysia_dashboard
+msgid "Malaysia Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងម៉ាឡេស៊ី"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_malaysia.menu_malaysia_epf
+msgid "Malaysia EPF/SOCSO Submission"
+msgstr "ដាក់ស្នើការយូរម៉ាឡេស៊ី EPF/SOCSO"
+
+#: field:hr.payslip,malaysia_epf_employee:0
+msgid "EPF - Employee"
+msgstr "EPF - និយោជក"
+
+#: field:hr.payslip,malaysia_epf_company:0
+msgid "EPF - Company"
+msgstr "EPF - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,malaysia_socso_employee:0
+msgid "SOCSO - Employee"
+msgstr "SOCSO - និយោជក"
+
+#: field:hr.payslip,malaysia_socso_company:0
+msgid "SOCSO - Company"
+msgstr "SOCSO - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,malaysia_eis:0
+msgid "Employment Insurance System"
+msgstr "ប្រព័ន្ធការធានារ៉ាប់រងការងារ"
+
+#: button:hr.payslip,action_compute_malaysia_tax:0
+msgid "Compute Malaysia Tax"
+msgstr "គណនាពន្ធម៉ាឡេស៊ី"
+
+#: view:hr.payslip:0
+msgid "Malaysia Payslip"
+msgstr "ឯកសារប៉ាវរូលម៉ាឡេស៊ី"
+
+#: view:hr.payslip:0
+msgid "Malaysia Salary Rules"
+msgstr "ច្បាប់លម្អិតលម្អិតម៉ាឡេស៊ី"
+
+#: view:hr.payslip:0
+msgid "Malaysia Insurance Components"
+msgstr "សមាសភាគការធានារ៉ាប់រងម៉ាឡេស៊ី"
+
+#: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:50
+msgid "Malaysia tax computed successfully"
+msgstr "ពន្ធម៉ាឡេស៊ីបានគណនាដោយជោគជ័យ"
+
+#: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:60
+msgid "Error computing Malaysia tax: %s"
+msgstr "កំហុសក្នុងការគណនាពន្ធម៉ាឡេស៊ី៖ %s"
+
+#: help:hr.payslip,malaysia_epf_employee:0
+msgid "11% deducted from employee salary for EPF (Employees Provident Fund)"
+msgstr "11% ត្រូវបានកាត់ចេញពីលម្អិតលម្អិតនិយោជកសម្រាប់ EPF (មូលនិធិលម្អិតលម្អិតនិយោជក)"
+
+#: help:hr.payslip,malaysia_epf_company:0
+msgid "12-13% paid by company for EPF (Employees Provident Fund)"
+msgstr "12-13% ត្រូវបានបង់ដោយក្រុមហ៊ុនសម្រាប់ EPF (មូលនិធិលម្អិតលម្អិតនិយោជក)"
+
+#: help:hr.payslip,malaysia_socso_employee:0
+msgid "0.5% deducted from employee salary for SOCSO"
+msgstr "0.5% ត្រូវបានកាត់ចេញពីលម្អិតលម្អិតនិយោជកសម្រាប់ SOCSO"
+
+#: help:hr.payslip,malaysia_socso_company:0
+msgid "1.75% paid by company for SOCSO"
+msgstr "1.75% ត្រូវបានបង់ដោយក្រុមហ៊ុនសម្រាប់ SOCSO"
+
+#: res.groups,name:pb_hr_payroll_malaysia.group_malaysia_payroll_officer
+msgid "Malaysia Payroll Officer"
+msgstr "មន្ត្រីប៉ាវរូលម៉ាឡេស៊ី"
+
+#: button:payroll.dashboard,action_process_malaysia_payroll:0
+msgid "Process Malaysia Payroll"
+msgstr "ដំណើរការប៉ាវរូលម៉ាឡេស៊ី"
+
+#: button:payroll.dashboard,action_submit_epf:0
+msgid "Submit EPF/SOCSO"
+msgstr "ដាក់ស្នើ EPF/SOCSO"
+
+#: button:payroll.dashboard,action_export_malaysia_data:0
+msgid "Export Malaysia Data"
+msgstr "នាំចេញទិន្នន័យម៉ាឡេស៊ី"
+
+#: dashboard.payroll:0
+msgid "Malaysia Payroll Management System"
+msgstr "ប្រព័ន្ធគ្រប់គ្រងប៉ាវរូលម៉ាឡេស៊ី"
+
+#: dashboard.payroll:0
+msgid "EPF Management and Submission"
+msgstr "គ្រប់គ្រង និង ដាក់ស្នើ EPF"
+
+#: dashboard.payroll:0
+msgid "SOCSO and EIS Management"
+msgstr "គ្រប់គ្រង SOCSO និង EIS"
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr "ដំណើរការប៉ាវរូលប្រចាំខែ"

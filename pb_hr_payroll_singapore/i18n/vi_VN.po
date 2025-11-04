@@ -1,0 +1,113 @@
+# Vietnamese translation for pb_hr_payroll_singapore.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_singapore package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_singapore 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Vietnamese Team\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_singapore
+#: model:ir.ui.view,string:pb_hr_payroll_singapore.view_payroll_dashboard_singapore
+msgid "Singapore Payroll Dashboard"
+msgstr "Bảng điều khiển Bảng lương Singapore"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_singapore.menu_singapore_dashboard
+msgid "Singapore Dashboard"
+msgstr "Bảng điều khiển Singapore"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_singapore.menu_singapore_cpf
+msgid "Singapore CPF Submission"
+msgstr "Nộp CPF Singapore"
+
+#: field:hr.payslip,singapore_cpf_employee:0
+msgid "CPF - Employee"
+msgstr "CPF - Nhân viên"
+
+#: field:hr.payslip,singapore_cpf_company:0
+msgid "CPF - Company"
+msgstr "CPF - Công ty"
+
+#: field:hr.payslip,singapore_sdl:0
+msgid "Skills Development Levy"
+msgstr "Lệ phí Phát triển Kỹ năng"
+
+#: field:hr.payslip,singapore_fwl:0
+msgid "Foreign Worker Levy"
+msgstr "Lệ phí Lao động Nước ngoài"
+
+#: button:hr.payslip,action_compute_singapore_tax:0
+msgid "Compute Singapore Tax"
+msgstr "Tính Thuế Singapore"
+
+#: view:hr.payslip:0
+msgid "Singapore Payslip"
+msgstr "Phiếu lương Singapore"
+
+#: view:hr.payslip:0
+msgid "Singapore Salary Rules"
+msgstr "Quy tắc lương Singapore"
+
+#: view:hr.payslip:0
+msgid "Singapore CPF Components"
+msgstr "Thành phần CPF Singapore"
+
+#: code:addons/pb_hr_payroll_singapore/models/hr_payslip_singapore.py:50
+msgid "Singapore tax computed successfully"
+msgstr "Thuế Singapore đã được tính toán thành công"
+
+#: code:addons/pb_hr_payroll_singapore/models/hr_payslip_singapore.py:60
+msgid "Error computing Singapore tax: %s"
+msgstr "Lỗi tính Thuế Singapore: %s"
+
+#: help:hr.payslip,singapore_cpf_employee:0
+msgid "CPF contribution deducted from employee salary"
+msgstr "Đóng góp CPF được khấu trừ từ lương nhân viên"
+
+#: help:hr.payslip,singapore_cpf_company:0
+msgid "CPF contribution paid by company"
+msgstr "Đóng góp CPF được trả bởi công ty"
+
+#: help:hr.payslip,singapore_sdl:0
+msgid "0.25% Skills Development Levy (if payroll > S$30,000 annually)"
+msgstr "Lệ phí Phát triển Kỹ năng 0.25% (nếu bảng lương > S$30.000 hàng năm)"
+
+#: res.groups,name:pb_hr_payroll_singapore.group_singapore_payroll_officer
+msgid "Singapore Payroll Officer"
+msgstr "Cán bộ Bảng lương Singapore"
+
+#: button:payroll.dashboard,action_process_singapore_payroll:0
+msgid "Process Singapore Payroll"
+msgstr "Xử lý Bảng lương Singapore"
+
+#: button:payroll.dashboard,action_submit_cpf:0
+msgid "Submit CPF"
+msgstr "Nộp CPF"
+
+#: button:payroll.dashboard,action_export_singapore_data:0
+msgid "Export Singapore Data"
+msgstr "Xuất dữ liệu Singapore"
+
+#: dashboard.payroll:0
+msgid "Singapore Payroll Management System"
+msgstr "Hệ thống Quản lý Bảng lương Singapore"
+
+#: dashboard.payroll:0
+msgid "CPF Management and Submission"
+msgstr "Quản lý và Nộp CPF"
+
+#: dashboard.payroll:0
+msgid "SDL and FWL Management"
+msgstr "Quản lý SDL và FWL"
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr "Xử lý Bảng lương Hàng tháng"

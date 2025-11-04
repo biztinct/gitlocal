@@ -1,0 +1,133 @@
+# Vietnamese translation for pb_hr_payroll_india.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_india package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_india 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Vietnamese Team\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_india
+#: model:ir.ui.view,string:pb_hr_payroll_india.view_payroll_dashboard_india
+msgid "India Payroll Dashboard"
+msgstr "Bảng điều khiển Bảng lương Ấn Độ"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_india.menu_india_dashboard
+msgid "India Dashboard"
+msgstr "Bảng điều khiển Ấn Độ"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_india.menu_india_gratuity
+msgid "India Gratuity Payments"
+msgstr "Thanh toán Trợ cấp Ấn Độ"
+
+#: field:hr.payslip,india_pf_employee:0
+msgid "Provident Fund - Employee"
+msgstr "Quỹ Lương hưu - Nhân viên"
+
+#: field:hr.payslip,india_pf_company:0
+msgid "Provident Fund - Company"
+msgstr "Quỹ Lương hưu - Công ty"
+
+#: field:hr.payslip,india_esi_employee:0
+msgid "Employee State Insurance - Employee"
+msgstr "Bảo hiểm Nhân viên Tiểu bang - Nhân viên"
+
+#: field:hr.payslip,india_esi_company:0
+msgid "Employee State Insurance - Company"
+msgstr "Bảo hiểm Nhân viên Tiểu bang - Công ty"
+
+#: field:hr.payslip,india_pt:0
+msgid "Professional Tax"
+msgstr "Thuế Chuyên nghiệp"
+
+#: field:hr.payslip,india_tds:0
+msgid "Tax Deducted at Source"
+msgstr "Thuế khấu trừ tại Nguồn"
+
+#: field:hr.payslip,india_gratuity:0
+msgid "Gratuity"
+msgstr "Trợ cấp"
+
+#: button:hr.payslip,action_compute_india_tax:0
+msgid "Compute India Tax"
+msgstr "Tính Thuế Ấn Độ"
+
+#: view:hr.payslip:0
+msgid "India Payslip"
+msgstr "Phiếu lương Ấn Độ"
+
+#: view:hr.payslip:0
+msgid "India Salary Rules"
+msgstr "Quy tắc lương Ấn Độ"
+
+#: view:hr.payslip:0
+msgid "India Insurance Components"
+msgstr "Thành phần bảo hiểm Ấn Độ"
+
+#: code:addons/pb_hr_payroll_india/models/hr_payslip_india.py:50
+msgid "India tax computed successfully"
+msgstr "Thuế Ấn Độ đã được tính toán thành công"
+
+#: code:addons/pb_hr_payroll_india/models/hr_payslip_india.py:60
+msgid "Error computing India tax: %s"
+msgstr "Lỗi tính Thuế Ấn Độ: %s"
+
+#: help:hr.payslip,india_pf_employee:0
+msgid "12% deducted from employee salary for provident fund"
+msgstr "12% được khấu trừ từ lương nhân viên cho quỹ lương hưu"
+
+#: help:hr.payslip,india_pf_company:0
+msgid "12% paid by company for provident fund"
+msgstr "12% được trả bởi công ty cho quỹ lương hưu"
+
+#: help:hr.payslip,india_esi_employee:0
+msgid "0.75% deducted from employee salary for ESI"
+msgstr "0.75% được khấu trừ từ lương nhân viên cho ESI"
+
+#: help:hr.payslip,india_esi_company:0
+msgid "3.25% paid by company for ESI"
+msgstr "3.25% được trả bởi công ty cho ESI"
+
+#: res.groups,name:pb_hr_payroll_india.group_india_payroll_officer
+msgid "India Payroll Officer"
+msgstr "Cán bộ Bảng lương Ấn Độ"
+
+#: button:payroll.dashboard,action_process_india_payroll:0
+msgid "Process India Payroll"
+msgstr "Xử lý Bảng lương Ấn Độ"
+
+#: button:payroll.dashboard,action_process_gratuity:0
+msgid "Process Gratuity Payments"
+msgstr "Xử lý Thanh toán Trợ cấp"
+
+#: button:payroll.dashboard,action_export_india_data:0
+msgid "Export India Data"
+msgstr "Xuất dữ liệu Ấn Độ"
+
+#: dashboard.payroll:0
+msgid "India Payroll Management System"
+msgstr "Hệ thống Quản lý Bảng lương Ấn Độ"
+
+#: dashboard.payroll:0
+msgid "Provident Fund Management"
+msgstr "Quản lý Quỹ Lương hưu"
+
+#: dashboard.payroll:0
+msgid "Employee State Insurance Management"
+msgstr "Quản lý Bảo hiểm Nhân viên Tiểu bang"
+
+#: dashboard.payroll:0
+msgid "Professional Tax Processing"
+msgstr "Xử lý Thuế Chuyên nghiệp"
+
+#: dashboard.payroll:0
+msgid "Gratuity Calculation and Payment"
+msgstr "Tính toán và Thanh toán Trợ cấp"

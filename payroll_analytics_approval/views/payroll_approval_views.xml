@@ -182,9 +182,9 @@
                                         <field name="state" widget="priority"/>
                                     </div>
                                     <div class="oe_kanban_bottom_right">
-                                        <button t-if="record.state.raw_value == 'ready'" 
-                                                name="action_open_dashboard" 
-                                                type="object" 
+                                        <button t-if="record.state.raw_value == 'ready' or record.state.raw_value == 'approved'"
+                                                name="action_open_dashboard"
+                                                type="object"
                                                 class="btn btn-primary btn-sm">
                                             <i class="fa fa-bar-chart"/> Dashboard
                                         </button>

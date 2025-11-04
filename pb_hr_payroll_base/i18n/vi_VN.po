@@ -1,0 +1,329 @@
+# Vietnamese translation for pb_hr_payroll_base.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_base package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_base 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Vietnamese Team\n"
+"Language-Team: Vietnamese\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_base
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:75
+msgid "Import Successful"
+msgstr "Nhập thành công"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:76
+msgid "Spreadsheet data imported successfully for %s"
+msgstr "Dữ liệu bảng tính đã được nhập thành công cho %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:90
+msgid "Spreadsheet Not Found"
+msgstr "Không tìm thấy bảng tính"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:91
+msgid "Spreadsheet reference %s not found for country %s"
+msgstr "Tham chiếu bảng tính %s không được tìm thấy cho quốc gia %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:100
+msgid "Import Warning"
+msgstr "Cảnh báo nhập"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:101
+msgid "Spreadsheet import encountered issues: %s"
+msgstr "Quá trình nhập bảng tính gặp phải vấn đề: %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:105
+msgid "No Spreadsheet Configured"
+msgstr "Không có bảng tính được cấu hình"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:106
+msgid "No spreadsheet is configured for country %s. Import skipped."
+msgstr "Không có bảng tính được cấu hình cho quốc gia %s. Đã bỏ qua nhập."
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:115
+msgid "Import Completed"
+msgstr "Nhập hoàn tất"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:116
+msgid "Payroll data import completed successfully. Use \"View Payslip Batches\" to create batches when ready."
+msgstr "Nhập dữ liệu bảng lương hoàn tất thành công. Sử dụng \"Xem Lô Phiếu Lương\" để tạo lô khi sẵn sàng."
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:145
+msgid "Error in payroll process: %s"
+msgstr "Lỗi trong quá trình xử lý bảng lương: %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:160
+msgid "No Employees Found"
+msgstr "Không tìm thấy nhân viên"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:161
+msgid "Please create payroll structures and contracts first."
+msgstr "Vui lòng tạo cấu trúc bảng lương và hợp đồng trước."
+
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:60
+msgid "Analytics Computed"
+msgstr "Phân tích đã được tính toán"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:61
+msgid "Analytics have been successfully computed."
+msgstr "Phân tích đã được tính toán thành công."
+
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:40
+msgid "This record has already been processed"
+msgstr "Bản ghi này đã được xử lý rồi"
+
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:50
+msgid "Error processing data: %s"
+msgstr "Lỗi xử lý dữ liệu: %s"
+
+#: code:addons/pb_hr_payroll_base/models/hr_payroll_structure_base.py:20
+msgid "Unable to view employees. Please try again."
+msgstr "Không thể xem nhân viên. Vui lòng thử lại."
+
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:35
+msgid "This record has already been processed"
+msgstr "Bản ghi này đã được xử lý rồi"
+
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:45
+msgid "Error processing data: %s"
+msgstr "Lỗi xử lý dữ liệu: %s"
+
+#: model:ir.ui.view,string:pb_hr_payroll_base.view_payroll_dashboard_base
+msgid "Payroll Dashboard"
+msgstr "Bảng điều khiển Bảng lương"
+
+#: field:payroll.dashboard,country:0
+msgid "Country"
+msgstr "Quốc gia"
+
+#: field:payroll.dashboard,total_employees:0
+msgid "Total Employees"
+msgstr "Tổng nhân viên"
+
+#: field:payroll.dashboard,total_payroll:0
+msgid "Total Payroll"
+msgstr "Tổng bảng lương"
+
+#: field:payroll.dashboard,average_salary:0
+msgid "Average Salary"
+msgstr "Mức lương trung bình"
+
+#: field:payroll.dashboard,pending_payslips:0
+msgid "Pending Payslips"
+msgstr "Phiếu lương đang chờ"
+
+#: field:payroll.dashboard,last_import_date:0
+msgid "Last Import Date"
+msgstr "Ngày nhập cuối cùng"
+
+#: field:payroll.dashboard,spreadsheet_url:0
+msgid "Spreadsheet URL"
+msgstr "Đường dẫn bảng tính"
+
+#: field:payroll.dashboard,auto_refresh:0
+msgid "Auto Refresh"
+msgstr "Làm mới tự động"
+
+#: field:payroll.dashboard,refresh_interval:0
+msgid "Refresh Interval (minutes)"
+msgstr "Khoảng thời gian làm mới (phút)"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:200
+msgid "Refresh interval must be at least 1 minute."
+msgstr "Khoảng thời gian làm mới phải ít nhất 1 phút."
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:210
+msgid "A dashboard for %s already exists"
+msgstr "Bảng điều khiển cho %s đã tồn tại"
+
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_view_payroll_dashboard
+msgid "Payroll Dashboard"
+msgstr "Bảng điều khiển Bảng lương"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_dashboard
+msgid "Dashboard"
+msgstr "Bảng điều khiển"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_setup_guide
+msgid "Setup Guide"
+msgstr "Hướng dẫn cài đặt"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_dashboard_section
+msgid "Dashboard"
+msgstr "Bảng điều khiển"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_employees
+msgid "Employees"
+msgstr "Nhân viên"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_payslips
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_reports
+msgid "Reports"
+msgstr "Báo cáo"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_configuration
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__name
+msgid "Name"
+msgstr "Tên"
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__active
+msgid "Active"
+msgstr "Hoạt động"
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#: button:payroll.dashboard,action_import_spreadsheet_data:0
+msgid "Import Spreadsheet Data"
+msgstr "Nhập dữ liệu bảng tính"
+
+#: button:payroll.dashboard,action_refresh_dashboard:0
+msgid "Refresh Dashboard"
+msgstr "Làm mới bảng điều khiển"
+
+#: button:payroll.dashboard,action_view_employees_by_country:0
+msgid "View Employees"
+msgstr "Xem nhân viên"
+
+#: button:payroll.dashboard,action_view_payslips_by_country:0
+msgid "View Payslips"
+msgstr "Xem phiếu lương"
+
+#: button:payroll.dashboard,action_view_contracts_by_country:0
+msgid "View Contracts"
+msgstr "Xem hợp đồng"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_user
+msgid "Payroll User"
+msgstr "Người dùng Bảng lương"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_officer
+msgid "Payroll Officer"
+msgstr "Cán bộ Bảng lương"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_manager
+msgid "Payroll Manager"
+msgstr "Quản lý Bảng lương"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_super_admin
+msgid "Payroll Super Admin"
+msgstr "Quản trị viên Bảng lương"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_vietnam
+msgid "Vietnam Payroll Access"
+msgstr "Quyền truy cập Bảng lương Việt Nam"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_cambodia
+msgid "Cambodia Payroll Access"
+msgstr "Quyền truy cập Bảng lương Campuchia"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_india
+msgid "India Payroll Access"
+msgstr "Quyền truy cập Bảng lương Ấn Độ"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_indonesia
+msgid "Indonesia Payroll Access"
+msgstr "Quyền truy cập Bảng lương Indonesia"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_malaysia
+msgid "Malaysia Payroll Access"
+msgstr "Quyền truy cập Bảng lương Malaysia"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_singapore
+msgid "Singapore Payroll Access"
+msgstr "Quyền truy cập Bảng lương Singapore"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_thailand
+msgid "Thailand Payroll Access"
+msgstr "Quyền truy cập Bảng lương Thái Lan"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_analytics_user
+msgid "Analytics User"
+msgstr "Người dùng Phân tích"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_analytics_manager
+msgid "Analytics Manager"
+msgstr "Quản lý Phân tích"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_integration_user
+msgid "Integration User"
+msgstr "Người dùng Tích hợp"
+
+#: help:payroll.dashboard,auto_refresh:0
+msgid "Enable automatic dashboard refresh at specified intervals"
+msgstr "Kích hoạt làm mới bảng điều khiển tự động theo khoảng thời gian được chỉ định"
+
+#: help:payroll.dashboard,refresh_interval:0
+msgid "Number of minutes between automatic refreshes (minimum 1)"
+msgstr "Số phút giữa các lần làm mới tự động (tối thiểu 1)"
+
+#: button:payroll.dashboard,action_open_zoho_integration:0
+msgid "Zoho Integration"
+msgstr "Tích hợp Zoho"
+
+#: view:payroll.dashboard:0
+msgid "Multi-Country Payroll Setup Guide"
+msgstr "Hướng dẫn cài đặt Bảng lương Đa quốc gia"
+
+#: view:payroll.dashboard:0
+msgid "Step 1: Create Spreadsheets"
+msgstr "Bước 1: Tạo bảng tính"
+
+#: view:payroll.dashboard:0
+msgid "Step 2: Import Employee Data"
+msgstr "Bước 2: Nhập dữ liệu nhân viên"
+
+#: view:payroll.dashboard:0
+msgid "Step 3: Run Payroll"
+msgstr "Bước 3: Chạy bảng lương"
+
+#: view:payroll.dashboard:0
+msgid "Required Components"
+msgstr "Các thành phần bắt buộc"
+
+#: view:payroll.dashboard:0
+msgid "Employee Data"
+msgstr "Dữ liệu nhân viên"
+
+#: view:payroll.dashboard:0
+msgid "Import employee information from Zoho People"
+msgstr "Nhập thông tin nhân viên từ Zoho People"
+
+#: view:payroll.dashboard:0
+msgid "Salary Rules"
+msgstr "Quy tắc lương"
+
+#: view:payroll.dashboard:0
+msgid "Configure country-specific salary components"
+msgstr "Cấu hình các thành phần lương cụ thể theo quốc gia"
+
+#: view:payroll.dashboard:0
+msgid "Payroll Structure"
+msgstr "Cấu trúc bảng lương"
+
+#: view:payroll.dashboard:0
+msgid "Define payroll structures for different roles"
+msgstr "Xác định cấu trúc bảng lương cho các vai trò khác nhau"
+
+#: view:payroll.dashboard:0
+msgid "Payroll Processing"
+msgstr "Xử lý bảng lương"
+
+#: view:payroll.dashboard:0
+msgid "Process and generate payslips"
+msgstr "Xử lý và tạo phiếu lương"

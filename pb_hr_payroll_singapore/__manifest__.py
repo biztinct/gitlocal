@@ -48,8 +48,12 @@
         'wizards/cpf_submission_wizard_views.xml',
         'views/contract_updater_views.xml',
         'views/report_payslip_singapore_template.xml',
-        'views/hr_payroll_report_singapore.xml', 
+        'views/hr_payroll_report_singapore.xml',
         'views/payslip_print_wizard_views.xml',
+        # Translations
+        'i18n/pb_hr_payroll_singapore.pot',
+        'i18n/vi_VN.po',
+        'i18n/km_KH.po',
     ],
     'installable': True,
     'application': False,
