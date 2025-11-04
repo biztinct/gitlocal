@@ -4,8 +4,19 @@
          <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
-                    <div class="page">  <t t-set="dsal" t-value="{}"/> <t t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">  <t t-esc="dsal.update({line.code:line.amount})"/>  </t>
-                    <t t-set="dwork" t-value="{}"/> <t t-foreach="o.worked_days_line_ids" t-as="line"><t t-esc="dwork.update({line.code:line.number_of_hours})"/> </t>
+                    <div class="page">
+                    <!-- Helper function to safely get salary line amounts with default value of 0 -->
+                    <t t-set="dsal" t-value="{}"/>
+                    <t t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                        <t t-esc="dsal.update({line.code:line.amount})"/>
+                    </t>
+                    <t t-set="get_sal" t-value="lambda code: dsal.get(code, 0)"/>
+
+                    <t t-set="dwork" t-value="{}"/>
+                    <t t-foreach="o.worked_days_line_ids" t-as="line">
+                        <t t-esc="dwork.update({line.code:line.number_of_hours})"/>
+                    </t>
+                    <t t-set="get_work" t-value="lambda code: dwork.get(code, 0)"/>
 <!--<img src="https://abm.biztinct.com/web/image/1148-05f6bd99/abm.png" style="max-height: 45px;" alt="Logo"/>-->
 <img src="https://payobook.com/web/image/2558-793910e5/PayobookLogo.png" style="max-height: 45px;" alt="Logo"/>
 <table style="border-collapse: collapse; width: 100%; border-width: 1px; background-color: #ffffff; border-color: #ffffff;" border="0">
@@ -105,7 +116,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Unused Vacation leaves <em>(Ngày phép chưa sử dụng)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['PAIDUNUSED'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('PAIDUNUSED'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -116,7 +127,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Taxable Overtime <em>(Tăng ca-đã nhân hệ số)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTTAX'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('OTTAX'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -127,7 +138,7 @@
     <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Responsibility allowance <em>(Phụ cấp trách nhiệm)</em></span></p>
   </td>
   <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTRESP'])"/></span></p>
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ACTRESP'))"/></span></p>
   </td>
   </tr>
 <tr style="height: 18.75pt;">
@@ -138,7 +149,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Taxi allowance <em>(Phụ cấp taxi)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTTAXI'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ACTTAXI'))"/></span></p>
 </td>
 </tr>
 
@@ -150,7 +161,7 @@
     <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Petrol allowance<em> (Xăng)</em></span></p>
   </td>
   <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTGAZ'])"/></span></p>
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ACTGAZ'))"/></span></p>
   </td>
 </tr>
 
@@ -162,7 +173,7 @@
     <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Bike park allowance <em>(Gửi xe)</em></span></p>
   </td>
   <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTPARK'])"/></span></p>
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ACTPARK'))"/></span></p>
   </td>
 </tr>
 
@@ -175,7 +186,7 @@
     <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Sales Incentive/Bean Paste Incentive <em>(Tiền thưởng khuyến khích)</em></span></p>
   </td>
   <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['SALESINC'])"/></span></p>
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('SALESINC'))"/></span></p>
   </td>
   </tr>
 
@@ -188,7 +199,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">13th month Salary <em>(Lương tháng 13)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['THMON'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('THMON'))"/></span></p>
 </td>
 </tr>
 
@@ -200,7 +211,7 @@
     <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Bonus <em>(Thưởng)</em></span></p>
   </td>
   <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['BONSTIP'])"/></span></p>
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('BONSTIP'))"/></span></p>
   </td>
   </tr>
 
@@ -212,7 +223,7 @@
     <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Other Addition / Deduction income before tax <em>(Khoản cộng/trừ trước thuế)</em></span></p>
   </td>
   <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTHERINC'])"/></span></p>
+    <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('OTHERINC'))"/></span></p>
   </td>
 </tr>
 
@@ -222,7 +233,7 @@
   <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Total I (Tổng cộng I)</span></strong></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['TAXIN'])"/></span></strong></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('TAXIN'))"/></span></strong></p>
 </td>
 </tr>
 
@@ -241,7 +252,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Non-Taxable Overtime and Night shift allowance <em>(Tăng ca không chịu thuế TNCN và ca đêm)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTNT'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('OTNT'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -252,7 +263,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Phone allowance <em>(Phụ cấp điện thoại)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTPHONE'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ACTPHONE'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -263,7 +274,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Meal allowance<em> (Cơm)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ACTMEAL'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ACTMEAL'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -274,7 +285,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Other Addition/ Deduction after tax (Khoản công/ trừ sau thuế)</span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['OTDEDU'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('OTDEDU'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -285,7 +296,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Severance Allowance <em>(Trợ cấp thôi việc)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['SEVER'])"/></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('SEVER'))"/></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -293,7 +304,7 @@
   <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Total II (Tổng cộng II)</span></strong></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['ATI'] - dsal['TAXIN'])"/></span></strong><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">   </span></strong></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ATI') - get_sal('TAXIN'))"/></span></strong><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">   </span></strong></p>
 </td>
 </tr>
 <tr style="height: 20.25pt;">
@@ -309,7 +320,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">SMUI 10.5% <em>(BHXH, BHYT, BHTN)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['SIHIUITEN'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('SIHIUITEN'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -320,7 +331,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Union fees <em>(Phí Công đoàn)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['EMPTU'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('EMPTU'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -331,7 +342,7 @@
   <p style="margin: 0cm; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Personal Income Tax <em>(Thuế thu nhập cá nhân)</em></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['MONPIT'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('MONPIT'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -345,7 +356,7 @@
   <p style="margin: 0cm; text-align: center; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-field="o.contract_id.dependents"/></span></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['DEPAMT'])"/></span></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('DEPAMT'))"/></span></p>
 </td>
 </tr>
 <tr style="height: 18.75pt;">
@@ -353,7 +364,7 @@
   <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">Total III (Tổng cộng III)</span></strong></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['TOTDEDU'])"/></span></strong></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('TOTDEDU'))"/></span></strong></p>
 </td>
 </tr>
 <tr style="height: 15.4pt;">
@@ -366,7 +377,7 @@
   <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">TOTAL IV = I+II-III  <em>(TỔNG MỤC IV = I+II-III)</em></span></strong></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(dsal['NETPAY'])"/></span></strong></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('NETPAY'))"/></span></strong></p>
 </td>
 </tr>
 <tr style="height: 32.25pt;">
@@ -377,6 +388,7 @@
 </tbody>
 </table>
 <h1> </h1>
+
 
 
 
