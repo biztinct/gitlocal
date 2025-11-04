@@ -17,8 +17,9 @@
                         <t t-esc="dwork.update({line.code:line.number_of_hours})"/>
                     </t>
                     <t t-set="get_work" t-value="lambda code: dwork.get(code, 0)"/>
-<!--<img src="https://abm.biztinct.com/web/image/1148-05f6bd99/abm.png" style="max-height: 45px;" alt="Logo"/>-->
-<img src="https://payobook.com/web/image/2558-793910e5/PayobookLogo.png" style="max-height: 45px;" alt="Logo"/>
+<t t-if="o.company_id.logo">
+    <img t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 120px;" alt="Company Logo"/>
+</t>
 <table style="border-collapse: collapse; width: 100%; border-width: 1px; background-color: #ffffff; border-color: #ffffff;" border="0">
 <col style="width: 50%;"/>
 <col style="width: 50%;"/>
