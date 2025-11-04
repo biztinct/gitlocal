@@ -228,7 +228,7 @@
                                         <h4 class="card-title">Payslip Batch</h4>
                                         <p class="card-description">Manage payslip batches and bulk payroll processing</p>
                                     </div>
-                                    <button name="%(action_vietnam_payslip_batch_kanban)d"
+                                    <button name="%(pb_hr_payroll_vietnam.action_vietnam_view_payslip_batches_clean)d"
                                             type="action"
                                             class="dashboard-btn">
                                         View Payslip Batches
