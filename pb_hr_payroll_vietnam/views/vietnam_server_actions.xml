@@ -44,6 +44,7 @@ action = {
 # Clear active_id context and open payslip batch view
 action = {
     'type': 'ir.actions.act_window',
+    'name': 'Batch Payslips',
     'res_model': 'hr.payslip.run',
     'view_mode': 'kanban,tree,form',
     'domain': [],
