@@ -1,0 +1,176 @@
+# Translation template for pb_hr_payroll_vietnam.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_vietnam package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_vietnam 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.view,string:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_dashboard
+msgid "Vietnam Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_social_insurance
+msgid "Vietnam Social Insurance"
+msgstr ""
+
+#: field:hr.payslip,vietnam_si_employee:0
+msgid "Social Insurance - Employee"
+msgstr ""
+
+#: field:hr.payslip,vietnam_si_company:0
+msgid "Social Insurance - Company"
+msgstr ""
+
+#: field:hr.payslip,vietnam_hi_employee:0
+msgid "Health Insurance - Employee"
+msgstr ""
+
+#: field:hr.payslip,vietnam_hi_company:0
+msgid "Health Insurance - Company"
+msgstr ""
+
+#: field:hr.payslip,vietnam_ui_employee:0
+msgid "Unemployment Insurance - Employee"
+msgstr ""
+
+#: field:hr.payslip,vietnam_ui_company:0
+msgid "Unemployment Insurance - Company"
+msgstr ""
+
+#: field:hr.payslip,vietnam_pit:0
+msgid "Personal Income Tax"
+msgstr ""
+
+#: field:hr.payslip,vietnam_net_pay:0
+msgid "Net Pay (Vietnam)"
+msgstr ""
+
+#: field:hr.payslip,vietnam_gross_salary:0
+msgid "Gross Salary (Vietnam)"
+msgstr ""
+
+#: button:hr.payslip,action_compute_vietnam_tax:0
+msgid "Compute Vietnam Tax"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Vietnam Payslip"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Vietnam Salary Rules"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Vietnam Insurance Components"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Social Insurance Calculation"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Health Insurance Calculation"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Unemployment Insurance Calculation"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Personal Income Tax Calculation"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:50
+msgid "Vietnam tax computed successfully"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:60
+msgid "Error computing Vietnam tax: %s"
+msgstr ""
+
+#: help:hr.payslip,vietnam_si_employee:0
+msgid "8% deducted from employee salary for social insurance"
+msgstr ""
+
+#: help:hr.payslip,vietnam_si_company:0
+msgid "17.5% paid by company for social insurance"
+msgstr ""
+
+#: help:hr.payslip,vietnam_hi_employee:0
+msgid "1.5% deducted from employee salary for health insurance"
+msgstr ""
+
+#: help:hr.payslip,vietnam_hi_company:0
+msgid "3% paid by company for health insurance"
+msgstr ""
+
+#: help:hr.payslip,vietnam_ui_employee:0
+msgid "1% deducted from employee salary for unemployment insurance"
+msgstr ""
+
+#: help:hr.payslip,vietnam_ui_company:0
+msgid "1% paid by company for unemployment insurance"
+msgstr ""
+
+#: help:hr.payslip,vietnam_pit:0
+msgid "Progressive personal income tax based on Vietnamese regulations"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_vietnam.group_vietnam_payroll_officer
+msgid "Vietnam Payroll Officer"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_vietnam.group_vietnam_payroll_manager
+msgid "Vietnam Payroll Manager"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Vietnam Payroll Management System"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Social Insurance (SI) Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Health Insurance (HI) Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Unemployment Insurance (UI) Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Personal Income Tax (PIT) Processing"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Annual Payroll Reports"
+msgstr ""
+
+#: button:payroll.dashboard,action_process_vietnam_payroll:0
+msgid "Process Vietnam Payroll"
+msgstr ""
+
+#: button:payroll.dashboard,action_generate_vietnam_reports:0
+msgid "Generate Vietnam Reports"
+msgstr ""
+
+#: button:payroll.dashboard,action_export_vietnam_data:0
+msgid "Export Vietnam Data"
+msgstr ""

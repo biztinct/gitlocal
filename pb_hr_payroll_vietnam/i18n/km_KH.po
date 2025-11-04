@@ -1,0 +1,181 @@
+# Khmer translation for pb_hr_payroll_vietnam.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_vietnam package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_vietnam 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Khmer Team\n"
+"Language-Team: Khmer\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.view,string:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប៉ាវローលវៀតណាម"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_dashboard
+msgid "Vietnam Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងវៀតណាម"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_social_insurance
+msgid "Vietnam Social Insurance"
+msgstr "ការធានារ៉ាប់រងសង្គមវៀតណាម"
+
+#: field:hr.payslip,vietnam_si_employee:0
+msgid "Social Insurance - Employee"
+msgstr "ការធានារ៉ាប់រងសង្គម - និយោជក"
+
+#: field:hr.payslip,vietnam_si_company:0
+msgid "Social Insurance - Company"
+msgstr "ការធានារ៉ាប់រងសង្គម - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,vietnam_hi_employee:0
+msgid "Health Insurance - Employee"
+msgstr "ការធានារ៉ាប់រងសុខភាព - និយោជក"
+
+#: field:hr.payslip,vietnam_hi_company:0
+msgid "Health Insurance - Company"
+msgstr "ការធានារ៉ាប់រងសុខភាព - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,vietnam_ui_employee:0
+msgid "Unemployment Insurance - Employee"
+msgstr "ការធានារ៉ាប់រងបាត់ការងារ - និយោជក"
+
+#: field:hr.payslip,vietnam_ui_company:0
+msgid "Unemployment Insurance - Company"
+msgstr "ការធានារ៉ាប់រងបាត់ការងារ - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,vietnam_pit:0
+msgid "Personal Income Tax"
+msgstr "ពន្ធលម្អិតលម្អិតផ្ទាល់ខ្លួន"
+
+#: field:hr.payslip,vietnam_net_pay:0
+msgid "Net Pay (Vietnam)"
+msgstr "លម្អិតលម្អិតសុទ្ធ (វៀតណាម)"
+
+#: field:hr.payslip,vietnam_gross_salary:0
+msgid "Gross Salary (Vietnam)"
+msgstr "លម្អិតលម្អិតក្រៅ (វៀតណាម)"
+
+#: button:hr.payslip,action_compute_vietnam_tax:0
+msgid "Compute Vietnam Tax"
+msgstr "គណនាពន្ធវៀតណាម"
+
+#: view:hr.payslip:0
+msgid "Vietnam Payslip"
+msgstr "ឯកសារប៉ាវរូលវៀតណាម"
+
+#: view:hr.payslip:0
+msgid "Vietnam Salary Rules"
+msgstr "ច្បាប់លម្អិតលម្អិតវៀតណាម"
+
+#: view:hr.payslip:0
+msgid "Vietnam Insurance Components"
+msgstr "សមាសភាគការធានារ៉ាប់រងវៀតណាម"
+
+#: view:hr.payslip:0
+msgid "Social Insurance Calculation"
+msgstr "ការគណនាការធានារ៉ាប់រងសង្គម"
+
+#: view:hr.payslip:0
+msgid "Health Insurance Calculation"
+msgstr "ការគណនាការធានារ៉ាប់រងសុខភាព"
+
+#: view:hr.payslip:0
+msgid "Unemployment Insurance Calculation"
+msgstr "ការគណនាការធានារ៉ាប់រងបាត់ការងារ"
+
+#: view:hr.payslip:0
+msgid "Personal Income Tax Calculation"
+msgstr "ការគណនាពន្ធលម្អិតលម្អិតផ្ទាល់ខ្លួន"
+
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:50
+msgid "Vietnam tax computed successfully"
+msgstr "ពន្ធវៀតណាមបានគណនាដោយជោគជ័យ"
+
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:60
+msgid "Error computing Vietnam tax: %s"
+msgstr "កំហុសក្នុងការគណនាពន្ធវៀតណាម៖ %s"
+
+#: help:hr.payslip,vietnam_si_employee:0
+msgid "8% deducted from employee salary for social insurance"
+msgstr "8% ត្រូវបានកាត់ចេញពីលម្អិតលម្អិតនិយោជកសម្រាប់ការធានារ៉ាប់រងសង្គម"
+
+#: help:hr.payslip,vietnam_si_company:0
+msgid "17.5% paid by company for social insurance"
+msgstr "17.5% ត្រូវបានបង់ដោយក្រុមហ៊ុនសម្រាប់ការធានារ៉ាប់រងសង្គម"
+
+#: help:hr.payslip,vietnam_hi_employee:0
+msgid "1.5% deducted from employee salary for health insurance"
+msgstr "1.5% ត្រូវបានកាត់ចេញពីលម្អិតលម្អិតនិយោជកសម្រាប់ការធានារ៉ាប់រងសុខភាព"
+
+#: help:hr.payslip,vietnam_hi_company:0
+msgid "3% paid by company for health insurance"
+msgstr "3% ត្រូវបានបង់ដោយក្រុមហ៊ុនសម្រាប់ការធានារ៉ាប់រងសុខភាព"
+
+#: help:hr.payslip,vietnam_ui_employee:0
+msgid "1% deducted from employee salary for unemployment insurance"
+msgstr "1% ត្រូវបានកាត់ចេញពីលម្អិតលម្អិតនិយោជកសម្រាប់ការធានារ៉ាប់រងបាត់ការងារ"
+
+#: help:hr.payslip,vietnam_ui_company:0
+msgid "1% paid by company for unemployment insurance"
+msgstr "1% ត្រូវបានបង់ដោយក្រុមហ៊ុនសម្រាប់ការធានារ៉ាប់រងបាត់ការងារ"
+
+#: help:hr.payslip,vietnam_pit:0
+msgid "Progressive personal income tax based on Vietnamese regulations"
+msgstr "ពន្ធលម្អិតលម្អិតផ្ទាល់ខ្លួនលម្អិតលម្អិតដែលផ្អែកលើលក្ខណៈលម្អិតវៀតណាម"
+
+#: res.groups,name:pb_hr_payroll_vietnam.group_vietnam_payroll_officer
+msgid "Vietnam Payroll Officer"
+msgstr "មន្ត្រីប៉ាវរូលវៀតណាម"
+
+#: res.groups,name:pb_hr_payroll_vietnam.group_vietnam_payroll_manager
+msgid "Vietnam Payroll Manager"
+msgstr "ក្រុមប្រឹក្សាប៉ាវរូលវៀតណាម"
+
+#: dashboard.payroll:0
+msgid "Vietnam Payroll Management System"
+msgstr "ប្រព័ន្ធគ្រប់គ្រងប៉ាវរូលវៀតណាម"
+
+#: dashboard.payroll:0
+msgid "Social Insurance (SI) Management"
+msgstr "គ្រប់គ្រងការធានារ៉ាប់រងសង្គម (SI)"
+
+#: dashboard.payroll:0
+msgid "Health Insurance (HI) Management"
+msgstr "គ្រប់គ្រងការធានារ៉ាប់រងសុខភាព (HI)"
+
+#: dashboard.payroll:0
+msgid "Unemployment Insurance (UI) Management"
+msgstr "គ្រប់គ្រងការធានារ៉ាប់រងបាត់ការងារ (UI)"
+
+#: dashboard.payroll:0
+msgid "Personal Income Tax (PIT) Processing"
+msgstr "ដំណើរការពន្ធលម្អិតលម្អិតផ្ទាល់ខ្លួន (PIT)"
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr "ដំណើរការប៉ាវរូលប្រចាំខែ"
+
+#: dashboard.payroll:0
+msgid "Annual Payroll Reports"
+msgstr "របាយការណ៍ប៉ាវរូលប្រចាំឆ្នាំ"
+
+#: button:payroll.dashboard,action_process_vietnam_payroll:0
+msgid "Process Vietnam Payroll"
+msgstr "ដំណើរការប៉ាវរូលវៀតណាម"
+
+#: button:payroll.dashboard,action_generate_vietnam_reports:0
+msgid "Generate Vietnam Reports"
+msgstr "បង្កើតរបាយការណ៍វៀតណាម"
+
+#: button:payroll.dashboard,action_export_vietnam_data:0
+msgid "Export Vietnam Data"
+msgstr "នាំចេញទិន្នន័យវៀតណាម"

@@ -1,0 +1,133 @@
+# Khmer translation for pb_hr_payroll_india.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_india package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_india 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Khmer Team\n"
+"Language-Team: Khmer\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_india
+#: model:ir.ui.view,string:pb_hr_payroll_india.view_payroll_dashboard_india
+msgid "India Payroll Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប៉ាវរូលឥណ្ឌា"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_india.menu_india_dashboard
+msgid "India Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងឥណ្ឌា"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_india.menu_india_gratuity
+msgid "India Gratuity Payments"
+msgstr "ការបង់ប្រាក់ឧបត្ថម្ភឥណ្ឌា"
+
+#: field:hr.payslip,india_pf_employee:0
+msgid "Provident Fund - Employee"
+msgstr "មូលនិធិលម្អិតលម្អិត - និយោជក"
+
+#: field:hr.payslip,india_pf_company:0
+msgid "Provident Fund - Company"
+msgstr "មូលនិធិលម្អិតលម្អិត - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,india_esi_employee:0
+msgid "Employee State Insurance - Employee"
+msgstr "ការធានារ៉ាប់រងរដ្ឋកម្មករ - និយោជក"
+
+#: field:hr.payslip,india_esi_company:0
+msgid "Employee State Insurance - Company"
+msgstr "ការធានារ៉ាប់រងរដ្ឋកម្មករ - ក្រុមហ៊ុន"
+
+#: field:hr.payslip,india_pt:0
+msgid "Professional Tax"
+msgstr "ពន្ធឧទ្ទក្ខិណ្ឌ"
+
+#: field:hr.payslip,india_tds:0
+msgid "Tax Deducted at Source"
+msgstr "ពន្ធខ្វៀងដែលកាត់ចេញនៅប្រភពលម្អិតលម្អិត"
+
+#: field:hr.payslip,india_gratuity:0
+msgid "Gratuity"
+msgstr "ឧបត្ថម្ភ"
+
+#: button:hr.payslip,action_compute_india_tax:0
+msgid "Compute India Tax"
+msgstr "គណនាពន្ធឥណ្ឌា"
+
+#: view:hr.payslip:0
+msgid "India Payslip"
+msgstr "ឯកសារប៉ាវរូលឥណ្ឌា"
+
+#: view:hr.payslip:0
+msgid "India Salary Rules"
+msgstr "ច្បាប់លម្អិតលម្អិតឥណ្ឌា"
+
+#: view:hr.payslip:0
+msgid "India Insurance Components"
+msgstr "សមាសភាគការធានារ៉ាប់រងឥណ្ឌា"
+
+#: code:addons/pb_hr_payroll_india/models/hr_payslip_india.py:50
+msgid "India tax computed successfully"
+msgstr "ពន្ធឥណ្ឌាបានគណនាដោយជោគជ័យ"
+
+#: code:addons/pb_hr_payroll_india/models/hr_payslip_india.py:60
+msgid "Error computing India tax: %s"
+msgstr "កំហុសក្នុងការគណនាពន្ធឥណ្ឌា៖ %s"
+
+#: help:hr.payslip,india_pf_employee:0
+msgid "12% deducted from employee salary for provident fund"
+msgstr "12% ត្រូវបានកាត់ចេញពីលម្អិតលម្អិតនិយោជកសម្រាប់មូលនិធិលម្អិតលម្អិត"
+
+#: help:hr.payslip,india_pf_company:0
+msgid "12% paid by company for provident fund"
+msgstr "12% ត្រូវបានបង់ដោយក្រុមហ៊ុនសម្រាប់មូលនិធិលម្អិតលម្អិត"
+
+#: help:hr.payslip,india_esi_employee:0
+msgid "0.75% deducted from employee salary for ESI"
+msgstr "0.75% ត្រូវបានកាត់ចេញពីលម្អិតលម្អិតនិយោជកសម្រាប់ ESI"
+
+#: help:hr.payslip,india_esi_company:0
+msgid "3.25% paid by company for ESI"
+msgstr "3.25% ត្រូវបានបង់ដោយក្រុមហ៊ុនសម្រាប់ ESI"
+
+#: res.groups,name:pb_hr_payroll_india.group_india_payroll_officer
+msgid "India Payroll Officer"
+msgstr "មន្ត្រីប៉ាវរូលឥណ្ឌា"
+
+#: button:payroll.dashboard,action_process_india_payroll:0
+msgid "Process India Payroll"
+msgstr "ដំណើរការប៉ាវរូលឥណ្ឌា"
+
+#: button:payroll.dashboard,action_process_gratuity:0
+msgid "Process Gratuity Payments"
+msgstr "ដំណើរការការបង់ឧបត្ថម្ភ"
+
+#: button:payroll.dashboard,action_export_india_data:0
+msgid "Export India Data"
+msgstr "នាំចេញទិន្នន័យឥណ្ឌា"
+
+#: dashboard.payroll:0
+msgid "India Payroll Management System"
+msgstr "ប្រព័ន្ធគ្រប់គ្រងប៉ាវរូលឥណ្ឌា"
+
+#: dashboard.payroll:0
+msgid "Provident Fund Management"
+msgstr "គ្រប់គ្រងមូលនិធិលម្អិតលម្អិត"
+
+#: dashboard.payroll:0
+msgid "Employee State Insurance Management"
+msgstr "គ្រប់គ្រងការធានារ៉ាប់រងរដ្ឋកម្មករ"
+
+#: dashboard.payroll:0
+msgid "Professional Tax Processing"
+msgstr "ដំណើរការពន្ធឧទ្ទក្ខិណ្ឌ"
+
+#: dashboard.payroll:0
+msgid "Gratuity Calculation and Payment"
+msgstr "ការគណនា និង ការបង់ឧបត្ថម្ភ"

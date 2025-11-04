@@ -1,0 +1,120 @@
+# Translation template for pb_hr_payroll_thailand.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_thailand package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_thailand 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_thailand
+#: model:ir.ui.view,string:pb_hr_payroll_thailand.view_payroll_dashboard_thailand
+msgid "Thailand Payroll Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_thailand.menu_thailand_dashboard
+msgid "Thailand Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_thailand.menu_thailand_ssf
+msgid "Thailand SSF Reporting"
+msgstr ""
+
+#: field:hr.payslip,thailand_ssf_employee:0
+msgid "SSF - Employee"
+msgstr ""
+
+#: field:hr.payslip,thailand_ssf_company:0
+msgid "SSF - Company"
+msgstr ""
+
+#: field:hr.payslip,thailand_pf_employee:0
+msgid "Provident Fund - Employee"
+msgstr ""
+
+#: field:hr.payslip,thailand_pf_company:0
+msgid "Provident Fund - Company"
+msgstr ""
+
+#: field:hr.payslip,thailand_wcf:0
+msgid "Workmen's Compensation Fund"
+msgstr ""
+
+#: button:hr.payslip,action_compute_thailand_tax:0
+msgid "Compute Thailand Tax"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Thailand Payslip"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Thailand Salary Rules"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Thailand Insurance Components"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_thailand/models/hr_payslip_thailand.py:50
+msgid "Thailand tax computed successfully"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_thailand/models/hr_payslip_thailand.py:60
+msgid "Error computing Thailand tax: %s"
+msgstr ""
+
+#: help:hr.payslip,thailand_ssf_employee:0
+msgid "Social Security Fund contribution deducted from employee"
+msgstr ""
+
+#: help:hr.payslip,thailand_ssf_company:0
+msgid "Social Security Fund contribution paid by company"
+msgstr ""
+
+#: help:hr.payslip,thailand_pf_employee:0
+msgid "Employee provident fund contribution"
+msgstr ""
+
+#: help:hr.payslip,thailand_pf_company:0
+msgid "Company provident fund contribution"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_thailand.group_thailand_payroll_officer
+msgid "Thailand Payroll Officer"
+msgstr ""
+
+#: button:payroll.dashboard,action_process_thailand_payroll:0
+msgid "Process Thailand Payroll"
+msgstr ""
+
+#: button:payroll.dashboard,action_submit_ssf:0
+msgid "Submit SSF Report"
+msgstr ""
+
+#: button:payroll.dashboard,action_export_thailand_data:0
+msgid "Export Thailand Data"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Thailand Payroll Management System"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "SSF Management and Reporting"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Provident Fund Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Workmen's Compensation Fund"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr ""

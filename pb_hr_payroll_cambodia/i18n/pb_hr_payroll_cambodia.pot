@@ -1,0 +1,104 @@
+# Translation template for pb_hr_payroll_cambodia.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_cambodia package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_cambodia 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_cambodia
+#: model:ir.ui.view,string:pb_hr_payroll_cambodia.view_payroll_dashboard_cambodia
+msgid "Cambodia Payroll Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_cambodia.menu_cambodia_dashboard
+msgid "Cambodia Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_cambodia.menu_cambodia_nssf
+msgid "Cambodia NSSF Processing"
+msgstr ""
+
+#: field:hr.payslip,cambodia_nssf_employee:0
+msgid "NSSF - Employee"
+msgstr ""
+
+#: field:hr.payslip,cambodia_nssf_company:0
+msgid "NSSF - Company"
+msgstr ""
+
+#: field:hr.payslip,cambodia_oc_employee:0
+msgid "Occupational Risk Insurance - Employee"
+msgstr ""
+
+#: field:hr.payslip,cambodia_oc_company:0
+msgid "Occupational Risk Insurance - Company"
+msgstr ""
+
+#: field:hr.payslip,cambodia_healthcare:0
+msgid "Healthcare Fund Contribution"
+msgstr ""
+
+#: button:hr.payslip,action_compute_cambodia_nssf:0
+msgid "Compute Cambodia NSSF"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Cambodia Payslip"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Cambodia NSSF Components"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "NSSF Contribution Calculation"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_cambodia/models/hr_payslip_cambodia.py:50
+msgid "Cambodia NSSF computed successfully"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_cambodia/models/hr_payslip_cambodia.py:60
+msgid "Error computing Cambodia NSSF: %s"
+msgstr ""
+
+#: help:hr.payslip,cambodia_nssf_employee:0
+msgid "Employee contribution to National Social Security Fund"
+msgstr ""
+
+#: help:hr.payslip,cambodia_nssf_company:0
+msgid "Company contribution to National Social Security Fund"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_cambodia.group_cambodia_payroll_officer
+msgid "Cambodia Payroll Officer"
+msgstr ""
+
+#: button:payroll.dashboard,action_process_cambodia_payroll:0
+msgid "Process Cambodia Payroll"
+msgstr ""
+
+#: button:payroll.dashboard,action_export_cambodia_data:0
+msgid "Export Cambodia Data"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Cambodia Payroll Management System"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "NSSF Management and Compliance"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Occupational Risk Insurance"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Healthcare Fund Management"
+msgstr ""

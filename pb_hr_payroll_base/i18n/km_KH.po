@@ -1,0 +1,329 @@
+# Khmer translation for pb_hr_payroll_base.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_base package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_base 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"PO-Revision-Date: 2024-11-05 00:00+0000\n"
+"Last-Translator: Khmer Team\n"
+"Language-Team: Khmer\n"
+"Language: km_KH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_base
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:75
+msgid "Import Successful"
+msgstr "នាំចូលដោយជោគជ័យ"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:76
+msgid "Spreadsheet data imported successfully for %s"
+msgstr "ទិន្នន័យតារាងក្រាច់ត្រូវបានគេនាំចូលដោយជោគជ័យសម្រាប់ %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:90
+msgid "Spreadsheet Not Found"
+msgstr "មិនបានរកឃើញតារាងក្រាច់"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:91
+msgid "Spreadsheet reference %s not found for country %s"
+msgstr "ឯកសារយោងតារាងក្រាច់ %s មិនបានរកឃើញសម្រាប់देश %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:100
+msgid "Import Warning"
+msgstr "ការព្រមាននាំចូល"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:101
+msgid "Spreadsheet import encountered issues: %s"
+msgstr "ការនាំចូលតារាងក្រាច់បានជួបប្រទះបញ្ហា៖ %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:105
+msgid "No Spreadsheet Configured"
+msgstr "មិនមានតារាងក្រាច់ដែលបានកំណត់រចនាសម្ព័ន្ធ"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:106
+msgid "No spreadsheet is configured for country %s. Import skipped."
+msgstr "មិនមានតារាងក្រាច់ដែលបានកំណត់រចនាសម្ព័ន្ធសម្រាប់देश %s។ ការនាំចូលត្រូវបានលុបចោល។"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:115
+msgid "Import Completed"
+msgstr "ការនាំចូលបានзавершен"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:116
+msgid "Payroll data import completed successfully. Use \"View Payslip Batches\" to create batches when ready."
+msgstr "ការនាំចូលទិន្នន័យប៉ាវローលបានបញ្ចប់ដោយជោគជ័យ។ ប្រើ \"មើលលក្ខណៈលម្អិតលក្ខណៈលម្អិត\" ដើម្បីបង្កើតលក្ខណៈលម្អិតនៅពេលដែលវាត្រៀម។"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:145
+msgid "Error in payroll process: %s"
+msgstr "កំហុសក្នុងដំណើរការប៉ាវローល៖ %s"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:160
+msgid "No Employees Found"
+msgstr "មិនបានរកឃើញនិយោជក"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:161
+msgid "Please create payroll structures and contracts first."
+msgstr "សូមបង្កើតរចនាសម្ព័ន្ធប៉ាវローលនិងកិច្ចសន្យាលក្ខណៈលម្អិតដំបូង។"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:60
+msgid "Analytics Computed"
+msgstr "ការវិភាគបានគណនា"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:61
+msgid "Analytics have been successfully computed."
+msgstr "ការវិភាគត្រូវបានគណនាដោយជោគជ័យ។"
+
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:40
+msgid "This record has already been processed"
+msgstr "កំណត់ត្រាលម្អិតនេះបានដំណើរការរួចហើយ"
+
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:50
+msgid "Error processing data: %s"
+msgstr "កំហុសក្នុងការដំណើរការទិន្នន័យ៖ %s"
+
+#: code:addons/pb_hr_payroll_base/models/hr_payroll_structure_base.py:20
+msgid "Unable to view employees. Please try again."
+msgstr "មិនអាចមើលនិយោជកបានទេ។ សូមព្យាយាមម្តងទៀត។"
+
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:35
+msgid "This record has already been processed"
+msgstr "កំណត្របានដំណើរការរួចហើយ"
+
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:45
+msgid "Error processing data: %s"
+msgstr "កំហុសក្នុងការដំណើរការទិន្នន័យ៖ %s"
+
+#: model:ir.ui.view,string:pb_hr_payroll_base.view_payroll_dashboard_base
+msgid "Payroll Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប៉ាវローល"
+
+#: field:payroll.dashboard,country:0
+msgid "Country"
+msgstr "देश"
+
+#: field:payroll.dashboard,total_employees:0
+msgid "Total Employees"
+msgstr "សរុបនិយោជក"
+
+#: field:payroll.dashboard,total_payroll:0
+msgid "Total Payroll"
+msgstr "សរុបប៉ាវローល"
+
+#: field:payroll.dashboard,average_salary:0
+msgid "Average Salary"
+msgstr "រយៈពេលមធ្យមអាហារូបករណ៍"
+
+#: field:payroll.dashboard,pending_payslips:0
+msgid "Pending Payslips"
+msgstr "ឯកសារប៉ាវローលរង់ចាំ"
+
+#: field:payroll.dashboard,last_import_date:0
+msgid "Last Import Date"
+msgstr "កាលបរិច្ឆេទនាំចូលចុងក្រោយ"
+
+#: field:payroll.dashboard,spreadsheet_url:0
+msgid "Spreadsheet URL"
+msgstr "URL តារាងក្រាច់"
+
+#: field:payroll.dashboard,auto_refresh:0
+msgid "Auto Refresh"
+msgstr "ធ្វើឱ្យស្វាគមន៍ម្ដងទៀត"
+
+#: field:payroll.dashboard,refresh_interval:0
+msgid "Refresh Interval (minutes)"
+msgstr "ចន្លោះពេលឆ្នើម (នាទី)"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:200
+msgid "Refresh interval must be at least 1 minute."
+msgstr "ចន្លោះពេលឆ្នើមត្រូវតែមានយ៉ាងហោចណាស់ 1 នាទី។"
+
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:210
+msgid "A dashboard for %s already exists"
+msgstr "ផ្ទាំងគ្រប់គ្រងសម្រាប់ %s មានរួចហើយ"
+
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_view_payroll_dashboard
+msgid "Payroll Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រងប៉ាវローល"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_dashboard
+msgid "Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រង"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_setup_guide
+msgid "Setup Guide"
+msgstr "មគ្គុទ្ធិកម្មលម្អិត"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_dashboard_section
+msgid "Dashboard"
+msgstr "ផ្ទាំងគ្រប់គ្រង"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_employees
+msgid "Employees"
+msgstr "និយោជក"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_payslips
+msgid "Payslips"
+msgstr "ឯកសារប៉ាវローល"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_reports
+msgid "Reports"
+msgstr "របាយការណ៍"
+
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_configuration
+msgid "Configuration"
+msgstr "ការកំណត់រចនាសម្ព័ន្ធ"
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__name
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__active
+msgid "Active"
+msgstr "សកម្ម"
+
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__sequence
+msgid "Sequence"
+msgstr "លំដាប់"
+
+#: button:payroll.dashboard,action_import_spreadsheet_data:0
+msgid "Import Spreadsheet Data"
+msgstr "នាំចូលទិន្នន័យតារាងក្រាច់"
+
+#: button:payroll.dashboard,action_refresh_dashboard:0
+msgid "Refresh Dashboard"
+msgstr "ធ្វើឱ្យផ្ទាំងគ្រប់គ្រងស្វាគមន៍ម្ដងទៀត"
+
+#: button:payroll.dashboard,action_view_employees_by_country:0
+msgid "View Employees"
+msgstr "មើលនិយោជក"
+
+#: button:payroll.dashboard,action_view_payslips_by_country:0
+msgid "View Payslips"
+msgstr "មើលឯកសារប៉ាវローល"
+
+#: button:payroll.dashboard,action_view_contracts_by_country:0
+msgid "View Contracts"
+msgstr "មើលកិច្ចសន្យា"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_user
+msgid "Payroll User"
+msgstr "អ្នកប្រើប៉ាវローល"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_officer
+msgid "Payroll Officer"
+msgstr "មន្ត្រីប៉ាវローល"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_base_manager
+msgid "Payroll Manager"
+msgstr "ក្រុមប្រឹក្សាប៉ាវローល"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_super_admin
+msgid "Payroll Super Admin"
+msgstr "អ្នកគ្រប់គ្រងលម្អិតលើស័ក"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_vietnam
+msgid "Vietnam Payroll Access"
+msgstr "ឯកសារប្រទេសវៀតណាមដែលមាន"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_cambodia
+msgid "Cambodia Payroll Access"
+msgstr "ឯកសារកម្ពុჩាដែលមាន"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_india
+msgid "India Payroll Access"
+msgstr "ឯកសារឥណ្ឌាដែលមាន"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_indonesia
+msgid "Indonesia Payroll Access"
+msgstr "ឯកសារឥណ្ឌូនេស៊ីដែលមាន"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_malaysia
+msgid "Malaysia Payroll Access"
+msgstr "ឯកសារម៉ាឡេស៊ីដែលមាន"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_singapore
+msgid "Singapore Payroll Access"
+msgstr "ឯកសារឆ្ងាយឆ្ងាយដែលមាន"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_thailand
+msgid "Thailand Payroll Access"
+msgstr "ឯកសារប្រទេសថៃដែលមាន"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_analytics_user
+msgid "Analytics User"
+msgstr "អ្នកប្រើប្រាស់ការវិភាគ"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_analytics_manager
+msgid "Analytics Manager"
+msgstr "ក្រុមប្រឹក្សាការវិភាគ"
+
+#: res.groups,name:pb_hr_payroll_base.group_payroll_integration_user
+msgid "Integration User"
+msgstr "អ្នកប្រើប្រាស់ការធ្វើសមាហរណកម្ម"
+
+#: help:payroll.dashboard,auto_refresh:0
+msgid "Enable automatic dashboard refresh at specified intervals"
+msgstr "ធ្វើឱ្យប្រើប្រាស់ការឆ្នើមផ្ទាំងគ្រប់គ្រងស្វាគមន៍ម្ដងទៀតនៅចន្លោះពេលដែលបានរៀបចំ"
+
+#: help:payroll.dashboard,refresh_interval:0
+msgid "Number of minutes between automatic refreshes (minimum 1)"
+msgstr "ចំនួននាទីរវាងការឆ្នើមស្វាគមន៍ម្ដងទៀត (អប្បបរមា 1)"
+
+#: button:payroll.dashboard,action_open_zoho_integration:0
+msgid "Zoho Integration"
+msgstr "ការធ្វើសមាហរណកម្ម Zoho"
+
+#: view:payroll.dashboard:0
+msgid "Multi-Country Payroll Setup Guide"
+msgstr "មគ្គុទ្ធិកម្មលម្អិតប៉ាវローលពហុប្រទេស"
+
+#: view:payroll.dashboard:0
+msgid "Step 1: Create Spreadsheets"
+msgstr "ជំហានទី 1៖ បង្កើតតារាងក្រាច់"
+
+#: view:payroll.dashboard:0
+msgid "Step 2: Import Employee Data"
+msgstr "ជំហានទី 2៖ នាំចូលទិន្នន័យនិយោជក"
+
+#: view:payroll.dashboard:0
+msgid "Step 3: Run Payroll"
+msgstr "ជំហានទី 3៖ ដំណើរការប៉ាវローល"
+
+#: view:payroll.dashboard:0
+msgid "Required Components"
+msgstr "សមាសភាគដែលត្រូវការ"
+
+#: view:payroll.dashboard:0
+msgid "Employee Data"
+msgstr "ទិន្នន័យនិយោជក"
+
+#: view:payroll.dashboard:0
+msgid "Import employee information from Zoho People"
+msgstr "នាំចូលព័ត៌មាននិយោជកពីមនុស្សលម្អិត Zoho"
+
+#: view:payroll.dashboard:0
+msgid "Salary Rules"
+msgstr "ច្បាប់រយៈពេលមធ្យម"
+
+#: view:payroll.dashboard:0
+msgid "Configure country-specific salary components"
+msgstr "កំណត់រចនាសម្ព័ន្ធលក្ខណៈលម្អិតរយៈពេលមធ្យម"
+
+#: view:payroll.dashboard:0
+msgid "Payroll Structure"
+msgstr "រចនាសម្ព័ន្ធប៉ាវローល"
+
+#: view:payroll.dashboard:0
+msgid "Define payroll structures for different roles"
+msgstr "កំណត់របាយការណ៍ប៉ាវរូលសម្រាប់ប៉ាទាហាងផ្សេងគ្នា"
+
+#: view:payroll.dashboard:0
+msgid "Payroll Processing"
+msgstr "ដំណើរការប៉ាវローល"
+
+#: view:payroll.dashboard:0
+msgid "Process and generate payslips"
+msgstr "ដំណើរការនិងបង្កើតឯកសារប៉ាវローល"

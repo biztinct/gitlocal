@@ -1,0 +1,116 @@
+# Translation template for pb_hr_payroll_malaysia.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_malaysia package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_malaysia 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_malaysia
+#: model:ir.ui.view,string:pb_hr_payroll_malaysia.view_payroll_dashboard_malaysia
+msgid "Malaysia Payroll Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_malaysia.menu_malaysia_dashboard
+msgid "Malaysia Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_malaysia.menu_malaysia_epf
+msgid "Malaysia EPF/SOCSO Submission"
+msgstr ""
+
+#: field:hr.payslip,malaysia_epf_employee:0
+msgid "EPF - Employee"
+msgstr ""
+
+#: field:hr.payslip,malaysia_epf_company:0
+msgid "EPF - Company"
+msgstr ""
+
+#: field:hr.payslip,malaysia_socso_employee:0
+msgid "SOCSO - Employee"
+msgstr ""
+
+#: field:hr.payslip,malaysia_socso_company:0
+msgid "SOCSO - Company"
+msgstr ""
+
+#: field:hr.payslip,malaysia_eis:0
+msgid "Employment Insurance System"
+msgstr ""
+
+#: button:hr.payslip,action_compute_malaysia_tax:0
+msgid "Compute Malaysia Tax"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Malaysia Payslip"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Malaysia Salary Rules"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Malaysia Insurance Components"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:50
+msgid "Malaysia tax computed successfully"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_malaysia/models/hr_payslip_malaysia.py:60
+msgid "Error computing Malaysia tax: %s"
+msgstr ""
+
+#: help:hr.payslip,malaysia_epf_employee:0
+msgid "11% deducted from employee salary for EPF (Employees Provident Fund)"
+msgstr ""
+
+#: help:hr.payslip,malaysia_epf_company:0
+msgid "12-13% paid by company for EPF (Employees Provident Fund)"
+msgstr ""
+
+#: help:hr.payslip,malaysia_socso_employee:0
+msgid "0.5% deducted from employee salary for SOCSO"
+msgstr ""
+
+#: help:hr.payslip,malaysia_socso_company:0
+msgid "1.75% paid by company for SOCSO"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_malaysia.group_malaysia_payroll_officer
+msgid "Malaysia Payroll Officer"
+msgstr ""
+
+#: button:payroll.dashboard,action_process_malaysia_payroll:0
+msgid "Process Malaysia Payroll"
+msgstr ""
+
+#: button:payroll.dashboard,action_submit_epf:0
+msgid "Submit EPF/SOCSO"
+msgstr ""
+
+#: button:payroll.dashboard,action_export_malaysia_data:0
+msgid "Export Malaysia Data"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Malaysia Payroll Management System"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "EPF Management and Submission"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "SOCSO and EIS Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Monthly Payroll Processing"
+msgstr ""

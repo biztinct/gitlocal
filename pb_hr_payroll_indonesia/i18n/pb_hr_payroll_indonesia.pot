@@ -1,0 +1,120 @@
+# Translation template for pb_hr_payroll_indonesia.
+# Copyright (C) 2024
+# This file is distributed under the same license as the pb_hr_payroll_indonesia package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_payroll_indonesia 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-05 00:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_payroll_indonesia
+#: model:ir.ui.view,string:pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia
+msgid "Indonesia Payroll Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_indonesia.menu_indonesia_dashboard
+msgid "Indonesia Dashboard"
+msgstr ""
+
+#: model:ir.ui.menu,name:pb_hr_payroll_indonesia.menu_indonesia_thr
+msgid "Indonesia THR Payments"
+msgstr ""
+
+#: field:hr.payslip,indonesia_bpjs_kes_emp:0
+msgid "BPJS Kesehatan - Employee"
+msgstr ""
+
+#: field:hr.payslip,indonesia_bpjs_kes_comp:0
+msgid "BPJS Kesehatan - Company"
+msgstr ""
+
+#: field:hr.payslip,indonesia_bpjs_jht_emp:0
+msgid "BPJS Ketenagakerjaan JHT - Employee"
+msgstr ""
+
+#: field:hr.payslip,indonesia_bpjs_jht_comp:0
+msgid "BPJS Ketenagakerjaan JHT - Company"
+msgstr ""
+
+#: field:hr.payslip,indonesia_pph21:0
+msgid "PPh 21 Income Tax"
+msgstr ""
+
+#: field:hr.payslip,indonesia_thr:0
+msgid "THR (Religious Allowance)"
+msgstr ""
+
+#: button:hr.payslip,action_compute_indonesia_tax:0
+msgid "Compute Indonesia Tax"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Indonesia Payslip"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Indonesia Salary Rules"
+msgstr ""
+
+#: view:hr.payslip:0
+msgid "Indonesia BPJS Components"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:50
+msgid "Indonesia tax computed successfully"
+msgstr ""
+
+#: code:addons/pb_hr_payroll_indonesia/models/hr_payslip_indonesia.py:60
+msgid "Error computing Indonesia tax: %s"
+msgstr ""
+
+#: help:hr.payslip,indonesia_bpjs_kes_emp:0
+msgid "Employee contribution to BPJS Kesehatan (Health Insurance)"
+msgstr ""
+
+#: help:hr.payslip,indonesia_bpjs_kes_comp:0
+msgid "Company contribution to BPJS Kesehatan (Health Insurance)"
+msgstr ""
+
+#: help:hr.payslip,indonesia_bpjs_jht_emp:0
+msgid "Employee contribution to BPJS JHT (Retirement Fund)"
+msgstr ""
+
+#: res.groups,name:pb_hr_payroll_indonesia.group_indonesia_payroll_officer
+msgid "Indonesia Payroll Officer"
+msgstr ""
+
+#: button:payroll.dashboard,action_process_indonesia_payroll:0
+msgid "Process Indonesia Payroll"
+msgstr ""
+
+#: button:payroll.dashboard,action_process_thr:0
+msgid "Process THR Payments"
+msgstr ""
+
+#: button:payroll.dashboard,action_export_indonesia_data:0
+msgid "Export Indonesia Data"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "Indonesia Payroll Management System"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "BPJS Kesehatan Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "BPJS Ketenagakerjaan Management"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "PPh 21 Tax Processing"
+msgstr ""
+
+#: dashboard.payroll:0
+msgid "THR Calculation and Payment"
+msgstr ""
