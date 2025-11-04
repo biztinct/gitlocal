@@ -752,7 +752,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                                         <div class="row" t-if="record.state.raw_value != 'draft'">
                                             <div class="col-6">
                                                 <div class="o_field_widget">
-                                                    <strong><field name="slip_ids" widget="many2many_counter"/></strong> Payslips
+                                                    <strong>Payslips</strong>
                                                 </div>
                                             </div>
                                             <div class="col-6">
