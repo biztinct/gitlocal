@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- Vietnam-specific dashboard record inheriting from base -->
         <record id="vietnam_payroll_dashboard" model="payroll.dashboard">
-            <field name="name">Vietnam Payroll Dashboard</field>
+            <field name="name">Batch Payslips</field>
             <field name="country">VN</field>
             <field name="sequence">10</field>
             <field name="active">True</field>
