@@ -1640,3 +1640,488 @@ msgstr "Bạn phải thiết lập một hợp đồng để có thể tạo chi
 #: model:ir.model.fields,help:om_hr_payroll.field_hr_salary_rule__amount_percentage_base
 msgid "result will be affected to a variable"
 msgstr "kết quả sẽ bị ảnh hưởng tới một biến số"
+
+#. module: om_hr_payroll (NEW ADDITIONS - Multi-level approval and enhanced features)
+#: model_terms:ir.ui.view,arch_db:om_hr_payroll.hr_payslip_kanban
+msgid "Level 1 approve"
+msgstr "Phê duyệt cấp 1"
+
+#: model_terms:ir.ui.view,arch_db:om_hr_payroll.hr_payslip_kanban
+msgid "Level 2 approve"
+msgstr "Phê duyệt cấp 2"
+
+#: button text in kanban view
+msgid "Submit for Approval"
+msgstr "Nộp để phê duyệt"
+
+#: button text in kanban view
+msgid "Reject"
+msgstr "Từ chối"
+
+#: button text in views
+msgid "Mail Batch Payslips"
+msgstr "Gửi Email Lô Phiếu Lương"
+
+#: button text in views
+msgid "Payslips by Employees"
+msgstr "Phiếu Lương theo Nhân Viên"
+
+#: button text
+msgid "Generate Payslips"
+msgstr "Tạo Phiếu Lương"
+
+#: menu item
+msgid "Pay components"
+msgstr "Thành Phần Lương"
+
+#: menu item
+msgid "Get Employee Data"
+msgstr "Lấy Dữ Liệu Nhân Viên"
+
+#: menu item
+msgid "Edit Integrated Spreadsheet"
+msgstr "Chỉnh Sửa Bảng Tính Tích Hợp"
+
+#: menu item
+msgid "Import Spreadsheet"
+msgstr "Nhập Bảng Tính"
+
+#: menu item
+msgid "Edit Spreadsheet"
+msgstr "Chỉnh Sửa Bảng Tính"
+
+#: menu section
+msgid "Integrated payroll"
+msgstr "Bảng lương tích hợp"
+
+#: menu section
+msgid "Manual payroll"
+msgstr "Bảng lương thủ công"
+
+#: button
+msgid "Generate Dashboard"
+msgstr "Tạo Bảng Điều Khiển"
+
+#: action name
+msgid "Payslip Computation Details"
+msgstr "Chi Tiết Tính Toán Phiếu Lương"
+
+#: action name
+msgid "Salary Components"
+msgstr "Thành Phần Lương"
+
+#: menu name
+msgid "Batch Payslips"
+msgstr "Lô Phiếu Lương"
+
+#: menu name
+msgid "Employee Payslips"
+msgstr "Phiếu Lương Nhân Viên"
+
+#: server action name
+msgid "Edit Integrated Spreadsheet"
+msgstr "Chỉnh Sửa Bảng Tính Tích Hợp"
+
+#: server action name
+msgid "Import Integrated Spreadsheet"
+msgstr "Nhập Bảng Tính Tích Hợp"
+
+#: server action name
+msgid "Import Manual Spreadsheet"
+msgstr "Nhập Bảng Tính Thủ Công"
+
+#: form section
+msgid "Worked Days & Inputs"
+msgstr "Ngày Làm Việc & Nhập Liệu"
+
+#: separator
+msgid "Worked Days"
+msgstr "Ngày Làm Việc"
+
+#: form string
+msgid "Worked Day"
+msgstr "Ngày Làm Việc"
+
+#: page string
+msgid "Salary Computation"
+msgstr "Tính Toán Lương"
+
+#: page string
+msgid "Details By Salary Rule Category"
+msgstr "Chi Tiết Theo Loại Quy Tắc Lương"
+
+#: page string
+msgid "Accounting Information"
+msgstr "Thông Tin Kế Toán"
+
+#: group
+msgid "Miscellaneous"
+msgstr "Khác"
+
+#: group
+msgid "Accounting"
+msgstr "Kế Toán"
+
+#: filter
+msgid "Draft Slip"
+msgstr "Phiếu Nháp"
+
+#: filter
+msgid "Done Slip"
+msgstr "Phiếu Hoàn Thành"
+
+#: filter
+msgid "PaySlip Batch"
+msgstr "Lô Phiếu Lương"
+
+#: filter
+msgid "Companies"
+msgstr "Công Ty"
+
+#: filter
+msgid "States"
+msgstr "Trạng Thái"
+
+#: help text
+msgid "Draft Payslip Batches"
+msgstr "Lô Phiếu Lương Nháp"
+
+#: help text
+msgid "Done Payslip Batches"
+msgstr "Lô Phiếu Lương Hoàn Thành"
+
+#: form/tree string
+msgid "Payslips Batches"
+msgstr "Lô Phiếu Lương"
+
+#: button in form
+msgid "Confirm"
+msgstr "Xác Nhận"
+
+#: button in form
+msgid "Refund"
+msgstr "Hoàn Lại"
+
+#: button in form
+msgid "Set to Draft"
+msgstr "Đặt Thành Nháp"
+
+#: button in form
+msgid "Compute Sheet"
+msgstr "Tính Toán Bảng"
+
+#: button in form
+msgid "Cancel Payslip"
+msgstr "Huỷ Phiếu Lương"
+
+#: button in form
+msgid "Send E-Mail"
+msgstr "Gửi Email"
+
+#: button in form
+msgid "Print Payslip"
+msgstr "In Phiếu Lương"
+
+#: button in form
+msgid "Email Payslips"
+msgstr "Email Phiếu Lương"
+
+#: button in form
+msgid "Compose Email"
+msgstr "Soạn Email"
+
+#: data - salary rule category
+msgid "Basic"
+msgstr "Cơ Bản"
+
+#: data - salary rule category
+msgid "Allowance"
+msgstr "Phụ Cấp"
+
+#: data - salary rule category
+msgid "Gross"
+msgstr "Tổng Cộng Gross"
+
+#: data - salary rule category
+msgid "Deduction"
+msgstr "Khấu Trừ"
+
+#: data - salary rule category
+msgid "Net"
+msgstr "Ròng"
+
+#: data - salary rule category
+msgid "Company Contribution"
+msgstr "Đóng Góp Công Ty"
+
+#: data - salary rule category
+msgid "House Rent Allowance"
+msgstr "Phụ Cấp Tiền Nhà"
+
+#: data - salary rule category
+msgid "Dearness Allowance"
+msgstr "Phụ Cấp Sinh Hoạt"
+
+#: data - salary rule category
+msgid "Travel Allowance"
+msgstr "Phụ Cấp Đi Lại"
+
+#: data - salary rule category
+msgid "Meal Allowance"
+msgstr "Phụ Cấp Ăn Cơm"
+
+#: data - salary rule category
+msgid "Medical Allowance"
+msgstr "Phụ Cấp Y Tế"
+
+#: data - salary rule category
+msgid "Other Allowance"
+msgstr "Phụ Cấp Khác"
+
+#: data - contribution register
+msgid "Employees"
+msgstr "Nhân Viên"
+
+#: report string
+msgid "Payslip - %s"
+msgstr "Phiếu Lương - %s"
+
+#: report string
+msgid "Payslip Details - %s"
+msgstr "Chi Tiết Phiếu Lương - %s"
+
+#: form field
+msgid "Period"
+msgstr "Kỳ"
+
+#: error message
+msgid "Refund: %s"
+msgstr "Hoàn Lại: %s"
+
+#: error message
+msgid "Refund Payslip"
+msgstr "Phiếu Lương Hoàn Lại"
+
+#: error message
+msgid "No running contract found for the employee: %s or no contract in the given period"
+msgstr "Không tìm thấy hợp đồng đang chạy cho nhân viên: %s hoặc không có hợp đồng trong kỳ nhất định"
+
+#: error message
+msgid "Global Leaves"
+msgstr "Ngày Phép Toàn Cục"
+
+#: error message
+msgid "Normal Working Days paid at 100%"
+msgstr "Ngày Làm Việc Thông Thường Được Trả 100%"
+
+#: error message
+msgid "Actual work incl paid leave"
+msgstr "Công Việc Thực Tế Bao Gồm Ngày Phép Trả Lương"
+
+#: error message
+msgid "Actual work not incl paid leave"
+msgstr "Công Việc Thực Tế Không Bao Gồm Ngày Phép Trả Lương"
+
+#: error message
+msgid "OT 1.5 Hrs"
+msgstr "Tăng Ca 1.5 Giờ"
+
+#: error message
+msgid "OT 2 Hrs"
+msgstr "Tăng Ca 2 Giờ"
+
+#: error message
+msgid "OT 3 Hrs"
+msgstr "Tăng Ca 3 Giờ"
+
+#: error message
+msgid "OT Night Shift Week day"
+msgstr "Tăng Ca Ca Đêm Ngày Thường"
+
+#: error message
+msgid "OT Night Shift Off day"
+msgstr "Tăng Ca Ca Đêm Ngày Nghỉ"
+
+#: error message
+msgid "OT Night Shift Holiday"
+msgstr "Tăng Ca Ca Đêm Ngày Lễ"
+
+#: error message
+msgid "Night Shift"
+msgstr "Ca Đêm"
+
+#: error message
+msgid "Paid leave unused"
+msgstr "Ngày Phép Không Sử Dụng"
+
+#: error message
+msgid "Salary Slip of %s for %s to %s"
+msgstr "Phiếu Lương Của %s Từ %s Đến %s"
+
+#: error message
+msgid "You Cannot Delete Done Payslips Batches"
+msgstr "Bạn Không Thể Xoá Lô Phiếu Lương Hoàn Thành"
+
+#: error message
+msgid "No payslips found in this batch."
+msgstr "Không tìm thấy phiếu lương nào trong lô này."
+
+#: error message
+msgid "Component amount can't be greater than upper bound limit for %s"
+msgstr "Số tiền thành phần không thể lớn hơn giới hạn trên cho %s"
+
+#: error message
+msgid "Component amount can't be less than lower bound limit for %s"
+msgstr "Số tiền thành phần không thể nhỏ hơn giới hạn dưới cho %s"
+
+#: error message
+msgid "Payslip 'Date From' must be earlier 'Date To'."
+msgstr "Phiếu Lương 'Từ Ngày' phải sớm hơn 'Đến Ngày'."
+
+#: error message
+msgid "Error! You cannot create recursive hierarchy of Salary Rule Category."
+msgstr "Lỗi! Bạn không thể tạo cấp bậc đệ quy của Loại Quy Tắc Lương."
+
+#: error message
+msgid "Error! You cannot create recursive hierarchy of Salary Rules."
+msgstr "Lỗi! Bạn không thể tạo cấp bậc đệ quy của Quy Tắc Lương."
+
+#: error message
+msgid "Wrong percentage base or quantity defined for salary rule %s (%s)."
+msgstr "Cơ Sở Phần Trăm Hoặc Số Lượng Sai Được Xác Định Cho Quy Tắc Lương %s (%s)."
+
+#: wizard button
+msgid "Generate"
+msgstr "Tạo"
+
+#: wizard button
+msgid "Cancel"
+msgstr "Huỷ"
+
+#: report action name
+msgid "Contribution Register's Payslip Lines"
+msgstr "Dòng Phiếu Lương Của Sổ Đăng Ký Đóng Góp"
+
+#: report button
+msgid "Print"
+msgstr "In"
+
+#: recurring payment
+msgid "Recurring Payment"
+msgstr "Thanh Toán Định Kỳ"
+
+#: recurring payment action
+msgid "Done"
+msgstr "Hoàn Thành"
+
+#: recurring payment action
+msgid "Set To Draft"
+msgstr "Đặt Thành Nháp"
+
+#: recurring payment page
+msgid "Recurring Entries"
+msgstr "Mục Nhập Định Kỳ"
+
+#: recurring payment button
+msgid "Create Payment"
+msgstr "Tạo Thanh Toán"
+
+#: recurring payment line
+msgid "Recurring Payment Line"
+msgstr "Dòng Thanh Toán Định Kỳ"
+
+#: recurring payments
+msgid "Recurring Payments"
+msgstr "Thanh Toán Định Kỳ"
+
+#: recurring template
+msgid "Recurring Template"
+msgstr "Mẫu Định Kỳ"
+
+#: zoho staging button
+msgid "Import Employee Data"
+msgstr "Nhập Dữ Liệu Nhân Viên"
+
+#: zoho staging form
+msgid "Import OCA Data"
+msgstr "Nhập Dữ Liệu OCA"
+
+#: zoho staging button
+msgid "Import"
+msgstr "Nhập"
+
+#: zoho action name
+msgid "Import Staging Data"
+msgstr "Nhập Dữ Liệu Staging"
+
+#: zoho action name
+msgid "Employee Staging Data"
+msgstr "Dữ Liệu Staging Nhân Viên"
+
+#: zoho menu name
+msgid "Zoho Staging Data"
+msgstr "Dữ Liệu Staging Zoho"
+
+#: zoho page
+msgid "Attendance"
+msgstr "Chấm Công"
+
+#: zoho text
+msgid "To import the data from Zoho, press the button below:"
+msgstr "Để nhập dữ liệu từ Zoho, hãy nhấn nút bên dưới:"
+
+#: zoho pivot
+msgid "Zoho Employee Data Analysis"
+msgstr "Phân Tích Dữ Liệu Nhân Viên Zoho"
+
+#: zoho views button
+msgid "Access Tokens"
+msgstr "Mã Truy Cập"
+
+#: contract views
+msgid "Contract Components"
+msgstr "Thành Phần Hợp Đồng"
+
+#: contract views
+msgid "Monthly Advantages in Cash"
+msgstr "Lợi Ích Hàng Tháng Bằng Tiền Mặt"
+
+#: contract views
+msgid "Advantage Name"
+msgstr "Tên Lợi Ích"
+
+#: salary rule views
+msgid "Employee Function"
+msgstr "Chức Năng Nhân Viên"
+
+#: salary rule views
+msgid "Payroll Structures"
+msgstr "Cấu Trúc Bảng Lương"
+
+#: salary rule views
+msgid "Salary Categories"
+msgstr "Danh Mục Lương"
+
+#: salary rule views
+msgid "Notes"
+msgstr "Ghi Chú"
+
+#: contract type views
+msgid "Contract Type"
+msgstr "Loại Hợp Đồng"
+
+#: contract type views
+msgid "Sequence"
+msgstr "Thứ Tự"
+
+#: config settings
+msgid "Payroll"
+msgstr "Bảng Lương"
+
+#: config settings
+msgid "Payroll Entries"
+msgstr "Mục Nhập Bảng Lương"
+
+#: config settings
+msgid "Payroll From Spreadsheet"
+msgstr "Bảng Lương Từ Bảng Tính"
