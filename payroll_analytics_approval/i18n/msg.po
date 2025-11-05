@@ -1,0 +1,1640 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-05 05:06+0000\n"
+"PO-Revision-Date: 2025-11-05 05:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: payroll_analytics_approval
+msgid "'Bank Export - %s' % (object.period_name)"
+msgstr "'Xuất ngân hàng - %s' % (object. Period_name)"
+
+#. module: payroll_analytics_approval
+msgid "'Payroll Analytics - %s' % (object.period_name)"
+msgstr "'Phân tích tiền lương - %s' % (object. Period_name)"
+
+#. module: payroll_analytics_approval
+msgid "'Payroll Comparison - %s' % (object.name)"
+msgstr "'So sánh bảng lương - %s' % (object.name)"
+
+#. module: payroll_analytics_approval
+msgid "- Payroll Analytics Report"
+msgstr "- Báo cáo phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "12 Months"
+msgstr "12 tháng"
+
+#. module: payroll_analytics_approval
+msgid "3 Months"
+msgstr "3 tháng"
+
+#. module: payroll_analytics_approval
+msgid "6 Months"
+msgstr "6 tháng"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-area-chart\"/> Variance Analysis"
+msgstr "<i class=\"fa fa-area-chart\"/> Phân tích phương sai"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-bar-chart\"/> Dashboard"
+msgstr "<i class=\"fa fa-bar-chart\"/> Trang tổng quan"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-bar-chart\"/> Month-over-Month Comparison"
+msgstr "<i class=\"fa fa-bar-chart\"/> So sánh giữa các tháng"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-bar-chart\"/> Payroll Comparison Wizard"
+msgstr "<i class=\"fa fa-bar-chart\"/> Trình hướng dẫn so sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-bar-chart\"/> Salary Components"
+msgstr "<i class=\"fa fa-bar-chart\"/> Thành phần tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-bar-chart-o\"/> Payroll Analytics Dashboard"
+msgstr "<i class=\"fa fa-bar-chart-o\"/> Trang tổng quan phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-calculator\"/> Salary Variance"
+msgstr "<i class=\"fa fa-calculator\"/> Chênh lệch tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-check\"/> Export Preview Ready"
+msgstr "<i class=\"fa fa-check\"/> Sẵn sàng xuất bản xem trước"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-check\"/> Final Approve Payroll"
+msgstr "<i class=\"fa fa-check\"/> Phê duyệt bảng lương lần cuối"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-check-circle text-success\"/> Recommendations"
+msgstr "<i class=\"fa fa-check-circle text-success\"/> Đề xuất"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-check-circle\"/> Export Successful!"
+msgstr "<i class=\"fa fa-check-circle\"/> Xuất thành công!"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-check-circle\"/> Normal Variance"
+msgstr "<i class=\"fa fa-check-circle\"/> Phương sai thông thường"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-download\"/> Export Bank File"
+msgstr "<i class=\"fa fa-download\"/> Xuất tệp ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-download\"/> Export Complete"
+msgstr "<i class=\"fa fa-download\"/> Xuất hoàn tất"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-exclamation-triangle text-warning\"/> Alerts"
+msgstr "<i class=\"fa fa-exclamation-triangle text-warning\"/> Cảnh báo"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-exclamation-triangle\"/> Anomaly Alerts"
+msgstr "<i class=\"fa fa-exclamation-triangle\"/> Cảnh báo bất thường"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-exclamation-triangle\"/> High Variance"
+msgstr "<i class=\"fa fa-exclamation-triangle\"/> Phương sai cao"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-exclamation-triangle\"/> Moderate Variance"
+msgstr "<i class=\"fa fa-exclamation-triangle\"/> Phương sai vừa phải"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-file-text\"/> View Detailed Report"
+msgstr "<i class=\"fa fa-file-text\"/> Xem báo cáo chi tiết"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-info-circle\"/> Bank Export Wizard"
+msgstr "<i class=\"fa fa-info-circle\"/> Trình hướng dẫn Xuất Ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid ""
+"<i class=\"fa fa-info-circle\"/> Charts and visualizations are embedded in "
+"the detailed dashboard view. Click \"Open Dashboard\" to view interactive "
+"charts."
+msgstr ""
+"<i class=\"fa fa-info-circle\"/> Biểu đồ và hình ảnh trực quan được nhúng "
+"trong chế độ xem trang tổng quan chi tiết. Nhấp vào \"Mở bảng điều khiển\" "
+"để xem biểu đồ tương tác."
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-info-circle\"/> Important Notes"
+msgstr "<i class=\"fa fa-info-circle\"/> Lưu ý quan trọng"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-lightbulb-o text-success\"/> Recommendations"
+msgstr "<i class=\"fa fa-lightbulb-o text-success\"/> Đề xuất"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-lightbulb-o\"/> Decision Support"
+msgstr "<i class=\"fa fa-lightbulb-o\"/> Hỗ trợ quyết định"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-lightbulb-o\"/> Decision Support &amp; Anomaly Detection"
+msgstr ""
+"<i class=\"fa fa-lightbulb-o\"/> Hỗ trợ Quyết định &amp; Phát hiện bất "
+"thường"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-line-chart\"/> Month over Month"
+msgstr "<i class=\"fa fa-line-chart\"/> Qua từng tháng"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-money\"/> Payroll Variance"
+msgstr "<i class=\"fa fa-money\"/> Chênh lệch Bảng lương"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-pie-chart\"/> Salary Components Breakdown"
+msgstr "<i class=\"fa fa-pie-chart\"/> Phân tích thành phần tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-table\"/> Detailed Component Analysis"
+msgstr "<i class=\"fa fa-table\"/> Phân tích thành phần chi tiết"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-university\"/> Bank Export Wizard"
+msgstr "<i class=\"fa fa-university\"/> Trình hướng dẫn Xuất Ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-users\"/> Employee Variance"
+msgstr "<i class=\"fa fa-users\"/> Sự khác biệt giữa nhân viên"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-warning text-warning\"/> Items to Review"
+msgstr "<i class=\"fa fa-warning text-warning\"/> Các mục cần xem lại"
+
+#. module: payroll_analytics_approval
+msgid "<i class=\"fa fa-warning text-warning\"/> Things to Review"
+msgstr "<i class=\"fa fa-warning text-warning\"/> Những điều cần xem lại"
+
+#. module: payroll_analytics_approval
+msgid ""
+"<select class=\"form-control form-control-sm\" id=\"components-view-toggle\">\n"
+"                                        <option value=\"total\">Total Amount</option>\n"
+"                                        <option value=\"average\">Average per Employee</option>\n"
+"                                    </select>"
+msgstr ""
+"<select class=\"form-control form-control-sm\" id=\"components-view-toggle\">\r\n"
+"                                        <option value=\"total\">Tổng số tiền__html_2___\r\n"
+"                                        <option value=\"average\">Trung bình mỗi nhân viên__html_2___\r\n"
+"                                    </select>"
+
+#. module: payroll_analytics_approval
+msgid "<small>Change in average salary</small>"
+msgstr "<small>Thay đổi mức lương trung bình</small>"
+
+#. module: payroll_analytics_approval
+msgid "<small>Change in employee count</small>"
+msgstr "<small>Thay đổi số lượng nhân viên</small>"
+
+#. module: payroll_analytics_approval
+msgid "<small>Change in total payroll</small>"
+msgstr "<small>Thay đổi tổng số tiền lương</small>"
+
+#. module: payroll_analytics_approval
+msgid ""
+"<span class=\"stat-number\" id=\"pending-approvals-count\">0</span>\n"
+"                        <span class=\"stat-label\">Pending</span>"
+msgstr ""
+"<span class=\"stat-number\" id=\"pending-approvals-count\">0__html_1___\r\n"
+"                        <span class=\"stat-label\">Đang chờ xử lý__html_1___"
+
+#. module: payroll_analytics_approval
+msgid ""
+"<span class=\"stat-number\" id=\"ready-exports-count\">0</span>\n"
+"                        <span class=\"stat-label\">Ready</span>"
+msgstr ""
+"<span class=\"stat-number\" id=\"ready-exports-count\">0__html_1___\r\n"
+"                        <span class=\"stat-label\">Sẵn sàng__html_1___"
+
+#. module: payroll_analytics_approval
+msgid ""
+"<span class=\"stat-number\" id=\"total-employees-count\">0</span>\n"
+"                        <span class=\"stat-label\">Employees</span>"
+msgstr ""
+"<span class=\"stat-number\" id=\"total-employees-count\">0__html_1___\r\n"
+"                        <span class=\"stat-label\">Nhân viên__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<span class=\"tile-action\">Click to Review →</span>"
+msgstr "<span class=\"tile-action\">Nhấp để xem lại →</span>"
+
+#. module: payroll_analytics_approval
+msgid "<span class=\"tile-action\">Export CSV →</span>"
+msgstr "<span class=\"tile-action\">Xuất CSV →</span>"
+
+#. module: payroll_analytics_approval
+msgid "<span class=\"tile-action\">View Report →</span>"
+msgstr "<span class=\"tile-action\">Xem báo cáo →</span>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Approval Date</strong>"
+msgstr "<strong>Ngày phê duyệt__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Approved By</strong>"
+msgstr "<strong>Được phê duyệt bởi</strong>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Average Salary Variance</strong>"
+msgstr "<strong>Chênh lệch lương trung bình</strong>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Average Salary</strong>"
+msgstr "<strong>Mức lương trung bình</strong>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Country</strong>"
+msgstr "<strong>Quốc gia</strong>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Employee Count Variance</strong>"
+msgstr "<strong>Sự khác biệt về số lượng nhân viên__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Employees</strong>"
+msgstr "<strong>Nhân viên__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Export Date</strong>"
+msgstr "<strong>Ngày xuất__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Export Format</strong>"
+msgstr "<strong>Định dạng xuất__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>File Name</strong>"
+msgstr "<strong>Tên Tệp__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Generated By</strong>"
+msgstr "<strong>Được tạo bởi</strong>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Generated Date</strong>"
+msgstr "<strong>Ngày tạo</strong>"
+
+#. module: payroll_analytics_approval
+msgid ""
+"<strong>Note:</strong> Detailed component breakdown and variance analysis."
+msgstr ""
+"<strong>Lưu ý:</strong> Phân tích chi tiết thành phần và phân tích phương "
+"sai."
+
+#. module: payroll_analytics_approval
+msgid "<strong>Notes</strong>"
+msgstr "<strong>Ghi chú__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Period</strong>"
+msgstr "<strong>Giai đoạn</strong>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Status</strong>"
+msgstr "<strong>Trạng thái__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Total Amount</strong>"
+msgstr "<strong>Tổng số tiền__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Total Employees</strong>"
+msgstr "<strong>Tổng số nhân viên__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Total Payroll Variance</strong>"
+msgstr "<strong>Tổng chênh lệch tiền lương</strong>"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Total Payroll</strong>"
+msgstr "<strong>Tổng tiền lương__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Total Records</strong>"
+msgstr "<strong>Tổng số hồ sơ__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "<strong>Variance</strong>"
+msgstr "<strong>Phương sai__html_1___"
+
+#. module: payroll_analytics_approval
+msgid "Action Method"
+msgstr "Phương pháp hành động"
+
+#. module: payroll_analytics_approval
+msgid "Action Model"
+msgstr "Mô hình hành động"
+
+#. module: payroll_analytics_approval
+msgid "Action Needed"
+msgstr "Hành động cần thiết"
+
+#. module: payroll_analytics_approval
+msgid "Active"
+msgstr "Tích cực"
+
+#. module: payroll_analytics_approval
+msgid "Activities"
+msgstr "Các hoạt động"
+
+#. module: payroll_analytics_approval
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: payroll_analytics_approval
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: payroll_analytics_approval
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: payroll_analytics_approval
+msgid "Alerts"
+msgstr "Cảnh báo"
+
+#. module: payroll_analytics_approval
+msgid "Analysis Name"
+msgstr "Tên phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Analysis Options"
+msgstr "Tùy chọn phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Analysis Results"
+msgstr "Kết quả phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Analysis Summary"
+msgstr "Tóm tắt phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Analytics Configuration"
+msgstr "Cấu hình phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Analytics Dashboard • Final Approval Review"
+msgstr "Trang tổng quan Analytics • Đánh giá phê duyệt cuối cùng"
+
+#. module: payroll_analytics_approval
+msgid "Analytics Overview"
+msgstr "Tổng quan về phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Analytics Reports"
+msgstr "Báo cáo phân tích"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Analytics are automatically generated when payslip batches reach Level 2 "
+"approval status."
+msgstr ""
+"Phân tích được tạo tự động khi lô phiếu lương đạt trạng thái phê duyệt Cấp "
+"2."
+
+#. module: payroll_analytics_approval
+msgid ""
+"Analytics reports provide detailed insights into payroll trends and "
+"patterns."
+msgstr ""
+"Báo cáo phân tích cung cấp thông tin chi tiết về xu hướng và mô hình bảng "
+"lương."
+
+#. module: payroll_analytics_approval
+msgid "Analyzing"
+msgstr "Phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Anomaly Alerts"
+msgstr "Cảnh báo bất thường"
+
+#. module: payroll_analytics_approval
+msgid "Anomaly Alerts JSON"
+msgstr "Cảnh báo bất thường JSON"
+
+#. module: payroll_analytics_approval
+msgid "Approval Information"
+msgstr "Thông tin phê duyệt"
+
+#. module: payroll_analytics_approval
+msgid "Approval Queue"
+msgstr "Hàng đợi phê duyệt"
+
+#. module: payroll_analytics_approval
+msgid "Approve"
+msgstr "Chấp thuận"
+
+#. module: payroll_analytics_approval
+msgid "Approve Payroll"
+msgstr "Phê duyệt bảng lương"
+
+#. module: payroll_analytics_approval
+msgid "Approved"
+msgstr "Tán thành"
+
+#. module: payroll_analytics_approval
+msgid "Approved payroll analytics will appear here for bank file generation."
+msgstr ""
+"Phân tích bảng lương đã được phê duyệt sẽ xuất hiện ở đây để tạo tệp ngân "
+"hàng."
+
+#. module: payroll_analytics_approval
+msgid "Are you sure you want to approve this payroll?"
+msgstr "Bạn có chắc chắn muốn phê duyệt bảng lương này không?"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Are you sure you want to approve this payroll? This action cannot be undone."
+msgstr ""
+"Bạn có chắc chắn muốn phê duyệt bảng lương này không? Không thể hoàn tác "
+"hành động này."
+
+#. module: payroll_analytics_approval
+msgid "Attachment Count"
+msgstr "Số lượng tệp đính kèm"
+
+#. module: payroll_analytics_approval
+msgid "Auto Generate Analytics"
+msgstr "Tự động tạo phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Average Salary"
+msgstr "Mức lương trung bình"
+
+#. module: payroll_analytics_approval
+msgid "Average Salary Variance %"
+msgstr "% chênh lệch lương trung bình"
+
+#. module: payroll_analytics_approval
+msgid "Average/Employee"
+msgstr "Trung bình/Nhân viên"
+
+#. module: payroll_analytics_approval
+msgid "Avg per Employee"
+msgstr "Trung bình mỗi nhân viên"
+
+#. module: payroll_analytics_approval
+msgid "Bank Export"
+msgstr "Xuất khẩu ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Bank Export Details"
+msgstr "Chi tiết xuất khẩu ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Bank Export History"
+msgstr "Lịch sử xuất khẩu ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Bank Export Summary"
+msgstr "Tóm tắt xuất khẩu ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Bank Export Summary Report"
+msgstr "Báo cáo tóm tắt xuất khẩu ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Bank Export Wizard"
+msgstr "Trình hướng dẫn xuất khẩu ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Bank Transfer Instructions"
+msgstr "Hướng dẫn chuyển khoản ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Bank disbursement file has been generated successfully."
+msgstr "Hồ sơ giải ngân ngân hàng đã được tạo thành công."
+
+#. module: payroll_analytics_approval
+msgid ""
+"Bank export file has been generated successfully. Click download to save the"
+" file."
+msgstr ""
+"Tệp xuất ngân hàng đã được tạo thành công. Nhấp vào tải xuống để lưu tập "
+"tin."
+
+#. module: payroll_analytics_approval
+msgid ""
+"Bank export files will appear here after being generated from approved "
+"payroll batches."
+msgstr ""
+"Các tệp xuất ngân hàng sẽ xuất hiện ở đây sau khi được tạo từ các lô bảng "
+"lương đã được phê duyệt."
+
+#. module: payroll_analytics_approval
+msgid "CSV"
+msgstr "CSV"
+
+#. module: payroll_analytics_approval
+msgid "Cambodia"
+msgstr "Campuchia"
+
+#. module: payroll_analytics_approval
+msgid "Can manage payroll analytics, approve payrolls, and export bank files"
+msgstr ""
+"Có thể quản lý phân tích bảng lương, phê duyệt bảng lương và xuất tệp ngân "
+"hàng"
+
+#. module: payroll_analytics_approval
+msgid "Can perform final approval of payroll batches"
+msgstr "Có thể thực hiện phê duyệt lần cuối các đợt trả lương"
+
+#. module: payroll_analytics_approval
+msgid "Can view payroll analytics and reports"
+msgstr "Có thể xem phân tích và báo cáo tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: payroll_analytics_approval
+msgid "Category"
+msgstr "Loại"
+
+#. module: payroll_analytics_approval
+msgid "Chart Data"
+msgstr "Dữ liệu biểu đồ"
+
+#. module: payroll_analytics_approval
+msgid "Chart Library"
+msgstr "Thư viện biểu đồ"
+
+#. module: payroll_analytics_approval
+msgid "Chart.js"
+msgstr "Chart.js"
+
+#. module: payroll_analytics_approval
+msgid "Charts & Visualizations"
+msgstr "Biểu đồ & Hình ảnh hóa"
+
+#. module: payroll_analytics_approval
+msgid "Code"
+msgstr "Mã số"
+
+#. module: payroll_analytics_approval
+msgid "Comma (,)"
+msgstr "Dấu phẩy (,)"
+
+#. module: payroll_analytics_approval
+msgid "Company"
+msgstr "Công ty"
+
+#. module: payroll_analytics_approval
+msgid "Compare With"
+msgstr "So sánh với"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Compare payroll data across different periods to identify trends and "
+"anomalies."
+msgstr ""
+"So sánh dữ liệu bảng lương giữa các giai đoạn khác nhau để xác định xu hướng"
+" và sự bất thường."
+
+#. module: payroll_analytics_approval
+msgid "Comparison"
+msgstr "So sánh"
+
+#. module: payroll_analytics_approval
+msgid "Comparison Analysis Name"
+msgstr "Tên phân tích so sánh"
+
+#. module: payroll_analytics_approval
+msgid "Comparison Dashboard"
+msgstr "Trang tổng quan so sánh"
+
+#. module: payroll_analytics_approval
+msgid "Comparison Data JSON"
+msgstr "Dữ liệu so sánh JSON"
+
+#. module: payroll_analytics_approval
+msgid "Comparison Period"
+msgstr "Thời gian so sánh"
+
+#. module: payroll_analytics_approval
+msgid "Comparison Summary"
+msgstr "Tóm tắt so sánh"
+
+#. module: payroll_analytics_approval
+msgid "Comparison Type"
+msgstr "Loại so sánh"
+
+#. module: payroll_analytics_approval
+msgid "Comparison with previous month"
+msgstr "So sánh với tháng trước"
+
+#. module: payroll_analytics_approval
+msgid "Completed"
+msgstr "Hoàn thành"
+
+#. module: payroll_analytics_approval
+msgid "Component"
+msgstr "Thành phần"
+
+#. module: payroll_analytics_approval
+msgid "Component Analysis"
+msgstr "Phân tích thành phần"
+
+#. module: payroll_analytics_approval
+msgid "Component Code"
+msgstr "Mã thành phần"
+
+#. module: payroll_analytics_approval
+msgid "Component Name"
+msgstr "Tên thành phần"
+
+#. module: payroll_analytics_approval
+msgid "Component code must be unique per country!"
+msgstr "Mã thành phần phải là duy nhất cho mỗi quốc gia!"
+
+#. module: payroll_analytics_approval
+msgid "Configuration"
+msgstr "Cấu hình"
+
+#. module: payroll_analytics_approval
+msgid "Configuration Management"
+msgstr "Quản lý cấu hình"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Configure analytics settings and review draft analytics before processing."
+msgstr ""
+"Định cấu hình cài đặt phân tích và xem xét phân tích dự thảo trước khi xử "
+"lý."
+
+#. module: payroll_analytics_approval
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Create payroll comparison analyses to track changes and trends across different periods.\n"
+"                Use the comparison wizard to generate detailed analytics."
+msgstr ""
+"Tạo các phân tích so sánh bảng lương để theo dõi những thay đổi và xu hướng qua các giai đoạn khác nhau.\r\n"
+"                Sử dụng trình hướng dẫn so sánh để tạo phân tích chi tiết."
+
+#. module: payroll_analytics_approval
+msgid "Created By"
+msgstr "Created By"
+
+#. module: payroll_analytics_approval
+msgid "Created by"
+msgstr "Created by"
+
+#. module: payroll_analytics_approval
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: payroll_analytics_approval
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: payroll_analytics_approval
+msgid "Current Employees"
+msgstr "Nhân viên hiện tại"
+
+#. module: payroll_analytics_approval
+msgid "Current Month"
+msgstr "Tháng hiện tại"
+
+#. module: payroll_analytics_approval
+msgid "Current Period"
+msgstr "Giai đoạn hiện tại"
+
+#. module: payroll_analytics_approval
+msgid "Current Period From"
+msgstr "Giai đoạn hiện tại từ"
+
+#. module: payroll_analytics_approval
+msgid "Current Period To"
+msgstr "Giai đoạn hiện tại Đến"
+
+#. module: payroll_analytics_approval
+msgid "Current Total"
+msgstr "Tổng số hiện tại"
+
+#. module: payroll_analytics_approval
+msgid "Current Total Payroll"
+msgstr "Tổng lương hiện tại"
+
+#. module: payroll_analytics_approval
+msgid "Custom Period"
+msgstr "Thời gian tùy chỉnh"
+
+#. module: payroll_analytics_approval
+msgid "D3.js"
+msgstr "D3.js"
+
+#. module: payroll_analytics_approval
+msgid "Dashboard"
+msgstr "Trang tổng quan"
+
+#. module: payroll_analytics_approval
+msgid "Dashboard Tile Configuration"
+msgstr "Cấu hình ô bảng thông tin"
+
+#. module: payroll_analytics_approval
+msgid "Date From"
+msgstr "Ngày từ"
+
+#. module: payroll_analytics_approval
+msgid "Date To"
+msgstr "Ngày đến"
+
+#. module: payroll_analytics_approval
+msgid "Deduction"
+msgstr "Khấu trừ"
+
+#. module: payroll_analytics_approval
+msgid "Detailed Results"
+msgstr "Kết quả chi tiết"
+
+#. module: payroll_analytics_approval
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: payroll_analytics_approval
+msgid "Display Order"
+msgstr "Thứ tự hiển thị"
+
+#. module: payroll_analytics_approval
+msgid "Done"
+msgstr "Xong"
+
+#. module: payroll_analytics_approval
+msgid "Download File"
+msgstr "Tải tập tin xuống"
+
+#. module: payroll_analytics_approval
+msgid "Draft"
+msgstr "Bản nháp"
+
+#. module: payroll_analytics_approval
+msgid "Dropdown"
+msgstr "Thả xuống"
+
+#. module: payroll_analytics_approval
+msgid "Earning"
+msgstr "Thu nhập"
+
+#. module: payroll_analytics_approval
+msgid "Email Notifications"
+msgstr "Thông báo qua email"
+
+#. module: payroll_analytics_approval
+msgid "Employee Count"
+msgstr "Số lượng nhân viên"
+
+#. module: payroll_analytics_approval
+msgid "Employee Metrics JSON"
+msgstr "Số liệu nhân viên JSON"
+
+#. module: payroll_analytics_approval
+msgid "Employee Variance %"
+msgstr "% chênh lệch nhân viên"
+
+#. module: payroll_analytics_approval
+msgid "Employees"
+msgstr "Người lao động"
+
+#. module: payroll_analytics_approval
+msgid "Employer Contribution"
+msgstr "Đóng góp của người sử dụng lao động"
+
+#. module: payroll_analytics_approval
+msgid "Enable Anomaly Detection"
+msgstr "Bật tính năng phát hiện bất thường"
+
+#. module: payroll_analytics_approval
+msgid "Error"
+msgstr "Lỗi"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "Error generating analysis: %s"
+msgstr "Phân tích tạo lỗi: %s"
+
+#. module: payroll_analytics_approval
+msgid "Excel"
+msgstr "Excel"
+
+#. module: payroll_analytics_approval
+msgid "Excel File"
+msgstr "Tệp Excel"
+
+#. module: payroll_analytics_approval
+msgid "Executive Summary"
+msgstr "Tóm tắt điều hành"
+
+#. module: payroll_analytics_approval
+msgid "Export"
+msgstr "Xuất khẩu"
+
+#. module: payroll_analytics_approval
+msgid "Export Bank File"
+msgstr "Xuất tập tin ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Export Date"
+msgstr "Ngày xuất"
+
+#. module: payroll_analytics_approval
+msgid "Export Details"
+msgstr "Xuất chi tiết"
+
+#. module: payroll_analytics_approval
+msgid "Export File"
+msgstr "Xuất tệp"
+
+#. module: payroll_analytics_approval
+msgid "Export Format"
+msgstr "Định dạng xuất"
+
+#. module: payroll_analytics_approval
+msgid "Export History"
+msgstr "Lịch sử xuất khẩu"
+
+#. module: payroll_analytics_approval
+msgid "Export Information"
+msgstr "Xuất thông tin"
+
+#. module: payroll_analytics_approval
+msgid "Export Name"
+msgstr "Tên xuất"
+
+#. module: payroll_analytics_approval
+msgid "Export Parameters"
+msgstr "Xuất thông số"
+
+#. module: payroll_analytics_approval
+msgid "Export Preview"
+msgstr "Xuất bản xem trước"
+
+#. module: payroll_analytics_approval
+msgid "Export Report"
+msgstr "Xuất báo cáo"
+
+#. module: payroll_analytics_approval
+msgid "Export Results"
+msgstr "Xuất kết quả"
+
+#. module: payroll_analytics_approval
+msgid "Exported"
+msgstr "Đã xuất"
+
+#. module: payroll_analytics_approval
+msgid "Field separator for CSV files"
+msgstr "Dấu phân cách trường cho tệp CSV"
+
+#. module: payroll_analytics_approval
+msgid "File Format:"
+msgstr "Định dạng tệp:"
+
+#. module: payroll_analytics_approval
+msgid "File Options"
+msgstr "Tùy chọn tệp"
+
+#. module: payroll_analytics_approval
+msgid "Filename"
+msgstr "Tên tệp"
+
+#. module: payroll_analytics_approval
+msgid "Final Approve"
+msgstr "Phê duyệt cuối cùng"
+
+#. module: payroll_analytics_approval
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: payroll_analytics_approval
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: payroll_analytics_approval
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Phông chữ biểu tượng tuyệt vời, ví dụ: nhiệm vụ fa"
+
+#. module: payroll_analytics_approval
+msgid "Format"
+msgstr "Định dạng"
+
+#. module: payroll_analytics_approval
+msgid "Found"
+msgstr "Thành lập"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Generate CSV/Excel file for bank salary disbursement with employee bank "
+"details and net pay amounts."
+msgstr ""
+"Tạo tệp CSV/Excel để giải ngân lương ngân hàng với chi tiết ngân hàng của "
+"nhân viên và số tiền lương ròng."
+
+#. module: payroll_analytics_approval
+msgid ""
+"Generate CSV/Excel file for bank salary disbursement. This file contains "
+"employee bank details and net pay amounts."
+msgstr ""
+"Tạo file CSV/Excel để giải ngân lương ngân hàng. Tệp này chứa chi tiết ngân "
+"hàng của nhân viên và số tiền lương ròng."
+
+#. module: payroll_analytics_approval
+msgid "Generate Comparison"
+msgstr "Tạo so sánh"
+
+#. module: payroll_analytics_approval
+msgid "Generate Export"
+msgstr "Tạo xuất"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Generate analytics data from different periods to compare payroll trends."
+msgstr ""
+"Tạo dữ liệu phân tích từ các giai đoạn khác nhau để so sánh xu hướng bảng "
+"lương."
+
+#. module: payroll_analytics_approval
+msgid "Generated:"
+msgstr "Đã tạo:"
+
+#. module: payroll_analytics_approval
+msgid "Group By"
+msgstr "Nhóm theo"
+
+#. module: payroll_analytics_approval
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: payroll_analytics_approval
+msgid "High Variance"
+msgstr "Phương sai cao"
+
+#. module: payroll_analytics_approval
+msgid "ID"
+msgstr "ID"
+
+#. module: payroll_analytics_approval
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: payroll_analytics_approval
+msgid "Icon Class"
+msgstr "Lớp biểu tượng"
+
+#. module: payroll_analytics_approval
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để biểu thị một hoạt động ngoại lệ."
+
+#. module: payroll_analytics_approval
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, các tin nhắn mới cần bạn chú ý."
+
+#. module: payroll_analytics_approval
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn có lỗi gửi."
+
+#. module: payroll_analytics_approval
+msgid "Include Charts"
+msgstr "Bao gồm biểu đồ"
+
+#. module: payroll_analytics_approval
+msgid "Include Headers"
+msgstr "Bao gồm tiêu đề"
+
+#. module: payroll_analytics_approval
+msgid "Include Variance Analysis"
+msgstr "Bao gồm phân tích phương sai"
+
+#. module: payroll_analytics_approval
+msgid "India"
+msgstr "Ấn Độ"
+
+#. module: payroll_analytics_approval
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: payroll_analytics_approval
+msgid "Is Follower"
+msgstr "là người theo dõi"
+
+#. module: payroll_analytics_approval
+msgid "Keep this report for audit trail purposes"
+msgstr "Giữ báo cáo này cho mục đích kiểm tra"
+
+#. module: payroll_analytics_approval
+msgid "Last Modified on"
+msgstr "Sửa đổi lần cuối vào"
+
+#. module: payroll_analytics_approval
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: payroll_analytics_approval
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: payroll_analytics_approval
+msgid "Level 2 Approve"
+msgstr "Phê duyệt cấp 2"
+
+#. module: payroll_analytics_approval
+msgid "Low Variance"
+msgstr "Phương sai thấp"
+
+#. module: payroll_analytics_approval
+msgid "Main Attachment"
+msgstr "Tệp đính kèm chính"
+
+#. module: payroll_analytics_approval
+msgid "Malaysia"
+msgstr "Malaysia"
+
+#. module: payroll_analytics_approval
+msgid "Mandatory Component"
+msgstr "Thành phần bắt buộc"
+
+#. module: payroll_analytics_approval
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: payroll_analytics_approval
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: payroll_analytics_approval
+msgid "Moderate"
+msgstr "Vừa phải"
+
+#. module: payroll_analytics_approval
+msgid "Month"
+msgstr "Tháng"
+
+#. module: payroll_analytics_approval
+msgid "Multi-Country Payroll Dashboard"
+msgstr "Bảng điều khiển bảng lương đa quốc gia"
+
+#. module: payroll_analytics_approval
+msgid "My Activity Deadline"
+msgstr "Hạn chót hoạt động của tôi"
+
+#. module: payroll_analytics_approval
+msgid "Negative Variance"
+msgstr "Phương sai âm"
+
+#. module: payroll_analytics_approval
+msgid "Net Pay"
+msgstr "Lương ròng"
+
+#. module: payroll_analytics_approval
+msgid "New Comparison"
+msgstr "So sánh mới"
+
+#. module: payroll_analytics_approval
+msgid "Next Activity Calendar Event"
+msgstr "Lịch hoạt động tiếp theo Sự kiện"
+
+#. module: payroll_analytics_approval
+msgid "Next Activity Deadline"
+msgstr "Hạn chót hoạt động tiếp theo"
+
+#. module: payroll_analytics_approval
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: payroll_analytics_approval
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "No Data Available"
+msgstr "Không có sẵn dữ liệu"
+
+#. module: payroll_analytics_approval
+msgid "No analytics data for comparison!"
+msgstr "Không có dữ liệu phân tích để so sánh!"
+
+#. module: payroll_analytics_approval
+msgid "No analytics data for reports!"
+msgstr "Không có dữ liệu phân tích cho các báo cáo!"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid ""
+"No approved payroll data available for export. Please approve payroll "
+"analytics first."
+msgstr ""
+"Không có dữ liệu bảng lương được phê duyệt để xuất khẩu. Vui lòng phê duyệt "
+"phân tích bảng lương trước."
+
+#. module: payroll_analytics_approval
+msgid "No approved payroll ready for export!"
+msgstr "Không có bảng lương được phê duyệt sẵn sàng để xuất khẩu!"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "No approved payslips found for the selected period and country"
+msgstr ""
+"Không tìm thấy phiếu lương nào được phê duyệt cho kỳ và quốc gia đã chọn"
+
+#. module: payroll_analytics_approval
+msgid "No bank export records found!"
+msgstr "Không tìm thấy hồ sơ xuất khẩu ngân hàng!"
+
+#. module: payroll_analytics_approval
+msgid "No draft analytics found!"
+msgstr "Không tìm thấy phân tích dự thảo nào!"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "No export file available. Please generate the export first."
+msgstr "Không có tập tin xuất có sẵn. Vui lòng tạo bản xuất trước."
+
+#. module: payroll_analytics_approval
+msgid "No payroll analytics ready for approval!"
+msgstr "Không có phân tích tiền lương sẵn sàng để phê duyệt!"
+
+#. module: payroll_analytics_approval
+msgid "No payroll comparisons found!"
+msgstr "Không tìm thấy so sánh tiền lương!"
+
+#. module: payroll_analytics_approval
+msgid "Normal Range"
+msgstr "Phạm vi bình thường"
+
+#. module: payroll_analytics_approval
+msgid "Normal Variance"
+msgstr "Phương sai bình thường"
+
+#. module: payroll_analytics_approval
+msgid "Number of Actions"
+msgstr "Số lượng hành động"
+
+#. module: payroll_analytics_approval
+msgid "Number of beneficiaries:"
+msgstr "Số lượng người thụ hưởng:"
+
+#. module: payroll_analytics_approval
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: payroll_analytics_approval
+msgid "Number of messages requiring action"
+msgstr "Số lượng tin nhắn yêu cầu hành động"
+
+#. module: payroll_analytics_approval
+msgid "Number of messages with delivery error"
+msgstr "Số lượng tin nhắn có lỗi gửi"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "Only analytics in Ready state can be approved"
+msgstr "Chỉ những phân tích ở trạng thái Sẵn sàng mới có thể được phê duyệt"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "Only approved analytics can be exported"
+msgstr "Chỉ những phân tích được phê duyệt mới có thể được xuất"
+
+#. module: payroll_analytics_approval
+msgid "Open Dashboard"
+msgstr "Mở trang tổng quan"
+
+#. module: payroll_analytics_approval
+msgid "PDF Report"
+msgstr "Báo cáo PDF"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics - Approval Queue"
+msgstr "Phân tích bảng lương - Hàng đợi phê duyệt"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics Dashboard"
+msgstr "Bảng điều khiển phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics Manager"
+msgstr "Người quản lý phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics Report"
+msgstr "Báo cáo phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics Search"
+msgstr "Tìm kiếm phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics Settings"
+msgstr "Cài đặt phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics User"
+msgstr "Người dùng phân tích tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Approval"
+msgstr "Phê duyệt bảng lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Approval Dashboard"
+msgstr "Bảng điều khiển phê duyệt bảng lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Comparison"
+msgstr "So sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Comparison Analysis"
+msgstr "Phân tích so sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Comparison Analysis Report"
+msgstr "Báo cáo phân tích so sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Comparison Report"
+msgstr "Báo cáo so sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Comparison Wizard"
+msgstr "Trình hướng dẫn so sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Comparisons"
+msgstr "So sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Component Mapping"
+msgstr "Ánh xạ thành phần bảng lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Final Approver"
+msgstr "Người phê duyệt cuối cùng về bảng lương"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Variance %"
+msgstr "% chênh lệch tiền lương"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid ""
+"Payroll approved successfully. %d payslip runs with %d individual payslips "
+"have been finalized."
+msgstr ""
+"Bảng lương được phê duyệt thành công. %d việc chạy phiếu lương với %d phiếu "
+"lương riêng lẻ đã được hoàn tất."
+
+#. module: payroll_analytics_approval
+msgid "Payroll variance is within acceptable range (&lt; 5%)."
+msgstr ""
+"Sự khác biệt về tiền lương nằm trong phạm vi chấp nhận được (&lt; 5%)."
+
+#. module: payroll_analytics_approval
+msgid "Payroll variance requires review (5% - 15%)."
+msgstr "Sự khác biệt trong bảng lương cần được xem xét (5% - 15%)."
+
+#. module: payroll_analytics_approval
+msgid "Percentage change from previous month by component"
+msgstr "Phần trăm thay đổi so với tháng trước theo thành phần"
+
+#. module: payroll_analytics_approval
+msgid "Performance Overview"
+msgstr "Tổng quan về hiệu suất"
+
+#. module: payroll_analytics_approval
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: payroll_analytics_approval
+msgid "Pipe (|)"
+msgstr "Ống (|)"
+
+#. module: payroll_analytics_approval
+msgid "Plotly"
+msgstr "âm mưu"
+
+#. module: payroll_analytics_approval
+msgid "Preview Data"
+msgstr "Xem trước dữ liệu"
+
+#. module: payroll_analytics_approval
+msgid "Preview Export"
+msgstr "Xem trước xuất"
+
+#. module: payroll_analytics_approval
+msgid "Preview Record Count"
+msgstr "Xem trước số lượng bản ghi"
+
+#. module: payroll_analytics_approval
+msgid "Preview Total Amount"
+msgstr "Xem trước tổng số tiền"
+
+#. module: payroll_analytics_approval
+msgid "Previous Employees"
+msgstr "Nhân viên trước đây"
+
+#. module: payroll_analytics_approval
+msgid "Previous Month"
+msgstr "Tháng trước"
+
+#. module: payroll_analytics_approval
+msgid "Previous Period"
+msgstr "Kỳ trước"
+
+#. module: payroll_analytics_approval
+msgid "Previous Period From"
+msgstr "Kỳ trước Từ"
+
+#. module: payroll_analytics_approval
+msgid "Previous Period To"
+msgstr "Kỳ trước Đến"
+
+#. module: payroll_analytics_approval
+msgid "Previous Quarter"
+msgstr "Quý trước"
+
+#. module: payroll_analytics_approval
+msgid "Previous Total"
+msgstr "Tổng số trước đó"
+
+#. module: payroll_analytics_approval
+msgid "Previous Total Payroll"
+msgstr "Tổng Bảng Lương Trước Đó"
+
+#. module: payroll_analytics_approval
+msgid "Previous:"
+msgstr "Trước:"
+
+#. module: payroll_analytics_approval
+msgid "Ready for Approval"
+msgstr "Sẵn sàng phê duyệt"
+
+#. module: payroll_analytics_approval
+msgid "Recommendations"
+msgstr "Khuyến nghị"
+
+#. module: payroll_analytics_approval
+msgid "Recommended to process transfers in batches if volume is high"
+msgstr "Khuyến nghị xử lý chuyển khoản theo đợt nếu khối lượng lớn"
+
+#. module: payroll_analytics_approval
+msgid "Refresh Data"
+msgstr "Làm mới dữ liệu"
+
+#. module: payroll_analytics_approval
+msgid "Regenerate Analysis"
+msgstr "Phân tích tái tạo"
+
+#. module: payroll_analytics_approval
+msgid "Reset"
+msgstr "Cài lại"
+
+#. module: payroll_analytics_approval
+msgid "Responsible User"
+msgstr "Người dùng có trách nhiệm"
+
+#. module: payroll_analytics_approval
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: payroll_analytics_approval
+msgid "Salary Components Analysis"
+msgstr "Phân tích thành phần tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Salary Components JSON"
+msgstr "Thành phần lương JSON"
+
+#. module: payroll_analytics_approval
+msgid "Salary Disbursement"
+msgstr "Giải ngân lương"
+
+#. module: payroll_analytics_approval
+msgid "Same Month Last Year"
+msgstr "Cùng Tháng Năm Năm ngoái"
+
+#. module: payroll_analytics_approval
+msgid "Search Payroll Comparisons"
+msgstr "Tìm kiếm so sánh tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Search components..."
+msgstr "Tìm kiếm thành phần..."
+
+#. module: payroll_analytics_approval
+msgid "Semicolon (;)"
+msgstr "Dấu chấm phẩy (;)"
+
+#. module: payroll_analytics_approval
+msgid "Separator"
+msgstr "Dấu phân cách"
+
+#. module: payroll_analytics_approval
+msgid "Sequence"
+msgstr "Sự liên tiếp"
+
+#. module: payroll_analytics_approval
+msgid "Settings Name"
+msgstr "Tên cài đặt"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Significant variance detected (&gt; 15%). Requires immediate attention."
+msgstr ""
+"Đã phát hiện sai số đáng kể (&gt; 15%). Yêu cầu sự chú ý ngay lập tức."
+
+#. module: payroll_analytics_approval
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: payroll_analytics_approval
+msgid "Standalone Bank Export Wizard"
+msgstr "Trình hướng dẫn xuất ngân hàng độc lập"
+
+#. module: payroll_analytics_approval
+msgid "State"
+msgstr "Tình trạng"
+
+#. module: payroll_analytics_approval
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: payroll_analytics_approval
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên hoạt động\r\n"
+"Quá hạn: Đã qua ngày đáo hạn\r\n"
+"Hôm nay: Ngày hoạt động là hôm nay\r\n"
+"Dự kiến: Hoạt động sắp tới."
+
+#. module: payroll_analytics_approval
+msgid "Subtitle"
+msgstr "Phụ đề"
+
+#. module: payroll_analytics_approval
+msgid "Summary"
+msgstr "Bản tóm tắt"
+
+#. module: payroll_analytics_approval
+msgid "Tab"
+msgstr "Thẻ"
+
+#. module: payroll_analytics_approval
+msgid "Text"
+msgstr "Chữ"
+
+#. module: payroll_analytics_approval
+msgid "Text File"
+msgstr "Tệp văn bản"
+
+#. module: payroll_analytics_approval
+msgid "Thailand"
+msgstr "Thái Lan"
+
+#. module: payroll_analytics_approval
+msgid "This Month"
+msgstr "Tháng này"
+
+#. module: payroll_analytics_approval
+msgid "Tile Title"
+msgstr "Tiêu đề ô xếp"
+
+#. module: payroll_analytics_approval
+msgid "Tile Type"
+msgstr "Loại gạch"
+
+#. module: payroll_analytics_approval
+msgid "Total Amount"
+msgstr "Tổng số tiền"
+
+#. module: payroll_analytics_approval
+msgid "Total Amount:"
+msgstr "Tổng số tiền:"
+
+#. module: payroll_analytics_approval
+msgid "Total Employees"
+msgstr "Tổng số nhân viên"
+
+#. module: payroll_analytics_approval
+msgid "Total Payroll"
+msgstr "Tổng tiền lương"
+
+#. module: payroll_analytics_approval
+msgid "Total Records"
+msgstr "Tổng số hồ sơ"
+
+#. module: payroll_analytics_approval
+msgid "Total Records:"
+msgstr "Tổng số bản ghi:"
+
+#. module: payroll_analytics_approval
+msgid "Total amount:"
+msgstr "Tổng số tiền:"
+
+#. module: payroll_analytics_approval
+msgid "Total amounts by component"
+msgstr "Tổng số tiền theo thành phần"
+
+#. module: payroll_analytics_approval
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ được ghi lại."
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "Unable to determine country for analytics dashboard"
+msgstr "Không thể xác định quốc gia cho trang tổng quan phân tích"
+
+#. module: payroll_analytics_approval
+#. odoo-python
+msgid "Unable to determine country for bank export"
+msgstr "Không thể xác định quốc gia xuất khẩu của ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Update analytics with current payslip data"
+msgstr "Cập nhật phân tích với dữ liệu phiếu lương hiện tại"
+
+#. module: payroll_analytics_approval
+msgid "Variance"
+msgstr "Phương sai"
+
+#. module: payroll_analytics_approval
+msgid "Variance %"
+msgstr "% phương sai"
+
+#. module: payroll_analytics_approval
+msgid "Variance Analysis"
+msgstr "Phân tích phương sai"
+
+#. module: payroll_analytics_approval
+msgid "Variance Threshold %"
+msgstr "Ngưỡng chênh lệch %"
+
+#. module: payroll_analytics_approval
+msgid "Variance vs Last Month"
+msgstr "Phương sai so với tháng trước"
+
+#. module: payroll_analytics_approval
+msgid "Verify all bank account details before processing transfers"
+msgstr ""
+"Xác minh tất cả chi tiết tài khoản ngân hàng trước khi xử lý chuyển khoản"
+
+#. module: payroll_analytics_approval
+msgid "Vietnam"
+msgstr "Việt Nam"
+
+#. module: payroll_analytics_approval
+msgid "Website Messages"
+msgstr "Tin nhắn trang web"
+
+#. module: payroll_analytics_approval
+msgid "Website communication history"
+msgstr "Lịch sử giao tiếp trang web"
+
+#. module: payroll_analytics_approval
+msgid "Year"
+msgstr "Năm"
+
+#. module: payroll_analytics_approval
+msgid ""
+"employees \n"
+"                                    with total amount of"
+msgstr ""
+"nhân viên \r\n"
+"                                    với tổng số tiền"
+
+#. module: payroll_analytics_approval
+msgid "to"
+msgstr "ĐẾN"
+
+#. module: payroll_analytics_approval
+msgid "vs last month"
+msgstr "so với tháng trước"
+
+#. module: payroll_analytics_approval
+msgid "• Final Approval Review"
+msgstr "• Đánh giá phê duyệt cuối cùng"

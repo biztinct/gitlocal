@@ -1,0 +1,3672 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-05 05:53+0000\n"
+"PO-Revision-Date: 2025-11-05 05:53+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_payroll_base
+msgid "1. Import Data"
+msgstr "1. Nhập dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "2. Calculate"
+msgstr "2. Tính toán"
+
+#. module: pb_hr_payroll_base
+msgid "3. Edit Spreadsheet"
+msgstr "3. Chỉnh sửa bảng tính"
+
+#. module: pb_hr_payroll_base
+msgid "4. Generate Payslips"
+msgstr "4. Tạo phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-calculator fa-4x text-info\" title=\"Calculate\"/>"
+msgstr "<i class=\"fa fa-calculator fa-4x text-info\" title=\"Calculate\"/>"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-chart-line\"/> View Analytics"
+msgstr "<i class=\"fa fa-chart-line\"/> Xem phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-dashboard mr-2\"/>Refresh"
+msgstr "<i class=\"fa fa-dashboard mr-2\"/>Làm mới"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-dashboard\"/> Access Dashboard"
+msgstr "<i class=\"fa fa-dashboard\"/> Truy cập Trang tổng quan"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-download mr-2\"/>Zoho Data"
+msgstr "<i class=\"fa fa-download mr-2\"/>Dữ liệu Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-download\"/> Import Employee Data"
+msgstr "<i class=\"fa fa-download\"/> Nhập dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-edit fa-4x text-warning\" title=\"Edit Spreadsheet\"/>"
+msgstr "<i class=\"fa fa-edit fa-4x text-warning\" title=\"Edit Spreadsheet\"/>"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-external-link\"/> Open Spreadsheet"
+msgstr "<i class=\"fa fa-external-link\"/> Mở bảng tính"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-file-text fa-4x text-danger\" title=\"Generate Payslips\"/>"
+msgstr "<i class=\"fa fa-file-text fa-4x text-danger\" title=\"Generate Payslips\"/>"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-info-circle mr-2\"/>Enhanced Payroll Framework"
+msgstr "<i class=\"fa fa-info-circle mr-2\"/>Khung lương nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-play\"/> Process Payroll"
+msgstr "<i class=\"fa fa-play\"/> Xử lý Bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-plus mr-2\"/>Salary Structure"
+msgstr "<i class=\"fa fa-plus mr-2\"/>Cơ cấu lương"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-refresh\"/> Refresh"
+msgstr "<i class=\"fa fa-refresh\"/> Làm mới"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-tasks\"/> Approval Dashboard"
+msgstr "<i class=\"fa fa-tasks\"/> Trang tổng quan phê duyệt"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-upload fa-4x text-primary\" title=\"Import Data\"/>"
+msgstr "<i class=\"fa fa-upload fa-4x text-primary\" title=\"Import Data\"/>"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-upload\"/> Export Bank File"
+msgstr "<i class=\"fa fa-upload\"/> Xuất tệp ngân hàng"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-users mr-2\"/>Manage Employees"
+msgstr "<i class=\"fa fa-users mr-2\"/>Quản lý nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "<i class=\"fa fa-warning text-warning\"/> Anomaly Detection"
+msgstr "<i class=\"fa fa-warning text-warning\"/> Phát hiện bất thường"
+
+#. module: pb_hr_payroll_base
+msgid "<small class=\"text-muted\">Detected Issues</small>"
+msgstr "<small class=\"text-muted\">Vấn đề được phát hiện__html_1___"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"metric-label\">Anomalies</span>"
+msgstr "<span class=\"metric-label\">Bất thường</span>"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"metric-label\">Avg Salary</span>"
+msgstr "<span class=\"metric-label\">Mức lương trung bình</span>"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"metric-label\">Employees</span>"
+msgstr "<span class=\"metric-label\">Nhân viên__html_1___"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"metric-label\">Total Payroll</span>"
+msgstr "<span class=\"metric-label\">Tổng tiền lương__html_1___"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"o_stat_text\">Contract</span>"
+msgstr "<span class=\"o_stat_text\">Hợp đồng__html_1___"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"o_stat_text\">Employee</span>"
+msgstr "<span class=\"o_stat_text\">Nhân viên__html_1___"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"stat-label\">Employees</span>"
+msgstr "<span class=\"stat-label\">Nhân viên__html_1___"
+
+#. module: pb_hr_payroll_base
+msgid "<span class=\"stat-label\">Payroll</span>"
+msgstr "<span class=\"stat-label\">Bảng lương__html_1___"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Country:</strong>"
+msgstr "<strong>Quốc gia:</strong>"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Currency:</strong>"
+msgstr "<strong>Tiền tệ:</strong>"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"<strong>Field Mapping:</strong> Configure how external data maps to Odoo "
+"employee fields."
+msgstr ""
+"<strong>Ánh xạ trường:</strong> Định cấu hình cách ánh xạ dữ liệu bên ngoài "
+"tới các trường nhân viên của Odoo."
+
+#. module: pb_hr_payroll_base
+msgid ""
+"<strong>Field Mapping:</strong> Map your spreadsheet columns to Odoo fields."
+msgstr ""
+"<strong>Ánh xạ trường:</strong> Ánh xạ các cột trong bảng tính của bạn tới "
+"các trường Odoo."
+
+#. module: pb_hr_payroll_base
+msgid "<strong>India:</strong> __custom__.payrollstaging_india"
+msgstr "<strong>Ấn Độ:</strong> __custom__.payrollstaging_india"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Indonesia:</strong> __custom__.payrollstaging_indonesia"
+msgstr "<strong>Indonesia:</strong> __custom__.payrollstaging_indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Payroll Structure:</strong>"
+msgstr "<strong>Cấu trúc bảng lương:</strong>"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Preview:</strong> Shows a sample of employees to be imported."
+msgstr "<strong>Xem trước:</strong> Hiển thị mẫu nhân viên được nhập."
+
+#. module: pb_hr_payroll_base
+msgid ""
+"<strong>Preview:</strong> Shows first 10 rows of your data for validation."
+msgstr ""
+"<strong>Xem trước:</strong> Hiển thị 10 hàng dữ liệu đầu tiên của bạn để xác"
+" thực."
+
+#. module: pb_hr_payroll_base
+msgid ""
+"<strong>Preview:</strong> This will show estimated results based on current "
+"configuration."
+msgstr ""
+"<strong>Xem trước:</strong> Điều này sẽ hiển thị kết quả ước tính dựa trên "
+"cấu hình hiện tại."
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Singapore:</strong> __custom__.payrollstaging_singapore"
+msgstr "<strong> Singapore:</strong> __custom__.payrollstaging_singapore"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Status:</strong>"
+msgstr "<strong>Trạng thái:</strong>"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Thailand:</strong> __custom__.payrollstaging_thailand"
+msgstr "<strong>Thái Lan:</strong> __custom__.payrollstaging_thailand"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"<strong>Transformation Rules Examples:</strong><br/>\n"
+"                        • <code>value.upper()</code> - Convert to uppercase<br/>\n"
+"                        • <code>value.replace(' ', '_')</code> - Replace spaces with underscores<br/>\n"
+"                        • <code>datetime.strptime(value, '%d/%m/%Y')</code> - Parse date format<br/>\n"
+"                        • <code>float(value) * 1000</code> - Convert currency units<br/>"
+msgstr ""
+"<strong>Ví dụ về quy tắc chuyển đổi:</strong>__html_2___\r\n"
+"                        • <code>value.upper()</code> - Chuyển thành chữ hoa__html_2___\r\n"
+"                        • <code>value.replace(' ', '_')</code> - Thay thế dấu cách bằng dấu gạch dưới__html_2___\r\n"
+"                        • <code>datetime.strptime(value, '%d/%m/%Y')</code> - Phân tích cú pháp định dạng ngày__html_2___\r\n"
+"                        • <code>float(giá trị) * 1000</code> - Chuyển đổi đơn vị tiền tệ<br/>"
+
+#. module: pb_hr_payroll_base
+msgid "<strong>Vietnam:</strong> __custom__.payrollstaging"
+msgstr "<strong>Việt Nam:</strong> __custom__.payrollstaging"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "A dashboard for %s already exists."
+msgstr "Trang tổng quan dành cho %s đã tồn tại."
+
+#. module: pb_hr_payroll_base
+msgid "API URL"
+msgstr "URL API"
+
+#. module: pb_hr_payroll_base
+msgid "Aadhaar Number"
+msgstr "Số Aadhaar"
+
+#. module: pb_hr_payroll_base
+msgid "Access Dashboard"
+msgstr "Truy cập trang tổng quan"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Access Request Required"
+msgstr "Yêu cầu truy cập bắt buộc"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Access interactive payroll spreadsheet for detailed salary component "
+"management, calculations, and data analysis."
+msgstr ""
+"Truy cập bảng tính lương tương tác để quản lý, tính toán và phân tích dữ "
+"liệu thành phần lương chi tiết."
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Access request sent successfully"
+msgstr "Yêu cầu truy cập đã được gửi thành công"
+
+#. module: pb_hr_payroll_base
+msgid "Access to Cambodia payroll system"
+msgstr "Truy cập vào hệ thống bảng lương của Campuchia"
+
+#. module: pb_hr_payroll_base
+msgid "Access to India payroll system"
+msgstr "Truy cập vào hệ thống bảng lương của Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "Access to Indonesia payroll system"
+msgstr "Truy cập vào hệ thống bảng lương của Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Access to Malaysia payroll system"
+msgstr "Truy cập vào hệ thống bảng lương của Malaysia"
+
+#. module: pb_hr_payroll_base
+msgid "Access to Singapore payroll system"
+msgstr "Truy cập vào hệ thống bảng lương của Singapore"
+
+#. module: pb_hr_payroll_base
+msgid "Access to Thailand payroll system"
+msgstr "Truy cập vào hệ thống bảng lương của Thái Lan"
+
+#. module: pb_hr_payroll_base
+msgid "Access to Vietnam payroll system"
+msgstr "Truy cập vào hệ thống bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Accounting"
+msgstr "Kế toán"
+
+#. module: pb_hr_payroll_base
+msgid "Action Needed"
+msgstr "Hành động cần thiết"
+
+#. module: pb_hr_payroll_base
+msgid "Active"
+msgstr "Tích cực"
+
+#. module: pb_hr_payroll_base
+msgid "Active Contracts"
+msgstr "Hợp đồng đang hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Active Status"
+msgstr "Trạng thái hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Activities"
+msgstr "Các hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Activity Exception Decoration"
+msgstr "Trang trí ngoại lệ hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Additional Statistics"
+msgstr "Thống kê bổ sung"
+
+#. module: pb_hr_payroll_base
+msgid "Address"
+msgstr "Địa chỉ"
+
+#. module: pb_hr_payroll_base
+msgid "Address Field"
+msgstr "Trường địa chỉ"
+
+#. module: pb_hr_payroll_base
+msgid "Adjustments"
+msgstr "Điều chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Advanced Analytics"
+msgstr "Phân tích nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Advanced Settings"
+msgstr "Cài đặt nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Advanced analytics and reporting capabilities"
+msgstr "Khả năng phân tích và báo cáo nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Affects Net Salary"
+msgstr "Ảnh hưởng đến lương ròng"
+
+#. module: pb_hr_payroll_base
+msgid "All Employees"
+msgstr "Tất cả nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "All Payslips"
+msgstr "Tất cả các phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "All States"
+msgstr "Tất cả các bang"
+
+#. module: pb_hr_payroll_base
+msgid "Allowances"
+msgstr "Phụ cấp"
+
+#. module: pb_hr_payroll_base
+msgid "Allowed Groups"
+msgstr "Nhóm được phép"
+
+#. module: pb_hr_payroll_base
+msgid "Amount Limits"
+msgstr "Giới hạn số tiền"
+
+#. module: pb_hr_payroll_base
+msgid "Analytic Account"
+msgstr "Tài khoản phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Analytics"
+msgstr "Phân tích"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Analytics Computed"
+msgstr "Phân tích được tính toán"
+
+#. module: pb_hr_payroll_base
+msgid "Analytics Configuration"
+msgstr "Cấu hình phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Analytics Enabled"
+msgstr "Đã bật phân tích"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Analytics Generated"
+msgstr "Phân tích đã được tạo"
+
+#. module: pb_hr_payroll_base
+msgid "Analytics Generation Wizard"
+msgstr "Trình hướng dẫn tạo phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Analytics Options"
+msgstr "Tùy chọn phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Analytics Reports"
+msgstr "Báo cáo phân tích"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Analytics have been successfully computed."
+msgstr "Analytics đã được tính toán thành công."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid ""
+"Analytics report \"%s\" has been generated successfully.\n"
+"Period: %s to %s\n"
+"Country: %s\n"
+"Employees: %d\n"
+"Total Payroll: %s"
+msgstr ""
+"Báo cáo phân tích \"%s\" đã được tạo thành công.\r\n"
+"Khoảng thời gian: %s đến %s\r\n"
+"Quốc gia: %s\r\n"
+"Nhân viên: %d\r\n"
+"Tổng tiền lương: %s"
+
+#. module: pb_hr_payroll_base
+msgid "Analyze Benefits"
+msgstr "Phân tích lợi ích"
+
+#. module: pb_hr_payroll_base
+msgid "Analyze Deductions"
+msgstr "Phân tích các khoản khấu trừ"
+
+#. module: pb_hr_payroll_base
+msgid "Analyze Salary Components"
+msgstr "Phân tích các thành phần tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Animated country selector with permission management"
+msgstr "Bộ chọn quốc gia hoạt hình với quản lý quyền"
+
+#. module: pb_hr_payroll_base
+msgid "Annually"
+msgstr "Hàng năm"
+
+#. module: pb_hr_payroll_base
+msgid "Anomalies"
+msgstr "dị thường"
+
+#. module: pb_hr_payroll_base
+msgid "Anomaly Threshold (%)"
+msgstr "Ngưỡng bất thường (%)"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Anomaly threshold must be between 0 and 100."
+msgstr "Ngưỡng bất thường phải nằm trong khoảng từ 0 đến 100."
+
+#. module: pb_hr_payroll_base
+msgid "Approval & Notes"
+msgstr "Phê duyệt & Ghi chú"
+
+#. module: pb_hr_payroll_base
+msgid "Approval Information"
+msgstr "Thông tin phê duyệt"
+
+#. module: pb_hr_payroll_base
+msgid "Approval Workflow"
+msgstr "Quy trình phê duyệt"
+
+#. module: pb_hr_payroll_base
+msgid "Approve"
+msgstr "Chấp thuận"
+
+#. module: pb_hr_payroll_base
+msgid "Approved"
+msgstr "Tán thành"
+
+#. module: pb_hr_payroll_base
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: pb_hr_payroll_base
+msgid "Attachment Count"
+msgstr "Số lượng tệp đính kèm"
+
+#. module: pb_hr_payroll_base
+msgid "Australia"
+msgstr "Úc"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Approve"
+msgstr "Tự động phê duyệt"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Assign Payroll Structure"
+msgstr "Tự động chỉ định cơ cấu bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Confirm Payslips"
+msgstr "Tự động xác nhận phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Create Contracts"
+msgstr "Tự động tạo hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Create Employees"
+msgstr "Tự động tạo nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Format Emails"
+msgstr "Tự động định dạng email"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Format Names"
+msgstr "Tên định dạng tự động"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Generate Name"
+msgstr "Tự động tạo tên"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Refresh"
+msgstr "Tự động làm mới"
+
+#. module: pb_hr_payroll_base
+msgid "Auto Sync Enabled"
+msgstr "Đã bật tự động đồng bộ hóa"
+
+#. module: pb_hr_payroll_base
+msgid "Auto-Generate Monthly Payroll Analytics"
+msgstr "Tự động tạo phân tích bảng lương hàng tháng"
+
+#. module: pb_hr_payroll_base
+msgid "Automatically generate period name"
+msgstr "Tự động tạo tên thời kỳ"
+
+#. module: pb_hr_payroll_base
+msgid "Average Salary"
+msgstr "Mức lương trung bình"
+
+#. module: pb_hr_payroll_base
+msgid "Average Salary Growth"
+msgstr "Tăng trưởng lương trung bình"
+
+#. module: pb_hr_payroll_base
+msgid "Average salary across all employees"
+msgstr "Mức lương trung bình của tất cả nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS Kesehatan (Employee)"
+msgstr "BPJS Kesehatan (Nhân viên)"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS Kesehatan (Employer)"
+msgstr "BPJS Kesehatan (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS Kesehatan (Health Insurance)"
+msgstr "BPJS Kesehatan (Bảo hiểm y tế)"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS Kesehatan Number"
+msgstr "Số Kesehatan của BPJS"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS Ketenagakerjaan (Employment Insurance)"
+msgstr "BPJS Ketenagakerjaan (Bảo hiểm việc làm)"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS Ketenagakerjaan Number"
+msgstr "Số Ketenagakerjaan của BPJS"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS TK JHT (Employee)"
+msgstr "BPJS TK JHT (Nhân viên)"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS TK JHT (Employer)"
+msgstr "BPJS TK JHT (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS TK JKK"
+msgstr "BPJS TK JKK"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS TK JKM"
+msgstr "BPJS TK JKM"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS TK JP (Employee)"
+msgstr "BPJS TK JP (Nhân viên)"
+
+#. module: pb_hr_payroll_base
+msgid "BPJS TK JP (Employer)"
+msgstr "BPJS TK JP (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_base
+msgid "Bank Account Field"
+msgstr "Trường tài khoản ngân hàng"
+
+#. module: pb_hr_payroll_base
+msgid "Bank Details"
+msgstr "Chi tiết ngân hàng"
+
+#. module: pb_hr_payroll_base
+msgid "Bank File Export"
+msgstr "Xuất tệp ngân hàng"
+
+#. module: pb_hr_payroll_base
+msgid "Base Structures"
+msgstr "Cấu trúc cơ sở"
+
+#. module: pb_hr_payroll_base
+msgid "Base structures cannot be deleted and serve as templates"
+msgstr "Cấu trúc cơ sở không thể bị xóa và dùng làm mẫu"
+
+#. module: pb_hr_payroll_base
+msgid "Basic Information"
+msgstr "Thông tin cơ bản"
+
+#. module: pb_hr_payroll_base
+msgid "Basic Salary"
+msgstr "Lương cơ bản"
+
+#. module: pb_hr_payroll_base
+msgid "Basic Salary - Vietnam"
+msgstr "Lương Cơ Bản - Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Basic Salary Column"
+msgstr "Cột Lương Cơ Bản"
+
+#. module: pb_hr_payroll_base
+msgid "Basic payroll access for viewing own payslips and basic information"
+msgstr ""
+"Truy cập bảng lương cơ bản để xem phiếu lương và thông tin cơ bản của riêng "
+"bạn"
+
+#. module: pb_hr_payroll_base
+msgid "Batch Size"
+msgstr "Kích thước lô"
+
+#. module: pb_hr_payroll_base
+msgid "Benefit Components"
+msgstr "Thành phần lợi ích"
+
+#. module: pb_hr_payroll_base
+msgid "Bi-monthly"
+msgstr "Hai tháng một lần"
+
+#. module: pb_hr_payroll_base
+msgid "Bi-weekly"
+msgstr "Hai tuần một lần"
+
+#. module: pb_hr_payroll_base
+msgid "Birthday"
+msgstr "Sinh nhật"
+
+#. module: pb_hr_payroll_base
+msgid "Birthday Field"
+msgstr "Trường sinh nhật"
+
+#. module: pb_hr_payroll_base
+msgid "Bonuses"
+msgstr "Tiền thưởng"
+
+#. module: pb_hr_payroll_base
+msgid "Boolean"
+msgstr "Boolean"
+
+#. module: pb_hr_payroll_base
+msgid "CSV"
+msgstr "CSV"
+
+#. module: pb_hr_payroll_base
+msgid "Cache Results"
+msgstr "Kết quả bộ nhớ đệm"
+
+#. module: pb_hr_payroll_base
+msgid "Cached Metrics JSON"
+msgstr "Chỉ số JSON được lưu vào bộ nhớ đệm"
+
+#. module: pb_hr_payroll_base
+msgid "Calculation Note"
+msgstr "Ghi chú tính toán"
+
+#. module: pb_hr_payroll_base
+msgid "Calculation Settings"
+msgstr "Cài đặt tính toán"
+
+#. module: pb_hr_payroll_base
+msgid "Cambodia"
+msgstr "Campuchia"
+
+#. module: pb_hr_payroll_base
+msgid "Cambodia Payroll Access"
+msgstr "Truy cập bảng lương của Campuchia"
+
+#. module: pb_hr_payroll_base
+msgid "Can import/export payroll data and manage integrations"
+msgstr "Có thể nhập/xuất dữ liệu bảng lương và quản lý tích hợp"
+
+#. module: pb_hr_payroll_base
+msgid "Can process payroll, generate payslips, and manage employee data"
+msgstr "Có thể xử lý bảng lương, tạo phiếu lương và quản lý dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_hr_payroll_base
+msgid "Category Type"
+msgstr "Loại danh mục"
+
+#. module: pb_hr_payroll_base
+msgid "Category description..."
+msgstr "Mô tả danh mục..."
+
+#. module: pb_hr_payroll_base
+msgid "Central Provident Fund (CPF)"
+msgstr "Quỹ tiết kiệm trung ương (CPF)"
+
+#. module: pb_hr_payroll_base
+msgid "Check Zoho API credentials and connection settings."
+msgstr "Kiểm tra thông tin xác thực API Zoho và cài đặt kết nối."
+
+#. module: pb_hr_payroll_base
+msgid "Choose your country to access the appropriate payroll dashboard."
+msgstr "Chọn quốc gia của bạn để truy cập bảng lương thích hợp."
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Choose your country to access the appropriate payroll management system"
+msgstr "Chọn quốc gia của bạn để truy cập hệ thống quản lý tiền lương phù hợp"
+
+#. module: pb_hr_payroll_base
+msgid "Cleanup Old Analytics Data"
+msgstr "Dọn dẹp dữ liệu phân tích cũ"
+
+#. module: pb_hr_payroll_base
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_hr_payroll_base
+msgid "Column Name"
+msgstr "Tên cột"
+
+#. module: pb_hr_payroll_base
+msgid "Commission Based"
+msgstr "Dựa trên hoa hồng"
+
+#. module: pb_hr_payroll_base
+msgid "Common Issues and Solutions"
+msgstr "Các vấn đề và giải pháp chung"
+
+#. module: pb_hr_payroll_base
+msgid "Compare with Period"
+msgstr "So sánh với thời kỳ"
+
+#. module: pb_hr_payroll_base
+msgid "Comparison"
+msgstr "So sánh"
+
+#. module: pb_hr_payroll_base
+msgid "Complete setup guide for all supported countries"
+msgstr "Hướng dẫn thiết lập hoàn chỉnh cho tất cả các quốc gia được hỗ trợ"
+
+#. module: pb_hr_payroll_base
+msgid "Completed"
+msgstr "Hoàn thành"
+
+#. module: pb_hr_payroll_base
+msgid "Compliance Notes"
+msgstr "Ghi chú tuân thủ"
+
+#. module: pb_hr_payroll_base
+msgid "Component Analysis"
+msgstr "Phân tích thành phần"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Comprehensive payroll analytics with month-over-month comparisons, trend "
+"analysis, and detailed reporting capabilities."
+msgstr ""
+"Phân tích bảng lương toàn diện với khả năng so sánh hàng tháng, phân tích xu"
+" hướng và khả năng báo cáo chi tiết."
+
+#. module: pb_hr_payroll_base
+msgid "Compute Analytics"
+msgstr "Phân tích tính toán"
+
+#. module: pb_hr_payroll_base
+msgid "Computing Analytics"
+msgstr "Phân tích máy tính"
+
+#. module: pb_hr_payroll_base
+msgid "Confidential"
+msgstr "Bảo mật"
+
+#. module: pb_hr_payroll_base
+msgid "Connected"
+msgstr "Đã kết nối"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Connection Successful"
+msgstr "Kết nối thành công"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Connection error: %s"
+msgstr "Lỗi kết nối: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Connection failed with status code: %s"
+msgstr "Kết nối không thành công với mã trạng thái: %s"
+
+#. module: pb_hr_payroll_base
+msgid "Contract Creation"
+msgstr "Tạo hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Contract Start Date"
+msgstr "Ngày bắt đầu hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Contract Type"
+msgstr "Loại hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Contract Type Breakdown"
+msgstr "Phân tích loại hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Contract Types"
+msgstr "Các loại hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Contract types that can use this payroll structure"
+msgstr "Các loại hợp đồng có thể sử dụng cấu trúc bảng lương này"
+
+#. module: pb_hr_payroll_base
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Contracts Created"
+msgstr "Hợp đồng đã tạo"
+
+#. module: pb_hr_payroll_base
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Country & Payroll"
+msgstr "Quốc gia & Bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Country & Scope"
+msgstr "Quốc gia & Phạm vi"
+
+#. module: pb_hr_payroll_base
+msgid "Country Configuration"
+msgstr "Cấu hình quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Country Dashboard"
+msgstr "Trang tổng quan quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Country Information"
+msgstr "Thông tin quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Country Reference"
+msgstr "Tham chiếu quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Country Selector"
+msgstr "Bộ chọn quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Country Selector Wizard"
+msgstr "Trình hướng dẫn chọn quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Country Specific"
+msgstr "Quốc gia cụ thể"
+
+#. module: pb_hr_payroll_base
+msgid "Country code for payroll processing"
+msgstr "Mã quốc gia để xử lý bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Country for which this payroll structure is applicable"
+msgstr "Quốc gia áp dụng cơ cấu bảng lương này"
+
+#. module: pb_hr_payroll_base
+msgid "Country-Specific Mapping"
+msgstr "Lập bản đồ theo quốc gia cụ thể"
+
+#. module: pb_hr_payroll_base
+msgid "Country-Specific Setup"
+msgstr "Thiết lập theo quốc gia cụ thể"
+
+#. module: pb_hr_payroll_base
+msgid "Create Contracts"
+msgstr "Tạo hợp đồng"
+
+#. module: pb_hr_payroll_base
+msgid "Create Missing Employees"
+msgstr "Tạo nhân viên bị thiếu"
+
+#. module: pb_hr_payroll_base
+msgid "Create Only"
+msgstr "Chỉ tạo"
+
+#. module: pb_hr_payroll_base
+msgid "Create a new payroll structure"
+msgstr "Tạo cơ cấu bảng lương mới"
+
+#. module: pb_hr_payroll_base
+msgid "Create a new salary rule"
+msgstr "Tạo quy tắc lương mới"
+
+#. module: pb_hr_payroll_base
+msgid "Create a payroll dashboard"
+msgstr "Tạo bảng tính lương"
+
+#. module: pb_hr_payroll_base
+msgid "Create comprehensive analytics for payroll data"
+msgstr "Tạo phân tích toàn diện cho dữ liệu bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Create comprehensive analytics reports to gain insights into your \n"
+"                payroll trends, employee growth, and compensation analysis."
+msgstr ""
+"Tạo báo cáo phân tích toàn diện để hiểu rõ hơn về \r\n"
+"                xu hướng tiền lương, tăng trưởng nhân viên và phân tích lương thưởng."
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Create dashboards for each country to track payroll statistics and "
+"performance."
+msgstr ""
+"Tạo trang tổng quan cho mỗi quốc gia để theo dõi số liệu thống kê và hiệu "
+"suất trả lương."
+
+#. module: pb_hr_payroll_base
+msgid "Create or Update"
+msgstr "Tạo hoặc cập nhật"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Create professional dashboards for each country with animated flags, advanced analytics, \n"
+"                and comprehensive payroll management capabilities."
+msgstr ""
+"Tạo trang tổng quan chuyên nghiệp cho từng quốc gia với cờ hoạt hình, phân tích nâng cao, \r\n"
+"                và khả năng quản lý tiền lương toàn diện."
+
+#. module: pb_hr_payroll_base
+msgid "Create spreadsheets with the following External IDs:"
+msgstr "Tạo bảng tính với ID bên ngoài sau:"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Create your first payroll analytics report to get insights into \n"
+"                    payroll trends, employee growth, and compensation analysis."
+msgstr ""
+"Tạo báo cáo phân tích tiền lương đầu tiên của bạn để hiểu rõ hơn về \r\n"
+"                    xu hướng tiền lương, tăng trưởng nhân viên và phân tích lương thưởng."
+
+#. module: pb_hr_payroll_base
+msgid "Created Contract"
+msgstr "Hợp đồng đã tạo"
+
+#. module: pb_hr_payroll_base
+msgid "Created Employee"
+msgstr "Nhân viên đã tạo"
+
+#. module: pb_hr_payroll_base
+msgid "Created by"
+msgstr "Created by"
+
+#. module: pb_hr_payroll_base
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: pb_hr_payroll_base
+msgid "Credit Account"
+msgstr "Tài khoản tín dụng"
+
+#. module: pb_hr_payroll_base
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_hr_payroll_base
+msgid "Currency Field"
+msgstr "Trường tiền tệ"
+
+#. module: pb_hr_payroll_base
+msgid "Currency for this payroll structure"
+msgstr "Đơn vị tiền tệ cho cơ cấu bảng lương này"
+
+#. module: pb_hr_payroll_base
+msgid "Current Year"
+msgstr "Năm hiện tại"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Domain Filter"
+msgstr "Bộ lọc tên miền tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Field Mapping"
+msgstr "Ánh xạ trường tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Field Mapping for Employee Import"
+msgstr "Ánh xạ trường tùy chỉnh để nhập nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Field Mappings"
+msgstr "Ánh xạ trường tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Filters"
+msgstr "Bộ lọc tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Period"
+msgstr "Thời gian tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Tax Rules"
+msgstr "Quy tắc thuế tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Validation Code"
+msgstr "Mã xác thực tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Validation Rules"
+msgstr "Quy tắc xác thực tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Custom Validations"
+msgstr "Xác thực tùy chỉnh"
+
+#. module: pb_hr_payroll_base
+msgid "Daily"
+msgstr "Hằng ngày"
+
+#. module: pb_hr_payroll_base
+msgid "Dark Mode"
+msgstr "Chế độ tối"
+
+#. module: pb_hr_payroll_base
+msgid "Dashboard"
+msgstr "Trang tổng quan"
+
+#. module: pb_hr_payroll_base
+msgid "Dashboard Name"
+msgstr "Tên trang tổng quan"
+
+#. module: pb_hr_payroll_base
+msgid "Dashboard Overview"
+msgstr "Tổng quan về trang tổng quan"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Dashboard Refreshed"
+msgstr "Đã làm mới trang tổng quan"
+
+#. module: pb_hr_payroll_base
+msgid "Dashboard Theme"
+msgstr "Chủ đề trang tổng quan"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Dashboards provide an overview of payroll statistics and quick access to \n"
+"                country-specific payroll management functions."
+msgstr ""
+"Bảng điều khiển cung cấp cái nhìn tổng quan về số liệu thống kê tiền lương và truy cập nhanh vào \r\n"
+"                chức năng quản lý tiền lương theo quốc gia cụ thể."
+
+#. module: pb_hr_payroll_base
+msgid "Data Source"
+msgstr "Nguồn dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Data Sources"
+msgstr "Nguồn dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Data Transformation"
+msgstr "Chuyển đổi dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Data Type"
+msgstr "Kiểu dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Data Validation"
+msgstr "Xác thực dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Date"
+msgstr "Ngày"
+
+#. module: pb_hr_payroll_base
+msgid "Date of last processed payroll"
+msgstr "Ngày xử lý bảng lương cuối cùng"
+
+#. module: pb_hr_payroll_base
+msgid "Date/Time"
+msgstr "Ngày/Giờ"
+
+#. module: pb_hr_payroll_base
+msgid "Debit Account"
+msgstr "Tài khoản ghi nợ"
+
+#. module: pb_hr_payroll_base
+msgid "Deduction Components"
+msgstr "Thành phần khấu trừ"
+
+#. module: pb_hr_payroll_base
+msgid "Deductions"
+msgstr "Các khoản khấu trừ"
+
+#. module: pb_hr_payroll_base
+msgid "Deductions Column"
+msgstr "Cột Khấu trừ"
+
+#. module: pb_hr_payroll_base
+msgid "Default"
+msgstr "Mặc định"
+
+#. module: pb_hr_payroll_base
+msgid "Default Contract Settings"
+msgstr "Cài đặt hợp đồng mặc định"
+
+#. module: pb_hr_payroll_base
+msgid "Default Contract Type"
+msgstr "Loại hợp đồng mặc định"
+
+#. module: pb_hr_payroll_base
+msgid "Default Country"
+msgstr "Quốc gia mặc định"
+
+#. module: pb_hr_payroll_base
+msgid "Default Currency"
+msgstr "Tiền tệ mặc định"
+
+#. module: pb_hr_payroll_base
+msgid "Default Value"
+msgstr "Giá trị mặc định"
+
+#. module: pb_hr_payroll_base
+msgid "Default Wage"
+msgstr "Mức lương mặc định"
+
+#. module: pb_hr_payroll_base
+msgid "Default Working Hours"
+msgstr "Giờ làm việc mặc định"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid ""
+"Demo data generation is currently only available for Vietnam and Indonesia. "
+"Current country: %s"
+msgstr ""
+"Việc tạo dữ liệu demo hiện chỉ khả dụng ở Việt Nam và Indonesia. Quốc gia "
+"hiện tại: %s"
+
+#. module: pb_hr_payroll_base
+msgid "Department"
+msgstr "Phòng"
+
+#. module: pb_hr_payroll_base
+msgid "Department Breakdown"
+msgstr "Phân tích bộ phận"
+
+#. module: pb_hr_payroll_base
+msgid "Department Column"
+msgstr "Cột Sở"
+
+#. module: pb_hr_payroll_base
+msgid "Department Field"
+msgstr "Lĩnh vực khoa"
+
+#. module: pb_hr_payroll_base
+msgid "Department Filter"
+msgstr "Bộ lọc bộ phận"
+
+#. module: pb_hr_payroll_base
+msgid "Deprecated"
+msgstr "Không được dùng nữa"
+
+#. module: pb_hr_payroll_base
+msgid "Description"
+msgstr "Sự miêu tả"
+
+#. module: pb_hr_payroll_base
+msgid "Disconnected"
+msgstr "Đã ngắt kết nối"
+
+#. module: pb_hr_payroll_base
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hr_payroll_base
+msgid "Display Order"
+msgstr "Thứ tự hiển thị"
+
+#. module: pb_hr_payroll_base
+msgid "Display Settings"
+msgstr "Cài đặt hiển thị"
+
+#. module: pb_hr_payroll_base
+msgid "Done Only"
+msgstr "Chỉ xong"
+
+#. module: pb_hr_payroll_base
+msgid "Download Error Report"
+msgstr "Tải xuống báo cáo lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Download Template"
+msgstr "Tải xuống mẫu"
+
+#. module: pb_hr_payroll_base
+msgid "Draft"
+msgstr "Bản nháp"
+
+#. module: pb_hr_payroll_base
+msgid "ESI (Employee)"
+msgstr "ESI (Nhân viên)"
+
+#. module: pb_hr_payroll_base
+msgid "ESI (Employer)"
+msgstr "ESI (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_base
+msgid "ESI Number"
+msgstr "Số ESI"
+
+#. module: pb_hr_payroll_base
+msgid "Edit Spreadsheet"
+msgstr "Chỉnh sửa bảng tính"
+
+#. module: pb_hr_payroll_base
+msgid "Email"
+msgstr "E-mail"
+
+#. module: pb_hr_payroll_base
+msgid "Email Field"
+msgstr "Trường email"
+
+#. module: pb_hr_payroll_base
+msgid "Emergency Contact"
+msgstr "Liên hệ khẩn cấp"
+
+#. module: pb_hr_payroll_base
+msgid "Emergency Contact Field"
+msgstr "Trường liên hệ khẩn cấp"
+
+#. module: pb_hr_payroll_base
+msgid "Employee"
+msgstr "Người lao động"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Employee %s already exists"
+msgstr "Nhân viên %s đã tồn tại"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Employee %s not found"
+msgstr "Không tìm thấy nhân viên %s"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Count"
+msgstr "Số lượng nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Data Management"
+msgstr "Quản lý dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Email Column"
+msgstr "Cột Email Nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Fields"
+msgstr "Trường nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Growth"
+msgstr "Tăng trưởng nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Growth Trend"
+msgstr "Xu hướng tăng trưởng nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee ID"
+msgstr "ID nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Import Wizard"
+msgstr "Trình hướng dẫn nhập nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Name Column"
+msgstr "Cột tên nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Number"
+msgstr "Mã số nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Number Column"
+msgstr "Cột Mã số Nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Number Field"
+msgstr "Trường mã số nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Rate (%)"
+msgstr "Tỷ lệ nhân viên (%)"
+
+#. module: pb_hr_payroll_base
+msgid "Employee State Insurance (ESI)"
+msgstr "Bảo hiểm Nhà nước cho Nhân viên (ESI)"
+
+#. module: pb_hr_payroll_base
+msgid "Employee Type"
+msgstr "Loại nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Employees"
+msgstr "Người lao động"
+
+#. module: pb_hr_payroll_base
+msgid "Employer Costs"
+msgstr "Chi phí sử dụng lao động"
+
+#. module: pb_hr_payroll_base
+msgid "Employer Rate (%)"
+msgstr "Tỷ lệ nhà tuyển dụng (%)"
+
+#. module: pb_hr_payroll_base
+msgid "Employment Details"
+msgstr "Chi tiết việc làm"
+
+#. module: pb_hr_payroll_base
+msgid "Enable payroll processing for this contract type"
+msgstr "Cho phép xử lý bảng lương cho loại hợp đồng này"
+
+#. module: pb_hr_payroll_base
+msgid "End Time"
+msgstr "Thời gian kết thúc"
+
+#. module: pb_hr_payroll_base
+msgid "Enhanced Configuration"
+msgstr "Cấu hình nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Enhanced Country Selector"
+msgstr "Bộ chọn quốc gia nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Enhanced Multi-Country Payroll Dashboard"
+msgstr "Bảng điều khiển tiền lương đa quốc gia nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Enhanced Payroll Dashboard"
+msgstr "Bảng điều khiển tiền lương nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Enhanced Payroll Dashboards"
+msgstr "Bảng điều khiển tính lương nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Enhanced Statistics"
+msgstr "Thống kê nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Ensure spreadsheets have the correct External IDs listed in Step 1."
+msgstr "Đảm bảo bảng tính có ID bên ngoài chính xác được liệt kê ở Bước 1."
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Enter compliance requirements, legal notes, or special considerations for "
+"this payroll structure..."
+msgstr ""
+"Nhập các yêu cầu tuân thủ, ghi chú pháp lý hoặc những cân nhắc đặc biệt cho "
+"cơ cấu bảng lương này..."
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Error"
+msgstr "Lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Error Details"
+msgstr "Chi tiết lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Error Handling"
+msgstr "Xử lý lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Error Message"
+msgstr "Thông báo lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Error Report Recipients"
+msgstr "Người nhận báo cáo lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Error Threshold (%)"
+msgstr "Ngưỡng lỗi (%)"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error connecting to API: %s"
+msgstr "Lỗi kết nối với API: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error connecting to Zoho: %s"
+msgstr "Lỗi kết nối với Zoho: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error creating demo data: %s"
+msgstr "Lỗi tạo dữ liệu demo: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error creating error report: %s"
+msgstr "Lỗi tạo báo cáo lỗi: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error creating template: %s"
+msgstr "Lỗi tạo mẫu: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error generating analytics: %s"
+msgstr "Lỗi tạo phân tích: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error generating preview: %s"
+msgstr "Lỗi tạo bản xem trước: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error importing data: %s"
+msgstr "Lỗi nhập dữ liệu: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error in payroll process: %s"
+msgstr "Lỗi trong quá trình tính lương: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error loading preview: %s"
+msgstr "Lỗi tải bản xem trước: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error previewing file: %s"
+msgstr "Lỗi xem trước tệp: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error processing data: %s"
+msgstr "Lỗi xử lý dữ liệu: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Error sending access request: "
+msgstr "Lỗi gửi yêu cầu truy cập:"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Error threshold exceeded. Import stopped."
+msgstr "Đã vượt quá ngưỡng lỗi. Đã dừng nhập khẩu."
+
+#. module: pb_hr_payroll_base
+msgid "Estimated Employee Count"
+msgstr "Số lượng nhân viên ước tính"
+
+#. module: pb_hr_payroll_base
+msgid "Estimated Payslip Count"
+msgstr "Số phiếu lương ước tính"
+
+#. module: pb_hr_payroll_base
+msgid "Estimated Processing Time (seconds)"
+msgstr "Thời gian xử lý ước tính (giây)"
+
+#. module: pb_hr_payroll_base
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_hr_payroll_base
+msgid "Exchange Rate Date"
+msgstr "Ngày tỷ giá hối đoái"
+
+#. module: pb_hr_payroll_base
+msgid "Export Report"
+msgstr "Xuất báo cáo"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Export payroll data to bank format for automated salary disbursement and "
+"payment processing with validation."
+msgstr ""
+"Xuất dữ liệu bảng lương sang định dạng ngân hàng để giải ngân lương tự động "
+"và xử lý thanh toán có xác nhận."
+
+#. module: pb_hr_payroll_base
+msgid "Export to Excel"
+msgstr "Xuất sang Excel"
+
+#. module: pb_hr_payroll_base
+msgid "External API"
+msgstr "API bên ngoài"
+
+#. module: pb_hr_payroll_base
+msgid "Failed Count"
+msgstr "Đếm không thành công"
+
+#. module: pb_hr_payroll_base
+msgid "Failed Records"
+msgstr "Bản ghi thất bại"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Failed to send access request"
+msgstr "Không gửi được yêu cầu truy cập"
+
+#. module: pb_hr_payroll_base
+msgid "Field Mapping"
+msgstr "Ánh xạ trường"
+
+#. module: pb_hr_payroll_base
+msgid "Field Mappings"
+msgstr "Ánh xạ trường"
+
+#. module: pb_hr_payroll_base
+msgid "Field Type"
+msgstr "Loại trường"
+
+#. module: pb_hr_payroll_base
+msgid "File Format"
+msgstr "Định dạng tệp"
+
+#. module: pb_hr_payroll_base
+msgid "File Upload"
+msgstr "Tải lên tệp"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "File format %s not supported yet"
+msgstr "Định dạng tệp %s chưa được hỗ trợ"
+
+#. module: pb_hr_payroll_base
+msgid "Filename"
+msgstr "Tên tệp"
+
+#. module: pb_hr_payroll_base
+msgid "Fixed Salary"
+msgstr "Lương cố định"
+
+#. module: pb_hr_payroll_base
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_hr_payroll_base
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_hr_payroll_base
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Phông chữ biểu tượng tuyệt vời, ví dụ: nhiệm vụ fa"
+
+#. module: pb_hr_payroll_base
+msgid "Foreign Worker Levy (FWL)"
+msgstr "Thuế lao động nước ngoài (FWL)"
+
+#. module: pb_hr_payroll_base
+msgid "Formula"
+msgstr "Công thức"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Found %d employees and %d payslips for analysis."
+msgstr "Đã tìm thấy %d nhân viên và %d phiếu lương để phân tích."
+
+#. module: pb_hr_payroll_base
+msgid "Full Name (English)"
+msgstr "Tên đầy đủ (tiếng Anh)"
+
+#. module: pb_hr_payroll_base
+msgid "Full access to all payroll systems and multi-country management"
+msgstr ""
+"Toàn quyền truy cập vào tất cả các hệ thống trả lương và quản lý đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Full payroll management including salary rules, structures, and analytics"
+msgstr ""
+"Quản lý bảng lương đầy đủ bao gồm các quy tắc, cấu trúc và phân tích tiền "
+"lương"
+
+#. module: pb_hr_payroll_base
+msgid "Gender"
+msgstr "Giới tính"
+
+#. module: pb_hr_payroll_base
+msgid "Gender Field"
+msgstr "Trường giới tính"
+
+#. module: pb_hr_payroll_base
+msgid "Generate Analytics"
+msgstr "Tạo phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Generate Analytics Report"
+msgstr "Tạo Báo cáo Analytics"
+
+#. module: pb_hr_payroll_base
+msgid "Generate Charts"
+msgstr "Tạo biểu đồ"
+
+#. module: pb_hr_payroll_base
+msgid "Generate Payroll Analytics"
+msgstr "Tạo phân tích tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Generate Preview"
+msgstr "Tạo bản xem trước"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Generated Analytics"
+msgstr "Phân tích đã tạo"
+
+#. module: pb_hr_payroll_base
+msgid "Get Employee Data"
+msgstr "Nhận dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Get employee data from Zoho"
+msgstr "Lấy dữ liệu nhân viên từ Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Go to Settings → Users and assign country-specific groups:"
+msgstr ""
+"Đi tới Cài đặt → Người dùng và chỉ định các nhóm theo quốc gia cụ thể:"
+
+#. module: pb_hr_payroll_base
+msgid "Gratuity"
+msgstr "Tiền thưởng"
+
+#. module: pb_hr_payroll_base
+msgid "Gratuity Payments"
+msgstr "Thanh toán tiền thưởng"
+
+#. module: pb_hr_payroll_base
+msgid "Gross Salary Column"
+msgstr "Cột Tổng Lương"
+
+#. module: pb_hr_payroll_base
+msgid "Group By"
+msgstr "Nhóm theo"
+
+#. module: pb_hr_payroll_base
+msgid "Has Anomalies"
+msgstr "Có điểm bất thường"
+
+#. module: pb_hr_payroll_base
+msgid "Has Employees"
+msgstr "Có nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Has Header Row"
+msgstr "Có hàng tiêu đề"
+
+#. module: pb_hr_payroll_base
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_hr_payroll_base
+msgid "Health Insurance (HI)"
+msgstr "Bảo hiểm y tế (HI)"
+
+#. module: pb_hr_payroll_base
+msgid "Hourly"
+msgstr "Hàng giờ"
+
+#. module: pb_hr_payroll_base
+msgid "Hourly Rate"
+msgstr "Tỷ lệ hàng giờ"
+
+#. module: pb_hr_payroll_base
+msgid "Housing Allowance"
+msgstr "Trợ cấp nhà ở"
+
+#. module: pb_hr_payroll_base
+msgid "Housing Allowance - Vietnam"
+msgstr "Trợ cấp Nhà ở - Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "How often employees with this contract type are paid"
+msgstr "Tần suất nhân viên có loại hợp đồng này được trả lương"
+
+#. module: pb_hr_payroll_base
+msgid "Hybrid (Fixed + Variable)"
+msgstr "Kết hợp (Cố định + Biến)"
+
+#. module: pb_hr_payroll_base
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hr_payroll_base
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_hr_payroll_base
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng để biểu thị một hoạt động ngoại lệ."
+
+#. module: pb_hr_payroll_base
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, các tin nhắn mới cần bạn chú ý."
+
+#. module: pb_hr_payroll_base
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn có lỗi gửi."
+
+#. module: pb_hr_payroll_base
+msgid "If unchecked, this payroll structure will be hidden from lists"
+msgstr "Nếu không chọn, cấu trúc bảng lương này sẽ bị ẩn khỏi danh sách"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Import Completed"
+msgstr "Nhập đã hoàn tất"
+
+#. module: pb_hr_payroll_base
+msgid "Import Configuration"
+msgstr "Nhập cấu hình"
+
+#. module: pb_hr_payroll_base
+msgid "Import Data"
+msgstr "Nhập dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Import Employee Data"
+msgstr "Nhập dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Import Employees"
+msgstr "Nhập khẩu nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Import File"
+msgstr "Nhập tệp"
+
+#. module: pb_hr_payroll_base
+msgid "Import Log"
+msgstr "Nhật ký nhập khẩu"
+
+#. module: pb_hr_payroll_base
+msgid "Import Mode"
+msgstr "Chế độ nhập"
+
+#. module: pb_hr_payroll_base
+msgid "Import Payroll Data"
+msgstr "Nhập dữ liệu bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Import Results"
+msgstr "Nhập kết quả"
+
+#. module: pb_hr_payroll_base
+msgid "Import Source"
+msgstr "Nguồn nhập khẩu"
+
+#. module: pb_hr_payroll_base
+msgid "Import Spreadsheet"
+msgstr "Nhập bảng tính"
+
+#. module: pb_hr_payroll_base
+msgid "Import Statistics"
+msgstr "Thống kê nhập khẩu"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Import Successful"
+msgstr "Nhập thành công"
+
+#. module: pb_hr_payroll_base
+msgid "Import Summary"
+msgstr "Tóm tắt nhập khẩu"
+
+#. module: pb_hr_payroll_base
+msgid "Import Type"
+msgstr "Loại nhập khẩu"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Import Warning"
+msgstr "Cảnh báo nhập khẩu"
+
+#. module: pb_hr_payroll_base
+msgid "Import Zoho Data"
+msgstr "Nhập dữ liệu Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Import Zoho Employee Data"
+msgstr "Nhập dữ liệu nhân viên Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Import Zoho Employees"
+msgstr "Nhập nhân viên Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Import Zoho Staging Data"
+msgstr "Nhập dữ liệu dàn dựng của Zoho"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Import and manage employee information from Zoho People system with "
+"automated data synchronization and validation."
+msgstr ""
+"Nhập và quản lý thông tin nhân viên từ hệ thống Zoho People bằng tính năng "
+"đồng bộ hóa và xác thực dữ liệu tự động."
+
+#. module: pb_hr_payroll_base
+msgid "Import and process employee data for multiple countries"
+msgstr "Nhập và xử lý dữ liệu nhân viên cho nhiều quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Import data and create payslips"
+msgstr "Nhập dữ liệu và tạo phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "Import employee data from Zoho"
+msgstr "Nhập dữ liệu nhân viên từ Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Import employee information from external sources"
+msgstr "Nhập thông tin nhân viên từ các nguồn bên ngoài"
+
+#. module: pb_hr_payroll_base
+msgid "Import employees from Zoho People to staging area"
+msgstr "Nhập nhân viên từ Zoho People vào khu vực tổ chức"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Import failed: %s"
+msgstr "Nhập không thành công: %s"
+
+#. module: pb_hr_payroll_base
+msgid "Important compliance information for this structure"
+msgstr "Thông tin tuân thủ quan trọng cho cấu trúc này"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Imported %d employees, updated %d, %d failed."
+msgstr "Đã nhập %d nhân viên, cập nhật %d, %d không thành công."
+
+#. module: pb_hr_payroll_base
+msgid "Imported Count"
+msgstr "Số lượng đã nhập"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Imported Employees"
+msgstr "Nhân viên nhập khẩu"
+
+#. module: pb_hr_payroll_base
+msgid "Inactive"
+msgstr "Không hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Include All Employees"
+msgstr "Bao gồm tất cả nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Include Anomaly Detection"
+msgstr "Bao gồm phát hiện bất thường"
+
+#. module: pb_hr_payroll_base
+msgid "Include Inactive Employees"
+msgstr "Bao gồm nhân viên không hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "Include Period Comparisons"
+msgstr "Bao gồm so sánh thời gian"
+
+#. module: pb_hr_payroll_base
+msgid "Income Tax"
+msgstr "Thuế thu nhập"
+
+#. module: pb_hr_payroll_base
+msgid "Income Tax (TDS)"
+msgstr "Thuế thu nhập (TDS)"
+
+#. module: pb_hr_payroll_base
+msgid "India"
+msgstr "Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Employees"
+msgstr "Nhân viên Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Employer Contributions"
+msgstr "Đóng góp của Chủ lao động Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Income Tax"
+msgstr "Thuế thu nhập Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Payroll Access"
+msgstr "Truy cập bảng lương ở Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Payroll Dashboard"
+msgstr "Trang tổng quan bảng lương Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Payroll User"
+msgstr "Người dùng bảng lương Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Specific"
+msgstr "Ấn Độ cụ thể"
+
+#. module: pb_hr_payroll_base
+msgid "India Specific Info"
+msgstr "Thông tin cụ thể về Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Staging Data"
+msgstr "Dữ liệu dàn dựng của Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Tax & Deductions"
+msgstr "Thuế và các khoản khấu trừ ở Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "India Zoho Data"
+msgstr "Dữ liệu Zoho Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia"
+msgstr "Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Employees"
+msgstr "Nhân viên Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Employer BPJS"
+msgstr "Chủ lao động Indonesia BPJS"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia PPh21 Tax"
+msgstr "Thuế PPh21 của Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Payroll Access"
+msgstr "Truy cập bảng lương của Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Payroll Dashboard"
+msgstr "Bảng điều khiển bảng lương Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Payroll User"
+msgstr "Người dùng bảng lương Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Specific"
+msgstr "Indonesia cụ thể"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Specific Info"
+msgstr "Thông tin cụ thể của Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Staging Data"
+msgstr "Dữ liệu dàn dựng của Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Tax & BPJS"
+msgstr "Thuế Indonesia & BPJS"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Zoho Data"
+msgstr "Dữ liệu Zoho của Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "Initial Contract State"
+msgstr "Trạng thái hợp đồng ban đầu"
+
+#. module: pb_hr_payroll_base
+msgid "Initial Setup"
+msgstr "Thiết lập ban đầu"
+
+#. module: pb_hr_payroll_base
+msgid "Integration Problems"
+msgstr "Vấn đề tích hợp"
+
+#. module: pb_hr_payroll_base
+msgid "Integration and Analytics"
+msgstr "Tích hợp và phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Interactive Analytics Charts"
+msgstr "Biểu đồ phân tích tương tác"
+
+#. module: pb_hr_payroll_base
+msgid "Interactive Spreadsheet"
+msgstr "Bảng tính tương tác"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Invalid import source."
+msgstr "Nguồn nhập không hợp lệ."
+
+#. module: pb_hr_payroll_base
+msgid "Is Base Structure"
+msgstr "Là cấu trúc cơ sở"
+
+#. module: pb_hr_payroll_base
+msgid "Is Follower"
+msgstr "là người theo dõi"
+
+#. module: pb_hr_payroll_base
+msgid "Is Taxable"
+msgstr "Có bị đánh thuế"
+
+#. module: pb_hr_payroll_base
+msgid "JSON"
+msgstr "JSON"
+
+#. module: pb_hr_payroll_base
+msgid "Job Title"
+msgstr "Chức danh"
+
+#. module: pb_hr_payroll_base
+msgid "Job Title Field"
+msgstr "Trường chức danh"
+
+#. module: pb_hr_payroll_base
+msgid "Join Date"
+msgstr "Ngày tham gia"
+
+#. module: pb_hr_payroll_base
+msgid "Join Date Field"
+msgstr "Trường ngày tham gia"
+
+#. module: pb_hr_payroll_base
+msgid "KTP Number"
+msgstr "Số KTP"
+
+#. module: pb_hr_payroll_base
+msgid "Key Metrics"
+msgstr "Số liệu chính"
+
+#. module: pb_hr_payroll_base
+msgid "Last 6 Months"
+msgstr "6 tháng qua"
+
+#. module: pb_hr_payroll_base
+msgid "Last Modified"
+msgstr "Sửa đổi lần cuối"
+
+#. module: pb_hr_payroll_base
+msgid "Last Modified on"
+msgstr "Sửa đổi lần cuối vào"
+
+#. module: pb_hr_payroll_base
+msgid "Last Payroll"
+msgstr "Bảng lương cuối cùng"
+
+#. module: pb_hr_payroll_base
+msgid "Last Payroll Date"
+msgstr "Ngày trả lương cuối cùng"
+
+#. module: pb_hr_payroll_base
+msgid "Last Sync Date"
+msgstr "Ngày đồng bộ hóa lần cuối"
+
+#. module: pb_hr_payroll_base
+msgid "Last Updated"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_hr_payroll_base
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_hr_payroll_base
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_hr_payroll_base
+msgid "Load Preview"
+msgstr "Tải bản xem trước"
+
+#. module: pb_hr_payroll_base
+msgid "Loading payroll dashboard..."
+msgstr "Đang tải bảng điều khiển bảng lương..."
+
+#. module: pb_hr_payroll_base
+msgid "Main Attachment"
+msgstr "Tệp đính kèm chính"
+
+#. module: pb_hr_payroll_base
+msgid "Maintenance"
+msgstr "BẢO TRÌ"
+
+#. module: pb_hr_payroll_base
+msgid "Malaysia"
+msgstr "Malaysia"
+
+#. module: pb_hr_payroll_base
+msgid "Malaysia Payroll Access"
+msgstr "Truy cập bảng lương của Malaysia"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Manage payroll approvals with multi-level review process, audit trail "
+"tracking, and automated notifications."
+msgstr ""
+"Quản lý phê duyệt bảng lương với quy trình đánh giá đa cấp, theo dõi quá "
+"trình kiểm tra và thông báo tự động."
+
+#. module: pb_hr_payroll_base
+msgid "Manager"
+msgstr "Giám đốc"
+
+#. module: pb_hr_payroll_base
+msgid "Manager Field"
+msgstr "Trường người quản lý"
+
+#. module: pb_hr_payroll_base
+msgid "Mathematical formula for amount calculation"
+msgstr "Công thức toán học tính số tiền"
+
+#. module: pb_hr_payroll_base
+msgid "Maximum Amount"
+msgstr "Số tiền tối đa"
+
+#. module: pb_hr_payroll_base
+msgid "Meal Allowance"
+msgstr "Trợ cấp bữa ăn"
+
+#. module: pb_hr_payroll_base
+msgid "Meal allowance"
+msgstr "Trợ cấp bữa ăn"
+
+#. module: pb_hr_payroll_base
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_hr_payroll_base
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_hr_payroll_base
+msgid "Metrics Last Computed"
+msgstr "Số liệu được tính toán lần cuối"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Metrics have been updated successfully."
+msgstr "Số liệu đã được cập nhật thành công."
+
+#. module: pb_hr_payroll_base
+msgid "Minimal"
+msgstr "Tối thiểu"
+
+#. module: pb_hr_payroll_base
+msgid "Minimum Amount"
+msgstr "Số tiền tối thiểu"
+
+#. module: pb_hr_payroll_base
+msgid "Mixed Sources"
+msgstr "Nguồn hỗn hợp"
+
+#. module: pb_hr_payroll_base
+msgid "Mobile-responsive design with modern animations"
+msgstr "Thiết kế đáp ứng di động với hình ảnh động hiện đại"
+
+#. module: pb_hr_payroll_base
+msgid "Modern"
+msgstr "Hiện đại"
+
+#. module: pb_hr_payroll_base
+msgid "Monthly"
+msgstr "hàng tháng"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-Country Configuration"
+msgstr "Cấu hình đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-Country Payroll"
+msgstr "Bảng lương đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-Country Payroll Dashboard"
+msgstr "Bảng điều khiển bảng lương đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-Country Payroll Setup Guide"
+msgstr "Hướng dẫn thiết lập bảng lương đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-Country Payroll System"
+msgstr "Hệ thống tính lương đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-Country Processing"
+msgstr "Xử lý đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-Country Zoho Import"
+msgstr "Nhập khẩu Zoho đa quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Multi-country support with extensible architecture"
+msgstr "Hỗ trợ đa quốc gia với kiến ​​trúc mở rộng"
+
+#. module: pb_hr_payroll_base
+msgid "My Activity Deadline"
+msgstr "Hạn chót hoạt động của tôi"
+
+#. module: pb_hr_payroll_base
+msgid "NPWP Number"
+msgstr "Số NPWP"
+
+#. module: pb_hr_payroll_base
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_hr_payroll_base
+msgid "Name Field"
+msgstr "Trường tên"
+
+#. module: pb_hr_payroll_base
+msgid "Net Salary"
+msgstr "Lương ròng"
+
+#. module: pb_hr_payroll_base
+msgid "Net Salary - Vietnam"
+msgstr "Lương Ròng - Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Net Salary Column"
+msgstr "Cột Lương Ròng"
+
+#. module: pb_hr_payroll_base
+msgid "Next Activity Calendar Event"
+msgstr "Lịch hoạt động tiếp theo Sự kiện"
+
+#. module: pb_hr_payroll_base
+msgid "Next Activity Deadline"
+msgstr "Hạn chót hoạt động tiếp theo"
+
+#. module: pb_hr_payroll_base
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: pb_hr_payroll_base
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "No Employees Found"
+msgstr "Không tìm thấy nhân viên nào"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "No Spreadsheet Configured"
+msgstr "Không có bảng tính nào được định cấu hình"
+
+#. module: pb_hr_payroll_base
+msgid "No analytics data found!"
+msgstr "Không tìm thấy dữ liệu phân tích!"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "No employees were imported."
+msgstr "Không có nhân viên nào được nhập khẩu."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "No errors to download."
+msgstr "Không có lỗi để tải về."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "No spreadsheet is configured for country %s. Import skipped."
+msgstr ""
+"Không có bảng tính nào được định cấu hình cho quốc gia %s. Đã bỏ qua quá "
+"trình nhập."
+
+#. module: pb_hr_payroll_base
+msgid "Normalize Phone Numbers"
+msgstr "Chuẩn hóa số điện thoại"
+
+#. module: pb_hr_payroll_base
+msgid "Notes about calculations..."
+msgstr "Lưu ý về tính toán..."
+
+#. module: pb_hr_payroll_base
+msgid "Number"
+msgstr "Con số"
+
+#. module: pb_hr_payroll_base
+msgid "Number of Actions"
+msgstr "Số lượng hành động"
+
+#. module: pb_hr_payroll_base
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Number of messages requiring action"
+msgstr "Số lượng tin nhắn yêu cầu hành động"
+
+#. module: pb_hr_payroll_base
+msgid "Number of messages with delivery error"
+msgstr "Số lượng tin nhắn có lỗi gửi"
+
+#. module: pb_hr_payroll_base
+msgid "Odoo Field"
+msgstr "Lĩnh vực Odoo"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Only CSV files are supported currently"
+msgstr "Hiện chỉ hỗ trợ tệp CSV"
+
+#. module: pb_hr_payroll_base
+msgid "Optimized asset loading and improved performance"
+msgstr "Tải tài sản được tối ưu hóa và cải thiện hiệu suất"
+
+#. module: pb_hr_payroll_base
+msgid "Organizational Analysis"
+msgstr "Phân tích tổ chức"
+
+#. module: pb_hr_payroll_base
+msgid "Other Allowances"
+msgstr "Phụ cấp khác"
+
+#. module: pb_hr_payroll_base
+msgid "Output Options"
+msgstr "Tùy chọn đầu ra"
+
+#. module: pb_hr_payroll_base
+msgid "PAN Number"
+msgstr "Số PAN"
+
+#. module: pb_hr_payroll_base
+msgid "PF (Employee)"
+msgstr "PF (Nhân viên)"
+
+#. module: pb_hr_payroll_base
+msgid "PF (Employer)"
+msgstr "PF (Nhà tuyển dụng)"
+
+#. module: pb_hr_payroll_base
+msgid "PF Number"
+msgstr "Số PF"
+
+#. module: pb_hr_payroll_base
+msgid "PPh 21 (Income Tax)"
+msgstr "PPh 21 (Thuế thu nhập)"
+
+#. module: pb_hr_payroll_base
+msgid "Paid Only"
+msgstr "Chỉ trả tiền"
+
+#. module: pb_hr_payroll_base
+msgid "Parallel Processing"
+msgstr "Xử lý song song"
+
+#. module: pb_hr_payroll_base
+msgid "Payment Method Field"
+msgstr "Trường phương thức thanh toán"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Analysis"
+msgstr "Phân tích tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Analytics"
+msgstr "Phân tích tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Analytics Dashboard"
+msgstr "Bảng điều khiển phân tích tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Base User"
+msgstr "Người dùng cơ sở bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Country"
+msgstr "Quốc gia trả lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Country Selector"
+msgstr "Công cụ chọn quốc gia tính lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Dashboard"
+msgstr "Bảng điều khiển tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Dashboards"
+msgstr "Bảng điều khiển tính lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Data Import Wizard"
+msgstr "Trình hướng dẫn nhập dữ liệu bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Distribution"
+msgstr "Phân phối tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Enabled"
+msgstr "Đã bật bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Fields"
+msgstr "Trường bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Growth"
+msgstr "Tăng trưởng tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Information"
+msgstr "Thông tin tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Integration User"
+msgstr "Người dùng tích hợp bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Manager"
+msgstr "Người quản lý tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Officer"
+msgstr "Cán bộ tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Processing"
+msgstr "Xử lý bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Schedule"
+msgstr "Bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Setup Guide"
+msgstr "Hướng dẫn thiết lập bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Structure"
+msgstr "Cơ cấu tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Structures"
+msgstr "Cơ cấu tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payroll Super Administrator"
+msgstr "Quản trị viên cấp cao tính lương"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid ""
+"Payroll data import completed successfully. Use \"View Payslip Batches\" to "
+"create batches when ready."
+msgstr ""
+"Nhập dữ liệu bảng lương đã hoàn tất thành công. Sử dụng \"Xem các lô phiếu "
+"lương\" để tạo các lô khi sẵn sàng."
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Payroll structures define the salary rules and calculations for employees.\n"
+"                You can create country-specific structures for different payroll systems and link them to contract types."
+msgstr ""
+"Cấu trúc bảng lương xác định các quy tắc và cách tính lương cho nhân viên.\r\n"
+"                Bạn có thể tạo cấu trúc theo quốc gia cụ thể cho các hệ thống trả lương khác nhau và liên kết chúng với các loại hợp đồng."
+
+#. module: pb_hr_payroll_base
+msgid "PayrollBackup"
+msgstr "Sao lưu bảng lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payslip Batches"
+msgstr "Lô phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payslip Data"
+msgstr "Dữ liệu phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payslip State Filter"
+msgstr "Bộ lọc trạng thái phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "Pending Payslips"
+msgstr "Phiếu lương đang chờ xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Pension Enabled"
+msgstr "Đã kích hoạt lương hưu"
+
+#. module: pb_hr_payroll_base
+msgid "Performance"
+msgstr "Hiệu suất"
+
+#. module: pb_hr_payroll_base
+msgid "Period"
+msgstr "Giai đoạn"
+
+#. module: pb_hr_payroll_base
+msgid "Period Configuration"
+msgstr "Cấu hình thời gian"
+
+#. module: pb_hr_payroll_base
+msgid "Period End"
+msgstr "Cuối kỳ"
+
+#. module: pb_hr_payroll_base
+msgid "Period Start"
+msgstr "Bắt đầu kỳ"
+
+#. module: pb_hr_payroll_base
+msgid "Period Type"
+msgstr "Loại kỳ"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Period start must be before period end."
+msgstr "Thời điểm bắt đầu kỳ phải trước thời điểm kết thúc kỳ."
+
+#. module: pb_hr_payroll_base
+msgid "Period-over-Period Comparison"
+msgstr "So sánh giữa các kỳ"
+
+#. module: pb_hr_payroll_base
+msgid "Personal Income Tax"
+msgstr "Thuế thu nhập cá nhân"
+
+#. module: pb_hr_payroll_base
+msgid "Personal Income Tax (PIT)"
+msgstr "Thuế thu nhập cá nhân (PIT)"
+
+#. module: pb_hr_payroll_base
+msgid "Personal Income Tax - Vietnam"
+msgstr "Thuế thu nhập cá nhân - Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Personal Information"
+msgstr "Thông tin cá nhân"
+
+#. module: pb_hr_payroll_base
+msgid "Philippines"
+msgstr "Philippin"
+
+#. module: pb_hr_payroll_base
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_hr_payroll_base
+msgid "Phone Field"
+msgstr "Trường điện thoại"
+
+#. module: pb_hr_payroll_base
+msgid "Piece Rate"
+msgstr "Tỷ lệ mảnh"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please create payroll structures and contracts first."
+msgstr "Vui lòng tạo cấu trúc bảng lương và hợp đồng trước."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please provide API URL."
+msgstr "Vui lòng cung cấp URL API."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please provide Zoho API Key and Organization ID."
+msgstr "Vui lòng cung cấp Khóa API Zoho và ID tổ chức."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please provide Zoho API credentials."
+msgstr "Vui lòng cung cấp thông tin xác thực API Zoho."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please select a file to import"
+msgstr "Vui lòng chọn một tệp để nhập"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please select employees or choose to include all employees."
+msgstr "Vui lòng chọn nhân viên hoặc chọn bao gồm tất cả nhân viên."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please upload a file first"
+msgstr "Vui lòng tải tệp lên trước"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Please upload a file first."
+msgstr "Vui lòng tải lên một tập tin đầu tiên."
+
+#. module: pb_hr_payroll_base
+msgid "Position Analysis"
+msgstr "Phân tích vị trí"
+
+#. module: pb_hr_payroll_base
+msgid "Preview"
+msgstr "Xem trước"
+
+#. module: pb_hr_payroll_base
+msgid "Preview Data"
+msgstr "Xem trước dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Preview Employee Count"
+msgstr "Xem trước số lượng nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Preview Existing Employees"
+msgstr "Xem trước nhân viên hiện tại"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Preview Generated"
+msgstr "Đã tạo bản xem trước"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Preview Loaded"
+msgstr "Đã tải bản xem trước"
+
+#. module: pb_hr_payroll_base
+msgid "Preview New Employees"
+msgstr "Xem trước nhân viên mới"
+
+#. module: pb_hr_payroll_base
+msgid "Preview Total Amount"
+msgstr "Xem trước tổng số tiền"
+
+#. module: pb_hr_payroll_base
+msgid "Preview Validation Errors"
+msgstr "Xem trước lỗi xác thực"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Preview data loaded successfully."
+msgstr "Xem trước dữ liệu được tải thành công."
+
+#. module: pb_hr_payroll_base
+msgid "Process Staging Batch"
+msgstr "Quá trình dàn dựng hàng loạt"
+
+#. module: pb_hr_payroll_base
+msgid "Process and import payroll calculations from spreadsheets"
+msgstr "Xử lý và nhập các tính toán bảng lương từ bảng tính"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Process monthly payroll with automated calculations, tax deductions, "
+"compliance validation, and audit trails."
+msgstr ""
+"Xử lý bảng lương hàng tháng bằng các tính toán tự động, khấu trừ thuế, xác "
+"thực tuân thủ và theo dõi kiểm toán."
+
+#. module: pb_hr_payroll_base
+msgid "Process to Employee"
+msgstr "Quy trình cho nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Processed"
+msgstr "Đã xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Processed Date"
+msgstr "Ngày xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Processed Records"
+msgstr "Hồ sơ đã xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Processing"
+msgstr "Xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Duration (s)"
+msgstr "Thời lượng xử lý (các)"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Duration (seconds)"
+msgstr "Thời lượng xử lý (giây)"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Info"
+msgstr "Đang xử lý thông tin"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Information"
+msgstr "Xử lý thông tin"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Log"
+msgstr "Nhật ký xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Notes"
+msgstr "Đang xử lý ghi chú"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Options"
+msgstr "Tùy chọn xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Processing Status"
+msgstr "Trạng thái xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Processing notes and logs..."
+msgstr "Đang xử lý ghi chú và nhật ký..."
+
+#. module: pb_hr_payroll_base
+msgid "Professional Indonesia theme integration (#21435F color scheme)"
+msgstr "Tích hợp chủ đề Indonesia chuyên nghiệp (phối màu #21435F)"
+
+#. module: pb_hr_payroll_base
+msgid "Professional Multi-Country Payroll Management System"
+msgstr "Hệ thống quản lý tiền lương đa quốc gia chuyên nghiệp"
+
+#. module: pb_hr_payroll_base
+msgid "Professional Tax"
+msgstr "Thuế chuyên nghiệp"
+
+#. module: pb_hr_payroll_base
+msgid "Provident Fund"
+msgstr "Quỹ tiết kiệm"
+
+#. module: pb_hr_payroll_base
+msgid "Provident Fund (PF)"
+msgstr "Quỹ tiết kiệm (PF)"
+
+#. module: pb_hr_payroll_base
+msgid "Python code to transform the value. Use \"value\" variable."
+msgstr "Mã Python để chuyển đổi giá trị. Sử dụng biến \"giá trị\"."
+
+#. module: pb_hr_payroll_base
+msgid "Quarter"
+msgstr "Một phần tư"
+
+#. module: pb_hr_payroll_base
+msgid "Quarterly"
+msgstr "Hàng quý"
+
+#. module: pb_hr_payroll_base
+msgid "Quick Actions"
+msgstr "Thao tác nhanh"
+
+#. module: pb_hr_payroll_base
+msgid "RM"
+msgstr "RM"
+
+#. module: pb_hr_payroll_base
+msgid "Ready for Approval"
+msgstr "Sẵn sàng phê duyệt"
+
+#. module: pb_hr_payroll_base
+msgid "Record Information"
+msgstr "Ghi lại thông tin"
+
+#. module: pb_hr_payroll_base
+msgid "Refresh Analytics"
+msgstr "Làm mới phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Refresh Dashboard Metrics"
+msgstr "Làm mới số liệu trên trang tổng quan"
+
+#. module: pb_hr_payroll_base
+msgid "Refresh Interval (minutes)"
+msgstr "Khoảng thời gian làm mới (phút)"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Refresh interval must be at least 1 minute."
+msgstr "Khoảng thời gian làm mới phải ít nhất là 1 phút."
+
+#. module: pb_hr_payroll_base
+msgid "Reports"
+msgstr "Báo cáo"
+
+#. module: pb_hr_payroll_base
+msgid "Required"
+msgstr "Yêu cầu"
+
+#. module: pb_hr_payroll_base
+msgid "Required Components:"
+msgstr "Thành phần bắt buộc:"
+
+#. module: pb_hr_payroll_base
+msgid "Responsible User"
+msgstr "Người dùng có trách nhiệm"
+
+#. module: pb_hr_payroll_base
+msgid "Review and adjust calculations"
+msgstr "Xem xét và điều chỉnh tính toán"
+
+#. module: pb_hr_payroll_base
+msgid "Review calculations in spreadsheet"
+msgstr "Xem lại các phép tính trong bảng tính"
+
+#. module: pb_hr_payroll_base
+msgid "Rounding Precision"
+msgstr "Làm tròn chính xác"
+
+#. module: pb_hr_payroll_base
+msgid "Rp"
+msgstr "Rp"
+
+#. module: pb_hr_payroll_base
+msgid "Running"
+msgstr "Đang chạy"
+
+#. module: pb_hr_payroll_base
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_hr_payroll_base
+msgid "Salary"
+msgstr "Lương"
+
+#. module: pb_hr_payroll_base
+msgid "Salary Components"
+msgstr "Thành phần lương"
+
+#. module: pb_hr_payroll_base
+msgid "Salary Components JSON"
+msgstr "Thành phần lương JSON"
+
+#. module: pb_hr_payroll_base
+msgid "Salary Field"
+msgstr "Trường lương"
+
+#. module: pb_hr_payroll_base
+msgid "Salary Rule"
+msgstr "Quy tắc lương"
+
+#. module: pb_hr_payroll_base
+msgid "Salary Rule Category"
+msgstr "Danh mục quy tắc lương"
+
+#. module: pb_hr_payroll_base
+msgid "Salary Rules"
+msgstr "Quy tắc lương"
+
+#. module: pb_hr_payroll_base
+msgid "Salary Structure"
+msgstr "Cơ cấu lương"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Salary rules define how different components of salary are calculated.\n"
+"                You can create country-specific rules for different payroll systems and link them to contract types."
+msgstr ""
+"Các quy tắc về lương xác định cách tính các thành phần khác nhau của tiền lương.\r\n"
+"                Bạn có thể tạo các quy tắc dành riêng cho từng quốc gia cho các hệ thống trả lương khác nhau và liên kết chúng với các loại hợp đồng."
+
+#. module: pb_hr_payroll_base
+msgid "Schedule"
+msgstr "Lịch trình"
+
+#. module: pb_hr_payroll_base
+msgid "Scheduled Pay"
+msgstr "Trả lương theo lịch trình"
+
+#. module: pb_hr_payroll_base
+msgid "Search Enhanced Payroll Dashboards"
+msgstr "Tìm kiếm Bảng điều khiển tính lương nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Search Zoho Staging Data"
+msgstr "Tìm kiếm dữ liệu dàn dựng của Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Select Payroll Country"
+msgstr "Chọn quốc gia tính lương"
+
+#. module: pb_hr_payroll_base
+msgid "Select Your Payroll Region"
+msgstr "Chọn khu vực trả lương của bạn"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Select a country to access its payroll dashboard and manage payroll operations.\n"
+"                    Use the enhanced dashboard to monitor real-time metrics and analytics."
+msgstr ""
+"Chọn một quốc gia để truy cập bảng lương và quản lý hoạt động trả lương.\r\n"
+"                    Sử dụng bảng điều khiển nâng cao để theo dõi số liệu và phân tích theo thời gian thực."
+
+#. module: pb_hr_payroll_base
+msgid "Selection"
+msgstr "Lựa chọn"
+
+#. module: pb_hr_payroll_base
+msgid "Semi-annually"
+msgstr "Nửa năm một lần"
+
+#. module: pb_hr_payroll_base
+msgid "Send Error Report"
+msgstr "Gửi báo cáo lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Send Notification"
+msgstr "Gửi thông báo"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Send Request"
+msgstr "Gửi yêu cầu"
+
+#. module: pb_hr_payroll_base
+msgid "Send Welcome Email"
+msgstr "Gửi email chào mừng"
+
+#. module: pb_hr_payroll_base
+msgid "Sequence"
+msgstr "Sự liên tiếp"
+
+#. module: pb_hr_payroll_base
+msgid "Set up Zoho API credentials in the configuration."
+msgstr "Thiết lập thông tin xác thực API Zoho trong cấu hình."
+
+#. module: pb_hr_payroll_base
+msgid "Set up country dashboards"
+msgstr "Thiết lập trang tổng quan quốc gia"
+
+#. module: pb_hr_payroll_base
+msgid "Show Analytics"
+msgstr "Hiển thị phân tích"
+
+#. module: pb_hr_payroll_base
+msgid "Show Charts"
+msgstr "Hiển thị biểu đồ"
+
+#. module: pb_hr_payroll_base
+msgid "Show on Payslip"
+msgstr "Hiển thị trên Phiếu lương"
+
+#. module: pb_hr_payroll_base
+msgid "Show on Summary"
+msgstr "Hiển thị trên Tóm tắt"
+
+#. module: pb_hr_payroll_base
+msgid "Simplified Tax Calculation"
+msgstr "Tính thuế đơn giản"
+
+#. module: pb_hr_payroll_base
+msgid "Singapore"
+msgstr "Singapore"
+
+#. module: pb_hr_payroll_base
+msgid "Singapore Payroll Access"
+msgstr "Truy cập bảng lương Singapore"
+
+#. module: pb_hr_payroll_base
+msgid "Singapore Payroll User"
+msgstr "Người dùng bảng lương Singapore"
+
+#. module: pb_hr_payroll_base
+msgid "Skills Development Levy (SDL)"
+msgstr "Thuế phát triển kỹ năng (SDL)"
+
+#. module: pb_hr_payroll_base
+msgid "Skip Errors"
+msgstr "Bỏ qua lỗi"
+
+#. module: pb_hr_payroll_base
+msgid "Social Insurance (SI)"
+msgstr "Bảo hiểm xã hội (SI)"
+
+#. module: pb_hr_payroll_base
+msgid "Social Security"
+msgstr "An sinh xã hội"
+
+#. module: pb_hr_payroll_base
+msgid "Social Security - Vietnam"
+msgstr "An Sinh Xã Hội - Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Social Security Enabled"
+msgstr "An sinh xã hội đã được kích hoạt"
+
+#. module: pb_hr_payroll_base
+msgid "Social Security Fund (SSF)"
+msgstr "Quỹ An Sinh Xã Hội (SSF)"
+
+#. module: pb_hr_payroll_base
+msgid "Social Security Number"
+msgstr "Số an sinh xã hội"
+
+#. module: pb_hr_payroll_base
+msgid "Source Field"
+msgstr "Trường nguồn"
+
+#. module: pb_hr_payroll_base
+msgid "Specific Employees"
+msgstr "Nhân viên cụ thể"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Spreadsheet Not Found"
+msgstr "Không tìm thấy bảng tính"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Spreadsheet data imported successfully for %s"
+msgstr "Dữ liệu bảng tính đã được nhập thành công cho %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Spreadsheet import encountered issues: %s"
+msgstr "Đã gặp sự cố khi nhập bảng tính: %s"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Spreadsheet reference %s not found for country %s"
+msgstr "Không tìm thấy tham chiếu bảng tính %s cho quốc gia %s"
+
+#. module: pb_hr_payroll_base
+msgid "Standard Payroll Workflow"
+msgstr "Quy trình tính lương tiêu chuẩn"
+
+#. module: pb_hr_payroll_base
+msgid "Standard Tax Calculation"
+msgstr "Cách tính thuế tiêu chuẩn"
+
+#. module: pb_hr_payroll_base
+msgid "Start Import"
+msgstr "Bắt đầu nhập"
+
+#. module: pb_hr_payroll_base
+msgid "Start Time"
+msgstr "Thời gian bắt đầu"
+
+#. module: pb_hr_payroll_base
+msgid "State"
+msgstr "Tình trạng"
+
+#. module: pb_hr_payroll_base
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái dựa trên hoạt động\r\n"
+"Quá hạn: Đã qua ngày đáo hạn\r\n"
+"Hôm nay: Ngày hoạt động là hôm nay\r\n"
+"Dự kiến: Hoạt động sắp tới."
+
+#. module: pb_hr_payroll_base
+msgid "Step 1: Create Spreadsheets"
+msgstr "Bước 1: Tạo bảng tính"
+
+#. module: pb_hr_payroll_base
+msgid "Step 2: Configure User Access"
+msgstr "Bước 2: Định cấu hình quyền truy cập của người dùng"
+
+#. module: pb_hr_payroll_base
+msgid "Step 3: Configure Zoho Integration"
+msgstr "Bước 3: Định cấu hình tích hợp Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Stores staging data from Zoho People"
+msgstr "Lưu trữ dữ liệu dàn dựng từ Zoho People"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Successfully connected to Zoho People API."
+msgstr "Đã kết nối thành công với API Zoho People."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid ""
+"Successfully generated fresh demo data for %s %s employees! (All previous "
+"data cleared)"
+msgstr ""
+"Đã tạo thành công dữ liệu demo mới cho nhân viên %s %s! (Tất cả dữ liệu "
+"trước đó đã bị xóa)"
+
+#. module: pb_hr_payroll_base
+msgid "Supported Contract Types"
+msgstr "Các loại hợp đồng được hỗ trợ"
+
+#. module: pb_hr_payroll_base
+msgid "Sync Active Only"
+msgstr "Chỉ đồng bộ hóa hoạt động"
+
+#. module: pb_hr_payroll_base
+msgid "System Information"
+msgstr "Thông tin hệ thống"
+
+#. module: pb_hr_payroll_base
+msgid "THR (Religious Holiday Allowance)"
+msgstr "THR (Trợ cấp nghỉ lễ tôn giáo)"
+
+#. module: pb_hr_payroll_base
+msgid "Target Country"
+msgstr "Quốc gia mục tiêu"
+
+#. module: pb_hr_payroll_base
+msgid "Target Field"
+msgstr "Trường mục tiêu"
+
+#. module: pb_hr_payroll_base
+msgid "Tax & Social Security"
+msgstr "Thuế & An Sinh Xã Hội"
+
+#. module: pb_hr_payroll_base
+msgid "Tax Calculation Method"
+msgstr "Phương pháp tính thuế"
+
+#. module: pb_hr_payroll_base
+msgid "Tax Exempt"
+msgstr "Miễn thuế"
+
+#. module: pb_hr_payroll_base
+msgid "Tax Exemption Amount"
+msgstr "Số tiền miễn thuế"
+
+#. module: pb_hr_payroll_base
+msgid "Tax Identification Number"
+msgstr "Mã số thuế"
+
+#. module: pb_hr_payroll_base
+msgid "Tax and Benefits"
+msgstr "Thuế và Phúc lợi"
+
+#. module: pb_hr_payroll_base
+msgid "Taxes"
+msgstr "Thuế"
+
+#. module: pb_hr_payroll_base
+msgid "Test Connection"
+msgstr "Kiểm tra kết nối"
+
+#. module: pb_hr_payroll_base
+msgid "Text"
+msgstr "Chữ"
+
+#. module: pb_hr_payroll_base
+msgid "Thailand"
+msgstr "Thái Lan"
+
+#. module: pb_hr_payroll_base
+msgid "Thailand Payroll Access"
+msgstr "Truy cập bảng lương Thái Lan"
+
+#. module: pb_hr_payroll_base
+msgid "Thailand Payroll User"
+msgstr "Người dùng bảng lương Thái Lan"
+
+#. module: pb_hr_payroll_base
+msgid "This Month"
+msgstr "Tháng này"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "This action is only available for Zoho import."
+msgstr "Hành động này chỉ khả dụng khi nhập Zoho."
+
+#. module: pb_hr_payroll_base
+msgid "This enhanced framework provides:"
+msgstr "Khung nâng cao này cung cấp:"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "This record has already been processed"
+msgstr "Bản ghi này đã được xử lý"
+
+#. module: pb_hr_payroll_base
+msgid "Total Employees"
+msgstr "Tổng số nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Total Gross Salary"
+msgstr "Tổng lương gộp"
+
+#. module: pb_hr_payroll_base
+msgid "Total Payroll"
+msgstr "Tổng tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Total number of employees in payroll system"
+msgstr "Tổng số lao động trong hệ thống tiền lương"
+
+#. module: pb_hr_payroll_base
+msgid "Total payroll amount for current period"
+msgstr "Tổng số tiền lương cho kỳ hiện tại"
+
+#. module: pb_hr_payroll_base
+msgid "Transformation Examples"
+msgstr "Ví dụ về chuyển đổi"
+
+#. module: pb_hr_payroll_base
+msgid "Transformation Rule"
+msgstr "Quy tắc chuyển đổi"
+
+#. module: pb_hr_payroll_base
+msgid "Transport Allowance"
+msgstr "Phụ cấp đi lại"
+
+#. module: pb_hr_payroll_base
+msgid "Transport Allowance - Vietnam"
+msgstr "Phụ cấp đi lại - Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Troubleshooting"
+msgstr "Khắc phục sự cố"
+
+#. module: pb_hr_payroll_base
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ được ghi lại."
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Unable to view employees. Please try again."
+msgstr "Không thể xem nhân viên. Vui lòng thử lại."
+
+#. module: pb_hr_payroll_base
+msgid "Unemployment Insurance (UI)"
+msgstr "Bảo hiểm Thất nghiệp (UI)"
+
+#. module: pb_hr_payroll_base
+msgid "United Kingdom"
+msgstr "Vương quốc Anh"
+
+#. module: pb_hr_payroll_base
+msgid "United States"
+msgstr "Hoa Kỳ"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Unsupported file format. Please use CSV, Excel, or JSON."
+msgstr ""
+"Định dạng tệp không được hỗ trợ. Vui lòng sử dụng CSV, Excel hoặc JSON."
+
+#. module: pb_hr_payroll_base
+msgid "Update Existing Employees"
+msgstr "Cập nhật nhân viên hiện có"
+
+#. module: pb_hr_payroll_base
+msgid "Update Existing Payslips"
+msgstr "Cập nhật các phiếu lương hiện có"
+
+#. module: pb_hr_payroll_base
+msgid "Update Existing Records"
+msgstr "Cập nhật hồ sơ hiện có"
+
+#. module: pb_hr_payroll_base
+msgid "Update Only"
+msgstr "Chỉ cập nhật"
+
+#. module: pb_hr_payroll_base
+msgid "Updated Count"
+msgstr "Số lượng cập nhật"
+
+#. module: pb_hr_payroll_base
+msgid ""
+"Use the import wizard to bring employee data from Zoho into the staging area,\n"
+"                then process it to create employees and contracts in Odoo."
+msgstr ""
+"Sử dụng trình hướng dẫn nhập để đưa dữ liệu nhân viên từ Zoho vào khu vực tổ chức,\r\n"
+"                sau đó xử lý nó để tạo nhân viên và hợp đồng trong Odoo."
+
+#. module: pb_hr_payroll_base
+msgid "User Access Issues"
+msgstr "Sự cố truy cập của người dùng"
+
+#. module: pb_hr_payroll_base
+msgid "VN Accident Insurance"
+msgstr "Bảo hiểm tai nạn VN"
+
+#. module: pb_hr_payroll_base
+msgid "VN Health Insurance (Employee)"
+msgstr "Bảo hiểm Y tế VN (Nhân viên)"
+
+#. module: pb_hr_payroll_base
+msgid "VN Health Insurance (Employer)"
+msgstr "Bảo hiểm Y tế VN (Người sử dụng lao động)"
+
+#. module: pb_hr_payroll_base
+msgid "VN ID Card Number"
+msgstr "Số CMND VN"
+
+#. module: pb_hr_payroll_base
+msgid "VN Social Insurance (Employee)"
+msgstr "Bảo hiểm xã hội VN (Nhân viên)"
+
+#. module: pb_hr_payroll_base
+msgid "VN Social Insurance (Employer)"
+msgstr "Bảo hiểm xã hội VN (Người sử dụng lao động)"
+
+#. module: pb_hr_payroll_base
+msgid "VN Social Insurance Number"
+msgstr "Số Bảo hiểm xã hội VN"
+
+#. module: pb_hr_payroll_base
+msgid "VN Unemployment Insurance (Employee)"
+msgstr "Bảo hiểm Thất nghiệp VN (Người lao động)"
+
+#. module: pb_hr_payroll_base
+msgid "VN Unemployment Insurance (Employer)"
+msgstr "Bảo hiểm Thất nghiệp VN (Người sử dụng lao động)"
+
+#. module: pb_hr_payroll_base
+msgid "VN Union Fee"
+msgstr "Phí Công đoàn VN"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Currency"
+msgstr "Xác thực tiền tệ"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Data"
+msgstr "Xác thực dữ liệu"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Dates"
+msgstr "Xác thực ngày"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Duplicate Employees"
+msgstr "Xác thực nhân viên trùng lặp"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Email Format"
+msgstr "Xác thực định dạng email"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Employee Exists"
+msgstr "Xác thực sự tồn tại của nhân viên"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Phone Format"
+msgstr "Xác thực định dạng điện thoại"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Required Fields"
+msgstr "Xác thực các trường bắt buộc"
+
+#. module: pb_hr_payroll_base
+msgid "Validate Salary Positive"
+msgstr "Xác thực mức lương dương"
+
+#. module: pb_hr_payroll_base
+msgid "Validation Rule"
+msgstr "Quy tắc xác thực"
+
+#. module: pb_hr_payroll_base
+msgid "Validation Rules"
+msgstr "Quy tắc xác thực"
+
+#. module: pb_hr_payroll_base
+msgid "Validation Settings"
+msgstr "Cài đặt xác thực"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Validation error in row %d: %s"
+msgstr "Lỗi xác thực ở hàng %d: %s"
+
+#. module: pb_hr_payroll_base
+msgid "Variance & Alerts"
+msgstr "Phương sai & Cảnh báo"
+
+#. module: pb_hr_payroll_base
+msgid "Variance Details"
+msgstr "Chi tiết phương sai"
+
+#. module: pb_hr_payroll_base
+msgid "Verify users are assigned to the correct country groups."
+msgstr "Xác minh người dùng được chỉ định vào đúng nhóm quốc gia."
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam"
+msgstr "Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Employees"
+msgstr "Nhân viên Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Employer Contributions"
+msgstr "Đóng góp của Chủ lao động Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam PIT"
+msgstr "thuế TNCN Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Payroll Access"
+msgstr "Truy Cập Bảng Lương Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Payroll Dashboard"
+msgstr "Bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Payroll User"
+msgstr "Người dùng bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Specific"
+msgstr "Riêng Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Specific Info"
+msgstr "Thông tin cụ thể về Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Staging Data"
+msgstr "Dữ liệu dàn dựng Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Tax & Social Security"
+msgstr "Thuế & An Sinh Xã Hội Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Tax Code"
+msgstr "Mã số thuế Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Zoho Data"
+msgstr "Dữ liệu Zoho Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "View Dashboard"
+msgstr "Xem trang tổng quan"
+
+#. module: pb_hr_payroll_base
+msgid "View Imported Employees"
+msgstr "Xem nhân viên đã nhập"
+
+#. module: pb_hr_payroll_base
+msgid "Wage Calculation"
+msgstr "Tính lương"
+
+#. module: pb_hr_payroll_base
+msgid "Wage Calculation Method"
+msgstr "Phương pháp tính lương"
+
+#. module: pb_hr_payroll_base
+msgid "Website Messages"
+msgstr "Tin nhắn trang web"
+
+#. module: pb_hr_payroll_base
+msgid "Website communication history"
+msgstr "Lịch sử giao tiếp trang web"
+
+#. module: pb_hr_payroll_base
+msgid "Weekly"
+msgstr "hàng tuần"
+
+#. module: pb_hr_payroll_base
+msgid "Welcome to Enhanced Multi-Country Payroll System!"
+msgstr "Chào mừng bạn đến với Hệ thống tính lương đa quốc gia nâng cao!"
+
+#. module: pb_hr_payroll_base
+msgid "Welcome to Multi-Country Payroll Management!"
+msgstr "Chào mừng bạn đến với Quản lý tiền lương đa quốc gia!"
+
+#. module: pb_hr_payroll_base
+msgid "Welcome to Payroll Analytics!"
+msgstr "Chào mừng bạn đến với Phân tích tiền lương!"
+
+#. module: pb_hr_payroll_base
+msgid "Wizard"
+msgstr "thuật sĩ"
+
+#. module: pb_hr_payroll_base
+msgid "Work Information"
+msgstr "Thông tin công việc"
+
+#. module: pb_hr_payroll_base
+msgid "Workflow"
+msgstr "Quy trình làm việc"
+
+#. module: pb_hr_payroll_base
+msgid "Working Days per Month"
+msgstr "Ngày làm việc mỗi tháng"
+
+#. module: pb_hr_payroll_base
+msgid "Working Days per Week"
+msgstr "Ngày làm việc mỗi tuần"
+
+#. module: pb_hr_payroll_base
+msgid "Working Hours per Day"
+msgstr "Giờ làm việc mỗi ngày"
+
+#. module: pb_hr_payroll_base
+msgid "Working Time"
+msgstr "Thời gian làm việc"
+
+#. module: pb_hr_payroll_base
+msgid "Workmen's Compensation Fund"
+msgstr "Quỹ bồi thường tai nạn lao động"
+
+#. module: pb_hr_payroll_base
+msgid "Yearly"
+msgstr "Hàng năm"
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+msgid "Your request for  payroll access has been sent to the administrator."
+msgstr "Yêu cầu truy cập bảng lương của bạn đã được gửi đến quản trị viên."
+
+#. module: pb_hr_payroll_base
+msgid "Zoho API Key"
+msgstr "Khóa API Zoho"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "Zoho API key seems too short."
+msgstr "Khóa API Zoho có vẻ quá ngắn."
+
+#. module: pb_hr_payroll_base
+msgid "Zoho Integration"
+msgstr "Tích hợp Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Zoho Organization ID"
+msgstr "ID tổ chức Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Enhanced Country Selector"
+msgstr "Bộ chọn Quốc gia Nâng cao"
+
+#. module: pb_hr_payroll_base
+msgid "Done"
+msgstr "Hoàn thành"
+
+#. module: pb_hr_payroll_base
+msgid "Level 2"
+msgstr "Cấp độ 2"
+
+#. module: pb_hr_payroll_base
+msgid "Vietnam Payroll Dashboard"
+msgstr "Bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_base
+msgid "Indonesia Payroll Dashboard"
+msgstr "Bảng lương Indonesia"
+
+#. module: pb_hr_payroll_base
+msgid "India Payroll Dashboard"
+msgstr "Bảng lương Ấn Độ"
+
+#. module: pb_hr_payroll_base
+msgid "Singapore Payroll Dashboard"
+msgstr "Bảng lương Singapore"
+
+#. module: pb_hr_payroll_base
+msgid "Thailand Payroll Dashboard"
+msgstr "Bảng lương Thái Lan"
+
+#. module: pb_hr_payroll_base
+msgid "Cambodia Payroll Dashboard"
+msgstr "Bảng lương Campuchia"
+
+#. module: pb_hr_payroll_base
+msgid "Zoho People"
+msgstr "Zoho People"
+
+#. module: pb_hr_payroll_base
+msgid "Zoho Staging Data"
+msgstr "Dữ liệu dàn dựng của Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Zoho Staging Data (Multi-Country)"
+msgstr "Dữ liệu phân giai đoạn của Zoho (Đa quốc gia)"
+
+#. module: pb_hr_payroll_base
+msgid "Zoho Staging Field Mapping"
+msgstr "Lập bản đồ trường dàn dựng của Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "Zoho Staging Import Wizard"
+msgstr "Thuật sĩ nhập khẩu Zoho Staging"
+
+#. module: pb_hr_payroll_base
+msgid "Zoho Status"
+msgstr "Trạng thái Zoho"
+
+#. module: pb_hr_payroll_base
+msgid "e.g., January 2024 - Vietnam"
+msgstr "ví dụ: tháng 1 năm 2024 - Việt Nam"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+msgid "openpyxl library is required for Excel file processing."
+msgstr "Thư viện openpyxl là cần thiết để xử lý tệp Excel."

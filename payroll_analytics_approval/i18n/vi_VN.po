@@ -1,10 +1,13 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* payroll_analytics_approval
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-05 05:06+0000\n"
-"PO-Revision-Date: 2025-11-05 05:06+0000\n"
+"POT-Creation-Date: 2025-11-05 20:36+0000\n"
+"PO-Revision-Date: 2025-11-05 20:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -13,114 +16,143 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.report,print_report_name:payroll_analytics_approval.action_report_bank_export
 msgid "'Bank Export - %s' % (object.period_name)"
 msgstr "'Xuất ngân hàng - %s' % (object. Period_name)"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.report,print_report_name:payroll_analytics_approval.action_report_payroll_analytics
 msgid "'Payroll Analytics - %s' % (object.period_name)"
 msgstr "'Phân tích tiền lương - %s' % (object. Period_name)"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.report,print_report_name:payroll_analytics_approval.action_report_payroll_comparison
 msgid "'Payroll Comparison - %s' % (object.name)"
 msgstr "'So sánh bảng lương - %s' % (object.name)"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "- Payroll Analytics Report"
 msgstr "- Báo cáo phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "12 Months"
 msgstr "12 tháng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "3 Months"
 msgstr "3 tháng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "6 Months"
 msgstr "6 tháng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-area-chart\"/> Variance Analysis"
 msgstr "<i class=\"fa fa-area-chart\"/> Phân tích phương sai"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
 msgid "<i class=\"fa fa-bar-chart\"/> Dashboard"
 msgstr "<i class=\"fa fa-bar-chart\"/> Trang tổng quan"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-bar-chart\"/> Month-over-Month Comparison"
 msgstr "<i class=\"fa fa-bar-chart\"/> So sánh giữa các tháng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid "<i class=\"fa fa-bar-chart\"/> Payroll Comparison Wizard"
 msgstr "<i class=\"fa fa-bar-chart\"/> Trình hướng dẫn so sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-bar-chart\"/> Salary Components"
 msgstr "<i class=\"fa fa-bar-chart\"/> Thành phần tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-bar-chart-o\"/> Payroll Analytics Dashboard"
 msgstr "<i class=\"fa fa-bar-chart-o\"/> Trang tổng quan phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<i class=\"fa fa-calculator\"/> Salary Variance"
 msgstr "<i class=\"fa fa-calculator\"/> Chênh lệch tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "<i class=\"fa fa-check\"/> Export Preview Ready"
 msgstr "<i class=\"fa fa-check\"/> Sẵn sàng xuất bản xem trước"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-check\"/> Final Approve Payroll"
 msgstr "<i class=\"fa fa-check\"/> Phê duyệt bảng lương lần cuối"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-check-circle text-success\"/> Recommendations"
 msgstr "<i class=\"fa fa-check-circle text-success\"/> Đề xuất"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
 msgid "<i class=\"fa fa-check-circle\"/> Export Successful!"
 msgstr "<i class=\"fa fa-check-circle\"/> Xuất thành công!"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<i class=\"fa fa-check-circle\"/> Normal Variance"
 msgstr "<i class=\"fa fa-check-circle\"/> Phương sai thông thường"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-download\"/> Export Bank File"
 msgstr "<i class=\"fa fa-download\"/> Xuất tệp ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "<i class=\"fa fa-download\"/> Export Complete"
 msgstr "<i class=\"fa fa-download\"/> Xuất hoàn tất"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<i class=\"fa fa-exclamation-triangle text-warning\"/> Alerts"
 msgstr "<i class=\"fa fa-exclamation-triangle text-warning\"/> Cảnh báo"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-exclamation-triangle\"/> Anomaly Alerts"
 msgstr "<i class=\"fa fa-exclamation-triangle\"/> Cảnh báo bất thường"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<i class=\"fa fa-exclamation-triangle\"/> High Variance"
 msgstr "<i class=\"fa fa-exclamation-triangle\"/> Phương sai cao"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<i class=\"fa fa-exclamation-triangle\"/> Moderate Variance"
 msgstr "<i class=\"fa fa-exclamation-triangle\"/> Phương sai vừa phải"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-file-text\"/> View Detailed Report"
 msgstr "<i class=\"fa fa-file-text\"/> Xem báo cáo chi tiết"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
 msgid "<i class=\"fa fa-info-circle\"/> Bank Export Wizard"
 msgstr "<i class=\"fa fa-info-circle\"/> Trình hướng dẫn Xuất Ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid ""
 "<i class=\"fa fa-info-circle\"/> Charts and visualizations are embedded in "
 "the detailed dashboard view. Click \"Open Dashboard\" to view interactive "
@@ -131,164 +163,198 @@ msgstr ""
 "để xem biểu đồ tương tác."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<i class=\"fa fa-info-circle\"/> Important Notes"
 msgstr "<i class=\"fa fa-info-circle\"/> Lưu ý quan trọng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<i class=\"fa fa-lightbulb-o text-success\"/> Recommendations"
 msgstr "<i class=\"fa fa-lightbulb-o text-success\"/> Đề xuất"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-lightbulb-o\"/> Decision Support"
 msgstr "<i class=\"fa fa-lightbulb-o\"/> Hỗ trợ quyết định"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-lightbulb-o\"/> Decision Support &amp; Anomaly Detection"
-msgstr ""
-"<i class=\"fa fa-lightbulb-o\"/> Hỗ trợ Quyết định &amp; Phát hiện bất "
-"thường"
+msgstr "<i class=\"fa fa-lightbulb-o\"/> Hỗ trợ Quyết định &amp; Phát hiện bất thường"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-line-chart\"/> Month over Month"
 msgstr "<i class=\"fa fa-line-chart\"/> Qua từng tháng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<i class=\"fa fa-money\"/> Payroll Variance"
 msgstr "<i class=\"fa fa-money\"/> Chênh lệch Bảng lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-pie-chart\"/> Salary Components Breakdown"
 msgstr "<i class=\"fa fa-pie-chart\"/> Phân tích thành phần tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-table\"/> Detailed Component Analysis"
 msgstr "<i class=\"fa fa-table\"/> Phân tích thành phần chi tiết"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "<i class=\"fa fa-university\"/> Bank Export Wizard"
 msgstr "<i class=\"fa fa-university\"/> Trình hướng dẫn Xuất Ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<i class=\"fa fa-users\"/> Employee Variance"
 msgstr "<i class=\"fa fa-users\"/> Sự khác biệt giữa nhân viên"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "<i class=\"fa fa-warning text-warning\"/> Items to Review"
 msgstr "<i class=\"fa fa-warning text-warning\"/> Các mục cần xem lại"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "<i class=\"fa fa-warning text-warning\"/> Things to Review"
 msgstr "<i class=\"fa fa-warning text-warning\"/> Những điều cần xem lại"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid ""
 "<select class=\"form-control form-control-sm\" id=\"components-view-toggle\">\n"
 "                                        <option value=\"total\">Total Amount</option>\n"
 "                                        <option value=\"average\">Average per Employee</option>\n"
 "                                    </select>"
 msgstr ""
-"<select class=\"form-control form-control-sm\" id=\"components-view-toggle\">\r\n"
-"                                        <option value=\"total\">Tổng số tiền__html_2___\r\n"
-"                                        <option value=\"average\">Trung bình mỗi nhân viên__html_2___\r\n"
+"<select class=\"form-control form-control-sm\" id=\"components-view-toggle\">\n"
+"                                        <option value=\"total\">Tổng số tiền</option>\n"
+"                                        <option value=\"average\">Trung bình mỗi nhân viên</option>\n"
 "                                    </select>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<small>Change in average salary</small>"
 msgstr "<small>Thay đổi mức lương trung bình</small>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<small>Change in employee count</small>"
 msgstr "<small>Thay đổi số lượng nhân viên</small>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "<small>Change in total payroll</small>"
 msgstr "<small>Thay đổi tổng số tiền lương</small>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid ""
 "<span class=\"stat-number\" id=\"pending-approvals-count\">0</span>\n"
 "                        <span class=\"stat-label\">Pending</span>"
 msgstr ""
-"<span class=\"stat-number\" id=\"pending-approvals-count\">0__html_1___\r\n"
-"                        <span class=\"stat-label\">Đang chờ xử lý__html_1___"
+"<span class=\"stat-number\" id=\"pending-approvals-count\">0</span>\n"
+"                        <span class=\"stat-label\">Đang chờ xử lý</span>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid ""
 "<span class=\"stat-number\" id=\"ready-exports-count\">0</span>\n"
 "                        <span class=\"stat-label\">Ready</span>"
 msgstr ""
-"<span class=\"stat-number\" id=\"ready-exports-count\">0__html_1___\r\n"
-"                        <span class=\"stat-label\">Sẵn sàng__html_1___"
+"<span class=\"stat-number\" id=\"ready-exports-count\">0</span>\n"
+"                        <span class=\"stat-label\">Sẵn sàng</span>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid ""
 "<span class=\"stat-number\" id=\"total-employees-count\">0</span>\n"
 "                        <span class=\"stat-label\">Employees</span>"
 msgstr ""
-"<span class=\"stat-number\" id=\"total-employees-count\">0__html_1___\r\n"
-"                        <span class=\"stat-label\">Nhân viên__html_1___"
+"<span class=\"stat-number\" id=\"total-employees-count\">0</span>\n"
+"                        <span class=\"stat-label\">Nhân viên</span>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "<span class=\"tile-action\">Click to Review →</span>"
 msgstr "<span class=\"tile-action\">Nhấp để xem lại →</span>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "<span class=\"tile-action\">Export CSV →</span>"
 msgstr "<span class=\"tile-action\">Xuất CSV →</span>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "<span class=\"tile-action\">View Report →</span>"
 msgstr "<span class=\"tile-action\">Xem báo cáo →</span>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Approval Date</strong>"
 msgstr "<strong>Ngày phê duyệt__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Approved By</strong>"
 msgstr "<strong>Được phê duyệt bởi</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "<strong>Average Salary Variance</strong>"
 msgstr "<strong>Chênh lệch lương trung bình</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Average Salary</strong>"
 msgstr "<strong>Mức lương trung bình</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<strong>Country</strong>"
 msgstr "<strong>Quốc gia</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "<strong>Employee Count Variance</strong>"
 msgstr "<strong>Sự khác biệt về số lượng nhân viên__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "<strong>Employees</strong>"
 msgstr "<strong>Nhân viên__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<strong>Export Date</strong>"
 msgstr "<strong>Ngày xuất__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<strong>Export Format</strong>"
 msgstr "<strong>Định dạng xuất__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<strong>File Name</strong>"
 msgstr "<strong>Tên Tệp__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<strong>Generated By</strong>"
 msgstr "<strong>Được tạo bởi</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Generated Date</strong>"
 msgstr "<strong>Ngày tạo</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid ""
 "<strong>Note:</strong> Detailed component breakdown and variance analysis."
 msgstr ""
@@ -296,114 +362,149 @@ msgstr ""
 "sai."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Notes</strong>"
 msgstr "<strong>Ghi chú__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "<strong>Period</strong>"
 msgstr "<strong>Giai đoạn</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Status</strong>"
 msgstr "<strong>Trạng thái__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<strong>Total Amount</strong>"
 msgstr "<strong>Tổng số tiền__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Total Employees</strong>"
 msgstr "<strong>Tổng số nhân viên__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "<strong>Total Payroll Variance</strong>"
 msgstr "<strong>Tổng chênh lệch tiền lương</strong>"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "<strong>Total Payroll</strong>"
 msgstr "<strong>Tổng tiền lương__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "<strong>Total Records</strong>"
 msgstr "<strong>Tổng số hồ sơ__html_1___"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "<strong>Variance</strong>"
 msgstr "<strong>Phương sai__html_1___"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__action_method
 msgid "Action Method"
 msgstr "Phương pháp hành động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__action_model
 msgid "Action Model"
 msgstr "Mô hình hành động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_needaction
 msgid "Action Needed"
 msgstr "Hành động cần thiết"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__is_active
 msgid "Active"
 msgstr "Tích cực"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_ids
 msgid "Activities"
 msgstr "Các hoạt động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr "Trang trí ngoại lệ hoạt động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_state
 msgid "Activity State"
 msgstr "Trạng thái hoạt động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_type_icon
 msgid "Activity Type Icon"
 msgstr "Biểu tượng loại hoạt động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__alerts
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "Alerts"
 msgstr "Cảnh báo"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__name
 msgid "Analysis Name"
 msgstr "Tên phân tích"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid "Analysis Options"
 msgstr "Tùy chọn phân tích"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__analysis_results
 msgid "Analysis Results"
 msgstr "Kết quả phân tích"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Analysis Summary"
 msgstr "Tóm tắt phân tích"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__analytics_id
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "Analytics"
 msgstr "Phân tích"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_analytics_config
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics_config
 msgid "Analytics Configuration"
 msgstr "Cấu hình phân tích"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Analytics Dashboard • Final Approval Review"
 msgstr "Trang tổng quan Analytics • Đánh giá phê duyệt cuối cùng"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__tile_type__analytics_overview
 msgid "Analytics Overview"
 msgstr "Tổng quan về phân tích"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_analytics_reports
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics_reports
 msgid "Analytics Reports"
 msgstr "Báo cáo phân tích"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_dashboard
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_queue
 msgid ""
 "Analytics are automatically generated when payslip batches reach Level 2 "
 "approval status."
@@ -412,6 +513,7 @@ msgstr ""
 "2."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_reports
 msgid ""
 "Analytics reports provide detailed insights into payroll trends and "
 "patterns."
@@ -420,48 +522,59 @@ msgstr ""
 "lương."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__analyzing
 msgid "Analyzing"
 msgstr "Phân tích"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "Anomaly Alerts"
 msgstr "Cảnh báo bất thường"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__anomaly_alerts
 msgid "Anomaly Alerts JSON"
 msgstr "Cảnh báo bất thường JSON"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "Approval Information"
 msgstr "Thông tin phê duyệt"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_approval_queue
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_approval_queue
 msgid "Approval Queue"
 msgstr "Hàng đợi phê duyệt"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
 msgid "Approve"
 msgstr "Chấp thuận"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
 msgid "Approve Payroll"
 msgstr "Phê duyệt bảng lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__approved
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Approved"
 msgstr "Tán thành"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_bank_exports
 msgid "Approved payroll analytics will appear here for bank file generation."
-msgstr ""
-"Phân tích bảng lương đã được phê duyệt sẽ xuất hiện ở đây để tạo tệp ngân "
-"hàng."
+msgstr "Phân tích bảng lương đã được phê duyệt sẽ xuất hiện ở đây để tạo tệp ngân hàng."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
 msgid "Are you sure you want to approve this payroll?"
 msgstr "Bạn có chắc chắn muốn phê duyệt bảng lương này không?"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid ""
 "Are you sure you want to approve this payroll? This action cannot be undone."
 msgstr ""
@@ -469,62 +582,87 @@ msgstr ""
 "hành động này."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_attachment_count
 msgid "Attachment Count"
 msgstr "Số lượng tệp đính kèm"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__auto_generate_analytics
 msgid "Auto Generate Analytics"
 msgstr "Tự động tạo phân tích"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__average_salary
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
 msgid "Average Salary"
 msgstr "Mức lương trung bình"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__average_salary_variance
 msgid "Average Salary Variance %"
 msgstr "% chênh lệch lương trung bình"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Average/Employee"
 msgstr "Trung bình/Nhân viên"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "Avg per Employee"
 msgstr "Trung bình mỗi nhân viên"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__tile_type__bank_export
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_bank_export
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
 msgid "Bank Export"
 msgstr "Xuất khẩu ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
 msgid "Bank Export Details"
 msgstr "Chi tiết xuất khẩu ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_bank_export_log
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_bank_exports
+#: model:ir.model,name:payroll_analytics_approval.model_bank_export_log
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_tree
 msgid "Bank Export History"
 msgstr "Lịch sử xuất khẩu ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.report,name:payroll_analytics_approval.action_report_bank_export
 msgid "Bank Export Summary"
 msgstr "Tóm tắt xuất khẩu ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "Bank Export Summary Report"
 msgstr "Báo cáo tóm tắt xuất khẩu ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_bank_export_wizard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "Bank Export Wizard"
 msgstr "Trình hướng dẫn xuất khẩu ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "Bank Transfer Instructions"
 msgstr "Hướng dẫn chuyển khoản ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
 msgid "Bank disbursement file has been generated successfully."
 msgstr "Hồ sơ giải ngân ngân hàng đã được tạo thành công."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid ""
 "Bank export file has been generated successfully. Click download to save the"
 " file."
@@ -533,6 +671,7 @@ msgstr ""
 "tin."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_bank_export_log
 msgid ""
 "Bank export files will appear here after being generated from approved "
 "payroll batches."
@@ -541,1100 +680,1533 @@ msgstr ""
 "lương đã được phê duyệt."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__export_format__csv
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__export_format__csv
 msgid "CSV"
 msgstr "CSV"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__kh
 msgid "Cambodia"
 msgstr "Campuchia"
 
 #. module: payroll_analytics_approval
+#: model:res.groups,comment:payroll_analytics_approval.group_payroll_analytics_manager
 msgid "Can manage payroll analytics, approve payrolls, and export bank files"
-msgstr ""
-"Có thể quản lý phân tích bảng lương, phê duyệt bảng lương và xuất tệp ngân "
-"hàng"
+msgstr "Có thể quản lý phân tích bảng lương, phê duyệt bảng lương và xuất tệp ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model:res.groups,comment:payroll_analytics_approval.group_payroll_final_approver
 msgid "Can perform final approval of payroll batches"
 msgstr "Có thể thực hiện phê duyệt lần cuối các đợt trả lương"
 
 #. module: payroll_analytics_approval
+#: model:res.groups,comment:payroll_analytics_approval.group_payroll_analytics_user
 msgid "Can view payroll analytics and reports"
 msgstr "Có thể xem phân tích và báo cáo tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid "Cancel"
 msgstr "Hủy bỏ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__category
 msgid "Category"
 msgstr "Loại"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__chart_data
 msgid "Chart Data"
 msgstr "Dữ liệu biểu đồ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__chart_library
 msgid "Chart Library"
 msgstr "Thư viện biểu đồ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics_settings__chart_library__chartjs
 msgid "Chart.js"
 msgstr "Chart.js"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Charts & Visualizations"
 msgstr "Biểu đồ & Hình ảnh hóa"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "Code"
 msgstr "Mã số"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__,
 msgid "Comma (,)"
 msgstr "Dấu phẩy (,)"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__company_id
 msgid "Company"
 msgstr "Công ty"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__comparison_type
 msgid "Compare With"
 msgstr "So sánh với"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid ""
 "Compare payroll data across different periods to identify trends and "
 "anomalies."
 msgstr ""
-"So sánh dữ liệu bảng lương giữa các giai đoạn khác nhau để xác định xu hướng"
-" và sự bất thường."
+"So sánh dữ liệu tiền lương trong các khoảng thời gian khác nhau để xác định "
+"xu hướng và điểm bất thường."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
 msgid "Comparison"
 msgstr "So sánh"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Comparison Analysis Name"
 msgstr "Tên phân tích so sánh"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
 msgid "Comparison Dashboard"
 msgstr "Trang tổng quan so sánh"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__comparison_data
 msgid "Comparison Data JSON"
 msgstr "Dữ liệu so sánh JSON"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid "Comparison Period"
 msgstr "Thời gian so sánh"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "Comparison Summary"
 msgstr "Tóm tắt so sánh"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__comparison_type
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "Comparison Type"
 msgstr "Loại so sánh"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Comparison with previous month"
 msgstr "So sánh với tháng trước"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__done
 msgid "Completed"
 msgstr "Hoàn thành"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Component"
 msgstr "Thành phần"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__component_analysis
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Component Analysis"
 msgstr "Phân tích thành phần"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__code
 msgid "Component Code"
 msgstr "Mã thành phần"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__name
 msgid "Component Name"
 msgstr "Tên thành phần"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.constraint,message:payroll_analytics_approval.constraint_payroll_component_mapping_unique_country_code
 msgid "Component code must be unique per country!"
 msgstr "Mã thành phần phải là duy nhất cho mỗi quốc gia!"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Configuration"
 msgstr "Cấu hình"
 
 #. module: payroll_analytics_approval
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics_config_main
 msgid "Configuration Management"
 msgstr "Quản lý cấu hình"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_config
 msgid ""
 "Configure analytics settings and review draft analytics before processing."
 msgstr ""
-"Định cấu hình cài đặt phân tích và xem xét phân tích dự thảo trước khi xử "
-"lý."
+"Định cấu hình cài đặt phân tích và xem xét các phân tích dự thảo trước khi "
+"xử lý."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__country
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "Country"
 msgstr "Quốc gia"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_comparison
 msgid ""
 "Create payroll comparison analyses to track changes and trends across different periods.\n"
 "                Use the comparison wizard to generate detailed analytics."
 msgstr ""
-"Tạo các phân tích so sánh bảng lương để theo dõi những thay đổi và xu hướng qua các giai đoạn khác nhau.\r\n"
+"Tạo phân tích so sánh tiền lương để theo dõi các thay đổi và xu hướng trong "
+"các khoảng thời gian khác nhau.\n"
 "                Sử dụng trình hướng dẫn so sánh để tạo phân tích chi tiết."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__created_by
 msgid "Created By"
 msgstr "Created By"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__create_uid
 msgid "Created by"
 msgstr "Created by"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__create_date
 msgid "Created on"
 msgstr "Được tạo vào"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__currency_id
 msgid "Currency"
 msgstr "Tiền tệ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_total_employees
 msgid "Current Employees"
 msgstr "Nhân viên hiện tại"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Current Month"
 msgstr "Tháng hiện tại"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid "Current Period"
 msgstr "Giai đoạn hiện tại"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_period_from
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__current_date_from
 msgid "Current Period From"
 msgstr "Giai đoạn hiện tại từ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_period_to
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__current_date_to
 msgid "Current Period To"
 msgstr "Giai đoạn hiện tại Đến"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Current Total"
 msgstr "Tổng số hiện tại"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_total_payroll
 msgid "Current Total Payroll"
 msgstr "Tổng lương hiện tại"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__custom
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__custom
 msgid "Custom Period"
 msgstr "Thời gian tùy chỉnh"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics_settings__chart_library__d3
 msgid "D3.js"
 msgstr "D3.js"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_tree
 msgid "Dashboard"
 msgstr "Trang tổng quan"
 
 #. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_dashboard_tile_config
 msgid "Dashboard Tile Configuration"
 msgstr "Cấu hình ô bảng thông tin"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__date_from
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__date_from
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Date From"
 msgstr "Ngày từ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__date_to
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__date_to
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Date To"
 msgstr "Ngày đến"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__deduction
 msgid "Deduction"
 msgstr "Khấu trừ"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Detailed Results"
 msgstr "Kết quả chi tiết"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__display_order
 msgid "Display Order"
 msgstr "Thứ tự hiển thị"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__state__done
 msgid "Done"
 msgstr "Xong"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "Download File"
 msgstr "Tải tập tin xuống"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__draft
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__state__draft
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__draft
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Draft"
 msgstr "Bản nháp"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
 msgid "Dropdown"
 msgstr "Thả xuống"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__earning
 msgid "Earning"
 msgstr "Thu nhập"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__email_notifications
 msgid "Email Notifications"
 msgstr "Thông báo qua email"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
 msgid "Employee Count"
 msgstr "Số lượng nhân viên"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__employee_metrics
 msgid "Employee Metrics JSON"
 msgstr "Số liệu nhân viên JSON"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__employee_variance
 msgid "Employee Variance %"
 msgstr "% chênh lệch nhân viên"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
 msgid "Employees"
 msgstr "Người lao động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__employer_contribution
 msgid "Employer Contribution"
 msgstr "Đóng góp của người sử dụng lao động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__anomaly_detection_enabled
 msgid "Enable Anomaly Detection"
 msgstr "Bật tính năng phát hiện bất thường"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__error
 msgid "Error"
 msgstr "Lỗi"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_comparison.py:0
+#, python-format
 msgid "Error generating analysis: %s"
 msgstr "Phân tích tạo lỗi: %s"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__export_format__excel
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__export_format__excel
 msgid "Excel"
 msgstr "Excel"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__export_format__excel
 msgid "Excel File"
 msgstr "Tệp Excel"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "Executive Summary"
 msgstr "Tóm tắt điều hành"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
 msgid "Export"
 msgstr "Xuất khẩu"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
 msgid "Export Bank File"
 msgstr "Xuất tập tin ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_date
 msgid "Export Date"
 msgstr "Ngày xuất"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_details
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
 msgid "Export Details"
 msgstr "Xuất chi tiết"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_file
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__export_file
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
 msgid "Export File"
 msgstr "Xuất tệp"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__export_format
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__export_format
 msgid "Export Format"
 msgstr "Định dạng xuất"
 
 #. module: payroll_analytics_approval
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_bank_export_history
 msgid "Export History"
 msgstr "Lịch sử xuất khẩu"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
 msgid "Export Information"
 msgstr "Xuất thông tin"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__name
 msgid "Export Name"
 msgstr "Tên xuất"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "Export Parameters"
 msgstr "Xuất thông số"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "Export Preview"
 msgstr "Xuất bản xem trước"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Export Report"
 msgstr "Xuất báo cáo"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
 msgid "Export Results"
 msgstr "Xuất kết quả"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__exported
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Exported"
 msgstr "Đã xuất"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_bank_export_wizard__separator
 msgid "Field separator for CSV files"
 msgstr "Dấu phân cách trường cho tệp CSV"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
 msgid "File Format:"
 msgstr "Định dạng tệp:"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "File Options"
 msgstr "Tùy chọn tệp"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__filename
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__export_filename
 msgid "Filename"
 msgstr "Tên tệp"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Final Approve"
 msgstr "Phê duyệt cuối cùng"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_follower_ids
 msgid "Followers"
 msgstr "Người theo dõi"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Người theo dõi (Đối tác)"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Phông chữ biểu tượng tuyệt vời, ví dụ: nhiệm vụ fa"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_format
 msgid "Format"
 msgstr "Định dạng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "Found"
 msgstr "Thành lập"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid ""
 "Generate CSV/Excel file for bank salary disbursement with employee bank "
 "details and net pay amounts."
 msgstr ""
-"Tạo tệp CSV/Excel để giải ngân lương ngân hàng với chi tiết ngân hàng của "
-"nhân viên và số tiền lương ròng."
+"Tạo tệp CSV/Excel cho việc giải ngân lương ngân hàng với chi tiết ngân hàng "
+"của nhân viên và số tiền lương ròng."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
 msgid ""
 "Generate CSV/Excel file for bank salary disbursement. This file contains "
 "employee bank details and net pay amounts."
 msgstr ""
-"Tạo file CSV/Excel để giải ngân lương ngân hàng. Tệp này chứa chi tiết ngân "
-"hàng của nhân viên và số tiền lương ròng."
+"Tạo tệp CSV/Excel cho việc giải ngân lương ngân hàng. Tệp này chứa chi tiết "
+"ngân hàng của nhân viên và số tiền lương ròng."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid "Generate Comparison"
 msgstr "Tạo so sánh"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
 msgid "Generate Export"
 msgstr "Tạo xuất"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_comparison
 msgid ""
 "Generate analytics data from different periods to compare payroll trends."
 msgstr ""
-"Tạo dữ liệu phân tích từ các giai đoạn khác nhau để so sánh xu hướng bảng "
-"lương."
+"Tạo dữ liệu phân tích từ các khoảng thời gian khác nhau để so sánh xu hướng "
+"tiền lương."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
 msgid "Generated:"
 msgstr "Đã tạo:"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "Group By"
 msgstr "Nhóm theo"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__has_message
 msgid "Has Message"
 msgstr "Có tin nhắn"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "High Variance"
 msgstr "Phương sai cao"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__id
 msgid "ID"
 msgstr "ID"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_exception_icon
 msgid "Icon"
 msgstr "Biểu tượng"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__icon
 msgid "Icon Class"
 msgstr "Lớp biểu tượng"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr "Biểu tượng để biểu thị một hoạt động ngoại lệ."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Nếu được chọn, các tin nhắn mới cần bạn chú ý."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_has_error
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Nếu được chọn, một số tin nhắn có lỗi gửi."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__include_charts
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__include_charts
 msgid "Include Charts"
 msgstr "Bao gồm biểu đồ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__include_header
 msgid "Include Headers"
 msgstr "Bao gồm tiêu đề"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__include_variance_analysis
 msgid "Include Variance Analysis"
 msgstr "Bao gồm phân tích phương sai"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__country__in
 msgid "India"
 msgstr "Ấn Độ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__country__id
 msgid "Indonesia"
 msgstr "Indonesia"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_is_follower
 msgid "Is Follower"
 msgstr "là người theo dõi"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "Keep this report for audit trail purposes"
 msgstr "Giữ báo cáo này cho mục đích kiểm tra"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping____last_update
 msgid "Last Modified on"
 msgstr "Sửa đổi lần cuối vào"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__write_uid
 msgid "Last Updated by"
 msgstr "Cập nhật lần cuối bởi"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__write_date
 msgid "Last Updated on"
 msgstr "Cập nhật lần cuối vào"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "Level 2 Approve"
 msgstr "Phê duyệt cấp 2"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Low Variance"
 msgstr "Phương sai thấp"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_main_attachment_id
 msgid "Main Attachment"
 msgstr "Tệp đính kèm chính"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__my
 msgid "Malaysia"
 msgstr "Malaysia"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__is_mandatory
 msgid "Mandatory Component"
 msgstr "Thành phần bắt buộc"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_has_error
 msgid "Message Delivery error"
 msgstr "Lỗi gửi tin nhắn"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_ids
 msgid "Messages"
 msgstr "Tin nhắn"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "Moderate"
 msgstr "Vừa phải"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "Month"
 msgstr "Tháng"
 
 #. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_dashboard
 msgid "Multi-Country Payroll Dashboard"
 msgstr "Bảng điều khiển bảng lương đa quốc gia"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "Hạn chót hoạt động của tôi"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Negative Variance"
 msgstr "Phương sai âm"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__net
 msgid "Net Pay"
 msgstr "Lương ròng"
 
 #. module: payroll_analytics_approval
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_comparison_wizard
 msgid "New Comparison"
 msgstr "So sánh mới"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
 msgstr "Lịch hoạt động tiếp theo Sự kiện"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr "Hạn chót hoạt động tiếp theo"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_summary
 msgid "Next Activity Summary"
 msgstr "Tóm tắt hoạt động tiếp theo"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_type_id
 msgid "Next Activity Type"
 msgstr "Loại hoạt động tiếp theo"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
 msgid "No Data Available"
 msgstr "Không có sẵn dữ liệu"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_comparison
 msgid "No analytics data for comparison!"
 msgstr "Không có dữ liệu phân tích để so sánh!"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_reports
 msgid "No analytics data for reports!"
 msgstr "Không có dữ liệu phân tích cho các báo cáo!"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
 msgid ""
 "No approved payroll data available for export. Please approve payroll "
 "analytics first."
 msgstr ""
-"Không có dữ liệu bảng lương được phê duyệt để xuất khẩu. Vui lòng phê duyệt "
-"phân tích bảng lương trước."
+"Không có dữ liệu tiền lương được phê duyệt để xuất. Vui lòng phê duyệt phân "
+"tích bảng lương trước."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_bank_exports
 msgid "No approved payroll ready for export!"
 msgstr "Không có bảng lương được phê duyệt sẵn sàng để xuất khẩu!"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/wizards/payroll_bank_export_wizard.py:0
+#, python-format
 msgid "No approved payslips found for the selected period and country"
-msgstr ""
-"Không tìm thấy phiếu lương nào được phê duyệt cho kỳ và quốc gia đã chọn"
+msgstr "Không tìm thấy phiếu lương nào được phê duyệt cho kỳ và quốc gia đã chọn"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_bank_export_log
 msgid "No bank export records found!"
 msgstr "Không tìm thấy hồ sơ xuất khẩu ngân hàng!"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_config
 msgid "No draft analytics found!"
 msgstr "Không tìm thấy phân tích dự thảo nào!"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/wizards/payroll_bank_export_wizard.py:0
+#, python-format
 msgid "No export file available. Please generate the export first."
 msgstr "Không có tập tin xuất có sẵn. Vui lòng tạo bản xuất trước."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_dashboard
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_queue
 msgid "No payroll analytics ready for approval!"
 msgstr "Không có phân tích tiền lương sẵn sàng để phê duyệt!"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_comparison
 msgid "No payroll comparisons found!"
 msgstr "Không tìm thấy so sánh tiền lương!"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "Normal Range"
 msgstr "Phạm vi bình thường"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "Normal Variance"
 msgstr "Phương sai bình thường"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Số lượng hành động"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "Number of beneficiaries:"
 msgstr "Số lượng người thụ hưởng:"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_has_error_counter
 msgid "Number of errors"
 msgstr "Số lỗi"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Số lượng tin nhắn yêu cầu hành động"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Số lượng tin nhắn có lỗi gửi"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:0
+#, python-format
 msgid "Only analytics in Ready state can be approved"
 msgstr "Chỉ những phân tích ở trạng thái Sẵn sàng mới có thể được phê duyệt"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:0
+#, python-format
 msgid "Only approved analytics can be exported"
 msgstr "Chỉ những phân tích được phê duyệt mới có thể được xuất"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
 msgid "Open Dashboard"
 msgstr "Mở trang tổng quan"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__export_format__pdf
 msgid "PDF Report"
 msgstr "Báo cáo PDF"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
 msgid "Payroll Analytics - Approval Queue"
 msgstr "Phân tích bảng lương - Hàng đợi phê duyệt"
 
 #. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Payroll Analytics Dashboard"
 msgstr "Bảng điều khiển phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:res.groups,name:payroll_analytics_approval.group_payroll_analytics_manager
 msgid "Payroll Analytics Manager"
 msgstr "Người quản lý phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.report,name:payroll_analytics_approval.action_report_payroll_analytics
 msgid "Payroll Analytics Report"
 msgstr "Báo cáo phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Payroll Analytics Search"
 msgstr "Tìm kiếm phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_analytics_settings
 msgid "Payroll Analytics Settings"
 msgstr "Cài đặt phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:res.groups,name:payroll_analytics_approval.group_payroll_analytics_user
 msgid "Payroll Analytics User"
 msgstr "Người dùng phân tích tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__tile_type__payroll_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "Payroll Approval"
 msgstr "Phê duyệt bảng lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_approval_dashboard
 msgid "Payroll Approval Dashboard"
 msgstr "Bảng điều khiển phê duyệt bảng lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_analytics_comparison
 msgid "Payroll Comparison"
 msgstr "So sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_comparison_wizard
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
 msgid "Payroll Comparison Analysis"
 msgstr "Phân tích so sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "Payroll Comparison Analysis Report"
 msgstr "Báo cáo phân tích so sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.report,name:payroll_analytics_approval.action_report_payroll_comparison
 msgid "Payroll Comparison Report"
 msgstr "Báo cáo so sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_comparison_wizard
 msgid "Payroll Comparison Wizard"
 msgstr "Trình hướng dẫn so sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_comparison
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_tree
 msgid "Payroll Comparisons"
 msgstr "So sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_component_mapping
 msgid "Payroll Component Mapping"
 msgstr "Ánh xạ thành phần bảng lương"
 
 #. module: payroll_analytics_approval
+#: model:res.groups,name:payroll_analytics_approval.group_payroll_final_approver
 msgid "Payroll Final Approver"
 msgstr "Người phê duyệt cuối cùng về bảng lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__payroll_variance
 msgid "Payroll Variance %"
 msgstr "% chênh lệch tiền lương"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:0
+#, python-format
 msgid ""
 "Payroll approved successfully. %d payslip runs with %d individual payslips "
 "have been finalized."
 msgstr ""
-"Bảng lương được phê duyệt thành công. %d việc chạy phiếu lương với %d phiếu "
-"lương riêng lẻ đã được hoàn tất."
+"Bảng lương được phê duyệt thành công. %d lần chạy phiếu lương với %d phiếu "
+"lương riêng lẻ đã được hoàn thành."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "Payroll variance is within acceptable range (&lt; 5%)."
-msgstr ""
-"Sự khác biệt về tiền lương nằm trong phạm vi chấp nhận được (&lt; 5%)."
+msgstr "Sự khác biệt về tiền lương nằm trong phạm vi chấp nhận được (&lt; 5%)."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "Payroll variance requires review (5% - 15%)."
 msgstr "Sự khác biệt trong bảng lương cần được xem xét (5% - 15%)."
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Percentage change from previous month by component"
 msgstr "Phần trăm thay đổi so với tháng trước theo thành phần"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "Performance Overview"
 msgstr "Tổng quan về hiệu suất"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__period_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__period_name
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Period"
 msgstr "Giai đoạn"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__|
 msgid "Pipe (|)"
 msgstr "Ống (|)"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics_settings__chart_library__plotly
 msgid "Plotly"
 msgstr "âm mưu"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__preview_data
 msgid "Preview Data"
 msgstr "Xem trước dữ liệu"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "Preview Export"
 msgstr "Xem trước xuất"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__preview_record_count
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__preview_record_count
 msgid "Preview Record Count"
 msgstr "Xem trước số lượng bản ghi"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__preview_total_amount
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__preview_total_amount
 msgid "Preview Total Amount"
 msgstr "Xem trước tổng số tiền"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_total_employees
 msgid "Previous Employees"
 msgstr "Nhân viên trước đây"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__previous_month
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__previous_month
 msgid "Previous Month"
 msgstr "Tháng trước"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
 msgid "Previous Period"
 msgstr "Kỳ trước"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_period_from
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__previous_date_from
 msgid "Previous Period From"
 msgstr "Kỳ trước Từ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_period_to
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__previous_date_to
 msgid "Previous Period To"
 msgstr "Kỳ trước Đến"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__previous_quarter
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__previous_quarter
 msgid "Previous Quarter"
 msgstr "Quý trước"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Previous Total"
 msgstr "Tổng số trước đó"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_total_payroll
 msgid "Previous Total Payroll"
 msgstr "Tổng Bảng Lương Trước Đó"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
 msgid "Previous:"
 msgstr "Trước:"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__ready
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Ready for Approval"
 msgstr "Sẵn sàng phê duyệt"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__recommendations
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Recommendations"
 msgstr "Khuyến nghị"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "Recommended to process transfers in batches if volume is high"
 msgstr "Khuyến nghị xử lý chuyển khoản theo đợt nếu khối lượng lớn"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
 msgid "Refresh Data"
 msgstr "Làm mới dữ liệu"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Regenerate Analysis"
 msgstr "Phân tích tái tạo"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid "Reset"
 msgstr "Cài lại"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_user_id
 msgid "Responsible User"
 msgstr "Người dùng có trách nhiệm"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "Lỗi gửi SMS"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid "Salary Components Analysis"
 msgstr "Phân tích thành phần tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__salary_components
 msgid "Salary Components JSON"
 msgstr "Thành phần lương JSON"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
 msgid "Salary Disbursement"
 msgstr "Giải ngân lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__same_month_last_year
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__same_month_last_year
 msgid "Same Month Last Year"
 msgstr "Cùng Tháng Năm Năm ngoái"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "Search Payroll Comparisons"
 msgstr "Tìm kiếm so sánh tiền lương"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "Search components..."
 msgstr "Tìm kiếm thành phần..."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__;
 msgid "Semicolon (;)"
 msgstr "Dấu chấm phẩy (;)"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__separator
 msgid "Separator"
 msgstr "Dấu phân cách"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__sequence
 msgid "Sequence"
 msgstr "Sự liên tiếp"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__name
 msgid "Settings Name"
 msgstr "Tên cài đặt"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
 msgid ""
 "Significant variance detected (&gt; 15%). Requires immediate attention."
 msgstr ""
-"Đã phát hiện sai số đáng kể (&gt; 15%). Yêu cầu sự chú ý ngay lập tức."
+"Phát hiện phương sai đáng kể (&gt; 15%). Yêu cầu sự chú ý ngay lập tức."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__sg
 msgid "Singapore"
 msgstr "Singapore"
 
 #. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_bank_export_wizard
 msgid "Standalone Bank Export Wizard"
 msgstr "Trình hướng dẫn xuất ngân hàng độc lập"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__state
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__state
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "State"
 msgstr "Tình trạng"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__state
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Status"
 msgstr "Trạng thái"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
-"Trạng thái dựa trên hoạt động\r\n"
-"Quá hạn: Đã qua ngày đáo hạn\r\n"
-"Hôm nay: Ngày hoạt động là hôm nay\r\n"
-"Dự kiến: Hoạt động sắp tới."
+"Trạng thái dựa trên hoạt động\n"
+"Quá hạn: Ngày hết hạn đã trôi qua\n"
+"Hôm nay: Ngày hoạt động là hôm nay\n"
+"Kế hoạch: Các hoạt động trong tương lai."
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__subtitle
 msgid "Subtitle"
 msgstr "Phụ đề"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
 msgid "Summary"
 msgstr "Bản tóm tắt"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__
 msgid "Tab"
 msgstr "Thẻ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__export_format__txt
 msgid "Text"
 msgstr "Chữ"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__export_format__txt
 msgid "Text File"
 msgstr "Tệp văn bản"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__th
 msgid "Thailand"
 msgstr "Thái Lan"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
 msgid "This Month"
 msgstr "Tháng này"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__title
 msgid "Tile Title"
 msgstr "Tiêu đề ô xếp"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__tile_type
 msgid "Tile Type"
 msgstr "Loại gạch"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__total_amount
 msgid "Total Amount"
 msgstr "Tổng số tiền"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
 msgid "Total Amount:"
 msgstr "Tổng số tiền:"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__total_employees
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Total Employees"
 msgstr "Tổng số nhân viên"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__total_payroll
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
 msgid "Total Payroll"
 msgstr "Tổng tiền lương"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__total_records
 msgid "Total Records"
 msgstr "Tổng số hồ sơ"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
 msgid "Total Records:"
 msgstr "Tổng số bản ghi:"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "Total amount:"
 msgstr "Tổng số tiền:"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Total amounts by component"
 msgstr "Tổng số tiền theo thành phần"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "Loại hoạt động ngoại lệ được ghi lại."
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
 msgid "Unable to determine country for analytics dashboard"
 msgstr "Không thể xác định quốc gia cho trang tổng quan phân tích"
 
 #. module: payroll_analytics_approval
 #. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
 msgid "Unable to determine country for bank export"
 msgstr "Không thể xác định quốc gia xuất khẩu của ngân hàng"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
 msgid "Update analytics with current payslip data"
 msgstr "Cập nhật phân tích với dữ liệu phiếu lương hiện tại"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Variance"
 msgstr "Phương sai"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__variance_percentage
 msgid "Variance %"
 msgstr "% phương sai"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
 msgid "Variance Analysis"
 msgstr "Phân tích phương sai"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__variance_threshold
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__variance_threshold
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__variance_threshold
 msgid "Variance Threshold %"
 msgstr "Ngưỡng chênh lệch %"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
 msgid "Variance vs Last Month"
 msgstr "Phương sai so với tháng trước"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
 msgid "Verify all bank account details before processing transfers"
-msgstr ""
-"Xác minh tất cả chi tiết tài khoản ngân hàng trước khi xử lý chuyển khoản"
+msgstr "Xác minh tất cả chi tiết tài khoản ngân hàng trước khi xử lý chuyển khoản"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__country__vn
 msgid "Vietnam"
 msgstr "Việt Nam"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__website_message_ids
 msgid "Website Messages"
 msgstr "Tin nhắn trang web"
 
 #. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__website_message_ids
 msgid "Website communication history"
 msgstr "Lịch sử giao tiếp trang web"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
 msgid "Year"
 msgstr "Năm"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
 msgid ""
 "employees \n"
 "                                    with total amount of"
 msgstr ""
-"nhân viên \r\n"
+"nhân viên \n"
 "                                    với tổng số tiền"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
 msgid "to"
 msgstr "ĐẾN"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
 msgid "vs last month"
 msgstr "so với tháng trước"
 
 #. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "• Final Approval Review"
 msgstr "• Đánh giá phê duyệt cuối cùng"
