@@ -24,7 +24,7 @@
     'data': [
         # Security
         'security/ir.model.access.csv',
-
+        
         # Data
         'data/hr_payroll_structure_data.xml',
         'data/hr_salary_rule_category_data.xml',
@@ -32,31 +32,26 @@
         'data/hr_contract_advantage_template_data.xml',
         'data/payroll_dashboard_data.xml',
         'data/spreadsheet_data.xml',  # NEW: India spreadsheet data
-
+        
         # Server Actions (load first - no dependencies)
         'views/india_server_actions.xml',  # NEW: Server actions for India
-
+        
         # Wizards (load before views that reference wizard actions)
         'wizards/gratuity_payment_wizard_views.xml',
         'wizards/india_payroll_processor_views.xml',  # NEW: India payroll processor
         'wizards/demo_data_generator_views.xml',  # NEW: India demo data generator
-
+        
         # Views (load before menu structure that references views)
         'views/hr_payroll_structure_views.xml',
         'views/payroll_dashboard_india.xml',
         'views/zoho_staging_data_views.xml',
         'views/payroll_analytics_integration.xml',  # NEW: Analytics integration
-
+        
         # Menu Structure (load after views are defined)
         'views/payroll_menu_structure.xml',
-
+        
         # Reports
         'reports/payslip_report_india.xml',
-
-        # Translations
-        'i18n/pb_hr_payroll_india.pot',
-        'i18n/vi_VN.po',
-        'i18n/km_KH.po',
     ],
     'installable': True,
     'application': False,
