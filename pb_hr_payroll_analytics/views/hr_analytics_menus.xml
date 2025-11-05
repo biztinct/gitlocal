@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menu Item for HR Analytics Under Payroll -->
+    <menuitem
+        id="menu_hr_analytics_root"
+        name="Analytics"
+        parent="om_hr_payroll.menu_hr_payroll_root"
+        sequence="50"
+        groups="pb_hr_payroll_base.group_payroll_base_manager,pb_hr_payroll_base.group_payroll_super_admin"
+    />
+
+    <!-- Main Dashboard -->
+    <menuitem
+        id="menu_hr_analytics_dashboard"
+        name="Analytics Dashboard"
+        parent="menu_hr_analytics_root"
+        action="action_prepare_hr_analytics_dashboard"
+        sequence="1"
+    />
+
+    <!-- Personnel Costs -->
+    <menuitem
+        id="menu_hr_analytics_personnel_costs"
+        name="Personnel Costs"
+        parent="menu_hr_analytics_root"
+        action="action_view_hr_analytics_personnel_costs"
+        sequence="2"
+    />
+
+    <!-- Statutory Contributions -->
+    <menuitem
+        id="menu_hr_analytics_statutory"
+        name="Statutory Contributions"
+        parent="menu_hr_analytics_root"
+        action="action_view_hr_analytics_statutory_contrib"
+        sequence="3"
+    />
+
+    <!-- Headcount Analysis -->
+    <menuitem
+        id="menu_hr_analytics_headcount"
+        name="Headcount Analysis"
+        parent="menu_hr_analytics_root"
+        action="action_view_hr_analytics_headcount"
+        sequence="4"
+    />
+
+    <!-- Dependents -->
+    <menuitem
+        id="menu_hr_analytics_dependents"
+        name="Dependents &amp; Benefits"
+        parent="menu_hr_analytics_root"
+        action="action_view_hr_analytics_dependents"
+        sequence="5"
+    />
+
+    <!-- Budget Variance -->
+    <menuitem
+        id="menu_hr_analytics_budget"
+        name="Budget Variance"
+        parent="menu_hr_analytics_root"
+        action="action_view_hr_analytics_budget_variance"
+        sequence="6"
+    />
+
+    <!-- Annual Costs -->
+    <menuitem
+        id="menu_hr_analytics_annual"
+        name="Annual HR Costs"
+        parent="menu_hr_analytics_root"
+        action="action_view_hr_analytics_annual_costs"
+        sequence="7"
+    />
+
+</odoo>

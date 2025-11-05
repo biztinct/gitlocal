@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Personnel Costs Form View -->
+    <record id="view_hr_analytics_personnel_costs_form" model="ir.ui.view">
+        <field name="name">Personnel Costs Form</field>
+        <field name="model">hr.analytics.personnel.costs</field>
+        <field name="arch" type="xml">
+            <form string="Personnel Costs Analysis">
+                <header>
+                    <button name="action_generate_analytics" type="object" string="Generate Report" class="oe_highlight" states="draft"/>
+                    <button name="action_approve" type="object" string="Approve" class="oe_highlight" states="ready"/>
+                    <button name="action_reset" type="object" string="Reset" states="ready,approved"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,ready,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="period_name"/></h1>
+                    </div>
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="selected_country"/>
+                        <field name="analysis_by"/>
+                    </group>
+                    <group col="4">
+                        <field name="total_direct_salaries" widget="monetary"/>
+                        <field name="total_employer_contrib" widget="monetary"/>
+                        <field name="total_benefits" widget="monetary"/>
+                        <field name="total_personnel_cost" widget="monetary"/>
+                    </group>
+                    <group col="3">
+                        <field name="total_employees"/>
+                        <field name="average_cost_per_employee" widget="monetary"/>
+                        <field name="variance_percentage"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Personnel Costs Tree View -->
+    <record id="view_hr_analytics_personnel_costs_tree" model="ir.ui.view">
+        <field name="name">Personnel Costs List</field>
+        <field name="model">hr.analytics.personnel.costs</field>
+        <field name="arch" type="xml">
+            <tree string="Personnel Costs" decoration-info="state=='draft'" decoration-success="state=='ready'" decoration-muted="state=='approved'">
+                <field name="period_name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="selected_country"/>
+                <field name="analysis_by"/>
+                <field name="total_personnel_cost" widget="monetary" sum="Total"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Personnel Costs Search View -->
+    <record id="view_hr_analytics_personnel_costs_search" model="ir.ui.view">
+        <field name="name">Personnel Costs Search</field>
+        <field name="model">hr.analytics.personnel.costs</field>
+        <field name="arch" type="xml">
+            <search string="Personnel Costs">
+                <field name="period_name"/>
+                <field name="selected_country"/>
+                <field name="analysis_by"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="ready" string="Ready" domain="[('state', '=', 'ready')]"/>
+                <filter name="approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_country" string="Country" domain="[]" context="{'group_by': 'selected_country'}"/>
+                    <filter name="group_by_analysis" string="Analysis By" domain="[]" context="{'group_by': 'analysis_by'}"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_view_hr_analytics_personnel_costs" model="ir.actions.act_window">
+        <field name="name">Personnel Costs</field>
+        <field name="res_model">hr.analytics.personnel.costs</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_hr_analytics_personnel_costs_search"/>
+        <field name="context">{'search_default_ready': 1}</field>
+    </record>
+
+</odoo>

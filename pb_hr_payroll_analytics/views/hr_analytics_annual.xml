@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_analytics_annual_form" model="ir.ui.view">
+        <field name="name">Annual Costs Form</field>
+        <field name="model">hr.analytics.annual.costs</field>
+        <field name="arch" type="xml">
+            <form string="Annual HR Costs">
+                <header>
+                    <button name="action_generate_analytics" type="object" string="Generate Report" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,ready"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="fiscal_year"/></h1>
+                    </div>
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group col="4">
+                        <field name="annual_salary_total" widget="monetary"/>
+                        <field name="annual_contrib_total" widget="monetary"/>
+                        <field name="annual_benefits_total" widget="monetary"/>
+                        <field name="annual_total_cost" widget="monetary"/>
+                    </group>
+                    <group col="3">
+                        <field name="annual_cost_per_employee" widget="monetary"/>
+                        <field name="growth_rate"/>
+                        <field name="projected_full_year" widget="monetary"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_hr_analytics_annual_costs" model="ir.actions.act_window">
+        <field name="name">Annual HR Costs</field>
+        <field name="res_model">hr.analytics.annual.costs</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

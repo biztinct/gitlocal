@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Sample Personnel Costs Record -->
+        <record id="sample_personnel_costs_vn_2024_01" model="hr.analytics.personnel.costs">
+            <field name="period_name">January 2024 - Personnel Costs - Vietnam</field>
+            <field name="date_from">2024-01-01</field>
+            <field name="date_to">2024-01-31</field>
+            <field name="selected_country">VN</field>
+            <field name="analysis_by">department</field>
+            <field name="direct_salaries_json">{"Sales": {"total": 300000000, "basic": 200000000, "allowances": 100000000}, "HR": {"total": 78000000, "basic": 60000000, "allowances": 18000000}, "IT": {"total": 180000000, "basic": 140000000, "allowances": 40000000}, "Finance": {"total": 65000000, "basic": 50000000, "allowances": 15000000}, "Admin": {"total": 42000000, "basic": 35000000, "allowances": 7000000}}</field>
+            <field name="employer_contributions_json">{"Sales": {"total": 60800000, "SI": 40000000, "HI": 15000000, "UI": 5800000}, "HR": {"total": 20400000, "SI": 13500000, "HI": 4500000, "UI": 2400000}, "IT": {"total": 51600000, "SI": 34000000, "HI": 12000000, "UI": 5600000}, "Finance": {"total": 17500000, "SI": 11500000, "HI": 4000000, "UI": 2000000}, "Admin": {"total": 11300000, "SI": 7500000, "HI": 2500000, "UI": 1300000}}</field>
+            <field name="benefits_json">{"Sales": {"total": 95200000}, "HR": {"total": 32100000}, "IT": {"total": 65400000}, "Finance": {"total": 25300000}, "Admin": {"total": 18200000}}</field>
+            <field name="training_costs_json">{"Sales": {"total": 5000000, "employees": 15}, "HR": {"total": 2000000, "employees": 5}, "IT": {"total": 8000000, "employees": 12}, "Finance": {"total": 1500000, "employees": 4}, "Admin": {"total": 800000, "employees": 3}}</field>
+            <field name="recruitment_costs_json">{"Sales": {"total": 2000000, "new_hires": 2}, "HR": {"total": 500000, "new_hires": 0}, "IT": {"total": 1500000, "new_hires": 1}, "Finance": {"total": 300000, "new_hires": 0}, "Admin": {"total": 200000, "new_hires": 0}}</field>
+            <field name="total_cost_json">{"Sales": {"total": 456000000, "employees": 15, "cost_per_emp": 30400000}, "HR": {"total": 120000000, "employees": 5, "cost_per_emp": 24000000}, "IT": {"total": 267000000, "employees": 12, "cost_per_emp": 22250000}, "Finance": {"total": 98000000, "employees": 4, "cost_per_emp": 24500000}, "Admin": {"total": 68000000, "employees": 3, "cost_per_emp": 22666667}}</field>
+            <field name="state">ready</field>
+        </record>
+
+        <!-- Sample Statutory Contributions Record -->
+        <record id="sample_statutory_contrib_vn_2024_01" model="hr.analytics.statutory.contrib">
+            <field name="period_name">January 2024 - Statutory Contributions - Vietnam</field>
+            <field name="date_from">2024-01-01</field>
+            <field name="date_to">2024-01-31</field>
+            <field name="country">VN</field>
+            <field name="group_by">contribution_type</field>
+            <field name="contribution_summary">{"SI": {"employee": 45000000, "employer": 80000000, "total": 125000000, "display_name": "Social Insurance"}, "HI": {"employee": 35000000, "employer": 54300000, "total": 89300000, "display_name": "Health Insurance"}, "UI": {"employee": 15000000, "employer": 17100000, "total": 32100000, "display_name": "Unemployment Insurance"}}</field>
+            <field name="employee_contrib_json">{"1": {"employee_name": "Nguyen A", "SI_EMP": 1850000, "HI_EMP": 950000, "UI_EMP": 350000, "total": 3150000}, "2": {"employee_name": "Tran B", "SI_EMP": 1720000, "HI_EMP": 880000, "UI_EMP": 320000, "total": 2920000}, "3": {"employee_name": "Pham C", "SI_EMP": 1650000, "HI_EMP": 850000, "UI_EMP": 310000, "total": 2810000}}</field>
+            <field name="employer_contrib_json">{"1": {"employee_name": "Nguyen A", "SI_COMP": 3200000, "HI_COMP": 1050000, "UI_COMP": 390000, "total": 4640000}, "2": {"employee_name": "Tran B", "SI_COMP": 2980000, "HI_COMP": 975000, "UI_COMP": 365000, "total": 4320000}, "3": {"employee_name": "Pham C", "SI_COMP": 2860000, "HI_COMP": 935000, "UI_COMP": 355000, "total": 4150000}}</field>
+            <field name="contribution_types">{}</field>
+            <field name="pending_contributions">{}</field>
+            <field name="compliance_status">compliant</field>
+            <field name="state">ready</field>
+        </record>
+
+        <!-- Sample Headcount Record -->
+        <record id="sample_headcount_2024_01" model="hr.analytics.headcount">
+            <field name="period_name">January 2024 - Headcount Analysis</field>
+            <field name="date_from">2024-01-01</field>
+            <field name="date_to">2024-01-31</field>
+            <field name="headcount_data">{"total_headcount": 39, "total_fte": 38.5, "part_time_count": 2, "contractor_count": 1}</field>
+            <field name="headcount_by_type">{"Full-time": 36, "Part-time": 2, "Contractor": 1}</field>
+            <field name="headcount_by_title">{"Sales Manager": {"count": 3, "fte": 3, "avg_salary": 0}, "Developer": {"count": 12, "fte": 12, "avg_salary": 0}, "HR Manager": {"count": 1, "fte": 1, "avg_salary": 0}, "Accountant": {"count": 4, "fte": 4, "avg_salary": 0}, "Administrative": {"count": 3, "fte": 2.5, "avg_salary": 0}}</field>
+            <field name="movements">{"new_hires": 3, "separations": 1}</field>
+            <field name="state">ready</field>
+        </record>
+
+    </data>
+</odoo>

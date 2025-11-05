@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_analytics_headcount_form" model="ir.ui.view">
+        <field name="name">Headcount Analysis Form</field>
+        <field name="model">hr.analytics.headcount</field>
+        <field name="arch" type="xml">
+            <form string="Headcount Analysis">
+                <header>
+                    <button name="action_generate_analytics" type="object" string="Generate Report" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,ready"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="period_name"/></h1>
+                    </div>
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="country"/>
+                        <field name="group_by"/>
+                    </group>
+                    <group col="4">
+                        <field name="total_headcount"/>
+                        <field name="total_fte"/>
+                        <field name="fte_percentage"/>
+                        <field name="part_time_count"/>
+                    </group>
+                    <group col="4">
+                        <field name="new_hires"/>
+                        <field name="separations"/>
+                        <field name="attrition_rate"/>
+                        <field name="contractor_count"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_analytics_headcount_tree" model="ir.ui.view">
+        <field name="name">Headcount Analysis List</field>
+        <field name="model">hr.analytics.headcount</field>
+        <field name="arch" type="xml">
+            <tree string="Headcount Analysis">
+                <field name="period_name"/>
+                <field name="date_from"/>
+                <field name="total_headcount"/>
+                <field name="total_fte"/>
+                <field name="fte_percentage"/>
+                <field name="attrition_rate"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_view_hr_analytics_headcount" model="ir.actions.act_window">
+        <field name="name">Headcount Analysis</field>
+        <field name="res_model">hr.analytics.headcount</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

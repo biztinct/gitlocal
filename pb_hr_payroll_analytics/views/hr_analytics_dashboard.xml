@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main HR Analytics Dashboard - Unified View with Tabs -->
+    <record id="view_hr_analytics_dashboard_form" model="ir.ui.view">
+        <field name="name">HR Analytics Dashboard</field>
+        <field name="model">hr.analytics.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="HR Analytics Dashboard" create="false" edit="false" delete="false">
+                <header>
+                    <button name="action_refresh_all_analytics" type="object" class="oe_highlight" string="Refresh All Analytics" icon="fa-refresh"/>
+                    <button name="action_clear_cache" type="object" string="Clear Cache" icon="fa-trash"/>
+                    <button name="%(pb_hr_payroll_analytics.action_hr_analytics_export_wizard)d" type="action" string="Export" icon="fa-download"/>
+                </header>
+
+                <sheet>
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <h1>HR Analytics Dashboard</h1>
+                        <p class="oe_grey">Professional analytics for personnel costs, headcount, and statutory compliance</p>
+                    </div>
+
+                    <!-- Global Filters at Top -->
+                    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                        <group col="4">
+                            <field name="selected_country" string="Country"/>
+                            <field name="date_from" string="From"/>
+                            <field name="date_to" string="To"/>
+                            <div/>
+                        </group>
+                        <div style="margin-top: 10px;">
+                            <button name="action_refresh_all_analytics" type="object" string="Apply Filters" class="btn btn-primary btn-sm" icon="fa-filter"/>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Cards -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-users">
+                            <field string="Total Employees" name="total_headcount" widget="statinfo"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-dollar">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="total_personnel_cost" widget="monetary"/></span>
+                                <span class="o_stat_text">Total Personnel Cost</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-files-o">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="total_contributions" widget="monetary"/></span>
+                                <span class="o_stat_text">Total Contributions</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-percent">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value"><field name="average_salary" widget="monetary"/></span>
+                                <span class="o_stat_text">Avg Cost/Employee</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Tab Navigation -->
+                    <notebook>
+                        <!-- Tab 1: Personnel Costs -->
+                        <page string="Personnel Costs for Management" name="personnel_costs">
+                            <div class="alert alert-info">
+                                <strong>Personnel Costs for Management:</strong> Comprehensive analysis of direct salaries, employer contributions, benefits, training, and recruitment costs by department, job title, designation, and cost center.
+                            </div>
+                            <field name="personnel_costs_id" mode="form">
+                                <form string="Personnel Costs" create="false">
+                                    <sheet>
+                                        <group col="2">
+                                            <field name="period_name"/>
+                                            <field name="date_from"/>
+                                            <field name="date_to"/>
+                                            <field name="analysis_by"/>
+                                        </group>
+
+                                        <!-- Metric Cards -->
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="metric-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; margin-bottom: 15px;">
+                                                    <h5 style="color: #2c3e50; margin: 0 0 10px 0;">Direct Salaries</h5>
+                                                    <p style="font-size: 24px; font-weight: bold; color: #3498db; margin: 0;"><field name="total_direct_salaries" widget="monetary"/></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="metric-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #2ecc71; margin-bottom: 15px;">
+                                                    <h5 style="color: #2c3e50; margin: 0 0 10px 0;">Employer Contrib</h5>
+                                                    <p style="font-size: 24px; font-weight: bold; color: #2ecc71; margin: 0;"><field name="total_employer_contrib" widget="monetary"/></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="metric-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c; margin-bottom: 15px;">
+                                                    <h5 style="color: #2c3e50; margin: 0 0 10px 0;">Total Benefits</h5>
+                                                    <p style="font-size: 24px; font-weight: bold; color: #e74c3c; margin: 0;"><field name="total_benefits" widget="monetary"/></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="metric-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #f39c12; margin-bottom: 15px;">
+                                                    <h5 style="color: #2c3e50; margin: 0 0 10px 0;">Total Cost</h5>
+                                                    <p style="font-size: 24px; font-weight: bold; color: #f39c12; margin: 0;"><field name="total_personnel_cost" widget="monetary"/></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="margin-top: 20px;">
+                                            <button name="action_generate_analytics" type="object" string="Generate Personnel Costs Report" class="btn btn-primary"/>
+                                            <button name="action_approve" type="object" string="Approve" class="btn btn-success" attrs="{'invisible': [('state', '!=', 'ready')]}"/>
+                                        </div>
+
+                                        <group col="2">
+                                            <field name="state"/>
+                                            <field name="average_cost_per_employee" widget="monetary"/>
+                                            <field name="total_employees"/>
+                                            <field name="variance_percentage" widget="monetary"/>
+                                        </group>
+
+                                        <!-- Charts and Tables would be rendered here via JavaScript -->
+                                        <div id="personnel-costs-charts" style="margin-top: 20px; min-height: 400px;">
+                                            <p style="text-align: center; color: #7f8c8d;">Charts will appear here after report generation</p>
+                                        </div>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+
+                        <!-- Tab 2: Cross Country Analytics -->
+                        <page string="Cross Country Analytics" name="cross_country">
+                            <div class="alert alert-info">
+                                <strong>Cross Country Analytics:</strong> Global view of personnel costs across all countries with multi-country comparisons, headcount distribution, and cost-per-employee analysis.
+                            </div>
+                            <div id="cross-country-charts" style="min-height: 600px;">
+                                <p style="text-align: center; color: #7f8c8d;">Cross-country analytics charts will appear here</p>
+                            </div>
+                        </page>
+
+                        <!-- Tab 3: Statutory Contributions -->
+                        <page string="Statutory Contributions" name="statutory_contributions">
+                            <div class="alert alert-info">
+                                <strong>Statutory Contributions:</strong> Employee &amp; employer contributions tracking with compliance status and payment tracking.
+                            </div>
+                            <field name="statutory_contrib_id" mode="form">
+                                <form string="Statutory Contributions" create="false">
+                                    <sheet>
+                                        <group col="2">
+                                            <field name="period_name"/>
+                                            <field name="date_from"/>
+                                            <field name="date_to"/>
+                                            <field name="country"/>
+                                        </group>
+
+                                        <!-- Metric Cards -->
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="metric-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3498db; margin-bottom: 15px;">
+                                                    <h5 style="color: #2c3e50; margin: 0 0 10px 0;">Employee Contrib</h5>
+                                                    <p style="font-size: 24px; font-weight: bold; color: #3498db; margin: 0;"><field name="total_employee_contrib" widget="monetary"/></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="metric-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #2ecc71; margin-bottom: 15px;">
+                                                    <h5 style="color: #2c3e50; margin: 0 0 10px 0;">Employer Contrib</h5>
+                                                    <p style="font-size: 24px; font-weight: bold; color: #2ecc71; margin: 0;"><field name="total_employer_contrib" widget="monetary"/></p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="metric-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c; margin-bottom: 15px;">
+                                                    <h5 style="color: #2c3e50; margin: 0 0 10px 0;">Compliance</h5>
+                                                    <p style="font-size: 18px; font-weight: bold; color: #e74c3c; margin: 0;"><field name="compliance_status"/></p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style="margin-top: 20px;">
+                                            <button name="action_generate_analytics" type="object" string="Generate Contributions Report" class="btn btn-primary"/>
+                                            <button name="action_verify" type="object" string="Verify" class="btn btn-info" attrs="{'invisible': [('state', '!=', 'ready')]}"/>
+                                            <button name="action_mark_paid" type="object" string="Mark as Paid" class="btn btn-success" attrs="{'invisible': [('state', '!=', 'verified')]}"/>
+                                        </div>
+
+                                        <group col="2">
+                                            <field name="state"/>
+                                            <field name="employees_covered"/>
+                                            <field name="total_pending_amount" widget="monetary"/>
+                                            <field name="overdue_amount" widget="monetary"/>
+                                        </group>
+
+                                        <!-- Charts would be rendered here via JavaScript -->
+                                        <div id="statutory-charts" style="margin-top: 20px; min-height: 400px;">
+                                            <p style="text-align: center; color: #7f8c8d;">Charts will appear here after report generation</p>
+                                        </div>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+
+                        <!-- Tab 4: Headcount Analysis -->
+                        <page string="Headcount Analysis" name="headcount">
+                            <div class="alert alert-info">
+                                <strong>Headcount Analysis:</strong> Employee count, FTE calculations, attrition rates, and headcount trends with department breakdowns.
+                            </div>
+                            <field name="headcount_id" mode="form">
+                                <form string="Headcount" create="false">
+                                    <sheet>
+                                        <group col="4">
+                                            <field name="total_headcount"/>
+                                            <field name="total_fte"/>
+                                            <field name="fte_percentage"/>
+                                            <field name="part_time_count"/>
+                                        </group>
+                                        <group col="4">
+                                            <field name="new_hires"/>
+                                            <field name="separations"/>
+                                            <field name="attrition_rate"/>
+                                            <field name="contractor_count"/>
+                                        </group>
+                                        <div style="margin-top: 20px;">
+                                            <button name="action_generate_analytics" type="object" string="Generate Headcount Report" class="btn btn-primary"/>
+                                        </div>
+                                        <div id="headcount-charts" style="margin-top: 20px; min-height: 400px;">
+                                            <p style="text-align: center; color: #7f8c8d;">Charts will appear here after report generation</p>
+                                        </div>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+
+                        <!-- Tab 5: Dependents &amp; Benefits -->
+                        <page string="Dependents &amp; Benefits" name="dependents">
+                            <div class="alert alert-info">
+                                <strong>Dependents &amp; Benefits:</strong> Dependent count tracking, age distribution, benefits impact analysis, and tax benefit implications.
+                            </div>
+                            <field name="dependents_id" mode="form">
+                                <form string="Dependents" create="false">
+                                    <sheet>
+                                        <group col="4">
+                                            <field name="total_dependents"/>
+                                            <field name="employees_with_dependents"/>
+                                            <field name="avg_dependents_per_employee"/>
+                                            <field name="total_dependent_allowance" widget="monetary"/>
+                                        </group>
+                                        <div style="margin-top: 20px;">
+                                            <button name="action_generate_analytics" type="object" string="Generate Dependents Report" class="btn btn-primary"/>
+                                        </div>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+
+                        <!-- Tab 6: Budget Variance -->
+                        <page string="Budget Variance" name="budget_variance">
+                            <div class="alert alert-warning">
+                                <strong>Budget Variance (Sample Data):</strong> Budgeted vs actual cost comparison with variance analysis and alerts for high-variance items.
+                            </div>
+                            <field name="budget_variance_id" mode="form">
+                                <form string="Budget Variance" create="false">
+                                    <sheet>
+                                        <group col="4">
+                                            <field name="total_budget" widget="monetary"/>
+                                            <field name="total_actual" widget="monetary"/>
+                                            <field name="total_variance" widget="monetary"/>
+                                            <field name="variance_percentage"/>
+                                        </group>
+                                        <group col="1">
+                                            <field name="use_sample_data"/>
+                                        </group>
+                                        <div style="margin-top: 20px;">
+                                            <button name="action_generate_analytics" type="object" string="Generate Budget Variance Report" class="btn btn-primary"/>
+                                        </div>
+                                        <div id="budget-charts" style="margin-top: 20px; min-height: 400px;">
+                                            <p style="text-align: center; color: #7f8c8d;">Charts will appear here after report generation</p>
+                                        </div>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+
+                        <!-- Tab 7: Annual HR Costs -->
+                        <page string="Annual HR Costs" name="annual_costs">
+                            <div class="alert alert-info">
+                                <strong>Annual HR Costs Overview:</strong> Annual salary costs, total cost of employment, cost trends, and full-year projections with year-over-year comparison.
+                            </div>
+                            <field name="annual_costs_id" mode="form">
+                                <form string="Annual Costs" create="false">
+                                    <sheet>
+                                        <group col="4">
+                                            <field name="annual_salary_total" widget="monetary"/>
+                                            <field name="annual_contrib_total" widget="monetary"/>
+                                            <field name="annual_benefits_total" widget="monetary"/>
+                                            <field name="annual_total_cost" widget="monetary"/>
+                                        </group>
+                                        <group col="3">
+                                            <field name="annual_cost_per_employee" widget="monetary"/>
+                                            <field name="growth_rate"/>
+                                            <field name="projected_full_year" widget="monetary"/>
+                                        </group>
+                                        <div style="margin-top: 20px;">
+                                            <button name="action_generate_analytics" type="object" string="Generate Annual Costs Report" class="btn btn-primary"/>
+                                        </div>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+
+                    <!-- Hidden fields for caching -->
+                    <field name="last_refresh" invisible="1"/>
+                    <field name="cache_valid" invisible="1"/>
+                    <field name="auto_refresh" invisible="1"/>
+
+                </sheet>
+
+                <!-- Inline CSS for Dashboard Styling -->
+                <style>
+                    .metric-card {
+                        transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    }
+                    .metric-card:hover {
+                        transform: translateY(-3px);
+                        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+                    }
+                    .row {
+                        display: flex;
+                        flex-wrap: wrap;
+                        margin: -15px;
+                    }
+                    .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-6, .col-md-12 {
+                        padding: 15px;
+                    }
+                    .col-md-1 { width: 8.333%; }
+                    .col-md-2 { width: 16.666%; }
+                    .col-md-3 { width: 25%; }
+                    .col-md-4 { width: 33.333%; }
+                    .col-md-6 { width: 50%; }
+                    .col-md-12 { width: 100%; }
+                    @media (max-width: 768px) {
+                        .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-6, .col-md-12 {
+                            width: 100% !important;
+                        }
+                    }
+                </style>
+            </form>
+        </field>
+    </record>
+
+    <!-- Dashboard Tree View (List) -->
+    <record id="view_hr_analytics_dashboard_tree" model="ir.ui.view">
+        <field name="name">HR Analytics Dashboard List</field>
+        <field name="model">hr.analytics.dashboard</field>
+        <field name="arch" type="xml">
+            <tree string="HR Analytics Dashboards">
+                <field name="name"/>
+                <field name="selected_country"/>
+                <field name="active_tab"/>
+                <field name="last_refresh"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Server Action to Prepare Dashboard -->
+    <record id="action_prepare_hr_analytics_dashboard" model="ir.actions.server">
+        <field name="name">Prepare HR Analytics Dashboard</field>
+        <field name="model_id" ref="model_hr_analytics_dashboard"/>
+        <field name="state">code</field>
+        <field name="code">
+dashboard = env['hr.analytics.dashboard'].get_or_create_dashboard()
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'HR Analytics Dashboard',
+    'res_model': 'hr.analytics.dashboard',
+    'res_id': dashboard.id,
+    'view_mode': 'form',
+    'view_id': env.ref('pb_hr_payroll_analytics.view_hr_analytics_dashboard_form').id,
+    'target': 'current',
+}
+        </field>
+    </record>
+
+    <!-- Action to Open Dashboard (Window Action - fallback) -->
+    <record id="action_open_hr_analytics_dashboard" model="ir.actions.act_window">
+        <field name="name">HR Analytics Dashboard</field>
+        <field name="res_model">hr.analytics.dashboard</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="view_hr_analytics_dashboard_form"/>
+        <field name="target">current</field>
+        <field name="context">{'default_auto_refresh': True}</field>
+    </record>
+
+</odoo>

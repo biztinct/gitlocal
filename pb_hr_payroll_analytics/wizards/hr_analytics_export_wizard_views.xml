@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Export Wizard Form View -->
+    <record id="view_hr_analytics_export_wizard_form" model="ir.ui.view">
+        <field name="name">HR Analytics Export Wizard</field>
+        <field name="model">hr.analytics.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Analytics Report">
+                <group col="2">
+                    <field name="report_type" widget="selection" required="1"/>
+                    <field name="file_format" widget="selection" required="1"/>
+                    <field name="include_charts"/>
+                    <field name="include_tables"/>
+                    <field name="include_summary"/>
+                </group>
+                <group col="1">
+                    <field name="file_name" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_export" type="object" string="Export" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Export Wizard Action -->
+    <record id="action_hr_analytics_export_wizard" model="ir.actions.act_window">
+        <field name="name">Export Analytics Report</field>
+        <field name="res_model">hr.analytics.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

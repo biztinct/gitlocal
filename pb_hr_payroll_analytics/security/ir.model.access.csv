@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_analytics_personnel_costs_manager,HR Analytics Personnel Costs - Manager,model_hr_analytics_personnel_costs,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_personnel_costs_admin,HR Analytics Personnel Costs - Admin,model_hr_analytics_personnel_costs,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_statutory_contrib_manager,HR Analytics Statutory Contrib - Manager,model_hr_analytics_statutory_contrib,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_statutory_contrib_admin,HR Analytics Statutory Contrib - Admin,model_hr_analytics_statutory_contrib,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_headcount_manager,HR Analytics Headcount - Manager,model_hr_analytics_headcount,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_headcount_admin,HR Analytics Headcount - Admin,model_hr_analytics_headcount,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_dependents_manager,HR Analytics Dependents - Manager,model_hr_analytics_dependents,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_dependents_admin,HR Analytics Dependents - Admin,model_hr_analytics_dependents,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_budget_variance_manager,HR Analytics Budget Variance - Manager,model_hr_analytics_budget_variance,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_budget_variance_admin,HR Analytics Budget Variance - Admin,model_hr_analytics_budget_variance,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_annual_costs_manager,HR Analytics Annual Costs - Manager,model_hr_analytics_annual_costs,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_annual_costs_admin,HR Analytics Annual Costs - Admin,model_hr_analytics_annual_costs,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_dashboard_manager,HR Analytics Dashboard - Manager,model_hr_analytics_dashboard,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_dashboard_admin,HR Analytics Dashboard - Admin,model_hr_analytics_dashboard,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_cache_manager,HR Analytics Cache - Manager,model_hr_analytics_cache,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_cache_admin,HR Analytics Cache - Admin,model_hr_analytics_cache,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_analytics_export_wizard_manager,HR Analytics Export Wizard - Manager,model_hr_analytics_export_wizard,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_analytics_export_wizard_admin,HR Analytics Export Wizard - Admin,model_hr_analytics_export_wizard,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
