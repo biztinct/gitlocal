@@ -44,22 +44,24 @@
                 </thead>
                 <tbody>
                     <t t-foreach="payslips" t-as="payslip">
+                        <t t-set="netpay_lines" t-value="payslip.line_ids.filtered(lambda line: line.code == 'NETPAY')"/>
                         <tr>
                             <td>
                                 <a t-att-href="payslip.get_portal_url()" t-att-title="payslip.name">
-                                    <t t-esc="payslip.name"/> 
+                                    <t t-esc="payslip.name"/>
                                 </a>
                             </td>
                             <td>
                                 <span t-field="payslip.date_from"/> - <span t-field="payslip.date_to"/>
                             </td>
-                            <td class="tx_status text-center"> 
+                            <td class="tx_status text-center">
                                 <span t-attf-class="badge rounded-pill text-bg-#{payslip.state == 'done' and 'success' or payslip.state == 'cancel' and 'warning' or 'info'}">
-                                    <t t-esc="payslip.state.capitalize()"/> 
+                                    <t t-esc="payslip.state.capitalize()"/>
                                 </span>
                             </td>
                             <td class="text-end">
-                                <span t-field="payslip.line_ids.filtered(lambda line: line.code == 'NETPAY')[0].amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: payslip.company_id.currency_id}"/> 
+                                <span t-if="netpay_lines" t-field="netpay_lines[0].amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: payslip.company_id.currency_id}"/>
+                                <span t-else="">0.00</span>
                             </td>
                         </tr>
                     </t>
@@ -79,12 +81,14 @@
         <div class="row mt16 o_portal_payslip_sidebar"> 
             <t t-call="portal.portal_record_sidebar">
                 <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
+                <t t-set="netpay_lines" t-value="payslip.line_ids.filtered(lambda line: line.code == 'NETPAY')"/>
                 <t t-set="title">
                     <h2 class="mb-0">
-                        <span t-field="payslip.line_ids.filtered(lambda line: line.code == 'NETPAY')[0].amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: payslip.company_id.currency_id}"/>
+                        <span t-if="netpay_lines" t-field="netpay_lines[0].amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: payslip.company_id.currency_id}"/>
+                        <span t-else="">0.00</span>
                     </h2>
-                    <span t-field="payslip.name"/> 
-                    <div class="small"><i class="fa fa-calendar-o"/> <span t-field="payslip.date_to"/></div> 
+                    <span t-field="payslip.name"/>
+                    <div class="small"><i class="fa fa-calendar-o"/> <span t-field="payslip.date_to"/></div>
                 </t>
 
                 <t t-set="entries">

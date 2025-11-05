@@ -1,0 +1,2163 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* payroll_analytics_approval
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-05 05:06+0000\n"
+"PO-Revision-Date: 2025-11-05 05:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.report,print_report_name:payroll_analytics_approval.action_report_bank_export
+msgid "'Bank Export - %s' % (object.period_name)"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.report,print_report_name:payroll_analytics_approval.action_report_payroll_analytics
+msgid "'Payroll Analytics - %s' % (object.period_name)"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.report,print_report_name:payroll_analytics_approval.action_report_payroll_comparison
+msgid "'Payroll Comparison - %s' % (object.name)"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "- Payroll Analytics Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "12 Months"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "3 Months"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "6 Months"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-area-chart\"/> Variance Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+msgid "<i class=\"fa fa-bar-chart\"/> Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-bar-chart\"/> Month-over-Month Comparison"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid "<i class=\"fa fa-bar-chart\"/> Payroll Comparison Wizard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-bar-chart\"/> Salary Components"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-bar-chart-o\"/> Payroll Analytics Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<i class=\"fa fa-calculator\"/> Salary Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "<i class=\"fa fa-check\"/> Export Preview Ready"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-check\"/> Final Approve Payroll"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-check-circle text-success\"/> Recommendations"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
+msgid "<i class=\"fa fa-check-circle\"/> Export Successful!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<i class=\"fa fa-check-circle\"/> Normal Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-download\"/> Export Bank File"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "<i class=\"fa fa-download\"/> Export Complete"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<i class=\"fa fa-exclamation-triangle text-warning\"/> Alerts"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-exclamation-triangle\"/> Anomaly Alerts"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<i class=\"fa fa-exclamation-triangle\"/> High Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<i class=\"fa fa-exclamation-triangle\"/> Moderate Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-file-text\"/> View Detailed Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
+msgid "<i class=\"fa fa-info-circle\"/> Bank Export Wizard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid ""
+"<i class=\"fa fa-info-circle\"/> Charts and visualizations are embedded in "
+"the detailed dashboard view. Click \"Open Dashboard\" to view interactive "
+"charts."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<i class=\"fa fa-info-circle\"/> Important Notes"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<i class=\"fa fa-lightbulb-o text-success\"/> Recommendations"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-lightbulb-o\"/> Decision Support"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-lightbulb-o\"/> Decision Support &amp; Anomaly Detection"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-line-chart\"/> Month over Month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<i class=\"fa fa-money\"/> Payroll Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-pie-chart\"/> Salary Components Breakdown"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-table\"/> Detailed Component Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "<i class=\"fa fa-university\"/> Bank Export Wizard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<i class=\"fa fa-users\"/> Employee Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "<i class=\"fa fa-warning text-warning\"/> Items to Review"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "<i class=\"fa fa-warning text-warning\"/> Things to Review"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid ""
+"<select class=\"form-control form-control-sm\" id=\"components-view-toggle\">\n"
+"                                        <option value=\"total\">Total Amount</option>\n"
+"                                        <option value=\"average\">Average per Employee</option>\n"
+"                                    </select>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<small>Change in average salary</small>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<small>Change in employee count</small>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "<small>Change in total payroll</small>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid ""
+"<span class=\"stat-number\" id=\"pending-approvals-count\">0</span>\n"
+"                        <span class=\"stat-label\">Pending</span>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid ""
+"<span class=\"stat-number\" id=\"ready-exports-count\">0</span>\n"
+"                        <span class=\"stat-label\">Ready</span>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid ""
+"<span class=\"stat-number\" id=\"total-employees-count\">0</span>\n"
+"                        <span class=\"stat-label\">Employees</span>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "<span class=\"tile-action\">Click to Review →</span>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "<span class=\"tile-action\">Export CSV →</span>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "<span class=\"tile-action\">View Report →</span>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Approval Date</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Approved By</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "<strong>Average Salary Variance</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Average Salary</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<strong>Country</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "<strong>Employee Count Variance</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "<strong>Employees</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<strong>Export Date</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<strong>Export Format</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<strong>File Name</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<strong>Generated By</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Generated Date</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid ""
+"<strong>Note:</strong> Detailed component breakdown and variance analysis."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Notes</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "<strong>Period</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Status</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<strong>Total Amount</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Total Employees</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "<strong>Total Payroll Variance</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "<strong>Total Payroll</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "<strong>Total Records</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "<strong>Variance</strong>"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__action_method
+msgid "Action Method"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__action_model
+msgid "Action Model"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__is_active
+msgid "Active"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__alerts
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "Alerts"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__name
+msgid "Analysis Name"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid "Analysis Options"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__analysis_results
+msgid "Analysis Results"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Analysis Summary"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__analytics_id
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "Analytics"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_analytics_config
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics_config
+msgid "Analytics Configuration"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Analytics Dashboard • Final Approval Review"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__tile_type__analytics_overview
+msgid "Analytics Overview"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_analytics_reports
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics_reports
+msgid "Analytics Reports"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_dashboard
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_queue
+msgid ""
+"Analytics are automatically generated when payslip batches reach Level 2 "
+"approval status."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_reports
+msgid ""
+"Analytics reports provide detailed insights into payroll trends and "
+"patterns."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__analyzing
+msgid "Analyzing"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "Anomaly Alerts"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__anomaly_alerts
+msgid "Anomaly Alerts JSON"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "Approval Information"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_approval_queue
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_approval_queue
+msgid "Approval Queue"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
+msgid "Approve"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+msgid "Approve Payroll"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__approved
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Approved"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_bank_exports
+msgid "Approved payroll analytics will appear here for bank file generation."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
+msgid "Are you sure you want to approve this payroll?"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid ""
+"Are you sure you want to approve this payroll? This action cannot be undone."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__auto_generate_analytics
+msgid "Auto Generate Analytics"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__average_salary
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+msgid "Average Salary"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__average_salary_variance
+msgid "Average Salary Variance %"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Average/Employee"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "Avg per Employee"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__tile_type__bank_export
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_bank_export
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
+msgid "Bank Export"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
+msgid "Bank Export Details"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_bank_export_log
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_bank_exports
+#: model:ir.model,name:payroll_analytics_approval.model_bank_export_log
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_tree
+msgid "Bank Export History"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.report,name:payroll_analytics_approval.action_report_bank_export
+msgid "Bank Export Summary"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "Bank Export Summary Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_bank_export_wizard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "Bank Export Wizard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "Bank Transfer Instructions"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
+msgid "Bank disbursement file has been generated successfully."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid ""
+"Bank export file has been generated successfully. Click download to save the"
+" file."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_bank_export_log
+msgid ""
+"Bank export files will appear here after being generated from approved "
+"payroll batches."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__export_format__csv
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__export_format__csv
+msgid "CSV"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__kh
+msgid "Cambodia"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:res.groups,comment:payroll_analytics_approval.group_payroll_analytics_manager
+msgid "Can manage payroll analytics, approve payrolls, and export bank files"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:res.groups,comment:payroll_analytics_approval.group_payroll_final_approver
+msgid "Can perform final approval of payroll batches"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:res.groups,comment:payroll_analytics_approval.group_payroll_analytics_user
+msgid "Can view payroll analytics and reports"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid "Cancel"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__category
+msgid "Category"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__chart_data
+msgid "Chart Data"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__chart_library
+msgid "Chart Library"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics_settings__chart_library__chartjs
+msgid "Chart.js"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Charts & Visualizations"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "Code"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__,
+msgid "Comma (,)"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__company_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__company_id
+msgid "Company"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__comparison_type
+msgid "Compare With"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid ""
+"Compare payroll data across different periods to identify trends and "
+"anomalies."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+msgid "Comparison"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Comparison Analysis Name"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+msgid "Comparison Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__comparison_data
+msgid "Comparison Data JSON"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid "Comparison Period"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "Comparison Summary"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__comparison_type
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "Comparison Type"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Comparison with previous month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__done
+msgid "Completed"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Component"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__component_analysis
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Component Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__code
+msgid "Component Code"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__name
+msgid "Component Name"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.constraint,message:payroll_analytics_approval.constraint_payroll_component_mapping_unique_country_code
+msgid "Component code must be unique per country!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Configuration"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_analytics_config_main
+msgid "Configuration Management"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_config
+msgid ""
+"Configure analytics settings and review draft analytics before processing."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__country
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__country
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "Country"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_comparison
+msgid ""
+"Create payroll comparison analyses to track changes and trends across different periods.\n"
+"                Use the comparison wizard to generate detailed analytics."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__created_by
+msgid "Created By"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__create_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__create_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__currency_id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_total_employees
+msgid "Current Employees"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Current Month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid "Current Period"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_period_from
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__current_date_from
+msgid "Current Period From"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_period_to
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__current_date_to
+msgid "Current Period To"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Current Total"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__current_total_payroll
+msgid "Current Total Payroll"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__custom
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__custom
+msgid "Custom Period"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics_settings__chart_library__d3
+msgid "D3.js"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_tree
+msgid "Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_dashboard_tile_config
+msgid "Dashboard Tile Configuration"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__date_from
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__date_from
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Date From"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__date_to
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__date_to
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Date To"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__deduction
+msgid "Deduction"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Detailed Results"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__display_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__display_order
+msgid "Display Order"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__state__done
+msgid "Done"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "Download File"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__draft
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__state__draft
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__draft
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Draft"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+msgid "Dropdown"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__earning
+msgid "Earning"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__email_notifications
+msgid "Email Notifications"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+msgid "Employee Count"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__employee_metrics
+msgid "Employee Metrics JSON"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__employee_variance
+msgid "Employee Variance %"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+msgid "Employees"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__employer_contribution
+msgid "Employer Contribution"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__anomaly_detection_enabled
+msgid "Enable Anomaly Detection"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__state__error
+msgid "Error"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_comparison.py:0
+#, python-format
+msgid "Error generating analysis: %s"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__export_format__excel
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__export_format__excel
+msgid "Excel"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__export_format__excel
+msgid "Excel File"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "Executive Summary"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
+msgid "Export"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
+msgid "Export Bank File"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_date
+msgid "Export Date"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_details
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
+msgid "Export Details"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_file
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__export_file
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
+msgid "Export File"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__export_format
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__export_format
+msgid "Export Format"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_bank_export_history
+msgid "Export History"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
+msgid "Export Information"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__name
+msgid "Export Name"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "Export Parameters"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "Export Preview"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Export Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
+msgid "Export Results"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__exported
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Exported"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_bank_export_wizard__separator
+msgid "Field separator for CSV files"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
+msgid "File Format:"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "File Options"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__filename
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__export_filename
+msgid "Filename"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Final Approve"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__export_format
+msgid "Format"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "Found"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid ""
+"Generate CSV/Excel file for bank salary disbursement with employee bank "
+"details and net pay amounts."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
+msgid ""
+"Generate CSV/Excel file for bank salary disbursement. This file contains "
+"employee bank details and net pay amounts."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid "Generate Comparison"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_form
+msgid "Generate Export"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_comparison
+msgid ""
+"Generate analytics data from different periods to compare payroll trends."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
+msgid "Generated:"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "Group By"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "High Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__id
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__id
+msgid "ID"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__icon
+msgid "Icon Class"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_has_error
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__include_charts
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__include_charts
+msgid "Include Charts"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__include_header
+msgid "Include Headers"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__include_variance_analysis
+msgid "Include Variance Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__country__in
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__country__in
+msgid "India"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__country__id
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__country__id
+msgid "Indonesia"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "Keep this report for audit trail purposes"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard____last_update
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__write_uid
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__write_date
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "Level 2 Approve"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Low Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__my
+msgid "Malaysia"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_component_mapping__is_mandatory
+msgid "Mandatory Component"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "Moderate"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "Month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_dashboard
+msgid "Multi-Country Payroll Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Negative Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__category__net
+msgid "Net Pay"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_comparison_wizard
+msgid "New Comparison"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
+msgid "No Data Available"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_comparison
+msgid "No analytics data for comparison!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_reports
+msgid "No analytics data for reports!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
+msgid ""
+"No approved payroll data available for export. Please approve payroll "
+"analytics first."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_bank_exports
+msgid "No approved payroll ready for export!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/wizards/payroll_bank_export_wizard.py:0
+#, python-format
+msgid "No approved payslips found for the selected period and country"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_bank_export_log
+msgid "No bank export records found!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_analytics_config
+msgid "No draft analytics found!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/wizards/payroll_bank_export_wizard.py:0
+#, python-format
+msgid "No export file available. Please generate the export first."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_dashboard
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_approval_queue
+msgid "No payroll analytics ready for approval!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.actions.act_window,help:payroll_analytics_approval.action_payroll_comparison
+msgid "No payroll comparisons found!"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "Normal Range"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "Normal Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "Number of beneficiaries:"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:0
+#, python-format
+msgid "Only analytics in Ready state can be approved"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:0
+#, python-format
+msgid "Only approved analytics can be exported"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
+msgid "Open Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__export_format__pdf
+msgid "PDF Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
+msgid "Payroll Analytics - Approval Queue"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Payroll Analytics Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:res.groups,name:payroll_analytics_approval.group_payroll_analytics_manager
+msgid "Payroll Analytics Manager"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.report,name:payroll_analytics_approval.action_report_payroll_analytics
+msgid "Payroll Analytics Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Payroll Analytics Search"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_analytics_settings
+msgid "Payroll Analytics Settings"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:res.groups,name:payroll_analytics_approval.group_payroll_analytics_user
+msgid "Payroll Analytics User"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__tile_type__payroll_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "Payroll Approval"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_approval_dashboard
+msgid "Payroll Approval Dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_analytics_comparison
+msgid "Payroll Comparison"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_comparison_wizard
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_wizard_form
+msgid "Payroll Comparison Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "Payroll Comparison Analysis Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.report,name:payroll_analytics_approval.action_report_payroll_comparison
+msgid "Payroll Comparison Report"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_comparison_wizard
+msgid "Payroll Comparison Wizard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.actions.act_window,name:payroll_analytics_approval.action_payroll_comparison
+#: model:ir.ui.menu,name:payroll_analytics_approval.menu_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_tree
+msgid "Payroll Comparisons"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_component_mapping
+msgid "Payroll Component Mapping"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:res.groups,name:payroll_analytics_approval.group_payroll_final_approver
+msgid "Payroll Final Approver"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__payroll_variance
+msgid "Payroll Variance %"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_analytics.py:0
+#, python-format
+msgid ""
+"Payroll approved successfully. %d payslip runs with %d individual payslips "
+"have been finalized."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "Payroll variance is within acceptable range (&lt; 5%)."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "Payroll variance requires review (5% - 15%)."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Percentage change from previous month by component"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "Performance Overview"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__period_name
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__period_name
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Period"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__|
+msgid "Pipe (|)"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics_settings__chart_library__plotly
+msgid "Plotly"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__preview_data
+msgid "Preview Data"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "Preview Export"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__preview_record_count
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__preview_record_count
+msgid "Preview Record Count"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__preview_total_amount
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__preview_total_amount
+msgid "Preview Total Amount"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_total_employees
+msgid "Previous Employees"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__previous_month
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__previous_month
+msgid "Previous Month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+msgid "Previous Period"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_period_from
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__previous_date_from
+msgid "Previous Period From"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_period_to
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__previous_date_to
+msgid "Previous Period To"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__previous_quarter
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__previous_quarter
+msgid "Previous Quarter"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Previous Total"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__previous_total_payroll
+msgid "Previous Total Payroll"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+msgid "Previous:"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__state__ready
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Ready for Approval"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__recommendations
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Recommendations"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "Recommended to process transfers in batches if volume is high"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
+msgid "Refresh Data"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Regenerate Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid "Reset"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid "Salary Components Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__salary_components
+msgid "Salary Components JSON"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_dashboard_tiles_template
+msgid "Salary Disbursement"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__comparison_type__same_month_last_year
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__comparison_type__same_month_last_year
+msgid "Same Month Last Year"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "Search Payroll Comparisons"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "Search components..."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__;
+msgid "Semicolon (;)"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__separator
+msgid "Separator"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__name
+msgid "Settings Name"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+msgid ""
+"Significant variance detected (&gt; 15%). Requires immediate attention."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__sg
+msgid "Singapore"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model,name:payroll_analytics_approval.model_payroll_bank_export_wizard
+msgid "Standalone Bank Export Wizard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_wizard__state
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__state
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "State"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__state
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Status"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__subtitle
+msgid "Subtitle"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_bank_export_log_form
+msgid "Summary"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__separator__
+msgid "Tab"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__export_format__txt
+msgid "Text"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__export_format__txt
+msgid "Text File"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__th
+msgid "Thailand"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_search
+msgid "This Month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__title
+msgid "Tile Title"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_dashboard_tile_config__tile_type
+msgid "Tile Type"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__total_amount
+msgid "Total Amount"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
+msgid "Total Amount:"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__total_employees
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Total Employees"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__total_payroll
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_dashboard
+msgid "Total Payroll"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_bank_export_log__total_records
+msgid "Total Records"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.bank_export_success_template
+msgid "Total Records:"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "Total amount:"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Total amounts by component"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
+msgid "Unable to determine country for analytics dashboard"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#. odoo-python
+#: code:addons/payroll_analytics_approval/models/payroll_dashboard_integration.py:0
+#, python-format
+msgid "Unable to determine country for bank export"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree
+msgid "Update analytics with current payslip data"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Variance"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics__variance_percentage
+msgid "Variance %"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_comparison_form
+msgid "Variance Analysis"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_analytics_settings__variance_threshold
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__variance_threshold
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison_wizard__variance_threshold
+msgid "Variance Threshold %"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_analytics_dashboard
+msgid "Variance vs Last Month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_bank_export
+msgid "Verify all bank account details before processing transfers"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__bank_export_log__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__dashboard_tile_config__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_analytics__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_bank_export_wizard__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_comparison_wizard__country__vn
+#: model:ir.model.fields.selection,name:payroll_analytics_approval.selection__payroll_component_mapping__country__vn
+msgid "Vietnam"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_comparison__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model:ir.model.fields,help:payroll_analytics_approval.field_payroll_comparison__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_search
+msgid "Year"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_bank_export_wizard_enhanced_form
+msgid ""
+"employees \n"
+"                                    with total amount of"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_analytics
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.report_payroll_comparison
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+msgid "to"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_kanban
+msgid "vs last month"
+msgstr ""
+
+#. module: payroll_analytics_approval
+#: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
+msgid "• Final Approval Review"
+msgstr ""
