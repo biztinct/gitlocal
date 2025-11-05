@@ -1,0 +1,966 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-05 05:25+0000\n"
+"PO-Revision-Date: 2025-11-05 05:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_payroll_vietnam
+msgid ""
+"1. Generate demo data → 2. Open spreadsheet → 3. Process payroll for testing"
+msgstr ""
+"1. Tạo dữ liệu demo → 2. Mở bảng tính → 3. Xử lý bảng lương để thử nghiệm"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Access Token"
+msgstr "Mã thông báo truy cập"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Accident Insurance - Employer (VND)"
+msgstr "Bảo hiểm tai nạn - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Additional analytics features will appear here when configured"
+msgstr ""
+"Các tính năng phân tích bổ sung sẽ xuất hiện ở đây khi được định cấu hình"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Advanced Analytics"
+msgstr "Phân tích nâng cao"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Allowances (VND)"
+msgstr "Phụ cấp (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Analytics Info"
+msgstr "Thông tin phân tích"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Annual Leave Days"
+msgstr "Ngày nghỉ phép hàng năm"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Annual Tax Report"
+msgstr "Báo cáo thuế hàng năm"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Approval Dashboard"
+msgstr "Trang tổng quan phê duyệt"
+
+#. module: pb_hr_payroll_vietnam
+msgid "BIDV"
+msgstr "BIDV"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bank Account Holder Name"
+msgstr "Tên chủ tài khoản ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bank Account Number"
+msgstr "Số tài khoản ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bank Branch"
+msgstr "Chi nhánh ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bank Export"
+msgstr "Xuất khẩu ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bank Format"
+msgstr "Định dạng ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bank Name"
+msgstr "Tên ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Bank transfer file has been exported successfully"
+msgstr "Tệp chuyển khoản ngân hàng đã được xuất thành công"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Basic Salary (VND)"
+msgstr "Lương cơ bản (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Basic salary (%.0f VND) is below minimum wage (%.0f VND) for %s"
+msgstr ""
+"Mức lương cơ bản (%.0f VNĐ) thấp hơn mức lương tối thiểu (%.0f VNĐ) cho %s"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Batch Payslips"
+msgstr "Phiếu lương hàng loạt"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bonus/13th Month (VND)"
+msgstr "Thưởng/Tháng 13 (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Citizen ID Number"
+msgstr "Số CMND"
+
+#. module: pb_hr_payroll_vietnam
+msgid "College"
+msgstr "Trường cao đẳng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Coming Soon"
+msgstr "Sắp ra mắt"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Compare payroll data across periods and analyze trends"
+msgstr "So sánh dữ liệu bảng lương giữa các thời kỳ và phân tích xu hướng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Comprehensive payroll analytics with trend analysis and reporting"
+msgstr "Phân tích bảng lương toàn diện với phân tích và báo cáo xu hướng"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Connection Test"
+msgstr "Kiểm tra kết nối"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Connection failed: %s"
+msgstr "Kết nối không thành công: %s"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Create New Employees Only"
+msgstr "Chỉ tạo nhân viên mới"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Create New and Update Existing"
+msgstr "Tạo mới và cập nhật hiện có"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Created by"
+msgstr "Created by"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Current Month Gross Salary"
+msgstr "Tổng lương tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Current Month Net Salary"
+msgstr "Lương ròng tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Current Month Payslips"
+msgstr "Phiếu lương tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Current Month Social Insurance"
+msgstr "Bảo hiểm xã hội tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Current Month Tax"
+msgstr "Thuế tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Dashboard Name"
+msgstr "Tên trang tổng quan"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Default Vietnam Region"
+msgstr "Khu vực Việt Nam mặc định"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Definite Term Contract"
+msgstr "Hợp đồng xác định thời hạn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Demo Employee Data"
+msgstr "Dữ liệu nhân viên demo"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Demo Information"
+msgstr "Thông tin demo"
+
+#. module: pb_hr_payroll_vietnam
+msgid ""
+"Demo data includes Vietnamese names, departments, salaries, and payroll "
+"information for testing"
+msgstr ""
+"Dữ liệu demo bao gồm tên tiếng Việt, phòng ban, lương, thông tin bảng lương "
+"để test"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Disabled"
+msgstr "Tàn tật"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_hr_payroll_vietnam
+msgid "District"
+msgstr "Huyện"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Divorced"
+msgstr "Đã ly hôn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Edit Vietnam Payroll Spreadsheet"
+msgstr "Chỉnh sửa bảng tính lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid ""
+"Edit and configure payroll calculations, salary components, and deductions"
+msgstr ""
+"Chỉnh sửa và định cấu hình tính toán bảng lương, các thành phần lương và các"
+" khoản khấu trừ"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Education Level"
+msgstr "Trình độ học vấn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Emergency Contact Name"
+msgstr "Tên liên hệ khẩn cấp"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Emergency Contact Phone"
+msgstr "Điện thoại liên lạc khẩn cấp"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employee"
+msgstr "Người lao động"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employee Data"
+msgstr "Dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employees"
+msgstr "Người lao động"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employees Created"
+msgstr "Nhân viên được tạo"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employees Updated"
+msgstr "Nhân viên được cập nhật"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Errors"
+msgstr "Lỗi"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Export Bank File"
+msgstr "Xuất tập tin ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Export Completed"
+msgstr "Đã xuất xong"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Export payroll data to bank format for automated salary disbursement"
+msgstr ""
+"Xuất dữ liệu bảng lương sang định dạng ngân hàng để giải ngân lương tự động"
+
+#. module: pb_hr_payroll_vietnam
+msgid "File Name"
+msgstr "Tên tệp"
+
+#. module: pb_hr_payroll_vietnam
+msgid "From Date"
+msgstr "Từ ngày"
+
+#. module: pb_hr_payroll_vietnam
+msgid ""
+"Generate 25 Vietnamese employees with realistic demo data for testing "
+"purposes"
+msgstr ""
+"Tạo ra 25 nhân viên Việt Nam với dữ liệu demo thực tế cho mục đích thử "
+"nghiệm"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Generate Demo Data"
+msgstr "Tạo dữ liệu demo"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Generic CSV"
+msgstr "CSV chung"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Graduation Year"
+msgstr "Năm tốt nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Gross Salary (VND)"
+msgstr "Tổng lương (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Guide Only"
+msgstr "Chỉ hướng dẫn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Health Insurance - Employee (VND)"
+msgstr "Bảo hiểm Y tế - Người lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Health Insurance - Employer (VND)"
+msgstr "Bảo hiểm Y tế - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "High School"
+msgstr "Trường trung học"
+
+#. module: pb_hr_payroll_vietnam
+msgid "House Allowance (VND)"
+msgstr "Trợ cấp nhà ở (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import Bank Details"
+msgstr "Chi tiết ngân hàng nhập khẩu"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import Contract Information"
+msgstr "Thông tin hợp đồng nhập khẩu"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import Mode"
+msgstr "Chế độ nhập"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import Summary"
+msgstr "Tóm tắt nhập khẩu"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import Tax Information"
+msgstr "Thông tin thuế nhập khẩu"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Import Vietnam Employee Data"
+msgstr "Nhập dữ liệu nhân viên Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import Vietnam Spreadsheet"
+msgstr "Nhập khẩu bảng tính Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import and process"
+msgstr "Nhập khẩu và xử lý"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import and synchronize employee information from Zoho People system"
+msgstr "Nhập và đồng bộ hóa thông tin nhân viên từ hệ thống Zoho People"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import calculated payroll data and generate employee payslips"
+msgstr "Nhập dữ liệu bảng lương đã tính và tạo phiếu lương nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Import failed: %s"
+msgstr "Nhập không thành công: %s"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Indefinite Term Contract"
+msgstr "Hợp đồng không xác định thời hạn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Information Only"
+msgstr "Chỉ thông tin"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Last Modified on"
+msgstr "Sửa đổi lần cuối vào"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối vào"
+
+#. module: pb_hr_payroll_vietnam
+msgid "MB Bank"
+msgstr "Ngân hàng MB"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Major/Specialization"
+msgstr "Chuyên ngành/Chuyên ngành"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Manage employee contracts and salary structures"
+msgstr "Quản lý hợp đồng nhân viên và cơ cấu tiền lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Manage payroll operations for Vietnam region"
+msgstr "Quản lý hoạt động tính lương cho khu vực Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Manage payslip batches and bulk payroll processing"
+msgstr "Quản lý lô phiếu lương và xử lý bảng lương số lượng lớn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Marital Status"
+msgstr "Tình trạng hôn nhân"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Married"
+msgstr "Đã cưới"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Maternity Leave Days"
+msgstr "Ngày nghỉ thai sản"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Meal Allowance (VND)"
+msgstr "Phụ cấp bữa ăn (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Minimum wage region for Vietnam payroll"
+msgstr "Vùng lương tối thiểu trong bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Minimum wage region in Vietnam"
+msgstr "Vùng lương tối thiểu ở Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Monthly Tax Report"
+msgstr "Báo cáo thuế hàng tháng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Number of Dependents"
+msgstr "Số người phụ thuộc"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Open Dashboard"
+msgstr "Mở trang tổng quan"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Open Vietnam Payroll Dashboard"
+msgstr "Mở Bảng lương Bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Open spreadsheet"
+msgstr "Mở bảng tính"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Other Allowances (VND)"
+msgstr "Các khoản phụ cấp khác (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Overtime Amount (VND)"
+msgstr "Số tiền làm thêm giờ (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Passport Number"
+msgstr "Số hộ chiếu"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Pay Slip"
+msgstr "Phiếu thanh toán"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Payroll Comparisons"
+msgstr "So sánh tiền lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Payroll spreadsheet"
+msgstr "Bảng tính lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Payslip Batch"
+msgstr "Lô phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Payslips"
+msgstr "Phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Permanent Address in Vietnam"
+msgstr "Địa chỉ thường trú tại Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Permanent Resident Card"
+msgstr "Thẻ thường trú"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Personal Income Tax (VND)"
+msgstr "Thuế thu nhập cá nhân (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Personal Income Tax code"
+msgstr "Mã số thuế thu nhập cá nhân"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Phone Allowance (VND)"
+msgstr "Phụ cấp điện thoại (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Postgraduate"
+msgstr "Sau đại học"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Previous Company"
+msgstr "Công ty trước đây"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Previous Position"
+msgstr "Vị trí trước đó"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Primary School"
+msgstr "Trường tiểu học"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Probation Contract"
+msgstr "Hợp đồng thử việc"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Process payroll"
+msgstr "Xử lý bảng lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Province/City"
+msgstr "Tỉnh/Thành phố"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Quarterly Tax Report"
+msgstr "Báo cáo thuế hàng quý"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Quick Start"
+msgstr "Bắt đầu nhanh"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region I (Hanoi, Ho Chi Minh City)"
+msgstr "Khu vực I (Hà Nội, TP.HCM)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region I Employees"
+msgstr "Nhân viên khu vực I"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region II (Can Tho, Da Nang, Hai Phong)"
+msgstr "Vùng II (Cần Thơ, Đà Nẵng, Hải Phòng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region II Employees"
+msgstr "Nhân viên khu vực II"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region III (Bien Hoa, Vung Tau, Nha Trang)"
+msgstr "Vùng III (Biên Hòa, Vũng Tàu, Nha Trang)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region III Employees"
+msgstr "Nhân viên khu vực III"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region IV (Other provinces)"
+msgstr "Vùng IV (Các tỉnh khác)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Region IV Employees"
+msgstr "Nhân viên khu vực IV"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Relationship"
+msgstr "Mối quan hệ"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Report Generated"
+msgstr "Báo cáo đã tạo"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Report Type"
+msgstr "Loại báo cáo"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Review and approve payroll with detailed analytics"
+msgstr "Xem xét và phê duyệt bảng lương với các phân tích chi tiết"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Seasonal Contract"
+msgstr "Hợp đồng theo mùa"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Secondary School"
+msgstr "Trường THCS"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Sick Leave Days"
+msgstr "Ngày nghỉ ốm"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Single"
+msgstr "Đơn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Social Insurance - Employee (VND)"
+msgstr "Bảo hiểm xã hội - Người lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Social Insurance - Employer (VND)"
+msgstr "Bảo hiểm xã hội - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Social Insurance Number"
+msgstr "Số bảo hiểm xã hội"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Spouse Name"
+msgstr "Tên vợ/chồng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Spouse Tax Code"
+msgstr "Mã số thuế vợ/chồng"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Successfully connected to Zoho API"
+msgstr "Đã kết nối thành công với API Zoho"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Techcombank"
+msgstr "Techcombank"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Temporary Address"
+msgstr "Địa chỉ tạm thời"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Temporary Resident Card"
+msgstr "Thẻ tạm trú"
+
+#. module: pb_hr_payroll_vietnam
+msgid "To Date"
+msgstr "Đến ngày"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Total Employees"
+msgstr "Tổng số nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Total Salary (VND)"
+msgstr "Tổng lương (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Transport Allowance (VND)"
+msgstr "Phụ cấp đi lại (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Unemployment Insurance - Employee (VND)"
+msgstr "Bảo hiểm thất nghiệp - Người lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Unemployment Insurance - Employer (VND)"
+msgstr "Bảo hiểm thất nghiệp - Người sử dụng lao động (đồng)"
+
+#. module: pb_hr_payroll_vietnam
+msgid "University"
+msgstr "Trường đại học"
+
+#. module: pb_hr_payroll_vietnam
+msgid "University/School Name"
+msgstr "Tên trường đại học/trường học"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Update Existing Employees Only"
+msgstr "Chỉ cập nhật nhân viên hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietcombank"
+msgstr "vietcombank"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Bank Account"
+msgstr "Tài khoản ngân hàng Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Vietnam Bank Transfer Export"
+msgstr "Xuất khẩu chuyển khoản ngân hàng Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Contract Type"
+msgstr "Loại hợp đồng ở Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Vietnam Current Month Payslips"
+msgstr "Việt Nam Phiếu lương tháng hiện tại"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Dashboard"
+msgstr "Bảng điều khiển Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Employee ID"
+msgstr "ID nhân viên Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Employee Import from Zoho"
+msgstr "Nhập khẩu nhân viên Việt Nam từ Zoho"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Vietnam Employees"
+msgstr "Nhân viên Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Payroll Dashboard"
+msgstr "Bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Payroll Dashboard Professional"
+msgstr "Bảng lương Việt Nam chuyên nghiệp"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Payroll Management"
+msgstr "Quản lý tiền lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Vietnam Payroll Spreadsheet"
+msgstr "Bảng tính lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Payroll User"
+msgstr "Người dùng bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Region"
+msgstr "Khu vực Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Social Insurance"
+msgstr "Bảo hiểm xã hội Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Vietnam Social Insurance Report"
+msgstr "Báo cáo Bảo hiểm xã hội Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Tax Code"
+msgstr "Mã số thuế Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Vietnam Tax Report"
+msgstr "Báo cáo thuế Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Tax Report Generator"
+msgstr "Trình tạo báo cáo thuế Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Vietnam tax report has been generated successfully"
+msgstr "Báo cáo thuế Việt Nam đã được tạo thành công"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnamese Citizen"
+msgstr "công dân việt nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "View Comparisons"
+msgstr "Xem so sánh"
+
+#. module: pb_hr_payroll_vietnam
+msgid "View Contracts"
+msgstr "Xem hợp đồng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "View Employees"
+msgstr "Xem nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+msgid "View Payslip Batches"
+msgstr "Xem các đợt phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "View and manage employee records in kanban view"
+msgstr "Xem và quản lý hồ sơ nhân viên ở chế độ xem Kanban"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vocational Training"
+msgstr "Đào tạo nghề"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Ward/Commune"
+msgstr "Phường/xã"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Widowed"
+msgstr "góa bụa"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Work Authorization"
+msgstr "Ủy quyền làm việc"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Work Permit Expiry Date"
+msgstr "Ngày hết hạn giấy phép lao động"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Work Permit Holder"
+msgstr "Người có giấy phép lao động"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Work Permit Number"
+msgstr "Số giấy phép lao động"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Work permit expiry date is required for work permit holders"
+msgstr ""
+"Ngày hết hạn của giấy phép lao động là bắt buộc đối với người có giấy phép "
+"lao động"
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+msgid "Work permit has expired. Please renew before processing payroll."
+msgstr ""
+"Giấy phép lao động đã hết hạn. Vui lòng gia hạn trước khi xử lý bảng lương."
+
+#. module: pb_hr_payroll_vietnam
+msgid "Years of Experience"
+msgstr "Số năm kinh nghiệm"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Zoho API URL"
+msgstr "URL API Zoho"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Enhanced Country Selector"
+msgstr "Bộ chọn Quốc gia Nâng cao"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Done"
+msgstr "Hoàn thành"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Draft"
+msgstr "Bản nháp"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Level 2"
+msgstr "Cấp độ 2"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Access Dashboard"
+msgstr "Truy cập Bảng điều khiển"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Vietnam Payroll Dashboard"
+msgstr "Bảng lương Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Manage payroll operations for Vietnam region"
+msgstr "Quản lý hoạt động tính lương cho khu vực Việt Nam"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Open spreadsheet"
+msgstr "Mở bảng tính"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Edit and configure payroll calculations, salary components, and deductions"
+msgstr "Chỉnh sửa và định cấu hình tính toán bảng lương, các thành phần lương và khoản khấu trừ"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Process payroll"
+msgstr "Xử lý bảng lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import calculated payroll data and generate employee payslips"
+msgstr "Nhập dữ liệu bảng lương đã tính và tạo phiếu lương nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Payslip Batch"
+msgstr "Lô phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Manage payslip batches and bulk payroll processing"
+msgstr "Quản lý lô phiếu lương và xử lý bảng lương số lượng lớn"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employees"
+msgstr "Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+msgid "View and manage employee records in kanban view"
+msgstr "Xem và quản lý hồ sơ nhân viên ở chế độ xem Kanban"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Contracts"
+msgstr "Hợp đồng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Manage employee contracts and salary structures"
+msgstr "Quản lý hợp đồng nhân viên và cơ cấu tiền lương"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Employee Data"
+msgstr "Dữ liệu nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Import and synchronize employee information from Zoho People system"
+msgstr "Nhập và đồng bộ hóa thông tin nhân viên từ hệ thống Zoho People"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Bank Export"
+msgstr "Xuất khẩu ngân hàng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Export payroll data to bank format for automated salary disbursement"
+msgstr "Xuất dữ liệu bảng lương sang định dạng ngân hàng để giải ngân lương tự động"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Advanced Analytics"
+msgstr "Phân tích nâng cao"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Comprehensive payroll analytics with trend analysis and reporting"
+msgstr "Phân tích bảng lương toàn diện với phân tích và báo cáo xu hướng"
+
+#. module: pb_hr_payroll_vietnam
+msgid "Coming Soon"
+msgstr "Sắp ra mắt"

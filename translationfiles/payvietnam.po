@@ -1,0 +1,1124 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_hr_payroll_vietnam
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-05 05:25+0000\n"
+"PO-Revision-Date: 2025-11-05 05:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid ""
+"1. Generate demo data → 2. Open spreadsheet → 3. Process payroll for testing"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__zoho_access_token
+msgid "Access Token"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_accident_insurance_employer
+msgid "Accident Insurance - Employer (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Additional analytics features will appear here when configured"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Advanced Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_allowances
+msgid "Allowances (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Analytics Info"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_annual_leave_days
+msgid "Annual Leave Days"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_tax_report_wizard__report_type__annual
+msgid "Annual Tax Report"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Approval Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__bidv
+msgid "BIDV"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_account_name
+msgid "Bank Account Holder Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_account_number
+msgid "Bank Account Number"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_branch
+msgid "Bank Branch"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Bank Export"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__bank_format
+msgid "Bank Format"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_bank_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_bank_name
+msgid "Bank Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_bank_export_wizard.py:0
+#, python-format
+msgid "Bank transfer file has been exported successfully"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_basic_salary
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_basic_salary
+msgid "Basic Salary (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_contract_vietnam.py:0
+#, python-format
+msgid "Basic salary (%.0f VND) is below minimum wage (%.0f VND) for %s"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_payslip_batch_kanban
+msgid "Batch Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_bonus
+msgid "Bonus/13th Month (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_citizen_id
+msgid "Citizen ID Number"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__college
+msgid "College"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Coming Soon"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Compare payroll data across periods and analyze trends"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Comprehensive payroll analytics with trend analysis and reporting"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+#, python-format
+msgid "Connection Test"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+#, python-format
+msgid "Connection failed: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_contracts_kanban
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__import_mode__create_new
+msgid "Create New Employees Only"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__import_mode__create_and_update
+msgid "Create New and Update Existing"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__company_currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_gross_salary_current_month
+msgid "Current Month Gross Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_net_salary_current_month
+msgid "Current Month Net Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_payslips_current_month
+msgid "Current Month Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_social_insurance_current_month
+msgid "Current Month Social Insurance"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_tax_current_month
+msgid "Current Month Tax"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__display_name
+msgid "Dashboard Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__default_vietnam_region
+msgid "Default Vietnam Region"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__definite
+msgid "Definite Term Contract"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Demo Employee Data"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Demo Information"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid ""
+"Demo data includes Vietnamese names, departments, salaries, and payroll "
+"information for testing"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Disabled"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_district
+msgid "District"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__divorced
+msgid "Divorced"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.server,name:pb_hr_payroll_vietnam.action_vietnam_edit_spreadsheet
+msgid "Edit Vietnam Payroll Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid ""
+"Edit and configure payroll calculations, salary components, and deductions"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_education_level
+msgid "Education Level"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_emergency_contact_name
+msgid "Emergency Contact Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_emergency_contact_phone
+msgid "Emergency Contact Phone"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_contract
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Employee Data"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_employees_kanban
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__employee_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__employees_created
+msgid "Employees Created"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__employees_updated
+msgid "Employees Updated"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__errors_count
+msgid "Errors"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Export Bank File"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_bank_export_wizard.py:0
+#, python-format
+msgid "Export Completed"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Export payroll data to bank format for automated salary disbursement"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__file_name
+msgid "File Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__date_from
+msgid "From Date"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid ""
+"Generate 25 Vietnamese employees with realistic demo data for testing "
+"purposes"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Generate Demo Data"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__generic
+msgid "Generic CSV"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_graduation_year
+msgid "Graduation Year"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_gross_salary
+msgid "Gross Salary (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Guide Only"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_health_insurance_employee
+msgid "Health Insurance - Employee (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_health_insurance_employer
+msgid "Health Insurance - Employer (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__high_school
+msgid "High School"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_house_allowance
+msgid "House Allowance (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_bank_details
+msgid "Import Bank Details"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_contracts
+msgid "Import Contract Information"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_mode
+msgid "Import Mode"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_summary
+msgid "Import Summary"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__import_tax_info
+msgid "Import Tax Information"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:0
+#, python-format
+msgid "Import Vietnam Employee Data"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.server,name:pb_hr_payroll_vietnam.action_vietnam_import_spreadsheet
+msgid "Import Vietnam Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Import and process"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Import and synchronize employee information from Zoho People system"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Import calculated payroll data and generate employee payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+#, python-format
+msgid "Import failed: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__indefinite
+msgid "Indefinite Term Contract"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Information Only"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__mb_bank
+msgid "MB Bank"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_major
+msgid "Major/Specialization"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Manage employee contracts and salary structures"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Manage payroll operations for Vietnam region"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Manage payslip batches and bulk payroll processing"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_marital_status
+msgid "Marital Status"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__married
+msgid "Married"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_maternity_leave_days
+msgid "Maternity Leave Days"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_meal_allowance
+msgid "Meal Allowance (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_contract__vietnam_region
+msgid "Minimum wage region for Vietnam payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_region
+msgid "Minimum wage region in Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_tax_report_wizard__report_type__monthly
+msgid "Monthly Tax Report"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_dependents_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_dependents
+msgid "Number of Dependents"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Open Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_vietnam_dashboard_window
+msgid "Open Vietnam Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Open spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_other_allowances
+msgid "Other Allowances (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_overtime_amount
+msgid "Overtime Amount (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_passport_number
+msgid "Passport Number"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Phiếu lương"
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Payroll Comparisons"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Payroll spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Payslip Batch"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_bank_export_wizard__payslip_ids
+msgid "Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_permanent_address
+msgid "Permanent Address in Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__permanent_resident
+msgid "Permanent Resident Card"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_personal_income_tax
+msgid "Personal Income Tax (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,help:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_tax_code
+msgid "Personal Income Tax code"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_phone_allowance
+msgid "Phone Allowance (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__postgraduate
+msgid "Postgraduate"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_previous_company
+msgid "Previous Company"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_previous_position
+msgid "Previous Position"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__primary
+msgid "Primary School"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__probation
+msgid "Probation Contract"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Process payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_province
+msgid "Province/City"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_tax_report_wizard__report_type__quarterly
+msgid "Quarterly Tax Report"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Quick Start"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region1
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region1
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region1
+msgid "Region I (Hanoi, Ho Chi Minh City)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region1_employees
+msgid "Region I Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region2
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region2
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region2
+msgid "Region II (Can Tho, Da Nang, Hai Phong)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region2_employees
+msgid "Region II Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region3
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region3
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region3
+msgid "Region III (Bien Hoa, Vung Tau, Nha Trang)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region3_employees
+msgid "Region III Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_region__region4
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_payslip__vietnam_region__region4
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__default_vietnam_region__region4
+msgid "Region IV (Other provinces)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__region4_employees
+msgid "Region IV Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_emergency_contact_relationship
+msgid "Relationship"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_tax_report_wizard.py:0
+#, python-format
+msgid "Report Generated"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__report_type
+msgid "Report Type"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "Review and approve payroll with detailed analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_contract__vietnam_contract_type__seasonal
+msgid "Seasonal Contract"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__secondary
+msgid "Secondary School"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_sick_leave_days
+msgid "Sick Leave Days"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__single
+msgid "Single"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_social_insurance_employee
+msgid "Social Insurance - Employee (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_social_insurance_employer
+msgid "Social Insurance - Employer (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_social_insurance_number
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_social_insurance_number
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_social_insurance_number
+msgid "Social Insurance Number"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_spouse_name
+msgid "Spouse Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_spouse_tax_code
+msgid "Spouse Tax Code"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_employee_import_wizard.py:0
+#, python-format
+msgid "Successfully connected to Zoho API"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__techcombank
+msgid "Techcombank"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_temporary_address
+msgid "Temporary Address"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__temp_resident
+msgid "Temporary Resident Card"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_tax_report_wizard__date_to
+msgid "To Date"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_payroll_dashboard__total_employees
+msgid "Total Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_total_salary
+msgid "Total Salary (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_transport_allowance
+msgid "Transport Allowance (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_unemployment_insurance_employee
+msgid "Unemployment Insurance - Employee (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_unemployment_insurance_employer
+msgid "Unemployment Insurance - Employer (VND)"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__university
+msgid "University"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_university_name
+msgid "University/School Name"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_employee_import_wizard__import_mode__update_existing
+msgid "Update Existing Employees Only"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__vietnam_bank_export_wizard__bank_format__vietcombank
+msgid "Vietcombank"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_bank_account
+msgid "Vietnam Bank Account"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_bank_export_wizard
+#, python-format
+msgid "Vietnam Bank Transfer Export"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_contract_type
+msgid "Vietnam Contract Type"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+#, python-format
+msgid "Vietnam Current Month Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_dashboard
+msgid "Vietnam Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_employee_id
+msgid "Vietnam Employee ID"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_employee_import_wizard
+msgid "Vietnam Employee Import from Zoho"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+#, python-format
+msgid "Vietnam Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_payroll_dashboard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.act_window,name:pb_hr_payroll_vietnam.action_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Dashboard Professional"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "Vietnam Payroll Management"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_payslip_vietnam.py:0
+#, python-format
+msgid "Vietnam Payroll Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:res.groups,name:pb_hr_payroll_vietnam.group_vietnam_payroll_user
+msgid "Vietnam Payroll User"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_region
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_region
+msgid "Vietnam Region"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.ui.menu,name:pb_hr_payroll_vietnam.menu_vietnam_social_insurance
+msgid "Vietnam Social Insurance"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+#, python-format
+msgid "Vietnam Social Insurance Report"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_contract__vietnam_tax_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_tax_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_payslip__vietnam_tax_code
+msgid "Vietnam Tax Code"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_employee_vietnam.py:0
+#: code:addons/pb_hr_payroll_vietnam/models/vietnam_payroll_dashboard.py:0
+#, python-format
+msgid "Vietnam Tax Report"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model,name:pb_hr_payroll_vietnam.model_vietnam_tax_report_wizard
+msgid "Vietnam Tax Report Generator"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/wizards/vietnam_tax_report_wizard.py:0
+#, python-format
+msgid "Vietnam tax report has been generated successfully"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__citizen
+msgid "Vietnamese Citizen"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam_analytics
+msgid "View Comparisons"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.actions.server,name:pb_hr_payroll_vietnam.action_vietnam_view_payslip_batches_clean
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View Payslip Batches"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_vietnam.view_payroll_dashboard_vietnam
+msgid "View and manage employee records in kanban view"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_education_level__vocational
+msgid "Vocational Training"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_ward
+msgid "Ward/Commune"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_marital_status__widowed
+msgid "Widowed"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_work_permit_type
+msgid "Work Authorization"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_work_permit_expiry
+msgid "Work Permit Expiry Date"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields.selection,name:pb_hr_payroll_vietnam.selection__hr_employee__vietnam_work_permit_type__work_permit
+msgid "Work Permit Holder"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_work_permit_number
+msgid "Work Permit Number"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_employee_vietnam.py:0
+#, python-format
+msgid "Work permit expiry date is required for work permit holders"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#. odoo-python
+#: code:addons/pb_hr_payroll_vietnam/models/hr_employee_vietnam.py:0
+#, python-format
+msgid "Work permit has expired. Please renew before processing payroll."
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_hr_employee__vietnam_years_of_experience
+msgid "Years of Experience"
+msgstr ""
+
+#. module: pb_hr_payroll_vietnam
+#: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__zoho_api_url
+msgid "Zoho API URL"
+msgstr ""

@@ -1,0 +1,5000 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_hr_payroll_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-05 05:33+0000\n"
+"PO-Revision-Date: 2025-11-05 05:33+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "1. Import Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "2. Calculate"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "3. Edit Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "4. Generate Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<i class=\"fa fa-calculator fa-4x text-info\" title=\"Calculate\"/>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "<i class=\"fa fa-chart-line\"/> View Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<i class=\"fa fa-dashboard mr-2\"/>Refresh"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
+msgid "<i class=\"fa fa-dashboard\"/> Access Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<i class=\"fa fa-download mr-2\"/>Zoho Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "<i class=\"fa fa-download\"/> Import Employee Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<i class=\"fa fa-edit fa-4x text-warning\" title=\"Edit Spreadsheet\"/>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "<i class=\"fa fa-external-link\"/> Open Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<i class=\"fa fa-file-text fa-4x text-danger\" title=\"Generate Payslips\"/>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "<i class=\"fa fa-info-circle mr-2\"/>Enhanced Payroll Framework"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "<i class=\"fa fa-play\"/> Process Payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<i class=\"fa fa-plus mr-2\"/>Salary Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
+msgid "<i class=\"fa fa-refresh\"/> Refresh"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "<i class=\"fa fa-tasks\"/> Approval Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<i class=\"fa fa-upload fa-4x text-primary\" title=\"Import Data\"/>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "<i class=\"fa fa-upload\"/> Export Bank File"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<i class=\"fa fa-users mr-2\"/>Manage Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "<i class=\"fa fa-warning text-warning\"/> Anomaly Detection"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "<small class=\"text-muted\">Detected Issues</small>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
+msgid "<span class=\"access-tick\">✓</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-icon\">⚠️</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-icon\">👥</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-icon\">💰</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-icon\">📊</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-label\">Anomalies</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-label\">Avg Salary</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-label\">Employees</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_kanban
+msgid "<span class=\"metric-label\">Total Payroll</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "<span class=\"o_stat_text\">Contract</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "<span class=\"o_stat_text\">Employee</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
+msgid "<span class=\"stat-label\">Employees</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
+msgid "<span class=\"stat-label\">Payroll</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid "<span>👥 Employees:</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid "<span>💰 Total Payroll:</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid "<span>💼 Contracts:</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<strong>Country:</strong>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<strong>Currency:</strong>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid ""
+"<strong>Field Mapping:</strong> Configure how external data maps to Odoo "
+"employee fields."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid ""
+"<strong>Field Mapping:</strong> Map your spreadsheet columns to Odoo fields."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<strong>India:</strong> __custom__.payrollstaging_india"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<strong>Indonesia:</strong> __custom__.payrollstaging_indonesia"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<strong>Payroll Structure:</strong>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "<strong>Preview:</strong> Shows a sample of employees to be imported."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid ""
+"<strong>Preview:</strong> Shows first 10 rows of your data for validation."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid ""
+"<strong>Preview:</strong> This will show estimated results based on current "
+"configuration."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<strong>Singapore:</strong> __custom__.payrollstaging_singapore"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "<strong>Status:</strong>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<strong>Thailand:</strong> __custom__.payrollstaging_thailand"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_custom_field_mapping_form
+msgid ""
+"<strong>Transformation Rules Examples:</strong><br/>\n"
+"                        • <code>value.upper()</code> - Convert to uppercase<br/>\n"
+"                        • <code>value.replace(' ', '_')</code> - Replace spaces with underscores<br/>\n"
+"                        • <code>datetime.strptime(value, '%d/%m/%Y')</code> - Parse date format<br/>\n"
+"                        • <code>float(value) * 1000</code> - Convert currency units<br/>"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "<strong>Vietnam:</strong> __custom__.payrollstaging"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "A dashboard for %s already exists."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__data_source_url
+msgid "API URL"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_aadhaar_number
+msgid "Aadhaar Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid "Access Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#, python-format
+msgid "Access Request Required"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid ""
+"Access interactive payroll spreadsheet for detailed salary component "
+"management, calculations, and data analysis."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#, python-format
+msgid "Access request sent successfully"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_cambodia
+msgid "Access to Cambodia payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_india
+msgid "Access to India payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_indonesia
+msgid "Access to Indonesia payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_malaysia
+msgid "Access to Malaysia payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_singapore
+msgid "Access to Singapore payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_thailand
+msgid "Access to Thailand payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_vietnam
+msgid "Access to Vietnam payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_form_base
+msgid "Accounting"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__active
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__active
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__structure_state__active
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__active
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Active"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__active_contracts
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Active Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Active Status"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Additional Statistics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__address
+msgid "Address"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__address_field
+msgid "Address Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__adjustments
+msgid "Adjustments"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Advanced Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Advanced Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Advanced analytics and reporting capabilities"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__affects_net_salary
+msgid "Affects Net Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_hr_employee_payroll
+msgid "All Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_hr_payslip_payroll
+msgid "All Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__payslip_state_filter__all
+msgid "All States"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_allowances_demo
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__allowance
+msgid "Allowances"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__user_groups
+msgid "Allowed Groups"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_form_base
+msgid "Amount Limits"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__analytic_account_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__analytic_account_id
+msgid "Analytic Account"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
+msgid "Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:0
+#, python-format
+msgid "Analytics Computed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Analytics Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__analytics_enabled
+msgid "Analytics Enabled"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid "Analytics Generated"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_analytics_wizard
+msgid "Analytics Generation Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Analytics Options"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analytics_report
+msgid "Analytics Reports"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_analytics.py:0
+#, python-format
+msgid "Analytics have been successfully computed."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid ""
+"Analytics report \"%s\" has been generated successfully.\n"
+"Period: %s to %s\n"
+"Country: %s\n"
+"Employees: %d\n"
+"Total Payroll: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__analyze_benefits
+msgid "Analyze Benefits"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__analyze_deductions
+msgid "Analyze Deductions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__analyze_salary_components
+msgid "Analyze Salary Components"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Animated country selector with permission management"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__annually
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__annually
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__annually
+msgid "Annually"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Anomalies"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__anomaly_threshold
+msgid "Anomaly Threshold (%)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid "Anomaly threshold must be between 0 and 100."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Approval & Notes"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Approval Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Approval Workflow"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Approve"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__approved
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Approved"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__structure_state__archived
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__archived
+msgid "Archived"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__au
+msgid "Australia"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__auto_approve
+msgid "Auto Approve"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__auto_assign_structure
+msgid "Auto Assign Payroll Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__auto_confirm_payslips
+msgid "Auto Confirm Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__auto_create_contracts
+msgid "Auto Create Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__auto_create_employees
+msgid "Auto Create Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__auto_format_emails
+msgid "Auto Format Emails"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__auto_format_names
+msgid "Auto Format Names"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__auto_name
+msgid "Auto Generate Name"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__auto_refresh
+msgid "Auto Refresh"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__auto_sync_enabled
+msgid "Auto Sync Enabled"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.server,name:pb_hr_payroll_base.cron_auto_generate_analytics_ir_actions_server
+#: model:ir.cron,cron_name:pb_hr_payroll_base.cron_auto_generate_analytics
+msgid "Auto-Generate Monthly Payroll Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Automatically generate period name"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__average_salary
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__average_salary
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Average Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Average Salary Growth"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__average_salary
+msgid "Average salary across all employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_kesehatan_employee
+msgid "BPJS Kesehatan (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_kesehatan_employer
+msgid "BPJS Kesehatan (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "BPJS Kesehatan (Health Insurance)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_kesehatan_number
+msgid "BPJS Kesehatan Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "BPJS Ketenagakerjaan (Employment Insurance)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_ketenagakerjaan_number
+msgid "BPJS Ketenagakerjaan Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jht_employee
+msgid "BPJS TK JHT (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jht_employer
+msgid "BPJS TK JHT (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jkk
+msgid "BPJS TK JKK"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jkm
+msgid "BPJS TK JKM"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jp_employee
+msgid "BPJS TK JP (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_bpjs_tk_jp_employer
+msgid "BPJS TK JP (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__bank_account_field
+msgid "Bank Account Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Bank Details"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Bank File Export"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+msgid "Base Structures"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__is_base_structure
+msgid "Base structures cannot be deleted and serve as templates"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Basic Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_basic_demo
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__basic_salary
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__basic
+msgid "Basic Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule,name:pb_hr_payroll_base.salary_rule_basic_vietnam
+msgid "Basic Salary - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__basic_salary_column
+msgid "Basic Salary Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_base_user
+msgid "Basic payroll access for viewing own payslips and basic information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__batch_size
+msgid "Batch Size"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Benefit Components"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__bi-monthly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__bi-monthly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__bi-monthly
+msgid "Bi-monthly"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__bi-weekly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__bi-weekly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__bi-weekly
+msgid "Bi-weekly"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__birthday
+msgid "Birthday"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__birthday_field
+msgid "Birthday Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__bonuses
+msgid "Bonuses"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__field_type__boolean
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__boolean
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__boolean
+msgid "Boolean"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__file_format__csv
+msgid "CSV"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__cache_results
+msgid "Cache Results"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__cached_metrics
+msgid "Cached Metrics JSON"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__calculation_note
+msgid "Calculation Note"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_category_form_base
+msgid "Calculation Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__kh
+msgid "Cambodia"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_cambodia
+msgid "Cambodia Payroll Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_integration_user
+msgid "Can import/export payroll data and manage integrations"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_base_officer
+msgid "Can process payroll, generate payslips, and manage employee data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
+#, python-format
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__category_type
+msgid "Category Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_category_form_base
+msgid "Category description..."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Central Provident Fund (CPF)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Check Zoho API credentials and connection settings."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_enhanced_country_selector
+msgid "Choose your country to access the appropriate payroll dashboard."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid ""
+"Choose your country to access the appropriate payroll management system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.server,name:pb_hr_payroll_base.cron_cleanup_old_analytics_ir_actions_server
+#: model:ir.cron,cron_name:pb_hr_payroll_base.cron_cleanup_old_analytics
+msgid "Cleanup Old Analytics Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Close"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__column_name
+msgid "Column Name"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__commission
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__wage_calculation__commission
+msgid "Commission Based"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Common Issues and Solutions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__previous_period_id
+msgid "Compare with Period"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Comparison"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Complete setup guide for all supported countries"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__state__completed
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__completed
+msgid "Completed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__compliance_notes
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
+msgid "Compliance Notes"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Component Analysis"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid ""
+"Comprehensive payroll analytics with month-over-month comparisons, trend "
+"analysis, and detailed reporting capabilities."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Compute Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__computing
+msgid "Computing Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Confidential"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__connected
+msgid "Connected"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Connection Successful"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Connection error: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Connection failed with status code: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Contract Creation"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__contract_start_date
+msgid "Contract Start Date"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_hr_contract_type
+msgid "Contract Type"
+msgstr "Kiểu Hợp đồng"
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Contract Type Breakdown"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
+msgid "Contract Types"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__contract_type_ids
+msgid "Contract types that can use this payroll structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_hr_contract_payroll
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__data_source__contracts
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__data_source__contracts
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_hr_contract_payroll
+msgid "Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__contracts_created
+msgid "Contracts Created"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__country_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__country_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract_type__country_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__country_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__country
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__country_code
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Country"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Country & Payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Country & Scope"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_category_form_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Country Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_dashboard_country
+msgid "Country Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Country Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__country_id
+msgid "Country Reference"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_country_selector_enhanced
+msgid "Country Selector"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_country_selector_wizard
+msgid "Country Selector Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__is_country_specific
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__is_country_specific
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__country_specific
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_search_base
+msgid "Country Specific"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__payroll_country_code
+msgid "Country code for payroll processing"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__country_id
+msgid "Country for which this payroll structure is applicable"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+msgid "Country-Specific Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Country-Specific Setup"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__create_contracts
+msgid "Create Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__create_missing_employees
+msgid "Create Missing Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__import_mode__create_only
+msgid "Create Only"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_hr_payroll_structure_base
+msgid "Create a new payroll structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_hr_salary_rule_base
+msgid "Create a new salary rule"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_base
+msgid "Create a payroll dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Create comprehensive analytics for payroll data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_dashboard
+msgid ""
+"Create comprehensive analytics reports to gain insights into your \n"
+"                payroll trends, employee growth, and compensation analysis."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_country
+msgid ""
+"Create dashboards for each country to track payroll statistics and "
+"performance."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__import_mode__create_update
+msgid "Create or Update"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid ""
+"Create professional dashboards for each country with animated flags, advanced analytics, \n"
+"                and comprehensive payroll management capabilities."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Create spreadsheets with the following External IDs:"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_main
+msgid ""
+"Create your first payroll analytics report to get insights into \n"
+"                    payroll trends, employee growth, and compensation analysis."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__created_contract_id
+msgid "Created Contract"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__created_employee_id
+msgid "Created Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__account_credit
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__account_credit
+msgid "Credit Account"
+msgstr "Tài khoản ghi Có"
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__currency_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__currency_field
+msgid "Currency Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__currency_id
+msgid "Currency for this payroll structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Current Year"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__custom_domain
+msgid "Custom Domain Filter"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_custom_field_mapping_form
+msgid "Custom Field Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_custom_field_mapping
+msgid "Custom Field Mapping for Employee Import"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__custom_field_mappings
+msgid "Custom Field Mappings"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Custom Filters"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__custom
+msgid "Custom Period"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__tax_calculation_method__custom
+msgid "Custom Tax Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__custom_validation_code
+msgid "Custom Validation Code"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__custom_validation_rules
+msgid "Custom Validation Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Custom Validations"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__daily
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__daily
+msgid "Daily"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__dark
+msgid "Dark Mode"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_dashboard_section
+msgid "Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__name
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Dashboard Name"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Dashboard Overview"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Dashboard Refreshed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__dashboard_theme
+msgid "Dashboard Theme"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_base
+msgid ""
+"Dashboards provide an overview of payroll statistics and quick access to \n"
+"                country-specific payroll management functions."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__data_source
+msgid "Data Source"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Data Sources"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Data Transformation"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__data_type
+msgid "Data Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Data Validation"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__field_type__date
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__date
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__date
+msgid "Date"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__last_payroll_date
+msgid "Date of last processed payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__datetime
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__datetime
+msgid "Date/Time"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__account_debit
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__account_debit
+msgid "Debit Account"
+msgstr "Tài khoản ghi Nợ"
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Deduction Components"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_deductions_demo
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__deduction
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__deductions
+msgid "Deductions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__deductions_column
+msgid "Deductions Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__default
+msgid "Default"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Default Contract Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__default_contract_type
+msgid "Default Contract Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__default_country_id
+msgid "Default Country"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__default_currency_id
+msgid "Default Currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__default_value
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__default_value
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__default_value
+msgid "Default Value"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__default_wage
+msgid "Default Wage"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__default_working_hours
+msgid "Default Working Hours"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid ""
+"Demo data generation is currently only available for Vietnam and Indonesia. "
+"Current country: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__department
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Department"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_department_breakdown
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Department Breakdown"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__department_column
+msgid "Department Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__department_field
+msgid "Department Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__zoho_department_filter
+msgid "Department Filter"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__structure_state__deprecated
+msgid "Deprecated"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__description
+msgid "Description"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__disconnected
+msgid "Disconnected"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__display_order
+msgid "Display Order"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_category_form_base
+msgid "Display Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__payslip_state_filter__done
+msgid "Done Only"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Download Error Report"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Download Template"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__contract_state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__structure_state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__draft
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Draft"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_esi_employee
+msgid "ESI (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_esi_employer
+msgid "ESI (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_esi_number
+msgid "ESI Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Edit Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__email
+msgid "Email"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__email_field
+msgid "Email Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__emergency_contact
+msgid "Emergency Contact"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__emergency_contact_field
+msgid "Emergency Contact Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_hr_employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Employee %s already exists"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Employee %s not found"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_hr_contract
+msgid "Employee Contract"
+msgstr "Hợp đồng nhân viên"
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__employee_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__employee_count
+msgid "Employee Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Employee Data Management"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__employee_email_column
+msgid "Employee Email Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Employee Fields"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Employee Growth"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Employee Growth Trend"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Employee ID"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_employee_import_wizard
+msgid "Employee Import Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__employee_name_column
+msgid "Employee Name Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__employee_number
+msgid "Employee Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__employee_number_column
+msgid "Employee Number Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__employee_number_field
+msgid "Employee Number Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__employee_rate
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__employee_rate
+msgid "Employee Rate (%)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Employee State Insurance (ESI)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Employee Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_hr_employee_payroll
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_employees
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_base
+msgid "Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__employer_cost
+msgid "Employer Costs"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__employer_rate
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__employer_rate
+msgid "Employer Rate (%)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Employment Details"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_contract_type__is_payroll_enabled
+msgid "Enable payroll processing for this contract type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__end_time
+msgid "End Time"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_form_base
+msgid "Enhanced Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_enhanced_country_selector
+msgid "Enhanced Country Selector"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "Enhanced Multi-Country Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Enhanced Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_tree_enhanced
+msgid "Enhanced Payroll Dashboards"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Enhanced Statistics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Ensure spreadsheets have the correct External IDs listed in Step 1."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
+msgid ""
+"Enter compliance requirements, legal notes, or special considerations for "
+"this payroll structure..."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__state__error
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__error
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__error
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__error
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+#, python-format
+msgid "Error"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__error_details
+msgid "Error Details"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Error Handling"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__error_message
+msgid "Error Message"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__error_email_recipients
+msgid "Error Report Recipients"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__error_threshold
+msgid "Error Threshold (%)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Error connecting to API: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Error connecting to Zoho: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Error creating demo data: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Error creating error report: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Error creating template: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid "Error generating analytics: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Error generating preview: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
+#, python-format
+msgid "Error importing data: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Error in payroll process: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Error loading preview: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
+#, python-format
+msgid "Error previewing file: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:0
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:0
+#, python-format
+msgid "Error processing data: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#, python-format
+msgid "Error sending access request: "
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Error threshold exceeded. Import stopped."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__estimated_employee_count
+msgid "Estimated Employee Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__estimated_payslip_count
+msgid "Estimated Payslip Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__estimated_processing_time
+msgid "Estimated Processing Time (seconds)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__file_format__xlsx
+msgid "Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__exchange_rate_date
+msgid "Exchange Rate Date"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Export Report"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid ""
+"Export payroll data to bank format for automated salary disbursement and "
+"payment processing with validation."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__export_to_excel
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Export to Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__import_source__api
+msgid "External API"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__failed_count
+msgid "Failed Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__failed_records
+msgid "Failed Records"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#, python-format
+msgid "Failed to send access request"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_field_mapping
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_field_mapping_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Field Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__field_mapping_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__country_mapping_ids
+msgid "Field Mappings"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__field_type
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__field_type
+msgid "Field Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__file_format
+msgid "File Format"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__import_source__file
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "File Upload"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "File format %s not supported yet"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__import_filename
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__import_filename
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__import_filename
+msgid "Filename"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__fixed
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__wage_calculation__fixed
+msgid "Fixed Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Foreign Worker Levy (FWL)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__amount_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__amount_formula
+msgid "Formula"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid "Found %d employees and %d payslips for analysis."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Full Name (English)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_super_admin
+msgid "Full access to all payroll systems and multi-country management"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,comment:pb_hr_payroll_base.group_payroll_base_manager
+msgid ""
+"Full payroll management including salary rules, structures, and analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__gender
+msgid "Gender"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__gender_field
+msgid "Gender Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_analytics_generation_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Generate Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_dashboard
+msgid "Generate Analytics Report"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__generate_charts
+msgid "Generate Charts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Generate Payroll Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Generate Preview"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid "Generated Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Get Employee Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Get employee data from Zoho"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Go to Settings → Users and assign country-specific groups:"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_gratuity
+msgid "Gratuity"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Gratuity Payments"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__gross_salary_column
+msgid "Gross Salary Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Group By"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Has Anomalies"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Has Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__has_header_row
+msgid "Has Header Row"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Health Insurance (HI)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__hourly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__hourly
+msgid "Hourly"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__hourly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__wage_calculation__hourly
+msgid "Hourly Rate"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__housing_allowance
+msgid "Housing Allowance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule,name:pb_hr_payroll_base.salary_rule_housing_vietnam
+msgid "Housing Allowance - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_contract_type__payroll_schedule
+msgid "How often employees with this contract type are paid"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__hybrid
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__wage_calculation__hybrid
+msgid "Hybrid (Fixed + Variable)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__message_has_error
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__active
+msgid "If unchecked, this payroll structure will be hidden from lists"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Import Completed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+msgid "Import Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
+msgid "Import Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
+msgid "Import Employee Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_employee_import_wizard
+msgid "Import Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__import_file
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__import_file
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__import_file
+msgid "Import File"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__import_log
+msgid "Import Log"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__import_mode
+msgid "Import Mode"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_import_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Import Payroll Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Import Results"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__import_source
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Import Source"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Import Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Import Statistics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Import Successful"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__import_summary
+msgid "Import Summary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__import_type
+msgid "Import Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Import Warning"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_import_wizard
+msgid "Import Zoho Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
+msgid "Import Zoho Employee Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_importer
+msgid "Import Zoho Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+msgid "Import Zoho Staging Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid ""
+"Import and manage employee information from Zoho People system with "
+"automated data synchronization and validation."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+msgid "Import and process employee data for multiple countries"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Import data and create payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_zoho_staging_data_enhanced
+msgid "Import employee data from Zoho"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Import employee information from external sources"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_importer_form
+msgid "Import employees from Zoho People to staging area"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Import failed: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payroll_structure__compliance_notes
+msgid "Important compliance information for this structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Imported %d employees, updated %d, %d failed."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__imported_count
+msgid "Imported Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Imported Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__inactive
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Inactive"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_all_employees
+msgid "Include All Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_anomaly_detection
+msgid "Include Anomaly Detection"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_inactive_employees
+msgid "Include Inactive Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_comparisons
+msgid "Include Period Comparisons"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Income Tax"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Income Tax (TDS)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__country_selector_wizard__country__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_country__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__in
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "India"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_india_employees
+msgid "India Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "India Employer Contributions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_income_tax
+msgid "India Income Tax"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_india
+msgid "India Payroll Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_india_dashboard
+msgid "India Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "India Payroll User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "India Specific"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "India Specific Info"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_india
+msgid "India Staging Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "India Tax & Deductions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_india_data
+msgid "India Zoho Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__country_selector_wizard__country__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_country__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Indonesia"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_indonesia_employees
+msgid "Indonesia Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Indonesia Employer BPJS"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_pph21_tax
+msgid "Indonesia PPh21 Tax"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_indonesia
+msgid "Indonesia Payroll Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_indonesia_dashboard
+msgid "Indonesia Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Indonesia Payroll User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Indonesia Specific"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Indonesia Specific Info"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_indonesia
+msgid "Indonesia Staging Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Indonesia Tax & BPJS"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_indonesia_data
+msgid "Indonesia Zoho Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__contract_state
+msgid "Initial Contract State"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Initial Setup"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Integration Problems"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Integration and Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.client,name:pb_hr_payroll_base.action_payroll_interactive_charts
+msgid "Interactive Analytics Charts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Interactive Spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Invalid import source."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__is_base_structure
+msgid "Is Base Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__is_taxable
+msgid "Is Taxable"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__file_format__json
+msgid "JSON"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__job_title
+msgid "Job Title"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__job_title_field
+msgid "Job Title Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__join_date
+msgid "Join Date"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__join_date_field
+msgid "Join Date Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_ktp_number
+msgid "KTP Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Key Metrics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Last 6 Months"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_tree_enhanced
+msgid "Last Modified"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Last Payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__last_payroll_date
+msgid "Last Payroll Date"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__zoho_last_sync_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__last_sync_date
+msgid "Last Sync Date"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__last_updated
+msgid "Last Updated"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_country_selector__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_setup_guide__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Load Preview"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid "Loading payroll dashboard..."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__maintenance
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Maintenance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__country_selector_wizard__country__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_country__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__my
+msgid "Malaysia"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_malaysia
+msgid "Malaysia Payroll Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid ""
+"Manage payroll approvals with multi-level review process, audit trail "
+"tracking, and automated notifications."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__manager
+msgid "Manager"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__manager_field
+msgid "Manager Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_payslip_line__amount_formula
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_salary_rule__amount_formula
+msgid "Mathematical formula for amount calculation"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__max_amount
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__max_amount
+msgid "Maximum Amount"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__meal_allowance
+msgid "Meal Allowance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_hr_contract__meal_allowance
+msgid "Meal allowance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__metrics_last_computed
+msgid "Metrics Last Computed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Metrics have been updated successfully."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__minimal
+msgid "Minimal"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__min_amount
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__min_amount
+msgid "Minimum Amount"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__data_source__mixed
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__data_source__mixed
+msgid "Mixed Sources"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Mobile-responsive design with modern animations"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__modern
+msgid "Modern"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__monthly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__monthly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__monthly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__monthly
+msgid "Monthly"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
+msgid "Multi-Country Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_hr_payroll_base_root
+msgid "Multi-Country Payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_payroll_dashboard
+msgid "Multi-Country Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_setup_guide
+#: model:ir.model,name:pb_hr_payroll_base.model_payroll_setup_guide
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Multi-Country Payroll Setup Guide"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid "Multi-Country Payroll System"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Multi-Country Processing"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+msgid "Multi-Country Zoho Import"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Multi-country support with extensible architecture"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__id_npwp_number
+msgid "NPWP Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__name_field
+msgid "Name Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__net
+msgid "Net Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule,name:pb_hr_payroll_base.salary_rule_net_vietnam
+msgid "Net Salary - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__net_salary_column
+msgid "Net Salary Column"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "No Employees Found"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "No Spreadsheet Configured"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_main
+msgid "No analytics data found!"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "No employees were imported."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "No errors to download."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "No spreadsheet is configured for country %s. Import skipped."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__normalize_phone_numbers
+msgid "Normalize Phone Numbers"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_category_form_base
+msgid "Notes about calculations..."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__field_type__float
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__float
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__float
+msgid "Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__odoo_field
+msgid "Odoo Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
+#, python-format
+msgid "Only CSV files are supported currently"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Optimized asset loading and improved performance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Organizational Analysis"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__other_allowances
+msgid "Other Allowances"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Output Options"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_pan_number
+msgid "PAN Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_provident_fund_employee
+msgid "PF (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_provident_fund_employer
+msgid "PF (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_pf_number
+msgid "PF Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "PPh 21 (Income Tax)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__payslip_state_filter__paid
+msgid "Paid Only"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__parallel_processing
+msgid "Parallel Processing"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__payment_method_field
+msgid "Payment Method Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analysis
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_analysis
+msgid "Payroll Analysis"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analytics_main
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_graph
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_pivot
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_tree
+msgid "Payroll Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_analytics_dashboard
+#: model:ir.model,name:pb_hr_payroll_base.model_payroll_analytics
+msgid "Payroll Analytics Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_base_user
+msgid "Payroll Base User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__payroll_country
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_employee__payroll_country
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__payroll_country_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__payroll_country_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule__payroll_country_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__payroll_country_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__payroll_country
+msgid "Payroll Country"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_payroll_country_selector
+msgid "Payroll Country Selector"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_dashboard_main
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_payroll_dashboard_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_tree_base
+msgid "Payroll Dashboards"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_payroll_import_wizard
+msgid "Payroll Data Import Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Payroll Distribution"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract_type__is_payroll_enabled
+msgid "Payroll Enabled"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Payroll Fields"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Payroll Growth"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Payroll Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_integration_user
+msgid "Payroll Integration User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_base_manager
+msgid "Payroll Manager"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_base_officer
+msgid "Payroll Officer"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Payroll Processing"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__payroll_schedule
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract_type__payroll_schedule
+msgid "Payroll Schedule"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Payroll Setup Guide"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__payroll_structure_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__structure_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Payroll Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_hr_payroll_structure_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_hr_payroll_structures_base
+msgid "Payroll Structures"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_super_admin
+msgid "Payroll Super Administrator"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid ""
+"Payroll data import completed successfully. Use \"View Payslip Batches\" to "
+"create batches when ready."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_hr_payroll_structure_base
+msgid ""
+"Payroll structures define the salary rules and calculations for employees.\n"
+"                You can create country-specific structures for different payroll systems and link them to contract types."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_backup_root
+msgid "PayrollBackup"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_hr_payslip_run_payroll
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_hr_payslip_run_payroll
+msgid "Payslip Batches"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__payslips
+msgid "Payslip Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__payslip_state_filter
+msgid "Payslip State Filter"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_hr_payslip_payroll
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__data_source__payslips
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_payslips
+msgid "Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__pending_payslips
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Pending Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__pension_enabled
+msgid "Pension Enabled"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Performance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__period_name
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Period"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+msgid "Period Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__period_end
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__period_end
+msgid "Period End"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__period_start
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__period_start
+msgid "Period Start"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__period_type
+msgid "Period Type"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid "Period start must be before period end."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Period-over-Period Comparison"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Personal Income Tax"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Personal Income Tax (PIT)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule,name:pb_hr_payroll_base.salary_rule_pit_vietnam
+msgid "Personal Income Tax - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Personal Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__ph
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__ph
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__ph
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__ph
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__ph
+msgid "Philippines"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__phone
+msgid "Phone"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__phone_field
+msgid "Phone Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__piece_rate
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__wage_calculation__piece_rate
+msgid "Piece Rate"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Please create payroll structures and contracts first."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Please provide API URL."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Please provide Zoho API Key and Organization ID."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Please provide Zoho API credentials."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/zoho_staging_wizard.py:0
+#, python-format
+msgid "Please select a file to import"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#, python-format
+msgid "Please select employees or choose to include all employees."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Please upload a file first"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Please upload a file first."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Position Analysis"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+msgid "Preview"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__preview_data
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__preview_data
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__preview_data
+msgid "Preview Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__preview_employee_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__preview_employee_count
+msgid "Preview Employee Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__preview_existing_employees
+msgid "Preview Existing Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/analytics_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Preview Generated"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Preview Loaded"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__preview_new_employees
+msgid "Preview New Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__preview_total_amount
+msgid "Preview Total Amount"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__preview_validation_errors
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__preview_validation_errors
+msgid "Preview Validation Errors"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Preview data loaded successfully."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.server,name:pb_hr_payroll_base.action_process_staging_batch
+msgid "Process Staging Batch"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Process and import payroll calculations from spreadsheets"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid ""
+"Process monthly payroll with automated calculations, tax deductions, "
+"compliance validation, and audit trails."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Process to Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__processed
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Processed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__processed_date
+msgid "Processed Date"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__processed_records
+msgid "Processed Records"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__state__processing
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__state__processing
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__processing_status__processing
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+msgid "Processing"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__processing_duration
+msgid "Processing Duration (s)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__processing_duration
+msgid "Processing Duration (seconds)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Processing Info"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Processing Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__processing_log
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Processing Log"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__processing_notes
+msgid "Processing Notes"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_import_wizard
+msgid "Processing Options"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__processing_status
+msgid "Processing Status"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Processing notes and logs..."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Professional Indonesia theme integration (#21435F color scheme)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Professional Multi-Country Payroll Management System"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_professional_tax
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Professional Tax"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Provident Fund"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Provident Fund (PF)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_custom_field_mapping__transformation_rule
+msgid "Python code to transform the value. Use \"value\" variable."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Quarter"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__quarterly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__quarterly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__quarterly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__quarterly
+msgid "Quarterly"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Quick Actions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
+msgid "RM"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__state__ready
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+msgid "Ready for Approval"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Record Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Refresh Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.server,name:pb_hr_payroll_base.cron_refresh_dashboard_metrics_ir_actions_server
+#: model:ir.cron,cron_name:pb_hr_payroll_base.cron_refresh_dashboard_metrics
+msgid "Refresh Dashboard Metrics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__refresh_interval
+msgid "Refresh Interval (minutes)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Refresh interval must be at least 1 minute."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_reports
+msgid "Reports"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__is_required
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__is_required
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__required
+msgid "Required"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Required Components:"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Review and adjust calculations"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Review calculations in spreadsheet"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__rounding_precision
+msgid "Rounding Precision"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_enhanced
+msgid "Rp"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__contract_state__open
+msgid "Running"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__salary
+msgid "Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__salary_components
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Salary Components"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__salary_components
+msgid "Salary Components JSON"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__salary_field
+msgid "Salary Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_hr_salary_rule
+msgid "Salary Rule"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_hr_salary_rule_category
+msgid "Salary Rule Category"
+msgstr "Nhóm Quy tắc Lương"
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_hr_salary_rule_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_hr_salary_rules_base
+msgid "Salary Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_hr_payroll_structure
+msgid "Salary Structure"
+msgstr "Cấu trúc lương"
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_hr_salary_rule_base
+msgid ""
+"Salary rules define how different components of salary are calculated.\n"
+"                You can create country-specific rules for different payroll systems and link them to contract types."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+msgid "Schedule"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__schedule_pay
+msgid "Scheduled Pay"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "Search Enhanced Payroll Dashboards"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+msgid "Search Zoho Staging Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.server,name:pb_hr_payroll_base.action_country_selector_main
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_country_selector_wizard__country
+msgid "Select Payroll Country"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_enhanced_country_selector
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
+msgid "Select Your Payroll Region"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_main
+msgid ""
+"Select a country to access its payroll dashboard and manage payroll operations.\n"
+"                    Use the enhanced dashboard to monitor real-time metrics and analytics."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__field_type__selection
+msgid "Selection"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__semi-annually
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__semi-annually
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__semi-annually
+msgid "Semi-annually"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__send_error_report
+msgid "Send Error Report"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__send_notification
+msgid "Send Notification"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#, python-format
+msgid "Send Request"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__send_welcome_email
+msgid "Send Welcome Email"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Set up Zoho API credentials in the configuration."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_country
+msgid "Set up country dashboards"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__show_analytics
+msgid "Show Analytics"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__show_charts
+msgid "Show Charts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__show_on_payslip
+msgid "Show on Payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__show_on_summary
+msgid "Show on Summary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__tax_calculation_method__simplified
+msgid "Simplified Tax Calculation"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__country_selector_wizard__country__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_country__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_country_selector__country__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__sg
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Singapore"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_singapore
+msgid "Singapore Payroll Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Singapore Payroll User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Skills Development Levy (SDL)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__skip_errors
+msgid "Skip Errors"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Social Insurance (SI)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__social_security
+msgid "Social Security"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule,name:pb_hr_payroll_base.salary_rule_social_security_vietnam
+msgid "Social Security - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__social_security_enabled
+msgid "Social Security Enabled"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Social Security Fund (SSF)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__social_security_number
+msgid "Social Security Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__source_field
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__source_field
+msgid "Source Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__employee_ids
+msgid "Specific Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+#, python-format
+msgid "Spreadsheet Not Found"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Spreadsheet data imported successfully for %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Spreadsheet import encountered issues: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid "Spreadsheet reference %s not found for country %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Standard Payroll Workflow"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__tax_calculation_method__standard
+msgid "Standard Tax Calculation"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Start Import"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__start_time
+msgid "Start Time"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__state
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__structure_state
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__state
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+msgid "State"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__state
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__state
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Status"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Step 1: Create Spreadsheets"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Step 2: Configure User Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Step 3: Configure Zoho Integration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_zoho_staging_data
+msgid "Stores staging data from Zoho People"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Successfully connected to Zoho People API."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/payroll_dashboard_base.py:0
+#, python-format
+msgid ""
+"Successfully generated fresh demo data for %s %s employees! (All previous "
+"data cleared)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__contract_type_ids
+msgid "Supported Contract Types"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__zoho_sync_active_only
+msgid "Sync Active Only"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "System Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "THR (Religious Holiday Allowance)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__target_country
+msgid "Target Country"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__target_field
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__target_field
+msgid "Target Field"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Tax & Social Security"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__tax_calculation_method
+msgid "Tax Calculation Method"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__tax_calculation_method__exempt
+msgid "Tax Exempt"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__tax_exemption_amount
+msgid "Tax Exemption Amount"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__tax_identification_number
+msgid "Tax Identification Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
+msgid "Tax and Benefits"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_taxes_demo
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__tax
+msgid "Taxes"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Test Connection"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__field_type__char
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__char
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__char
+msgid "Text"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__th
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__th
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__th
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__th
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__th
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Thailand"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_thailand
+msgid "Thailand Payroll Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Thailand Payroll User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "This Month"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "This action is only available for Zoho import."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "This enhanced framework provides:"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/zoho_base_models.py:0
+#: code:addons/pb_hr_payroll_base/models/zoho_staging_base.py:0
+#, python-format
+msgid "This record has already been processed"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__total_employees
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__total_employees
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Total Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__total_gross_salary
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
+msgid "Total Gross Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__total_payroll
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__total_payroll
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Total Payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__total_employees
+msgid "Total number of employees in payroll system"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__total_payroll
+msgid "Total payroll amount for current period"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_custom_field_mapping_form
+msgid "Transformation Examples"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__transformation_rule
+msgid "Transformation Rule"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__transport_allowance
+msgid "Transport Allowance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:hr.salary.rule,name:pb_hr_payroll_base.salary_rule_transport_vietnam
+msgid "Transport Allowance - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Troubleshooting"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/models/hr_payroll_structure_base.py:0
+#, python-format
+msgid "Unable to view employees. Please try again."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Unemployment Insurance (UI)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__gb
+msgid "United Kingdom"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__us
+msgid "United States"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Unsupported file format. Please use CSV, Excel, or JSON."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__update_existing
+msgid "Update Existing Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__update_existing_payslips
+msgid "Update Existing Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__update_existing
+msgid "Update Existing Records"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__import_mode__update_only
+msgid "Update Only"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__updated_count
+msgid "Updated Count"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_zoho_staging_data_enhanced
+msgid ""
+"Use the import wizard to bring employee data from Zoho into the staging area,\n"
+"                then process it to create employees and contracts in Odoo."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "User Access Issues"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_accident_insurance
+msgid "VN Accident Insurance"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_health_insurance_employee
+msgid "VN Health Insurance (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_health_insurance_employer
+msgid "VN Health Insurance (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_id_card_number
+msgid "VN ID Card Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_social_insurance_employee
+msgid "VN Social Insurance (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_social_insurance_employer
+msgid "VN Social Insurance (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_social_insurance_number
+msgid "VN Social Insurance Number"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_unemployment_insurance_employee
+msgid "VN Unemployment Insurance (Employee)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_unemployment_insurance_employer
+msgid "VN Unemployment Insurance (Employer)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_union_fee
+msgid "VN Union Fee"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__validate_currency
+msgid "Validate Currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__validate_data
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__validate_data
+msgid "Validate Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__validate_dates
+msgid "Validate Dates"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__validate_duplicate_employees
+msgid "Validate Duplicate Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__validate_email_format
+msgid "Validate Email Format"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__validate_employee_exists
+msgid "Validate Employee Exists"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__validate_phone_format
+msgid "Validate Phone Format"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__validate_required_fields
+msgid "Validate Required Fields"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__validate_salary_positive
+msgid "Validate Salary Positive"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__validation_rule
+msgid "Validation Rule"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_import_wizard_form
+msgid "Validation Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "Validation Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/payroll_import_wizard.py:0
+#, python-format
+msgid "Validation error in row %d: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Variance & Alerts"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "Variance Details"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Verify users are assigned to the correct country groups."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__country_selector_wizard__country__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_country__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_employee__payroll_country__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__payroll_country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payslip_line__payroll_country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule__payroll_country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__payroll_country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__country__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_data__payroll_country__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_import_wizard__target_country__vn
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+msgid "Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_vietnam_employees
+msgid "Vietnam Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Vietnam Employer Contributions"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_personal_income_tax
+msgid "Vietnam PIT"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:res.groups,name:pb_hr_payroll_base.group_payroll_vietnam
+msgid "Vietnam Payroll Access"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_vietnam_dashboard
+msgid "Vietnam Payroll Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Vietnam Payroll User"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Vietnam Specific"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Vietnam Specific Info"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_vietnam
+msgid "Vietnam Staging Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form_enhanced
+msgid "Vietnam Tax & Social Security"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_tax_code
+msgid "Vietnam Tax Code"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_vietnam_data
+msgid "Vietnam Zoho Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_kanban_base
+msgid "View Dashboard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+msgid "View Imported Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract__wage_calculation
+msgid "Wage Calculation"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_contract_type__wage_calculation
+msgid "Wage Calculation Method"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__weekly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__weekly
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__weekly
+msgid "Weekly"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "Welcome to Enhanced Multi-Country Payroll System!"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_main
+msgid "Welcome to Multi-Country Payroll Management!"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_analytics_dashboard
+msgid "Welcome to Payroll Analytics!"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_custom_field_mapping__wizard_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_field_mapping__wizard_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_field_mapping__wizard_id
+msgid "Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+msgid "Work Information"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Workflow"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__working_days_per_month
+msgid "Working Days per Month"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__working_days_per_week
+msgid "Working Days per Week"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__working_hours_per_day
+msgid "Working Hours per Day"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_form_base
+msgid "Working Time"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
+msgid "Workmen's Compensation Fund"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__yearly
+msgid "Yearly"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js:0
+#, python-format
+msgid "Your request for  payroll access has been sent to the administrator."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__zoho_api_key
+msgid "Zoho API Key"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "Zoho API key seems too short."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_zoho
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
+msgid "Zoho Integration"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__zoho_org_id
+msgid "Zoho Organization ID"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__employee_import_wizard__import_source__zoho
+msgid "Zoho People"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_data
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_tree
+msgid "Zoho Staging Data"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.actions.act_window,name:pb_hr_payroll_base.action_zoho_staging_data_enhanced
+msgid "Zoho Staging Data (Multi-Country)"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_zoho_staging_field_mapping
+msgid "Zoho Staging Field Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model,name:pb_hr_payroll_base.model_zoho_staging_import_wizard
+msgid "Zoho Staging Import Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__zoho_connection_status
+msgid "Zoho Status"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
+msgid "e.g., January 2024 - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#. odoo-python
+#: code:addons/pb_hr_payroll_base/wizards/employee_import_wizard.py:0
+#, python-format
+msgid "openpyxl library is required for Excel file processing."
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "🇮🇩 Indonesia - BPJS, PPh 21, THR payments with IDR currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "🇮🇳 India - PF, ESI, Professional Tax with INR currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "🇰🇭 Cambodia - NSSF management with KHR currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "🇲🇾 Malaysia - EPF, SOCSO, EIS with MYR currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "🇸🇬 Singapore - CPF and SGD support"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "🇹🇭 Thailand - SSF, Provident Fund with THB currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
+msgid "🇻🇳 Vietnam - Full payroll management with VND currency"
+msgstr ""
+
+#. module: pb_hr_payroll_base
+#: model:ir.ui.menu,name:pb_hr_payroll_base.menu_payroll_setup_guide
+msgid "📋 Setup Guide"
+msgstr ""
