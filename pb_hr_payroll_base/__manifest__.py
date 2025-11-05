@@ -68,16 +68,16 @@ for all country-specific modules while maintaining clean separation of concerns.
         # Security - Load security files first
         'security/payroll_base_security_enhanced.xml',          # Security groups
         'security/ir.model.access.csv',                         # Access rights
-
+        
         # Data
         'data/payroll_base_data.xml',
         'data/payroll_dashboard_data.xml',
-
+        
         # Wizards - Load before views that reference them
         'wizards/analytics_wizard_views.xml',
         'wizards/employee_import_wizard_views.xml',
         'wizards/payroll_import_wizard_views.xml',
-
+        
         # Views
         'views/payroll_menu_base.xml',                          # Base menu structure - Load first to define parent menus
         'views/payroll_setup_guide.xml',                        # Setup guide for all countries
@@ -90,11 +90,6 @@ for all country-specific modules while maintaining clean separation of concerns.
         'views/zoho_base_views.xml',                            # Zoho base views
         'views/zoho_staging_views.xml',                         # Zoho staging views
         'views/zoho_menu_integration.xml',                      # Zoho menu integration - Load after base menus
-
-        # Translations
-        'i18n/pb_hr_payroll_base.pot',
-        'i18n/vi_VN.po',
-        'i18n/km_KH.po',
     ],
     'assets': {
         'web.assets_backend': [

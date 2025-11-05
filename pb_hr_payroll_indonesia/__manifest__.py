@@ -40,7 +40,7 @@
         'views/payroll_dashboard.xml',
         'views/payroll_country_selector_template.xml',
         'views/payroll_landing_page_views.xml',
-        # Load dashboard data
+        # Load dashboard data 
         'data/payroll_dashboard_data.xml',
         # Load menu structure AFTER dashboard view (references dashboard view)
         'views/payroll_menu_structure.xml',
@@ -51,13 +51,9 @@
         'wizards/thr_payment_wizard_views.xml',
         'views/contract_updater_views.xml',
         'views/report_payslip_indonesia_template.xml',
-        'views/hr_payroll_report_indonesia.xml',
+        'views/hr_payroll_report_indonesia.xml', 
         'views/payslip_print_wizard_views.xml',
         'views/payroll_analytics_integration.xml',    # Analytics integration (when payroll_analytics_approval is installed)
-        # Translations
-        'i18n/pb_hr_payroll_indonesia.pot',
-        'i18n/vi_VN.po',
-        'i18n/km_KH.po',
     ],
     'installable': True,
     'application': False,

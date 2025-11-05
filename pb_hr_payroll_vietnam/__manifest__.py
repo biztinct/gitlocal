@@ -57,38 +57,33 @@ Supported Features:
     'data': [
         # Security
         'security/ir.model.access.csv',
-
+        
         # Data files - Vietnam-specific dashboard and spreadsheet
         'data/payroll_dashboard_data.xml',
         'data/spreadsheet_data.xml',                     # Vietnam spreadsheet template
-
+        
         # Views - Server Actions first, then Dashboard (references actions), then Menu Structure (references view)
         'views/vietnam_server_actions.xml',           # Server actions (must load first)
-        'views/payroll_dashboard_vietnam.xml',        # Professional Vietnam dashboard
+        'views/payroll_dashboard_vietnam.xml',        # Professional Vietnam dashboard 
         'views/payroll_menu_structure.xml',           # Menu structure references dashboard view
         'views/payroll_analytics_integration.xml',    # Analytics integration (when payroll_analytics_approval is installed)
-
-        # Translations
-        'i18n/pb_hr_payroll_vietnam.pot',
-        'i18n/vi_VN.po',
-        'i18n/km_KH.po',
-
+        
         # Note: Data files will be added as needed
         # TODO: Add Vietnam-specific data files:
         # - hr_payroll_structure_vietnam.xml
         # - hr_salary_rule_vietnam.xml
         # - vietnam_holidays.xml
-
+        
         # TODO: Add view files:
         # - views/hr_payslip_vietnam_views.xml
         # - views/hr_contract_vietnam_views.xml
         # - views/hr_employee_vietnam_views.xml
         # - views/vietnam_payroll_dashboard_views.xml
-
+        
         # TODO: Add wizard views:
         # - wizards/vietnam_payroll_reports_views.xml
         # - wizards/vietnam_employee_import_views.xml
-
+        
         # TODO: Add report files:
         # - reports/vietnam_payslip_report.xml
         # - reports/vietnam_tax_report.xml
