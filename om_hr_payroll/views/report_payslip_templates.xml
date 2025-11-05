@@ -378,7 +378,7 @@
   <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;">TOTAL IV = I+II-III  <em>(TỔNG MỤC IV = I+II-III)</em></span></strong></p>
 </td>
 <td style="width: 126.0pt; border-top: none; border-left: none; border-bottom: solid windowtext 1.0pt; border-right: solid windowtext 1.0pt; padding: 0cm 5.4pt 0cm 5.4pt;">
-  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('NETPAY'))"/></span></strong></p>
+  <p style="margin: 0cm; text-align: right; line-height: normal; font-size: 11pt; font-family: Arial, sans-serif;"><strong><span style="font-size: 10.0pt; font-family: Calibri, sans-serif;"><span t-esc="'{:,.0f}'.format(get_sal('ATI') - get_sal('TOTDEDU'))"/></span></strong></p>
 </td>
 </tr>
 <tr style="height: 32.25pt;">
