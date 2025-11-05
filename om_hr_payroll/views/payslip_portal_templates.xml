@@ -44,7 +44,11 @@
                 </thead>
                 <tbody>
                     <t t-foreach="payslips" t-as="payslip">
-                        <t t-set="netpay_lines" t-value="payslip.line_ids.filtered(lambda line: line.code == 'NETPAY')"/>
+                        <t t-set="dsal_list" t-value="{}"/>
+                        <t t-foreach="payslip.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                            <t t-esc="dsal_list.update({line.code:line.amount})"/>
+                        </t>
+                        <t t-set="get_sal_list" t-value="lambda code: dsal_list.get(code, 0)"/>
                         <tr>
                             <td>
                                 <a t-att-href="payslip.get_portal_url()" t-att-title="payslip.name">
@@ -60,8 +64,7 @@
                                 </span>
                             </td>
                             <td class="text-end">
-                                <span t-if="netpay_lines" t-field="netpay_lines[0].amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: payslip.company_id.currency_id}"/>
-                                <span t-else="">0.00</span>
+                                <span t-esc="'{:,.0f}'.format(get_sal_list('ATI') - get_sal_list('TOTDEDU'))"/>
                             </td>
                         </tr>
                     </t>
@@ -81,11 +84,14 @@
         <div class="row mt16 o_portal_payslip_sidebar"> 
             <t t-call="portal.portal_record_sidebar">
                 <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
-                <t t-set="netpay_lines" t-value="payslip.line_ids.filtered(lambda line: line.code == 'NETPAY')"/>
+                <t t-set="dsal_portal" t-value="{}"/>
+                <t t-foreach="payslip.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                    <t t-esc="dsal_portal.update({line.code:line.amount})"/>
+                </t>
+                <t t-set="get_sal_portal" t-value="lambda code: dsal_portal.get(code, 0)"/>
                 <t t-set="title">
                     <h2 class="mb-0">
-                        <span t-if="netpay_lines" t-field="netpay_lines[0].amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: payslip.company_id.currency_id}"/>
-                        <span t-else="">0.00</span>
+                        <span t-esc="'{:,.0f}'.format(get_sal_portal('ATI') - get_sal_portal('TOTDEDU'))"/>
                     </h2>
                     <span t-field="payslip.name"/>
                     <div class="small"><i class="fa fa-calendar-o"/> <span t-field="payslip.date_to"/></div>
