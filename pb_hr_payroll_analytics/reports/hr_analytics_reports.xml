@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Personnel Costs Report -->
+    <report
+        id="action_report_personnel_costs"
+        model="hr.analytics.personnel.costs"
+        string="Personnel Costs Report"
+        report_type="qweb-pdf"
+        file="pb_hr_payroll_analytics.report_personnel_costs"
+        name="pb_hr_payroll_analytics.report_personnel_costs"
+    />
+
+    <!-- Statutory Contributions Report -->
+    <report
+        id="action_report_statutory_contrib"
+        model="hr.analytics.statutory.contrib"
+        string="Statutory Contributions Report"
+        report_type="qweb-pdf"
+        file="pb_hr_payroll_analytics.report_statutory_contrib"
+        name="pb_hr_payroll_analytics.report_statutory_contrib"
+    />
+
+    <!-- Headcount Report -->
+    <report
+        id="action_report_headcount"
+        model="hr.analytics.headcount"
+        string="Headcount Analysis Report"
+        report_type="qweb-pdf"
+        file="pb_hr_payroll_analytics.report_headcount"
+        name="pb_hr_payroll_analytics.report_headcount"
+    />
+
+</odoo>

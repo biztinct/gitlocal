@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Dashboard Search View -->
+    <record id="view_hr_analytics_dashboard_search" model="ir.ui.view">
+        <field name="name">Dashboard Search</field>
+        <field name="model">hr.analytics.dashboard</field>
+        <field name="arch" type="xml">
+            <search string="Search Dashboards">
+                <field name="selected_country"/>
+                <field name="active_tab"/>
+                <filter name="auto_refresh" string="Auto Refresh Enabled" domain="[('auto_refresh', '=', True)]"/>
+                <filter name="cache_valid" string="Cache Valid" domain="[('cache_valid', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_country" string="Country" domain="[]" context="{'group_by': 'selected_country'}"/>
+                    <filter name="group_by_tab" string="Active Tab" domain="[]" context="{'group_by': 'active_tab'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>

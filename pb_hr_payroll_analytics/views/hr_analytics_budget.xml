@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_analytics_budget_form" model="ir.ui.view">
+        <field name="name">Budget Variance Form</field>
+        <field name="model">hr.analytics.budget.variance</field>
+        <field name="arch" type="xml">
+            <form string="Budget Variance">
+                <header>
+                    <button name="action_generate_analytics" type="object" string="Generate Report" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,ready"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="period_name"/></h1>
+                        <p class="oe_grey" attrs="{'invisible': [('use_sample_data', '=', False)]}">
+                            <i class="fa fa-info-circle"/> This report uses sample data for demonstration
+                        </p>
+                    </div>
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group col="4">
+                        <field name="total_budget" widget="monetary"/>
+                        <field name="total_actual" widget="monetary"/>
+                        <field name="total_variance" widget="monetary"/>
+                        <field name="variance_percentage"/>
+                    </group>
+                    <group col="1">
+                        <field name="use_sample_data" readonly="1"/>
+                    </group>
+                    <div style="margin-top: 20px;">
+                        <button name="action_generate_analytics" type="object" string="Generate Budget Variance Report" class="btn btn-primary"/>
+                    </div>
+                    <div id="budget-charts" style="margin-top: 20px; min-height: 400px;">
+                        <p style="text-align: center; color: #7f8c8d;">Charts will appear here after report generation</p>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_hr_analytics_budget_variance" model="ir.actions.act_window">
+        <field name="name">Budget Variance</field>
+        <field name="res_model">hr.analytics.budget.variance</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

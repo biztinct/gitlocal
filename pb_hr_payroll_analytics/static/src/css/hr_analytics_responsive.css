@@ -1,0 +1,319 @@
+/* Responsive Design for HR Analytics Dashboard */
+
+/* Tablet Devices (768px to 1024px) */
+@media (max-width: 1024px) {
+    .dashboard-filters {
+        flex-direction: column;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .metric-card {
+        margin-bottom: 15px;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+
+    .analysis-table {
+        font-size: 13px;
+    }
+
+    .analysis-table th,
+    .analysis-table td {
+        padding: 12px;
+    }
+}
+
+/* Mobile Devices (480px to 768px) */
+@media (max-width: 768px) {
+    .hr-analytics-dashboard {
+        padding: 15px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 24px;
+    }
+
+    .dashboard-header p {
+        font-size: 12px;
+    }
+
+    .dashboard-filters {
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .filter-group {
+        width: 100%;
+        min-width: auto;
+    }
+
+    /* Metric Cards - Stack vertically on mobile */
+    .metric-card {
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+
+    .metric-icon {
+        font-size: 24px;
+    }
+
+    .metric-value {
+        font-size: 22px;
+    }
+
+    .metric-label {
+        font-size: 11px;
+    }
+
+    /* Tab Navigation */
+    .nav-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    /* Charts - Reduced height */
+    .chart-card {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .chart-card .chart-header h4 {
+        font-size: 16px;
+    }
+
+    .chart-container {
+        height: 250px;
+    }
+
+    /* Data Tables - Responsive */
+    .analysis-table th,
+    .analysis-table td {
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .analysis-table thead {
+        display: none;
+    }
+
+    .analysis-table tbody,
+    .analysis-table tr,
+    .analysis-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .analysis-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 10px;
+    }
+
+    .analysis-table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border: none;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .analysis-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: 600;
+        color: #2c3e50;
+        text-align: left;
+    }
+
+    .analysis-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px 15px;
+        font-size: 13px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Alert Boxes */
+    .alert {
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    .alert i {
+        display: none;
+    }
+
+    /* Hide less important elements on mobile */
+    .chart-card .chart-header p {
+        display: none;
+    }
+}
+
+/* Small Mobile Devices (< 480px) */
+@media (max-width: 480px) {
+    .hr-analytics-dashboard {
+        padding: 10px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 20px;
+    }
+
+    .dashboard-filters {
+        padding: 10px;
+        gap: 5px;
+    }
+
+    .filter-group label {
+        font-size: 12px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    .metric-card {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+
+    .metric-value {
+        font-size: 20px;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+
+    .analysis-table th,
+    .analysis-table td {
+        padding: 8px;
+        font-size: 11px;
+    }
+
+    .btn {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    /* Hide decorative elements */
+    .metric-icon {
+        display: none;
+    }
+}
+
+/* Landscape Orientation (Mobile) */
+@media (max-height: 500px) and (orientation: landscape) {
+    .dashboard-header {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+    }
+
+    .dashboard-header h1 {
+        font-size: 20px;
+    }
+
+    .metric-card {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+
+    .analysis-table {
+        margin-top: 15px;
+    }
+}
+
+/* Dark Mode Support (Optional - for future implementation) */
+@media (prefers-color-scheme: dark) {
+    .hr-analytics-dashboard {
+        background-color: #1a1a1a;
+    }
+
+    .metric-card,
+    .chart-card,
+    .analysis-table,
+    .dashboard-filters {
+        background-color: #2a2a2a;
+        color: #e0e0e0;
+    }
+
+    .dashboard-header h1,
+    .chart-card .chart-header h4,
+    .analysis-table th {
+        color: #e0e0e0;
+    }
+
+    .analysis-table td,
+    .metric-label {
+        color: #b0b0b0;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .metric-card,
+    .chart-card,
+    .nav-tabs .nav-link,
+    .btn {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .metric-card:hover,
+    .btn:hover {
+        transform: none;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: more) {
+    .metric-card,
+    .chart-card,
+    .analysis-table {
+        border: 2px solid #000;
+    }
+
+    .btn {
+        border: 2px solid #000;
+    }
+
+    .metric-label,
+    .alert {
+        font-weight: 700;
+    }
+}

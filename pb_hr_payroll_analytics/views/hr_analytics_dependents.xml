@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_analytics_dependents_form" model="ir.ui.view">
+        <field name="name">Dependents Analysis Form</field>
+        <field name="model">hr.analytics.dependents</field>
+        <field name="arch" type="xml">
+            <form string="Dependents &amp; Benefits">
+                <header>
+                    <button name="action_generate_analytics" type="object" string="Generate Report" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,ready"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="period_name"/></h1>
+                    </div>
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group col="4">
+                        <field name="total_dependents"/>
+                        <field name="employees_with_dependents"/>
+                        <field name="avg_dependents_per_employee"/>
+                        <field name="total_dependent_allowance" widget="monetary"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_hr_analytics_dependents" model="ir.actions.act_window">
+        <field name="name">Dependents &amp; Benefits</field>
+        <field name="res_model">hr.analytics.dependents</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

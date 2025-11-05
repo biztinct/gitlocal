@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Record Rules: Only HR/Manager roles can view analytics -->
+
+    <record id="ir_rule_analytics_manager_access" model="ir.rule">
+        <field name="name">HR Analytics: Manager Access</field>
+        <field name="model_id" ref="model_hr_analytics_personnel_costs"/>
+        <field name="groups" eval="[(4, ref('pb_hr_payroll_base.group_payroll_base_manager')), (4, ref('pb_hr_payroll_base.group_payroll_super_admin'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[]</field>
+    </record>
+
+    <record id="ir_rule_statutory_contrib_access" model="ir.rule">
+        <field name="name">HR Analytics: Statutory Contributions Access</field>
+        <field name="model_id" ref="model_hr_analytics_statutory_contrib"/>
+        <field name="groups" eval="[(4, ref('pb_hr_payroll_base.group_payroll_base_manager')), (4, ref('pb_hr_payroll_base.group_payroll_super_admin'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[]</field>
+    </record>
+
+    <record id="ir_rule_headcount_access" model="ir.rule">
+        <field name="name">HR Analytics: Headcount Access</field>
+        <field name="model_id" ref="model_hr_analytics_headcount"/>
+        <field name="groups" eval="[(4, ref('pb_hr_payroll_base.group_payroll_base_manager')), (4, ref('pb_hr_payroll_base.group_payroll_super_admin'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[]</field>
+    </record>
+
+    <record id="ir_rule_dashboard_access" model="ir.rule">
+        <field name="name">HR Analytics: Dashboard Access</field>
+        <field name="model_id" ref="model_hr_analytics_dashboard"/>
+        <field name="groups" eval="[(4, ref('pb_hr_payroll_base.group_payroll_base_manager')), (4, ref('pb_hr_payroll_base.group_payroll_super_admin'))]"/>
+        <field name="perm_read" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="domain_force">[]</field>
+    </record>
+
+</odoo>

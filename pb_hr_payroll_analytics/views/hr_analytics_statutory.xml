@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_analytics_statutory_form" model="ir.ui.view">
+        <field name="name">Statutory Contributions Form</field>
+        <field name="model">hr.analytics.statutory.contrib</field>
+        <field name="arch" type="xml">
+            <form string="Statutory Contributions">
+                <header>
+                    <button name="action_generate_analytics" type="object" string="Generate Report" class="oe_highlight" states="draft"/>
+                    <button name="action_verify" type="object" string="Verify" states="ready"/>
+                    <button name="action_mark_paid" type="object" string="Mark Paid" states="verified"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,ready,verified,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="period_name"/></h1>
+                    </div>
+                    <group col="4">
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="country"/>
+                        <field name="group_by"/>
+                    </group>
+                    <group col="4">
+                        <field name="total_employee_contrib" widget="monetary"/>
+                        <field name="total_employer_contrib" widget="monetary"/>
+                        <field name="total_contrib" widget="monetary"/>
+                        <field name="employees_covered"/>
+                    </group>
+                    <group col="3">
+                        <field name="compliance_status"/>
+                        <field name="total_pending_amount" widget="monetary"/>
+                        <field name="overdue_amount" widget="monetary"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_analytics_statutory_tree" model="ir.ui.view">
+        <field name="name">Statutory Contributions List</field>
+        <field name="model">hr.analytics.statutory.contrib</field>
+        <field name="arch" type="xml">
+            <tree string="Statutory Contributions">
+                <field name="period_name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="country"/>
+                <field name="total_contrib" widget="monetary"/>
+                <field name="compliance_status"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_view_hr_analytics_statutory_contrib" model="ir.actions.act_window">
+        <field name="name">Statutory Contributions</field>
+        <field name="res_model">hr.analytics.statutory.contrib</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
