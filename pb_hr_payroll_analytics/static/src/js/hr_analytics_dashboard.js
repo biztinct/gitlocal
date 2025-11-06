@@ -145,15 +145,13 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
         _setupMetricCards: function() {
             console.log('[HR Analytics] Setting up metric cards...');
-            // Update metric cards with data from form fields
-            var data = this.record.data;
-
-            // Update stat info boxes with current field values
+            // Metric cards are auto-populated by Odoo's field widgets
+            // The form fields (total_headcount, total_personnel_cost, total_contributions, average_salary)
+            // are automatically rendered and updated by the field system
             var headcountElements = document.querySelectorAll('.o_stat_value');
             console.log('[HR Analytics] Found ' + headcountElements.length + ' stat value elements');
             if (headcountElements.length > 0) {
-                // Fields are auto-updated by Odoo's field widgets
-                console.log('[HR Analytics] Dashboard stats loaded from field values');
+                console.log('[HR Analytics] Dashboard stats are being displayed by Odoo field widgets');
             }
         },
 
