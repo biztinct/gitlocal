@@ -1,4 +1,4 @@
-odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
+odoo.define('pb_hr_payroll_demand.workforce_dashboard_action', function (require) {
     'use strict';
 
     const AbstractAction = require('web.AbstractAction');
@@ -8,15 +8,8 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
 
     const _t = core._t;
 
-    const WorkforceDashboard = AbstractAction.extend({
+    const WorkforceDashboardAction = AbstractAction.extend({
         template: 'pb_hr_payroll_demand.WorkforceDashboard',
-
-        events: {
-            'click .pb-dashboard-refresh': '_onRefreshClick',
-            'change select[data-filter="year"]': '_onFilterChange',
-            'change select[data-filter="capability"]': '_onFilterChange',
-            'change select[data-filter="role"]': '_onFilterChange',
-        },
 
         init: function (parent, action) {
             this._super.apply(this, arguments);
@@ -33,73 +26,36 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         willStart: function () {
             return Promise.all([
                 this._super.apply(this, arguments),
-                this._fetchFilterOptions(),
+                rpc.query({
+                    model: 'pb.workforce.demand.plan',
+                    method: 'get_dashboard_filters',
+                    args: [],
+                }).then(result => {
+                    this.filterOptions = result || {};
+                }),
             ]);
         },
 
         start: function () {
             return this._super.apply(this, arguments).then(() => {
                 this._renderFilters();
-                console.log('pb_hr_payroll_demand template check', this.$('.pb-workforce-dashboard').length);
-                console.log('pb_hr_payroll_demand template html snippet', (this.$el && this.$el[0] && this.$el[0].innerHTML) ? this.$el[0].innerHTML.slice(0, 400) : 'no html');
                 setTimeout(() => this._refresh(), 350);
             });
         },
 
-        // ---------------------------------------------------------------------
-        // Data Loading
-        // ---------------------------------------------------------------------
-
-        _fetchFilterOptions: function () {
-            return rpc.query({
-                model: 'pb.workforce.demand.plan',
-                method: 'get_dashboard_filters',
-                args: [],
-            }).then(result => {
-                if (result) {
-                    this.filterOptions = result;
-                }
-            });
+        events: {
+            'click .pb-dashboard-refresh': '_onRefreshClick',
+            'change select[data-filter="year"]': '_onFilterChange',
+            'change select[data-filter="capability"]': '_onFilterChange',
+            'change select[data-filter="role"]': '_onFilterChange',
         },
-
-        _refresh: function () {
-            this.$el.addClass('o_loading');
-            return rpc.query({
-                model: 'pb.workforce.demand.plan',
-                method: 'get_dashboard_snapshot',
-                args: [],
-                kwargs: this._getPayload(),
-            }).then(data => {
-                this._updateDashboard(data || {});
-            }).finally(() => {
-                this.$el.removeClass('o_loading');
-            });
-        },
-
-        _getPayload: function () {
-            const payload = {};
-            if (this.filters.year) {
-                payload.year = parseInt(this.filters.year, 10);
-            }
-            if (this.filters.capability) {
-                payload.capability_id = parseInt(this.filters.capability, 10);
-            }
-            if (this.filters.role) {
-                payload.role_id = parseInt(this.filters.role, 10);
-            }
-            return payload;
-        },
-
-        // ---------------------------------------------------------------------
-        // Rendering helpers
-        // ---------------------------------------------------------------------
 
         _renderFilters: function () {
             const $year = this.$('select[data-filter="year"]');
             const $capability = this.$('select[data-filter="capability"]');
             const $role = this.$('select[data-filter="role"]');
 
-            this._renderSelect($year, this.filterOptions.years.map(year => ({
+            this._renderSelect($year, (this.filterOptions.years || []).map(year => ({
                 value: year,
                 label: year,
             })), _t('All Years'));
@@ -131,8 +87,35 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
             });
         },
 
+        _refresh: function () {
+            this.$el.addClass('o_loading');
+            return rpc.query({
+                model: 'pb.workforce.demand.plan',
+                method: 'get_dashboard_snapshot',
+                args: [],
+                kwargs: this._getPayload(),
+            }).then(data => {
+                this._updateDashboard(data || {});
+            }).finally(() => {
+                this.$el.removeClass('o_loading');
+            });
+        },
+
+        _getPayload: function () {
+            const payload = {};
+            if (this.filters.year) {
+                payload.year = parseInt(this.filters.year, 10);
+            }
+            if (this.filters.capability) {
+                payload.capability_id = parseInt(this.filters.capability, 10);
+            }
+            if (this.filters.role) {
+                payload.role_id = parseInt(this.filters.role, 10);
+            }
+            return payload;
+        },
+
         _updateDashboard: function (data) {
-            console.log('pb_hr_payroll_demand dashboard payload', data);
             this._updateMetrics(data.totals || {});
             this._updateStates(data.states || {});
             this._updateQuadrants(data.quadrants || {});
@@ -141,7 +124,6 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         },
 
         _updateMetrics: function (totals) {
-            console.log('pb_hr_payroll_demand metric update', totals, this.$('#pb-metric-plan-count').text());
             const formatter = new Intl.NumberFormat(this._getLocale(), { maximumFractionDigits: 0 });
             this.currencyName = totals.currency_name || this.currencyName || 'USD';
             const currencyFormatter = this._getCurrencyFormatter();
@@ -154,10 +136,6 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
             this.$('#pb-metric-total-headcount').text(safeText(formatter.format(totals.total_headcount || 0)));
             this.$('#pb-metric-total-cost').text(safeText(currencyFormatter(totals.total_cost || 0)));
             this.$('#pb-metric-variance').text(safeText(currencyFormatter(totals.variance_amount || 0)));
-            console.log('pb_hr_payroll_demand metric updated text',
-                this.$('#pb-metric-plan-count').text(),
-                this.$('#pb-metric-role-count').text(),
-                this.$('#pb-metric-total-cost').text());
         },
 
         _updateStates: function (states) {
@@ -203,10 +181,6 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         },
 
         _renderTrendChart: function (series) {
-            this._renderTrendChartInternal(series || []);
-        },
-
-        _renderTrendChartInternal: function (series) {
             if (typeof Chart === 'undefined') {
                 console.warn('pb_hr_payroll_demand Chart.js still undefined');
                 return;
@@ -217,7 +191,6 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
                 return;
             }
             const canvasEl = $canvas[0];
-            console.log('pb_hr_payroll_demand trend canvas element', canvasEl);
             const labels = series.map(item => item.month);
             const employees = series.map(item => item.employees || 0);
             const costs = series.map(item => item.cost || 0);
@@ -225,26 +198,19 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
             const container = canvasEl.parentNode;
             const containerWidth = container ? (container.offsetWidth || container.clientWidth || 1024) : 1024;
             const desiredHeight = Math.max(container ? (container.offsetHeight || container.clientHeight || 320) : 320, 240);
-            console.log('pb_hr_payroll_demand trend container size', containerWidth, desiredHeight);
             canvasEl.width = containerWidth;
             canvasEl.height = desiredHeight;
             canvasEl.style.width = containerWidth + 'px';
             canvasEl.style.height = desiredHeight + 'px';
-            console.log('pb_hr_payroll_demand canvas size applied', canvasEl.width, canvasEl.height);
 
             const context = canvasEl.getContext('2d');
             if (!context) {
                 console.warn('pb_hr_payroll_demand canvas context not available');
                 return;
             }
-            context.clearRect(0, 0, canvasEl.width, canvasEl.height);
-            context.fillStyle = 'rgba(255, 0, 0, 0.15)';
-            context.fillRect(0, 0, canvasEl.width, canvasEl.height);
-            console.log('pb_hr_payroll_demand canvas rect', canvasEl.getBoundingClientRect());
 
             window.requestAnimationFrame(() => {
                 if (this.charts.trend) {
-                    console.log('pb_hr_payroll_demand updating existing chart');
                     this.charts.trend.data.labels = labels;
                     this.charts.trend.data.datasets[0].data = employees;
                     this.charts.trend.data.datasets[1].data = costs;
@@ -252,7 +218,6 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
                     return;
                 }
 
-                console.log('pb_hr_payroll_demand creating new chart', labels, employees, costs);
                 this.charts.trend = new Chart(context, {
                     type: 'line',
                     data: {
@@ -312,10 +277,6 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
             });
         },
 
-        // ---------------------------------------------------------------------
-        // Formatting helpers
-        // ---------------------------------------------------------------------
-
         _getLocale: function () {
             const lang = (session.user_context.lang || 'en_US').replace(/_/g, '-');
             try {
@@ -356,10 +317,6 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
             return mapping[state] || state || '';
         },
 
-        // ---------------------------------------------------------------------
-        // Handlers
-        // ---------------------------------------------------------------------
-
         _onRefreshClick: function () {
             this._refresh();
         },
@@ -370,16 +327,14 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
             const value = $target.val();
             this.filters[key] = value || false;
             if (key === 'capability' && !value) {
-                // Reset role if capability cleared to avoid stale context.
                 this.filters.role = false;
                 this.$('select[data-filter="role"]').val('');
             }
             this._refresh();
         },
-
     });
 
-    core.action_registry.add('pb_workforce_dashboard', WorkforceDashboard);
+    core.action_registry.add('pb_workforce_dashboard', WorkforceDashboardAction);
 
-    return WorkforceDashboard;
+    return WorkforceDashboardAction;
 });

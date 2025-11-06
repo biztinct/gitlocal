@@ -85,7 +85,7 @@
                         <h3>Monthly Demand &amp; Spend</h3>
                     </div>
                     <div class="pb-chart-container" style="min-height:260px; width:100%;">
-                        <canvas id="pb-demand-trend-chart" height="220" />
+                        <canvas id="pb-demand-trend-chart" height="220"></canvas>
                     </div>
                 </div>
             </div>

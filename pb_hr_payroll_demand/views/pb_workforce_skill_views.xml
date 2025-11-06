@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pb_workforce_skill_tree" model="ir.ui.view">
+            <field name="name">pb.workforce.skill.tree</field>
+            <field name="model">pb.workforce.skill</field>
+            <field name="arch" type="xml">
+                <tree default_order="name">
+                    <field name="name"/>
+                    <field name="category" widget="selection"/>
+                    <field name="description" optional="hide"/>
+                    <field name="color" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_skill_form" model="ir.ui.view">
+            <field name="name">pb.workforce.skill.form</field>
+            <field name="model">pb.workforce.skill</field>
+            <field name="arch" type="xml">
+                <form string="Skill">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="category"/>
+                                <field name="owner_id"/>
+                                <field name="color" widget="colorpicker"/>
+                            </group>
+                            <group>
+                                <field name="description" widget="html"/>
+                                <field name="proficiency_scale"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Capabilities">
+                                <field name="capability_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            </page>
+                            <page string="Roles">
+                                <field name="role_ids" widget="many2many_tags"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_skill_search" model="ir.ui.view">
+            <field name="name">pb.workforce.skill.search</field>
+            <field name="model">pb.workforce.skill</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <filter name="filter_category_technical" string="Technical" domain="[('category', '=', 'technical')]"/>
+                    <filter name="filter_category_business" string="Business" domain="[('category', '=', 'business')]"/>
+                    <filter name="filter_category_leadership" string="Leadership" domain="[('category', '=', 'leadership')]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_category" string="Category" context="{'group_by': 'category'}"/>
+                        <filter name="group_owner" string="Owner" context="{'group_by': 'owner_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

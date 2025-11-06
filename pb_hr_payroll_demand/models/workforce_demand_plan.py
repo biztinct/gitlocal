@@ -210,22 +210,22 @@ class WorkforceDemandPlan(models.Model):
             state_breakdown[row['state']] = row.get('state_count', row.get('__count', 0))
 
         month_series = []
-        line_domain = [('plan_id', 'in', plans.ids)]
-        line_data = self.env['pb.workforce.demand.line'].read_group(
-            line_domain,
-            ['month', 'employees_required:sum', 'employee_cost:sum', 'variance_headcount:sum', 'variance_cost:sum'],
-            ['month'],
-            lazy=False,
-        )
-        month_lookup = {item['month']: item for item in line_data}
-        for idx, month_name in enumerate(self.env['pb.workforce.demand.line']._get_month_selection(), start=1):
-            code, label = month_name
-            row = month_lookup.get(code, {})
+        month_map = {code: {'employees': 0.0, 'cost': 0.0, 'variance': 0.0} for code, _ in self.env['pb.workforce.demand.line']._get_month_selection()}
+        lines = self.env['pb.workforce.demand.line'].search([('plan_id', 'in', plans.ids)])
+        for line in lines:
+            bucket = month_map.get(line.month)
+            if bucket is not None:
+                bucket['employees'] += line.employees_required or 0.0
+                bucket['cost'] += line.employee_cost or 0.0
+                bucket['variance'] += line.variance_cost or 0.0
+
+        for code, label in self.env['pb.workforce.demand.line']._get_month_selection():
+            bucket = month_map.get(code, {})
             month_series.append({
                 'month': label,
-                'employees': row.get('employees_required_sum', 0.0),
-                'cost': row.get('employee_cost_sum', 0.0),
-                'variance': row.get('variance_cost_sum', 0.0),
+                'employees': bucket.get('employees', 0.0),
+                'cost': bucket.get('cost', 0.0),
+                'variance': bucket.get('variance', 0.0),
             })
 
         quadrant_counts = defaultdict(int)
