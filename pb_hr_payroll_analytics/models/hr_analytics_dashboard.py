@@ -175,25 +175,66 @@ class HrAnalyticsDashboard(models.Model):
                 ('code', 'in', ['VN', 'ID', 'IN', 'SG', 'TH', 'KH', 'MY'])
             ])
 
-    @api.depends('personnel_costs_id', 'statutory_contrib_id', 'headcount_id')
+    @api.depends('personnel_costs_id', 'statutory_contrib_id', 'headcount_id', 'selected_country', 'date_from', 'date_to')
     def _compute_dashboard_stats(self):
-        """Compute quick stats from analytics records"""
+        """Compute quick stats from analytics records, filtered by country"""
         for record in self:
-            # Personnel costs
-            if record.personnel_costs_id:
-                record.total_personnel_cost = record.personnel_costs_id.total_personnel_cost
-                record.average_salary = record.personnel_costs_id.average_cost_per_employee
-                record.total_headcount = record.personnel_costs_id.total_employees
+            # Get payslips based on country and date filters
+            domain = []
+
+            # Add date filters
+            if record.date_from:
+                domain.append(('date_from', '>=', record.date_from))
+            if record.date_to:
+                domain.append(('date_to', '<=', record.date_to))
+
+            # Add country filter if not "All Countries"
+            if record.selected_country and record.selected_country != 'ALL':
+                domain.append(('employee_id.address_home_id.country_id.code', '=', record.selected_country))
+
+            # Query payslips
+            payslips = self.env['hr.payslip'].search(domain)
+
+            if payslips:
+                # Calculate totals from payslips
+                total_cost = 0
+                total_employees = len(set(payslips.mapped('employee_id')))
+
+                for payslip in payslips:
+                    # Sum all salary line amounts
+                    total_cost += sum(payslip.line_ids.mapped('amount'))
+
+                record.total_personnel_cost = total_cost
+                record.total_headcount = total_employees
+                record.average_salary = total_cost / total_employees if total_employees > 0 else 0
+
+                # Calculate contributions from payslips
+                total_contrib = 0
+                for payslip in payslips:
+                    # Sum only contribution lines (social security, insurance, etc.)
+                    contrib_lines = payslip.line_ids.filtered(
+                        lambda l: l.salary_rule_id.category_id.code in ['SI_EMP', 'HI_EMP', 'UI_EMP', 'PF', 'ESI', 'CPF', 'SSF', 'EPF', 'SOCSO']
+                    )
+                    total_contrib += sum(contrib_lines.mapped('amount'))
+
+                record.total_contributions = total_contrib
             else:
+                # No data for selected filters
                 record.total_personnel_cost = 0
                 record.average_salary = 0
                 record.total_headcount = 0
-
-            # Contributions
-            if record.statutory_contrib_id:
-                record.total_contributions = record.statutory_contrib_id.total_contrib
-            else:
                 record.total_contributions = 0
+
+    # ============================================================================
+    # CHANGE HANDLERS
+    # ============================================================================
+
+    @api.onchange('selected_country', 'date_from', 'date_to')
+    def _onchange_filters(self):
+        """Trigger metric recalculation when filters change"""
+        # The @api.depends decorator on _compute_dashboard_stats will automatically
+        # trigger the computation when these fields change
+        pass
 
     # ============================================================================
     # ACTION METHODS

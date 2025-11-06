@@ -28,7 +28,10 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         events: _.extend({}, FormController.prototype.events, {
             'click .nav-link': '_onTabClick',
             'click button[name="action_refresh_all_analytics"]': '_onRefresh',
-            'click button[name="action_export_report"]': '_onExport'
+            'click button[name="action_export_report"]': '_onExport',
+            'change [name="selected_country"]': '_onCountryChange',
+            'change [name="date_from"]': '_onDateChange',
+            'change [name="date_to"]': '_onDateChange'
         }),
 
         init: function() {
@@ -161,81 +164,57 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
         _setupTabNavigation: function() {
             var self = this;
-            console.log('[HR Analytics] _setupTabNavigation: Setting up tab click handlers');
-            var tabs = document.querySelectorAll('.nav-link');
-            console.log('[HR Analytics] Found ' + tabs.length + ' nav-link elements');
-
-            tabs.forEach(function(tab, idx) {
-                tab.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // Tab name is in the 'name' attribute of the <a> tag
-                    var tabName = this.getAttribute('name');
-                    console.log('[HR Analytics] _setupTabNavigation: Tab ' + idx + ' clicked, name:', tabName);
-                    self._switchTab(tabName);
-                });
-            });
+            console.log('[HR Analytics] _setupTabNavigation: Setting up tab monitoring for chart loading');
+            // Don't add custom click handlers - let Bootstrap handle tab switching
+            // We'll use the event handler below to load charts when tabs are shown
         },
 
         _onTabClick: function(e) {
-            e.preventDefault();
-            // Tab name is in the 'name' attribute of the <a> tag
+            // Get tab name from the link's name attribute
             var tabName = e.currentTarget.getAttribute('name');
             console.log('[HR Analytics] _onTabClick: Tab clicked, name:', tabName);
-            this._switchTab(tabName);
+
+            // Don't prevent default - let Bootstrap handle the tab switching
+            // Just schedule chart loading after the tab transition completes
+            var self = this;
+
+            // Set active tab immediately
+            this.activeTab = tabName;
+
+            // Load charts after a short delay to allow Bootstrap tab animation to complete
+            setTimeout(function() {
+                console.log('[HR Analytics] Loading charts for tab:', tabName);
+                self._loadTabData(tabName);
+            }, 100);
         },
 
-        _switchTab: function(tabName) {
-            console.log('[HR Analytics] _switchTab called with tabName:', tabName);
+        _onCountryChange: function(e) {
+            console.log('[HR Analytics] Country filter changed');
+            var self = this;
+            var selectedCountry = this.record.data.selected_country;
+            console.log('[HR Analytics] Selected country:', selectedCountry);
 
-            if (!tabName) {
-                console.error('[HR Analytics] _switchTab: tabName is null or empty!');
-                return;
-            }
-
-            // Hide all tabs and remove active class
-            console.log('[HR Analytics] _switchTab: Hiding all tab panes...');
-            document.querySelectorAll('[role="tabpanel"]').forEach(function(panel) {
-                panel.classList.remove('active');
-                panel.style.display = 'none';
+            // Save the record to trigger compute methods
+            this.record.save().then(function() {
+                console.log('[HR Analytics] Dashboard saved, metrics will update');
+                // Reload current tab to reflect new country data
+                self._loadTabData(self.activeTab);
             });
+        },
 
-            // Remove active class from all nav links
-            document.querySelectorAll('.nav-link').forEach(function(link) {
-                link.classList.remove('active');
+        _onDateChange: function(e) {
+            console.log('[HR Analytics] Date filter changed');
+            var self = this;
+            var dateFrom = this.record.data.date_from;
+            var dateTo = this.record.data.date_to;
+            console.log('[HR Analytics] Date range:', dateFrom, 'to', dateTo);
+
+            // Save the record to trigger compute methods
+            this.record.save().then(function() {
+                console.log('[HR Analytics] Dashboard saved, metrics will update');
+                // Reload current tab to reflect new date range data
+                self._loadTabData(self.activeTab);
             });
-
-            // Find and show the selected tab pane by finding the link with matching name
-            console.log('[HR Analytics] _switchTab: Looking for tab with name:', tabName);
-            var activeLink = document.querySelector('.nav-link[name="' + tabName + '"]');
-
-            if (activeLink) {
-                console.log('[HR Analytics] _switchTab: Found active link for tab:', tabName);
-                activeLink.classList.add('active');
-
-                // Find the corresponding tab pane
-                // Bootstrap tabs use the href to find the pane
-                var panelId = activeLink.getAttribute('href');
-                if (panelId) {
-                    // Remove the # if present
-                    panelId = panelId.replace('#', '');
-                    var tabPanel = document.getElementById(panelId);
-                    if (tabPanel) {
-                        console.log('[HR Analytics] _switchTab: Found tab pane:', panelId);
-                        tabPanel.classList.add('active');
-                        tabPanel.style.display = 'block';
-                    } else {
-                        console.error('[HR Analytics] _switchTab: Tab pane not found:', panelId);
-                    }
-                }
-            } else {
-                console.error('[HR Analytics] _switchTab: Active link not found for tab:', tabName);
-            }
-
-            this.activeTab = tabName;
-            console.log('[HR Analytics] _switchTab: Active tab set to:', this.activeTab);
-
-            // Load data for this tab
-            this._loadTabData(tabName);
         },
 
         _loadTabData: function(tabName) {
