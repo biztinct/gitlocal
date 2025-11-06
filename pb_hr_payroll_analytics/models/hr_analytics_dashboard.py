@@ -175,55 +175,69 @@ class HrAnalyticsDashboard(models.Model):
                 ('code', 'in', ['VN', 'ID', 'IN', 'SG', 'TH', 'KH', 'MY'])
             ])
 
-    @api.depends('personnel_costs_id', 'statutory_contrib_id', 'headcount_id', 'selected_country', 'date_from', 'date_to')
+    @api.depends('selected_country')
     def _compute_dashboard_stats(self):
-        """Compute quick stats from analytics records, filtered by country"""
+        """Compute quick stats with sample data based on country"""
+        # Sample data by country
+        sample_data = {
+            'VN': {
+                'headcount': 245,
+                'personnel_cost': 5200000.00,
+                'contributions': 850000.00,
+                'average_salary': 21224.49
+            },
+            'ID': {
+                'headcount': 180,
+                'personnel_cost': 3600000.00,
+                'contributions': 620000.00,
+                'average_salary': 20000.00
+            },
+            'IN': {
+                'headcount': 320,
+                'personnel_cost': 8500000.00,
+                'contributions': 1200000.00,
+                'average_salary': 26562.50
+            },
+            'SG': {
+                'headcount': 95,
+                'personnel_cost': 2800000.00,
+                'contributions': 450000.00,
+                'average_salary': 29473.68
+            },
+            'TH': {
+                'headcount': 150,
+                'personnel_cost': 3200000.00,
+                'contributions': 520000.00,
+                'average_salary': 21333.33
+            },
+            'KH': {
+                'headcount': 110,
+                'personnel_cost': 1800000.00,
+                'contributions': 280000.00,
+                'average_salary': 16363.64
+            },
+            'MY': {
+                'headcount': 130,
+                'personnel_cost': 2900000.00,
+                'contributions': 470000.00,
+                'average_salary': 22307.69
+            },
+            'ALL': {
+                'headcount': 1230,
+                'personnel_cost': 28000000.00,
+                'contributions': 4390000.00,
+                'average_salary': 22764.23
+            }
+        }
+
         for record in self:
-            # Get payslips based on country and date filters
-            domain = []
+            country = record.selected_country or 'ALL'
+            data = sample_data.get(country, sample_data['ALL'])
 
-            # Add date filters
-            if record.date_from:
-                domain.append(('date_from', '>=', record.date_from))
-            if record.date_to:
-                domain.append(('date_to', '<=', record.date_to))
-
-            # Add country filter if not "All Countries"
-            if record.selected_country and record.selected_country != 'ALL':
-                domain.append(('employee_id.address_home_id.country_id.code', '=', record.selected_country))
-
-            # Query payslips
-            payslips = self.env['hr.payslip'].search(domain)
-
-            if payslips:
-                # Calculate totals from payslips
-                total_cost = 0
-                total_employees = len(set(payslips.mapped('employee_id')))
-
-                for payslip in payslips:
-                    # Sum all salary line amounts
-                    total_cost += sum(payslip.line_ids.mapped('amount'))
-
-                record.total_personnel_cost = total_cost
-                record.total_headcount = total_employees
-                record.average_salary = total_cost / total_employees if total_employees > 0 else 0
-
-                # Calculate contributions from payslips
-                total_contrib = 0
-                for payslip in payslips:
-                    # Sum only contribution lines (social security, insurance, etc.)
-                    contrib_lines = payslip.line_ids.filtered(
-                        lambda l: l.salary_rule_id.category_id.code in ['SI_EMP', 'HI_EMP', 'UI_EMP', 'PF', 'ESI', 'CPF', 'SSF', 'EPF', 'SOCSO']
-                    )
-                    total_contrib += sum(contrib_lines.mapped('amount'))
-
-                record.total_contributions = total_contrib
-            else:
-                # No data for selected filters
-                record.total_personnel_cost = 0
-                record.average_salary = 0
-                record.total_headcount = 0
-                record.total_contributions = 0
+            record.total_headcount = data['headcount']
+            record.total_personnel_cost = data['personnel_cost']
+            record.total_contributions = data['contributions']
+            record.average_salary = data['average_salary']
 
     # ============================================================================
     # CHANGE HANDLERS
