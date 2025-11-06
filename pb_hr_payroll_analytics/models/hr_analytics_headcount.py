@@ -155,7 +155,7 @@ class HrAnalyticsHeadcount(models.Model):
 
     def _count_contractors(self, employees):
         """Count contractor employees"""
-        return len(employees.filtered(lambda e: e.contract_id and e.contract_id.type_id.code == 'contractor'))
+        return len(employees.filtered(lambda e: e.contract_id and e.contract_id.type_id and 'contractor' in e.contract_id.type_id.name.lower()))
 
     def _group_by_type(self, employees):
         """Group employees by employment type"""

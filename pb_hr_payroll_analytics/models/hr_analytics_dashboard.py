@@ -58,7 +58,7 @@ class HrAnalyticsDashboard(models.Model):
 
     date_from = fields.Date(
         string='Date From',
-        default=lambda self: datetime(datetime.now().year, datetime.now().month, 1)
+        default=lambda self: datetime(datetime.now().year, datetime.now().month, 1).date()
     )
 
     date_to = fields.Date(
@@ -219,6 +219,31 @@ class HrAnalyticsDashboard(models.Model):
                 _logger.warning(f'Auto-refresh failed: {str(e)}')
 
         return dashboard
+
+    @api.model
+    def default_get(self, fields):
+        """Set defaults and auto-initialize dashboard"""
+        res = super().default_get(fields)
+
+        # Ensure date defaults are set
+        if not res.get('date_from'):
+            res['date_from'] = datetime(datetime.now().year, datetime.now().month, 1).date()
+        if not res.get('date_to'):
+            res['date_to'] = datetime.now().date()
+        if not res.get('selected_country'):
+            res['selected_country'] = 'ALL'
+
+        return res
+
+    def action_onload_generate_data(self):
+        """Called when dashboard is loaded - auto-generate data if needed"""
+        for record in self:
+            if not record.personnel_costs_id and record.date_from and record.date_to:
+                try:
+                    record.action_refresh_all_analytics()
+                except Exception as e:
+                    _logger.warning(f'Onload generation failed: {str(e)}')
+        return True
 
     def action_refresh_all_analytics(self):
         """Refresh all analytics data"""

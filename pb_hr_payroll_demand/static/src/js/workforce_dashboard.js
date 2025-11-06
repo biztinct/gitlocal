@@ -28,6 +28,8 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
             };
             this.filterOptions = { years: [], capabilities: [], roles: [] };
             this.charts = {};
+            this._chartJsPromise = null;
+            this._chartRetryCount = 0;
         },
 
         willStart: function () {
@@ -130,6 +132,7 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         },
 
         _updateDashboard: function (data) {
+            console.log('pb_hr_payroll_demand dashboard payload', data);
             this._updateMetrics(data.totals || {});
             this._updateStates(data.states || {});
             this._updateQuadrants(data.quadrants || {});
@@ -138,16 +141,23 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         },
 
         _updateMetrics: function (totals) {
-            const formatter = new Intl.NumberFormat(session.user_context.lang || undefined, { maximumFractionDigits: 0 });
+            console.log('pb_hr_payroll_demand metric update', totals, this.$('#pb-metric-plan-count').text());
+            const formatter = new Intl.NumberFormat(this._getLocale(), { maximumFractionDigits: 0 });
             this.currencyName = totals.currency_name || this.currencyName || 'USD';
             const currencyFormatter = this._getCurrencyFormatter();
 
-            this.$('#pb-metric-plan-count').text(formatter.format(totals.plan_count || 0));
-            this.$('#pb-metric-role-count').text(formatter.format(totals.role_count || 0));
-            this.$('#pb-metric-capability-count').text(formatter.format(totals.capability_count || 0));
-            this.$('#pb-metric-total-headcount').text(formatter.format(totals.total_headcount || 0));
-            this.$('#pb-metric-total-cost').text(currencyFormatter(totals.total_cost || 0));
-            this.$('#pb-metric-variance').text(currencyFormatter(totals.variance_amount || 0));
+            const safeText = value => (value === undefined || value === null ? '0' : value);
+
+            this.$('#pb-metric-plan-count').text(safeText(formatter.format(totals.plan_count || 0)));
+            this.$('#pb-metric-role-count').text(safeText(formatter.format(totals.role_count || 0)));
+            this.$('#pb-metric-capability-count').text(safeText(formatter.format(totals.capability_count || 0)));
+            this.$('#pb-metric-total-headcount').text(safeText(formatter.format(totals.total_headcount || 0)));
+            this.$('#pb-metric-total-cost').text(safeText(currencyFormatter(totals.total_cost || 0)));
+            this.$('#pb-metric-variance').text(safeText(currencyFormatter(totals.variance_amount || 0)));
+            console.log('pb_hr_payroll_demand metric updated text',
+                this.$('#pb-metric-plan-count').text(),
+                this.$('#pb-metric-role-count').text(),
+                this.$('#pb-metric-total-cost').text());
         },
 
         _updateStates: function (states) {
@@ -193,16 +203,60 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         },
 
         _renderTrendChart: function (series) {
+            var self = this;
+            this._loadChartJs().then(function () {
+                self._renderTrendChartInternal(series || []);
+            }).catch(function (error) {
+                console.error('pb_hr_payroll_demand failed to initialise Chart.js', error);
+            });
+        },
+
+        _renderTrendChartInternal: function (series) {
             if (typeof Chart === 'undefined') {
+                console.warn('pb_hr_payroll_demand Chart.js still undefined');
                 return;
             }
-            const ctx = this.$('#pb-demand-trend-chart');
-            if (!ctx.length) {
+            const $canvas = this.$('#pb-demand-trend-chart');
+            if (!$canvas.length) {
+                console.warn('pb_hr_payroll_demand trend canvas missing');
                 return;
             }
+            const canvasEl = $canvas[0];
+            console.log('pb_hr_payroll_demand Chart.js version', Chart.version, 'canvas', canvasEl);
             const labels = series.map(item => item.month);
             const employees = series.map(item => item.employees || 0);
             const costs = series.map(item => item.cost || 0);
+
+            console.log('pb_hr_payroll_demand trend series', labels, employees, costs);
+
+            const container = canvasEl.parentNode;
+            let containerWidth = container ? container.clientWidth || container.offsetWidth : 0;
+            let containerHeight = container ? container.clientHeight || container.offsetHeight : 0;
+            if (!containerWidth) {
+                containerWidth = this.$el.width() || canvasEl.getBoundingClientRect().width;
+            }
+            if (!containerHeight) {
+                containerHeight = containerWidth ? containerWidth * 0.45 : 260;
+            }
+            if (!containerWidth && this._chartRetryCount < 10) {
+                this._chartRetryCount += 1;
+                console.log('pb_hr_payroll_demand container width zero, retrying attempt', this._chartRetryCount);
+                setTimeout(this._renderTrendChartInternal.bind(this, series), 120);
+                return;
+            }
+            if (!containerWidth) {
+                containerWidth = 640;
+            }
+            if (!containerHeight) {
+                containerHeight = 290;
+            }
+            this._chartRetryCount = 0;
+
+            const desiredHeight = containerHeight || 260;
+            canvasEl.width = containerWidth;
+            canvasEl.height = desiredHeight;
+            canvasEl.style.width = containerWidth + 'px';
+            canvasEl.style.height = desiredHeight + 'px';
 
             if (this.charts.trend) {
                 this.charts.trend.data.labels = labels;
@@ -212,7 +266,7 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
                 return;
             }
 
-            this.charts.trend = new Chart(ctx, {
+            this.charts.trend = new Chart(canvasEl, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -272,8 +326,18 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         // Formatting helpers
         // ---------------------------------------------------------------------
 
+        _getLocale: function () {
+            const lang = (session.user_context.lang || 'en_US').replace(/_/g, '-');
+            try {
+                new Intl.NumberFormat(lang);
+                return lang;
+            } catch (e) {
+                return 'en-US';
+            }
+        },
+
         _getCurrencyFormatter: function () {
-            const lang = session.user_context.lang || undefined;
+            const lang = this._getLocale();
             const currency = this.currencyName || 'USD';
             const formatter = new Intl.NumberFormat(lang, {
                 style: 'currency',
@@ -285,7 +349,7 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
         },
 
         _formatPercent: function (value) {
-            const formatter = new Intl.NumberFormat(session.user_context.lang || undefined, {
+            const formatter = new Intl.NumberFormat(this._getLocale(), {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 1,
             });
@@ -321,6 +385,32 @@ odoo.define('pb_hr_payroll_demand.workforce_dashboard', function (require) {
                 this.$('select[data-filter="role"]').val('');
             }
             this._refresh();
+        },
+
+        _loadChartJs: function () {
+            if (typeof Chart !== 'undefined') {
+                return Promise.resolve();
+            }
+            if (this._chartJsPromise) {
+                return this._chartJsPromise;
+            }
+            var self = this;
+            this._chartJsPromise = new Promise(function (resolve, reject) {
+                var script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+                script.async = true;
+                script.onload = function () {
+                    console.log('pb_hr_payroll_demand Chart.js loaded');
+                    resolve();
+                };
+                script.onerror = function (error) {
+                    console.error('pb_hr_payroll_demand failed to load Chart.js', error);
+                    self._chartJsPromise = null;
+                    reject(error);
+                };
+                document.head.appendChild(script);
+            });
+            return this._chartJsPromise;
         },
     });
 

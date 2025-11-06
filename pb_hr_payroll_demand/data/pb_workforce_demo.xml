@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Skills -->
+        <record id="pb_workforce_skill_employee_relations" model="pb.workforce.skill">
+            <field name="name">Employee Relations Strategy</field>
+            <field name="category">business</field>
+            <field name="description">Structured approach for coaching, investigations, and risk mitigation.</field>
+        </record>
+        <record id="pb_workforce_skill_change_enablement" model="pb.workforce.skill">
+            <field name="name">Change Enablement</field>
+            <field name="category">leadership</field>
+            <field name="description">Supports adoption of new people processes and tooling.</field>
+        </record>
+        <record id="pb_workforce_skill_data_storytelling" model="pb.workforce.skill">
+            <field name="name">Data Storytelling</field>
+            <field name="category">digital</field>
+            <field name="description">Translate workforce trends into business-ready insights.</field>
+        </record>
+        <record id="pb_workforce_skill_workforce_planning" model="pb.workforce.skill">
+            <field name="name">Strategic Workforce Planning</field>
+            <field name="category">business</field>
+            <field name="description">Scenario modelling, demand translation, and portfolio prioritisation.</field>
+        </record>
+        <record id="pb_workforce_skill_compensation_design" model="pb.workforce.skill">
+            <field name="name">Compensation Design</field>
+            <field name="category">compliance</field>
+            <field name="description">Design and audit reward frameworks for multi-country footprint.</field>
+        </record>
+
+        <!-- Capabilities -->
+        <record id="pb_workforce_capability_people_ops" model="pb.workforce.capability">
+            <field name="name">People Operations Excellence</field>
+            <field name="code">POX</field>
+            <field name="capability_type">primary</field>
+            <field name="maturity">developing</field>
+            <field name="vision_statement">Deliver proactive people support across the organisation</field>
+            <field name="last_review_date">2024-09-01</field>
+            <field name="note">Focus on harmonising onboarding, lifecycle and policy compliance for hybrid workforce.</field>
+            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_employee_relations'), ref('pb_workforce_skill_change_enablement')])]"/>
+        </record>
+        <record id="pb_workforce_capability_digital_hr" model="pb.workforce.capability">
+            <field name="name">Digital HR Insights</field>
+            <field name="code">DHI</field>
+            <field name="capability_type">primary</field>
+            <field name="maturity">emerging</field>
+            <field name="vision_statement">Unlock data-driven workforce decisions with modern analytics</field>
+            <field name="last_review_date">2024-10-15</field>
+            <field name="note">Standing up dashboards, adoption support, and predictive analytics pilots.</field>
+            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_data_storytelling'), ref('pb_workforce_skill_workforce_planning')])]"/>
+        </record>
+        <record id="pb_workforce_capability_total_rewards" model="pb.workforce.capability">
+            <field name="name">Total Rewards &amp; Mobility</field>
+            <field name="code">TRM</field>
+            <field name="capability_type">secondary</field>
+            <field name="maturity">mature</field>
+            <field name="vision_statement">Competitive, equitable compensation experiences</field>
+            <field name="last_review_date">2024-07-01</field>
+            <field name="note">Maintain regional parity, support internal mobility and quarterly benchmarking.</field>
+            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_compensation_design'), ref('pb_workforce_skill_workforce_planning')])]"/>
+        </record>
+
+        <!-- Subactivities -->
+        <record id="pb_workforce_subactivity_people_ops_1" model="pb.workforce.subactivity">
+            <field name="name">Lifecycle Services</field>
+            <field name="description">Onboarding to offboarding service catalogue</field>
+            <field name="capability_id" ref="pb_workforce_capability_people_ops"/>
+            <field name="focus_level">run</field>
+        </record>
+        <record id="pb_workforce_subactivity_people_ops_2" model="pb.workforce.subactivity">
+            <field name="name">Policy Advisory</field>
+            <field name="description">Employee relations partnership &amp; coaching</field>
+            <field name="capability_id" ref="pb_workforce_capability_people_ops"/>
+            <field name="focus_level">grow</field>
+        </record>
+        <record id="pb_workforce_subactivity_digital_hr_1" model="pb.workforce.subactivity">
+            <field name="name">Insight Factory</field>
+            <field name="description">Data product backlog and releases</field>
+            <field name="capability_id" ref="pb_workforce_capability_digital_hr"/>
+            <field name="focus_level">transform</field>
+        </record>
+        <record id="pb_workforce_subactivity_total_rewards_1" model="pb.workforce.subactivity">
+            <field name="name">Mobility Design</field>
+            <field name="description">Cross-border reward frameworks</field>
+            <field name="capability_id" ref="pb_workforce_capability_total_rewards"/>
+            <field name="focus_level">grow</field>
+        </record>
+
+        <!-- Roles -->
+        <record id="pb_workforce_role_people_partner" model="pb.workforce.role">
+            <field name="name">Senior People Partner</field>
+            <field name="code">ROLE-PP-01</field>
+            <field name="capability_id" ref="pb_workforce_capability_people_ops"/>
+            <field name="mission">Trusted advisor for business leaders navigating people decisions.</field>
+            <field name="state">ready</field>
+            <field name="segmentation_criticality">critical</field>
+            <field name="segmentation_scarcity">significant</field>
+            <field name="segmentation_volume">medium</field>
+            <field name="segmentation_business_impact">high</field>
+            <field name="segmentation_effort_to_find">extreme</field>
+            <field name="segmentation_demand">significant</field>
+            <field name="headcount_current">4.0</field>
+            <field name="headcount_target">6.0</field>
+            <field name="salary_average">7500.0</field>
+            <field name="last_review_date">2024-09-10</field>
+            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_employee_relations'), ref('pb_workforce_skill_change_enablement')])]"/>
+        </record>
+        <record id="pb_workforce_role_analytics_lead" model="pb.workforce.role">
+            <field name="name">Workforce Analytics Lead</field>
+            <field name="code">ROLE-WA-01</field>
+            <field name="capability_id" ref="pb_workforce_capability_digital_hr"/>
+            <field name="mission">Drive data products and planning insights for talent leaders.</field>
+            <field name="state">ready</field>
+            <field name="segmentation_criticality">critical</field>
+            <field name="segmentation_scarcity">significant</field>
+            <field name="segmentation_volume">low</field>
+            <field name="segmentation_business_impact">high</field>
+            <field name="headcount_current">2.0</field>
+            <field name="headcount_target">3.0</field>
+            <field name="salary_average">9200.0</field>
+            <field name="last_review_date">2024-10-05</field>
+            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_data_storytelling'), ref('pb_workforce_skill_workforce_planning')])]"/>
+        </record>
+        <record id="pb_workforce_role_comp_specialist" model="pb.workforce.role">
+            <field name="name">Compensation Specialist</field>
+            <field name="code">ROLE-TR-01</field>
+            <field name="capability_id" ref="pb_workforce_capability_total_rewards"/>
+            <field name="mission">Maintain regional salary frameworks and job architecture.</field>
+            <field name="state">approved</field>
+            <field name="segmentation_criticality">important</field>
+            <field name="segmentation_scarcity">moderate</field>
+            <field name="segmentation_volume">medium</field>
+            <field name="segmentation_business_impact">medium</field>
+            <field name="headcount_current">3.0</field>
+            <field name="headcount_target">3.0</field>
+            <field name="salary_average">6800.0</field>
+            <field name="last_review_date">2024-08-18</field>
+            <field name="skill_ids" eval="[(6, 0, [ref('pb_workforce_skill_compensation_design'), ref('pb_workforce_skill_workforce_planning')])]"/>
+        </record>
+
+        <!-- Role Focus Areas -->
+        <record id="pb_workforce_role_focus_people_partner_alignment" model="pb.workforce.role.focus">
+            <field name="role_id" ref="pb_workforce_role_people_partner"/>
+            <field name="name">Leadership Alignment</field>
+            <field name="success_metric">Quarterly talent strategy reviews completed</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="pb_workforce_role_focus_people_partner_lifecycle" model="pb.workforce.role.focus">
+            <field name="role_id" ref="pb_workforce_role_people_partner"/>
+            <field name="name">Lifecycle Innovation</field>
+            <field name="success_metric">Employee NPS &gt; 55 for onboarding program</field>
+            <field name="sequence">2</field>
+        </record>
+        <record id="pb_workforce_role_focus_analytics_product" model="pb.workforce.role.focus">
+            <field name="role_id" ref="pb_workforce_role_analytics_lead"/>
+            <field name="name">Analytics Product Adoption</field>
+            <field name="success_metric">Active monthly dashboard users</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <!-- Role KPIs -->
+        <record id="pb_workforce_role_kpi_people_partner_resolution" model="pb.workforce.role.kpi">
+            <field name="role_id" ref="pb_workforce_role_people_partner"/>
+            <field name="name">Case Resolution Cycle Time</field>
+            <field name="unit_of_measure">days</field>
+            <field name="target_value">7</field>
+            <field name="frequency">monthly</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="pb_workforce_role_kpi_analytics_adoption" model="pb.workforce.role.kpi">
+            <field name="role_id" ref="pb_workforce_role_analytics_lead"/>
+            <field name="name">Dashboard Adoption</field>
+            <field name="unit_of_measure">%</field>
+            <field name="target_value">75</field>
+            <field name="frequency">monthly</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="pb_workforce_role_kpi_comp_cycle" model="pb.workforce.role.kpi">
+            <field name="role_id" ref="pb_workforce_role_comp_specialist"/>
+            <field name="name">Comp Cycle Accuracy</field>
+            <field name="unit_of_measure">%</field>
+            <field name="target_value">99</field>
+            <field name="frequency">annual</field>
+            <field name="sequence">1</field>
+        </record>
+
+        <!-- Demand Plans -->
+        <record id="pb_workforce_demand_plan_people_partner_2025" model="pb.workforce.demand.plan">
+            <field name="role_id" ref="pb_workforce_role_people_partner"/>
+            <field name="year">2025</field>
+            <field name="plan_type">hybrid</field>
+            <field name="state">review</field>
+            <field name="planned_budget">540000.0</field>
+            <field name="actual_spend">525000.0</field>
+        </record>
+        <record id="pb_workforce_demand_plan_analytics_2025" model="pb.workforce.demand.plan">
+            <field name="role_id" ref="pb_workforce_role_analytics_lead"/>
+            <field name="year">2025</field>
+            <field name="plan_type">project</field>
+            <field name="state">draft</field>
+            <field name="planned_budget">360000.0</field>
+        </record>
+        <record id="pb_workforce_demand_plan_rewards_2025" model="pb.workforce.demand.plan">
+            <field name="role_id" ref="pb_workforce_role_comp_specialist"/>
+            <field name="year">2025</field>
+            <field name="plan_type">shift</field>
+            <field name="state">approved</field>
+            <field name="planned_budget">290000.0</field>
+            <field name="actual_spend">298500.0</field>
+        </record>
+
+        <!-- Demand Plan Monthly Lines -->
+        <record id="pb_workforce_demand_line_people_partner_jan" model="pb.workforce.demand.line">
+            <field name="plan_id" ref="pb_workforce_demand_plan_people_partner_2025"/>
+            <field name="month">01</field>
+            <field name="target_projects">6</field>
+            <field name="capacity_per_resource">2</field>
+            <field name="shifts_per_month">12</field>
+            <field name="demand_per_shift">20</field>
+            <field name="operator_capacity_per_shift">12</field>
+            <field name="employee_cost_unit">7800.0</field>
+            <field name="actual_employees">4.0</field>
+            <field name="actual_cost">31200.0</field>
+        </record>
+        <record id="pb_workforce_demand_line_people_partner_apr" model="pb.workforce.demand.line">
+            <field name="plan_id" ref="pb_workforce_demand_plan_people_partner_2025"/>
+            <field name="month">04</field>
+            <field name="target_projects">5</field>
+            <field name="capacity_per_resource">1.8</field>
+            <field name="shifts_per_month">10</field>
+            <field name="demand_per_shift">18</field>
+            <field name="operator_capacity_per_shift">11</field>
+            <field name="employee_cost_unit">7800.0</field>
+            <field name="actual_employees">4.5</field>
+            <field name="actual_cost">33900.0</field>
+        </record>
+        <record id="pb_workforce_demand_line_people_partner_sep" model="pb.workforce.demand.line">
+            <field name="plan_id" ref="pb_workforce_demand_plan_people_partner_2025"/>
+            <field name="month">09</field>
+            <field name="target_projects">7</field>
+            <field name="capacity_per_resource">2.2</field>
+            <field name="shifts_per_month">14</field>
+            <field name="demand_per_shift">22</field>
+            <field name="operator_capacity_per_shift">12</field>
+            <field name="employee_cost_unit">8200.0</field>
+            <field name="actual_employees">5.0</field>
+            <field name="actual_cost">41000.0</field>
+        </record>
+        <record id="pb_workforce_demand_line_analytics_jan" model="pb.workforce.demand.line">
+            <field name="plan_id" ref="pb_workforce_demand_plan_analytics_2025"/>
+            <field name="month">01</field>
+            <field name="target_projects">4</field>
+            <field name="capacity_per_resource">1.5</field>
+            <field name="employee_cost_unit">9500.0</field>
+            <field name="actual_employees">2.0</field>
+            <field name="actual_cost">19000.0</field>
+        </record>
+        <record id="pb_workforce_demand_line_analytics_jul" model="pb.workforce.demand.line">
+            <field name="plan_id" ref="pb_workforce_demand_plan_analytics_2025"/>
+            <field name="month">07</field>
+            <field name="target_projects">5</field>
+            <field name="capacity_per_resource">1.4</field>
+            <field name="employee_cost_unit">9500.0</field>
+            <field name="actual_employees">2.5</field>
+            <field name="actual_cost">23750.0</field>
+        </record>
+        <record id="pb_workforce_demand_line_rewards_mar" model="pb.workforce.demand.line">
+            <field name="plan_id" ref="pb_workforce_demand_plan_rewards_2025"/>
+            <field name="month">03</field>
+            <field name="shifts_per_month">15</field>
+            <field name="demand_per_shift">40</field>
+            <field name="operator_capacity_per_shift">18</field>
+            <field name="shifts_per_employee">18</field>
+            <field name="employee_cost_unit">7000.0</field>
+            <field name="actual_employees">3.0</field>
+            <field name="actual_cost">21000.0</field>
+        </record>
+        <record id="pb_workforce_demand_line_rewards_oct" model="pb.workforce.demand.line">
+            <field name="plan_id" ref="pb_workforce_demand_plan_rewards_2025"/>
+            <field name="month">10</field>
+            <field name="shifts_per_month">18</field>
+            <field name="demand_per_shift">45</field>
+            <field name="operator_capacity_per_shift">20</field>
+            <field name="shifts_per_employee">18</field>
+            <field name="employee_cost_unit">7000.0</field>
+            <field name="actual_employees">3.2</field>
+            <field name="actual_cost">22400.0</field>
+        </record>
+    </data>
+</odoo>

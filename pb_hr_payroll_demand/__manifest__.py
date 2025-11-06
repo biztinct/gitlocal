@@ -30,6 +30,7 @@
         'security/pb_hr_payroll_demand_security.xml',
         'security/ir.model.access.csv',
         'data/pb_hr_payroll_demand_sequences.xml',
+        'data/pb_workforce_demo.xml',
         'views/pb_workforce_menus.xml',
         'views/pb_workforce_capability_views.xml',
         'views/pb_workforce_role_views.xml',
