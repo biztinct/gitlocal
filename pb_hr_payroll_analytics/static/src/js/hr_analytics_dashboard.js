@@ -120,9 +120,27 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
             console.log('[HR Analytics] chartJSLoaded:', this.chartJSLoaded);
 
             var self = this;
-            this._setupMetricCards();
-            console.log('[HR Analytics] Loading initial tab data (personnel_costs)...');
-            this._loadTabData('personnel_costs');
+
+            // Validate prerequisites
+            if (!window.Chart) {
+                console.error('[HR Analytics] CRITICAL: Chart.js not loaded! Charts cannot be created.');
+                return;
+            }
+
+            if (!ChartLib || typeof ChartLib.createDoughnutChart !== 'function') {
+                console.error('[HR Analytics] CRITICAL: ChartLib not properly loaded! Missing chart creation methods.');
+                console.log('[HR Analytics] ChartLib object:', ChartLib);
+                return;
+            }
+
+            try {
+                this._setupMetricCards();
+                console.log('[HR Analytics] Loading initial tab data (personnel_costs)...');
+                this._loadTabData('personnel_costs');
+            } catch(e) {
+                console.error('[HR Analytics] Error in _setupDashboard:', e.message);
+                console.error('[HR Analytics] Stack trace:', e.stack);
+            }
         },
 
         _setupMetricCards: function() {
@@ -192,39 +210,54 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
         _loadTabData: function(tabName) {
             console.log('[HR Analytics] _loadTabData called for tab:', tabName);
+            console.log('[HR Analytics] Current activeTab:', this.activeTab);
+            console.log('[HR Analytics] Chart.js loaded:', !!window.Chart);
+            console.log('[HR Analytics] ChartLib available:', !!ChartLib);
+
             var self = this;
 
-            switch(tabName) {
-                case 'personnel_costs':
-                    console.log('[HR Analytics] Switching to personnel_costs tab');
-                    this._loadPersonnelCostsCharts();
-                    break;
-                case 'cross_country':
-                    console.log('[HR Analytics] Switching to cross_country tab');
-                    this._loadCrossCountryCharts();
-                    break;
-                case 'statutory_contributions':
-                    console.log('[HR Analytics] Switching to statutory_contributions tab');
-                    this._loadStatutoryContribCharts();
-                    break;
-                case 'headcount':
-                    console.log('[HR Analytics] Switching to headcount tab');
-                    this._loadHeadcountCharts();
-                    break;
-                case 'dependents':
-                    console.log('[HR Analytics] Switching to dependents tab');
-                    this._loadDependentsCharts();
-                    break;
-                case 'budget_variance':
-                    console.log('[HR Analytics] Switching to budget_variance tab');
-                    this._loadBudgetVarianceCharts();
-                    break;
-                case 'annual_costs':
-                    console.log('[HR Analytics] Switching to annual_costs tab');
-                    this._loadAnnualCostsCharts();
-                    break;
-                default:
-                    console.warn('[HR Analytics] Unknown tab name:', tabName);
+            // Validate tab name
+            if (!tabName) {
+                console.error('[HR Analytics] ERROR: No tab name provided to _loadTabData');
+                return;
+            }
+
+            try {
+                switch(tabName) {
+                    case 'personnel_costs':
+                        console.log('[HR Analytics] _loadTabData: Loading personnel_costs tab');
+                        this._loadPersonnelCostsCharts();
+                        break;
+                    case 'cross_country':
+                        console.log('[HR Analytics] _loadTabData: Loading cross_country tab');
+                        this._loadCrossCountryCharts();
+                        break;
+                    case 'statutory_contributions':
+                        console.log('[HR Analytics] _loadTabData: Loading statutory_contributions tab');
+                        this._loadStatutoryContribCharts();
+                        break;
+                    case 'headcount':
+                        console.log('[HR Analytics] _loadTabData: Loading headcount tab');
+                        this._loadHeadcountCharts();
+                        break;
+                    case 'dependents':
+                        console.log('[HR Analytics] _loadTabData: Loading dependents tab');
+                        this._loadDependentsCharts();
+                        break;
+                    case 'budget_variance':
+                        console.log('[HR Analytics] _loadTabData: Loading budget_variance tab');
+                        this._loadBudgetVarianceCharts();
+                        break;
+                    case 'annual_costs':
+                        console.log('[HR Analytics] _loadTabData: Loading annual_costs tab');
+                        this._loadAnnualCostsCharts();
+                        break;
+                    default:
+                        console.error('[HR Analytics] ERROR: Unknown tab name:', tabName);
+                }
+            } catch(e) {
+                console.error('[HR Analytics] EXCEPTION in _loadTabData:', e.message);
+                console.error('[HR Analytics] Stack trace:', e.stack);
             }
         },
 
@@ -233,7 +266,8 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         // =====================================================================
 
         _loadPersonnelCostsCharts: function() {
-            console.log('[HR Analytics] Loading Personnel Costs charts...');
+            console.log('[HR Analytics] _loadPersonnelCostsCharts: Starting personnel costs chart loading');
+
             try {
                 // Sample data for Personnel Costs
                 var departments = ['Engineering', 'Sales', 'Operations', 'HR', 'Finance'];
@@ -242,57 +276,94 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 var contributions = [8000, 7000, 6000, 5000, 6500];
 
                 // Chart 1: Cost Breakdown by Department (Doughnut)
+                console.log('[HR Analytics] Personnel Costs: Looking for doughnut-chart-personnel element...');
                 var doughnutEl = document.getElementById('doughnut-chart-personnel');
-                console.log('[HR Analytics] doughnut-chart-personnel element:', doughnutEl);
 
-                if (doughnutEl) {
-                    console.log('[HR Analytics] Creating doughnut chart...');
-                    var totalByCost = departments.map((d, i) => basicSalaries[i] + allowances[i] + contributions[i]);
-                    ChartLib.destroyChart('doughnut-chart-personnel');
-                    ChartLib.createDoughnutChart(
-                        'doughnut-chart-personnel',
-                        departments,
-                        totalByCost,
-                        ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6']
-                    );
-                    console.log('[HR Analytics] Doughnut chart created successfully');
+                if (!doughnutEl) {
+                    console.error('[HR Analytics] ERROR: doughnut-chart-personnel canvas element NOT found in DOM');
+                    console.log('[HR Analytics] Available canvas elements:', document.querySelectorAll('canvas').length);
+                    Array.from(document.querySelectorAll('canvas')).forEach(function(canvas, idx) {
+                        console.log('[HR Analytics] Canvas ' + idx + ' id:', canvas.id, 'class:', canvas.className);
+                    });
                 } else {
-                    console.warn('[HR Analytics] doughnut-chart-personnel element not found in DOM');
+                    console.log('[HR Analytics] Personnel Costs: doughnut-chart-personnel found, creating chart...');
+                    try {
+                        var totalByCost = departments.map((d, i) => basicSalaries[i] + allowances[i] + contributions[i]);
+                        console.log('[HR Analytics] Personnel Costs: Data prepared. Total costs:', totalByCost);
+
+                        // Destroy existing chart
+                        if (ChartLib.destroyChart) {
+                            ChartLib.destroyChart('doughnut-chart-personnel');
+                            console.log('[HR Analytics] Personnel Costs: Destroyed existing doughnut chart');
+                        }
+
+                        // Create new chart
+                        if (ChartLib.createDoughnutChart) {
+                            ChartLib.createDoughnutChart(
+                                'doughnut-chart-personnel',
+                                departments,
+                                totalByCost,
+                                ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6']
+                            );
+                            console.log('[HR Analytics] Personnel Costs: Doughnut chart created successfully');
+                        } else {
+                            console.error('[HR Analytics] ERROR: ChartLib.createDoughnutChart is not a function');
+                        }
+                    } catch(chartError) {
+                        console.error('[HR Analytics] ERROR creating doughnut chart:', chartError.message);
+                        console.error('[HR Analytics] Stack trace:', chartError.stack);
+                    }
                 }
 
                 // Chart 2: Salary Components (Stacked Bar)
+                console.log('[HR Analytics] Personnel Costs: Looking for stacked-bar-chart-personnel element...');
                 var stackedEl = document.getElementById('stacked-bar-chart-personnel');
-                console.log('[HR Analytics] stacked-bar-chart-personnel element:', stackedEl);
 
-                if (stackedEl) {
-                    console.log('[HR Analytics] Creating stacked bar chart...');
-                    var datasets = [
-                        {
-                            label: 'Basic Salary',
-                            data: basicSalaries,
-                            backgroundColor: '#3498db'
-                        },
-                        {
-                            label: 'Allowances',
-                            data: allowances,
-                            backgroundColor: '#2ecc71'
-                        },
-                        {
-                            label: 'Contributions',
-                            data: contributions,
-                            backgroundColor: '#e74c3c'
-                        }
-                    ];
-
-                    ChartLib.destroyChart('stacked-bar-chart-personnel');
-                    ChartLib.createStackedBarChart('stacked-bar-chart-personnel', departments, datasets);
-                    console.log('[HR Analytics] Stacked bar chart created successfully');
+                if (!stackedEl) {
+                    console.error('[HR Analytics] ERROR: stacked-bar-chart-personnel canvas element NOT found in DOM');
                 } else {
-                    console.warn('[HR Analytics] stacked-bar-chart-personnel element not found in DOM');
+                    console.log('[HR Analytics] Personnel Costs: stacked-bar-chart-personnel found, creating chart...');
+                    try {
+                        var datasets = [
+                            {
+                                label: 'Basic Salary',
+                                data: basicSalaries,
+                                backgroundColor: '#3498db'
+                            },
+                            {
+                                label: 'Allowances',
+                                data: allowances,
+                                backgroundColor: '#2ecc71'
+                            },
+                            {
+                                label: 'Contributions',
+                                data: contributions,
+                                backgroundColor: '#e74c3c'
+                            }
+                        ];
+
+                        // Destroy existing chart
+                        if (ChartLib.destroyChart) {
+                            ChartLib.destroyChart('stacked-bar-chart-personnel');
+                            console.log('[HR Analytics] Personnel Costs: Destroyed existing stacked bar chart');
+                        }
+
+                        // Create new chart
+                        if (ChartLib.createStackedBarChart) {
+                            ChartLib.createStackedBarChart('stacked-bar-chart-personnel', departments, datasets);
+                            console.log('[HR Analytics] Personnel Costs: Stacked bar chart created successfully');
+                        } else {
+                            console.error('[HR Analytics] ERROR: ChartLib.createStackedBarChart is not a function');
+                        }
+                    } catch(chartError) {
+                        console.error('[HR Analytics] ERROR creating stacked bar chart:', chartError.message);
+                        console.error('[HR Analytics] Stack trace:', chartError.stack);
+                    }
                 }
 
             } catch (e) {
-                console.error('[HR Analytics] Error loading personnel costs charts:', e);
+                console.error('[HR Analytics] EXCEPTION in _loadPersonnelCostsCharts:', e.message);
+                console.error('[HR Analytics] Stack trace:', e.stack);
             }
         },
 
@@ -552,6 +623,98 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         _onExport: function(e) {
             e.preventDefault();
             // Open export wizard
+        },
+
+        // =====================================================================
+        // DIAGNOSTICS - Run this to check system health
+        // =====================================================================
+
+        runDiagnostics: function() {
+            console.log('========== HR ANALYTICS DIAGNOSTICS ==========');
+            console.log('[Diagnostics] Time:', new Date().toLocaleTimeString());
+
+            // 1. Check Chart.js
+            console.log('[Diagnostics] Chart.js Status:');
+            console.log('  - window.Chart exists:', !!window.Chart);
+            if (window.Chart) {
+                console.log('  - Chart version:', window.Chart.version || 'unknown');
+                console.log('  - Chart.helpers exists:', !!window.Chart.helpers);
+            }
+
+            // 2. Check ChartLib
+            console.log('[Diagnostics] ChartLib Status:');
+            console.log('  - ChartLib exists:', !!ChartLib);
+            if (ChartLib) {
+                console.log('  - createDoughnutChart:', typeof ChartLib.createDoughnutChart);
+                console.log('  - createStackedBarChart:', typeof ChartLib.createStackedBarChart);
+                console.log('  - createPieChart:', typeof ChartLib.createPieChart);
+                console.log('  - createLineChart:', typeof ChartLib.createLineChart);
+                console.log('  - destroyChart:', typeof ChartLib.destroyChart);
+            }
+
+            // 3. Check DOM Elements
+            console.log('[Diagnostics] Canvas Elements in DOM:');
+            var canvases = document.querySelectorAll('canvas');
+            console.log('  - Total canvas elements:', canvases.length);
+            Array.from(canvases).forEach(function(canvas, idx) {
+                console.log('  - Canvas ' + idx + ':', {
+                    id: canvas.id,
+                    class: canvas.className,
+                    parent: canvas.parentElement ? canvas.parentElement.className : 'none',
+                    visible: canvas.offsetHeight > 0
+                });
+            });
+
+            // 4. Check Form Model
+            console.log('[Diagnostics] Form/Record Data:');
+            if (this.record && this.record.data) {
+                console.log('  - Record ID:', this.record.data.id);
+                console.log('  - Record fields:', Object.keys(this.record.data));
+                console.log('  - total_headcount:', this.record.data.total_headcount);
+                console.log('  - total_personnel_cost:', this.record.data.total_personnel_cost);
+            } else {
+                console.log('  - No record data available');
+            }
+
+            // 5. Check Controller State
+            console.log('[Diagnostics] Controller State:');
+            console.log('  - activeTab:', this.activeTab);
+            console.log('  - chartJSLoaded:', this.chartJSLoaded);
+            console.log('  - charts object size:', Object.keys(this.charts || {}).length);
+
+            // 6. Check Form View
+            console.log('[Diagnostics] Form View:');
+            var form = document.querySelector('form[js_class="hr_analytics_dashboard"]');
+            if (form) {
+                console.log('  - Custom form view found: YES');
+                console.log('  - Form class:', form.className);
+            } else {
+                console.log('  - Custom form view found: NO (may be using default FormView)');
+            }
+
+            // 7. List all available chart IDs in DOM
+            console.log('[Diagnostics] Expected Chart Elements:');
+            var expectedCharts = [
+                'doughnut-chart-personnel',
+                'stacked-bar-chart-personnel',
+                'bar-chart-country-costs',
+                'pie-chart-headcount',
+                'scatter-chart-costvsheadcount',
+                'doughnut-chart-statutory',
+                'stacked-bar-chart-statutory',
+                'pie-chart-hc-type',
+                'bar-chart-dependents',
+                'grouped-bar-chart-budget',
+                'bar-chart-variance',
+                'line-chart-annual-trend'
+            ];
+
+            expectedCharts.forEach(function(chartId) {
+                var el = document.getElementById(chartId);
+                console.log('  - ' + chartId + ':', el ? 'FOUND' : 'NOT FOUND');
+            });
+
+            console.log('========== END DIAGNOSTICS ==========');
         }
     });
 
