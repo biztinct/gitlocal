@@ -37,7 +37,7 @@
 
         <menuitem id="menu_pb_workforce_root"
                   name="Workforce Planning"
-                  parent="pb_hr_payroll_base.menu_payroll_backup_root"
+                  parent="om_hr_payroll.menu_hr_payroll_root"
                   sequence="45"
                   groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
 

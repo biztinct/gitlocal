@@ -58,7 +58,7 @@
                                 <t t-if="record.approved_budget.value">
                                     <div class="pb-capability-card__budget">
                                         <span class="pb-capability-card__stat-label">Budget</span>
-                                        <span class="pb-capability-card__stat-value" t-esc="kanban_datetime.monetary(record.approved_budget.raw_value, record.company_currency_id.raw_value)"/>
+                                        <field name="approved_budget" widget="monetary" options="{'currency_field': 'company_currency_id'}" class="pb-capability-card__stat-value"/>
                                     </div>
                                 </t>
                             </div>

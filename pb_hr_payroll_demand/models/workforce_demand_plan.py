@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from collections import defaultdict
 
 from odoo import api, fields, models, _
+
+_logger = logging.getLogger(__name__)
 
 
 class WorkforceDemandPlan(models.Model):
@@ -204,7 +207,7 @@ class WorkforceDemandPlan(models.Model):
 
         state_breakdown = {}
         for row in self.read_group(domain, ['state'], ['state']):
-            state_breakdown[row['state']] = row['__count']
+            state_breakdown[row['state']] = row.get('state_count', row.get('__count', 0))
 
         month_series = []
         line_domain = [('plan_id', 'in', plans.ids)]
@@ -245,13 +248,25 @@ class WorkforceDemandPlan(models.Model):
             'state': plan.state,
         } for plan in top_variances]
 
-        return {
+        payload = {
             'totals': totals,
             'states': state_breakdown,
             'month_series': month_series,
             'quadrants': quadrant_counts,
             'top_variances': top_variance_rows,
         }
+        _logger.info(
+            'Workforce demand snapshot domain=%s filters(year=%s, capability=%s, role=%s) totals=%s states=%s month_rows=%s top_variances=%s',
+            domain,
+            year,
+            capability_id,
+            role_id,
+            totals,
+            state_breakdown,
+            len(month_series),
+            len(top_variance_rows),
+        )
+        return payload
 
     @api.model
     def get_dashboard_filters(self):
@@ -264,11 +279,18 @@ class WorkforceDemandPlan(models.Model):
         )
         capabilities = self.env['pb.workforce.capability'].search([('active', '=', True)], order='name')
         roles = self.env['pb.workforce.role'].search([('active', '=', True)], order='name')
-        return {
+        payload = {
             'years': years[:6],
             'capabilities': [{'id': cap.id, 'name': cap.name} for cap in capabilities],
             'roles': [{'id': role.id, 'name': f'{role.name} ({role.capability_id.display_name})'} for role in roles],
         }
+        _logger.info(
+            'Workforce demand dashboard filters years=%s capabilities=%s roles=%s',
+            payload['years'],
+            len(payload['capabilities']),
+            len(payload['roles']),
+        )
+        return payload
 
 
 class WorkforceDemandLine(models.Model):

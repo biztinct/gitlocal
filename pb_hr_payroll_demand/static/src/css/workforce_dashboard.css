@@ -97,6 +97,11 @@
     color: #1f2933;
 }
 
+.pb-metric-value:not(:empty) {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
 .pb-dashboard-sections {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -181,7 +186,14 @@
 
 .pb-chart-container {
     position: relative;
-    min-height: 220px;
+    width: 100%;
+    min-height: 260px;
+    flex: 1;
+}
+
+.pb-chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .pb-segmentation-grid {
