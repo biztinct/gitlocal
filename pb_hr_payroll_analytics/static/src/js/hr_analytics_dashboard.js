@@ -194,12 +194,11 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
             var selectedCountry = this.record.data.selected_country;
             console.log('[HR Analytics] Selected country:', selectedCountry);
 
-            // Save the record to trigger compute methods
-            this.record.save().then(function() {
-                console.log('[HR Analytics] Dashboard saved, metrics will update');
-                // Reload current tab to reflect new country data
+            // Metrics will update automatically via computed field
+            // Reload current tab charts with new country filter
+            setTimeout(function() {
                 self._loadTabData(self.activeTab);
-            });
+            }, 100);
         },
 
         _onDateChange: function(e) {
@@ -209,12 +208,10 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
             var dateTo = this.record.data.date_to;
             console.log('[HR Analytics] Date range:', dateFrom, 'to', dateTo);
 
-            // Save the record to trigger compute methods
-            this.record.save().then(function() {
-                console.log('[HR Analytics] Dashboard saved, metrics will update');
-                // Reload current tab to reflect new date range data
+            // Reload current tab charts with new date range
+            setTimeout(function() {
                 self._loadTabData(self.activeTab);
-            });
+            }, 100);
         },
 
         _loadTabData: function(tabName) {
