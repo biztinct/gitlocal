@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="pb_hr_payroll_demand.WorkforceDashboard">
+        <div class="o_control_panel pb-workforce-dashboard__control">
+            <div class="o_cp_heading">
+                <h2 class="pb-dashboard-title">Workforce Demand Hub</h2>
+            </div>
+            <div class="o_cp_searchview">
+                <div class="pb-dashboard-filters">
+                    <div class="pb-dashboard-filter">
+                        <label>Year</label>
+                        <select class="form-select" data-filter="year"></select>
+                    </div>
+                    <div class="pb-dashboard-filter">
+                        <label>Capability</label>
+                        <select class="form-select" data-filter="capability"></select>
+                    </div>
+                    <div class="pb-dashboard-filter">
+                        <label>Role</label>
+                        <select class="form-select" data-filter="role"></select>
+                    </div>
+                    <div class="pb-dashboard-filter pb-dashboard-filter--refresh">
+                        <button type="button" class="btn btn-primary pb-dashboard-refresh">
+                            <i class="fa fa-refresh me-1"/> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pb-workforce-dashboard o_content">
+            <div class="pb-metric-grid">
+                <div class="pb-metric-card">
+                    <span class="pb-metric-label">Active Plans</span>
+                    <span class="pb-metric-value" id="pb-metric-plan-count">0</span>
+                </div>
+                <div class="pb-metric-card">
+                    <span class="pb-metric-label">Roles Covered</span>
+                    <span class="pb-metric-value" id="pb-metric-role-count">0</span>
+                </div>
+                <div class="pb-metric-card">
+                    <span class="pb-metric-label">Capabilities</span>
+                    <span class="pb-metric-value" id="pb-metric-capability-count">0</span>
+                </div>
+                <div class="pb-metric-card pb-metric-card--accent">
+                    <span class="pb-metric-label">Planned Headcount</span>
+                    <span class="pb-metric-value" id="pb-metric-total-headcount">0</span>
+                </div>
+                <div class="pb-metric-card pb-metric-card--accent">
+                    <span class="pb-metric-label">Total Planned Cost</span>
+                    <span class="pb-metric-value" id="pb-metric-total-cost">0</span>
+                </div>
+                <div class="pb-metric-card pb-metric-card--alert">
+                    <span class="pb-metric-label">Variance</span>
+                    <span class="pb-metric-value" id="pb-metric-variance">0</span>
+                </div>
+            </div>
+
+            <div class="pb-dashboard-sections">
+                <div class="pb-dashboard-panel">
+                    <div class="pb-panel-header">
+                        <h3>Status Overview</h3>
+                    </div>
+                    <div class="pb-status-grid" id="pb-plan-state-grid">
+                        <div class="pb-status-card" data-state="draft">
+                            <span class="pb-status-label">Draft</span>
+                            <span class="pb-status-value">0</span>
+                        </div>
+                        <div class="pb-status-card" data-state="review">
+                            <span class="pb-status-label">In Review</span>
+                            <span class="pb-status-value">0</span>
+                        </div>
+                        <div class="pb-status-card" data-state="approved">
+                            <span class="pb-status-label">Approved</span>
+                            <span class="pb-status-value">0</span>
+                        </div>
+                        <div class="pb-status-card" data-state="archived">
+                            <span class="pb-status-label">Archived</span>
+                            <span class="pb-status-value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pb-dashboard-panel">
+                    <div class="pb-panel-header">
+                        <h3>Monthly Demand & Spend</h3>
+                    </div>
+                    <div class="pb-chart-container">
+                        <canvas id="pb-demand-trend-chart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pb-dashboard-sections pb-dashboard-sections--split">
+                <div class="pb-dashboard-panel">
+                    <div class="pb-panel-header">
+                        <h3>Role Segmentation</h3>
+                    </div>
+                    <div class="pb-segmentation-grid" id="pb-quadrant-grid">
+                        <div class="pb-segmentation-card" data-quadrant="protect">
+                            <span class="pb-segmentation-label">Protect</span>
+                            <span class="pb-segmentation-value">0</span>
+                        </div>
+                        <div class="pb-segmentation-card" data-quadrant="transform">
+                            <span class="pb-segmentation-label">Transform</span>
+                            <span class="pb-segmentation-value">0</span>
+                        </div>
+                        <div class="pb-segmentation-card" data-quadrant="build">
+                            <span class="pb-segmentation-label">Build</span>
+                            <span class="pb-segmentation-value">0</span>
+                        </div>
+                        <div class="pb-segmentation-card" data-quadrant="streamline">
+                            <span class="pb-segmentation-label">Streamline</span>
+                            <span class="pb-segmentation-value">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pb-dashboard-panel">
+                    <div class="pb-panel-header">
+                        <h3>Variance Watchlist</h3>
+                    </div>
+                    <div class="pb-table-wrapper">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Plan</th>
+                                    <th>Role</th>
+                                    <th>Capability</th>
+                                    <th class="text-end">Variance</th>
+                                    <th class="text-end">% </th>
+                                    <th class="text-center">State</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pb-variance-table">
+                                <tr class="pb-empty-row">
+                                    <td colspan="6">No significant variance detected.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

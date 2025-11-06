@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_pb_workforce_dashboard" model="ir.actions.client">
+            <field name="name">Workforce Planner</field>
+            <field name="tag">pb_workforce_dashboard</field>
+            <field name="context">{}</field>
+        </record>
+
+        <record id="action_pb_workforce_capability" model="ir.actions.act_window">
+            <field name="name">Capabilities</field>
+            <field name="res_model">pb.workforce.capability</field>
+            <field name="view_mode">kanban,tree,form,pivot,graph</field>
+            <field name="context">{'default_capability_type': 'primary'}</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <record id="action_pb_workforce_skill" model="ir.actions.act_window">
+            <field name="name">Skills Library</field>
+            <field name="res_model">pb.workforce.skill</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="action_pb_workforce_role" model="ir.actions.act_window">
+            <field name="name">Roles</field>
+            <field name="res_model">pb.workforce.role</field>
+            <field name="view_mode">kanban,tree,form,pivot,graph</field>
+            <field name="context">{}</field>
+        </record>
+
+        <record id="action_pb_workforce_demand_plan" model="ir.actions.act_window">
+            <field name="name">Demand Plans</field>
+            <field name="res_model">pb.workforce.demand.plan</field>
+            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="context">{'search_default_group_by_year': 1}</field>
+        </record>
+
+        <menuitem id="menu_pb_workforce_root"
+                  name="Workforce Planning"
+                  parent="pb_hr_payroll_base.menu_payroll_backup_root"
+                  sequence="45"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+
+        <menuitem id="menu_pb_workforce_dashboard"
+                  name="Planner Hub"
+                  parent="menu_pb_workforce_root"
+                  action="action_pb_workforce_dashboard"
+                  sequence="5"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+
+        <menuitem id="menu_pb_workforce_catalog"
+                  name="Capability Catalog"
+                  parent="menu_pb_workforce_root"
+                  sequence="10"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+
+        <menuitem id="menu_pb_workforce_capabilities"
+                  name="Capabilities"
+                  parent="menu_pb_workforce_catalog"
+                  action="action_pb_workforce_capability"
+                  sequence="10"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+
+        <menuitem id="menu_pb_workforce_skills"
+                  name="Skills Library"
+                  parent="menu_pb_workforce_catalog"
+                  action="action_pb_workforce_skill"
+                  sequence="20"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+
+        <menuitem id="menu_pb_workforce_roles"
+                  name="Roles"
+                  parent="menu_pb_workforce_root"
+                  action="action_pb_workforce_role"
+                  sequence="20"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+
+        <menuitem id="menu_pb_workforce_demand"
+                  name="Demand Planning"
+                  parent="menu_pb_workforce_root"
+                  sequence="30"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+
+        <menuitem id="menu_pb_workforce_demand_plans"
+                  name="Demand Plans"
+                  parent="menu_pb_workforce_demand"
+                  action="action_pb_workforce_demand_plan"
+                  sequence="10"
+                  groups="pb_hr_payroll_demand.group_pb_workforce_user"/>
+    </data>
+</odoo>

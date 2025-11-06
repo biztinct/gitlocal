@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_pb_workforce_demand_plan" model="ir.sequence">
+            <field name="name">Workforce Demand Plan</field>
+            <field name="code">pb.workforce.demand.plan</field>
+            <field name="prefix">WDP%(year)s-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

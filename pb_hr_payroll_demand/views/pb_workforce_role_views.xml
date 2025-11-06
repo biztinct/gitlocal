@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pb_workforce_role_tree" model="ir.ui.view">
+            <field name="name">pb.workforce.role.tree</field>
+            <field name="model">pb.workforce.role</field>
+            <field name="arch" type="xml">
+                <tree default_order="capability_id,name">
+                    <field name="name"/>
+                    <field name="code" optional="hide"/>
+                    <field name="capability_id"/>
+                    <field name="segmentation_quadrant" widget="selection"/>
+                    <field name="headcount_current"/>
+                    <field name="headcount_target"/>
+                    <field name="headcount_gap"/>
+                    <field name="salary_average" optional="hide"/>
+                    <field name="total_annual_cost" optional="hide"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_role_kanban" model="ir.ui.view">
+            <field name="name">pb.workforce.role.kanban</field>
+            <field name="model">pb.workforce.role</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="segmentation_quadrant" class="pb-role-kanban">
+                    <field name="name"/>
+                    <field name="capability_id"/>
+                    <field name="headcount_target"/>
+                    <field name="headcount_gap"/>
+                    <field name="segmentation_quadrant"/>
+                    <field name="manager_id"/>
+                    <field name="color"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click pb-role-card oe_kanban_card oe_kanban_color_#{kanban_getcolor(record.color.raw_value)}">
+                                <div class="pb-role-card__header">
+                                    <span class="badge badge-primary" t-esc="record.segmentation_quadrant.value or 'N/A'"/>
+                                    <div class="pb-role-card__name" t-esc="record.name.value"/>
+                                </div>
+                                <div class="pb-role-card__meta">
+                                    <span class="pb-role-card__capability" t-esc="record.capability_id.value"/>
+                                    <span class="pb-role-card__manager" t-esc="record.manager_id.value"/>
+                                </div>
+                                <div class="pb-role-card__stats">
+                                    <div>
+                                        <span class="pb-role-card__label">Target</span>
+                                        <span class="pb-role-card__value" t-esc="record.headcount_target.value or 0"/>
+                                    </div>
+                                    <div>
+                                        <span class="pb-role-card__label">Gap</span>
+                                        <span class="pb-role-card__value" t-esc="record.headcount_gap.value or 0"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_role_form" model="ir.ui.view">
+            <field name="name">pb.workforce.role.form</field>
+            <field name="model">pb.workforce.role</field>
+            <field name="arch" type="xml">
+                <form string="Role">
+                    <header>
+                        <button name="action_mark_reviewed" type="object" string="Mark Reviewed" class="oe_highlight"
+                                attrs="{'invisible': [('state', '=', 'archived')]}"/>
+                        <button name="action_open_demand_plans" type="object" string="Open Demand Plans"
+                                class="oe_link"/>
+                        <button name="action_reset_draft" type="object" string="Reset to Draft"
+                                attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,ready,approved,archived"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="action_open_demand_plans" class="oe_stat_button" icon="fa-calendar">
+                                <field name="headcount_gap" widget="statinfo" string="Headcount Gap"/>
+                            </button>
+                            <button type="object" name="action_open_demand_plans" class="oe_stat_button" icon="fa-line-chart">
+                                <field name="total_annual_cost" widget="statinfo" string="Annual Cost"/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="capability_id"/>
+                                <field name="manager_id"/>
+                                <field name="mission"/>
+                                <field name="comment" widget="html"/>
+                            </group>
+                            <group>
+                                <field name="headcount_current"/>
+                                <field name="headcount_target"/>
+                                <field name="headcount_gap" readonly="1"/>
+                                <field name="salary_average"/>
+                                <field name="total_annual_cost" readonly="1"/>
+                                <field name="last_review_date"/>
+                                <field name="next_review_date" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Role Overview">
+                                <group>
+                                    <group>
+                                        <field name="segmentation_criticality"/>
+                                        <field name="segmentation_scarcity"/>
+                                        <field name="segmentation_volume"/>
+                                    </group>
+                                    <group>
+                                        <field name="segmentation_business_impact"/>
+                                        <field name="segmentation_effort_to_find"/>
+                                        <field name="segmentation_demand"/>
+                                    </group>
+                                </group>
+                                <field name="segmentation_quadrant" readonly="1"/>
+                            </page>
+                            <page string="Focus Areas">
+                                <field name="focus_area_ids" context="{'default_role_id': active_id}">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="success_metric"/>
+                                        <field name="description"/>
+                                        <field name="sequence"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="KPIs">
+                                <field name="kpi_ids" context="{'default_role_id': active_id}">
+                                    <tree editable="bottom">
+                                        <field name="name"/>
+                                        <field name="target_value"/>
+                                        <field name="unit_of_measure"/>
+                                        <field name="frequency"/>
+                                        <field name="description"/>
+                                        <field name="sequence"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Skills">
+                                <field name="skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                <field name="proficiency_notes"/>
+                            </page>
+                            <page string="Demand Plans">
+                                <field name="demand_plan_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="year"/>
+                                        <field name="plan_type"/>
+                                        <field name="state"/>
+                                        <field name="total_headcount"/>
+                                        <field name="total_employee_cost"/>
+                                        <field name="variance_percent"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_role_search" model="ir.ui.view">
+            <field name="name">pb.workforce.role.search</field>
+            <field name="model">pb.workforce.role</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <filter name="filter_quadrant_protect" string="Protect" domain="[('segmentation_quadrant', '=', 'protect')]"/>
+                    <filter name="filter_quadrant_transform" string="Transform" domain="[('segmentation_quadrant', '=', 'transform')]"/>
+                    <filter name="filter_gap_positive" string="Open Gap" domain="[('headcount_gap', '&gt;', 0)]"/>
+                    <filter name="filter_ready" string="Ready" domain="[('state', '=', 'ready')]"/>
+                    <filter name="filter_approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_capability" string="Capability" context="{'group_by': 'capability_id'}"/>
+                        <filter name="group_quadrant" string="Quadrant" context="{'group_by': 'segmentation_quadrant'}"/>
+                        <filter name="group_manager" string="Owner" context="{'group_by': 'manager_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

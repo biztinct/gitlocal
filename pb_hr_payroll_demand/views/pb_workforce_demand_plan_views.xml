@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pb_workforce_demand_plan_tree" model="ir.ui.view">
+            <field name="name">pb.workforce.demand.plan.tree</field>
+            <field name="model">pb.workforce.demand.plan</field>
+            <field name="arch" type="xml">
+                <tree default_order="year desc, role_id">
+                    <field name="name"/>
+                    <field name="role_id"/>
+                    <field name="year"/>
+                    <field name="plan_type"/>
+                    <field name="state"/>
+                    <field name="total_headcount"/>
+                    <field name="total_employee_cost"/>
+                    <field name="planned_budget"/>
+                    <field name="variance_amount"/>
+                    <field name="variance_percent"/>
+                    <field name="owner_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_demand_plan_form" model="ir.ui.view">
+            <field name="name">pb.workforce.demand.plan.form</field>
+            <field name="model">pb.workforce.demand.plan</field>
+            <field name="arch" type="xml">
+                <form string="Workforce Demand Plan">
+                    <header>
+                        <button name="action_submit" type="object" string="Submit"
+                                states="draft" class="oe_highlight"/>
+                        <button name="action_approve" type="object" string="Approve"
+                                states="review" class="oe_highlight"/>
+                        <button name="action_archive" type="object" string="Archive"
+                                states="approved" class="oe_link"/>
+                        <button name="action_reset_draft" type="object" string="Reset to Draft"
+                                states="review,approved,archived"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,review,approved,archived"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button type="object" name="action_open_role" class="oe_stat_button" icon="fa-briefcase"
+                                    attrs="{'invisible': [('role_id', '=', False)]}">
+                                <field name="total_headcount" widget="statinfo" string="Planned Headcount"/>
+                            </button>
+                            <button name="action_open_role" type="object" class="oe_stat_button" icon="fa-area-chart"
+                                    attrs="{'invisible': [('role_id', '=', False)]}">
+                                <field name="total_employee_cost" widget="statinfo" string="Planned Cost"/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="role_id" options="{'no_open': False}"/>
+                                <field name="year"/>
+                                <field name="plan_type"/>
+                                <field name="owner_id"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group>
+                                <field name="planned_budget"/>
+                                <field name="actual_spend"/>
+                                <field name="total_headcount" readonly="1"/>
+                                <field name="total_fte" readonly="1"/>
+                                <field name="total_employee_cost" readonly="1"/>
+                                <field name="variance_amount" readonly="1"/>
+                                <field name="variance_percent" readonly="1"/>
+                                <field name="escalation_needed" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Monthly Planning">
+                                <field name="monthly_line_ids">
+                                    <tree editable="bottom">
+                                        <field name="month"/>
+                                        <field name="target_output"/>
+                                        <field name="plan_type" invisible="1"/>
+                                        <field name="target_projects" attrs="{'readonly': [('plan_type', '=', 'shift')]}"/>
+                                        <field name="shifts_per_month" attrs="{'readonly': [('plan_type', '=', 'project')]}"/>
+                                        <field name="demand_per_shift" attrs="{'readonly': [('plan_type', '=', 'project')]}"/>
+                                        <field name="capacity_per_resource"/>
+                                        <field name="operator_capacity_per_shift"/>
+                                        <field name="shifts_per_employee"/>
+                                        <field name="employee_cost_unit"/>
+                                        <field name="employees_required" readonly="1"/>
+                                        <field name="actual_employees"/>
+                                        <field name="employee_cost" readonly="1"/>
+                                        <field name="actual_cost"/>
+                                        <field name="variance_headcount" readonly="1"/>
+                                        <field name="variance_cost" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Narrative &amp; Notes">
+                                <field name="narrative" widget="html"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_demand_plan_search" model="ir.ui.view">
+            <field name="name">pb.workforce.demand.plan.search</field>
+            <field name="model">pb.workforce.demand.plan</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <filter name="filter_year_current" string="Current Year"
+                            domain="[('year', '=', context_today().year)]"/>
+                    <filter name="filter_state_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                    <filter name="filter_state_review" string="In Review" domain="[('state', '=', 'review')]"/>
+                    <filter name="filter_state_approved" string="Approved" domain="[('state', '=', 'approved')]"/>
+                    <filter name="filter_escalation" string="Escalation Needed" domain="[('escalation_needed', '=', True)]"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_year" string="Year" context="{'group_by': 'year'}"/>
+                        <filter name="group_role" string="Role" context="{'group_by': 'role_id'}"/>
+                        <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                        <filter name="group_type" string="Plan Type" context="{'group_by': 'plan_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_demand_plan_graph" model="ir.ui.view">
+            <field name="name">pb.workforce.demand.plan.graph</field>
+            <field name="model">pb.workforce.demand.plan</field>
+            <field name="arch" type="xml">
+                <graph string="Workforce Spend" type="bar">
+                    <field name="total_employee_cost" type="measure"/>
+                    <field name="year" type="row"/>
+                    <field name="plan_type" type="col"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="view_pb_workforce_demand_plan_pivot" model="ir.ui.view">
+            <field name="name">pb.workforce.demand.plan.pivot</field>
+            <field name="model">pb.workforce.demand.plan</field>
+            <field name="arch" type="xml">
+                <pivot string="Workforce Plans Pivot">
+                    <field name="total_headcount" type="measure"/>
+                    <field name="total_employee_cost" type="measure"/>
+                    <field name="variance_amount" type="measure"/>
+                    <field name="year" type="row"/>
+                    <field name="plan_type" type="row"/>
+                    <field name="state" type="col"/>
+                </pivot>
+            </field>
+        </record>
+    </data>
+</odoo>

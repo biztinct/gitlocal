@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="module_category_pb_workforce" model="ir.module.category">
+            <field name="name">Workforce Planning</field>
+            <field name="description">Capability mapping and demand planning workspace</field>
+            <field name="sequence">35</field>
+        </record>
+
+        <record id="group_pb_workforce_user" model="res.groups">
+            <field name="name">Workforce Planner</field>
+            <field name="category_id" ref="pb_hr_payroll_demand.module_category_pb_workforce"/>
+            <field name="implied_ids" eval="[(4, ref('pb_hr_payroll_base.group_payroll_base_user'))]"/>
+            <field name="comment">Access to workforce dashboards and read access to plans.</field>
+        </record>
+
+        <record id="group_pb_workforce_manager" model="res.groups">
+            <field name="name">Workforce Manager</field>
+            <field name="category_id" ref="pb_hr_payroll_demand.module_category_pb_workforce"/>
+            <field name="implied_ids" eval="[(4, ref('pb_hr_payroll_demand.group_pb_workforce_user')), (4, ref('pb_hr_payroll_base.group_payroll_base_officer'))]"/>
+            <field name="comment">Can edit capabilities, roles, and demand plans.</field>
+        </record>
+
+        <record id="group_pb_workforce_admin" model="res.groups">
+            <field name="name">Workforce Architect</field>
+            <field name="category_id" ref="pb_hr_payroll_demand.module_category_pb_workforce"/>
+            <field name="implied_ids" eval="[(4, ref('pb_hr_payroll_demand.group_pb_workforce_manager')), (4, ref('pb_hr_payroll_base.group_payroll_base_manager'))]"/>
+            <field name="comment">Full control over workforce demand workspace.</field>
+        </record>
+    </data>
+</odoo>
