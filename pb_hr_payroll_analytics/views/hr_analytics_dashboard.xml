@@ -5,8 +5,10 @@
     <record id="view_hr_analytics_dashboard_form" model="ir.ui.view">
         <field name="name">HR Analytics Dashboard</field>
         <field name="model">hr.analytics.dashboard</field>
+        <field name="type">form</field>
+        <field name="priority">16</field>
         <field name="arch" type="xml">
-            <form string="HR Analytics Dashboard" create="false" delete="false" js_class="pb_hr_payroll_analytics.Dashboard">
+            <form string="HR Analytics Dashboard" create="false" delete="false" js_class="hr_analytics_dashboard">
                 <header>
                     <button name="action_refresh_all_analytics" type="object" class="oe_highlight" string="Refresh All Analytics" icon="fa-refresh"/>
                     <button name="action_clear_cache" type="object" string="Clear Cache" icon="fa-trash"/>
