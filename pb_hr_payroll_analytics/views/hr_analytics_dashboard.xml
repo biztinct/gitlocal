@@ -10,198 +10,268 @@
         <field name="arch" type="xml">
             <form string="HR Analytics Dashboard" create="false" delete="false" js_class="hr_analytics_dashboard">
                 <header>
-                    <button name="action_refresh_all_analytics" type="object" class="oe_highlight" string="Refresh All Analytics" icon="fa-refresh"/>
-                    <button name="action_clear_cache" type="object" string="Clear Cache" icon="fa-trash"/>
-                    <button name="%(pb_hr_payroll_analytics.action_hr_analytics_export_wizard)d" type="action" string="Export" icon="fa-download"/>
+                    <span class="badge badge-success" style="padding: 8px 12px; font-size: 12px; font-weight: bold;">READY FOR APPROVAL</span>
+                    <div style="flex: 1;"></div>
+                    <button name="action_refresh_all_analytics" type="object" class="btn btn-sm btn-outline-secondary" string="Refresh" icon="fa-refresh"/>
+                    <button name="action_clear_cache" type="object" class="btn btn-sm btn-outline-secondary" string="Clear Cache" icon="fa-trash"/>
+                    <button name="%(pb_hr_payroll_analytics.action_hr_analytics_export_wizard)d" type="action" class="btn btn-sm btn-outline-secondary" string="Export" icon="fa-download"/>
                 </header>
 
                 <sheet>
-                    <!-- Title -->
-                    <div class="oe_title">
-                        <h1>HR Analytics Dashboard</h1>
-                        <p class="oe_grey">Professional analytics for personnel costs, headcount, and statutory compliance</p>
+                    <!-- Professional Dashboard Header -->
+                    <div style="margin-bottom: 30px; padding: 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 8px;">
+                        <h2 style="margin: 0; color: #2c3e50; font-size: 24px; font-weight: 600;">HR Analytics Dashboard</h2>
+                        <p style="margin: 5px 0 0 0; color: #7f8c8d; font-size: 14px;">Analytics Dashboard · Final Approval Review</p>
                     </div>
 
-                    <!-- Global Filters at Top -->
-                    <div style="margin-bottom: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                    <!-- Global Filters Section -->
+                    <div style="margin-bottom: 30px; padding: 20px; background-color: #ffffff; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        <h4 style="margin: 0 0 15px 0; color: #2c3e50; font-weight: 600;">Filters</h4>
                         <group col="4">
-                            <field name="selected_country" string="Country"/>
-                            <field name="date_from" string="From"/>
-                            <field name="date_to" string="To"/>
-                            <div/>
+                            <field name="selected_country" string="Country" nolabel="1"/>
+                            <field name="date_from" string="From" nolabel="1"/>
+                            <field name="date_to" string="To" nolabel="1"/>
+                            <button name="action_refresh_all_analytics" type="object" string="Apply" class="btn btn-primary btn-sm" icon="fa-filter"/>
                         </group>
-                        <div style="margin-top: 10px;">
-                            <button name="action_refresh_all_analytics" type="object" string="Apply Filters" class="btn btn-primary btn-sm" icon="fa-filter"/>
-                        </div>
                     </div>
 
-                    <!-- Quick Stats Cards -->
-                    <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-users">
-                            <field string="Total Employees" name="total_headcount" widget="statinfo"/>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-dollar">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value"><field name="total_personnel_cost" widget="monetary"/></span>
-                                <span class="o_stat_text">Total Personnel Cost</span>
+                    <!-- Professional Metric Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+                        <!-- Card 1: Total Employees -->
+                        <div style="background: white; border-radius: 8px; padding: 20px; border-left: 4px solid #3498db; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h5 style="margin: 0; color: #7f8c8d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Employees</h5>
+                                <i class="fa fa-users" style="font-size: 20px; color: #3498db; opacity: 0.3;"></i>
                             </div>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-files-o">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value"><field name="total_contributions" widget="monetary"/></span>
-                                <span class="o_stat_text">Total Contributions</span>
+                            <div style="color: #2c3e50; font-size: 28px; font-weight: 600;">
+                                <field name="total_headcount" readonly="1" style="display: block;"/>
                             </div>
-                        </button>
-                        <button class="oe_stat_button" type="object" name="action_refresh_all_analytics" icon="fa-percent">
-                            <div class="o_field_widget o_stat_info">
-                                <span class="o_stat_value"><field name="average_salary" widget="monetary"/></span>
-                                <span class="o_stat_text">Avg Cost/Employee</span>
+                        </div>
+
+                        <!-- Card 2: Total Payroll -->
+                        <div style="background: white; border-radius: 8px; padding: 20px; border-left: 4px solid #27ae60; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h5 style="margin: 0; color: #7f8c8d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Payroll</h5>
+                                <i class="fa fa-money" style="font-size: 20px; color: #27ae60; opacity: 0.3;"></i>
                             </div>
-                        </button>
+                            <div style="color: #2c3e50; font-size: 28px; font-weight: 600;">
+                                <field name="total_personnel_cost" widget="monetary" readonly="1" style="display: block;"/>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Average Salary -->
+                        <div style="background: white; border-radius: 8px; padding: 20px; border-left: 4px solid #f39c12; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h5 style="margin: 0; color: #7f8c8d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Average Salary</h5>
+                                <i class="fa fa-calculator" style="font-size: 20px; color: #f39c12; opacity: 0.3;"></i>
+                            </div>
+                            <div style="color: #2c3e50; font-size: 28px; font-weight: 600;">
+                                <field name="average_salary" widget="monetary" readonly="1" style="display: block;"/>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Total Contributions -->
+                        <div style="background: white; border-radius: 8px; padding: 20px; border-left: 4px solid #e74c3c; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h5 style="margin: 0; color: #7f8c8d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Total Contributions</h5>
+                                <i class="fa fa-percent" style="font-size: 20px; color: #e74c3c; opacity: 0.3;"></i>
+                            </div>
+                            <div style="color: #2c3e50; font-size: 28px; font-weight: 600;">
+                                <field name="total_contributions" widget="monetary" readonly="1" style="display: block;"/>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Tab Navigation -->
                     <notebook>
                         <!-- Tab 1: Personnel Costs -->
                         <page string="Personnel Costs for Management" name="personnel_costs">
-                            <div class="alert alert-info">
-                                <strong>Personnel Costs for Management:</strong> Comprehensive analysis of direct salaries, employer contributions, benefits, training, and recruitment costs by department, job title, designation, and cost center.
-                            </div>
-                            <div style="padding: 20px;">
-                                <group col="2">
-                                    <field name="total_personnel_cost" widget="monetary"/>
-                                    <field name="total_contributions" widget="monetary"/>
-                                    <field name="total_headcount"/>
-                                    <field name="average_salary" widget="monetary"/>
-                                </group>
-                                <div style="margin-top: 20px;">
-                                    <button name="action_refresh_all_analytics" type="object" string="Refresh Personnel Costs" class="btn btn-primary"/>
+                            <!-- Charts Grid -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                                <!-- Chart 1: Salary Components (Doughnut) -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-bar-chart" style="margin-right: 8px; color: #3498db;"></i> Salary Components
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Total amounts by component</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="doughnut-chart-personnel" style="max-height: 320px;"></canvas>
+                                    </div>
                                 </div>
-                                <!-- Charts Containers -->
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
-                                    <div style="min-height: 400px;"><canvas id="doughnut-chart-personnel"></canvas></div>
-                                    <div style="min-height: 400px;"><canvas id="stacked-bar-chart-personnel"></canvas></div>
+
+                                <!-- Chart 2: Salary Breakdown (Stacked Bar) -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-line-chart" style="margin-right: 8px; color: #27ae60;"></i> Cost Breakdown by Department
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Personnel costs analysis by department</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="stacked-bar-chart-personnel" style="max-height: 320px;"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </page>
 
                         <!-- Tab 2: Cross Country Analytics -->
                         <page string="Cross Country Analytics" name="cross_country">
-                            <div class="alert alert-info">
-                                <strong>Cross Country Analytics:</strong> Global view of personnel costs across all countries with multi-country comparisons, headcount distribution, and cost-per-employee analysis.
+                            <!-- Charts Grid -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                                <!-- Chart 1: Costs by Country -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-globe" style="margin-right: 8px; color: #3498db;"></i> Personnel Costs by Country
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Total costs across all countries</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="bar-chart-country-costs" style="max-height: 320px;"></canvas>
+                                    </div>
+                                </div>
+
+                                <!-- Chart 2: Headcount Distribution -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-pie-chart" style="margin-right: 8px; color: #27ae60;"></i> Headcount Distribution
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Employee count by country</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="pie-chart-headcount" style="max-height: 320px;"></canvas>
+                                    </div>
+                                </div>
                             </div>
-                            <!-- Charts Containers -->
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
-                                <div style="min-height: 400px;"><canvas id="bar-chart-country-costs"></canvas></div>
-                                <div style="min-height: 400px;"><canvas id="pie-chart-headcount"></canvas></div>
+
+                            <!-- Chart 3: Cost vs Headcount -->
+                            <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 30px;">
+                                <div style="margin-bottom: 20px;">
+                                    <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                        <i class="fa fa-scatter" style="margin-right: 8px; color: #e74c3c;"></i> Cost per Employee Analysis
+                                    </h4>
+                                    <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Comparison of costs and headcount</p>
+                                </div>
+                                <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                    <canvas id="scatter-chart-costvsheadcount" style="max-height: 320px;"></canvas>
+                                </div>
                             </div>
-                            <div style="margin-top: 30px; min-height: 400px;"><canvas id="scatter-chart-costvsheadcount"></canvas></div>
                         </page>
 
                         <!-- Tab 3: Statutory Contributions -->
                         <page string="Statutory Contributions" name="statutory_contributions">
-                            <div class="alert alert-info">
-                                <strong>Statutory Contributions:</strong> Employee &amp; employer contributions tracking with compliance status and payment tracking.
-                            </div>
-                            <div style="padding: 20px;">
-                                <group col="2">
-                                    <field name="total_contributions" widget="monetary"/>
-                                    <field name="total_headcount"/>
-                                    <field name="total_personnel_cost" widget="monetary"/>
-                                    <field name="average_salary" widget="monetary"/>
-                                </group>
-                                <div style="margin-top: 20px;">
-                                    <button name="action_refresh_all_analytics" type="object" string="Refresh Contributions" class="btn btn-primary"/>
+                            <!-- Charts Grid -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                                <!-- Chart 1: Contributions Breakdown -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-pie-chart" style="margin-right: 8px; color: #3498db;"></i> Contribution Types
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Breakdown by contribution type</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="doughnut-chart-statutory" style="max-height: 320px;"></canvas>
+                                    </div>
                                 </div>
-                                <!-- Charts Containers -->
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
-                                    <div style="min-height: 400px;"><canvas id="doughnut-chart-statutory"></canvas></div>
-                                    <div style="min-height: 400px;"><canvas id="stacked-bar-chart-statutory"></canvas></div>
+
+                                <!-- Chart 2: Employee vs Employer -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-bar-chart" style="margin-right: 8px; color: #27ae60;"></i> Employer vs Employee
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Contribution comparison</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="stacked-bar-chart-statutory" style="max-height: 320px;"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </page>
 
                         <!-- Tab 4: Headcount Analysis -->
                         <page string="Headcount Analysis" name="headcount">
-                            <div class="alert alert-info">
-                                <strong>Headcount Analysis:</strong> Employee count, FTE calculations, attrition rates, and headcount trends with department breakdowns.
-                            </div>
-                            <div style="padding: 20px;">
-                                <group col="4">
-                                    <field name="total_headcount"/>
-                                    <field name="total_personnel_cost" widget="monetary"/>
-                                    <field name="average_salary" widget="monetary"/>
-                                    <field name="total_contributions" widget="monetary"/>
-                                </group>
-                                <div style="margin-top: 20px;">
-                                    <button name="action_refresh_all_analytics" type="object" string="Refresh Headcount" class="btn btn-primary"/>
+                            <!-- Chart -->
+                            <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px;">
+                                <div style="margin-bottom: 20px;">
+                                    <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                        <i class="fa fa-pie-chart" style="margin-right: 8px; color: #3498db;"></i> Employee Type Distribution
+                                    </h4>
+                                    <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Headcount breakdown by employee type</p>
                                 </div>
-                                <!-- Charts Container -->
-                                <div style="margin-top: 30px; min-height: 400px;"><canvas id="pie-chart-hc-type"></canvas></div>
+                                <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                    <canvas id="pie-chart-hc-type" style="max-height: 320px;"></canvas>
+                                </div>
                             </div>
                         </page>
 
                         <!-- Tab 5: Dependents &amp; Benefits -->
                         <page string="Dependents &amp; Benefits" name="dependents">
-                            <div class="alert alert-info">
-                                <strong>Dependents &amp; Benefits:</strong> Dependent count tracking, age distribution, benefits impact analysis, and tax benefit implications.
-                            </div>
-                            <div style="padding: 20px;">
-                                <group col="2">
-                                    <field name="total_contributions" widget="monetary"/>
-                                    <field name="total_headcount"/>
-                                    <field name="total_personnel_cost" widget="monetary"/>
-                                    <field name="average_salary" widget="monetary"/>
-                                </group>
-                                <div style="margin-top: 20px;">
-                                    <button name="action_refresh_all_analytics" type="object" string="Refresh Dependents" class="btn btn-primary"/>
+                            <!-- Chart -->
+                            <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px;">
+                                <div style="margin-bottom: 20px;">
+                                    <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                        <i class="fa fa-bar-chart" style="margin-right: 8px; color: #3498db;"></i> Dependents by Category
+                                    </h4>
+                                    <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Dependent count tracking and benefits analysis</p>
                                 </div>
-                                <!-- Charts Container - Sample Data Note -->
-                                <div class="alert alert-warning" style="margin-top: 30px;">
-                                    <strong>Note:</strong> Dependents data populated from sample data. Uses Chart.js visualization for future live data integration.
+                                <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                    <canvas id="bar-chart-dependents" style="max-height: 320px;"></canvas>
                                 </div>
-                                <div style="margin-top: 20px; min-height: 400px;"><canvas id="bar-chart-dependents"></canvas></div>
                             </div>
                         </page>
 
                         <!-- Tab 6: Budget Variance -->
                         <page string="Budget Variance" name="budget_variance">
-                            <div class="alert alert-warning">
-                                <strong>Budget Variance (Sample Data):</strong> Budgeted vs actual cost comparison with variance analysis and alerts for high-variance items.
-                            </div>
-                            <div style="padding: 20px;">
-                                <group col="2">
-                                    <field name="total_personnel_cost" widget="monetary"/>
-                                    <field name="average_salary" widget="monetary"/>
-                                </group>
-                                <div style="margin-top: 20px;">
-                                    <button name="action_refresh_all_analytics" type="object" string="Refresh Budget" class="btn btn-primary"/>
+                            <!-- Charts Grid -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                                <!-- Chart 1: Budget vs Actual -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-bar-chart" style="margin-right: 8px; color: #3498db;"></i> Budget vs Actual
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Comparison of budgeted and actual costs</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="grouped-bar-chart-budget" style="max-height: 320px;"></canvas>
+                                    </div>
                                 </div>
-                                <!-- Charts Containers -->
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;">
-                                    <div style="min-height: 400px;"><canvas id="grouped-bar-chart-budget"></canvas></div>
-                                    <div style="min-height: 400px;"><canvas id="bar-chart-variance"></canvas></div>
+
+                                <!-- Chart 2: Variance Percentage -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-line-chart" style="margin-right: 8px; color: #27ae60;"></i> Variance Analysis
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Variance percentage by department</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="bar-chart-variance" style="max-height: 320px;"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </page>
 
                         <!-- Tab 7: Annual HR Costs -->
                         <page string="Annual HR Costs" name="annual_costs">
-                            <div class="alert alert-info">
-                                <strong>Annual HR Costs Overview:</strong> Annual salary costs, total cost of employment, cost trends, and full-year projections with year-over-year comparison.
-                            </div>
-                            <div style="padding: 20px;">
-                                <group col="2">
-                                    <field name="total_personnel_cost" widget="monetary"/>
-                                    <field name="total_contributions" widget="monetary"/>
-                                    <field name="total_headcount"/>
-                                    <field name="average_salary" widget="monetary"/>
-                                </group>
-                                <div style="margin-top: 20px;">
-                                    <button name="action_refresh_all_analytics" type="object" string="Refresh Annual Costs" class="btn btn-primary"/>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 20px;">
+                                <!-- Chart: Annual Cost Trend (Line Chart) -->
+                                <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <div style="margin-bottom: 20px;">
+                                        <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
+                                            <i class="fa fa-line-chart" style="margin-right: 8px; color: #3498db;"></i> Annual Cost Trend
+                                        </h4>
+                                        <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Year-over-year cost analysis and projections</p>
+                                    </div>
+                                    <div style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                                        <canvas id="line-chart-annual-trend" style="max-height: 320px;"></canvas>
+                                    </div>
                                 </div>
-                                <!-- Charts Container -->
-                                <div style="margin-top: 30px; min-height: 400px;"><canvas id="line-chart-annual-trend"></canvas></div>
                             </div>
                         </page>
                     </notebook>
