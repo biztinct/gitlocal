@@ -1,13 +1,30 @@
 /* HR Analytics Dashboard - Main Dashboard Controller */
 
+console.log('[HR Analytics] Dashboard.js file loaded - about to define module');
+
 odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
     'use strict';
 
-    var FormController = require('web.FormController');
-    var rpc = require('web.rpc');
-    var ChartLib = require('pb_hr_payroll_analytics.Charts');
+    console.log('[HR Analytics] Dashboard module definition starting...');
 
-    return FormController.extend({
+    var FormController = require('web.FormController');
+    var FormView = require('web.FormView');
+    var rpc = require('web.rpc');
+
+    console.log('[HR Analytics] Attempting to load ChartLib...');
+    var ChartLib;
+    try {
+        ChartLib = require('pb_hr_payroll_analytics.Charts');
+        console.log('[HR Analytics] ChartLib loaded successfully');
+    } catch(e) {
+        console.warn('[HR Analytics] ChartLib not available, will use fallback');
+        ChartLib = window.ChartLib || {};
+    }
+
+    console.log('[HR Analytics] FormController require complete, ChartLib available:', !!ChartLib);
+
+    // Create custom FormController class
+    var DashboardController = FormController.extend({
         events: _.extend({}, FormController.prototype.events, {
             'click .nav-link': '_onTabClick',
             'click button[name="action_refresh_all_analytics"]': '_onRefresh',
@@ -15,11 +32,12 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         }),
 
         init: function() {
+            console.log('[HR Analytics] FormController init called with args:', arguments);
             this._super.apply(this, arguments);
             this.charts = {};
             this.chartJSLoaded = false;
             this.activeTab = 'personnel_costs';
-            console.log('[HR Analytics] FormController initialized');
+            console.log('[HR Analytics] FormController initialized successfully');
         },
 
         willStart: function() {
@@ -33,11 +51,26 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         start: function() {
             console.log('[HR Analytics] start called');
             return this._super.apply(this, arguments).then(() => {
-                console.log('[HR Analytics] Setting up dashboard...');
-                this._setupDashboard();
-                this._setupTabNavigation();
-                console.log('[HR Analytics] Dashboard setup complete');
+                console.log('[HR Analytics] Super start complete, scheduling dashboard setup...');
+                this._scheduleDashboardSetup();
             });
+        },
+
+        _scheduleDashboardSetup: function() {
+            var self = this;
+            console.log('[HR Analytics] _scheduleDashboardSetup: Scheduling dashboard setup with 500ms delay');
+
+            // Use setTimeout to ensure DOM is fully rendered before accessing canvas elements
+            setTimeout(function() {
+                console.log('[HR Analytics] _scheduleDashboardSetup: 500ms delay complete, initializing dashboard');
+                try {
+                    self._setupDashboard();
+                    self._setupTabNavigation();
+                    console.log('[HR Analytics] Dashboard setup complete');
+                } catch(e) {
+                    console.error('[HR Analytics] Error during dashboard setup:', e);
+                }
+            }, 500);
         },
 
         destroy: function() {
@@ -464,9 +497,9 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         // =====================================================================
 
         _loadAnnualCostsCharts: function() {
-            var annual = this.renderer.state.data.annual_costs_id;
-
-            if (!annual) return;
+            // Use sample data for annual costs since annual_costs_id may not exist
+            // var annual = this.record.data.annual_costs_id;
+            // if (!annual) return;
 
             // Sample monthly data for trend
             var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -521,4 +554,57 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
             // Open export wizard
         }
     });
+
+    console.log('[HR Analytics] DashboardController class created successfully');
+    console.log('[HR Analytics] Registering DashboardController as pb_hr_payroll_analytics.Dashboard');
+
+    // =====================================================================
+    // FORMVIEW EXTENSION - Inject DashboardController
+    // =====================================================================
+
+    console.log('[HR Analytics] Creating FormView extension to inject custom controller...');
+
+    // Create a custom FormView that uses our DashboardController
+    var DashboardFormView = FormView.extend({
+        config: _.extend({}, FormView.prototype.config, {
+            Controller: DashboardController,
+        }),
+
+        init: function(viewInfo, params) {
+            console.log('[HR Analytics] DashboardFormView init called for model:', viewInfo.model);
+
+            // Always use our custom controller for dashboard views
+            if (viewInfo.model === 'hr.analytics.dashboard') {
+                console.log('[HR Analytics] Setting up DashboardController for hr.analytics.dashboard');
+                viewInfo.controllerClass = DashboardController;
+                this.config.Controller = DashboardController;
+            }
+
+            return this._super.apply(this, arguments);
+        }
+    });
+
+    console.log('[HR Analytics] FormView extension created successfully');
+
+    // =====================================================================
+    // REGISTER FORMVIEW IN VIEWREGISTRY
+    // =====================================================================
+
+    console.log('[HR Analytics] Registering DashboardFormView in viewRegistry with key "hr_analytics_dashboard"');
+
+    try {
+        var viewRegistry = require('web.view_registry');
+
+        // Register the DashboardFormView with the exact js_class name from the form view XML
+        viewRegistry.add('hr_analytics_dashboard', DashboardFormView);
+
+        console.log('[HR Analytics] DashboardFormView successfully registered in viewRegistry');
+        console.log('[HR Analytics] This FormView will be used for forms with js_class="hr_analytics_dashboard"');
+    } catch(e) {
+        console.error('[HR Analytics] Error registering DashboardFormView in viewRegistry:', e);
+    }
+
+    return DashboardController;
 });
+
+console.log('[HR Analytics] Dashboard module fully loaded and exported');
