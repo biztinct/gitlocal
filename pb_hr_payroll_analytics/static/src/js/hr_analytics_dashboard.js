@@ -161,11 +161,16 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
         _setupTabNavigation: function() {
             var self = this;
+            console.log('[HR Analytics] _setupTabNavigation: Setting up tab click handlers');
             var tabs = document.querySelectorAll('.nav-link');
-            tabs.forEach(function(tab) {
+            console.log('[HR Analytics] Found ' + tabs.length + ' nav-link elements');
+
+            tabs.forEach(function(tab, idx) {
                 tab.addEventListener('click', function(e) {
                     e.preventDefault();
-                    var tabName = this.getAttribute('data-tab');
+                    // Tab name is in the 'name' attribute of the <a> tag
+                    var tabName = this.getAttribute('name');
+                    console.log('[HR Analytics] _setupTabNavigation: Tab ' + idx + ' clicked, name:', tabName);
                     self._switchTab(tabName);
                 });
             });
@@ -173,13 +178,24 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
         _onTabClick: function(e) {
             e.preventDefault();
-            var tabName = e.currentTarget.getAttribute('data-tab');
+            // Tab name is in the 'name' attribute of the <a> tag
+            var tabName = e.currentTarget.getAttribute('name');
+            console.log('[HR Analytics] _onTabClick: Tab clicked, name:', tabName);
             this._switchTab(tabName);
         },
 
         _switchTab: function(tabName) {
-            // Hide all tabs
+            console.log('[HR Analytics] _switchTab called with tabName:', tabName);
+
+            if (!tabName) {
+                console.error('[HR Analytics] _switchTab: tabName is null or empty!');
+                return;
+            }
+
+            // Hide all tabs and remove active class
+            console.log('[HR Analytics] _switchTab: Hiding all tab panes...');
             document.querySelectorAll('[role="tabpanel"]').forEach(function(panel) {
+                panel.classList.remove('active');
                 panel.style.display = 'none';
             });
 
@@ -188,19 +204,35 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 link.classList.remove('active');
             });
 
-            // Show selected tab
-            var tabPanel = document.querySelector('[data-tab-pane="' + tabName + '"]');
-            if (tabPanel) {
-                tabPanel.style.display = 'block';
-            }
+            // Find and show the selected tab pane by finding the link with matching name
+            console.log('[HR Analytics] _switchTab: Looking for tab with name:', tabName);
+            var activeLink = document.querySelector('.nav-link[name="' + tabName + '"]');
 
-            // Add active class to clicked link
-            var activeLink = document.querySelector('[data-tab="' + tabName + '"]');
             if (activeLink) {
+                console.log('[HR Analytics] _switchTab: Found active link for tab:', tabName);
                 activeLink.classList.add('active');
+
+                // Find the corresponding tab pane
+                // Bootstrap tabs use the href to find the pane
+                var panelId = activeLink.getAttribute('href');
+                if (panelId) {
+                    // Remove the # if present
+                    panelId = panelId.replace('#', '');
+                    var tabPanel = document.getElementById(panelId);
+                    if (tabPanel) {
+                        console.log('[HR Analytics] _switchTab: Found tab pane:', panelId);
+                        tabPanel.classList.add('active');
+                        tabPanel.style.display = 'block';
+                    } else {
+                        console.error('[HR Analytics] _switchTab: Tab pane not found:', panelId);
+                    }
+                }
+            } else {
+                console.error('[HR Analytics] _switchTab: Active link not found for tab:', tabName);
             }
 
             this.activeTab = tabName;
+            console.log('[HR Analytics] _switchTab: Active tab set to:', this.activeTab);
 
             // Load data for this tab
             this._loadTabData(tabName);
