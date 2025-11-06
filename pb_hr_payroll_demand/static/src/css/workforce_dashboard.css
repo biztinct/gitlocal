@@ -1,0 +1,302 @@
+.pb-workforce-dashboard__control {
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.pb-dashboard-title {
+    font-weight: 600;
+    color: var(--o-brand-odoo, #32325d);
+}
+
+.pb-dashboard-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+}
+
+.pb-dashboard-filter label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6c6d71;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.pb-dashboard-filter--refresh {
+    align-self: flex-end;
+}
+
+.pb-workforce-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0 0.5rem 1rem 0.5rem;
+    background: linear-gradient(180deg, #f9fafc 0%, #ffffff 100%);
+    min-height: calc(100vh - 9rem);
+}
+
+.pb-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.75rem;
+}
+
+.pb-metric-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1.1rem;
+    box-shadow: 0 8px 20px rgba(50, 50, 93, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.pb-metric-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.12), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pb-metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 30px rgba(50, 50, 93, 0.12);
+}
+
+.pb-metric-card:hover::after {
+    opacity: 1;
+}
+
+.pb-metric-card--accent {
+    border-left: 4px solid #0d6efd;
+}
+
+.pb-metric-card--alert {
+    border-left: 4px solid #e55353;
+}
+
+.pb-metric-label {
+    display: block;
+    color: #6c6d71;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.25rem;
+}
+
+.pb-metric-value {
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: #1f2933;
+}
+
+.pb-dashboard-sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+.pb-dashboard-sections--split {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+}
+
+.pb-dashboard-panel {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 1.25rem;
+    box-shadow: 0 10px 24px rgba(31, 45, 61, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pb-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding-bottom: 0.5rem;
+}
+
+.pb-panel-header h3 {
+    font-weight: 600;
+    color: #2f3a4f;
+    margin: 0;
+}
+
+.pb-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+
+.pb-status-card {
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    background: #f4f7fb;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.pb-status-card[data-state="draft"] {
+    border-left: 4px solid #6c63ff;
+}
+
+.pb-status-card[data-state="review"] {
+    border-left: 4px solid #ffb347;
+}
+
+.pb-status-card[data-state="approved"] {
+    border-left: 4px solid #48bb78;
+}
+
+.pb-status-card[data-state="archived"] {
+    border-left: 4px solid #718096;
+}
+
+.pb-status-card:hover {
+    transform: translateY(-2px);
+    background: #eef2fb;
+}
+
+.pb-status-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #5f6368;
+}
+
+.pb-status-value {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.pb-chart-container {
+    position: relative;
+    min-height: 220px;
+}
+
+.pb-segmentation-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.pb-segmentation-card {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.08), rgba(13, 110, 253, 0.02));
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.pb-segmentation-card[data-quadrant="protect"] {
+    border-left: 4px solid #ff6b6b;
+}
+
+.pb-segmentation-card[data-quadrant="transform"] {
+    border-left: 4px solid #6c63ff;
+}
+
+.pb-segmentation-card[data-quadrant="build"] {
+    border-left: 4px solid #20c997;
+}
+
+.pb-segmentation-card[data-quadrant="streamline"] {
+    border-left: 4px solid #4dabf7;
+}
+
+.pb-segmentation-card:hover {
+    transform: translateX(4px);
+}
+
+.pb-table-wrapper {
+    max-height: 300px;
+    overflow: auto;
+}
+
+.pb-table-wrapper table th {
+    background: rgba(33, 150, 243, 0.08);
+    border-top: none;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #495057;
+}
+
+.pb-table-wrapper table td {
+    vertical-align: middle;
+}
+
+.pb-empty-row td {
+    text-align: center;
+    padding: 1.5rem 0;
+    color: #818384;
+    font-style: italic;
+}
+
+.pb-capability-card__header,
+.pb-role-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.pb-capability-card__name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2f3a4f;
+}
+
+.pb-capability-card__stats,
+.pb-role-card__stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+}
+
+.pb-capability-card__stat-label,
+.pb-role-card__label {
+    color: #6c6d71;
+    text-transform: uppercase;
+    display: block;
+}
+
+.pb-capability-card__stat-value,
+.pb-role-card__value {
+    font-weight: 600;
+    color: #1f2933;
+}
+
+.pb-role-card__meta {
+    display: flex;
+    justify-content: space-between;
+    color: #6c6d71;
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+@media (max-width: 1024px) {
+    .pb-dashboard-filters {
+        width: 100%;
+    }
+
+    .pb-dashboard-filter label {
+        font-size: 0.68rem;
+    }
+
+    .pb-dashboard-sections,
+    .pb-dashboard-sections--split {
+        grid-template-columns: 1fr;
+    }
+}
