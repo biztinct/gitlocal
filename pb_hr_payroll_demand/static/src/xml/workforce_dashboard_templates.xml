@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <templates id="template" xml:space="preserve">
     <t t-name="pb_hr_payroll_demand.WorkforceDashboard">
+        <div class="pb-workforce-dashboard-wrapper">
         <div class="o_control_panel pb-workforce-dashboard__control">
             <div class="o_cp_heading">
                 <h2 class="pb-dashboard-title">Workforce Demand Hub</h2>
@@ -9,19 +10,19 @@
                 <div class="pb-dashboard-filters">
                     <div class="pb-dashboard-filter">
                         <label>Year</label>
-                        <select class="form-select" data-filter="year" />
+                        <select class="form-select" data-filter="year"></select>
                     </div>
                     <div class="pb-dashboard-filter">
                         <label>Capability</label>
-                        <select class="form-select" data-filter="capability" />
+                        <select class="form-select" data-filter="capability"></select>
                     </div>
                     <div class="pb-dashboard-filter">
                         <label>Role</label>
-                        <select class="form-select" data-filter="role" />
+                        <select class="form-select" data-filter="role"></select>
                     </div>
                     <div class="pb-dashboard-filter pb-dashboard-filter--refresh">
                         <button type="button" class="btn btn-primary pb-dashboard-refresh">
-                            <i class="fa fa-refresh me-1" /> Refresh
+                            <i class="fa fa-refresh me-1"></i> Refresh
                         </button>
                     </div>
                 </div>
@@ -140,6 +141,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </t>
 </templates>
