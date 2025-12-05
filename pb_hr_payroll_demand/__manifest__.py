@@ -42,7 +42,6 @@
             'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js',
             'pb_hr_payroll_demand/static/src/css/workforce_dashboard.css',
             'pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js',
-            'pb_hr_payroll_demand/static/src/js/workforce_dashboard.js',
             'pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml',
         ],
     },
