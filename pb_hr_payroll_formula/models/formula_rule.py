@@ -233,21 +233,36 @@ class HrFormulaRule(models.Model):
         for record in self:
             record.display_name = f"{record.column_letter}: {record.name} ({record.code})"
 
-    @api.depends('sequence', 'config_id', 'config_id.rule_ids')
+    @api.depends('sequence', 'config_id')
     def _compute_column_letter(self):
-        """Compute Excel-style column letter based on sequence order"""
-        for config in self.mapped('config_id'):
-            # Handle NewId objects for unsaved records by using sequence only
-            # and falling back to string representation for tie-breaking
-            rules = config.rule_ids.sorted(
-                key=lambda r: (r.sequence, str(r.id) if not isinstance(r.id, int) else r.id)
-            )
-            for index, rule in enumerate(rules):
-                rule.column_letter = self._index_to_letter(index)
+        """Compute Excel-style column letter based on sequence order.
 
-        # Handle records without a config_id (new unsaved records)
-        for record in self.filtered(lambda r: not r.config_id):
-            record.column_letter = 'A'
+        For saved records: compute based on sequence order among saved siblings.
+        For unsaved records: show blank (will get letter after save).
+        """
+        for record in self:
+            if not record.config_id:
+                # No config - blank
+                record.column_letter = ''
+            elif not isinstance(record.id, int):
+                # Unsaved record - blank until saved
+                record.column_letter = ''
+            else:
+                # Saved record - compute position among saved siblings only
+                # Read directly from database to avoid cache issues during editing
+                saved_siblings = record.config_id.rule_ids.filtered(
+                    lambda r: isinstance(r.id, int)
+                )
+                sorted_siblings = saved_siblings.sorted(
+                    key=lambda r: (r.sequence or 0, r.id)
+                )
+                # Find position of this record
+                for index, sibling in enumerate(sorted_siblings):
+                    if sibling.id == record.id:
+                        record.column_letter = self._index_to_letter(index)
+                        break
+                else:
+                    record.column_letter = ''
 
     @staticmethod
     def _index_to_letter(index):

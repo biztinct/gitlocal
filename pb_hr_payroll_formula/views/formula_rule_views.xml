@@ -17,10 +17,7 @@
                        decoration-muted="column_type == 'constant'"/>
                 <field name="name"/>
                 <field name="code"/>
-                <field name="column_type" widget="badge"
-                       decoration-info="column_type == 'input'"
-                       decoration-success="column_type == 'formula'"
-                       decoration-muted="column_type == 'constant'"/>
+                <field name="column_type"/>
                 <field name="excel_formula" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
                 <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
                 <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>

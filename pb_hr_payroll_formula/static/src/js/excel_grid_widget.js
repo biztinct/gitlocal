@@ -583,10 +583,18 @@ export class ExcelFormulaGrid extends Component {
     }
 }
 
-// Register the component as a field widget
-registry.category("fields").add("excel_formula_grid", {
-    component: ExcelFormulaGrid,
-    supportedTypes: ["text", "char"],
-});
+// NOTE: Widget registration is disabled until proper One2many field widget
+// implementation is complete. The standard Odoo tree view is used instead.
+// The component is exported for future development.
+//
+// To re-enable:
+// 1. Import standardFieldProps from "@web/views/fields/standard_field_props"
+// 2. Extend from a proper One2many field base class
+// 3. Register with supportedTypes: ["one2many"]
+//
+// registry.category("fields").add("excel_formula_grid", {
+//     component: ExcelFormulaGrid,
+//     supportedTypes: ["one2many"],
+// });
 
 export default ExcelFormulaGrid;
