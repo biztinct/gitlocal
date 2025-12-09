@@ -68,23 +68,24 @@ License: LGPL-3
     ],
     'assets': {
         'web.assets_backend': [
-            # SCSS
+            # SCSS - Core styling only
             'pb_hr_payroll_formula/static/src/scss/excel_grid.scss',
-            'pb_hr_payroll_formula/static/src/scss/formula_bar.scss',
-            'pb_hr_payroll_formula/static/src/scss/dark_theme.scss',
             'pb_hr_payroll_formula/static/src/scss/animations.scss',
 
-            # JavaScript
-            'pb_hr_payroll_formula/static/src/js/excel_grid_widget.js',
-            'pb_hr_payroll_formula/static/src/js/formula_bar.js',
-            'pb_hr_payroll_formula/static/src/js/column_header.js',
-            'pb_hr_payroll_formula/static/src/js/cell_editor.js',
-            'pb_hr_payroll_formula/static/src/js/formula_autocomplete.js',
-            'pb_hr_payroll_formula/static/src/js/grid_actions.js',
-
-            # XML Templates
-            'pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml',
-            'pb_hr_payroll_formula/static/src/xml/formula_components.xml',
+            # NOTE: Custom Excel grid widget JS disabled until proper implementation
+            # The standard Odoo tree view is used instead for formula configuration
+            # To re-enable custom widget, uncomment the following lines:
+            #
+            # 'pb_hr_payroll_formula/static/src/js/excel_grid_widget.js',
+            # 'pb_hr_payroll_formula/static/src/js/formula_bar.js',
+            # 'pb_hr_payroll_formula/static/src/js/column_header.js',
+            # 'pb_hr_payroll_formula/static/src/js/cell_editor.js',
+            # 'pb_hr_payroll_formula/static/src/js/formula_autocomplete.js',
+            # 'pb_hr_payroll_formula/static/src/js/grid_actions.js',
+            # 'pb_hr_payroll_formula/static/src/scss/formula_bar.scss',
+            # 'pb_hr_payroll_formula/static/src/scss/dark_theme.scss',
+            # 'pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml',
+            # 'pb_hr_payroll_formula/static/src/xml/formula_components.xml',
         ],
     },
     'images': ['static/description/icon.png'],
