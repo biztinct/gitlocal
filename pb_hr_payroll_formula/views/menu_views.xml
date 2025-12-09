@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         MAIN MENU STRUCTURE
+         ========================================== -->
+
+    <!-- Formula Configuration Root Menu (Under Payroll) -->
+    <menuitem id="menu_formula_root"
+              name="Formula Engine"
+              parent="om_hr_payroll.menu_hr_payroll_root"
+              sequence="50"
+              groups="pb_hr_payroll_formula.group_formula_user"/>
+
+    <!-- Configurations Submenu -->
+    <menuitem id="menu_formula_configs"
+              name="Configurations"
+              parent="menu_formula_root"
+              action="action_formula_config"
+              sequence="10"/>
+
+    <!-- Integration Submenu -->
+    <menuitem id="menu_formula_integrations"
+              name="Integrations"
+              parent="menu_formula_root"
+              sequence="20"
+              groups="pb_hr_payroll_formula.group_formula_admin"/>
+
+    <menuitem id="menu_integration_connectors"
+              name="Connectors"
+              parent="menu_formula_integrations"
+              action="action_integration_connector"
+              sequence="10"/>
+
+    <menuitem id="menu_integration_mappings"
+              name="Field Mappings"
+              parent="menu_formula_integrations"
+              action="action_field_mapping"
+              sequence="20"/>
+
+    <!-- Testing Submenu -->
+    <menuitem id="menu_formula_testing"
+              name="Testing"
+              parent="menu_formula_root"
+              sequence="30"
+              groups="pb_hr_payroll_formula.group_formula_manager"/>
+
+    <menuitem id="menu_sample_data"
+              name="Sample Data"
+              parent="menu_formula_testing"
+              action="action_sample_data"
+              sequence="10"/>
+
+    <menuitem id="menu_test_results"
+              name="Test Results"
+              parent="menu_formula_testing"
+              action="action_test_results"
+              sequence="20"/>
+
+    <!-- Settings Submenu -->
+    <menuitem id="menu_formula_settings"
+              name="Settings"
+              parent="menu_formula_root"
+              sequence="100"
+              groups="pb_hr_payroll_formula.group_formula_admin"/>
+
+</odoo>

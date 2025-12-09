@@ -1,0 +1,95 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Excel Formula Payroll Calculator',
+    'version': '16.0.1.0.0',
+    'category': 'Human Resources/Payroll',
+    'summary': 'State-of-the-art Excel-like formula-based salary calculation engine',
+    'description': """
+Excel Formula Payroll Calculator
+================================
+
+A modern, visually stunning module that provides Excel-like formula-based
+salary rule configuration with an intuitive drag-and-drop interface.
+
+Key Features:
+-------------
+* Excel-like grid interface with column letters (A, B, C...Z, AA, AB, etc.)
+* Drag-and-drop column reordering with automatic formula reference updates
+* Formula bar with syntax highlighting and autocomplete
+* Real-time formula validation and circular reference detection
+* Light/Dark theme support with smooth animations
+* Multi-system HR integration (Zoho People, Excel Import, SAP, Workday, Oracle HCM)
+* Advanced sample data testing with anonymized employee comparison
+* Seamless integration with existing payroll workflow
+
+Technical Features:
+------------------
+* Uses Python 'formulas' library for Excel-to-Python conversion
+* OWL-based modern frontend components
+* Full backward compatibility with spreadsheet-based calculation
+
+Author: Anthropic Claude Code
+License: LGPL-3
+    """,
+    'author': 'Anthropic Claude Code',
+    'website': 'https://github.com/anthropics/claude-code',
+    'license': 'LGPL-3',
+    'depends': [
+        'om_hr_payroll',
+        'pb_hr_payroll_base',
+        'web',
+        'mail',
+    ],
+    'external_dependencies': {
+        'python': ['formulas', 'openpyxl'],
+    },
+    'data': [
+        # Security
+        'security/formula_security.xml',
+        'security/ir.model.access.csv',
+
+        # Data
+        'data/formula_functions_data.xml',
+
+        # Views
+        'views/assets.xml',
+        'views/formula_config_views.xml',
+        'views/formula_rule_views.xml',
+        'views/integration_views.xml',
+        'views/sample_data_views.xml',
+        'views/menu_views.xml',
+        'views/hr_payslip_formula_views.xml',
+
+        # Wizards
+        'wizards/wizard_views.xml',
+    ],
+    'demo': [
+        'data/demo_formula_config.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            # SCSS
+            'pb_hr_payroll_formula/static/src/scss/excel_grid.scss',
+            'pb_hr_payroll_formula/static/src/scss/formula_bar.scss',
+            'pb_hr_payroll_formula/static/src/scss/dark_theme.scss',
+            'pb_hr_payroll_formula/static/src/scss/animations.scss',
+
+            # JavaScript
+            'pb_hr_payroll_formula/static/src/js/excel_grid_widget.js',
+            'pb_hr_payroll_formula/static/src/js/formula_bar.js',
+            'pb_hr_payroll_formula/static/src/js/column_header.js',
+            'pb_hr_payroll_formula/static/src/js/cell_editor.js',
+            'pb_hr_payroll_formula/static/src/js/formula_autocomplete.js',
+            'pb_hr_payroll_formula/static/src/js/grid_actions.js',
+
+            # XML Templates
+            'pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml',
+            'pb_hr_payroll_formula/static/src/xml/formula_components.xml',
+        ],
+    },
+    'images': ['static/description/icon.png'],
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+    'sequence': 1,
+}

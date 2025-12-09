@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Formula Bar Component Template -->
+    <t t-name="pb_hr_payroll_formula.FormulaBar" owl="1">
+        <div class="formula-bar-component">
+            <div class="cell-reference">
+                <span t-if="props.cellReference" class="column-letter" t-esc="props.cellReference"/>
+                <span t-if="props.rowType" class="row-indicator" t-esc="props.rowType"/>
+                <span t-if="!props.cellReference" class="no-selection">-</span>
+            </div>
+
+            <div class="formula-icon">fx</div>
+
+            <div class="formula-input-wrapper">
+                <input type="text"
+                       class="formula-input"
+                       t-ref="input"
+                       t-att-value="props.value"
+                       t-att-disabled="props.readonly"
+                       t-on-input="onInput"
+                       t-on-keydown="onKeyDown"
+                       placeholder="Enter formula (e.g., =A1+B1*0.08)"/>
+
+                <!-- Autocomplete Dropdown -->
+                <div t-if="state.showAutocomplete" class="formula-autocomplete">
+                    <t t-foreach="state.autocompleteItems" t-as="item" t-key="item_index">
+                        <div t-attf-class="autocomplete-item #{item_index === state.highlightedIndex ? 'highlighted' : ''}"
+                             t-on-click="() => this.selectAutocompleteItem(item_index)"
+                             t-on-mouseenter="() => this.state.highlightedIndex = item_index">
+                            <div t-attf-class="item-icon #{item.type === 'function' ? 'function-icon' : 'column-icon'}">
+                                <t t-if="item.type === 'function'">fx</t>
+                                <t t-else="" t-esc="item.name"/>
+                            </div>
+                            <div class="item-content">
+                                <span class="item-name" t-esc="item.name"/>
+                                <span class="item-description" t-esc="item.description"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Function Help Tooltip -->
+                <div t-if="state.showHelp and state.currentFunction" class="formula-help-tooltip">
+                    <div class="help-header">
+                        <span class="function-name" t-esc="state.currentFunction.name"/>
+                        <span class="function-category" t-esc="state.currentFunction.category"/>
+                    </div>
+                    <div class="help-syntax" t-esc="state.currentFunction.syntax"/>
+                    <div class="help-description" t-esc="state.currentFunction.description"/>
+                </div>
+            </div>
+
+            <button class="btn btn-sm btn-success formula-commit"
+                    t-on-click="onCommitClick"
+                    t-att-disabled="props.readonly"
+                    title="Apply (Enter)">
+                <i class="fa fa-check"/>
+            </button>
+            <button class="btn btn-sm btn-secondary formula-cancel"
+                    t-on-click="onCancelClick"
+                    title="Cancel (Esc)">
+                <i class="fa fa-times"/>
+            </button>
+        </div>
+    </t>
+
+    <!-- Cell Editor Template -->
+    <t t-name="pb_hr_payroll_formula.CellEditor" owl="1">
+        <div class="cell-editor-wrapper">
+            <input t-ref="input"
+                   t-att-type="getInputType()"
+                   t-attf-class="#{getInputClass()}"
+                   t-att-value="state.value"
+                   t-on-input="onInput"
+                   t-on-keydown="onKeyDown"
+                   t-on-blur="onBlur"/>
+            <div t-if="!state.isValid" class="cell-editor-error" t-esc="state.error"/>
+        </div>
+    </t>
+
+    <!-- Numeric Editor Template -->
+    <t t-name="pb_hr_payroll_formula.NumericEditor" owl="1">
+        <div class="numeric-editor-wrapper">
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="decrement">
+                <i class="fa fa-minus"/>
+            </button>
+            <input t-ref="input"
+                   type="number"
+                   class="numeric-input"
+                   t-att-value="state.value"
+                   t-att-step="state.step"
+                   t-att-min="state.min"
+                   t-att-max="state.max"
+                   t-on-input="onInput"
+                   t-on-keydown="onKeyDown"
+                   t-on-blur="onBlur"/>
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="increment">
+                <i class="fa fa-plus"/>
+            </button>
+        </div>
+    </t>
+
+    <!-- Formula Editor Template -->
+    <t t-name="pb_hr_payroll_formula.FormulaEditor" owl="1">
+        <div class="formula-editor-wrapper">
+            <input t-ref="input"
+                   type="text"
+                   class="formula-editor-input"
+                   t-att-value="state.value"
+                   t-on-input="onInput"
+                   t-on-keydown="onKeyDown"
+                   t-on-blur="onBlur"
+                   placeholder="="/>
+
+            <div t-if="state.showSuggestions" class="formula-suggestions">
+                <t t-foreach="state.suggestions" t-as="suggestion" t-key="suggestion_index">
+                    <div t-attf-class="suggestion-item #{suggestion_index === state.selectedSuggestion ? 'selected' : ''}"
+                         t-on-click="() => this.applySuggestion(suggestion_index)">
+                        <span class="suggestion-label" t-esc="suggestion.label"/>
+                        <span class="suggestion-description" t-esc="suggestion.description"/>
+                    </div>
+                </t>
+            </div>
+
+            <div t-if="!state.isValid" class="formula-error">
+                <i class="fa fa-exclamation-circle"/>
+                <span t-esc="state.error"/>
+            </div>
+        </div>
+    </t>
+
+    <!-- Column Header Template -->
+    <t t-name="pb_hr_payroll_formula.ColumnHeader" owl="1">
+        <th t-attf-class="#{getHeaderClass()}"
+            draggable="true"
+            t-on-dragstart="onDragStart"
+            t-on-dragend="onDragEnd"
+            t-on-mouseenter="onMouseEnter"
+            t-on-mouseleave="onMouseLeave"
+            t-att-style="'width: ' + (props.column.column_width || 120) + 'px;'">
+
+            <div class="column-header-content">
+                <span class="column-letter-badge" t-esc="props.column.column_letter"/>
+                <i t-attf-class="fa #{getColumnTypeIcon()} column-type-icon"/>
+                <i t-if="!props.column.is_valid"
+                   class="fa fa-exclamation-triangle validation-error-icon"
+                   t-att-title="props.column.validation_message"/>
+            </div>
+
+            <div t-if="state.showActions and !props.readonly" class="column-header-actions">
+                <button class="btn btn-xs btn-link" t-on-click.stop="onSettingsClick" title="Settings">
+                    <i class="fa fa-cog"/>
+                </button>
+                <button class="btn btn-xs btn-link text-danger" t-on-click.stop="onDeleteClick" title="Delete">
+                    <i class="fa fa-trash"/>
+                </button>
+            </div>
+        </th>
+    </t>
+
+    <!-- Column Resizer Template -->
+    <t t-name="pb_hr_payroll_formula.ColumnResizer" owl="1">
+        <div class="column-resizer" t-on-mousedown="onMouseDown"/>
+    </t>
+
+    <!-- Autocomplete Template -->
+    <t t-name="pb_hr_payroll_formula.FormulaAutocomplete" owl="1">
+        <div class="formula-autocomplete-dropdown">
+            <t t-set="groups" t-value="groupItemsByCategory()"/>
+            <t t-foreach="Object.entries(groups)" t-as="entry" t-key="entry[0]">
+                <div class="autocomplete-section">
+                    <div class="section-title" t-esc="getCategoryLabel(entry[0])"/>
+                    <t t-foreach="entry[1]" t-as="item" t-key="item.name">
+                        <div t-attf-class="#{getItemClass(props.items.indexOf(item))}"
+                             t-on-click="() => this.onItemClick(props.items.indexOf(item))"
+                             t-on-mouseenter="() => this.onItemMouseEnter(props.items.indexOf(item))">
+                            <div t-attf-class="item-icon #{getItemIcon(item)}">
+                                <t t-esc="getItemIconText(item)"/>
+                            </div>
+                            <div class="item-content">
+                                <span class="item-name" t-esc="item.name"/>
+                                <span class="item-description" t-esc="item.description"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <!-- Function Help Template -->
+    <t t-name="pb_hr_payroll_formula.FunctionHelp" owl="1">
+        <div class="formula-help-tooltip">
+            <button class="close-btn" t-on-click="onClose">
+                <i class="fa fa-times"/>
+            </button>
+
+            <div class="help-header">
+                <span class="function-name" t-esc="props.func.name"/>
+                <span t-attf-class="function-category #{getCategoryBadgeClass()}" t-esc="props.func.category"/>
+            </div>
+
+            <div class="help-syntax" t-esc="props.func.syntax"/>
+            <div class="help-description" t-esc="props.func.description"/>
+
+            <t t-set="examples" t-value="getExamples()"/>
+            <div t-if="examples.length > 0" class="help-examples">
+                <div class="example-title">Examples</div>
+                <t t-foreach="examples" t-as="example" t-key="example_index">
+                    <div class="example-item">
+                        <code class="example-formula" t-esc="example.formula"/>
+                        <span class="example-result" t-esc="example.result"/>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- Grid Actions Template -->
+    <t t-name="pb_hr_payroll_formula.GridActions" owl="1">
+        <div class="grid-actions-toolbar">
+            <div class="action-group">
+                <button class="btn btn-sm btn-outline-primary" t-on-click="addColumn">
+                    <i class="fa fa-plus"/> Add Column
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" t-on-click="duplicateColumn"
+                        t-att-disabled="!props.selectedColumn">
+                    <i class="fa fa-copy"/> Duplicate
+                </button>
+            </div>
+
+            <div class="action-group">
+                <button class="btn btn-sm btn-outline-success" t-on-click="validateAllFormulas">
+                    <i class="fa fa-check-circle"/> Validate All
+                </button>
+                <button class="btn btn-sm btn-outline-info" t-on-click="runAllTests">
+                    <i class="fa fa-play"/> Run Tests
+                </button>
+            </div>
+
+            <div class="action-group">
+                <button class="btn btn-sm btn-outline-secondary" t-on-click="openSampleDataWizard">
+                    <i class="fa fa-database"/> Sample Data
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" t-on-click="syncFromConnector">
+                    <i class="fa fa-refresh"/> Sync
+                </button>
+            </div>
+        </div>
+    </t>
+
+    <!-- Context Menu Template -->
+    <t t-name="pb_hr_payroll_formula.GridContextMenu" owl="1">
+        <div class="grid-context-menu" t-att-style="getStyle()">
+            <t t-foreach="getMenuItems()" t-as="item" t-key="item.id || item_index">
+                <t t-if="item.divider">
+                    <div class="menu-divider"/>
+                </t>
+                <t t-else="">
+                    <div t-attf-class="menu-item #{item.danger ? 'danger' : ''}"
+                         t-on-click="() => this.onItemClick(item)">
+                        <i t-attf-class="fa #{item.icon}"/>
+                        <span t-esc="item.label"/>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         FORMULA CONFIG - TREE VIEW
+         ========================================== -->
+    <record id="view_formula_config_tree" model="ir.ui.view">
+        <field name="name">hr.formula.config.tree</field>
+        <field name="model">hr.formula.config</field>
+        <field name="arch" type="xml">
+            <tree string="Formula Configurations" decoration-info="state == 'draft'"
+                  decoration-success="state == 'active'" decoration-muted="state == 'archived'">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="country_code"/>
+                <field name="structure_id"/>
+                <field name="rule_count"/>
+                <field name="validation_status" widget="badge"
+                       decoration-success="validation_status == 'passed'"
+                       decoration-danger="validation_status == 'failed'"
+                       decoration-warning="validation_status == 'warning'"/>
+                <field name="state" widget="badge"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         FORMULA CONFIG - FORM VIEW
+         ========================================== -->
+    <record id="view_formula_config_form" model="ir.ui.view">
+        <field name="name">hr.formula.config.form</field>
+        <field name="model">hr.formula.config</field>
+        <field name="arch" type="xml">
+            <form string="Formula Configuration">
+                <header>
+                    <button name="action_set_draft" string="Set to Draft" type="object"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"
+                            groups="pb_hr_payroll_formula.group_formula_manager"/>
+                    <button name="action_start_testing" string="Start Testing" type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            groups="pb_hr_payroll_formula.group_formula_manager"/>
+                    <button name="action_validate" string="Validate" type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('state', 'not in', ['testing'])]}"
+                            groups="pb_hr_payroll_formula.group_formula_manager"/>
+                    <button name="action_activate" string="Activate" type="object"
+                            class="btn-success"
+                            attrs="{'invisible': [('state', '!=', 'validated')]}"
+                            groups="pb_hr_payroll_formula.group_formula_manager"/>
+                    <button name="action_archive" string="Archive" type="object"
+                            attrs="{'invisible': [('state', '=', 'archived')]}"
+                            groups="pb_hr_payroll_formula.group_formula_admin"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,testing,validated,active"/>
+                </header>
+                <sheet>
+                    <!-- Hidden fields needed for attrs -->
+                    <field name="rule_count" invisible="1"/>
+                    <field name="sample_count" invisible="1"/>
+                    <field name="has_errors" invisible="1"/>
+                    <field name="has_circular_refs" invisible="1"/>
+
+                    <!-- Smart Buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_open_excel_grid"
+                                icon="fa-table" attrs="{'invisible': [('rule_count', '=', 0)]}">
+                            <span class="o_stat_text">Open Grid</span>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_validate_formulas"
+                                icon="fa-check-circle">
+                            <field name="formula_rule_count" widget="statinfo" string="Formulas"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_run_tests"
+                                icon="fa-flask" attrs="{'invisible': [('sample_count', '=', 0)]}">
+                            <field name="sample_count" widget="statinfo" string="Tests"/>
+                        </button>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div class="alert alert-warning" role="alert"
+                         attrs="{'invisible': [('has_errors', '=', False)]}">
+                        <i class="fa fa-exclamation-triangle"/> Some formulas have errors. Please fix them before activating.
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('has_circular_refs', '=', False)]}">
+                        <i class="fa fa-ban"/> Circular references detected! Please fix formula dependencies.
+                    </div>
+
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., Vietnam Standard Payroll 2024"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Configuration">
+                            <field name="code"/>
+                            <field name="country_code"/>
+                            <field name="structure_id"/>
+                            <field name="connector_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Status">
+                            <field name="validation_status" widget="badge"/>
+                            <field name="last_validated"/>
+                            <field name="last_validated_by"/>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- Formula Rules Tab -->
+                        <page string="Formula Rules" name="rules">
+                            <group>
+                                <button name="action_import_from_structure" string="Import from Structure"
+                                        type="object" class="btn-secondary"
+                                        attrs="{'invisible': [('structure_id', '=', False)]}"/>
+                            </group>
+                            <field name="rule_ids" nolabel="1">
+                                <tree editable="bottom" decoration-danger="not is_valid"
+                                      decoration-warning="has_circular_ref">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="column_letter" readonly="1"/>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="column_type"/>
+                                    <field name="category_id"/>
+                                    <field name="excel_formula" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
+                                    <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
+                                    <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
+                                    <field name="number_format"/>
+                                    <field name="appears_on_payslip"/>
+                                    <field name="is_valid" readonly="1"/>
+                                    <field name="validation_message" readonly="1"/>
+                                    <field name="has_circular_ref" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- Sample Data Tab -->
+                        <page string="Sample Data &amp; Testing" name="samples">
+                            <group>
+                                <button name="action_generate_sample_data" string="Generate from Payslips"
+                                        type="object" class="btn-secondary"/>
+                                <button name="action_run_tests" string="Run All Tests"
+                                        type="object" class="btn-primary"/>
+                            </group>
+                            <field name="sample_data_ids" nolabel="1">
+                                <tree decoration-success="all_passed" decoration-danger="not all_passed">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="source_type"/>
+                                    <field name="discrepancy_count"/>
+                                    <field name="max_discrepancy"/>
+                                    <field name="validation_status" widget="badge"/>
+                                    <field name="last_computed"/>
+                                    <button name="action_recompute" type="object"
+                                            icon="fa-refresh" title="Recompute"/>
+                                    <field name="all_passed" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- Test Results Tab -->
+                        <page string="Test Results" name="results">
+                            <field name="test_result_ids" nolabel="1">
+                                <tree decoration-success="status == 'passed'"
+                                      decoration-danger="status == 'failed'"
+                                      decoration-warning="status == 'warning'">
+                                    <field name="sample_id"/>
+                                    <field name="rule_code"/>
+                                    <field name="expected_value"/>
+                                    <field name="computed_value"/>
+                                    <field name="difference"/>
+                                    <field name="discrepancy_percent"/>
+                                    <field name="status" widget="badge"/>
+                                    <field name="error_message"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- UI Settings Tab -->
+                        <page string="Grid Settings" name="settings">
+                            <group>
+                                <group string="Display">
+                                    <field name="theme" widget="radio"/>
+                                    <field name="grid_row_height"/>
+                                    <field name="default_column_width"/>
+                                </group>
+                                <group string="Features">
+                                    <field name="show_formula_bar"/>
+                                    <field name="show_column_letters"/>
+                                    <field name="show_gridlines"/>
+                                    <field name="frozen_columns"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Description Tab -->
+                        <page string="Description" name="description">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                    </notebook>
+
+                    <!-- Validation Message -->
+                    <group string="Validation Log" attrs="{'invisible': [('validation_message', '=', False)]}">
+                        <field name="validation_message" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         FORMULA CONFIG - KANBAN VIEW
+         ========================================== -->
+    <record id="view_formula_config_kanban" model="ir.ui.view">
+        <field name="name">hr.formula.config.kanban</field>
+        <field name="model">hr.formula.config</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="country_code"/>
+                <field name="rule_count"/>
+                <field name="state"/>
+                <field name="validation_status"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top mb-0">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <field name="state" widget="label_selection"
+                                           options="{'classes': {'draft': 'secondary', 'testing': 'info', 'validated': 'warning', 'active': 'success', 'archived': 'muted'}}"/>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <span class="text-muted">[<field name="code"/>]</span>
+                                    <br/>
+                                    <span class="badge badge-pill badge-info">
+                                        <field name="country_code"/>
+                                    </span>
+                                    <span class="float-end">
+                                        <field name="rule_count"/> rules
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         FORMULA CONFIG - SEARCH VIEW
+         ========================================== -->
+    <record id="view_formula_config_search" model="ir.ui.view">
+        <field name="name">hr.formula.config.search</field>
+        <field name="model">hr.formula.config</field>
+        <field name="arch" type="xml">
+            <search string="Search Formula Configurations">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="structure_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Active" name="active_state" domain="[('state', '=', 'active')]"/>
+                <filter string="Has Errors" name="errors" domain="[('has_errors', '=', True)]"/>
+                <separator/>
+                <filter string="Vietnam" name="vietnam" domain="[('country_code', '=', 'VN')]"/>
+                <filter string="Indonesia" name="indonesia" domain="[('country_code', '=', 'ID')]"/>
+                <filter string="India" name="india" domain="[('country_code', '=', 'IN')]"/>
+                <filter string="Singapore" name="singapore" domain="[('country_code', '=', 'SG')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Structure" name="group_structure" context="{'group_by': 'structure_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         FORMULA CONFIG - EXCEL GRID VIEW
+         ========================================== -->
+    <record id="view_formula_config_excel_grid" model="ir.ui.view">
+        <field name="name">hr.formula.config.excel.grid</field>
+        <field name="model">hr.formula.config</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Formula Grid Configuration">
+                <header>
+                    <button name="action_validate_formulas" string="Validate All" type="object"
+                            class="btn-primary" icon="fa-check"/>
+                    <button name="action_run_tests" string="Run Tests" type="object"
+                            class="btn-secondary" icon="fa-flask"/>
+                    <field name="state" widget="statusbar" readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_title mb-3">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+
+                    <!-- Formula Rules Grid (Editable Tree) -->
+                    <field name="rule_ids" nolabel="1">
+                        <tree string="Formula Rules" editable="bottom" default_order="sequence">
+                            <field name="sequence" widget="handle"/>
+                            <field name="column_letter" readonly="1" string="Col"
+                                   decoration-bf="column_type == 'formula'"
+                                   decoration-success="column_type == 'input'"
+                                   decoration-muted="column_type == 'constant'"/>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="column_type" widget="badge"
+                                   decoration-info="column_type == 'input'"
+                                   decoration-success="column_type == 'formula'"
+                                   decoration-muted="column_type == 'constant'"/>
+                            <field name="excel_formula"
+                                   attrs="{'invisible': [('column_type', '!=', 'formula')], 'required': [('column_type', '=', 'formula')]}"/>
+                            <field name="data_source_field"
+                                   attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
+                            <field name="constant_value"
+                                   attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
+                            <field name="default_value"/>
+                            <field name="is_valid" widget="boolean" readonly="1"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         ACTIONS
+         ========================================== -->
+    <record id="action_formula_config" model="ir.actions.act_window">
+        <field name="name">Formula Configurations</field>
+        <field name="res_model">hr.formula.config</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="search_view_id" ref="view_formula_config_search"/>
+        <field name="context">{'search_default_active_state': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Formula Configuration
+            </p>
+            <p>
+                Formula configurations allow you to define Excel-like formulas
+                for salary calculations. Create rules, assign column letters,
+                and define formulas using familiar Excel syntax.
+            </p>
+        </field>
+    </record>
+
+</odoo>
