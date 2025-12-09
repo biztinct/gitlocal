@@ -1,0 +1,534 @@
+// ==========================================
+// ANIMATIONS - Smooth, Modern Transitions
+// ==========================================
+
+// ==========================================
+// KEYFRAME ANIMATIONS
+// ==========================================
+
+// Fade In
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+// Fade In Up
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Fade In Down
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Fade In Scale
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+// Slide In Right
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+// Slide In Left
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+// Pulse
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+// Subtle Pulse
+@keyframes subtlePulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+// Bounce
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+// Shake
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+// Gentle Shake
+@keyframes gentleShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-3px);
+    }
+    75% {
+        transform: translateX(3px);
+    }
+}
+
+// Spin
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Gradient Shift
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+// Cell Highlight (for updated cells)
+@keyframes cellHighlight {
+    0% {
+        background: rgba(102, 126, 234, 0.4);
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    }
+    100% {
+        background: transparent;
+        box-shadow: none;
+    }
+}
+
+// Success Flash
+@keyframes successFlash {
+    0% {
+        background: rgba(16, 185, 129, 0.4);
+    }
+    100% {
+        background: transparent;
+    }
+}
+
+// Error Flash
+@keyframes errorFlash {
+    0% {
+        background: rgba(239, 68, 68, 0.4);
+    }
+    100% {
+        background: transparent;
+    }
+}
+
+// Ripple Effect
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+// Progress Bar
+@keyframes progressBar {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+// Shimmer (for loading states)
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+// ==========================================
+// ANIMATION CLASSES
+// ==========================================
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.animate-fadeInDown {
+    animation: fadeInDown 0.4s ease-out forwards;
+}
+
+.animate-fadeInScale {
+    animation: fadeInScale 0.3s ease-out forwards;
+}
+
+.animate-slideInRight {
+    animation: slideInRight 0.4s ease-out forwards;
+}
+
+.animate-slideInLeft {
+    animation: slideInLeft 0.4s ease-out forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-subtlePulse {
+    animation: subtlePulse 1.5s ease-in-out infinite;
+}
+
+.animate-bounce {
+    animation: bounce 1s ease infinite;
+}
+
+.animate-shake {
+    animation: shake 0.5s ease;
+}
+
+.animate-gentleShake {
+    animation: gentleShake 0.3s ease;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+.animate-gradientShift {
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}
+
+// ==========================================
+// GRID SPECIFIC ANIMATIONS
+// ==========================================
+
+// Column Reorder Animation
+.column-header {
+    &.reordering {
+        animation: fadeInScale 0.3s ease-out;
+    }
+
+    &.dropped {
+        animation: bounce 0.3s ease-out;
+    }
+}
+
+// Cell Update Animation
+.grid-cell {
+    &.updated {
+        animation: cellHighlight 0.6s ease-out;
+    }
+
+    &.success {
+        animation: successFlash 0.5s ease-out;
+    }
+
+    &.error {
+        animation: errorFlash 0.5s ease-out, gentleShake 0.3s ease-out;
+    }
+
+    &.calculating {
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(102, 126, 234, 0.2),
+                transparent
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    }
+}
+
+// Row Animations (staggered)
+.sample-row {
+    opacity: 0;
+    animation: fadeInUp 0.4s ease-out forwards;
+
+    @for $i from 1 through 20 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.05}s;
+        }
+    }
+}
+
+// Column Header Animations (staggered)
+.column-header {
+    opacity: 0;
+    animation: fadeInDown 0.3s ease-out forwards;
+
+    @for $i from 1 through 30 {
+        &:nth-child(#{$i}) {
+            animation-delay: #{$i * 0.03}s;
+        }
+    }
+}
+
+// ==========================================
+// LOADING ANIMATIONS
+// ==========================================
+
+.loading-spinner {
+    .fa-spinner {
+        animation: spin 1s linear infinite;
+    }
+}
+
+.skeleton-loader {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+// ==========================================
+// BUTTON ANIMATIONS
+// ==========================================
+
+.btn {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    &:active::after {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+// ==========================================
+// TOOLTIP ANIMATIONS
+// ==========================================
+
+.tooltip-animated {
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+
+    &.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// ==========================================
+// MODAL ANIMATIONS
+// ==========================================
+
+.modal-animated {
+    &.entering {
+        .modal-backdrop {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+
+        .modal-content {
+            animation: fadeInScale 0.3s ease-out forwards;
+        }
+    }
+
+    &.leaving {
+        .modal-backdrop {
+            animation: fadeIn 0.2s ease-out reverse forwards;
+        }
+
+        .modal-content {
+            animation: fadeInScale 0.2s ease-out reverse forwards;
+        }
+    }
+}
+
+// ==========================================
+// NOTIFICATION ANIMATIONS
+// ==========================================
+
+.notification-toast {
+    animation: slideInRight 0.4s ease-out;
+
+    &.closing {
+        animation: slideInRight 0.3s ease-out reverse forwards;
+    }
+}
+
+// ==========================================
+// TRANSITION UTILITIES
+// ==========================================
+
+.transition-fast {
+    transition: all 0.15s ease;
+}
+
+.transition-normal {
+    transition: all 0.25s ease;
+}
+
+.transition-slow {
+    transition: all 0.4s ease;
+}
+
+.transition-colors {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.transition-transform {
+    transition: transform 0.2s ease;
+}
+
+.transition-opacity {
+    transition: opacity 0.2s ease;
+}
+
+.transition-shadow {
+    transition: box-shadow 0.2s ease;
+}
+
+// ==========================================
+// HOVER EFFECTS
+// ==========================================
+
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.hover-grow {
+    transition: transform 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+.hover-glow {
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+    }
+}
+
+.hover-underline {
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: currentColor;
+        transition: width 0.3s ease;
+    }
+
+    &:hover::after {
+        width: 100%;
+    }
+}

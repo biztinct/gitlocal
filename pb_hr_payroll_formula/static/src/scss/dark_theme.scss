@@ -1,0 +1,574 @@
+// ==========================================
+// DARK THEME - Modern Dark Mode Styling
+// ==========================================
+
+// Dark Theme Variables
+$dark-bg-primary: #0f172a;
+$dark-bg-secondary: #1e293b;
+$dark-bg-tertiary: #334155;
+$dark-bg-elevated: #1e293b;
+
+$dark-text-primary: #f1f5f9;
+$dark-text-secondary: #94a3b8;
+$dark-text-muted: #64748b;
+
+$dark-border-color: #334155;
+$dark-border-light: #475569;
+
+$dark-accent-primary: #818cf8;
+$dark-accent-secondary: #a78bfa;
+$dark-accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+
+$dark-success: #34d399;
+$dark-warning: #fbbf24;
+$dark-danger: #f87171;
+$dark-info: #38bdf8;
+
+$dark-cell-hover: rgba(129, 140, 248, 0.1);
+$dark-cell-selected: rgba(129, 140, 248, 0.2);
+
+// ==========================================
+// DARK THEME CONTAINER
+// ==========================================
+
+.excel-formula-grid-container.dark {
+    background: $dark-bg-primary;
+    color: $dark-text-primary;
+
+    // ==========================================
+    // TOOLBAR
+    // ==========================================
+
+    .excel-toolbar {
+        background: linear-gradient(to right, $dark-bg-secondary, $dark-bg-tertiary);
+        border-bottom-color: $dark-border-color;
+
+        .btn-outline-primary {
+            color: $dark-accent-primary;
+            border-color: $dark-accent-primary;
+
+            &:hover {
+                background: rgba($dark-accent-primary, 0.15);
+                color: lighten($dark-accent-primary, 10%);
+            }
+        }
+
+        .btn-outline-success {
+            color: $dark-success;
+            border-color: $dark-success;
+
+            &:hover {
+                background: rgba($dark-success, 0.15);
+            }
+        }
+
+        .btn-outline-info {
+            color: $dark-info;
+            border-color: $dark-info;
+
+            &:hover {
+                background: rgba($dark-info, 0.15);
+            }
+        }
+
+        .btn-outline-secondary {
+            color: $dark-text-secondary;
+            border-color: $dark-border-light;
+
+            &:hover {
+                background: $dark-bg-tertiary;
+                color: $dark-text-primary;
+            }
+        }
+
+        .zoom-controls {
+            background: $dark-bg-tertiary;
+            border-color: $dark-border-color;
+
+            .zoom-level {
+                color: $dark-text-primary;
+            }
+        }
+
+        .theme-toggle {
+            &:hover {
+                background: rgba($dark-warning, 0.15);
+                color: $dark-warning;
+            }
+        }
+    }
+
+    // ==========================================
+    // FORMULA BAR
+    // ==========================================
+
+    .formula-bar {
+        background: $dark-bg-secondary;
+        border-bottom-color: $dark-border-color;
+
+        .cell-reference {
+            background: $dark-bg-tertiary;
+            border-color: $dark-border-color;
+            color: $dark-text-primary;
+
+            .column-letter {
+                color: $dark-accent-primary;
+            }
+
+            .row-indicator {
+                color: $dark-text-muted;
+            }
+
+            .no-selection {
+                color: $dark-text-muted;
+            }
+        }
+
+        .formula-icon {
+            color: $dark-accent-primary;
+        }
+
+        .formula-input {
+            background: $dark-bg-tertiary;
+            border-color: $dark-border-color;
+            color: $dark-text-primary;
+
+            &:focus {
+                border-color: $dark-accent-primary;
+                box-shadow: 0 0 0 3px rgba($dark-accent-primary, 0.2);
+            }
+
+            &:disabled {
+                background: $dark-bg-secondary;
+                color: $dark-text-muted;
+            }
+
+            &::placeholder {
+                color: $dark-text-muted;
+            }
+        }
+
+        .formula-commit {
+            background: $dark-success;
+            border-color: $dark-success;
+
+            &:hover {
+                background: lighten($dark-success, 5%);
+            }
+        }
+
+        .formula-cancel {
+            background: $dark-bg-tertiary;
+            border-color: $dark-border-color;
+            color: $dark-text-secondary;
+
+            &:hover {
+                background: $dark-border-light;
+            }
+        }
+    }
+
+    // ==========================================
+    // GRID WRAPPER
+    // ==========================================
+
+    .excel-grid-wrapper {
+        background: $dark-bg-primary;
+    }
+
+    // ==========================================
+    // GRID TABLE
+    // ==========================================
+
+    .excel-grid {
+        background: $dark-bg-secondary;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+        // Column Headers
+        .excel-grid-header {
+            .column-letters-row {
+                background: $dark-accent-gradient;
+
+                th {
+                    border-right-color: rgba(255, 255, 255, 0.1);
+                }
+
+                .corner-cell {
+                    background: rgba(0, 0, 0, 0.2);
+                }
+
+                .column-header {
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.1);
+                    }
+
+                    &.dragging {
+                        background: rgba(0, 0, 0, 0.3);
+                    }
+
+                    &.drop-target {
+                        background: rgba(255, 255, 255, 0.2);
+                    }
+
+                    .validation-error-icon {
+                        color: $dark-warning;
+                    }
+
+                    .column-header-actions .btn {
+                        color: rgba(255, 255, 255, 0.8);
+
+                        &:hover {
+                            color: white;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Row Headers
+        .row-header {
+            background: linear-gradient(to right, $dark-bg-tertiary, $dark-bg-secondary);
+            border-right-color: $dark-border-color;
+            color: $dark-text-secondary;
+
+            &.sample-header {
+                background: linear-gradient(to right, rgba($dark-success, 0.15), $dark-bg-secondary);
+            }
+        }
+
+        // Grid Cells
+        .grid-cell {
+            border-right-color: $dark-border-color;
+            border-bottom-color: $dark-border-color;
+            color: $dark-text-primary;
+
+            &:hover {
+                background: $dark-cell-hover;
+            }
+
+            &.selected {
+                background: $dark-cell-selected;
+                box-shadow: inset 0 0 0 2px $dark-accent-primary;
+            }
+
+            &.invalid {
+                background: rgba($dark-danger, 0.15);
+                box-shadow: inset 0 0 0 2px $dark-danger;
+            }
+
+            .cell-editor {
+                background: $dark-bg-tertiary;
+                border-color: $dark-accent-primary;
+                color: $dark-text-primary;
+
+                &:focus {
+                    box-shadow: 0 0 0 3px rgba($dark-accent-primary, 0.25);
+                }
+            }
+        }
+
+        // Label Row
+        .label-row {
+            .grid-cell {
+                color: $dark-text-primary;
+            }
+        }
+
+        // Code Row
+        .code-row {
+            background: $dark-bg-tertiary;
+
+            .grid-cell code {
+                background: $dark-bg-primary;
+                color: $dark-accent-primary;
+            }
+        }
+
+        // Type Row
+        .type-row {
+            .grid-cell {
+                &.column-input .type-badge {
+                    background: linear-gradient(135deg, rgba($dark-info, 0.3), rgba($dark-info, 0.15));
+                    color: $dark-info;
+                }
+
+                &.column-formula .type-badge {
+                    background: linear-gradient(135deg, rgba($dark-success, 0.3), rgba($dark-success, 0.15));
+                    color: $dark-success;
+                }
+
+                &.column-constant .type-badge {
+                    background: linear-gradient(135deg, rgba($dark-text-muted, 0.3), rgba($dark-text-muted, 0.15));
+                    color: $dark-text-secondary;
+                }
+            }
+        }
+
+        // Formula Row
+        .formula-row {
+            background: rgba($dark-warning, 0.08);
+
+            .grid-cell {
+                .formula-text {
+                    color: $dark-success;
+                }
+
+                .input-indicator {
+                    color: $dark-info;
+                }
+
+                .constant-value {
+                    color: $dark-text-secondary;
+                }
+            }
+        }
+
+        // Separator Row
+        .separator-row {
+            .separator-line {
+                &::before,
+                &::after {
+                    background: linear-gradient(to right, transparent, $dark-border-light, transparent);
+                }
+
+                .separator-label {
+                    background: linear-gradient(135deg, $dark-success, darken($dark-success, 15%));
+                }
+            }
+        }
+
+        // Sample Rows
+        .sample-row {
+            &:hover {
+                background: rgba($dark-success, 0.05);
+            }
+
+            &.passed {
+                .row-header {
+                    background: linear-gradient(to right, rgba($dark-success, 0.2), $dark-bg-secondary);
+                }
+            }
+
+            &.failed {
+                .row-header {
+                    background: linear-gradient(to right, rgba($dark-danger, 0.2), $dark-bg-secondary);
+                }
+            }
+
+            .sample-cell {
+                color: $dark-text-secondary;
+            }
+        }
+
+        // Empty State
+        .empty-samples-row td {
+            background: $dark-bg-tertiary;
+            color: $dark-text-muted;
+
+            i {
+                color: $dark-border-light;
+            }
+        }
+    }
+
+    // ==========================================
+    // STATUS BAR
+    // ==========================================
+
+    .excel-status-bar {
+        background: linear-gradient(to right, $dark-bg-secondary, $dark-bg-tertiary);
+        border-top-color: $dark-border-color;
+        color: $dark-text-muted;
+
+        .validation-status {
+            &.ok {
+                background: rgba($dark-success, 0.2);
+                color: $dark-success;
+            }
+
+            &.error {
+                background: rgba($dark-danger, 0.2);
+                color: $dark-danger;
+            }
+        }
+    }
+
+    // ==========================================
+    // LOADING OVERLAY
+    // ==========================================
+
+    .grid-loading-overlay {
+        background: rgba($dark-bg-primary, 0.9);
+
+        .loading-spinner {
+            color: $dark-accent-primary;
+
+            span {
+                color: $dark-text-secondary;
+            }
+        }
+    }
+
+    // ==========================================
+    // AUTOCOMPLETE
+    // ==========================================
+
+    .formula-autocomplete {
+        background: $dark-bg-elevated;
+        border-color: $dark-border-color;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+        .autocomplete-section {
+            border-bottom-color: $dark-border-color;
+
+            .section-title {
+                background: $dark-bg-tertiary;
+                color: $dark-text-muted;
+            }
+        }
+
+        .autocomplete-item {
+            &:hover,
+            &.highlighted {
+                background: $dark-cell-hover;
+            }
+
+            .item-content {
+                .item-name {
+                    color: $dark-text-primary;
+                }
+
+                .item-description {
+                    color: $dark-text-muted;
+                }
+            }
+
+            .item-shortcut {
+                background: $dark-bg-tertiary;
+                color: $dark-text-muted;
+            }
+        }
+    }
+
+    // ==========================================
+    // TOOLTIPS & POPOVERS
+    // ==========================================
+
+    .formula-help-tooltip {
+        background: $dark-bg-elevated;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+        &::after {
+            background: $dark-bg-elevated;
+        }
+
+        .help-header {
+            border-bottom-color: $dark-border-color;
+
+            .function-name {
+                color: $dark-accent-primary;
+            }
+
+            .function-category {
+                background: $dark-bg-tertiary;
+                color: $dark-text-muted;
+            }
+        }
+
+        .help-syntax {
+            background: $dark-bg-tertiary;
+            color: $dark-text-secondary;
+        }
+
+        .help-description {
+            color: $dark-text-secondary;
+        }
+
+        .help-examples {
+            .example-title {
+                color: $dark-text-muted;
+            }
+
+            .example-item {
+                border-bottom-color: $dark-border-color;
+
+                .example-formula {
+                    background: rgba($dark-success, 0.15);
+                    color: $dark-success;
+                }
+
+                .example-result {
+                    color: $dark-text-muted;
+                }
+            }
+        }
+    }
+
+    .formula-error-popover {
+        background: rgba($dark-danger, 0.15);
+        border-color: rgba($dark-danger, 0.4);
+
+        .error-header {
+            color: $dark-danger;
+        }
+
+        .error-message {
+            color: lighten($dark-danger, 10%);
+        }
+
+        .error-position .position-marker {
+            background: rgba($dark-danger, 0.2);
+        }
+    }
+
+    // ==========================================
+    // SCROLLBARS
+    // ==========================================
+
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: $dark-bg-tertiary;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: $dark-border-light;
+        border-radius: 5px;
+
+        &:hover {
+            background: lighten($dark-border-light, 10%);
+        }
+    }
+
+    // ==========================================
+    // ANIMATIONS OVERRIDES
+    // ==========================================
+
+    .grid-cell {
+        &.updated {
+            animation-name: darkCellHighlight;
+        }
+    }
+
+    @keyframes darkCellHighlight {
+        0% {
+            background: rgba($dark-accent-primary, 0.4);
+            box-shadow: 0 0 0 4px rgba($dark-accent-primary, 0.2);
+        }
+        100% {
+            background: transparent;
+            box-shadow: none;
+        }
+    }
+}
+
+// ==========================================
+// SYSTEM DARK MODE PREFERENCE
+// ==========================================
+// Note: Auto dark mode via @media prefers-color-scheme is handled
+// via JavaScript by adding the .dark class when theme is set to 'auto'
+// The @extend directive cannot cross media query boundaries in SCSS

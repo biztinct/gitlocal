@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        PAYSLIP FORMULA INTEGRATION VIEWS
+
+        Note: These views extend the base hr.payslip model.
+        The hr_payslip_formula.py model must add the required fields
+        before these views will work properly.
+
+        For now, this file is empty to allow module installation.
+        Views will be added once the model extensions are complete.
+    -->
+</odoo>

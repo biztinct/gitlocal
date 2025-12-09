@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        SUPPORTED EXCEL FUNCTIONS REFERENCE
+        ===================================
+
+        The following Excel functions are supported by the formula engine.
+        These are implemented in formula_engine/validator.py
+
+        MATHEMATICAL FUNCTIONS:
+        - SUM(range)          : Sum of values
+        - AVERAGE(range)      : Average of values
+        - MIN(range)          : Minimum value
+        - MAX(range)          : Maximum value
+        - ROUND(value, decimals) : Round to decimals
+        - ROUNDUP(value, decimals) : Round up
+        - ROUNDDOWN(value, decimals) : Round down
+        - ABS(value)          : Absolute value
+        - INT(value)          : Integer part
+        - MOD(value, divisor) : Modulo operation
+
+        LOGICAL FUNCTIONS:
+        - IF(condition, true_val, false_val) : Conditional
+        - AND(cond1, cond2, ...) : All conditions true
+        - OR(cond1, cond2, ...)  : Any condition true
+        - NOT(condition)         : Negate condition
+        - IFERROR(value, error_val) : Handle errors
+
+        LOOKUP FUNCTIONS:
+        - VLOOKUP(value, range, col, exact) : Vertical lookup
+        - HLOOKUP(value, range, row, exact) : Horizontal lookup
+        - INDEX(range, row, col) : Value at position
+        - MATCH(value, range, type) : Position of value
+
+        TEXT FUNCTIONS:
+        - LEFT(text, num)     : Left characters
+        - RIGHT(text, num)    : Right characters
+        - MID(text, start, num) : Middle characters
+        - LEN(text)           : Text length
+        - TRIM(text)          : Remove spaces
+        - UPPER(text)         : Uppercase
+        - LOWER(text)         : Lowercase
+        - CONCATENATE(...)    : Join text
+
+        DATE FUNCTIONS:
+        - TODAY()             : Current date
+        - NOW()               : Current datetime
+        - YEAR(date)          : Year from date
+        - MONTH(date)         : Month from date
+        - DAY(date)           : Day from date
+        - DATEDIF(start, end, unit) : Date difference
+
+        FINANCIAL FUNCTIONS:
+        - PMT(rate, nper, pv) : Payment calculation
+        - FV(rate, nper, pmt) : Future value
+        - PV(rate, nper, pmt) : Present value
+    -->
+</odoo>

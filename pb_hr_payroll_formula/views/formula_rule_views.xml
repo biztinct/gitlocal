@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         FORMULA RULE VIEWS
+         ========================================== -->
+
+    <record id="view_formula_rule_tree" model="ir.ui.view">
+        <field name="name">hr.formula.rule.tree</field>
+        <field name="model">hr.formula.rule</field>
+        <field name="arch" type="xml">
+            <tree string="Formula Rules" editable="bottom" default_order="sequence">
+                <field name="sequence" widget="handle"/>
+                <field name="column_letter" readonly="1"
+                       decoration-bf="column_type == 'formula'"
+                       decoration-success="column_type == 'input'"
+                       decoration-muted="column_type == 'constant'"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="column_type" widget="badge"
+                       decoration-info="column_type == 'input'"
+                       decoration-success="column_type == 'formula'"
+                       decoration-muted="column_type == 'constant'"/>
+                <field name="excel_formula" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
+                <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
+                <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
+                <field name="default_value"/>
+                <field name="number_format"/>
+                <field name="is_valid" widget="boolean" readonly="1"/>
+                <field name="appears_on_payslip"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_formula_rule_form" model="ir.ui.view">
+        <field name="name">hr.formula.rule.form</field>
+        <field name="model">hr.formula.rule</field>
+        <field name="arch" type="xml">
+            <form string="Formula Rule">
+                <sheet>
+                    <widget name="web_ribbon" title="Invalid" bg_color="bg-danger"
+                            attrs="{'invisible': [('is_valid', '=', True)]}"/>
+
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., Basic Salary"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Identification">
+                            <field name="config_id" invisible="1"/>
+                            <field name="column_letter" readonly="1"/>
+                            <field name="code" placeholder="e.g., BASIC"/>
+                            <field name="sequence"/>
+                            <field name="category_id"/>
+                            <field name="salary_rule_id"/>
+                        </group>
+                        <group string="Column Type">
+                            <field name="column_type" widget="radio"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- Input Column Settings -->
+                        <page string="Input Settings" name="input"
+                              attrs="{'invisible': [('column_type', '!=', 'input')]}">
+                            <group>
+                                <group string="Data Source">
+                                    <field name="data_source_field" placeholder="e.g., basic_salary"/>
+                                    <field name="default_value"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Formula Settings -->
+                        <page string="Formula" name="formula"
+                              attrs="{'invisible': [('column_type', '!=', 'formula')]}">
+                            <group>
+                                <group string="Excel Formula">
+                                    <field name="excel_formula" placeholder="e.g., =A1+B1*0.08"
+                                           widget="char" class="o_text_mono"/>
+                                </group>
+                                <group string="Converted Python">
+                                    <field name="python_formula" readonly="1"
+                                           widget="text" class="o_text_mono"/>
+                                </group>
+                            </group>
+                            <group string="Dependencies">
+                                <field name="formula_dependencies" readonly="1"/>
+                            </group>
+                            <group string="Validation Status">
+                                <field name="is_valid"/>
+                                <field name="validation_message"/>
+                                <field name="has_circular_ref"/>
+                            </group>
+                        </page>
+
+                        <!-- Constant Settings -->
+                        <page string="Constant" name="constant"
+                              attrs="{'invisible': [('column_type', '!=', 'constant')]}">
+                            <group>
+                                <field name="constant_value"/>
+                            </group>
+                        </page>
+
+                        <!-- Display Settings -->
+                        <page string="Display" name="display">
+                            <group>
+                                <group string="Formatting">
+                                    <field name="number_format" widget="radio"/>
+                                    <field name="decimal_places"/>
+                                    <field name="column_width"/>
+                                </group>
+                                <group string="Visibility">
+                                    <field name="appears_on_payslip"/>
+                                    <field name="is_visible_in_grid"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_formula_rule_kanban" model="ir.ui.view">
+        <field name="name">hr.formula.rule.kanban</field>
+        <field name="model">hr.formula.rule</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column" default_order="sequence">
+                <field name="column_letter"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="column_type"/>
+                <field name="excel_formula"/>
+                <field name="is_valid"/>
+                <field name="sequence"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <span t-attf-class="badge #{record.column_type.raw_value == 'formula' ? 'text-bg-success' : record.column_type.raw_value == 'input' ? 'text-bg-info' : 'text-bg-secondary'}"
+                                              style="font-size: 14px; margin-right: 8px;">
+                                            <field name="column_letter"/>
+                                        </span>
+                                        <field name="name"/>
+                                    </strong>
+                                    <span class="o_kanban_record_subtitle text-muted">
+                                        <field name="code"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body" t-if="record.column_type.raw_value == 'formula'">
+                                <code><field name="excel_formula"/></code>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="column_type" widget="badge"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <t t-if="record.is_valid.raw_value">
+                                        <span class="badge text-bg-success">
+                                            <i class="fa fa-check"/> Valid
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge text-bg-danger">
+                                            <i class="fa fa-times"/> Invalid
+                                        </span>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_formula_rule_search" model="ir.ui.view">
+        <field name="name">hr.formula.rule.search</field>
+        <field name="model">hr.formula.rule</field>
+        <field name="arch" type="xml">
+            <search string="Search Formula Rules">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="column_letter"/>
+                <field name="excel_formula"/>
+                <filter name="input_columns" string="Input Columns"
+                        domain="[('column_type', '=', 'input')]"/>
+                <filter name="formula_columns" string="Formula Columns"
+                        domain="[('column_type', '=', 'formula')]"/>
+                <filter name="constant_columns" string="Constant Columns"
+                        domain="[('column_type', '=', 'constant')]"/>
+                <separator/>
+                <filter name="valid" string="Valid"
+                        domain="[('is_valid', '=', True)]"/>
+                <filter name="invalid" string="Invalid"
+                        domain="[('is_valid', '=', False)]"/>
+                <separator/>
+                <filter name="on_payslip" string="On Payslip"
+                        domain="[('appears_on_payslip', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_type" string="Column Type"
+                            context="{'group_by': 'column_type'}"/>
+                    <filter name="group_category" string="Category"
+                            context="{'group_by': 'category_id'}"/>
+                    <filter name="group_format" string="Number Format"
+                            context="{'group_by': 'number_format'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for standalone rule management -->
+    <record id="action_formula_rule" model="ir.actions.act_window">
+        <field name="name">Formula Rules</field>
+        <field name="res_model">hr.formula.rule</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Define formula-based salary rules
+            </p>
+            <p>
+                Create rules with Excel-like column letters and formulas.
+                Use column types: Input (from data source), Formula (calculated), or Constant.
+            </p>
+        </field>
+    </record>
+
+</odoo>

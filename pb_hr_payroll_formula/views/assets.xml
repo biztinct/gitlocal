@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Assets are registered via __manifest__.py 'assets' key (Odoo 16 style).
+        See __manifest__.py -> assets -> web.assets_backend for the asset definitions.
+    -->
+</odoo>

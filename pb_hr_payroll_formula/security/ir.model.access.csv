@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_formula_config_user,hr.formula.config.user,model_hr_formula_config,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_formula_config_manager,hr.formula.config.manager,model_hr_formula_config,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_rule_user,hr.formula.rule.user,model_hr_formula_rule,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_formula_rule_manager,hr.formula.rule.manager,model_hr_formula_rule,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_sample_data_user,hr.formula.sample.data.user,model_hr_formula_sample_data,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_sample_data_manager,hr.formula.sample.data.manager,model_hr_formula_sample_data,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_test_result_user,hr.formula.test.result.user,model_hr_formula_test_result,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_test_result_manager,hr.formula.test.result.manager,model_hr_formula_test_result,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
+access_connector_user,hr.integration.connector.user,model_hr_integration_connector,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_connector_admin,hr.integration.connector.admin,model_hr_integration_connector,pb_hr_payroll_formula.group_formula_admin,1,1,1,1
+access_mapping_user,hr.integration.field.mapping.user,model_hr_integration_field_mapping,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_mapping_admin,hr.integration.field.mapping.admin,model_hr_integration_field_mapping,pb_hr_payroll_formula.group_formula_admin,1,1,1,1
+access_sample_wizard,hr.formula.sample.data.wizard,model_hr_formula_sample_data_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
+access_import_wizard,hr.formula.import.wizard,model_hr_formula_import_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
+access_sync_wizard,hr.integration.sync.wizard,model_hr_integration_sync_wizard,pb_hr_payroll_formula.group_formula_admin,1,1,1,0

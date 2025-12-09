@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         INTEGRATION CONNECTOR VIEWS
+         ========================================== -->
+
+    <record id="view_integration_connector_tree" model="ir.ui.view">
+        <field name="name">hr.integration.connector.tree</field>
+        <field name="model">hr.integration.connector</field>
+        <field name="arch" type="xml">
+            <tree string="HR System Connectors">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="connector_type"/>
+                <field name="country_code"/>
+                <field name="connection_status" widget="badge"
+                       decoration-success="connection_status == 'connected'"
+                       decoration-danger="connection_status == 'error'"
+                       decoration-warning="connection_status == 'disconnected'"/>
+                <field name="last_sync"/>
+                <field name="mapping_count"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_integration_connector_form" model="ir.ui.view">
+        <field name="name">hr.integration.connector.form</field>
+        <field name="model">hr.integration.connector</field>
+        <field name="arch" type="xml">
+            <form string="HR System Connector">
+                <header>
+                    <button name="action_test_connection" string="Test Connection" type="object"
+                            class="btn-primary"/>
+                    <button name="action_sync_now" string="Sync Now" type="object"
+                            attrs="{'invisible': [('connection_status', '!=', 'connected')]}"/>
+                    <button name="action_fetch_available_fields" string="Fetch Fields" type="object"
+                            attrs="{'invisible': [('connector_type', '=', 'excel')]}"/>
+                    <field name="connection_status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_view_mappings"
+                                icon="fa-exchange">
+                            <field name="mapping_count" widget="statinfo" string="Mappings"/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Error" bg_color="bg-danger"
+                            attrs="{'invisible': [('connection_status', '!=', 'error')]}"/>
+
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., Zoho People - Vietnam"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Connection Type">
+                            <field name="connector_type" widget="radio"/>
+                            <field name="country_code"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Status">
+                            <field name="last_sync"/>
+                            <field name="last_sync_status" widget="badge"/>
+                            <field name="sync_interval"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- API Settings -->
+                        <page string="API Settings" name="api"
+                              attrs="{'invisible': [('connector_type', '=', 'excel')]}">
+                            <group>
+                                <group string="Endpoint">
+                                    <field name="api_endpoint"/>
+                                    <field name="api_version"/>
+                                </group>
+                                <group string="Authentication">
+                                    <field name="auth_type"/>
+                                </group>
+                            </group>
+                            <group string="OAuth 2.0 Settings"
+                                   attrs="{'invisible': [('auth_type', '!=', 'oauth2')]}">
+                                <field name="oauth_authorize_url"/>
+                                <field name="oauth_token_url"/>
+                                <field name="oauth_scope"/>
+                            </group>
+                        </page>
+
+                        <!-- Credentials -->
+                        <page string="Credentials" name="credentials"
+                              groups="base.group_system">
+                            <group>
+                                <field name="client_id"/>
+                                <field name="client_secret" password="True"/>
+                                <field name="api_key" password="True"
+                                       attrs="{'invisible': [('auth_type', '!=', 'api_key')]}"/>
+                                <field name="username"
+                                       attrs="{'invisible': [('auth_type', '!=', 'basic')]}"/>
+                                <field name="password" password="True"
+                                       attrs="{'invisible': [('auth_type', '!=', 'basic')]}"/>
+                            </group>
+                            <group string="Tokens" attrs="{'invisible': [('auth_type', '!=', 'oauth2')]}">
+                                <field name="access_token" password="True"/>
+                                <field name="refresh_token" password="True"/>
+                                <field name="token_expiry"/>
+                            </group>
+                        </page>
+
+                        <!-- Excel Import Settings -->
+                        <page string="Excel Settings" name="excel"
+                              attrs="{'invisible': [('connector_type', '!=', 'excel')]}">
+                            <group>
+                                <group string="File Settings">
+                                    <field name="file_header_row"/>
+                                    <field name="file_data_start_row"/>
+                                    <field name="file_sheet_name"/>
+                                </group>
+                                <group string="Last Import">
+                                    <field name="last_import_filename"/>
+                                </group>
+                            </group>
+                            <group>
+                                <button name="action_import_excel" string="Import Excel File"
+                                        type="object" class="btn-primary"/>
+                            </group>
+                        </page>
+
+                        <!-- Field Mappings -->
+                        <page string="Field Mappings" name="mappings">
+                            <field name="field_mapping_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="source_field"/>
+                                    <field name="source_field_label"/>
+                                    <field name="source_data_type"/>
+                                    <field name="target_rule_id"/>
+                                    <field name="transformation_type"/>
+                                    <field name="transformation_value"
+                                           attrs="{'invisible': [('transformation_type', 'in', ['direct', 'python'])]}"/>
+                                    <field name="is_required"/>
+                                    <field name="default_value"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- Error Log -->
+                        <page string="Error Log" name="errors"
+                              attrs="{'invisible': [('last_error', '=', False)]}">
+                            <field name="last_error" readonly="1"/>
+                            <field name="last_sync_message" readonly="1"/>
+                        </page>
+                    </notebook>
+
+                    <field name="description"/>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         FIELD MAPPING VIEWS
+         ========================================== -->
+
+    <record id="view_field_mapping_tree" model="ir.ui.view">
+        <field name="name">hr.integration.field.mapping.tree</field>
+        <field name="model">hr.integration.field.mapping</field>
+        <field name="arch" type="xml">
+            <tree string="Field Mappings" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="connector_id"/>
+                <field name="source_field"/>
+                <field name="source_field_label"/>
+                <field name="source_data_type"/>
+                <field name="target_rule_id"/>
+                <field name="target_column_letter"/>
+                <field name="transformation_type"/>
+                <field name="is_mapped" widget="boolean"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_field_mapping_form" model="ir.ui.view">
+        <field name="name">hr.integration.field.mapping.form</field>
+        <field name="model">hr.integration.field.mapping</field>
+        <field name="arch" type="xml">
+            <form string="Field Mapping">
+                <sheet>
+                    <group>
+                        <group string="Source">
+                            <field name="connector_id"/>
+                            <field name="source_field"/>
+                            <field name="source_field_label"/>
+                            <field name="source_data_type"/>
+                            <field name="source_sample_value"/>
+                        </group>
+                        <group string="Target">
+                            <field name="target_rule_id" domain="[('column_type', '=', 'input')]"/>
+                            <field name="target_column_letter"/>
+                            <field name="target_rule_code"/>
+                        </group>
+                    </group>
+                    <group string="Transformation">
+                        <field name="transformation_type"/>
+                        <field name="transformation_value"
+                               attrs="{'invisible': [('transformation_type', 'in', ['direct', 'python'])]}"/>
+                        <field name="transformation_decimals"
+                               attrs="{'invisible': [('transformation_type', '!=', 'round')]}"/>
+                        <field name="transformation_code"
+                               attrs="{'invisible': [('transformation_type', '!=', 'python')]}"/>
+                    </group>
+                    <group string="Validation">
+                        <field name="is_required"/>
+                        <field name="default_value"/>
+                        <field name="min_value"/>
+                        <field name="max_value"/>
+                    </group>
+                    <group>
+                        <button name="action_test_mapping" string="Test Mapping" type="object"/>
+                        <button name="action_auto_map" string="Auto-Map" type="object"/>
+                    </group>
+                    <field name="notes"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         ACTIONS
+         ========================================== -->
+
+    <record id="action_integration_connector" model="ir.actions.act_window">
+        <field name="name">HR System Connectors</field>
+        <field name="res_model">hr.integration.connector</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Connect to external HR systems
+            </p>
+            <p>
+                Configure connections to Zoho People, SAP SuccessFactors,
+                Workday, Oracle HCM, or import data from Excel files.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_field_mapping" model="ir.actions.act_window">
+        <field name="name">Field Mappings</field>
+        <field name="res_model">hr.integration.field.mapping</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>

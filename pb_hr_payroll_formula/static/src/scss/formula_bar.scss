@@ -1,0 +1,445 @@
+// ==========================================
+// FORMULA BAR - Enhanced Styling
+// ==========================================
+
+// Formula Autocomplete Dropdown
+.formula-autocomplete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+
+    .autocomplete-section {
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f5f9;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            padding: 6px 14px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            background: #f8fafc;
+        }
+    }
+
+    .autocomplete-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 14px;
+        cursor: pointer;
+        transition: background 0.15s ease;
+
+        &:hover,
+        &.highlighted {
+            background: rgba(102, 126, 234, 0.08);
+        }
+
+        &.highlighted {
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .item-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            margin-right: 10px;
+            font-size: 12px;
+
+            &.function-icon {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+            }
+
+            &.column-icon {
+                background: linear-gradient(135deg, #11998e, #38ef7d);
+                color: white;
+            }
+
+            &.operator-icon {
+                background: linear-gradient(135deg, #f093fb, #f5576c);
+                color: white;
+            }
+        }
+
+        .item-content {
+            flex: 1;
+
+            .item-name {
+                font-weight: 600;
+                font-size: 13px;
+                color: #1e293b;
+                font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            }
+
+            .item-description {
+                font-size: 11px;
+                color: #64748b;
+                margin-top: 2px;
+            }
+        }
+
+        .item-shortcut {
+            font-size: 10px;
+            color: #94a3b8;
+            padding: 2px 6px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+    }
+}
+
+// Formula Syntax Highlighting (in formula bar)
+.formula-input {
+    &.syntax-highlighted {
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+
+        .token-function {
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .token-operator {
+            color: #dc2626;
+        }
+
+        .token-number {
+            color: #0891b2;
+        }
+
+        .token-cell-ref {
+            color: #059669;
+            background: rgba(5, 150, 105, 0.1);
+            padding: 1px 3px;
+            border-radius: 3px;
+        }
+
+        .token-string {
+            color: #d97706;
+        }
+
+        .token-paren {
+            color: #64748b;
+
+            &.level-1 {
+                color: #7c3aed;
+            }
+
+            &.level-2 {
+                color: #0891b2;
+            }
+
+            &.level-3 {
+                color: #059669;
+            }
+        }
+
+        .token-error {
+            color: #dc2626;
+            text-decoration: wavy underline;
+            text-decoration-color: #dc2626;
+        }
+    }
+}
+
+// Formula Help Tooltip
+.formula-help-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    min-width: 300px;
+    max-width: 450px;
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 20px;
+        width: 16px;
+        height: 16px;
+        background: white;
+        transform: rotate(45deg);
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .help-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f1f5f9;
+
+        .function-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .function-category {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            background: #f1f5f9;
+            color: #64748b;
+            border-radius: 12px;
+        }
+    }
+
+    .help-syntax {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        background: #f8fafc;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        color: #334155;
+
+        .param-required {
+            color: #dc2626;
+        }
+
+        .param-optional {
+            color: #64748b;
+        }
+    }
+
+    .help-description {
+        font-size: 13px;
+        color: #475569;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
+    .help-examples {
+        .example-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .example-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .example-formula {
+                flex: 1;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 12px;
+                color: #059669;
+                background: rgba(5, 150, 105, 0.08);
+                padding: 4px 8px;
+                border-radius: 4px;
+            }
+
+            .example-result {
+                font-size: 12px;
+                color: #64748b;
+
+                &::before {
+                    content: '→';
+                    margin-right: 4px;
+                    color: #94a3b8;
+                }
+            }
+        }
+    }
+}
+
+// Formula Validation Indicator
+.formula-validation-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+
+    &.valid {
+        background: rgba(5, 150, 105, 0.1);
+        color: #059669;
+
+        i {
+            color: #10b981;
+        }
+    }
+
+    &.invalid {
+        background: rgba(220, 38, 38, 0.1);
+        color: #dc2626;
+
+        i {
+            color: #ef4444;
+        }
+    }
+
+    &.warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+
+        i {
+            color: #f59e0b;
+        }
+    }
+}
+
+// Formula Error Popover
+.formula-error-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    z-index: 1000;
+
+    .error-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #dc2626;
+
+        i {
+            font-size: 14px;
+        }
+    }
+
+    .error-message {
+        font-size: 13px;
+        color: #b91c1c;
+        line-height: 1.4;
+    }
+
+    .error-position {
+        margin-top: 8px;
+        font-size: 11px;
+        color: #991b1b;
+        font-family: 'JetBrains Mono', monospace;
+
+        .position-marker {
+            display: inline-block;
+            padding: 2px 6px;
+            background: rgba(220, 38, 38, 0.15);
+            border-radius: 4px;
+        }
+    }
+}
+
+// Formula Dependencies Visualization
+.formula-dependencies-panel {
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    .panel-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        i {
+            color: #667eea;
+        }
+    }
+
+    .dependency-graph {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .dependency-node {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+
+            &:hover {
+                background: rgba(102, 126, 234, 0.1);
+                border-color: #667eea;
+            }
+
+            .node-letter {
+                font-weight: 700;
+                color: #667eea;
+                font-family: 'JetBrains Mono', monospace;
+            }
+
+            .node-name {
+                color: #64748b;
+            }
+
+            .node-arrow {
+                color: #94a3b8;
+                margin: 0 4px;
+            }
+        }
+    }
+
+    .circular-warning {
+        margin-top: 12px;
+        padding: 10px 14px;
+        background: #fef3c7;
+        border: 1px solid #fcd34d;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #92400e;
+
+        i {
+            color: #f59e0b;
+        }
+    }
+}

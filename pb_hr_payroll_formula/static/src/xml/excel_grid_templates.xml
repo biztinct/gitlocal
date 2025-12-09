@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Main Excel Grid Template -->
+    <t t-name="pb_hr_payroll_formula.ExcelFormulaGrid" owl="1">
+        <div t-attf-class="excel-formula-grid-container #{state.theme}" t-ref="grid"
+             t-att-style="'zoom: ' + state.zoom + '%;'">
+
+            <!-- Loading Overlay -->
+            <div t-if="state.isLoading" class="grid-loading-overlay">
+                <div class="loading-spinner">
+                    <i class="fa fa-spinner fa-spin fa-3x"/>
+                    <span>Loading grid...</span>
+                </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="excel-toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-sm btn-outline-primary" t-on-click="addColumn"
+                            t-att-disabled="props.readonly" title="Add Column">
+                        <i class="fa fa-plus"/> Add Column
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" t-on-click="validateFormulas"
+                            title="Validate Formulas">
+                        <i class="fa fa-check-circle"/> Validate
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" t-on-click="runTests"
+                            title="Run Tests">
+                        <i class="fa fa-play"/> Run Tests
+                    </button>
+                </div>
+                <div class="toolbar-right">
+                    <div class="zoom-controls">
+                        <button class="btn btn-sm btn-outline-secondary" t-on-click="zoomOut"
+                                title="Zoom Out">
+                            <i class="fa fa-search-minus"/>
+                        </button>
+                        <span class="zoom-level"><t t-esc="state.zoom"/>%</span>
+                        <button class="btn btn-sm btn-outline-secondary" t-on-click="zoomIn"
+                                title="Zoom In">
+                            <i class="fa fa-search-plus"/>
+                        </button>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary theme-toggle" t-on-click="toggleTheme"
+                            title="Toggle Theme">
+                        <i t-attf-class="fa #{state.theme === 'light' ? 'fa-moon-o' : 'fa-sun-o'}"/>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Formula Bar -->
+            <div t-if="state.showFormulaBar" class="formula-bar">
+                <div class="cell-reference">
+                    <t t-if="state.selectedCell">
+                        <span class="column-letter">
+                            <t t-esc="getColumnLetter(state.selectedCell.column)"/>
+                        </span>
+                        <span class="row-indicator" t-esc="state.selectedCell.rowType"/>
+                    </t>
+                    <t t-else="">
+                        <span class="no-selection">-</span>
+                    </t>
+                </div>
+                <div class="formula-icon">
+                    <i class="fa fa-function"/>
+                </div>
+                <input type="text" class="formula-input" t-ref="formulaBar"
+                       t-att-value="state.formulaBarValue"
+                       t-on-input="onFormulaBarInput"
+                       t-on-keydown="onFormulaBarKeyDown"
+                       t-att-disabled="props.readonly || !state.selectedCell || state.selectedCell.rowType !== 'formula'"
+                       placeholder="Enter formula (e.g., =A1+B1*0.08)"/>
+                <button class="btn btn-sm btn-success formula-commit" t-on-click="commitFormulaBarValue"
+                        t-att-disabled="props.readonly || !state.selectedCell || state.selectedCell.rowType !== 'formula'"
+                        title="Apply (Enter)">
+                    <i class="fa fa-check"/>
+                </button>
+                <button class="btn btn-sm btn-secondary formula-cancel" t-on-click="revertFormulaBarValue"
+                        title="Cancel (Esc)">
+                    <i class="fa fa-times"/>
+                </button>
+            </div>
+
+            <!-- Grid Container -->
+            <div class="excel-grid-wrapper">
+                <table class="excel-grid" t-att-class="{'show-gridlines': state.showGridlines}">
+                    <!-- Column Headers (Letters) -->
+                    <thead class="excel-grid-header">
+                        <tr class="column-letters-row">
+                            <th class="row-header corner-cell">
+                                <i class="fa fa-th"/>
+                            </th>
+                            <t t-foreach="state.columns" t-as="column" t-key="column.id">
+                                <th t-attf-class="column-header #{getColumnTypeClass(column.column_type)} #{state.dropTargetIndex === column_index ? 'drop-target' : ''} #{state.dragSourceIndex === column_index ? 'dragging' : ''}"
+                                    draggable="true"
+                                    t-on-dragstart="(ev) => this.onColumnDragStart(ev, column_index)"
+                                    t-on-dragover="(ev) => this.onColumnDragOver(ev, column_index)"
+                                    t-on-dragenter="(ev) => this.onColumnDragEnter(ev, column_index)"
+                                    t-on-dragleave="onColumnDragLeave"
+                                    t-on-drop="(ev) => this.onColumnDrop(ev, column_index)"
+                                    t-on-dragend="onColumnDragEnd"
+                                    t-att-style="'width: ' + (column.column_width || 120) + 'px;'">
+                                    <div class="column-header-content">
+                                        <span class="column-letter-badge">
+                                            <t t-esc="column.column_letter"/>
+                                        </span>
+                                        <i t-attf-class="fa #{getColumnTypeIcon(column.column_type)} column-type-icon"
+                                           t-att-title="column.column_type"/>
+                                        <t t-if="!column.is_valid">
+                                            <i class="fa fa-exclamation-triangle validation-error-icon"
+                                               t-att-title="column.validation_message"/>
+                                        </t>
+                                    </div>
+                                    <div class="column-header-actions" t-if="!props.readonly">
+                                        <button class="btn btn-xs btn-link" t-on-click.stop="() => this.openColumnSettings(column_index)"
+                                                title="Settings">
+                                            <i class="fa fa-cog"/>
+                                        </button>
+                                        <button class="btn btn-xs btn-link text-danger" t-on-click.stop="() => this.deleteColumn(column_index)"
+                                                title="Delete">
+                                            <i class="fa fa-trash"/>
+                                        </button>
+                                    </div>
+                                </th>
+                            </t>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- Row 1: Column Labels -->
+                        <tr class="label-row">
+                            <th class="row-header">
+                                <span class="row-label">Label</span>
+                            </th>
+                            <t t-foreach="state.columns" t-as="column" t-key="'label-' + column.id">
+                                <td t-attf-class="grid-cell label-cell #{isCellSelected(column_index, 'label') ? 'selected' : ''}"
+                                    t-on-click="() => this.onCellClick(column_index, 'label')"
+                                    t-on-dblclick="() => this.onCellDoubleClick(column_index, 'label')"
+                                    t-on-keydown="(ev) => this.onCellKeyDown(ev, column_index, 'label')"
+                                    tabindex="0">
+                                    <t t-if="state.isEditing and state.editingCell?.column === column_index and state.editingCell?.rowType === 'label'">
+                                        <input type="text" class="cell-editor"
+                                               t-att-value="column.name"
+                                               t-on-blur="(ev) => this.commitEditing(ev.target.value)"
+                                               t-on-keydown="(ev) => ev.key === 'Enter' and this.commitEditing(ev.target.value)"
+                                               autofocus="autofocus"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="cell-value" t-esc="column.name"/>
+                                    </t>
+                                </td>
+                            </t>
+                        </tr>
+
+                        <!-- Row 2: Column Codes -->
+                        <tr class="code-row">
+                            <th class="row-header">
+                                <span class="row-label">Code</span>
+                            </th>
+                            <t t-foreach="state.columns" t-as="column" t-key="'code-' + column.id">
+                                <td class="grid-cell code-cell">
+                                    <code t-esc="column.code"/>
+                                </td>
+                            </t>
+                        </tr>
+
+                        <!-- Row 3: Column Types -->
+                        <tr class="type-row">
+                            <th class="row-header">
+                                <span class="row-label">Type</span>
+                            </th>
+                            <t t-foreach="state.columns" t-as="column" t-key="'type-' + column.id">
+                                <td t-attf-class="grid-cell type-cell #{getColumnTypeClass(column.column_type)}">
+                                    <span class="type-badge">
+                                        <i t-attf-class="fa #{getColumnTypeIcon(column.column_type)}"/>
+                                        <t t-esc="column.column_type"/>
+                                    </span>
+                                </td>
+                            </t>
+                        </tr>
+
+                        <!-- Row 4: Formulas -->
+                        <tr class="formula-row">
+                            <th class="row-header">
+                                <span class="row-label">Formula</span>
+                            </th>
+                            <t t-foreach="state.columns" t-as="column" t-key="'formula-' + column.id">
+                                <td t-attf-class="grid-cell formula-cell #{getColumnTypeClass(column.column_type)} #{isCellSelected(column_index, 'formula') ? 'selected' : ''} #{!column.is_valid ? 'invalid' : ''}"
+                                    t-on-click="() => this.onCellClick(column_index, 'formula')"
+                                    t-on-dblclick="() => this.onCellDoubleClick(column_index, 'formula')"
+                                    t-on-keydown="(ev) => this.onCellKeyDown(ev, column_index, 'formula')"
+                                    tabindex="0">
+                                    <t t-if="column.column_type === 'formula'">
+                                        <t t-if="state.isEditing and state.editingCell?.column === column_index and state.editingCell?.rowType === 'formula'">
+                                            <input type="text" class="cell-editor formula-editor"
+                                                   t-att-value="column.excel_formula"
+                                                   t-on-blur="(ev) => this.commitEditing(ev.target.value)"
+                                                   t-on-keydown="(ev) => ev.key === 'Enter' and this.commitEditing(ev.target.value)"
+                                                   autofocus="autofocus"/>
+                                        </t>
+                                        <t t-else="">
+                                            <code class="formula-text" t-esc="column.excel_formula"/>
+                                        </t>
+                                    </t>
+                                    <t t-elif="column.column_type === 'input'">
+                                        <span class="input-indicator">
+                                            <i class="fa fa-sign-in"/> Input
+                                        </span>
+                                    </t>
+                                    <t t-elif="column.column_type === 'constant'">
+                                        <span class="constant-value">
+                                            <i class="fa fa-lock"/>
+                                            <t t-esc="column.constant_value"/>
+                                        </span>
+                                    </t>
+                                </td>
+                            </t>
+                        </tr>
+
+                        <!-- Separator Row -->
+                        <tr class="separator-row">
+                            <td t-att-colspan="state.columns.length + 1">
+                                <div class="separator-line">
+                                    <span class="separator-label">Sample Data</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Sample Data Rows -->
+                        <t t-foreach="state.sampleRows" t-as="sample" t-key="sample.id">
+                            <tr t-attf-class="sample-row #{sample.all_passed ? 'passed' : sample.discrepancy_count > 0 ? 'failed' : ''}">
+                                <th class="row-header sample-header">
+                                    <span class="sample-name" t-esc="sample.name"/>
+                                    <t t-if="sample.all_passed">
+                                        <i class="fa fa-check-circle text-success" title="All tests passed"/>
+                                    </t>
+                                    <t t-elif="sample.discrepancy_count > 0">
+                                        <i class="fa fa-times-circle text-danger"
+                                           t-att-title="sample.discrepancy_count + ' discrepancies'"/>
+                                    </t>
+                                </th>
+                                <t t-foreach="state.columns" t-as="column" t-key="'sample-' + sample.id + '-' + column.id">
+                                    <td t-attf-class="grid-cell sample-cell #{isCellSelected(column_index, 'sample', sample_index) ? 'selected' : ''}"
+                                        t-on-click="() => this.onCellClick(column_index, 'sample', sample_index)"
+                                        tabindex="0">
+                                        <span class="cell-value">
+                                            <t t-esc="formatCellValue(sample.values?.[column.code], column.number_format)"/>
+                                        </span>
+                                    </td>
+                                </t>
+                            </tr>
+                        </t>
+
+                        <!-- Empty State for Sample Data -->
+                        <t t-if="state.sampleRows.length === 0">
+                            <tr class="empty-samples-row">
+                                <td t-att-colspan="state.columns.length + 1" class="text-center text-muted py-4">
+                                    <i class="fa fa-database fa-2x mb-2"/>
+                                    <p>No sample data yet. Add sample data to test your formulas.</p>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="excel-status-bar">
+                <div class="status-left">
+                    <span class="column-count">
+                        <i class="fa fa-columns"/>
+                        <t t-esc="state.columns.length"/> columns
+                    </span>
+                    <span class="sample-count">
+                        <i class="fa fa-database"/>
+                        <t t-esc="state.sampleRows.length"/> samples
+                    </span>
+                </div>
+                <div class="status-right">
+                    <t t-if="Object.keys(state.validationErrors).length > 0">
+                        <span class="validation-status error">
+                            <i class="fa fa-exclamation-triangle"/>
+                            <t t-esc="Object.keys(state.validationErrors).length"/> errors
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <span class="validation-status ok">
+                            <i class="fa fa-check-circle"/>
+                            All valid
+                        </span>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

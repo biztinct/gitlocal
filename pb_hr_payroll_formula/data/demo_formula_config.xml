@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ==========================================
+             DEMO FORMULA CONFIGURATION
+             ========================================== -->
+
+        <!-- Demo Configuration for Vietnam -->
+        <record id="demo_formula_config_vn" model="hr.formula.config">
+            <field name="name">Vietnam Payroll Formula Demo</field>
+            <field name="code">DEMO_VN_FORMULA</field>
+            <field name="country_code">VN</field>
+            <field name="state">draft</field>
+            <field name="theme">light</field>
+            <field name="show_formula_bar" eval="True"/>
+            <field name="show_column_letters" eval="True"/>
+            <field name="description">Demo formula configuration for Vietnam payroll calculation</field>
+        </record>
+
+        <!-- Demo Rules -->
+        <record id="demo_rule_basic" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Basic Salary</field>
+            <field name="code">BASIC</field>
+            <field name="sequence">10</field>
+            <field name="column_type">input</field>
+            <field name="default_value">10000000</field>
+            <field name="number_format">currency</field>
+            <field name="description">Monthly basic salary input</field>
+        </record>
+
+        <record id="demo_rule_hra" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Housing Allowance</field>
+            <field name="code">HRA</field>
+            <field name="sequence">20</field>
+            <field name="column_type">formula</field>
+            <field name="excel_formula">=A1*0.2</field>
+            <field name="number_format">currency</field>
+            <field name="description">Housing allowance = 20% of basic salary</field>
+        </record>
+
+        <record id="demo_rule_transport" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Transport Allowance</field>
+            <field name="code">TRANSPORT</field>
+            <field name="sequence">30</field>
+            <field name="column_type">constant</field>
+            <field name="constant_value">500000</field>
+            <field name="number_format">currency</field>
+            <field name="description">Fixed transport allowance</field>
+        </record>
+
+        <record id="demo_rule_meal" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Meal Allowance</field>
+            <field name="code">MEAL</field>
+            <field name="sequence">40</field>
+            <field name="column_type">constant</field>
+            <field name="constant_value">730000</field>
+            <field name="number_format">currency</field>
+            <field name="description">Fixed meal allowance (tax-exempt)</field>
+        </record>
+
+        <record id="demo_rule_gross" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Gross Salary</field>
+            <field name="code">GROSS</field>
+            <field name="sequence">50</field>
+            <field name="column_type">formula</field>
+            <field name="excel_formula">=A1+B1+C1+D1</field>
+            <field name="number_format">currency</field>
+            <field name="description">Gross salary = Basic + HRA + Transport + Meal</field>
+        </record>
+
+        <record id="demo_rule_si_emp" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Social Insurance (Employee)</field>
+            <field name="code">SI_EMP</field>
+            <field name="sequence">60</field>
+            <field name="column_type">formula</field>
+            <field name="excel_formula">=A1*0.08</field>
+            <field name="number_format">currency</field>
+            <field name="description">Employee social insurance contribution = 8% of basic</field>
+        </record>
+
+        <record id="demo_rule_hi_emp" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Health Insurance (Employee)</field>
+            <field name="code">HI_EMP</field>
+            <field name="sequence">70</field>
+            <field name="column_type">formula</field>
+            <field name="excel_formula">=A1*0.015</field>
+            <field name="number_format">currency</field>
+            <field name="description">Employee health insurance = 1.5% of basic</field>
+        </record>
+
+        <record id="demo_rule_ui_emp" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Unemployment Insurance (Employee)</field>
+            <field name="code">UI_EMP</field>
+            <field name="sequence">80</field>
+            <field name="column_type">formula</field>
+            <field name="excel_formula">=A1*0.01</field>
+            <field name="number_format">currency</field>
+            <field name="description">Employee unemployment insurance = 1% of basic</field>
+        </record>
+
+        <record id="demo_rule_total_deductions" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Total Deductions</field>
+            <field name="code">TOTAL_DED</field>
+            <field name="sequence">90</field>
+            <field name="column_type">formula</field>
+            <field name="excel_formula">=F1+G1+H1</field>
+            <field name="number_format">currency</field>
+            <field name="description">Total deductions = SI + HI + UI</field>
+        </record>
+
+        <record id="demo_rule_net" model="hr.formula.rule">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Net Salary</field>
+            <field name="code">NET</field>
+            <field name="sequence">100</field>
+            <field name="column_type">formula</field>
+            <field name="excel_formula">=E1-I1</field>
+            <field name="number_format">currency</field>
+            <field name="description">Net salary = Gross - Total Deductions</field>
+        </record>
+
+        <!-- Demo Sample Data -->
+        <record id="demo_sample_1" model="hr.formula.sample.data">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Sample A - Standard Employee</field>
+            <field name="description">Standard employee with 10M basic salary</field>
+            <field name="source_type">manual</field>
+            <field name="is_anonymized" eval="True"/>
+            <field name="input_values_json">{"BASIC": 10000000}</field>
+        </record>
+
+        <record id="demo_sample_2" model="hr.formula.sample.data">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Sample B - Senior Employee</field>
+            <field name="description">Senior employee with 25M basic salary</field>
+            <field name="source_type">manual</field>
+            <field name="is_anonymized" eval="True"/>
+            <field name="input_values_json">{"BASIC": 25000000}</field>
+        </record>
+
+        <record id="demo_sample_3" model="hr.formula.sample.data">
+            <field name="config_id" ref="demo_formula_config_vn"/>
+            <field name="name">Sample C - Manager</field>
+            <field name="description">Manager with 50M basic salary</field>
+            <field name="source_type">manual</field>
+            <field name="is_anonymized" eval="True"/>
+            <field name="input_values_json">{"BASIC": 50000000}</field>
+        </record>
+
+    </data>
+</odoo>
