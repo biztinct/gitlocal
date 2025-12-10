@@ -7,6 +7,9 @@ import base64
 import json
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class FormulaImportWizard(models.TransientModel):
@@ -223,9 +226,10 @@ class FormulaImportWizard(models.TransientModel):
         try:
             import openpyxl
             import io
+            import re
 
             content = base64.b64decode(self.import_file)
-            workbook = openpyxl.load_workbook(io.BytesIO(content))
+            workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=False)
             sheet = workbook.active
         except ImportError:
             raise UserError(_("openpyxl library required. Install with: pip install openpyxl"))
@@ -235,87 +239,71 @@ class FormulaImportWizard(models.TransientModel):
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
 
-        # Read headers from first row
-        headers = [cell.value for cell in sheet[1]]
-
-        # Expected columns
-        required_cols = ['code', 'name']
-        optional_cols = ['column_type', 'excel_formula', 'constant_value', 'default_value']
-
-        # Validate headers
-        for col in required_cols:
-            if col.lower() not in [h.lower() if h else '' for h in headers]:
-                raise UserError(_("Missing required column: %s") % col)
-
-        # Create column index mapping
-        col_map = {}
-        for idx, header in enumerate(headers):
-            if header:
-                col_map[header.lower()] = idx
-
-        max_sequence = max(
-            self.config_id.rule_ids.mapped('sequence') or [0]
-        )
-
+        existing_codes = set(self.config_id.rule_ids.mapped('code'))
+        max_sequence = max(self.config_id.rule_ids.mapped('sequence') or [0])
         created_rules = self.env['hr.formula.rule']
 
-        for row in sheet.iter_rows(min_row=2):
-            row_values = [cell.value for cell in row]
-
-            # Skip empty rows
-            if not any(row_values):
+        # Read labels across first row; use corresponding row-2 cells. Skip blank labels.
+        entries = []
+        first_row_cells = list(sheet[1])  # row 1 cells
+        for cell in first_row_cells:
+            label = cell.value
+            if label in (None, ''):
                 continue
+            value_cell = sheet.cell(row=2, column=cell.col_idx)
+            entries.append((label, value_cell))
+
+        # _logger.info(
+        #     "Formula import (excel): found %s entries from row 1 headers: %s",
+        #     len(entries),
+        #     [(str(lbl), val.value, val.data_type) for lbl, val in entries],
+        # )
+
+        for idx, (label, value_cell) in enumerate(entries, start=1):
+            value = value_cell.value
+            is_formula = (value_cell.data_type == 'f') or (isinstance(value, str) and str(value).startswith('='))
+
+            column_type = 'formula' if is_formula else 'input'
+            excel_formula = ''
+            if is_formula and value:
+                excel_formula = str(value) if str(value).startswith('=') else f"={value}"
+
+            name = str(label).strip()
+            code = self._generate_code_from_label(name, existing_codes)
+            existing_codes.add(code)
 
             max_sequence += 10
-
-            code = row_values[col_map.get('code', 0)]
-            name = row_values[col_map.get('name', 1)]
-
-            if not code or not name:
-                continue
-
             values = {
                 'config_id': self.config_id.id,
-                'code': str(code),
-                'name': str(name),
+                'name': name,
+                'code': code,
                 'sequence': max_sequence,
+                'column_type': column_type,
+                'data_source_field': name,
+                'number_format': False,
             }
+            if excel_formula:
+                values['excel_formula'] = excel_formula
 
-            # Optional columns
-            if 'column_type' in col_map:
-                col_type = row_values[col_map['column_type']]
-                if col_type in ['input', 'formula', 'constant']:
-                    values['column_type'] = col_type
-
-            if 'excel_formula' in col_map:
-                formula = row_values[col_map['excel_formula']]
-                if formula:
-                    values['excel_formula'] = str(formula)
-
-            if 'constant_value' in col_map:
-                const = row_values[col_map['constant_value']]
-                if const is not None:
-                    try:
-                        values['constant_value'] = float(const)
-                    except (ValueError, TypeError):
-                        pass
-
-            if 'default_value' in col_map:
-                default = row_values[col_map['default_value']]
-                if default is not None:
-                    try:
-                        values['default_value'] = float(default)
-                    except (ValueError, TypeError):
-                        pass
-
-            created_rules |= self.env['hr.formula.rule'].create(values)
+            try:
+                created = self.env['hr.formula.rule'].create(values)
+                created_rules |= created
+                # _logger.info(
+                #     "Formula import (excel): created rule %s/%s -> code=%s, name=%s, type=%s, formula=%s",
+                #     idx, len(entries), code, name, column_type, excel_formula,
+                # )
+            except Exception as e:
+                _logger.error(
+                    "Formula import (excel): failed to create rule for label '%s' (code candidate %s): %s",
+                    name, code, e,
+                )
 
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'message': _('%d rules imported from Excel') % len(created_rules),
-                'type': 'success',
+                    'message': _('%d rules imported from Excel') % len(created_rules),
+                    'type': 'success',
                 'sticky': False,
             }
         }
@@ -331,24 +319,19 @@ class FormulaImportWizard(models.TransientModel):
             ws = wb.active
             ws.title = "Formula Rules"
 
-            # Headers
-            headers = ['code', 'name', 'column_type', 'excel_formula', 'constant_value', 'default_value']
+            # Template format:
+            # Row 1: Labels/Names (stop at first blank)
+            # Row 2: Values or formulas. Blank/value => input; formula => formula column_type
+            headers = ["Basic Salary", "Std Wrk Hrs", "Actual Wrk Hrs", "Overtime Pay", "Net Pay Cap"]
+            formulas = ["", "", "", "=C2*1.5", "=IF(D2>15000000,15000000,D2)"]
+
             for col, header in enumerate(headers, 1):
                 cell = ws.cell(row=1, column=col)
                 cell.value = header
                 cell.font = openpyxl.styles.Font(bold=True)
 
-            # Sample rows
-            samples = [
-                ['BASIC', 'Basic Salary', 'input', '', '', '0'],
-                ['HRA', 'Housing Allowance', 'formula', '=A1*0.2', '', '0'],
-                ['TRANSPORT', 'Transport Allowance', 'constant', '', '500000', ''],
-                ['GROSS', 'Gross Salary', 'formula', '=A1+B1+C1', '', '0'],
-            ]
-
-            for row_idx, sample in enumerate(samples, 2):
-                for col_idx, value in enumerate(sample, 1):
-                    ws.cell(row=row_idx, column=col_idx).value = value
+            for col, value in enumerate(formulas, 1):
+                ws.cell(row=2, column=col).value = value
 
             # Save to bytes
             output = io.BytesIO()
@@ -371,3 +354,29 @@ class FormulaImportWizard(models.TransientModel):
 
         except ImportError:
             raise UserError(_("openpyxl library required for template generation"))
+
+    # --------------------------------------------------
+    # Helpers
+    # --------------------------------------------------
+    def _generate_code_from_label(self, label, existing_codes):
+        """Create a short unique code (3-10 chars) derived from the label."""
+        import re
+
+        base = re.sub(r'[^A-Za-z0-9]', '', label).upper()
+        if not base:
+            base = 'COL'
+
+        if len(base) < 3:
+            base = (base + 'XXX')[:3]
+        if len(base) > 10:
+            base = base[:10]
+
+        code = base
+        suffix = 1
+        while code in existing_codes:
+            # ensure total length <=10 when adding suffix
+            trimmed = base[: max(1, 10 - len(str(suffix)))]
+            code = f"{trimmed}{suffix}"
+            suffix += 1
+
+        return code

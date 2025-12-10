@@ -56,12 +56,11 @@ License: LGPL-3
         'views/formula_config_views.xml',
         'views/formula_rule_views.xml',
         'views/integration_views.xml',
+        # Wizards (actions used by views below)
+        'wizards/wizard_views.xml',
         'views/sample_data_views.xml',
         'views/menu_views.xml',
         'views/hr_payslip_formula_views.xml',
-
-        # Wizards
-        'wizards/wizard_views.xml',
     ],
     'demo': [
         'data/demo_formula_config.xml',

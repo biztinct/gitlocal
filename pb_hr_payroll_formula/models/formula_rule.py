@@ -233,23 +233,20 @@ class HrFormulaRule(models.Model):
         for record in self:
             record.display_name = f"{record.column_letter}: {record.name} ({record.code})"
 
-    @api.depends('sequence', 'config_id')
+    @api.depends('sequence', 'config_id', 'name', 'code')
     def _compute_column_letter(self):
         """Compute Excel-style column letter based on sequence order.
 
         For saved records: compute based on sequence order among saved siblings.
-        For unsaved records: show blank (will get letter after save).
+        For unsaved records with data: show provisional letter.
+        For empty unsaved records: show blank.
         """
         for record in self:
             if not record.config_id:
                 # No config - blank
                 record.column_letter = ''
-            elif not isinstance(record.id, int):
-                # Unsaved record - blank until saved
-                record.column_letter = ''
-            else:
-                # Saved record - compute position among saved siblings only
-                # Read directly from database to avoid cache issues during editing
+            elif isinstance(record.id, int):
+                # Saved record - compute position among saved siblings
                 saved_siblings = record.config_id.rule_ids.filtered(
                     lambda r: isinstance(r.id, int)
                 )
@@ -262,6 +259,26 @@ class HrFormulaRule(models.Model):
                         record.column_letter = self._index_to_letter(index)
                         break
                 else:
+                    record.column_letter = ''
+            else:
+                # Unsaved record
+                if record.name or record.code:
+                    # Has data - show provisional letter
+                    # Count saved records
+                    saved_count = len(record.config_id.rule_ids.filtered(
+                        lambda r: isinstance(r.id, int)
+                    ))
+                    # Count unsaved records WITH DATA that come before this one
+                    # Use sequence and id string for ordering
+                    current_key = (record.sequence or 0, str(record.id))
+                    unsaved_with_data_before = len(record.config_id.rule_ids.filtered(
+                        lambda r: not isinstance(r.id, int) and
+                        (r.name or r.code) and
+                        (r.sequence or 0, str(r.id)) < current_key
+                    ))
+                    record.column_letter = self._index_to_letter(saved_count + unsaved_with_data_before)
+                else:
+                    # Empty/new row - blank
                     record.column_letter = ''
 
     @staticmethod
@@ -313,17 +330,31 @@ class HrFormulaRule(models.Model):
 
         result = formula[1:]  # Remove leading '='
 
-        # Replace cell references (e.g., A1, AA1) with variable names
+        # First, replace cell references WITH row numbers (e.g., A1, AA1, B2)
         # Pattern matches column letters followed by row number
-        def replace_ref(match):
+        def replace_ref_with_row(match):
             col_letter = match.group(1)
-            # row_num = match.group(2)  # For now, we use row 1 always
             code = column_map.get(col_letter)
             if code:
-                return f"values['{code}']"
+                return f"values.get('{code}', 0)"
             return match.group(0)
 
-        result = re.sub(r'([A-Z]+)(\d+)', replace_ref, result)
+        result = re.sub(r'\$?([A-Z]+)\$?(\d+)', replace_ref_with_row, result)
+
+        # Then, replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
+        # This handles formulas like =ROUND(C/B*A,0)
+        # Pattern: column letter NOT followed by digit and NOT preceded by alphanumeric
+        def replace_ref_no_row(match):
+            col_letter = match.group(1)
+            code = column_map.get(col_letter)
+            if code:
+                return f"values.get('{code}', 0)"
+            return match.group(0)
+
+        # Match column letters that are standalone (not part of function names or already converted)
+        # Negative lookbehind: not preceded by letter or underscore
+        # Negative lookahead: not followed by letter, digit, underscore, or opening bracket
+        result = re.sub(r'(?<![A-Za-z_])([A-Z]+)(?![A-Za-z0-9_\(\[])', replace_ref_no_row, result)
 
         # Replace Excel functions with Python equivalents
         function_map = {
@@ -334,6 +365,7 @@ class HrFormulaRule(models.Model):
             r'\bABS\(': 'abs(',
             r'\bROUND\(': 'round(',
             r'\bIF\(': 'self._if(',
+            r'\bISBLANK\(': 'self._isblank(',
             r'\bAND\(': 'all([',
             r'\bOR\(': 'any([',
             r'\bNOT\(': 'not(',
@@ -388,9 +420,19 @@ class HrFormulaRule(models.Model):
                 record.formula_dependencies = ''
                 continue
 
-            # Extract column references
-            refs = re.findall(r'([A-Z]+)\d+', record.excel_formula.upper())
-            unique_refs = sorted(set(refs))
+            # Extract column references - both with row numbers (A1, B2) and without (A, B, C)
+            formula = record.excel_formula.upper()
+
+            # Find references with row numbers (A1, AA1, etc.)
+            refs_with_row = re.findall(r'([A-Z]+)\d+', formula)
+
+            # Find standalone column letters (A, B, C) - not part of function names
+            # Remove function names first to avoid matching them
+            formula_cleaned = re.sub(r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(', '', formula)
+            refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
+
+            all_refs = refs_with_row + refs_no_row
+            unique_refs = sorted(set(all_refs))
             record.formula_dependencies = ','.join(unique_refs)
 
     # ==========================================
@@ -409,8 +451,17 @@ class HrFormulaRule(models.Model):
         if not self.excel_formula.startswith('='):
             errors.append(_("Formula must start with '='"))
 
-        # Check for valid column references
-        refs = re.findall(r'([A-Z]+)\d+', self.excel_formula.upper())
+        # Check for valid column references - both formats
+        formula = self.excel_formula.upper()
+
+        # Find references with row numbers (A1, AA1, etc.)
+        refs_with_row = re.findall(r'\$?([A-Z]+)\$?\d+', formula)
+
+        # Find standalone column letters - remove function names first
+        formula_cleaned = re.sub(r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(', '', formula)
+        refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
+
+        refs = list(set(refs_with_row + refs_no_row))
         valid_letters = set(self.config_id.rule_ids.mapped('column_letter'))
 
         for ref in refs:
@@ -531,13 +582,30 @@ class HrFormulaRule(models.Model):
         self.ensure_one()
 
         if self.column_type == 'constant':
-            return self.constant_value
+            return self.constant_value or 0.0
 
         if self.column_type == 'input':
-            return values.get(self.code, self.default_value)
+            return values.get(self.code, self.default_value or 0.0)
 
         if self.column_type == 'formula':
-            if not self.python_formula:
+            # Get python formula - compute on-the-fly if not cached
+            python_code = self.python_formula
+
+            if not python_code and self.excel_formula:
+                # Python formula not computed yet, compute it now
+                _logger.info(f"Computing Python formula on-the-fly for {self.code}: {self.excel_formula}")
+                try:
+                    column_map = {}
+                    for rule in self.config_id.rule_ids:
+                        if rule.column_letter and rule.code:
+                            column_map[rule.column_letter] = rule.code
+                    python_code = self._convert_excel_to_python(self.excel_formula, column_map)
+                except Exception as e:
+                    _logger.error(f"Error converting formula for {self.code}: {e}")
+                    return 0.0
+
+            if not python_code:
+                _logger.warning(f"No formula to evaluate for {self.code}, returning 0")
                 return 0.0
 
             try:
@@ -553,10 +621,11 @@ class HrFormulaRule(models.Model):
                     'round': round,
                     'pow': pow,
                 }
-                result = eval(self.python_formula, {"__builtins__": {}}, safe_context)
+                result = eval(python_code, {"__builtins__": {}}, safe_context)
                 return float(result) if result is not None else 0.0
             except Exception as e:
-                _logger.error(f"Formula evaluation error for {self.code}: {e}")
+                _logger.error(f"Formula evaluation error for {self.code} with formula '{python_code}': {e}")
+                _logger.error(f"Available values: {list(values.keys())}")
                 return 0.0
 
         return 0.0
@@ -569,3 +638,7 @@ class HrFormulaRule(models.Model):
         """Excel AVERAGE function implementation"""
         valid_values = [v for v in values_list if v is not None]
         return sum(valid_values) / len(valid_values) if valid_values else 0
+
+    def _isblank(self, value):
+        """Excel ISBLANK function implementation"""
+        return value in (None, '')

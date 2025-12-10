@@ -14,3 +14,6 @@ access_mapping_admin,hr.integration.field.mapping.admin,model_hr_integration_fie
 access_sample_wizard,hr.formula.sample.data.wizard,model_hr_formula_sample_data_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
 access_import_wizard,hr.formula.import.wizard,model_hr_formula_import_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
 access_sync_wizard,hr.integration.sync.wizard,model_hr_integration_sync_wizard,pb_hr_payroll_formula.group_formula_admin,1,1,1,0
+access_sample_input_line_user,hr.formula.sample.input.line.user,model_hr_formula_sample_input_line,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_sample_input_line_manager,hr.formula.sample.input.line.manager,model_hr_formula_sample_input_line,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_compute_wizard_user,hr.formula.compute.wizard,model_hr_formula_compute_wizard,pb_hr_payroll_formula.group_formula_user,1,1,1,0

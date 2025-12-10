@@ -76,29 +76,79 @@
                     </group>
 
                     <notebook>
-                        <!-- Input Values -->
-                        <page string="Input Values" name="inputs">
+                        <!-- User-Friendly Input (for Manual Entry) -->
+                        <page string="Input Values (Table)" name="input_table"
+                              attrs="{'invisible': [('source_type', '!=', 'manual')]}">
+                            <div class="alert alert-info mb-3" role="alert" style="margin: 0 0 16px 0;">
+                                <div class="d-flex align-items-center">
+                                    <i class="fa fa-info-circle fa-lg me-3"/>
+                                    <div>
+                                        <strong>How to use:</strong>
+                                        <ol class="mb-0" style="padding-left: 20px; margin-top: 8px;">
+                                            <li>Click <b>Load Input Columns</b> to populate the table</li>
+                                            <li>Enter test values for each input column</li>
+                                            <li>Click <b>Sync &amp; Compute</b> to automatically save and run formulas</li>
+                                            <li>Check the <b>Computed Results</b> tab to see results</li>
+                                        </ol>
+                                        <div class="text-success mt-2" style="font-size: 0.9em;">
+                                            <i class="fa fa-check-circle"></i>
+                                            <strong>Note:</strong> Changes are automatically saved when you click Sync &amp; Compute
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <button name="action_generate_input_lines" string="Load Input Columns"
+                                        type="object" class="btn btn-secondary me-2" icon="fa-download"
+                                        attrs="{'invisible': [('config_id', '=', False)]}"/>
+                                <button name="%(action_compute_sample_wizard)d" string="Sync &amp; Compute"
+                                        type="action" class="btn btn-primary" icon="fa-play"
+                                        attrs="{'invisible': [('config_id', '=', False)]}"/>
+                            </div>
+                            <field name="input_line_ids" nolabel="1">
+                                <tree string="Input Values" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="column_letter" readonly="1" string="Col"/>
+                                    <field name="column_code" readonly="1" string="Code"/>
+                                    <field name="column_name" readonly="1" string="Name"/>
+                                    <field name="column_type" readonly="1" string="Type" widget="badge"
+                                           decoration-info="column_type == 'input'"
+                                           decoration-muted="column_type == 'constant'"/>
+                                    <field name="value" string="Value"/>
+                                    <field name="rule_id" invisible="1"/>
+                                    <field name="is_editable" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- Raw JSON Input Values -->
+                        <page string="Input Values (JSON)" name="inputs">
                             <group string="JSON Input Data">
-                                <field name="input_values_json" widget="ace" options="{'mode': 'json'}"
+                                <field name="input_values_json"
+                                       widget="text"
                                        placeholder='{"BASIC": 10000000, "HRA": 2000000, ...}'
-                                       nolabel="1" colspan="2"/>
+                                       nolabel="1" colspan="2"
+                                       class="o_monospaced"
+                                       style="min-height: 180px"/>
                             </group>
                         </page>
 
                         <!-- Expected Values -->
                         <page string="Expected Values" name="expected">
                             <group string="Expected Results">
-                                <field name="expected_values_json" widget="ace" options="{'mode': 'json'}"
+                                <field name="expected_values_json"
+                                       widget="text"
                                        placeholder='{"GROSS": 12500000, "NET": 10000000, ...}'
-                                       nolabel="1" colspan="2"/>
+                                       nolabel="1" colspan="2"
+                                       class="o_monospaced"
+                                       style="min-height: 180px"/>
                             </group>
                         </page>
 
                         <!-- Computed Results -->
                         <page string="Computed Results" name="computed">
-                            <group string="Calculated by Formula Engine">
-                                <field name="computed_values_json" widget="ace" options="{'mode': 'json'}"
-                                       readonly="1" nolabel="1" colspan="2"/>
+                            <group>
+                                <field name="computed_values_html" nolabel="1" readonly="1"/>
                             </group>
                             <group>
                                 <field name="last_computed" readonly="1"/>
