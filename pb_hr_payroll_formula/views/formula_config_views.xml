@@ -42,6 +42,11 @@
                             type="object" class="btn-secondary"
                             attrs="{'invisible': [('structure_id', '=', False)]}"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
+                    <button name="action_regenerate_formulas" string="Regenerate Formulas"
+                            type="object" class="btn-secondary" icon="fa-refresh"
+                            attrs="{'invisible': [('rule_count', '=', 0)]}"
+                            groups="pb_hr_payroll_formula.group_formula_manager"
+                            title="Refresh all Python formulas using latest conversion engine"/>
                     <button name="action_start_testing" string="Start Testing" type="object"
                             class="btn-primary"
                             attrs="{'invisible': [('state', '!=', 'draft')]}"

@@ -380,6 +380,57 @@ class HrFormulaConfig(models.Model):
     # ==========================================
     # FORMULA VALIDATION
     # ==========================================
+    def action_regenerate_formulas(self):
+        """Regenerate Python code for all formula rules
+
+        Use this after updating the formula conversion logic to refresh
+        all cached Python formulas with the latest conversion engine.
+        """
+        self.ensure_one()
+        rules = self.rule_ids.filtered(lambda r: r.column_type == 'formula' and r.excel_formula)
+
+        # Build column mapping
+        column_map = {}
+        for r in self.rule_ids.sorted(key=lambda r: r.sequence):
+            if r.column_letter and r.code:
+                column_map[r.column_letter] = r.code
+
+        regenerated = 0
+        errors = []
+        for rule in rules:
+            try:
+                python_code = rule._convert_excel_to_python(rule.excel_formula, column_map)
+                rule.write({'python_formula': python_code})
+                regenerated += 1
+                _logger.info(f"Regenerated formula for {rule.code}: {rule.excel_formula} -> {python_code}")
+            except Exception as e:
+                errors.append(f"{rule.code}: {str(e)}")
+                _logger.error(f"Failed to regenerate formula for {rule.code}: {e}")
+
+        if errors:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Regeneration Complete with Errors'),
+                    'message': _('%d formulas regenerated, %d errors:\n%s') % (
+                        regenerated, len(errors), '\n'.join(errors[:5])
+                    ),
+                    'type': 'warning',
+                    'sticky': True,
+                }
+            }
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Formulas Regenerated'),
+                'message': _('%d Python formulas successfully regenerated.') % regenerated,
+                'type': 'success',
+            }
+        }
+
     def action_validate_formulas(self):
         """Validate all formulas in this configuration"""
         self.ensure_one()

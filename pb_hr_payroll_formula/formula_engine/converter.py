@@ -112,12 +112,27 @@ class FormulaConverter:
         if not formula:
             return "0"
 
-        # Try using formulas library first
+        # Try using formulas library first (robust grammar); fall back on regex
         if HAS_FORMULAS_LIB and self._parser:
+            _logger.debug(
+                "FormulaConverter: attempting library conversion for %s with mapping %s",
+                excel_formula, mapping,
+            )
             try:
-                return self._convert_with_library(formula, mapping)
+                lib_python = self._convert_with_library(formula, mapping)
+                if lib_python:
+                    _logger.info(
+                        "FormulaConverter: using formulas library for %s -> %s",
+                        excel_formula, lib_python,
+                    )
+                    return lib_python
             except Exception as e:
                 _logger.debug(f"Library conversion failed, using fallback: {e}")
+        else:
+            _logger.debug(
+                "FormulaConverter: skipping library conversion (HAS_FORMULAS_LIB=%s, parser=%s) for %s",
+                HAS_FORMULAS_LIB, bool(self._parser), excel_formula,
+            )
 
         # Fallback to regex-based conversion
         return self._convert_with_regex(formula, mapping)
@@ -129,12 +144,21 @@ class FormulaConverter:
         The library parses and can evaluate Excel formulas.
         We convert its output to our Python expression format.
         """
-        # Parse the formula
-        func = formulas.Parser().ast(f"={formula}")
-
-        # Get the formula as a Python-like expression
-        # The formulas library creates a callable, we need to extract logic
-        # For now, fall back to regex since library integration is complex
+        # Attempt to parse; if to_python exists, use it, else fallback.
+        parsed = self._parser.ast(f"={formula}")
+        if hasattr(parsed, "to_python"):
+            py_expr = parsed.to_python()
+            # Replace Excel-style refs with our mapping
+            mapped = self._replace_cell_references(py_expr, mapping)
+            _logger.debug(
+                "FormulaConverter library AST -> python: expr=%s mapped=%s mapping=%s",
+                py_expr, mapped, mapping,
+            )
+            # If library output still has slicing-like patterns, fall back
+            if "values.get" in mapped and ":" in mapped:
+                return None
+            return self._post_process_python(mapped)
+        # Fallback to regex
         return self._convert_with_regex(formula, mapping)
 
     def _convert_with_regex(self, formula: str, mapping: Dict[str, str]) -> str:
@@ -154,13 +178,14 @@ class FormulaConverter:
         # Step 3: Replace Excel operators
         result = self._replace_operators(result)
 
-        # Step 4: Convert percent literals (e.g., 8% -> 8/100)
-        result = re.sub(r'(\d+(?:\.\d+)?)%', r'(\1/100)', result)
+        # Step 4: Post-process and clean up
+        return self._post_process_python(result)
 
-        # Step 4: Clean up
-        result = self._cleanup(result)
-
-        return result
+    def _post_process_python(self, expr: str) -> str:
+        """Normalize Python expression: percents, equality, cleanup."""
+        expr = re.sub(r'(\d+(?:\.\d+)?)%', r'(\1/100)', expr)
+        expr = re.sub(r'(?<![<>=!])=(?!=)', '==', expr)
+        return self._cleanup(expr)
 
     def _replace_cell_references(self, formula: str, mapping: Dict[str, str]) -> str:
         """
