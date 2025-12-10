@@ -67,6 +67,7 @@ class FormulaEvaluator:
             '_avg': self._excel_average,
             '_if': self._excel_if,
             '_iferror': self._excel_iferror,
+            '_isblank': self._excel_isblank,
             '_mod': self._excel_mod,
             '_sign': self._excel_sign,
             '_roundup': self._excel_roundup,
@@ -149,6 +150,11 @@ class FormulaEvaluator:
         safe_context = self._build_safe_context(context)
 
         try:
+            # Sanitize None -> 0 for arithmetic
+            safe_context["values"] = {
+                k: (0 if v is None else v) for k, v in values.items()
+            }
+
             result = eval(python_formula, {"__builtins__": {}}, safe_context)
             return float(result) if result is not None else 0.0
 
@@ -260,6 +266,11 @@ class FormulaEvaluator:
             return expression
         except:
             return error_value
+
+    @staticmethod
+    def _excel_isblank(value):
+        """Excel ISBLANK function"""
+        return value in (None, '')
 
     @staticmethod
     def _excel_mod(number, divisor):

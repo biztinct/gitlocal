@@ -6,8 +6,11 @@ Sample Data Wizard - Generate sample data for formula testing.
 import json
 import random
 import string
+import datetime
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import base64
+import io
 
 
 class SampleDataWizard(models.TransientModel):
@@ -25,6 +28,7 @@ class SampleDataWizard(models.TransientModel):
         ('manual', 'Manual Entry'),
         ('employees', 'From Employees'),
         ('payslips', 'From Existing Payslips'),
+        ('file', 'Imported from File'),
         ('random', 'Generate Random Data'),
     ], string='Data Source', default='employees', required=True)
 
@@ -52,6 +56,10 @@ class SampleDataWizard(models.TransientModel):
     include_expected = fields.Boolean('Include Expected Values', default=True,
         help="Copy computed values as expected results for validation")
 
+    # File import
+    import_file = fields.Binary('Import File')
+    import_filename = fields.Char('Filename')
+
     # Random generation options
     min_salary = fields.Float('Minimum Salary', default=5000000)
     max_salary = fields.Float('Maximum Salary', default=50000000)
@@ -72,6 +80,8 @@ class SampleDataWizard(models.TransientModel):
             samples = self._generate_from_employees()
         elif self.source == 'payslips':
             samples = self._generate_from_payslips()
+        elif self.source == 'file':
+            samples = self._generate_from_file()
         elif self.source == 'random':
             samples = self._generate_random()
         else:
@@ -185,6 +195,72 @@ class SampleDataWizard(models.TransientModel):
             })
 
         return samples
+
+    def _generate_from_file(self):
+        """Generate samples from an uploaded Excel file.
+
+        Assumptions:
+        - First row: headers (rule code or name)
+        - Subsequent rows: one sample per row
+        """
+        if not self.import_file:
+            raise UserError(_("Please upload a file"))
+
+        try:
+            import openpyxl
+        except ImportError:
+            raise UserError(_("openpyxl library required. Install with: pip install openpyxl"))
+
+        try:
+            content = base64.b64decode(self.import_file)
+            workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
+            sheet = workbook.active
+        except Exception as e:
+            raise UserError(_("Failed to read Excel file: %s") % e)
+
+        # Headers
+        headers = [cell.value for cell in sheet[1]]
+        header_indices = {idx: hdr for idx, hdr in enumerate(headers) if hdr}
+
+        # Build mapping header -> rule code (match by code or name)
+        rules = self.config_id.rule_ids
+        header_to_code = {}
+        for idx, hdr in header_indices.items():
+            match = rules.filtered(lambda r: r.code == hdr) or rules.filtered(lambda r: r.name == hdr)
+            if match:
+                header_to_code[idx] = match[0].code
+
+        if not header_to_code:
+            raise UserError(_("No headers matched any rule codes or names."))
+
+        samples = []
+        for row_idx in range(2, sheet.max_row + 1):
+            row = [cell.value for cell in sheet[row_idx]]
+            if not any(row):
+                continue
+
+            input_values = {}
+            for idx, code in header_to_code.items():
+                if idx < len(row):
+                    input_values[code] = self._serialize_value(row[idx])
+
+            samples.append({
+                'config_id': self.config_id.id,
+                'name': _("File Sample %s") % (row_idx - 1),
+                'source_type': 'import',
+                'is_anonymized': self.anonymize,
+                'input_values_json': json.dumps(input_values),
+            })
+
+        return samples
+
+    # Helpers -------------------------------------------------------------
+    @staticmethod
+    def _serialize_value(val):
+        """Convert Excel cell values to JSON-serializable types."""
+        if isinstance(val, (datetime.datetime, datetime.date)):
+            return val.isoformat()
+        return val
 
     def _generate_sample_name(self, index, employee=None):
         """Generate anonymized sample name."""

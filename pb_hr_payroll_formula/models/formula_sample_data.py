@@ -99,11 +99,27 @@ class HrFormulaSampleData(models.Model):
         help="JSON object with expected calculated values for comparison"
     )
 
+    # ==========================================
+    # USER-FRIENDLY INPUT LINES
+    # ==========================================
+    input_line_ids = fields.One2many(
+        'hr.formula.sample.input.line',
+        'sample_id',
+        string='Input Values',
+        help="User-friendly input values for testing"
+    )
+
     computed_values_json = fields.Text(
         string='Computed Values (JSON)',
         compute='_compute_results',
         store=True,
         help="JSON object with formula-computed values"
+    )
+
+    computed_values_html = fields.Html(
+        string='Computed Values (Table)',
+        compute='_compute_computed_values_html',
+        help="HTML table view of computed values for quick inspection"
     )
 
     # ==========================================
@@ -230,6 +246,43 @@ class HrFormulaSampleData(models.Model):
                 record.max_discrepancy = 100
                 record.validation_status = 'failed'
 
+    def _compute_computed_values_html(self):
+        """Render computed values as an HTML table for the UI tab."""
+        for record in self:
+            rows_html = []
+
+            computed = record.get_computed_values()
+            rules = record.config_id.rule_ids.sorted(key=lambda r: r.sequence)
+
+            for rule in rules:
+                value = computed.get(rule.code, 0)
+                is_formula = rule.column_type == 'formula'
+                row_style = "background:#f6f8fa;font-weight:bold;" if is_formula else ""
+                rows_html.append(
+                    f"<tr style='{row_style}'>"
+                    f"<td>{rule.column_letter or ''}</td>"
+                    f"<td>{rule.name or ''}</td>"
+                    f"<td>{rule.code or ''}</td>"
+                    f"<td>{rule.excel_formula or ''}</td>"
+                    f"<td style='text-align:right'>{value}</td>"
+                    "</tr>"
+                )
+
+            if rows_html:
+                table_html = (
+                    "<table class='table table-sm' style='width:100%'>"
+                    "<thead><tr>"
+                    "<th>Col</th><th>Label/Name</th><th>Code</th><th>Formula</th><th style='text-align:right'>Value</th>"
+                    "</tr></thead>"
+                    "<tbody>"
+                    + "".join(rows_html) +
+                    "</tbody></table>"
+                )
+            else:
+                table_html = "<p class='text-muted'>No computed values available.</p>"
+
+            record.computed_values_html = table_html
+
     # ==========================================
     # HELPER METHODS
     # ==========================================
@@ -323,6 +376,218 @@ class HrFormulaSampleData(models.Model):
                 'type': 'info',
             }
         }
+
+    def action_generate_input_lines(self):
+        """Generate input lines from config's input columns"""
+        self.ensure_one()
+        if not self.config_id:
+            raise UserError(_('Please select a Formula Configuration first.'))
+
+        # Get existing input values
+        existing_values = self.get_input_values()
+
+        # Get input and constant columns from config
+        input_rules = self.config_id.rule_ids.filtered(
+            lambda r: r.column_type in ('input', 'constant')
+        ).sorted(key=lambda r: r.sequence)
+
+        # Delete existing lines
+        self.input_line_ids.unlink()
+
+        # Create new lines
+        lines_to_create = []
+        for rule in input_rules:
+            value = existing_values.get(rule.code, rule.default_value or 0.0)
+            if rule.column_type == 'constant':
+                value = rule.constant_value or 0.0
+            lines_to_create.append({
+                'sample_id': self.id,
+                'rule_id': rule.id,
+                'column_letter': rule.column_letter,
+                'column_code': rule.code,
+                'column_name': rule.name,
+                'column_type': rule.column_type,
+                'value': value,
+            })
+
+        if lines_to_create:
+            self.env['hr.formula.sample.input.line'].create(lines_to_create)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Input Lines Generated'),
+                'message': _('%d input columns loaded. Enter values and click "Sync to JSON".') % len(lines_to_create),
+                'type': 'success',
+            }
+        }
+
+    def action_sync_input_to_json(self):
+        """Sync input lines to JSON for computation with field toggle workaround
+
+        This implements a multi-phase approach to handle editable tree pending edits:
+        Phase 1: Collect current values and compute
+        Phase 2: Save to database
+        Phase 3: Toggle is_anonymized field and revert (forces commit of pending edits)
+        Phase 4: Save again
+        Phase 5: Re-read fresh values and recompute with accurate data
+        """
+        self.ensure_one()
+
+        _logger.info("=== PHASE 1: Initial data collection and computation ===")
+
+        # Phase 1: Collect current values from input lines (may be from cache/UI layer)
+        input_values_phase1 = {}
+        for line in self.input_line_ids:
+            if line.column_type == 'input':
+                input_values_phase1[line.column_code] = line.value
+                _logger.debug(f"  Phase 1: {line.column_code} = {line.value}")
+
+        if not input_values_phase1:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('No Input Values'),
+                    'message': _('Please click "Load Input Columns" first to populate the table, '
+                                'then enter values before computing.'),
+                    'type': 'warning',
+                }
+            }
+
+        _logger.info(f"Phase 1 collected {len(input_values_phase1)} input values: {input_values_phase1}")
+
+        # Compute with phase 1 values
+        computed_phase1 = self._compute_formula_results(input_values_phase1)
+
+        # Phase 2: Save to database
+        _logger.info("=== PHASE 2: Writing to database (first save) ===")
+        self.write({
+            'input_values_json': json.dumps(input_values_phase1),
+            'computed_values_json': json.dumps(computed_phase1),
+            'last_computed': fields.Datetime.now(),
+        })
+
+        # Phase 3: Toggle is_anonymized field to force commit of pending editable tree changes
+        _logger.info("=== PHASE 3: Toggling is_anonymized field to force commit ===")
+        original_anonymized = self.is_anonymized
+        _logger.debug(f"  Original is_anonymized: {original_anonymized}")
+
+        # Toggle the field
+        self.write({'is_anonymized': not original_anonymized})
+        _logger.debug(f"  Toggled to: {not original_anonymized}")
+
+        # Toggle it back to original value
+        self.write({'is_anonymized': original_anonymized})
+        _logger.debug(f"  Reverted to: {original_anonymized}")
+
+        # Phase 4: Save again to ensure all changes are committed
+        _logger.info("=== PHASE 4: Second save after field toggle ===")
+        self.env.flush_all()
+        self.invalidate_recordset(['input_line_ids'])
+
+        # Refresh record from database to get committed values
+        self_fresh = self.browse(self.id)
+
+        # Phase 5: Re-collect input values (now fresh from database with committed edits)
+        _logger.info("=== PHASE 5: Re-reading fresh data and recomputing ===")
+        input_values_phase5 = {}
+        for line in self_fresh.input_line_ids:
+            if line.column_type == 'input':
+                input_values_phase5[line.column_code] = line.value
+                _logger.debug(f"  Phase 5 (fresh): {line.column_code} = {line.value}")
+
+        _logger.info(f"Phase 5 collected {len(input_values_phase5)} fresh values: {input_values_phase5}")
+
+        # Check if values changed between phase 1 and phase 5
+        values_changed = input_values_phase1 != input_values_phase5
+        if values_changed:
+            _logger.info("  ✓ VALUES CHANGED - Pending edits were successfully committed!")
+            _logger.info(f"  Phase 1 values: {input_values_phase1}")
+            _logger.info(f"  Phase 5 values: {input_values_phase5}")
+        else:
+            _logger.info("  ℹ Values unchanged between phase 1 and phase 5")
+
+        # Recompute with fresh values
+        computed_phase5 = self_fresh._compute_formula_results(input_values_phase5)
+
+        # Write final accurate results
+        self_fresh.write({
+            'input_values_json': json.dumps(input_values_phase5),
+            'computed_values_json': json.dumps(computed_phase5),
+            'last_computed': fields.Datetime.now(),
+        })
+
+        input_count = len(input_values_phase5)
+        result_count = len(computed_phase5)
+
+        _logger.info(f"=== COMPLETE: {input_count} inputs processed, {result_count} results computed ===")
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Synced & Computed'),
+                'message': _('%d input values synced and %d formula results computed. '
+                            'Check the Computed Results tab.') % (input_count, result_count),
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
+    def _compute_formula_results(self, input_values):
+        """Compute formula results from input values (helper method)"""
+        self.ensure_one()
+        if not self.config_id:
+            _logger.warning("No config_id set for sample data")
+            return {}
+
+        try:
+            rules = self.config_id.rule_ids.sorted(key=lambda r: r.sequence)
+            _logger.info(f"Computing formulas for {len(rules)} rules with input values: {input_values}")
+
+            # Build results by evaluating each rule in order
+            results = input_values.copy()
+
+            for rule in rules:
+                _logger.debug(f"Processing rule {rule.column_letter} ({rule.code}) - type: {rule.column_type}")
+
+                if rule.column_type == 'input':
+                    # Use input value or default
+                    if rule.code not in results:
+                        results[rule.code] = rule.default_value or 0.0
+                        _logger.debug(f"  Using default value: {results[rule.code]}")
+                    else:
+                        _logger.debug(f"  Using input value: {results[rule.code]}")
+
+                elif rule.column_type == 'constant':
+                    results[rule.code] = rule.constant_value or 0.0
+                    _logger.debug(f"  Using constant value: {results[rule.code]}")
+
+                elif rule.column_type == 'formula':
+                    # Evaluate formula with current results
+                    try:
+                        _logger.debug(f"  Evaluating formula: {rule.excel_formula}")
+                        value = rule.evaluate(results)
+                        results[rule.code] = value
+                        _logger.debug(f"  Result: {value}")
+                    except Exception as e:
+                        _logger.warning(f"Formula evaluation error for {rule.code}: {e}")
+                        results[rule.code] = 0.0
+
+            _logger.info(f"Formula computation complete. Results: {results}")
+            return results
+        except Exception as e:
+            _logger.error(f"Error computing formula results: {e}", exc_info=True)
+            return {'error': str(e)}
+
+    @api.onchange('config_id')
+    def _onchange_config_id(self):
+        """Auto-generate input lines when config changes"""
+        if self.config_id and self.source_type == 'manual':
+            # Clear existing lines for manual entry
+            self.input_line_ids = [(5, 0, 0)]
 
     def action_view_comparison(self):
         """Open detailed comparison view"""
@@ -477,3 +742,101 @@ class HrFormulaTestResult(models.Model):
     def _compute_difference(self):
         for record in self:
             record.difference = record.expected_value - record.computed_value
+
+
+class HrFormulaSampleInputLine(models.Model):
+    """
+    Formula Sample Input Line - Stores individual input values for a sample data set.
+    Provides a user-friendly way to enter test data instead of raw JSON.
+    """
+    _name = 'hr.formula.sample.input.line'
+    _description = 'Formula Sample Input Line'
+    _order = 'sequence, id'
+
+    # ==========================================
+    # LINKS
+    # ==========================================
+    sample_id = fields.Many2one(
+        'hr.formula.sample.data',
+        string='Sample Data',
+        required=True,
+        ondelete='cascade',
+        index=True
+    )
+
+    rule_id = fields.Many2one(
+        'hr.formula.rule',
+        string='Formula Rule',
+        ondelete='set null',
+        help="Link to the formula rule this input corresponds to"
+    )
+
+    # ==========================================
+    # COLUMN IDENTIFICATION
+    # ==========================================
+    column_letter = fields.Char(
+        string='Column',
+        readonly=True,
+        help="Excel-style column letter (A, B, C...)"
+    )
+
+    column_code = fields.Char(
+        string='Code',
+        required=True,
+        help="Salary rule code (e.g., BASIC, HRA)"
+    )
+
+    column_name = fields.Char(
+        string='Name',
+        help="Display name of the column"
+    )
+
+    column_type = fields.Selection([
+        ('input', 'Input'),
+        ('constant', 'Constant')
+    ], string='Type', default='input')
+
+    sequence = fields.Integer(
+        string='Sequence',
+        default=10
+    )
+
+    # ==========================================
+    # VALUE
+    # ==========================================
+    value = fields.Float(
+        string='Value',
+        digits=(16, 2),
+        help="The input value for this column"
+    )
+
+    # ==========================================
+    # COMPUTED FIELDS
+    # ==========================================
+    is_editable = fields.Boolean(
+        string='Editable',
+        compute='_compute_is_editable',
+        help="Whether this value can be edited (only input columns are editable)"
+    )
+
+    @api.depends('column_type')
+    def _compute_is_editable(self):
+        """Only input columns should be editable by user"""
+        for record in self:
+            record.is_editable = record.column_type == 'input'
+
+    # ==========================================
+    # ONCHANGE
+    # ==========================================
+    @api.onchange('rule_id')
+    def _onchange_rule_id(self):
+        """Auto-fill column details from linked rule"""
+        if self.rule_id:
+            self.column_letter = self.rule_id.column_letter
+            self.column_code = self.rule_id.code
+            self.column_name = self.rule_id.name
+            self.column_type = self.rule_id.column_type if self.rule_id.column_type in ('input', 'constant') else 'input'
+            if self.rule_id.column_type == 'constant':
+                self.value = self.rule_id.constant_value or 0.0
+            elif not self.value:
+                self.value = self.rule_id.default_value or 0.0

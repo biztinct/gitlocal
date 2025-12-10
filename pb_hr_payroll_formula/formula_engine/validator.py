@@ -25,6 +25,7 @@ class FormulaValidator:
         'SUM', 'AVERAGE', 'MIN', 'MAX', 'ABS', 'ROUND', 'ROUNDUP', 'ROUNDDOWN',
         'CEILING', 'FLOOR', 'POWER', 'SQRT', 'MOD', 'INT', 'SIGN',
         'IF', 'AND', 'OR', 'NOT', 'TRUE', 'FALSE', 'IFERROR', 'IFS',
+        'ISBLANK',
         'CONCATENATE', 'LEFT', 'RIGHT', 'MID', 'LEN', 'UPPER', 'LOWER', 'TRIM',
         'VLOOKUP', 'HLOOKUP', 'INDEX', 'MATCH', 'CHOOSE',
         'COUNT', 'COUNTA', 'COUNTIF', 'SUMIF', 'AVERAGEIF',
@@ -131,8 +132,8 @@ class FormulaValidator:
         """Check that all cell references are valid"""
         errors = []
 
-        # Extract cell references
-        pattern = r'\b([A-Z]+)(\d+)\b'
+        # Extract cell references (allow $ for absolute refs)
+        pattern = r'\$?([A-Z]+)\$?(\d+)\b'
         matches = re.findall(pattern, formula.upper())
 
         for col, row in matches:

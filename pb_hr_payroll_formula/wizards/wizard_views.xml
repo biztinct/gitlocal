@@ -28,6 +28,14 @@
                            placeholder="Leave empty to use recent payslips"/>
                 </group>
 
+                <!-- File Import -->
+                <group attrs="{'invisible': [('source', '!=', 'file')]}">
+                    <field name="import_file" filename="import_filename"
+                           string="Excel File" required="1"/>
+                    <field name="import_filename" invisible="1"/>
+                    <div class="o_form_label">First row headers; subsequent rows are samples.</div>
+                </group>
+
                 <!-- Random Generation Options -->
                 <group string="Random Generation Settings"
                        attrs="{'invisible': [('source', '!=', 'random')]}">
@@ -195,6 +203,33 @@
         <field name="res_model">hr.integration.sync.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+    </record>
+
+    <!-- ==========================================
+         COMPUTE SAMPLE WIZARD
+         ========================================== -->
+    <record id="view_compute_sample_wizard_form" model="ir.ui.view">
+        <field name="name">hr.formula.compute.wizard.form</field>
+        <field name="model">hr.formula.compute.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Check Calculations">
+                <group>
+                    <field name="note" nolabel="1" readonly="1" colspan="2"/>
+                </group>
+                <footer>
+                    <button name="action_run" string="Continue" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_compute_sample_wizard" model="ir.actions.act_window">
+        <field name="name">Sync &amp; Compute</field>
+        <field name="res_model">hr.formula.compute.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_sample_id': active_id}</field>
     </record>
 
 </odoo>

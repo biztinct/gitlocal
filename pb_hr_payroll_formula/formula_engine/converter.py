@@ -52,6 +52,7 @@ class FormulaConverter:
 
         # Logical functions
         'IF': ('_if', 'args'),
+        'ISBLANK': ('_isblank', 'single'),
         'AND': ('all', 'list'),
         'OR': ('any', 'list'),
         'NOT': ('not', 'single'),
@@ -101,8 +102,9 @@ class FormulaConverter:
         if not excel_formula:
             return "0"
 
-        # Use provided mapping or instance mapping
+        # Use provided mapping or instance mapping; keep on self for helper use
         mapping = column_map or self.column_mapping
+        self.column_mapping = mapping
 
         # Remove leading '=' if present
         formula = excel_formula.lstrip('=').strip()
@@ -152,6 +154,9 @@ class FormulaConverter:
         # Step 3: Replace Excel operators
         result = self._replace_operators(result)
 
+        # Step 4: Convert percent literals (e.g., 8% -> 8/100)
+        result = re.sub(r'(\d+(?:\.\d+)?)%', r'(\1/100)', result)
+
         # Step 4: Clean up
         result = self._cleanup(result)
 
@@ -178,7 +183,7 @@ class FormulaConverter:
                 return f"values.get('{col_letter}', 0)"
 
         # Pattern: Column letter(s) followed by row number
-        pattern = r'\b([A-Z]+)(\d+)\b'
+        pattern = r'\$?([A-Z]+)\$?(\d+)\b'
         return re.sub(pattern, replace_ref, formula, flags=re.IGNORECASE)
 
     def _replace_functions(self, formula: str) -> str:
@@ -219,7 +224,7 @@ class FormulaConverter:
             args = match.group(1)
 
             # Check for range notation (A1:C1)
-            range_match = re.search(r'([A-Z]+)\d+\s*:\s*([A-Z]+)\d+', args, re.IGNORECASE)
+            range_match = re.search(r'\$?([A-Z]+)\$?\d+\s*:\s*\$?([A-Z]+)\$?\d+', args, re.IGNORECASE)
             if range_match:
                 # It's a range - expand it
                 start_col = range_match.group(1).upper()
@@ -251,6 +256,7 @@ class FormulaConverter:
             (r'\^', '**'),           # Exponentiation
             (r'<>', '!='),           # Not equal
             (r'&', '+'),             # String concatenation (simplified)
+            (r'(?<![<>=!])=(?!=)', '=='),  # Equality
         ]
 
         result = formula
