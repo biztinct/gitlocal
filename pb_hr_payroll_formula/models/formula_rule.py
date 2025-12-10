@@ -324,14 +324,111 @@ class HrFormulaRule(models.Model):
                 _logger.warning(f"Formula conversion error for {record.code}: {e}")
 
     def _convert_excel_to_python(self, formula, column_map):
-        """Convert Excel formula to Python expression"""
+        """Convert Excel formula to Python expression
+
+        This is the PRIMARY formula conversion engine. It handles:
+        - Cell references (A1, B2, etc.)
+        - Standalone column letters (A, B, C)
+        - Column codes (BASIC, GROSS, etc.)
+        - Ranges (A1:C1, A:C, BASIC:GROSS)
+        - Excel functions (SUM, IF, ROUND, etc.)
+        - Percent literals (8% -> 0.08)
+        - Comparison operators (= -> ==)
+        """
         if not formula or not formula.startswith('='):
             return formula
 
         result = formula[1:]  # Remove leading '='
 
-        # First, replace cell references WITH row numbers (e.g., A1, AA1, B2)
-        # Pattern matches column letters followed by row number
+        _logger.debug(f"Converting formula: {formula}")
+
+        # Build reverse map: code -> column_letter for range expansion
+        code_to_letter = {v: k for k, v in column_map.items()}
+
+        # Get all codes in SEQUENCE ORDER for proper range expansion
+        # The column_map may not be in sequence order, so we need to sort by column letter
+        # Column letters A, B, C, ..., Z, AA, AB follow a specific order
+        from ..formula_engine.column_manager import ColumnManager
+        all_codes_ordered = [
+            column_map[letter] for letter in sorted(
+                column_map.keys(),
+                key=lambda x: ColumnManager.letter_to_index(x)
+            )
+        ]
+
+        # Helper function to expand a range of codes/letters into a list
+        def expand_range(start_ref, end_ref):
+            """Expand a range like A:C or BASIC:GROSS into list of values.get() calls"""
+            # Determine if refs are column letters or codes
+            start_letter = start_ref if start_ref in column_map else code_to_letter.get(start_ref)
+            end_letter = end_ref if end_ref in column_map else code_to_letter.get(end_ref)
+
+            if not start_letter or not end_letter:
+                # Try to find by code directly
+                start_code = column_map.get(start_ref, start_ref)
+                end_code = column_map.get(end_ref, end_ref)
+
+                # Find indices in ordered codes
+                try:
+                    start_idx = all_codes_ordered.index(start_code)
+                    end_idx = all_codes_ordered.index(end_code)
+                except ValueError:
+                    # Fallback: just return the two endpoints
+                    return f"values.get('{start_code}', 0), values.get('{end_code}', 0)"
+
+                # Get all codes in range
+                parts = []
+                for code in all_codes_ordered[start_idx:end_idx + 1]:
+                    parts.append(f"values.get('{code}', 0)")
+                return ', '.join(parts)
+
+            # Use column manager for letter-based ranges
+            from ..formula_engine.column_manager import ColumnManager
+            start_idx = ColumnManager.letter_to_index(start_letter)
+            end_idx = ColumnManager.letter_to_index(end_letter)
+            parts = []
+            for i in range(start_idx, end_idx + 1):
+                letter = ColumnManager.index_to_letter(i)
+                code = column_map.get(letter, letter)
+                parts.append(f"values.get('{code}', 0)")
+            return ', '.join(parts)
+
+        # Convert ranges with row numbers (e.g., A1:C1, $A$1:$C$1)
+        # NOTE: Don't add brackets here - let function replacement handle it
+        # This avoids double brackets like sum([[...]]) when SUM( becomes sum([
+        def replace_range_with_row(m):
+            start_col = m.group(1)
+            end_col = m.group(2)
+            expanded = expand_range(start_col, end_col)
+            return expanded  # No brackets - SUM([...]) will be handled by function replacement
+
+        result = re.sub(r'\$?([A-Z]+)\$?\d+\s*:\s*\$?([A-Z]+)\$?\d+', replace_range_with_row, result)
+
+        # Convert ranges WITHOUT row numbers - column letters only (e.g., A:C)
+        def replace_range_no_row(m):
+            start_col = m.group(1)
+            end_col = m.group(2)
+            expanded = expand_range(start_col, end_col)
+            return expanded  # No brackets
+
+        # Match ranges like A:C (single letters) - must come before cell ref replacement
+        result = re.sub(r'\b([A-Z])\s*:\s*([A-Z])\b', replace_range_no_row, result)
+
+        # Convert ranges with CODE names (e.g., ACTUALBASI:REIMBURSEM)
+        # These are multi-letter codes that look like ranges
+        def replace_code_range(m):
+            start_code = m.group(1)
+            end_code = m.group(2)
+            # Verify these are actual codes in our map
+            if start_code in column_map.values() and end_code in column_map.values():
+                expanded = expand_range(start_code, end_code)
+                return expanded  # No brackets
+            return m.group(0)  # Not a valid range, leave as-is
+
+        # Match CODE:CODE patterns (uppercase letters, 2+ chars each)
+        result = re.sub(r'\b([A-Z]{2,}[A-Z0-9]*)\s*:\s*([A-Z]{2,}[A-Z0-9]*)\b', replace_code_range, result)
+
+        # Replace cell references WITH row numbers (e.g., A1, AA1, B2), allow $ for absolute refs
         def replace_ref_with_row(match):
             col_letter = match.group(1)
             code = column_map.get(col_letter)
@@ -341,9 +438,8 @@ class HrFormulaRule(models.Model):
 
         result = re.sub(r'\$?([A-Z]+)\$?(\d+)', replace_ref_with_row, result)
 
-        # Then, replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
-        # This handles formulas like =ROUND(C/B*A,0)
-        # Pattern: column letter NOT followed by digit and NOT preceded by alphanumeric
+        # Replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
+        # But NOT if they're part of a string like "YES"
         def replace_ref_no_row(match):
             col_letter = match.group(1)
             code = column_map.get(col_letter)
@@ -351,10 +447,24 @@ class HrFormulaRule(models.Model):
                 return f"values.get('{code}', 0)"
             return match.group(0)
 
-        # Match column letters that are standalone (not part of function names or already converted)
-        # Negative lookbehind: not preceded by letter or underscore
-        # Negative lookahead: not followed by letter, digit, underscore, or opening bracket
-        result = re.sub(r'(?<![A-Za-z_])([A-Z]+)(?![A-Za-z0-9_\(\[])', replace_ref_no_row, result)
+        # Match column letters that are standalone (not part of function names, strings, or already converted)
+        # Negative lookbehind: not preceded by letter, underscore, or quote
+        # Negative lookahead: not followed by letter, digit, underscore, opening bracket, or quote
+        result = re.sub(r'(?<![A-Za-z_"\'])([A-Z]+)(?![A-Za-z0-9_\(\["\'])', replace_ref_no_row, result)
+
+        # Replace multi-letter CODES that are in column_map.values() (e.g., BASIC, GROSS)
+        # This handles formulas that use codes directly instead of column letters
+        # IMPORTANT: Only replace codes that are NOT already inside values.get('...', 0) calls
+        def replace_code_ref(match):
+            code = match.group(1)
+            if code in column_map.values():
+                return f"values.get('{code}', 0)"
+            return match.group(0)
+
+        # Match uppercase identifiers that might be codes
+        # Use negative lookbehind/lookahead for quotes to avoid matching inside already-converted strings
+        # e.g., values.get('BASESALARY', 0) - BASESALARY is inside quotes, should NOT be matched again
+        result = re.sub(r"(?<!')([A-Z][A-Z0-9]{1,})(?!')", replace_code_ref, result)
 
         # Replace Excel functions with Python equivalents
         function_map = {
@@ -378,37 +488,63 @@ class HrFormulaRule(models.Model):
         for excel_func, python_func in function_map.items():
             result = re.sub(excel_func, python_func, result, flags=re.IGNORECASE)
 
+        # Convert percent literals (e.g., 8% -> (8/100), 1.5% -> (1.5/100))
+        # Must handle cases like *8% or +8% or just 8%
+        result = re.sub(r'(\d+(?:\.\d+)?)\s*%', r'(\1/100)', result)
+
+        # Convert single '=' to '==' for comparisons (not touching >=, <=, !=, ==)
+        # Also handle string comparisons like ="YES"
+        result = re.sub(r'(?<![<>=!])=(?!=)', '==', result)
+
         # Fix closing brackets for array functions (SUM, MIN, MAX, etc.)
-        # This is a simplified approach - full implementation would need proper parsing
         result = self._fix_array_brackets(result)
+
+        _logger.debug(f"Converted to Python: {result}")
 
         return result
 
     def _fix_array_brackets(self, formula):
-        """Fix brackets for functions that were converted to list operations"""
-        # Simple fix: for functions converted to list operations,
-        # convert comma-separated args to list items
-        # e.g., sum([A1, B1, C1) -> sum([A1, B1, C1])
+        """Fix brackets for functions that were converted to list operations
 
-        # Find patterns like "sum([..." and ensure proper closing
+        This handles patterns like:
+        - sum([v1, v2, v3) -> sum([v1, v2, v3])
+        - sum([v1, v2, v3)+x -> sum([v1, v2, v3])+x
+
+        Must handle multiple occurrences of the same function.
+        """
         patterns = ['sum([', 'min([', 'max([', 'self._avg([', 'all([', 'any([']
+
         for pattern in patterns:
-            if pattern in formula:
-                # Find the matching closing paren and add ]
-                start = formula.find(pattern)
-                if start != -1:
-                    # Count parentheses to find matching close
-                    open_count = 0
-                    for i, char in enumerate(formula[start:]):
-                        if char == '(':
-                            open_count += 1
-                        elif char == ')':
-                            open_count -= 1
-                            if open_count == 0:
-                                # Insert ] before the closing )
-                                pos = start + i
-                                formula = formula[:pos] + ']' + formula[pos:]
-                                break
+            # Process all occurrences of this pattern
+            search_start = 0
+            while True:
+                start = formula.find(pattern, search_start)
+                if start == -1:
+                    break
+
+                # Find the bracket position (right after the pattern's opening paren)
+                bracket_pos = start + len(pattern) - 1  # Position of '['
+
+                # Count parentheses to find matching close
+                open_count = 0
+                found_close = False
+                for i, char in enumerate(formula[start:]):
+                    if char == '(':
+                        open_count += 1
+                    elif char == ')':
+                        open_count -= 1
+                        if open_count == 0:
+                            # Insert ] before the closing )
+                            pos = start + i
+                            formula = formula[:pos] + ']' + formula[pos:]
+                            found_close = True
+                            # Move search_start past this occurrence (accounting for inserted ])
+                            search_start = pos + 2
+                            break
+
+                if not found_close:
+                    # No matching paren found, move past this pattern
+                    search_start = start + len(pattern)
 
         return formula
 
@@ -578,7 +714,11 @@ class HrFormulaRule(models.Model):
     # EVALUATION
     # ==========================================
     def evaluate(self, values):
-        """Evaluate this rule with given values context"""
+        """Evaluate this rule with given values context
+
+        IMPORTANT: This always computes the Python formula fresh to ensure
+        we use the latest conversion logic. Cached python_formula may be stale.
+        """
         self.ensure_one()
 
         if self.column_type == 'constant':
@@ -588,30 +728,54 @@ class HrFormulaRule(models.Model):
             return values.get(self.code, self.default_value or 0.0)
 
         if self.column_type == 'formula':
-            # Get python formula - compute on-the-fly if not cached
-            python_code = self.python_formula
+            if not self.excel_formula:
+                _logger.warning(f"No Excel formula defined for {self.code}, returning 0")
+                return 0.0
 
-            if not python_code and self.excel_formula:
-                # Python formula not computed yet, compute it now
-                _logger.info(f"Computing Python formula on-the-fly for {self.code}: {self.excel_formula}")
-                try:
-                    column_map = {}
-                    for rule in self.config_id.rule_ids:
-                        if rule.column_letter and rule.code:
-                            column_map[rule.column_letter] = rule.code
-                    python_code = self._convert_excel_to_python(self.excel_formula, column_map)
-                except Exception as e:
-                    _logger.error(f"Error converting formula for {self.code}: {e}")
-                    return 0.0
+            # ALWAYS compute Python formula fresh to ensure latest conversion logic
+            # The cached python_formula field may have been computed with old buggy logic
+            try:
+                column_map = {}
+                for rule in self.config_id.rule_ids:
+                    if rule.column_letter and rule.code:
+                        column_map[rule.column_letter] = rule.code
+                python_code = self._convert_excel_to_python(self.excel_formula, column_map)
+            except Exception as e:
+                _logger.error(f"Error converting formula for {self.code}: {e}")
+                return 0.0
 
             if not python_code:
-                _logger.warning(f"No formula to evaluate for {self.code}, returning 0")
+                _logger.warning(f"No Python code generated for {self.code}, returning 0")
                 return 0.0
 
             try:
-                # Build safe evaluation context
+                # Helper function to safely convert values
+                def safe_value(v):
+                    """Convert value, preserving non-numeric strings for comparisons like ="YES"
+
+                    - None/empty → 0
+                    - Numbers → kept as-is
+                    - Numeric strings ("123") → converted to float
+                    - Non-numeric strings ("YES") → preserved for IF comparisons
+                    """
+                    if v is None or v == '':
+                        return 0
+                    if isinstance(v, (int, float)):
+                        return v
+                    if isinstance(v, str):
+                        # Try to convert string to number
+                        try:
+                            # Handle comma as decimal separator (European format)
+                            cleaned = v.replace(',', '.').strip()
+                            return float(cleaned)
+                        except (ValueError, TypeError):
+                            # Keep non-numeric strings as-is for comparisons like ="YES"
+                            return v
+                    return v
+
+                # Build safe evaluation context with values properly converted
                 safe_context = {
-                    'values': values,
+                    'values': {k: safe_value(v) for k, v in values.items()},
                     'self': self,
                     'math': __import__('math'),
                     'sum': sum,
@@ -620,15 +784,38 @@ class HrFormulaRule(models.Model):
                     'abs': abs,
                     'round': round,
                     'pow': pow,
+                    'all': all,
+                    'any': any,
                 }
                 result = eval(python_code, {"__builtins__": {}}, safe_context)
                 return float(result) if result is not None else 0.0
             except Exception as e:
-                _logger.error(f"Formula evaluation error for {self.code} with formula '{python_code}': {e}")
-                _logger.error(f"Available values: {list(values.keys())}")
+                _logger.error(f"Formula evaluation error for {self.code}")
+                _logger.error(f"  Excel formula: {self.excel_formula}")
+                _logger.error(f"  Python code: {python_code}")
+                _logger.error(f"  Error: {e}")
+                _logger.error(f"  Available values: {list(values.keys())}")
                 return 0.0
 
         return 0.0
+
+    def action_regenerate_python_formulas(self):
+        """Force regeneration of Python formulas for all rules in the config
+
+        Use this after updating the formula conversion logic to refresh all cached formulas.
+        """
+        for rule in self:
+            if rule.excel_formula and rule.column_type == 'formula':
+                try:
+                    column_map = {}
+                    for r in rule.config_id.rule_ids:
+                        if r.column_letter and r.code:
+                            column_map[r.column_letter] = r.code
+                    python_code = rule._convert_excel_to_python(rule.excel_formula, column_map)
+                    rule.write({'python_formula': python_code})
+                    _logger.info(f"Regenerated Python formula for {rule.code}: {python_code}")
+                except Exception as e:
+                    _logger.error(f"Failed to regenerate formula for {rule.code}: {e}")
 
     def _if(self, condition, true_val, false_val):
         """Excel IF function implementation"""
