@@ -73,6 +73,11 @@
 
                     <!-- Smart Buttons -->
                     <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_launch_payroll_import"
+                                icon="fa-upload"
+                                attrs="{'invisible': [('state', 'not in', ['active', 'validated'])]}">
+                            <span class="o_stat_text">Payroll Import</span>
+                        </button>
                         <button class="oe_stat_button" type="object" name="action_open_excel_grid"
                                 icon="fa-table" attrs="{'invisible': [('rule_count', '=', 0)]}">
                             <span class="o_stat_text">Open Grid</span>
@@ -110,6 +115,9 @@
                             <field name="country_code"/>
                             <field name="structure_id"/>
                             <field name="connector_id"/>
+                            <field name="payroll_journal_id"
+                                   options="{'no_create': False}"
+                                   groups="base.group_multi_company"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group string="Status">

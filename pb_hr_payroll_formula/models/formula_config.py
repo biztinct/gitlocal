@@ -77,6 +77,13 @@ class HrFormulaConfig(models.Model):
         store=True
     )
 
+    payroll_journal_id = fields.Many2one(
+        'account.journal',
+        string='Payroll Journal',
+        domain="[('type', '=', 'general'), ('company_id', '=', company_id)]",
+        help="Optional default journal to use when creating payslips from this configuration."
+    )
+
     structure_id = fields.Many2one(
         'hr.payroll.structure',
         string='Payroll Structure',
@@ -684,4 +691,19 @@ class HrFormulaConfig(models.Model):
             'view_id': self.env.ref('pb_hr_payroll_formula.view_formula_config_excel_grid').id,
             'target': 'current',
             'context': {'form_view_initial_mode': 'edit'},
+        }
+
+    def action_launch_payroll_import(self):
+        """Launch payroll import with this configuration pre-selected"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('New Payroll Import'),
+            'res_model': 'hr.payroll.import.batch',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_formula_config_id': self.id,
+                'default_source_type': 'excel',
+            },
         }

@@ -389,6 +389,21 @@ class HrIntegrationConnector(models.Model):
         # TODO: Implement sync history model
         pass
 
+    def action_launch_payroll_import(self):
+        """Launch payroll import using this connector"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('New Payroll Import'),
+            'res_model': 'hr.payroll.import.batch',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_connector_id': self.id,
+                'default_source_type': 'connector' if self.connector_type != 'excel' else 'excel',
+            },
+        }
+
     # ==========================================
     # CONNECTOR FACTORY
     # ==========================================

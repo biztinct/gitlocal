@@ -19,6 +19,25 @@
               action="action_formula_config"
               sequence="10"/>
 
+    <!-- Payroll Import Submenu -->
+    <menuitem id="menu_formula_import"
+              name="Payroll Import"
+              parent="menu_formula_root"
+              sequence="15"
+              groups="pb_hr_payroll_formula.group_formula_manager"/>
+
+    <menuitem id="menu_import_batches"
+              name="Import Batches"
+              parent="menu_formula_import"
+              action="action_payroll_import_batch"
+              sequence="10"/>
+
+    <menuitem id="menu_import_new"
+              name="New Import"
+              parent="menu_formula_import"
+              action="action_payroll_import_batch_new"
+              sequence="20"/>
+
     <!-- Integration Submenu -->
     <menuitem id="menu_formula_integrations"
               name="Integrations"

@@ -17,3 +17,8 @@ access_sync_wizard,hr.integration.sync.wizard,model_hr_integration_sync_wizard,p
 access_sample_input_line_user,hr.formula.sample.input.line.user,model_hr_formula_sample_input_line,pb_hr_payroll_formula.group_formula_user,1,0,0,0
 access_sample_input_line_manager,hr.formula.sample.input.line.manager,model_hr_formula_sample_input_line,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_compute_wizard_user,hr.formula.compute.wizard,model_hr_formula_compute_wizard,pb_hr_payroll_formula.group_formula_user,1,1,1,0
+access_import_batch_user,hr.payroll.import.batch.user,model_hr_payroll_import_batch,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_import_batch_manager,hr.payroll.import.batch.manager,model_hr_payroll_import_batch,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_import_line_user,hr.payroll.import.line.user,model_hr_payroll_import_line,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_import_line_manager,hr.payroll.import.line.manager,model_hr_payroll_import_line,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_import_line_match_wizard,hr.payroll.import.line.match.wizard,model_hr_payroll_import_line_match_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,0

@@ -62,29 +62,53 @@ class ExcelConnector(BaseHRConnector):
     # FILE PROCESSING
     # ==========================================
 
-    def load_file(self, file_content: bytes, filename: str) -> bool:
+    def load_file(
+        self,
+        file_content: bytes,
+        filename: str,
+        header_row: int = None,
+        data_start_row: int = None,
+        sheet_name: str = None
+    ) -> Dict[str, Any]:
         """
         Load Excel or CSV file content.
 
         Args:
             file_content: File content as bytes
             filename: Original filename
+            header_row: Row number containing headers (1-based), overrides connector setting
+            data_start_row: Row number where data starts (1-based), overrides connector setting
+            sheet_name: Sheet name for Excel files, overrides connector setting
 
         Returns:
-            True if file loaded successfully
+            Dictionary with 'headers' and 'rows' keys, or raises exception
         """
+        # Store parameters for use in loading methods
+        self._header_row = header_row
+        self._data_start_row = data_start_row
+        self._sheet_name = sheet_name
+
         try:
             if filename.lower().endswith('.csv'):
-                return self._load_csv(file_content)
+                success = self._load_csv(file_content)
             elif filename.lower().endswith(('.xlsx', '.xls')):
-                return self._load_excel(file_content)
+                success = self._load_excel(file_content)
             else:
-                _logger.error(f"Unsupported file format: {filename}")
-                return False
+                raise ValueError(f"Unsupported file format: {filename}")
+
+            if success:
+                return {
+                    'headers': self.headers,
+                    'rows': self.data_rows,
+                    'total_rows': len(self.data_rows),
+                    'total_columns': len(self.headers),
+                }
+            else:
+                raise ValueError("Failed to load file")
 
         except Exception as e:
             _logger.exception(f"Failed to load file: {e}")
-            return False
+            raise
 
     def _load_csv(self, content: bytes) -> bool:
         """
@@ -117,18 +141,22 @@ class ExcelConnector(BaseHRConnector):
             if not rows:
                 return False
 
-            # Get header row
-            header_row = self.connector.file_header_row or 1
-            data_start_row = self.connector.file_data_start_row or 2
+            # Get header row - prefer parameter, then connector setting, then default
+            header_row = self._header_row or (getattr(self.connector, 'file_header_row', None) if self.connector else None) or 1
+            data_start_row = self._data_start_row or (getattr(self.connector, 'file_data_start_row', None) if self.connector else None) or 2
 
             self.headers = rows[header_row - 1] if len(rows) >= header_row else []
             self.data_rows = rows[data_start_row - 1:] if len(rows) >= data_start_row else []
 
-            # Update connector with filename
-            self.connector.write({
-                'last_import_filename': 'imported.csv',
-                'connection_status': 'connected',
-            })
+            # Update connector with filename if available
+            if self.connector and hasattr(self.connector, 'write'):
+                try:
+                    self.connector.write({
+                        'last_import_filename': 'imported.csv',
+                        'connection_status': 'connected',
+                    })
+                except Exception:
+                    pass  # Ignore if connector can't be updated
 
             return True
 
@@ -157,16 +185,17 @@ class ExcelConnector(BaseHRConnector):
                 data_only=True  # Get calculated values
             )
 
-            # Get sheet
-            sheet_name = self.connector.file_sheet_name
+            # Get sheet - prefer parameter, then connector setting
+            sheet_name = self._sheet_name or (getattr(self.connector, 'file_sheet_name', None) if self.connector else None)
             if sheet_name and sheet_name in self.workbook.sheetnames:
                 sheet = self.workbook[sheet_name]
             else:
                 sheet = self.workbook.active
+                sheet_name = sheet.title
 
-            # Get header row
-            header_row = self.connector.file_header_row or 1
-            data_start_row = self.connector.file_data_start_row or 2
+            # Get header row - prefer parameter, then connector setting, then default
+            header_row = self._header_row or (getattr(self.connector, 'file_header_row', None) if self.connector else None) or 1
+            data_start_row = self._data_start_row or (getattr(self.connector, 'file_data_start_row', None) if self.connector else None) or 2
 
             # Extract headers
             self.headers = []
@@ -181,11 +210,15 @@ class ExcelConnector(BaseHRConnector):
                 if any(v is not None for v in row_data):
                     self.data_rows.append(row_data)
 
-            # Update connector
-            self.connector.write({
-                'last_import_filename': sheet_name or 'Sheet1',
-                'connection_status': 'connected',
-            })
+            # Update connector if available
+            if self.connector and hasattr(self.connector, 'write'):
+                try:
+                    self.connector.write({
+                        'last_import_filename': sheet_name or 'Sheet1',
+                        'connection_status': 'connected',
+                    })
+                except Exception:
+                    pass  # Ignore if connector can't be updated
 
             return True
 

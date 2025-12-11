@@ -41,6 +41,11 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_launch_payroll_import"
+                                icon="fa-upload"
+                                attrs="{'invisible': [('connection_status', '!=', 'connected')]}">
+                            <span class="o_stat_text">Payroll Import</span>
+                        </button>
                         <button class="oe_stat_button" type="object" name="action_view_mappings"
                                 icon="fa-exchange">
                             <field name="mapping_count" widget="statinfo" string="Mappings"/>

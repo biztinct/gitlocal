@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         PAYROLL IMPORT BATCH - TREE VIEW
+         ========================================== -->
+    <record id="view_payroll_import_batch_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.import.batch.tree</field>
+        <field name="model">hr.payroll.import.batch</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Import Batches"
+                  decoration-info="state == 'draft'"
+                  decoration-warning="state in ['loaded', 'matched', 'validated']"
+                  decoration-success="state == 'done'"
+                  decoration-danger="state == 'error'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="source_type" widget="badge"/>
+                <field name="formula_config_id"/>
+                <field name="country_code"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="total_lines"/>
+                <field name="matched_employees"/>
+                <field name="new_employees"/>
+                <field name="error_lines"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state in ['loaded', 'matched', 'validated']"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'error'"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         PAYROLL IMPORT BATCH - FORM VIEW
+         ========================================== -->
+    <record id="view_payroll_import_batch_form" model="ir.ui.view">
+        <field name="name">hr.payroll.import.batch.form</field>
+        <field name="model">hr.payroll.import.batch</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Import Batch">
+                <header>
+                    <!-- Action Buttons based on state -->
+                    <button name="action_load_file" string="Load File" type="object"
+                            class="btn-primary" icon="fa-upload"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_match_employees" string="Match Employees" type="object"
+                            class="btn-primary" icon="fa-users"
+                            attrs="{'invisible': [('state', 'not in', ['loaded'])]}"/>
+                    <button name="action_validate" string="Validate" type="object"
+                            class="btn-primary" icon="fa-check"
+                            attrs="{'invisible': [('state', 'not in', ['matched'])]}"/>
+                    <button name="action_process" string="Process All" type="object"
+                            class="btn-success" icon="fa-play"
+                            attrs="{'invisible': [('state', 'not in', ['validated', 'matched'])]}"
+                            confirm="This will create employees, contracts and payslips. Continue?"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object"
+                            class="btn-secondary"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'done', 'processing'])]}"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            class="btn-secondary"
+                            attrs="{'invisible': [('state', 'in', ['done', 'cancelled'])]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,loaded,matched,validated,done"/>
+                </header>
+                <sheet>
+                    <!-- Hidden fields for attrs -->
+                    <field name="total_lines" invisible="1"/>
+                    <field name="matched_employees" invisible="1"/>
+                    <field name="new_employees" invisible="1"/>
+                    <field name="error_lines" invisible="1"/>
+
+                    <!-- Smart Buttons -->
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_created_employees"
+                                icon="fa-users"
+                                attrs="{'invisible': [('state', '!=', 'done')]}">
+                            <field name="new_employees" widget="statinfo" string="Created"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_created_payslips"
+                                icon="fa-file-text-o"
+                                attrs="{'invisible': [('state', '!=', 'done')]}">
+                            <field name="processed_lines" widget="statinfo" string="Payslips"/>
+                        </button>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('error_lines', '=', 0)]}">
+                        <i class="fa fa-exclamation-triangle"/> <field name="error_lines"/> lines have errors. Please review and fix before processing.
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Import Batch Name"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Source Configuration">
+                            <field name="source_type" widget="radio"/>
+                            <field name="formula_config_id" required="1"
+                                   options="{'no_create': True}"/>
+                            <field name="connector_id"
+                                   attrs="{'invisible': [('source_type', '!=', 'connector')]}"
+                                   domain="[('connector_type', 'in', ['excel', 'zoho', 'sap', 'workday', 'oracle'])]"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Period">
+                            <field name="payroll_period" widget="radio"/>
+                            <field name="date_from"
+                                   attrs="{'required': [('payroll_period', '=', 'custom')]}"/>
+                            <field name="date_to"
+                                   attrs="{'required': [('payroll_period', '=', 'custom')]}"/>
+                            <field name="country_code" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!-- File Upload Tab -->
+                        <page string="File Import" name="file_import"
+                              attrs="{'invisible': [('source_type', '!=', 'excel')]}">
+                            <group>
+                                <group>
+                                    <field name="import_file" filename="import_filename"
+                                           widget="binary"/>
+                                    <field name="import_filename" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="file_header_row"/>
+                                    <field name="file_data_start_row"/>
+                                    <field name="file_sheet_name"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Import Lines Tab -->
+                        <page string="Import Lines" name="import_lines">
+                            <field name="import_line_ids" nolabel="1">
+                                <tree string="Import Lines" editable="bottom"
+                                      decoration-success="state == 'processed'"
+                                      decoration-warning="state in ['unmatched', 'validated']"
+                                      decoration-info="state == 'matched'"
+                                      decoration-danger="state == 'error'">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="employee_code"/>
+                                    <field name="employee_name"/>
+                                    <field name="employee_email"/>
+                                    <field name="employee_id"
+                                           options="{'no_create': True}"/>
+                                    <field name="is_new_employee"/>
+                                    <field name="payslip_id" readonly="1"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'processed'"
+                                           decoration-warning="state in ['unmatched', 'validated']"
+                                           decoration-info="state == 'matched'"
+                                           decoration-danger="state == 'error'"/>
+                                    <field name="error_message" optional="hide"/>
+                                    <button name="action_manual_match" type="object"
+                                            icon="fa-search" title="Manual Match"
+                                            attrs="{'invisible': [('state', 'not in', ['draft', 'unmatched'])]}"/>
+                                    <button name="action_retry" type="object"
+                                            icon="fa-refresh" title="Retry"
+                                            attrs="{'invisible': [('state', '!=', 'error')]}"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <!-- Options Tab -->
+                        <page string="Options" name="options">
+                            <group>
+                                <group string="Employee Matching">
+                                    <field name="match_by_code"/>
+                                    <field name="match_by_email"/>
+                                    <field name="auto_create_employees"/>
+                                    <field name="auto_create_contracts"
+                                           attrs="{'invisible': [('auto_create_employees', '=', False)]}"/>
+                                </group>
+                                <group string="Payslip Options">
+                                    <field name="create_payslips"/>
+                                    <field name="payslip_state"
+                                           attrs="{'invisible': [('create_payslips', '=', False)]}"/>
+                                    <field name="payroll_journal_id"
+                                           attrs="{'invisible': [('create_payslips', '=', False)]}"
+                                           options="{'no_create': False}"
+                                           groups="base.group_multi_company"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Processing Log Tab -->
+                        <page string="Processing Log" name="log"
+                              attrs="{'invisible': [('processing_log', '=', False)]}">
+                            <field name="processing_log" readonly="1" nolabel="1"
+                                   class="o_monospaced"/>
+                        </page>
+
+                        <!-- Results Tab -->
+                        <page string="Results" name="results"
+                              attrs="{'invisible': [('state', '!=', 'done')]}">
+                            <group>
+                                <group string="Created Records">
+                                    <field name="created_employee_ids" widget="many2many_tags" readonly="1"/>
+                                    <field name="created_contract_ids" widget="many2many_tags" readonly="1"/>
+                                    <field name="created_payslip_ids" widget="many2many_tags" readonly="1"/>
+                                </group>
+                                <group string="Statistics">
+                                    <field name="total_lines" readonly="1"/>
+                                    <field name="matched_employees" readonly="1"/>
+                                    <field name="new_employees" readonly="1"/>
+                                    <field name="processed_lines" readonly="1"/>
+                                    <field name="error_lines" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         PAYROLL IMPORT BATCH - SEARCH VIEW
+         ========================================== -->
+    <record id="view_payroll_import_batch_search" model="ir.ui.view">
+        <field name="name">hr.payroll.import.batch.search</field>
+        <field name="model">hr.payroll.import.batch</field>
+        <field name="arch" type="xml">
+            <search string="Search Import Batches">
+                <field name="name"/>
+                <field name="formula_config_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="In Progress" name="in_progress"
+                        domain="[('state', 'in', ['loaded', 'matched', 'validated', 'processing'])]"/>
+                <filter string="Completed" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Errors" name="errors" domain="[('state', '=', 'error')]"/>
+                <separator/>
+                <filter string="Excel Import" name="excel" domain="[('source_type', '=', 'excel')]"/>
+                <filter string="Connector Import" name="connector" domain="[('source_type', '=', 'connector')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Source" name="group_source" context="{'group_by': 'source_type'}"/>
+                    <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
+                    <filter string="Config" name="group_config" context="{'group_by': 'formula_config_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         PAYROLL IMPORT LINE - TREE VIEW
+         ========================================== -->
+    <record id="view_payroll_import_line_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.import.line.tree</field>
+        <field name="model">hr.payroll.import.line</field>
+        <field name="arch" type="xml">
+            <tree string="Import Lines"
+                  decoration-success="state == 'processed'"
+                  decoration-warning="state in ['unmatched', 'validated']"
+                  decoration-info="state == 'matched'"
+                  decoration-danger="state == 'error'">
+                <field name="sequence"/>
+                <field name="batch_id"/>
+                <field name="employee_code"/>
+                <field name="employee_name"/>
+                <field name="employee_email"/>
+                <field name="employee_id"/>
+                <field name="is_new_employee"/>
+                <field name="payslip_id"/>
+                <field name="state" widget="badge"/>
+                <field name="error_message"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         PAYROLL IMPORT LINE - FORM VIEW
+         ========================================== -->
+    <record id="view_payroll_import_line_form" model="ir.ui.view">
+        <field name="name">hr.payroll.import.line.form</field>
+        <field name="model">hr.payroll.import.line</field>
+        <field name="arch" type="xml">
+            <form string="Import Line">
+                <header>
+                    <button name="action_manual_match" string="Manual Match" type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'unmatched'])]}"/>
+                    <button name="action_retry" string="Retry" type="object"
+                            class="btn-secondary"
+                            attrs="{'invisible': [('state', '!=', 'error')]}"/>
+                    <button name="action_skip" string="Skip" type="object"
+                            class="btn-secondary"
+                            attrs="{'invisible': [('state', 'in', ['processed', 'error'])]}"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,matched,validated,processed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Employee Matching">
+                            <field name="batch_id" readonly="1"/>
+                            <field name="sequence"/>
+                            <field name="employee_code"/>
+                            <field name="employee_name"/>
+                            <field name="employee_email"/>
+                        </group>
+                        <group string="Matched Records">
+                            <field name="employee_id"/>
+                            <field name="is_new_employee"/>
+                            <field name="payslip_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Error" attrs="{'invisible': [('error_message', '=', False)]}">
+                        <field name="error_message" nolabel="1" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Raw Data" name="raw_data">
+                            <field name="raw_data_json" widget="text" readonly="1"
+                                   class="o_monospaced"/>
+                        </page>
+                        <page string="Computed Values" name="computed"
+                              attrs="{'invisible': [('computed_values_json', '=', False)]}">
+                            <field name="computed_values_json" widget="text" readonly="1"
+                                   class="o_monospaced"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         PAYROLL IMPORT LINE MATCH WIZARD
+         ========================================== -->
+    <record id="view_payroll_import_line_match_wizard_form" model="ir.ui.view">
+        <field name="name">hr.payroll.import.line.match.wizard.form</field>
+        <field name="model">hr.payroll.import.line.match.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Match Employee">
+                <group>
+                    <group string="Data from Excel">
+                        <field name="employee_name" readonly="1"/>
+                        <field name="employee_code" readonly="1"/>
+                        <field name="employee_email" readonly="1"/>
+                    </group>
+                    <group string="Match To">
+                        <field name="employee_id"
+                               attrs="{'invisible': [('create_new', '=', True)]}"
+                               options="{'no_create': True}"/>
+                        <field name="create_new"/>
+                    </group>
+                </group>
+                <field name="line_id" invisible="1"/>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         ACTIONS
+         ========================================== -->
+    <record id="action_payroll_import_batch" model="ir.actions.act_window">
+        <field name="name">Payroll Import</field>
+        <field name="res_model">hr.payroll.import.batch</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_payroll_import_batch_search"/>
+        <field name="context">{'search_default_in_progress': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Payroll Import Batch
+            </p>
+            <p>
+                Import payroll data from Excel files and automatically create
+                employees, contracts, and payslips using formula-based calculations.
+            </p>
+        </field>
+    </record>
+
+    <!-- Quick action for new import -->
+    <record id="action_payroll_import_batch_new" model="ir.actions.act_window">
+        <field name="name">New Payroll Import</field>
+        <field name="res_model">hr.payroll.import.batch</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+</odoo>
