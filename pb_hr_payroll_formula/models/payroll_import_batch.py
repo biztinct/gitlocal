@@ -211,6 +211,12 @@ class HrPayrollImportBatch(models.Model):
         string='Created Payslips',
         readonly=True
     )
+    payslip_run_id = fields.Many2one(
+        'hr.payslip.run',
+        string='Payslip Run',
+        readonly=True,
+        help="Batch-generated payslip run containing the created payslips."
+    )
 
     @api.onchange('formula_config_id')
     def _onchange_formula_config_id(self):
@@ -321,15 +327,8 @@ class HrPayrollImportBatch(models.Model):
         self.state = 'loaded'
         self._log("Created %d import lines" % len(line_vals_list))
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': _("Loaded %d records from file") % len(line_vals_list),
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        # Refresh the form to reflect new state and stats
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def action_match_employees(self):
         """Match import lines to existing employees"""
@@ -357,15 +356,8 @@ class HrPayrollImportBatch(models.Model):
         self.state = 'matched'
         self._log("Matched %d employees, %d new employees to create" % (matched_count, new_count))
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': _("Matched %d employees, %d unmatched") % (matched_count, new_count),
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        # Refresh the form to reflect new state and stats
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def _find_employee(self, line):
         """
@@ -427,15 +419,8 @@ class HrPayrollImportBatch(models.Model):
 
         self.state = 'validated'
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': _("Validation complete. %d errors found.") % len(errors),
-                'type': 'warning' if errors else 'success',
-                'sticky': bool(errors),
-            }
-        }
+        # Refresh the form to show updated states
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def action_process(self):
         """Process all validated lines - create employees, contracts, and payslips"""
@@ -490,6 +475,21 @@ class HrPayrollImportBatch(models.Model):
             self.created_contract_ids = [(6, 0, created_contracts.ids)]
             self.created_payslip_ids = [(6, 0, created_payslips.ids)]
 
+            # Create or link a payslip run to group created payslips
+            if self.create_payslips and created_payslips:
+                if not self.payslip_run_id:
+                    run_vals = {
+                        'name': "%s - Payslips" % self.name,
+                        'date_start': self.date_from,
+                        'date_end': self.date_to,
+                    }
+                    run = self.env['hr.payslip.run'].create(run_vals)
+                    self.payslip_run_id = run.id
+                else:
+                    run = self.payslip_run_id
+                # Link slips to run
+                created_payslips.write({'payslip_run_id': run.id})
+
             self.state = 'done'
             self._log("Processing complete. Created: %d employees, %d contracts, %d payslips" % (
                 len(created_employees), len(created_contracts), len(created_payslips)
@@ -500,17 +500,7 @@ class HrPayrollImportBatch(models.Model):
             self._log("Processing error: %s" % str(e))
             raise UserError(_("Processing failed: %s") % str(e))
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'message': _("Created %d employees, %d contracts, %d payslips") % (
-                    len(created_employees), len(created_contracts), len(created_payslips)
-                ),
-                'type': 'success',
-                'sticky': False,
-            }
-        }
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def _create_employee(self, line):
         """Create a new employee from import line data"""
@@ -771,9 +761,19 @@ class HrPayrollImportBatch(models.Model):
         if existing:
             # Link it
             formula_rule.salary_rule_id = existing.id
+            # If missing accounts and config has defaults, fill them once
+            updates = {}
+            config = self.formula_config_id
+            if config.debit_account_id and not existing.account_debit:
+                updates['account_debit'] = config.debit_account_id.id
+            if config.credit_account_id and not existing.account_credit:
+                updates['account_credit'] = config.credit_account_id.id
+            if updates:
+                existing.write(updates)
             return existing
 
         # Create a minimal salary rule so salary_rule_id is never null on payslip lines
+        config = self.formula_config_id
         category = formula_rule.category_id or self._get_default_category(formula_rule.code)
         rule_vals = {
             'name': formula_rule.name or formula_rule.code,
@@ -788,6 +788,10 @@ class HrPayrollImportBatch(models.Model):
             'appears_on_payslip': True,
             'active': True,
         }
+        if config.debit_account_id:
+            rule_vals['account_debit'] = config.debit_account_id.id
+        if config.credit_account_id:
+            rule_vals['account_credit'] = config.credit_account_id.id
         new_rule = SalaryRule.create(rule_vals)
         # Link back to formula rule
         formula_rule.salary_rule_id = new_rule.id
