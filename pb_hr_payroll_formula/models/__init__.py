@@ -8,3 +8,5 @@ from . import integration_connector
 from . import integration_field_mapping
 from . import hr_payslip_formula
 from . import hr_payroll_structure_formula
+from . import payroll_import_batch
+from . import payroll_import_line
