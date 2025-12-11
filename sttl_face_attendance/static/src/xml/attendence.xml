@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template xml:space="preserve">
+
+    <t t-name="HrAttendanceKioskModeFaceDetection" t-inherit="hr_attendance.HrAttendanceKioskMode" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('align-self-end')]" position="after">
+            <div class="mt-5 align-self-end">
+                <button class="o_hr_attendance_button_face_checkin_out btn btn-link">
+                    Face check In/Check Out
+                </button>
+            </div>
+        </xpath>
+    </t>
+
+</template>

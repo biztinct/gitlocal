@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_attendance_lateness_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.hr_attendance</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr_attendance.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+
+            <div name="pincode_setting_container" position="after">
+                <h2>Softatt Settings</h2>
+                <div class="row mt16 o_settings_container" name="softatt_mode_setting">
+                        <div class="col-12 col-lg-12 o_setting_box" >
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <div class="text-muted col-lg-10">
+                                    Use Employee Lateness Deductions.
+
+                                    <div>   
+                                        <span class="text-muted">
+                                            Setup a deduction rule on your salary structure and paste the following condition and code.
+                                        </span>
+                                        <br/>
+                                        <br/>
+                                        <span class="text-muted">
+                                            Condition: 
+                                            <br/>
+                                            <Code>
+                                                result = sum(employee.attendance_ids.filtered(lambda x:x.check_in.date() &gt;= payslip.date_from and x.check_in.date() &lt;= payslip.date_to and x.waved == False).mapped('deduction_amount')) &gt; 0
+                                            </Code>
+                                        </span>
+                                        <br/>
+                                        <span class="text-muted">
+                                            Computation:
+                                            <br/>
+                                            <Code>
+                                                result = -sum(employee.attendance_ids.filtered(lambda x:x.check_in.date() &gt;= payslip.date_from and x.check_in.date() &lt;= payslip.date_to and x.waved == False).mapped('deduction_amount'))
+                                            </Code>
+                                        </span>
+                                    </div>
+            
+                                </div>
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+        </field>
+    </record>
+
+
+</odoo>

@@ -118,6 +118,12 @@
                             <field name="payroll_journal_id"
                                    options="{'no_create': False}"
                                    groups="base.group_multi_company"/>
+                            <field name="debit_account_id"
+                                   options="{'no_create': False}"
+                                   groups="base.group_multi_company"/>
+                            <field name="credit_account_id"
+                                   options="{'no_create': False}"
+                                   groups="base.group_multi_company"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group string="Status">

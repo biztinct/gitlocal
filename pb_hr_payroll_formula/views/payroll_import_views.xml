@@ -208,6 +208,8 @@
                                     <field name="created_employee_ids" widget="many2many_tags" readonly="1"/>
                                     <field name="created_contract_ids" widget="many2many_tags" readonly="1"/>
                                     <field name="created_payslip_ids" widget="many2many_tags" readonly="1"/>
+                                    <field name="payslip_run_id" readonly="1"
+                                           options="{'no_open': False, 'no_create': True}"/>
                                 </group>
                                 <group string="Statistics">
                                     <field name="total_lines" readonly="1"/>

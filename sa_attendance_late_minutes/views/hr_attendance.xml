@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="softatt_deductions_inheirt_hr_attendance_tree" model="ir.ui.view">
+        <field name="name">hr_attendance.tree</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.view_attendance_tree" />
+        <field name="arch" type="xml">
+            <field name="check_out" position="after">
+                    <!-- #!! -->
+                <field name="late_minutes"          force_save="1"  invisible="1"/>
+                <field name="display_late_minutes"  force_save="1"  readonly="1"    widget="float_time" optional="show"/>
+                <field name="deduction_amount"      force_save="1"  readonly="1" groups="hr_attendance.group_hr_attendance_user"/>
+                <field name="currency_id" invisible="1" groups="hr_attendance.group_hr_attendance_user"/>
+                <field name="waved" invisible="1"  groups="hr_attendance.group_hr_attendance_user"/>
+                <button name="action_wave_deduction" attrs="{'invisible': ['|', ('waved', '=', True),('deduction_amount', '=', 0)]}" class="btn btn-success" type="object" string="Waive"  groups="hr_attendance.group_hr_attendance_user"/>
+                <button name="action_unwave_deduction" attrs="{'invisible': ['|', ('waved', '=', False), ('deduction_amount', '=', 0)]}" class="btn btn-danger" type="object" string="Apply"  groups="hr_attendance.group_hr_attendance_user"/>
+            </field>
+        </field>
+    </record>    
+</odoo>

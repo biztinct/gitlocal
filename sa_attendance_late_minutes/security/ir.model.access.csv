@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_sa_attendance_rule_user,softatt_attendance.sa.attendance.rule.user,model_sa_attendance_rule,hr_attendance.group_hr_attendance_user,1,1,1,1
+access_sa_attendance_rule_line_user,softatt_attendance.sa.attendance.rule.line.user,model_sa_attendance_rule_line,hr_attendance.group_hr_attendance_user,1,1,1,1

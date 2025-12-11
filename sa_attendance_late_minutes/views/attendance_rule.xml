@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="attendance_rule_tree" model="ir.ui.view">
+        <field name="name">attendance.rule.tree</field>
+        <field name="model">sa.attendance.rule</field>
+        <field name="arch" type="xml">
+            <tree string="">
+                <field name="name"/>
+                <field name="deduction_type"/>
+                <field name="active"  widget="boolean_toggle"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="attendance_rule_kanban" model="ir.ui.view">
+        <field name="name">attendance.rule.kanban</field>
+        <field name="model">sa.attendance.rule</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="deduction_type"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <h3><field name="name"/></h3>
+                                <p>Type:<field name="deduction_type"/></p>
+                            </div>
+                            <h1><field name="active"  widget="boolean_toggle"/></h1>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <record id="attendance_rule_form" model="ir.ui.view">
+        <field name="name">attendance.rule.form</field>
+        <field name="model">sa.attendance.rule</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <sheet>
+                    <h1><field name="name" placeholder="Rule Name" /></h1>
+                    
+                    <group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="deduction_type" widget="radio" required="1"/>
+                        </group>
+
+                        <group attrs="{'invisible': [('deduction_type','=', 'by_minute')]}" >
+                            <field name="allowed_minutes" />
+                            <field name="daily_wage_base"/>
+                            
+                        </group>
+                    </group>
+
+
+                    <group>
+                        <group>
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+
+
+                    <notebook attrs="{'invisible': [('deduction_type','!=', 'by_minute')]}" >
+                        <page name="lines" string="Deduct By Minutes">
+                            <field name="line_ids" editable="bottom">
+                                <tree order_by="sequence">
+                                    <field name="sequence"  widget="handle"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="minutes" width="10%"/>
+                                    <field name="amount"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="minutes"/>
+                                        <field name="amount"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity" />
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="sa_attendance_rule_action" model="ir.actions.act_window">
+        <field name="name">Attendance Rules</field>
+        <field name="res_model">sa.attendance.rule</field>
+        <field name="view_mode">tree,kanban,form</field>
+    </record>
+
+
+    
+    <!-- Menu Items -->
+    <menuitem   
+        id="hr_attendance.menu_hr_attendance_settings"
+        name="Configuration"
+        parent="hr_attendance.menu_hr_attendance_root"
+        sequence="99" />
+
+    <menuitem
+        id="sa_attendance_res_settings_menu"
+        name="Configuration"
+        parent="hr_attendance.menu_hr_attendance_settings"
+        action="hr_attendance.action_hr_attendance_settings"
+        sequence="1" />
+
+    <menuitem   
+        id="sa_attendance_settings_menu"
+        name="Other Settings"
+        parent="hr_attendance.menu_hr_attendance_settings"
+        sequence="98" />
+
+    <menuitem
+        id="sa_attendance_deduction_rules_menu"
+        name="Attendance Rules"
+        parent="sa_attendance_settings_menu"
+        action="sa_attendance_rule_action"
+        sequence="1" />
+
+</odoo>

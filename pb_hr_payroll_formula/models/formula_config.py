@@ -83,6 +83,18 @@ class HrFormulaConfig(models.Model):
         domain="[('type', '=', 'general'), ('company_id', '=', company_id)]",
         help="Optional default journal to use when creating payslips from this configuration."
     )
+    debit_account_id = fields.Many2one(
+        'account.account',
+        string='Default Debit Account',
+        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
+        help="Default debit account to assign when creating salary rules from this formula configuration."
+    )
+    credit_account_id = fields.Many2one(
+        'account.account',
+        string='Default Credit Account',
+        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
+        help="Default credit account to assign when creating salary rules from this formula configuration."
+    )
 
     structure_id = fields.Many2one(
         'hr.payroll.structure',
