@@ -51,7 +51,7 @@
                 </group>
                 <footer>
                     <button name="action_export" type="object" string="Export XLS" class="btn-primary"/>
-                    <button name="action_mail_report" type="object" string="Mail Report" class="btn-info"/>
+                    <button name="action_mail_report" type="object" string="MAIL REPORT" class="btn-info"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
