@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pb_govt_report_wizard_form" model="ir.ui.view">
+        <field name="name">pb.govt.report.wizard.form</field>
+        <field name="model">pb.govt.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Vietnam Government XLS Reports">
+                <group>
+                    <field name="company_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="report_type"/>
+                    <field name="employee_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="department_id"/>
+                    <field name="contract_type_id"/>
+                </group>
+                <group string="BHXH630 - Ốm đau/Thai sản" attrs="{'invisible': [('report_type', '!=', 'bhxh630')]}">
+                    <field name="bhxh630_benefit_group"/>
+                    <field name="bhxh630_certificate_serial"/>
+                    <field name="bhxh630_supplement_batch"/>
+                    <field name="bhxh630_payment_method"/>
+                    <field name="bhxh630_bank_no"/>
+                    <field name="bhxh630_bank_holder"/>
+                    <field name="bhxh630_bank_code"/>
+                    <field name="bhxh630_route_code"/>
+                    <field name="bhxh630_long_illness_code"/>
+                </group>
+                <group string="BHXHDSTK01-DV_595" attrs="{'invisible': [('report_type', '!=', 'bhxhdstk01')]}">
+                    <field name="bhxhdstk_contribution_method"/>
+                    <field name="bhxhdstk_change_content"/>
+                    <field name="bhxhdstk_hospital_code"/>
+                </group>
+                <group string="BangKeHS D01-TS" attrs="{'invisible': [('report_type', '!=', 'bangke_d01')]}">
+                    <field name="d01_doc_name"/>
+                    <field name="d01_doc_number"/>
+                    <field name="d01_issue_date"/>
+                    <field name="d01_effective_date"/>
+                    <field name="d01_agency"/>
+                    <field name="d01_summary"/>
+                    <field name="d01_appraisal"/>
+                </group>
+                <group string="Báo giảm lao động" attrs="{'invisible': [('report_type', '!=', 'giam_ld')]}">
+                    <field name="giam_reason"/>
+                    <field name="giam_effective_date"/>
+                    <field name="giam_region_code"/>
+                </group>
+                <group string="Báo tăng lao động" attrs="{'invisible': [('report_type', '!=', 'tang_ld')]}">
+                    <field name="tang_reason"/>
+                    <field name="tang_effective_date"/>
+                    <field name="tang_region_code"/>
+                </group>
+                <footer>
+                    <button name="action_export" type="object" string="Export XLS" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_govt_report_wizard" model="ir.actions.act_window">
+        <field name="name">Vietnam Government XLS Reports</field>
+        <field name="res_model">pb.govt.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="menu_pb_govt_reports"
+        name="Government XLS Reports"
+        parent="om_hr_payroll.menu_hr_payroll_root"
+        action="action_pb_govt_report_wizard"
+        groups="pb_hr_govt.group_pb_hr_govt_user"
+    />
+</odoo>

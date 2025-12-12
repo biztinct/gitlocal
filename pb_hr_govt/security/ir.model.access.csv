@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_govt_code_lookup_user,pb.govt.code.lookup user,model_pb_govt_code_lookup,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_govt_code_lookup_manager,pb.govt.code.lookup manager,model_pb_govt_code_lookup,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_pb_govt_code_lookup_govt_group,pb.govt.code.lookup govt group,model_pb_govt_code_lookup,pb_hr_govt.group_pb_hr_govt_user,1,1,1,1
+access_pb_govt_report_wizard,pb.govt.report.wizard access,model_pb_govt_report_wizard,pb_hr_govt.group_pb_hr_govt_user,1,1,1,1

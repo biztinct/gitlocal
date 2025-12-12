@@ -17,3 +17,5 @@ access_hr_analytics_cache_manager,HR Analytics Cache - Manager,model_hr_analytic
 access_hr_analytics_cache_admin,HR Analytics Cache - Admin,model_hr_analytics_cache,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
 access_hr_analytics_export_wizard_manager,HR Analytics Export Wizard - Manager,model_hr_analytics_export_wizard,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
 access_hr_analytics_export_wizard_admin,HR Analytics Export Wizard - Admin,model_hr_analytics_export_wizard,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_payroll_employee_detail_manager,HR Payroll Employee Detail - Manager,model_hr_payroll_employee_detail,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_payroll_employee_detail_admin,HR Payroll Employee Detail - Admin,model_hr_payroll_employee_detail,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1

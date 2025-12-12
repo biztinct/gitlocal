@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_pb_hr_govt_user" model="res.groups">
+        <field name="name">Government Reports User</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+        <!-- Imply payroll user so wage-related models remain accessible -->
+        <field name="implied_ids" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
+    </record>
+</odoo>

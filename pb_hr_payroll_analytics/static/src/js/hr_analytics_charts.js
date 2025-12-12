@@ -31,7 +31,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 1. DOUGHNUT CHART
     // =====================================================================
-    var createDoughnutChart = function(elementId, labels, data, colors) {
+    var createDoughnutChart = function (elementId, labels, data, colors, onClickCallback) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -49,6 +49,15 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
+                onClick: function (event, activeElements) {
+                    if (activeElements.length > 0 && onClickCallback) {
+                        var index = activeElements[0].index;
+                        var label = labels[index];
+                        var value = data[index];
+                        console.log('[HR Analytics] Chart segment clicked:', label, value);
+                        onClickCallback(label, value, index);
+                    }
+                },
                 plugins: {
                     legend: {
                         position: 'bottom',
@@ -64,7 +73,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
                         titleFont: { size: 13 },
                         bodyFont: { size: 12 },
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 var sum = context.dataset.data.reduce((a, b) => a + b, 0);
                                 var percentage = ((context.parsed / sum) * 100).toFixed(1);
                                 return context.label + ': ' + formatCurrency(context.parsed) + ' (' + percentage + '%)';
@@ -85,7 +94,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 2. HORIZONTAL BAR CHART
     // =====================================================================
-    var createHorizontalBarChart = function(elementId, labels, datasets) {
+    var createHorizontalBarChart = function (elementId, labels, datasets) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -125,7 +134,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 3. VERTICAL BAR CHART
     // =====================================================================
-    var createVerticalBarChart = function(elementId, labels, datasets) {
+    var createVerticalBarChart = function (elementId, labels, datasets) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -157,7 +166,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 4. STACKED BAR CHART
     // =====================================================================
-    var createStackedBarChart = function(elementId, labels, datasets) {
+    var createStackedBarChart = function (elementId, labels, datasets) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -187,7 +196,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 5. LINE CHART (for trends)
     // =====================================================================
-    var createLineChart = function(elementId, labels, datasets) {
+    var createLineChart = function (elementId, labels, datasets) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -216,7 +225,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 6. SCATTER PLOT CHART
     // =====================================================================
-    var createScatterChart = function(elementId, dataPoints, labels) {
+    var createScatterChart = function (elementId, dataPoints, labels) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -250,7 +259,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 7. PIE CHART
     // =====================================================================
-    var createPieChart = function(elementId, labels, data, colors) {
+    var createPieChart = function (elementId, labels, data, colors) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -276,7 +285,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // UTILITY FUNCTIONS
     // =====================================================================
 
-    var formatCurrency = function(amount) {
+    var formatCurrency = function (amount) {
         if (amount >= 1000000) {
             return (amount / 1000000).toFixed(1) + 'M';
         } else if (amount >= 1000) {
@@ -285,15 +294,15 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
         return amount.toFixed(0);
     };
 
-    var destroyChart = function(elementId) {
+    var destroyChart = function (elementId) {
         if (charts[elementId]) {
             charts[elementId].destroy();
             delete charts[elementId];
         }
     };
 
-    var destroyAllCharts = function() {
-        Object.keys(charts).forEach(function(key) {
+    var destroyAllCharts = function () {
+        Object.keys(charts).forEach(function (key) {
             charts[key].destroy();
         });
         charts = {};
