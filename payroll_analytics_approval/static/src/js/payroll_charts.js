@@ -354,6 +354,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
         },
 
         _createComponentChart: function (components) {
+            var self = this;
             var ctx = document.getElementById('componentsChart');
             if (!ctx) {
                 console.warn('Components chart canvas not found');
@@ -404,6 +405,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: function (event, elements) {
+                        if (elements && elements.length) {
+                            var index = elements[0].index;
+                            var label = labels[index];
+                            self._openPivotForComponent(label);
+                        }
+                    },
                     plugins: {
                         legend: {
                             position: 'bottom',
@@ -433,6 +441,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
         },
 
         _createComparisonChart: function (components, comparison) {
+            var self = this;
             var ctx = document.getElementById('comparisonChart');
             if (!ctx) {
                 console.warn('Comparison chart canvas not found');
@@ -483,6 +492,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: function (event, elements) {
+                        if (elements && elements.length) {
+                            var index = elements[0].index;
+                            var label = labels[index];
+                            self._openPivotForComponent(label);
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -522,6 +538,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
         },
 
         _createVarianceChart: function (components, comparison) {
+            var self = this;
             var ctx = document.getElementById('varianceChart');
             if (!ctx) {
                 console.warn('Variance chart canvas not found');
@@ -601,6 +618,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    onClick: function (event, elements) {
+                        if (elements && elements.length) {
+                            var index = elements[0].index;
+                            var label = labels[index];
+                            self._openPivotForComponent(label);
+                        }
+                    },
                     scales: {
                         y: {
                             beginAtZero: true,
@@ -635,6 +659,66 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     }
                 }
             });
+        },
+
+        _openPivotForComponent: function (componentLabel) {
+            if (!componentLabel) {
+                console.warn('Drill-down skipped: empty component label');
+                return;
+            }
+            // Map some friendly labels back to payroll codes
+            var code = componentLabel;
+            var labelToCode = {
+                'Total Cost to Employer': 'TOTCOST',
+                'Total Cost': 'TOTCOST',
+                'Total Payroll': 'TOTCOST',
+                'Total Deductions': 'TOTDEDU',
+                'ATI': 'ATI',
+                'ACTBASE': 'ACTBASE',
+                'UI': 'UI',
+                'SI': 'SI',
+                'TAXIN': 'TAXIN'
+            };
+            if (labelToCode[componentLabel]) {
+                code = labelToCode[componentLabel];
+            }
+            code = code.toString();
+
+            var dateFrom = this._getFieldValue('date_from');
+            var dateTo = this._getFieldValue('date_to');
+            var domain = [['code', '=', code]];
+            if (dateFrom) {
+                domain.push(['slip_id.date_from', '>=', dateFrom.toString()]);
+            }
+            if (dateTo) {
+                domain.push(['slip_id.date_to', '<=', dateTo.toString()]);
+            }
+            domain = domain.filter(function (d) {
+                return d && d.length >= 3 && d[2] !== undefined && d[2] !== null;
+            });
+
+            var self = this;
+            var action = {
+                type: 'ir.actions.act_window',
+                name: (core._t("Drill-down: ") + componentLabel),
+                res_model: 'hr.payslip.line',
+                view_mode: 'pivot,tree',
+                views: [
+                    [false, 'pivot'],
+                    [false, 'list'],
+                ],
+                domain: domain,
+                context: {
+                    search_default_group_by_employee: 1,
+                    search_default_group_by_slip: 1,
+                }
+            };
+
+            // Align with analytics module: navigate first, then destroy charts shortly after
+            this.do_action(action);
+            setTimeout(function () {
+                self._destroyAllCharts();
+            }, 80);
         },
 
         _displayAnomalyAlerts: function (alerts) {
