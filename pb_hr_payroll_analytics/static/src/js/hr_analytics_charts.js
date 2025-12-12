@@ -280,8 +280,18 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 7. PIE CHART
     // =====================================================================
-    var createPieChart = function (elementId, labels, data, colors) {
+    var createPieChart = function (elementId, labels, data, colorsOrCallback) {
         if (!document.getElementById(elementId)) return;
+
+        // Check if the 4th parameter is a function (callback) or colors array
+        var colors = null;
+        var onClickCallback = null;
+
+        if (typeof colorsOrCallback === 'function') {
+            onClickCallback = colorsOrCallback;
+        } else {
+            colors = colorsOrCallback;
+        }
 
         var ctx = document.getElementById(elementId).getContext('2d');
         charts[elementId] = new Chart(ctx, {
@@ -295,6 +305,14 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
             },
             options: {
                 responsive: true,
+                onClick: onClickCallback ? function (event, elements) {
+                    if (elements && elements.length > 0) {
+                        var index = elements[0].index;
+                        var label = labels[index];
+                        var value = data[index];
+                        onClickCallback(label, value, index);
+                    }
+                } : undefined,
                 plugins: {
                     legend: { position: 'bottom' }
                 }
