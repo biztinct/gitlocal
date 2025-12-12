@@ -68,6 +68,9 @@ Supported Features:
         'views/payroll_menu_structure.xml',           # Menu structure references dashboard view
         'views/payroll_analytics_integration.xml',    # Analytics integration (when payroll_analytics_approval is installed)
         
+        # Wizards
+        'wizards/govt_report_selector_views.xml',     # Government report selector
+        
         # Note: Data files will be added as needed
         # TODO: Add Vietnam-specific data files:
         # - hr_payroll_structure_vietnam.xml

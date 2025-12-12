@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Government Report Selector Form View -->
+    <record id="view_pb_govt_report_selector_form" model="ir.ui.view">
+        <field name="name">pb.govt.report.selector.form</field>
+        <field name="model">pb.govt.report.selector</field>
+        <field name="arch" type="xml">
+            <form string="Select Government Report">
+                <style>
+                    .report-selector-container {
+                        padding: 24px;
+                        background: #f8f9fa;
+                    }
+                    .report-selector-header {
+                        text-align: center;
+                        margin-bottom: 24px;
+                        padding-bottom: 16px;
+                        border-bottom: 2px solid #e9ecef;
+                    }
+                    .report-selector-title {
+                        color: #2c3e50;
+                        font-size: 24px;
+                        font-weight: 600;
+                        margin: 0 0 8px 0;
+                    }
+                    .report-selector-subtitle {
+                        color: #6c757d;
+                        font-size: 14px;
+                    }
+                    .report-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 16px;
+                        margin-bottom: 16px;
+                    }
+                    .report-tile {
+                        background: white;
+                        border: 2px solid #e9ecef;
+                        border-radius: 12px;
+                        padding: 20px;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        min-height: 140px;
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .report-tile:hover {
+                        border-color: #21435F;
+                        box-shadow: 0 4px 12px rgba(33,67,95,0.15);
+                        transform: translateY(-2px);
+                    }
+                    .report-icon {
+                        color: #21435F;
+                        margin-bottom: 12px;
+                    }
+                    .report-title {
+                        color: #2c3e50;
+                        font-size: 16px;
+                        font-weight: 600;
+                        margin-bottom: 8px;
+                        line-height: 1.3;
+                    }
+                    .report-description {
+                        color: #6c757d;
+                        font-size: 13px;
+                        line-height: 1.4;
+                        flex-grow: 1;
+                    }
+                    .report-btn {
+                        background: #21435F;
+                        border: none;
+                        color: white !important;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        font-size: 13px;
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: all 0.2s ease;
+                        width: 100%;
+                        margin-top: 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .report-btn:hover {
+                        background: #1a3651;
+                        transform: translateY(-1px);
+                    }
+                </style>
+                
+                <div class="report-selector-container">
+                    <div class="report-selector-header">
+                        <h2 class="report-selector-title">📊 Government Reports</h2>
+                        <p class="report-selector-subtitle">Select a report type to generate official government declarations</p>
+                    </div>
+                    
+                    <div class="report-grid">
+                        <!-- Report 1: BHXH630 -->
+                        <div class="report-tile">
+                            <div>
+                                <i class="fa fa-medkit fa-3x report-icon"/>
+                                <h4 class="report-title">BHXH630</h4>
+                                <p class="report-description">Ốm đau/Thai sản - Sickness and maternity benefits report</p>
+                            </div>
+                            <button name="action_bhxh630" type="object" class="report-btn">
+                                Select Report
+                            </button>
+                        </div>
+                        
+                        <!-- Report 2: BHXHDSTK01-DV_595 -->
+                        <div class="report-tile">
+                            <div>
+                                <i class="fa fa-users fa-3x report-icon"/>
+                                <h4 class="report-title">BHXHDSTK01-DV_595</h4>
+                                <p class="report-description">Danh sách tham gia - Social insurance participant list</p>
+                            </div>
+                            <button name="action_bhxhdstk01" type="object" class="report-btn">
+                                Select Report
+                            </button>
+                        </div>
+                        
+                        <!-- Report 3: BangKeHS D01-TS -->
+                        <div class="report-tile">
+                            <div>
+                                <i class="fa fa-file-text fa-3x report-icon"/>
+                                <h4 class="report-title">BangKeHS D01-TS</h4>
+                                <p class="report-description">Hồ sơ D01-TS - D01-TS document records</p>
+                            </div>
+                            <button name="action_bangke_d01" type="object" class="report-btn">
+                                Select Report
+                            </button>
+                        </div>
+                        
+                        <!-- Report 4: Giảm lao động -->
+                        <div class="report-tile">
+                            <div>
+                                <i class="fa fa-user-times fa-3x report-icon"/>
+                                <h4 class="report-title">GiamLaoDong</h4>
+                                <p class="report-description">Báo giảm lao động - Employee termination report</p>
+                            </div>
+                            <button name="action_giam_ld" type="object" class="report-btn">
+                                Select Report
+                            </button>
+                        </div>
+                        
+                        <!-- Report 5: Tăng lao động -->
+                        <div class="report-tile">
+                            <div>
+                                <i class="fa fa-user-plus fa-3x report-icon"/>
+                                <h4 class="report-title">TangLaoDong</h4>
+                                <p class="report-description">Báo tăng lao động - New employee registration report</p>
+                            </div>
+                            <button name="action_tang_ld" type="object" class="report-btn">
+                                Select Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <footer>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

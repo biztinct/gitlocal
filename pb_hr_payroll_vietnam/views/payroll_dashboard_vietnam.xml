@@ -150,6 +150,10 @@
                             text-transform: none;
                             letter-spacing: 0;
                             width: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            min-height: 44px;
                         }
                         .dashboard-btn:hover {
                             background: #1a3651;
@@ -307,11 +311,11 @@
                             <div class="col-lg-4">
                                 <div class="dashboard-card" style="opacity: 0.7;">
                                     <div>
-                                        <i class="fa fa-bar-chart fa-3x card-icon" style="color: #6c757d;"/>
-                                        <h4 class="card-title" style="color: #6c757d;">Advanced Analytics</h4>
-                                        <p class="card-description">Comprehensive payroll analytics with trend analysis and reporting</p>
+                                        <i class="fa fa-info-circle fa-3x card-icon" style="color: #6c757d;"/>
+                                        <h4 class="card-title" style="color: #6c757d;">Analytics Info</h4>
+                                        <p class="card-description">Additional analytics features will appear here when configured</p>
                                     </div>
-                                    <button name="dummy_analytics_button" 
+                                    <button name="dummy_analytics_info_button" 
                                             type="button" 
                                             class="dashboard-btn" 
                                             style="background: #6c757d; cursor: not-allowed;" 
@@ -322,7 +326,18 @@
                             </div>
                             
                             <div class="col-lg-4">
-                                <!-- Empty space - Social Insurance tile removed -->
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-file-text fa-3x card-icon"/>
+                                        <h4 class="card-title">Government Reports</h4>
+                                        <p class="card-description">Generate official government reports and declarations</p>
+                                    </div>
+                                    <button name="action_open_govt_reports" 
+                                            type="object" 
+                                            class="dashboard-btn">
+                                        View Reports
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         
@@ -346,16 +361,16 @@
                             <div class="col-lg-4">
                                 <div class="dashboard-card" style="opacity: 0.7;">
                                     <div>
-                                        <i class="fa fa-info-circle fa-3x card-icon" style="color: #6c757d;"/>
-                                        <h4 class="card-title" style="color: #6c757d;">Demo Information</h4>
-                                        <p class="card-description">Demo data includes Vietnamese names, departments, salaries, and payroll information for testing</p>
+                                        <i class="fa fa-bar-chart fa-3x card-icon" style="color: #6c757d;"/>
+                                        <h4 class="card-title" style="color: #6c757d;">Advanced Analytics</h4>
+                                        <p class="card-description">Comprehensive payroll analytics with trend analysis and reporting</p>
                                     </div>
-                                    <button name="dummy_info_button" 
+                                    <button name="dummy_analytics_button" 
                                             type="button" 
                                             class="dashboard-btn" 
                                             style="background: #6c757d; cursor: not-allowed;" 
                                             disabled="disabled">
-                                        Information Only
+                                        Coming Soon
                                     </button>
                                 </div>
                             </div>

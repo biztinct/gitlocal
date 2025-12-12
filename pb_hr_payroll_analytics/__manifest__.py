@@ -50,6 +50,7 @@
         'views/hr_analytics_budget.xml',
         'views/hr_analytics_annual.xml',
         'views/hr_analytics_search_filters.xml',
+        'views/hr_payroll_employee_detail_views.xml',
         # Load export wizard before dashboard (dashboard references the action)
         'wizards/hr_analytics_export_wizard_views.xml',
         # Load dashboard after all actions are defined
