@@ -348,7 +348,7 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 var stackedEl = document.getElementById('stacked-bar-chart-personnel');
 
                 if (!stackedEl) {
-                    console.error('[HR Analytics] ERROR: stacked-bar-chart-personnel canvas element NOT found in DOM');
+                    console.error('[HR Analytics] ERROR: stacked-bar-chart-personnel canvas element NOT found');
                 } else {
                     console.log('[HR Analytics] Personnel Costs: stacked-bar-chart-personnel found, creating chart...');
                     try {
@@ -370,18 +370,16 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                             }
                         ];
 
-                        // Destroy existing chart
                         if (ChartLib.destroyChart) {
                             ChartLib.destroyChart('stacked-bar-chart-personnel');
-                            console.log('[HR Analytics] Personnel Costs: Destroyed existing stacked bar chart');
                         }
 
-                        // Create new chart
                         if (ChartLib.createStackedBarChart) {
-                            ChartLib.createStackedBarChart('stacked-bar-chart-personnel', departments, datasets);
-                            console.log('[HR Analytics] Personnel Costs: Stacked bar chart created successfully');
-                        } else {
-                            console.error('[HR Analytics] ERROR: ChartLib.createStackedBarChart is not a function');
+                            var self = this;
+                            ChartLib.createStackedBarChart('stacked-bar-chart-personnel', departments, datasets, function (departmentName) {
+                                self._onChartSegmentClick(departmentName);
+                            });
+                            console.log('[HR Analytics] Personnel Costs: Stacked bar chart created successfully with drill-down');
                         }
                     } catch (chartError) {
                         console.error('[HR Analytics] ERROR creating stacked bar chart:', chartError.message);
@@ -407,18 +405,21 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 var costs = [1245, 820, 420, 185, 85, 45, 25];
                 var headcount = [450, 280, 120, 45, 32, 15, 8];
 
-                // Bar chart: Cost by Country
+                // Chart 3: Cost by Country (Vertical Bar)
                 console.log('[HR Analytics] Looking for bar-chart-country-costs element');
                 if (document.getElementById('bar-chart-country-costs')) {
-                    console.log('[HR Analytics] Creating vertical bar chart for countries');
+                    console.log('[HR Analytics] Creating bar chart for country costs');
                     var datasets = [{
-                        label: 'Total Personnel Cost (Millions)',
+                        label: 'Total Cost',
                         data: costs,
                         backgroundColor: '#3498db'
                     }];
+                    var self = this;
                     ChartLib.destroyChart('bar-chart-country-costs');
-                    ChartLib.createVerticalBarChart('bar-chart-country-costs', countries, datasets);
-                    console.log('[HR Analytics] Country costs chart created');
+                    ChartLib.createVerticalBarChart('bar-chart-country-costs', countries, datasets, function (departmentName) {
+                        self._onChartSegmentClick(departmentName);
+                    });
+                    console.log('[HR Analytics] Country costs bar chart created with drill-down');
                 } else {
                     console.warn('[HR Analytics] bar-chart-country-costs element not found');
                 }
@@ -427,9 +428,12 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 console.log('[HR Analytics] Looking for pie-chart-headcount element');
                 if (document.getElementById('pie-chart-headcount')) {
                     console.log('[HR Analytics] Creating pie chart for headcount');
+                    var self = this;
                     ChartLib.destroyChart('pie-chart-headcount');
-                    ChartLib.createPieChart('pie-chart-headcount', countries, headcount);
-                    console.log('[HR Analytics] Headcount pie chart created');
+                    ChartLib.createPieChart('pie-chart-headcount', countries, headcount, function (departmentName) {
+                        self._onChartSegmentClick(departmentName);
+                    });
+                    console.log('[HR Analytics] Headcount pie chart created with drill-down');
                 } else {
                     console.warn('[HR Analytics] pie-chart-headcount element not found');
                 }
@@ -467,8 +471,11 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
                 // Chart 1: Contribution Type Breakdown (Doughnut)
                 if (document.getElementById('doughnut-chart-statutory')) {
+                    var self = this;
                     ChartLib.destroyChart('doughnut-chart-statutory');
-                    ChartLib.createDoughnutChart('doughnut-chart-statutory', contribTypes, totals);
+                    ChartLib.createDoughnutChart('doughnut-chart-statutory', contribTypes, totals, null, function (departmentName) {
+                        self._onChartSegmentClick(departmentName);
+                    });
                 }
 
                 // Chart 2: Employee vs Employer Contributions (Stacked)
@@ -507,8 +514,11 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
                 // Pie chart: Headcount by Type
                 if (document.getElementById('pie-chart-hc-type')) {
+                    var self = this;
                     ChartLib.destroyChart('pie-chart-hc-type');
-                    ChartLib.createPieChart('pie-chart-hc-type', types, counts);
+                    ChartLib.createPieChart('pie-chart-hc-type', types, counts, function (departmentName) {
+                        self._onChartSegmentClick(departmentName);
+                    });
                 }
 
             } catch (e) {
@@ -532,8 +542,11 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                     data: dependentCounts,
                     backgroundColor: '#9b59b6'
                 }];
+                var self = this;
                 ChartLib.destroyChart('bar-chart-dependents');
-                ChartLib.createVerticalBarChart('bar-chart-dependents', departments, datasets);
+                ChartLib.createVerticalBarChart('bar-chart-dependents', departments, datasets, function (departmentName) {
+                    self._onChartSegmentClick(departmentName);
+                });
             }
         },
 
@@ -553,7 +566,7 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 if (document.getElementById('grouped-bar-chart-budget')) {
                     var datasets = [
                         {
-                            label: 'Budgeted',
+                            label: 'Budget',
                             data: budgetAmounts,
                             backgroundColor: '#3498db'
                         },
@@ -564,8 +577,11 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                         }
                     ];
 
+                    var self = this;
                     ChartLib.destroyChart('grouped-bar-chart-budget');
-                    ChartLib.createVerticalBarChart('grouped-bar-chart-budget', departments, datasets);
+                    ChartLib.createVerticalBarChart('grouped-bar-chart-budget', departments, datasets, function (departmentName) {
+                        self._onChartSegmentClick(departmentName);
+                    });
                 }
 
                 // Chart: Variance %
@@ -582,8 +598,11 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                         backgroundColor: colors
                     }];
 
+                    var self = this;
                     ChartLib.destroyChart('bar-chart-variance');
-                    ChartLib.createVerticalBarChart('bar-chart-variance', departments, datasets);
+                    ChartLib.createVerticalBarChart('bar-chart-variance', departments, datasets, function (departmentName) {
+                        self._onChartSegmentClick(departmentName);
+                    });
                 }
 
             } catch (e) {
@@ -651,6 +670,13 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 }
             }).then(function (action) {
                 console.log('[HR Analytics] Drill-down action received:', action);
+
+                // Destroy charts AFTER starting navigation to prevent handleEvent errors
+                // Use setTimeout to defer destruction until after do_action starts
+                setTimeout(function () {
+                    self._destroyAllCharts();
+                }, 50);
+
                 self.do_action(action);
             }).catch(function (error) {
                 console.error('[HR Analytics] Error generating drill-down data:', error);

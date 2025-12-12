@@ -94,7 +94,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 2. HORIZONTAL BAR CHART
     // =====================================================================
-    var createHorizontalBarChart = function (elementId, labels, datasets) {
+    var createHorizontalBarChart = function (elementId, labels, datasets, onClickCallback) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -108,6 +108,13 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: true,
+                onClick: onClickCallback ? function (event, elements) {
+                    if (elements && elements.length > 0) {
+                        var index = elements[0].index;
+                        var label = labels[index];
+                        onClickCallback(label, datasets[0].data[index], index);
+                    }
+                } : undefined,
                 plugins: {
                     legend: {
                         display: true,
@@ -134,7 +141,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 3. VERTICAL BAR CHART
     // =====================================================================
-    var createVerticalBarChart = function (elementId, labels, datasets) {
+    var createVerticalBarChart = function (elementId, labels, datasets, onClickCallback) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -147,6 +154,13 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
+                onClick: onClickCallback ? function (event, elements) {
+                    if (elements && elements.length > 0) {
+                        var index = elements[0].index;
+                        var label = labels[index];
+                        onClickCallback(label, datasets[0].data[index], index);
+                    }
+                } : undefined,
                 plugins: {
                     legend: {
                         display: true,
@@ -166,7 +180,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     // =====================================================================
     // 4. STACKED BAR CHART
     // =====================================================================
-    var createStackedBarChart = function (elementId, labels, datasets) {
+    var createStackedBarChart = function (elementId, labels, datasets, onClickCallback) {
         if (!document.getElementById(elementId)) return;
 
         var ctx = document.getElementById(elementId).getContext('2d');
@@ -179,6 +193,13 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
+                onClick: onClickCallback ? function (event, elements) {
+                    if (elements && elements.length > 0) {
+                        var index = elements[0].index;
+                        var label = labels[index];
+                        onClickCallback(label, datasets[0].data[index], index);
+                    }
+                } : undefined,
                 scales: {
                     x: { stacked: true },
                     y: { stacked: true, beginAtZero: true }
