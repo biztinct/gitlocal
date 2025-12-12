@@ -92,7 +92,7 @@
                                 <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                     <div style="margin-bottom: 20px;">
                                         <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
-                                            <i class="fa fa-bar-chart" style="margin-right: 8px; color: #3498db;"></i> Salary Components
+                                            <i class="fa fa-chart-area" style="margin-right: 8px; color: #3498db;"></i> Salary Components
                                         </h4>
                                         <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Total amounts by component</p>
                                     </div>
@@ -182,7 +182,7 @@
                                 <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                     <div style="margin-bottom: 20px;">
                                         <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
-                                            <i class="fa fa-bar-chart" style="margin-right: 8px; color: #27ae60;"></i> Employer vs Employee
+                                            <i class="fa fa-chart-area" style="margin-right: 8px; color: #27ae60;"></i> Employer vs Employee
                                         </h4>
                                         <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Contribution comparison</p>
                                     </div>
@@ -215,7 +215,7 @@
                             <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 20px;">
                                 <div style="margin-bottom: 20px;">
                                     <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
-                                        <i class="fa fa-bar-chart" style="margin-right: 8px; color: #3498db;"></i> Dependents by Category
+                                        <i class="fa fa-chart-area" style="margin-right: 8px; color: #3498db;"></i> Dependents by Category
                                     </h4>
                                     <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Dependent count tracking and benefits analysis</p>
                                 </div>
@@ -233,7 +233,7 @@
                                 <div style="background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                                     <div style="margin-bottom: 20px;">
                                         <h4 style="margin: 0 0 5px 0; color: #2c3e50; font-weight: 600; font-size: 16px;">
-                                            <i class="fa fa-bar-chart" style="margin-right: 8px; color: #3498db;"></i> Budget vs Actual
+                                            <i class="fa fa-chart-area" style="margin-right: 8px; color: #3498db;"></i> Budget vs Actual
                                         </h4>
                                         <p style="margin: 0; color: #7f8c8d; font-size: 13px;">Comparison of budgeted and actual costs</p>
                                     </div>
@@ -361,14 +361,15 @@ action = {
         </field>
     </record>
 
-    <!-- Action to Open Dashboard (Window Action - fallback) -->
+    <!-- Action to Open Dashboard - Uses Server Action to ensure record exists -->
     <record id="action_open_hr_analytics_dashboard" model="ir.actions.act_window">
         <field name="name">HR Analytics Dashboard</field>
         <field name="res_model">hr.analytics.dashboard</field>
-        <field name="view_mode">form,tree</field>
+        <field name="view_mode">form</field>
         <field name="view_id" ref="view_hr_analytics_dashboard_form"/>
         <field name="target">current</field>
-        <field name="context">{'default_auto_refresh': True}</field>
+        <field name="domain">[('name', '=', 'HR Analytics Dashboard')]</field>
+        <field name="context">{'create': False, 'default_name': 'HR Analytics Dashboard'}</field>
     </record>
 
 </odoo>

@@ -120,3 +120,18 @@ class PbGovtReportWizard(models.TransientModel):
         if not action_xmlid:
             return False
         return self.env.ref(action_xmlid).report_action(self)
+
+    def action_mail_report(self):
+        """Show notification about mail report feature."""
+        self.ensure_one()
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Mail Report',
+                'message': 'Mail report feature - configure email template to enable sending reports via email.',
+                'type': 'info',
+                'sticky': False,
+            }
+        }
