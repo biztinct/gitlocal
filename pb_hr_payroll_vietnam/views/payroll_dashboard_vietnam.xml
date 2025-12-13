@@ -1,5 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Kanban view for Payroll Import Batches (used from the dashboard shortcut) -->
+    <record id="view_payroll_import_batch_kanban_vn" model="ir.ui.view">
+        <field name="name">hr.payroll.import.batch.kanban.vn</field>
+        <field name="model">hr.payroll.import.batch</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column" create="true" edit="true" delete="true" quick_create="false" default_group_by="state">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="total_lines"/>
+                <field name="matched_employees"/>
+                <field name="new_employees"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click o_kanban_record o_kanban_card">
+                            <div class="o_kanban_record_top mb-2 d-flex justify-content-between align-items-center">
+                                <strong class="o_kanban_record_title">
+                                    <field name="name"/>
+                                </strong>
+                                <span class="badge badge-primary">
+                                    <field name="state"/>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_body text-muted">
+                                <div class="mb-1">
+                                    <span>Period:</span>
+                                    <field name="date_from"/> —
+                                    <field name="date_to"/>
+                                </div>
+                                <div class="mb-1">
+                                    <span>Lines:</span> <field name="total_lines"/>
+                                </div>
+                                <div>
+                                    <span>Matched:</span> <field name="matched_employees"/> |
+                                    <span>New:</span> <field name="new_employees"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
     
     <!-- Professional Vietnam Dashboard View -->
     <record id="view_payroll_dashboard_vietnam" model="ir.ui.view">
@@ -215,12 +259,12 @@
                                     <div>
                                         <i class="fa fa-download fa-3x card-icon"/>
                                         <h4 class="card-title">Process payroll</h4>
-                                        <p class="card-description">Import calculated payroll data and generate employee payslips</p>
+                                        <p class="card-description">Calculate pay as per configured formulas and generate employee payslips</p>
                                     </div>
-                                    <button name="action_import_spreadsheet" 
+                                    <button name="action_open_import_batch" 
                                             type="object" 
                                             class="dashboard-btn">
-                                        Import and process
+                                        Process payroll
                                     </button>
                                 </div>
                             </div>
@@ -357,7 +401,19 @@
                             </div>
                             
                             <div class="col-lg-4">
-                                <!-- Empty space -->
+                                <!-- Salary Configuration Tile -->
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-cogs fa-3x card-icon" style="color: #9b59b6;"/>
+                                        <h4 class="card-title">Salary Configuration</h4>
+                                        <p class="card-description">Configure formula-based salary calculations with Excel-like rules</p>
+                                    </div>
+                                    <button name="%(pb_hr_payroll_base.action_salary_configuration_workflow)d"
+                                            type="action"
+                                            class="dashboard-btn" style="background: #9b59b6; border-color: #9b59b6;">
+                                        <i class="fa fa-arrow-right"/> Configure Salary
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="col-lg-4">

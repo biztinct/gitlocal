@@ -17,10 +17,12 @@ class ResourceCalendar(models.Model):
         res = super(ResourceCalendar, self).default_get(fields)
         if "attendance_ids" in res:
             for _, _, attendance in res["attendance_ids"]:
-                attendance["hour_check_in_from"] = attendance["hour_from"]
-                attendance["hour_check_in_to"] = attendance["hour_from"]
-                attendance["hour_check_out_from"] = attendance["hour_to"]
-                attendance["hour_check_out_to"] = attendance["hour_to"]
+                # Check if attendance is a dictionary before accessing keys
+                if isinstance(attendance, dict):
+                    attendance["hour_check_in_from"] = attendance.get("hour_from", 0)
+                    attendance["hour_check_in_to"] = attendance.get("hour_from", 0)
+                    attendance["hour_check_out_from"] = attendance.get("hour_to", 0)
+                    attendance["hour_check_out_to"] = attendance.get("hour_to", 0)
         return res
 
 

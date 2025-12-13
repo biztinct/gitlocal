@@ -248,8 +248,9 @@
     <record id="view_formula_config_kanban" model="ir.ui.view">
         <field name="name">hr.formula.config.kanban</field>
         <field name="model">hr.formula.config</field>
+        <field name="priority">1</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" default_group_by="state">
+            <kanban class="o_kanban_mobile" default_group_by="state" create="true" edit="true" delete="true" quick_create="false">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="country_code"/>
@@ -371,6 +372,26 @@
         <field name="view_mode">tree,kanban,form</field>
         <field name="search_view_id" ref="view_formula_config_search"/>
         <field name="context">{'search_default_active_state': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Formula Configuration
+            </p>
+            <p>
+                Formula configurations allow you to define Excel-like formulas
+                for salary calculations. Create rules, assign column letters,
+                and define formulas using familiar Excel syntax.
+            </p>
+        </field>
+    </record>
+
+    <!-- Kanban View Action for Formula Config (Grouped by Country) -->
+    <record id="action_formula_config_kanban" model="ir.actions.act_window">
+        <field name="name">Salary Structure Configurations</field>
+        <field name="res_model">hr.formula.config</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="view_formula_config_kanban"/>
+        <field name="search_view_id" ref="view_formula_config_search"/>
+        <field name="context">{'group_by': 'country_code'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first Formula Configuration

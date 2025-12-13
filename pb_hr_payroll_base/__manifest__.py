@@ -86,6 +86,7 @@ for all country-specific modules while maintaining clean separation of concerns.
         'views/payroll_base_dashboard.xml',                     # Base dashboard views
         'views/payroll_dashboard_enhanced_views.xml',           # Enhanced dashboard with animations
         'views/payroll_country_selector_enhanced.xml',          # Enhanced country selector
+        'views/salary_configuration_workflow.xml',              # Salary configuration workflow dashboard
         'views/payroll_analytics_views.xml',                    # Analytics views
         'views/zoho_base_views.xml',                            # Zoho base views
         'views/zoho_staging_views.xml',                         # Zoho staging views

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         SALARY CONFIGURATION WORKFLOW DASHBOARD
+         Modern Badge-Style Workflow Interface
+         ========================================== -->
+
+    <!-- Salary Configuration Workflow Form View -->
+    <record id="view_salary_configuration_workflow" model="ir.ui.view">
+        <field name="name">Salary Configuration Workflow</field>
+        <field name="model">salary.configuration.workflow.wizard</field>
+        <field name="priority">200</field>
+        <field name="arch" type="xml">
+            <form string="Salary Configuration Workflow" create="false" edit="false" delete="false">
+                <sheet>
+                    <!-- Modern Workflow Dashboard Styling -->
+                    <style>
+                        .salary-workflow-container {
+                            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                            padding: 48px 32px;
+                            border-radius: 16px;
+                            min-height: 500px;
+                        }
+
+                        .workflow-header {
+                            text-align: center;
+                            margin-bottom: 48px;
+                        }
+
+                        .workflow-title {
+                            font-size: 36px;
+                            font-weight: 700;
+                            color: #2c3e50;
+                            margin: 0 0 12px 0;
+                            letter-spacing: -0.5px;
+                        }
+
+                        .workflow-subtitle {
+                            font-size: 16px;
+                            color: #7f8c8d;
+                            margin: 0;
+                            font-weight: 400;
+                        }
+
+                        /* Badge Container */
+                        .workflow-badges-container {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            gap: 32px;
+                            flex-wrap: wrap;
+                            margin-top: 32px;
+                        }
+
+                        /* Individual Badge Styling */
+                        .workflow-badge {
+                            background: white;
+                            border-radius: 20px;
+                            padding: 40px 32px;
+                            width: 280px;
+                            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                            cursor: pointer;
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .workflow-badge::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 4px;
+                            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+                            transform: scaleX(0);
+                            transform-origin: left;
+                            transition: transform 0.3s ease;
+                        }
+
+                        .workflow-badge:hover::before {
+                            transform: scaleX(1);
+                        }
+
+                        .workflow-badge:hover {
+                            transform: translateY(-8px);
+                            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+                        }
+
+                        .workflow-badge-connector {
+                            border-top: 4px solid #3498db;
+                        }
+
+                        .workflow-badge-structure {
+                            border-top: 4px solid #9b59b6;
+                        }
+
+                        .workflow-badge-test {
+                            border-top: 4px solid #2ecc71;
+                        }
+
+                        /* Badge Icon */
+                        .badge-icon {
+                            font-size: 56px;
+                            margin-bottom: 20px;
+                            display: block;
+                            text-align: center;
+                        }
+
+                        .badge-icon-connector {
+                            color: #3498db;
+                        }
+
+                        .badge-icon-structure {
+                            color: #9b59b6;
+                        }
+
+                        .badge-icon-test {
+                            color: #2ecc71;
+                        }
+
+                        /* Badge Title */
+                        .badge-title {
+                            font-size: 24px;
+                            font-weight: 700;
+                            color: #2c3e50;
+                            margin: 0 0 12px 0;
+                            text-align: center;
+                        }
+
+                        /* Badge Description */
+                        .badge-description {
+                            font-size: 14px;
+                            color: #7f8c8d;
+                            text-align: center;
+                            margin: 0 0 24px 0;
+                            line-height: 1.6;
+                        }
+
+                        /* Badge Button */
+                        .badge-button {
+                            width: 100%;
+                            padding: 14px 24px !important;
+                            border-radius: 10px !important;
+                            font-size: 15px !important;
+                            font-weight: 600 !important;
+                            border: none !important;
+                            cursor: pointer !important;
+                            transition: all 0.2s ease !important;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+
+                        .badge-button-connector {
+                            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+                            color: white !important;
+                        }
+
+                        .badge-button-connector:hover {
+                            background: linear-gradient(135deg, #2980b9 0%, #21618c 100%) !important;
+                            transform: translateY(-2px);
+                            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+                        }
+
+                        .badge-button-structure {
+                            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important;
+                            color: white !important;
+                        }
+
+                        .badge-button-structure:hover {
+                            background: linear-gradient(135deg, #8e44ad 0%, #71368a 100%) !important;
+                            transform: translateY(-2px);
+                            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3);
+                        }
+
+                        .badge-button-test {
+                            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important;
+                            color: white !important;
+                        }
+
+                        .badge-button-test:hover {
+                            background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%) !important;
+                            transform: translateY(-2px);
+                            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+                        }
+
+                        /* Step Number Badge */
+                        .step-number {
+                            position: absolute;
+                            top: 16px;
+                            right: 16px;
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 50%;
+                            background: #ecf0f1;
+                            color: #7f8c8d;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 700;
+                            font-size: 16px;
+                        }
+
+                        /* Arrow Connector */
+                        .workflow-arrow {
+                            font-size: 32px;
+                            color: #bdc3c7;
+                            margin: 0 -8px;
+                        }
+
+                        /* Responsive Design */
+                        @media (max-width: 1024px) {
+                            .workflow-badges-container {
+                                flex-direction: column;
+                                gap: 24px;
+                            }
+
+                            .workflow-arrow {
+                                transform: rotate(90deg);
+                            }
+
+                            .workflow-badge {
+                                width: 100%;
+                                max-width: 400px;
+                            }
+                        }
+
+                        /* Animation Keyframes */
+                        @keyframes fadeInUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(30px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+
+                        .workflow-badge {
+                            animation: fadeInUp 0.6s ease-out backwards;
+                        }
+
+                        .workflow-badge:nth-child(1) {
+                            animation-delay: 0.1s;
+                        }
+
+                        .workflow-badge:nth-child(3) {
+                            animation-delay: 0.2s;
+                        }
+
+                        .workflow-badge:nth-child(5) {
+                            animation-delay: 0.3s;
+                        }
+                    </style>
+
+                    <div class="salary-workflow-container">
+                        <!-- Workflow Header -->
+                        <div class="workflow-header">
+                            <h1 class="workflow-title">Salary Configuration Workflow</h1>
+                            <p class="workflow-subtitle">Configure your payroll formula engine in 3 simple steps</p>
+                        </div>
+
+                        <!-- Workflow Badges -->
+                        <div class="workflow-badges-container">
+                            <!-- Step 1: Connector Badge -->
+                            <div class="workflow-badge workflow-badge-connector">
+                                <span class="step-number">1</span>
+                                <i class="fa fa-plug badge-icon badge-icon-connector"/>
+                                <h3 class="badge-title">Connector</h3>
+                                <p class="badge-description">
+                                    Connect to external HR systems like Zoho People, SAP, or import from Excel files
+                                </p>
+                                <button name="action_open_connectors"
+                                        type="object"
+                                        class="badge-button badge-button-connector">
+                                    <i class="fa fa-th"/> Open Connectors
+                                </button>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="workflow-arrow">
+                                <i class="fa fa-arrow-right"/>
+                            </div>
+
+                            <!-- Step 2: Salary Structure Badge -->
+                            <div class="workflow-badge workflow-badge-structure">
+                                <span class="step-number">2</span>
+                                <i class="fa fa-calculator badge-icon badge-icon-structure"/>
+                                <h3 class="badge-title">Salary Structure</h3>
+                                <p class="badge-description">
+                                    Define Excel-like formulas for salary calculations with drag-and-drop rules
+                                </p>
+                                <button name="action_open_structure"
+                                        type="object"
+                                        class="badge-button badge-button-structure">
+                                    <i class="fa fa-th"/> Configure Structure
+                                </button>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="workflow-arrow">
+                                <i class="fa fa-arrow-right"/>
+                            </div>
+
+                            <!-- Step 3: Test Badge -->
+                            <div class="workflow-badge workflow-badge-test">
+                                <span class="step-number">3</span>
+                                <i class="fa fa-flask badge-icon badge-icon-test"/>
+                                <h3 class="badge-title">Test</h3>
+                                <p class="badge-description">
+                                    Validate formulas with sample data and compare results before going live
+                                </p>
+                                <button name="action_run_tests"
+                                        type="object"
+                                        class="badge-button badge-button-test">
+                                    <i class="fa fa-play"/> Run Tests
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open Salary Configuration Workflow -->
+    <record id="action_salary_configuration_workflow" model="ir.actions.act_window">
+        <field name="name">Salary Configuration Workflow</field>
+        <field name="res_model">salary.configuration.workflow.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_salary_configuration_workflow"/>
+        <field name="target">current</field>
+    </record>
+
+</odoo>
