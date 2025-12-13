@@ -62,6 +62,33 @@
                         </h1>
                     </div>
 
+                    <!-- Visual Connector Type Icons Guide -->
+                    <div class="alert alert-info" style="margin: 10px 0;">
+                        <h5 style="margin-top: 0;">Connector Types:</h5>
+                        <div class="row">
+                            <div class="col-md-2 text-center" style="padding: 10px;">
+                                <i class="fa fa-cloud fa-2x text-primary"/>
+                                <br/><small>Zoho People</small>
+                            </div>
+                            <div class="col-md-2 text-center" style="padding: 10px;">
+                                <i class="fa fa-file-excel-o fa-2x text-success"/>
+                                <br/><small>Excel Import</small>
+                            </div>
+                            <div class="col-md-2 text-center" style="padding: 10px;">
+                                <i class="fa fa-building fa-2x text-info"/>
+                                <br/><small>SAP SuccessFactors</small>
+                            </div>
+                            <div class="col-md-2 text-center" style="padding: 10px;">
+                                <i class="fa fa-calendar fa-2x text-warning"/>
+                                <br/><small>Workday</small>
+                            </div>
+                            <div class="col-md-2 text-center" style="padding: 10px;">
+                                <i class="fa fa-database fa-2x text-danger"/>
+                                <br/><small>Oracle HCM</small>
+                            </div>
+                        </div>
+                    </div>
+
                     <group>
                         <group string="Connection Type">
                             <field name="connector_type" widget="radio"/>
@@ -98,7 +125,8 @@
 
                         <!-- Credentials -->
                         <page string="Credentials" name="credentials"
-                              groups="base.group_system">
+                              groups="base.group_system"
+                              attrs="{'invisible': [('connector_type', '=', 'excel')]}">
                             <group>
                                 <field name="client_id"/>
                                 <field name="client_secret" password="True"/>
@@ -129,14 +157,12 @@
                                     <field name="last_import_filename"/>
                                 </group>
                             </group>
-                            <group>
-                                <button name="action_import_excel" string="Import Excel File"
-                                        type="object" class="btn-primary"/>
-                            </group>
+                            <!-- Import button removed for Excel connector as it served no purpose -->
                         </page>
 
                         <!-- Field Mappings -->
-                        <page string="Field Mappings" name="mappings">
+                        <page string="Field Mappings" name="mappings"
+                              attrs="{'invisible': [('connector_type', '=', 'excel')]}">
                             <field name="field_mapping_ids" nolabel="1">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
@@ -240,6 +266,82 @@
         </field>
     </record>
 
+    <!-- Connector Kanban View -->
+    <record id="view_integration_connector_kanban" model="ir.ui.view">
+        <field name="name">hr.integration.connector.kanban</field>
+        <field name="model">hr.integration.connector</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" create="true" edit="true" delete="true">
+                <field name="name"/>
+                <field name="connector_type"/>
+                <field name="country_code"/>
+                <field name="connection_status"/>
+                <field name="last_sync"/>
+                <field name="mapping_count"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="o_kanban_record_top mb-2">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="name"/>
+                                        </strong>
+                                    </div>
+                                    <span t-attf-class="badge badge-#{record.connection_status.raw_value == 'connected' ? 'success' : record.connection_status.raw_value == 'error' ? 'danger' : 'warning'}">
+                                        <field name="connection_status"/>
+                                    </span>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <span class="text-muted">Type:</span>
+                                            <br/>
+                                            <strong>
+                                                <!-- Connector Type Icons -->
+                                                <t t-if="record.connector_type.raw_value == 'zoho'">
+                                                    <i class="fa fa-cloud text-primary"/> Zoho People
+                                                </t>
+                                                <t t-if="record.connector_type.raw_value == 'excel'">
+                                                    <i class="fa fa-file-excel-o text-success"/> Excel File Import
+                                                </t>
+                                                <t t-if="record.connector_type.raw_value == 'sap'">
+                                                    <i class="fa fa-building text-info"/> SAP SuccessFactors
+                                                </t>
+                                                <t t-if="record.connector_type.raw_value == 'workday'">
+                                                    <i class="fa fa-calendar text-warning"/> Workday
+                                                </t>
+                                                <t t-if="record.connector_type.raw_value == 'oracle'">
+                                                    <i class="fa fa-database text-danger"/> Oracle HCM
+                                                </t>
+                                            </strong>
+                                        </div>
+                                        <div class="col-6">
+                                            <span class="text-muted">Country:</span>
+                                            <br/>
+                                            <strong><field name="country_code"/></strong>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <i class="fa fa-exchange"/> <field name="mapping_count"/> mappings
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom mt-3">
+                                    <div class="oe_kanban_bottom_left">
+                                        <t t-if="record.last_sync.raw_value">
+                                            <i class="fa fa-clock-o"/> Last sync: <field name="last_sync"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <!-- ==========================================
          ACTIONS
          ========================================== -->
@@ -248,6 +350,24 @@
         <field name="name">HR System Connectors</field>
         <field name="res_model">hr.integration.connector</field>
         <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Connect to external HR systems
+            </p>
+            <p>
+                Configure connections to Zoho People, SAP SuccessFactors,
+                Workday, Oracle HCM, or import data from Excel files.
+            </p>
+        </field>
+    </record>
+
+    <!-- Kanban View Action for Connectors -->
+    <record id="action_integration_connector_kanban" model="ir.actions.act_window">
+        <field name="name">HR System Connectors</field>
+        <field name="res_model">hr.integration.connector</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_id" ref="view_integration_connector_kanban"/>
+        <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Connect to external HR systems

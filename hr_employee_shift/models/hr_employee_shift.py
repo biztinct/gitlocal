@@ -43,21 +43,28 @@ class HrEmployeeShift(models.Model):
         ]
 
     color = fields.Integer(string='Color Index', help="Color")
-    hr_department = fields.Many2one('hr.department', string="Department", required=True, help="Department")
+    hr_department = fields.Many2one('hr.department', string="Department", help="Department (leave blank to apply to all departments)")
     sequence = fields.Integer(string="Sequence", required=True, default=1, help="Sequence")
     attendance_ids = fields.One2many(
         'resource.calendar.attendance', 'calendar_id', 'Workingssss Time',
         copy=True, default=_get_default_attendance_ids)
 
-    @api.constrains('sequence')
+    @api.constrains('sequence', 'hr_department')
     def validate_seq(self):
-        if self.hr_department.id:
-            record = self.env['resource.calendar'].search([('hr_department', '=', self.hr_department.id),
-                                                           ('sequence', '=', self.sequence),
-                                                           ('company_id', '=', self.company_id.id)
-                                                           ])
-            if len(record) > 1:
-                raise ValidationError("One record with same sequence is already active."
-                                      "You can't activate more than one record  at a time")
+        # Only check sequence uniqueness within the same department
+        # If no department is set, the shift applies to all departments (no sequence constraint needed)
+        if self.hr_department:
+            domain = [
+                ('hr_department', '=', self.hr_department.id),
+                ('sequence', '=', self.sequence),
+                ('company_id', '=', self.company_id.id),
+                ('id', '!=', self.id)  # Exclude current record
+            ]
+            duplicate_records = self.env['resource.calendar'].search(domain)
+            if duplicate_records:
+                raise ValidationError(
+                    _("A shift with the same sequence (%s) already exists for department '%s'. "
+                      "Please use a different sequence number.") % (self.sequence, self.hr_department.name)
+                )
 
 

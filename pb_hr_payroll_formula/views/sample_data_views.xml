@@ -174,8 +174,9 @@
     <record id="view_formula_sample_data_kanban" model="ir.ui.view">
         <field name="name">hr.formula.sample.data.kanban</field>
         <field name="model">hr.formula.sample.data</field>
+        <field name="priority">1</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_small_column">
+            <kanban class="o_kanban_small_column" create="true" edit="true" delete="true" quick_create="false">
                 <field name="name"/>
                 <field name="source_type"/>
                 <field name="all_passed"/>

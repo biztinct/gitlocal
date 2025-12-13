@@ -150,6 +150,10 @@
                             text-transform: none;
                             letter-spacing: 0;
                             width: 100%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            min-height: 44px;
                         }
                         .dashboard-btn:hover {
                             background: #1a3651;
@@ -346,6 +350,25 @@
                                             type="object" 
                                             class="dashboard-btn">
                                         <i class="fa fa-file-text"></i> SSF Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fourth Row: Salary Configuration -->
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <!-- Salary Configuration Tile -->
+                                <div class="dashboard-card">
+                                    <div>
+                                        <i class="fa fa-cogs fa-3x card-icon" style="color: #9b59b6;"/>
+                                        <h4 class="card-title">Salary Configuration</h4>
+                                        <p class="card-description">Configure formula-based salary calculations with Excel-like rules</p>
+                                    </div>
+                                    <button name="%(pb_hr_payroll_base.action_salary_configuration_workflow)d"
+                                            type="action"
+                                            class="dashboard-btn" style="background: #9b59b6; border-color: #9b59b6;">
+                                        <i class="fa fa-arrow-right"/> Configure Salary
                                     </button>
                                 </div>
                             </div>

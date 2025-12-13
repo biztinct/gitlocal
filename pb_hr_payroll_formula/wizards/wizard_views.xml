@@ -31,7 +31,8 @@
                 <!-- File Import -->
                 <group attrs="{'invisible': [('source', '!=', 'file')]}">
                     <field name="import_file" filename="import_filename"
-                           string="Excel File" required="1"/>
+                           string="Excel File"
+                           attrs="{'required': [('source', '=', 'file')]}"/>
                     <field name="import_filename" invisible="1"/>
                     <div class="o_form_label">First row headers; subsequent rows are samples.</div>
                 </group>
