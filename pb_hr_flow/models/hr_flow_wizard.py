@@ -12,7 +12,7 @@ class HRFlowWizard(models.TransientModel):
     _name = 'hr.flow.wizard'
     _description = 'HR Workflow Flow Dashboard'
 
-    name = fields.Char(string='Flow Dashboard', default='HR Workflow', readonly=True)
+    name = fields.Char(string='Flow Dashboard', default=lambda self: self._default_name(), readonly=True)
 
     # ==========================================
     # PRIMARY LEVEL ACTIONS
@@ -159,3 +159,87 @@ class HRFlowWizard(models.TransientModel):
                 'sticky': False,
             }
         }
+
+    # ==========================================
+    # Tertiary actions resolver (server-side to avoid private RPC)
+    # ==========================================
+
+    @api.model
+    def get_tertiary_action(self, key):
+        """
+        Return a full action dict for a tertiary tile.
+        Uses server-side xmlid resolution so the client can simply do-action.
+        """
+        # Map keys to action xmlid and optional menu xmlid
+        mapping = {
+            # Overtime
+            'overtime-request': ('hr_attendance.hr_attendance_overtime_action',
+                                 'hr_attendance.menu_hr_attendance_attendances_overview'),
+            'overtime-approve': ('hr_attendance.hr_attendance_action_overview',
+                                 'hr_attendance.menu_hr_attendance_attendances_overview'),
+            'overtime-rules': ('hr_attendance_reason.action_hr_attendance_reason',
+                               'hr_attendance.hr_attendance_reason_menu'),
+            'overtime-schedules': ('resource.action_resource_calendar_form',
+                                   'hr_employee_shift.menu_shift'),
+            'overtime-analytics': ('hr_attendance.hr_attendance_action_overview',
+                                   'hr_attendance.menu_hr_attendance_attendances_overview'),
+            'overtime-settings': ('hr_attendance.action_hr_attendance_settings',
+                                  'hr_attendance.menu_hr_attendance_settings'),
+            # Shift
+            'shift-calendar': ('resource.action_resource_calendar_form',
+                               'hr_employee_shift.menu_shift'),
+            'shift-templates': ('resource.action_resource_calendar_form',
+                                'hr_employee_shift.menu_conf_shift'),
+            'shift-swap': ('hr_employee_shift.generate_schedule_action_window',
+                           'hr_employee_shift.menu_shift_schedule_generate_id_menu'),
+            'shift-compliance': ('hr_attendance.hr_attendance_action',
+                                 'hr_attendance.menu_hr_attendance_view_attendances'),
+            'shift-attendance': ('hr_attendance.hr_attendance_action_employee',
+                                 'hr_attendance.menu_hr_attendance_view_attendances'),
+            'shift-settings': ('hr_attendance.action_hr_attendance_settings',
+                               'hr_attendance.menu_hr_attendance_settings'),
+            # Timesheet
+            'timesheet-mine': ('hr_timesheet.act_hr_timesheet_line',
+                               'hr_timesheet.timesheet_menu_root'),
+            'timesheet-approvals': ('hr_timesheet_sheet.act_hr_timesheet_sheet_to_review',
+                                    'hr_timesheet.menu_hr_to_review'),
+            'timesheet-reports': ('hr_timesheet.act_hr_timesheet_report',
+                                  'hr_timesheet.menu_hr_time_tracking'),
+            'timesheet-settings': ('hr_timesheet.act_hr_timesheet_line',
+                                   'hr_timesheet.menu_hr_time_tracking'),
+        }
+        action_xmlid, menu_xmlid = mapping.get(key, (False, False))
+        if not action_xmlid:
+            return {'type': 'ir.actions.act_window_close'}
+
+        try:
+            action = self.env['ir.actions.actions']._for_xml_id(action_xmlid)
+        except Exception:
+            return {'type': 'ir.actions.act_window_close'}
+
+        # open full-screen so breadcrumbs and full controls show
+        action['target'] = 'current'
+
+        # Resolve menu id if present
+        if menu_xmlid:
+            menu = self.env.ref(menu_xmlid, raise_if_not_found=False)
+            if menu:
+                action['menu_id'] = menu.id
+        return action
+
+    # ==========================================
+    # Defaults / helpers
+    # ==========================================
+
+    @api.model
+    def _default_name(self):
+        """Ensure the control panel title is always meaningful (no 'New')."""
+        return _('Flow Dashboard')
+
+    @api.model
+    def default_get(self, fields_list):
+        """Guarantee name is set even if context/defaults are missing."""
+        res = super().default_get(fields_list)
+        if 'name' in fields_list:
+            res.setdefault('name', self._default_name())
+        return res

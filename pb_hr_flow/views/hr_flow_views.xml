@@ -11,15 +11,11 @@
         <field name="model">hr.flow.wizard</field>
         <field name="priority">1</field>
         <field name="arch" type="xml">
-            <form string="HR Workflow Flow" create="false" edit="false" delete="false" class="hr-flow-form">
+            <form string="Flow Dashboard" class="hr-flow-form">
                 <sheet>
+                    <field name="name" invisible="1"/>
                     <!-- Advanced CSS Styling with Animations -->
                     <style>
-                        /* Hide create button only for this dashboard */
-                        .hr-flow-form .o_form_view .o_control_panel .o_button_create {
-                            display: none !important;
-                        }
-
                         /* ==========================================
                            GLOBAL STYLES
                            ========================================== */
@@ -431,24 +427,27 @@
                            ========================================== */
                         .tertiary-panel {
                             position: fixed;
-                            top: 0;
-                            right: -420px;
+                            top: 50%;
+                            right: 40px;
                             width: 420px;
-                            height: 100vh;
+                            height: 700px; /* match flow height */
+                            max-height: 80vh;
+                            transform: translate(30px, -50%);
                             background: #ffffff;
-                            box-shadow: -12px 0 30px rgba(0, 0, 0, 0.15);
+                            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
                             z-index: 9999;
-                            transition: right 0.35s ease, opacity 0.3s ease;
+                            transition: transform 0.35s ease, opacity 0.3s ease;
                             opacity: 0;
                             display: flex;
                             flex-direction: column;
                             padding: 24px;
                             gap: 16px;
-                            border-left: 1px solid #e2e8f0;
+                            border: 2px solid #cbd5e1;
+                            border-radius: 14px;
                         }
 
                         .tertiary-panel.open {
-                            right: 0;
+                            transform: translate(0, -50%);
                             opacity: 1;
                         }
 
@@ -486,7 +485,7 @@
                         }
 
                         .tertiary-card {
-                            border: 1px solid #e2e8f0;
+                            border: 2px solid #e2e8f0;
                             border-radius: 10px;
                             padding: 12px;
                             display: flex;
@@ -499,8 +498,14 @@
                         }
 
                         .tertiary-card:hover {
-                            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+                            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+                            border-color: #cbd5e1;
                             transform: translateY(-2px);
+                        }
+
+                        .tertiary-card:active {
+                            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+                            transform: translateY(0);
                         }
 
                         .tertiary-card.is-disabled {
@@ -781,7 +786,7 @@
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_hr_flow_wizard_form"/>
         <field name="target">current</field>
-        <field name="context">{'create': False, 'no_create': True, 'no_create_edit': True}</field>
+        <field name="context">{'default_name': 'Flow Dashboard'}</field>
     </record>
 
 </odoo>
