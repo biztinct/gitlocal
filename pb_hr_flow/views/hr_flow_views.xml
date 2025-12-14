@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         HR WORKFLOW FLOW - CIRCULAR DASHBOARD
+         State-of-the-Art Interactive Interface
+         ========================================== -->
+
+    <record id="view_hr_flow_wizard_form" model="ir.ui.view">
+        <field name="name">HR Workflow Flow Dashboard</field>
+        <field name="model">hr.flow.wizard</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="HR Workflow Flow" create="false" edit="false" delete="false">
+                <sheet>
+                    <!-- Advanced CSS Styling with Animations -->
+                    <style>
+                        /* ==========================================
+                           GLOBAL STYLES
+                           ========================================== */
+                        .hr-flow-container {
+                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                            min-height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 40px 20px;
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .hr-flow-container::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background-image: radial-gradient(circle at 20% 50%, rgba(66, 153, 225, 0.05) 0%, transparent 50%),
+                                            radial-gradient(circle at 80% 80%, rgba(159, 122, 234, 0.05) 0%, transparent 50%);
+                            pointer-events: none;
+                        }
+
+                        /* Titles removed as requested */
+
+                        /* ==========================================
+                           CIRCULAR WORKFLOW LAYOUT
+                           ========================================== */
+                        .circular-workflow {
+                            position: relative;
+                            width: 700px;
+                            height: 700px;
+                            margin: 0 auto;
+                        }
+
+                        @media (max-width: 768px) {
+                            .circular-workflow {
+                                width: 500px;
+                                height: 500px;
+                            }
+                        }
+
+                        @media (max-width: 480px) {
+                            .circular-workflow {
+                                width: 350px;
+                                height: 350px;
+                            }
+                        }
+
+                        /* ==========================================
+                           CENTER EMPLOYEE BADGE
+                           ========================================== */
+                        .center-badge {
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 180px;
+                            height: 180px;
+                            background: #264A6A;
+                            border-radius: 50%;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            box-shadow: 0 20px 60px rgba(38, 74, 106, 0.3),
+                                       0 8px 16px rgba(0, 0, 0, 0.1);
+                            cursor: pointer;
+                            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                            z-index: 100;
+                            animation: pulse 3s ease-in-out infinite;
+                            border: 4px solid #fff;
+                        }
+
+                        .center-badge:hover {
+                            transform: translate(-50%, -50%) scale(1.1);
+                            box-shadow: 0 25px 70px rgba(38, 74, 106, 0.4),
+                                       0 10px 20px rgba(0, 0, 0, 0.15);
+                        }
+
+                        .center-badge-icon {
+                            font-size: 52px;
+                            color: #fff;
+                            margin-bottom: 8px;
+                        }
+
+                        .center-badge-text {
+                            font-size: 18px;
+                            font-weight: 700;
+                            color: #fff;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                        }
+
+                        @media (max-width: 768px) {
+                            .center-badge {
+                                width: 130px;
+                                height: 130px;
+                            }
+                            .center-badge-icon {
+                                font-size: 38px;
+                            }
+                            .center-badge-text {
+                                font-size: 14px;
+                            }
+                        }
+
+                        /* ==========================================
+                           PRIMARY BADGES (6 badges in circle)
+                           ========================================== */
+                        .primary-badge {
+                            position: absolute;
+                            width: 140px;
+                            height: 140px;
+                            background: #fff;
+                            border-radius: 50%;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+                            cursor: pointer;
+                            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                            z-index: 50;
+                            border: 4px solid #f7fafc;
+                        }
+
+                        .primary-badge:hover {
+                            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+                            z-index: 200 !important;
+                        }
+
+                        /* Individual badge hover shadows - matching icon colors */
+                        .badge-attendance:hover {
+                            box-shadow: 0 25px 70px rgba(66, 153, 225, 0.6);
+                        }
+
+                        .badge-payroll:hover {
+                            box-shadow: 0 25px 70px rgba(72, 187, 120, 0.6);
+                        }
+
+                        .badge-approval:hover {
+                            box-shadow: 0 25px 70px rgba(237, 137, 54, 0.6);
+                        }
+
+                        .badge-pay-salary:hover {
+                            box-shadow: 0 25px 70px rgba(159, 122, 234, 0.6);
+                        }
+
+                        .badge-government:hover {
+                            box-shadow: 0 25px 70px rgba(245, 101, 101, 0.6);
+                        }
+
+                        .badge-analytics:hover {
+                            box-shadow: 0 25px 70px rgba(56, 178, 172, 0.6);
+                        }
+
+                        .primary-badge.shrink {
+                            transform: scale(0.7) !important;
+                            opacity: 0.5;
+                        }
+
+                        .primary-badge-icon {
+                            font-size: 42px;
+                            margin-bottom: 6px;
+                            transition: transform 0.4s ease;
+                        }
+
+                        .primary-badge:hover .primary-badge-icon {
+                            transform: scale(1.1);
+                        }
+
+                        .primary-badge-text {
+                            font-size: 13px;
+                            font-weight: 700;
+                            color: #2d3748;
+                            text-align: center;
+                            line-height: 1.2;
+                        }
+
+                        @media (max-width: 768px) {
+                            .primary-badge {
+                                width: 100px;
+                                height: 100px;
+                            }
+                            .primary-badge-icon {
+                                font-size: 30px;
+                            }
+                            .primary-badge-text {
+                                font-size: 11px;
+                            }
+                        }
+
+                        /* Badge Colors */
+                        .badge-attendance .primary-badge-icon { color: #4299e1; }
+                        .badge-payroll .primary-badge-icon { color: #48bb78; }
+                        .badge-approval .primary-badge-icon { color: #ed8936; }
+                        .badge-pay-salary .primary-badge-icon { color: #9f7aea; }
+                        .badge-government .primary-badge-icon { color: #f56565; }
+                        .badge-analytics .primary-badge-icon { color: #38b2ac; }
+
+                        /* Badge Colored Borders (matching icon colors) */
+                        .badge-attendance { border-color: #4299e1 !important; }
+                        .badge-payroll { border-color: #48bb78 !important; }
+                        .badge-approval { border-color: #ed8936 !important; }
+                        .badge-pay-salary { border-color: #9f7aea !important; }
+                        .badge-government { border-color: #f56565 !important; }
+                        .badge-analytics { border-color: #38b2ac !important; }
+
+                        /* Badge Positioning (perfect circular symmetry - 60° apart) */
+                        /* Attendance - Top (12 o'clock position) */
+                        .badge-attendance {
+                            top: 0;
+                            left: 50%;
+                            margin-left: -70px; /* Half of badge width for perfect centering */
+                            animation: fadeIn 0.6s ease-out 0.2s both;
+                        }
+
+                        /* Payroll - Top Right (2 o'clock position) */
+                        .badge-payroll {
+                            top: 21.4%;
+                            right: 7.9%;
+                            animation: fadeIn 0.6s ease-out 0.4s both;
+                        }
+
+                        /* Approval - Bottom Right (4 o'clock position) */
+                        .badge-approval {
+                            bottom: 21.4%;
+                            right: 7.9%;
+                            animation: fadeIn 0.6s ease-out 0.6s both;
+                        }
+
+                        /* Pay Salary - Bottom (6 o'clock position) */
+                        .badge-pay-salary {
+                            bottom: 0;
+                            left: 50%;
+                            margin-left: -70px; /* Half of badge width for perfect centering */
+                            animation: fadeIn 0.6s ease-out 0.8s both;
+                        }
+
+                        /* Government Reports - Bottom Left (8 o'clock position) */
+                        .badge-government {
+                            bottom: 21.4%;
+                            left: 7.9%;
+                            animation: fadeIn 0.6s ease-out 1s both;
+                        }
+
+                        /* Analytics - Top Left (10 o'clock position) */
+                        .badge-analytics {
+                            top: 21.4%;
+                            left: 7.9%;
+                            animation: fadeIn 0.6s ease-out 1.2s both;
+                        }
+
+                        /* ==========================================
+                           SECONDARY BADGES (submenu items)
+                           ========================================== */
+                        .secondary-badges {
+                            position: absolute;
+                            top: -15%; /* Extend upward to cover attendance area */
+                            left: 0;
+                            width: 100%;
+                            height: 130%; /* Larger area to maintain hover */
+                            pointer-events: none;
+                            z-index: 150;
+                        }
+
+                        /* Enable pointer events for the attendance hover zone */
+                        .badge-attendance:hover ~ .secondary-badges,
+                        .secondary-badges:hover {
+                            pointer-events: auto;
+                        }
+
+                        .secondary-badge {
+                            position: absolute;
+                            width: 100px;
+                            height: 100px;
+                            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+                            border-radius: 50%;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            box-shadow: 0 10px 40px rgba(66, 153, 225, 0.3);
+                            cursor: pointer;
+                            /* Secondary badges should be visible by default */
+                            opacity: 1;
+                            transform: scale(1);
+                            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                            pointer-events: auto;
+                            border: 3px solid #fff;
+                        }
+
+                        .secondary-badge.show {
+                            opacity: 1;
+                            transform: scale(1);
+                            pointer-events: auto;
+                        }
+
+                        .secondary-badge:hover {
+                            transform: scale(1.15);
+                            box-shadow: 0 15px 50px rgba(66, 153, 225, 0.4);
+                        }
+
+                        .secondary-badge-icon {
+                            font-size: 32px;
+                            color: #fff;
+                            margin-bottom: 4px;
+                        }
+
+                        .secondary-badge-text {
+                            font-size: 11px;
+                            font-weight: 600;
+                            color: #fff;
+                            text-align: center;
+                        }
+
+                        @media (max-width: 768px) {
+                            .secondary-badge {
+                                width: 75px;
+                                height: 75px;
+                            }
+                            .secondary-badge-icon {
+                                font-size: 24px;
+                            }
+                            .secondary-badge-text {
+                                font-size: 9px;
+                            }
+                        }
+
+                        /* Secondary badge positioning for Attendance submenu
+                           Pulled closer to center to avoid clipping */
+                        .secondary-overtime {
+                            top: 10%;
+                            left: 20%;
+                        }
+
+                        .secondary-shift {
+                            top: 5%;
+                            left: 50%;
+                            transform: translateX(-50%) scale(1);
+                        }
+
+                        .secondary-timesheet {
+                            top: 10%;
+                            right: 20%;
+                        }
+
+                        /* ==========================================
+                           ANIMATIONS
+                           ========================================== */
+                        @keyframes fadeIn {
+                            from {
+                                opacity: 0;
+                                transform: scale(0.5);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: scale(1);
+                            }
+                        }
+
+                        @keyframes fadeInDown {
+                            from {
+                                opacity: 0;
+                                transform: translateX(-50%) translateY(-20px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateX(-50%) translateY(0);
+                            }
+                        }
+
+                        @keyframes pulse {
+                            0%, 100% {
+                                box-shadow: 0 20px 60px rgba(38, 74, 106, 0.3),
+                                           0 8px 16px rgba(0, 0, 0, 0.1);
+                            }
+                            50% {
+                                box-shadow: 0 25px 70px rgba(38, 74, 106, 0.4),
+                                           0 12px 24px rgba(0, 0, 0, 0.12);
+                            }
+                        }
+
+                        /* ==========================================
+                           UTILITY CLASSES
+                           ========================================== */
+                        .hidden {
+                            display: none !important;
+                        }
+
+                        /* Prevent text selection during interactions */
+                        .circular-workflow * {
+                            user-select: none;
+                            -webkit-user-select: none;
+                            -moz-user-select: none;
+                        }
+
+                        /* ==========================================
+                           PURE CSS HOVER INTERACTIONS
+                           ========================================== */
+
+                        /* Show secondary badges when hovering anywhere in workflow */
+                        .circular-workflow:hover .secondary-badges .secondary-badge {
+                            opacity: 1;
+                            transform: scale(1);
+                            pointer-events: auto;
+                        }
+
+                        .circular-workflow:hover .secondary-badges .secondary-shift {
+                            transform: translateX(-50%) scale(1);
+                        }
+
+                        /* Hide secondary badges ONLY when hovering over specific primary badges or center */
+                        .circular-workflow:has(.badge-payroll:hover) .secondary-badges .secondary-badge,
+                        .circular-workflow:has(.badge-approval:hover) .secondary-badges .secondary-badge,
+                        .circular-workflow:has(.badge-pay-salary:hover) .secondary-badges .secondary-badge,
+                        .circular-workflow:has(.badge-government:hover) .secondary-badges .secondary-badge,
+                        .circular-workflow:has(.badge-analytics:hover) .secondary-badges .secondary-badge,
+                        .circular-workflow:has(.center-badge:hover) .secondary-badges .secondary-badge {
+                            opacity: 0 !important;
+                            transform: scale(0) !important;
+                            pointer-events: none !important;
+                        }
+
+                        .circular-workflow:has(.badge-payroll:hover) .secondary-badges .secondary-shift,
+                        .circular-workflow:has(.badge-approval:hover) .secondary-badges .secondary-shift,
+                        .circular-workflow:has(.badge-pay-salary:hover) .secondary-badges .secondary-shift,
+                        .circular-workflow:has(.badge-government:hover) .secondary-badges .secondary-shift,
+                        .circular-workflow:has(.badge-analytics:hover) .secondary-badges .secondary-shift,
+                        .circular-workflow:has(.center-badge:hover) .secondary-badges .secondary-shift {
+                            transform: translateX(-50%) scale(0) !important;
+                        }
+
+                        /* When hovering over attendance or secondary badges, shrink other primary badges */
+                        .circular-workflow:has(.badge-attendance:hover) .badge-payroll,
+                        .circular-workflow:has(.badge-attendance:hover) .badge-approval,
+                        .circular-workflow:has(.badge-attendance:hover) .badge-pay-salary,
+                        .circular-workflow:has(.badge-attendance:hover) .badge-government,
+                        .circular-workflow:has(.badge-attendance:hover) .badge-analytics,
+                        .circular-workflow:has(.secondary-badges:hover) .badge-payroll,
+                        .circular-workflow:has(.secondary-badges:hover) .badge-approval,
+                        .circular-workflow:has(.secondary-badges:hover) .badge-pay-salary,
+                        .circular-workflow:has(.secondary-badges:hover) .badge-government,
+                        .circular-workflow:has(.secondary-badges:hover) .badge-analytics {
+                            transform: scale(0.7) !important;
+                            opacity: 0.5;
+                        }
+
+                        /* Shrink employee center badge when hovering on attendance or secondary badges */
+                        .circular-workflow:has(.badge-attendance:hover) .center-badge,
+                        .circular-workflow:has(.secondary-badges:hover) .center-badge {
+                            transform: translate(-50%, -50%) scale(0.75);
+                            opacity: 0.6;
+                        }
+
+                        /* Staggered animation delays for secondary badges */
+                        .badge-attendance:hover ~ .secondary-badges .secondary-overtime,
+                        .secondary-badges:hover .secondary-overtime {
+                            transition-delay: 0.1s;
+                        }
+
+                        .badge-attendance:hover ~ .secondary-badges .secondary-shift,
+                        .secondary-badges:hover .secondary-shift {
+                            transition-delay: 0.2s;
+                        }
+
+                        .badge-attendance:hover ~ .secondary-badges .secondary-timesheet,
+                        .secondary-badges:hover .secondary-timesheet {
+                            transition-delay: 0.3s;
+                        }
+
+                        /* ==========================================
+                           FLOW ARROWS (Clockwise Direction)
+                           ========================================== */
+                        .flow-arrows {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            pointer-events: none;
+                            z-index: 1;
+                        }
+
+                        .flow-arrows svg {
+                            width: 100%;
+                            height: 100%;
+                        }
+
+                        .flow-arrow {
+                            fill: none;
+                            stroke: #264A6A;
+                            stroke-width: 2;
+                            stroke-linecap: round;
+                            opacity: 0.6;
+                            transition: opacity 0.3s ease;
+                        }
+
+                        .circular-workflow:hover .flow-arrow {
+                            opacity: 0.8;
+                        }
+                    </style>
+
+                    <!-- Main Container -->
+                    <div class="hr-flow-container">
+                        <!-- Circular Workflow Layout -->
+                        <div class="circular-workflow">
+
+                            <!-- Flow Arrows (Clockwise Direction) -->
+                            <div class="flow-arrows">
+                                <svg viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <!-- Arrow marker for path ends -->
+                                        <marker id="arrowhead" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto">
+                                            <polygon points="0 0, 6 2.5, 0 5" fill="#264A6A"/>
+                                        </marker>
+                                    </defs>
+
+                                    <!-- Attendance (350,70) to Payroll (570,220) - Half length, centered -->
+                                    <path class="flow-arrow"
+                                          d="M 410,120 Q 490,145 510,175"
+                                          marker-end="url(#arrowhead)"/>
+
+                                    <!-- Payroll (570,220) to Approval (570,480) - Half length, centered -->
+                                    <path class="flow-arrow"
+                                          d="M 570,285 Q 590,350 570,415"
+                                          marker-end="url(#arrowhead)"/>
+
+                                    <!-- Approval (570,480) to Pay Salary (350,630) - Half length, centered -->
+                                    <path class="flow-arrow"
+                                          d="M 510,525 Q 490,555 410,580"
+                                          marker-end="url(#arrowhead)"/>
+
+                                    <!-- Pay Salary (350,630) to Government (130,480) - Half length, centered -->
+                                    <path class="flow-arrow"
+                                          d="M 290,580 Q 210,555 190,525"
+                                          marker-end="url(#arrowhead)"/>
+
+                                    <!-- Government (130,480) to Analytics (130,220) - Half length, centered -->
+                                    <path class="flow-arrow"
+                                          d="M 130,415 Q 110,350 130,285"
+                                          marker-end="url(#arrowhead)"/>
+
+                                    <!-- Analytics (130,220) to Attendance (350,70) - Half length, centered -->
+                                    <path class="flow-arrow"
+                                          d="M 190,175 Q 210,145 290,120"
+                                          marker-end="url(#arrowhead)"/>
+                                </svg>
+                            </div>
+
+                            <!-- CENTER: Employee Badge -->
+                            <button name="action_open_employee"
+                                    type="object"
+                                    class="center-badge">
+                                <i class="fa fa-users center-badge-icon"/>
+                                <span class="center-badge-text">Employee</span>
+                            </button>
+
+                            <!-- PRIMARY LEVEL: 6 Badges in Circle -->
+
+                            <!-- 1. Attendance (Top) -->
+                            <button name="action_open_attendance"
+                                    type="object"
+                                    class="primary-badge badge-attendance">
+                                <i class="fa fa-clock-o primary-badge-icon"/>
+                                <span class="primary-badge-text">Attendance</span>
+                            </button>
+
+                            <!-- 2. Payroll (Right Top) -->
+                            <button name="action_open_payroll"
+                                    type="object"
+                                    class="primary-badge badge-payroll">
+                                <i class="fa fa-calculator primary-badge-icon"/>
+                                <span class="primary-badge-text">Payroll</span>
+                            </button>
+
+                            <!-- 3. Approval (Right Bottom) -->
+                            <button name="action_open_approval"
+                                    type="object"
+                                    class="primary-badge badge-approval">
+                                <i class="fa fa-check-circle primary-badge-icon"/>
+                                <span class="primary-badge-text">Approval</span>
+                            </button>
+
+                            <!-- 4. Pay Salary (Bottom) -->
+                            <button name="action_open_pay_salary"
+                                    type="object"
+                                    class="primary-badge badge-pay-salary">
+                                <i class="fa fa-money primary-badge-icon"/>
+                                <span class="primary-badge-text">Pay Salary</span>
+                            </button>
+
+                            <!-- 5. Government Reports (Left Bottom) -->
+                            <button name="action_open_government_reports"
+                                    type="object"
+                                    class="primary-badge badge-government">
+                                <i class="fa fa-file-text primary-badge-icon"/>
+                                <span class="primary-badge-text">Government<br/>Reports</span>
+                            </button>
+
+                            <!-- 6. Analytics (Left Top) -->
+                            <button name="action_open_analytics"
+                                    type="object"
+                                    class="primary-badge badge-analytics">
+                                <i class="fa fa-line-chart primary-badge-icon"/>
+                                <span class="primary-badge-text">Analytics</span>
+                            </button>
+
+                            <!-- SECONDARY LEVEL: Attendance Submenu (appears on hover) -->
+                            <div class="secondary-badges">
+                                <!-- Overtime -->
+                                <button name="action_open_overtime"
+                                        type="object"
+                                        class="secondary-badge secondary-overtime">
+                                    <i class="fa fa-hourglass-end secondary-badge-icon"/>
+                                    <span class="secondary-badge-text">Overtime</span>
+                                </button>
+
+                                <!-- Shift -->
+                                <button name="action_open_shift"
+                                        type="object"
+                                        class="secondary-badge secondary-shift">
+                                    <i class="fa fa-calendar secondary-badge-icon"/>
+                                    <span class="secondary-badge-text">Shift</span>
+                                </button>
+
+                                <!-- Timesheet -->
+                                <button name="action_open_timesheet"
+                                        type="object"
+                                        class="secondary-badge secondary-timesheet">
+                                    <i class="fa fa-table secondary-badge-icon"/>
+                                    <span class="secondary-badge-text">Timesheet</span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open HR Flow Dashboard -->
+    <record id="action_hr_flow_wizard" model="ir.actions.act_window">
+        <field name="name">HR Workflow Flow</field>
+        <field name="res_model">hr.flow.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_hr_flow_wizard_form"/>
+        <field name="target">current</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+</odoo>
