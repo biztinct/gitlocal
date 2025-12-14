@@ -2,28 +2,19 @@
 odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
     'use strict';
     const domReady = require('web.dom_ready');
+    const rpc = require('web.rpc');
+    const core = require('web.core');
 
     domReady(function () {
         console.log('[HR Flow] JS loaded');
 
-        // The dashboard is inside a form view; dom_ready can fire before the form is mounted.
-        // Retry a few times until the element is available.
-        let attempts = 0;
-        const maxAttempts = 40; // retry longer to cover slow renders/dialogs
-        const attemptDelay = 250;
-
-        const tryBind = () => {
+        const bindWorkflow = () => {
             const workflow = document.querySelector('.circular-workflow');
-            if (!workflow) {
-                attempts += 1;
-                if (attempts <= maxAttempts) {
-                    setTimeout(tryBind, attemptDelay);
-                } else {
-                    console.warn('[HR Flow] Workflow not found after retries');
-                }
+            if (!workflow || workflow.dataset.hrFlowBound) {
                 return;
             }
-            console.log('[HR Flow] Workflow found after', attempts, 'attempt(s)');
+            workflow.dataset.hrFlowBound = '1';
+            console.log('[HR Flow] Workflow found and bound');
 
             const secondary = workflow.querySelector('.secondary-badges');
             const nonAttendance = workflow.querySelectorAll('.primary-badge:not(.badge-attendance), .center-badge');
@@ -39,37 +30,37 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
 
             const tertiaryData = {
                 overtime: {
-                title: 'Overtime',
-                items: [
-                    { label: 'Request Overtime', icon: 'fa-send', desc: 'Submit overtime request', disabled: false },
-                    { label: 'Approve Overtime', icon: 'fa-check-square', desc: 'Manager approval queue', disabled: false },
-                    { label: 'Overtime Policy/Rules', icon: 'fa-balance-scale', desc: 'Configure rates and caps', disabled: false },
-                    { label: 'Overtime Schedules', icon: 'fa-calendar-plus-o', desc: 'Plan OT by date/shift', disabled: false },
-                    { label: 'Overtime Analytics', icon: 'fa-bar-chart', desc: 'Hours and costs overview', disabled: false },
-                    { label: 'Overtime Settings', icon: 'fa-cog', desc: 'Geofence/reasons & defaults', disabled: false },
-                ],
-            },
-            shift: {
-                title: 'Shift',
-                items: [
-                    { label: 'Shift Calendar', icon: 'fa-calendar', desc: 'Assign and manage shifts', disabled: false },
-                    { label: 'Shift Templates', icon: 'fa-clone', desc: 'Reusable shift patterns', disabled: false },
-                    { label: 'Shift Swap/Requests', icon: 'fa-exchange', desc: 'Employee swap/change requests', disabled: false },
-                    { label: 'Shift Compliance', icon: 'fa-shield', desc: 'Conflicts and rest checks', disabled: false },
-                    { label: 'Shift Attendance', icon: 'fa-clock-o', desc: 'Attendance filtered by shift', disabled: false },
-                    { label: 'Shift Settings', icon: 'fa-sliders', desc: 'Locations, geofence, reasons', disabled: false },
-                ],
-            },
-            timesheet: {
-                title: 'Timesheet',
-                items: [
-                    { label: 'My Timesheets', icon: 'fa-table', desc: 'Enter and submit hours', disabled: false },
-                    { label: 'Timesheet Approvals', icon: 'fa-check', desc: 'Manager validation queue', disabled: false },
-                    { label: 'Timesheet Reports', icon: 'fa-area-chart', desc: 'Pivot/list by employee', disabled: false },
-                    { label: 'Timesheet Settings', icon: 'fa-cog', desc: 'Period locks and rules', disabled: false },
-                ],
-            },
-        };
+                    title: 'Overtime',
+                    items: [
+                        { label: 'Request Overtime', icon: 'fa-send', desc: 'Submit overtime request', disabled: false, route: 'overtime-request' },
+                        { label: 'Approve Overtime', icon: 'fa-check-square', desc: 'Manager approval queue', disabled: false, route: 'overtime-approve' },
+                        { label: 'Overtime Policy/Rules', icon: 'fa-balance-scale', desc: 'Configure rates and caps', disabled: false, route: 'overtime-rules' },
+                        { label: 'Overtime Schedules', icon: 'fa-calendar-plus-o', desc: 'Plan OT by date/shift', disabled: false, route: 'overtime-schedules' },
+                        { label: 'Overtime Analytics', icon: 'fa-bar-chart', desc: 'Hours and costs overview', disabled: false, route: 'overtime-analytics' },
+                        { label: 'Overtime Settings', icon: 'fa-cog', desc: 'Geofence/reasons & defaults', disabled: false, route: 'overtime-settings' },
+                    ],
+                },
+                shift: {
+                    title: 'Shift',
+                    items: [
+                        { label: 'Shift Calendar', icon: 'fa-calendar', desc: 'Assign and manage shifts', disabled: false, route: 'shift-calendar' },
+                        { label: 'Shift Templates', icon: 'fa-clone', desc: 'Reusable shift patterns', disabled: false, route: 'shift-templates' },
+                        { label: 'Shift Swap/Requests', icon: 'fa-exchange', desc: 'Employee swap/change requests', disabled: false, route: 'shift-swap' },
+                        { label: 'Shift Compliance', icon: 'fa-shield', desc: 'Conflicts and rest checks', disabled: false, route: 'shift-compliance' },
+                        { label: 'Shift Attendance', icon: 'fa-clock-o', desc: 'Attendance filtered by shift', disabled: false, route: 'shift-attendance' },
+                        { label: 'Shift Settings', icon: 'fa-sliders', desc: 'Locations, geofence, reasons', disabled: false, route: 'shift-settings' },
+                    ],
+                },
+                timesheet: {
+                    title: 'Timesheet',
+                    items: [
+                        { label: 'My Timesheets', icon: 'fa-table', desc: 'Enter and submit hours', disabled: false, route: 'timesheet-mine' },
+                        { label: 'Timesheet Approvals', icon: 'fa-check', desc: 'Manager validation queue', disabled: false, route: 'timesheet-approvals' },
+                        { label: 'Timesheet Reports', icon: 'fa-area-chart', desc: 'Pivot/list by employee', disabled: false, route: 'timesheet-reports' },
+                        { label: 'Timesheet Settings', icon: 'fa-cog', desc: 'Period locks and rules', disabled: false, route: 'timesheet-settings' },
+                    ],
+                },
+            };
 
         const openPanel = (key) => {
             if (!panel) return;
@@ -85,6 +76,26 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     '<p class="tertiary-card-desc">' + item.desc + '</p>';
                 if (item.disabled) {
                     card.title = 'Access required';
+                } else if (item.route) {
+                    card.addEventListener('click', function () {
+                        rpc.query({
+                            model: 'hr.flow.wizard',
+                            method: 'get_tertiary_action',
+                            args: [item.route],
+                        }).then((action) => {
+                            if (action && action.type) {
+                                // Open full screen (target provided by server)
+                                core.bus.trigger('do-action', { action: action });
+                                closePanel();
+                            } else {
+                                console.warn('[HR Flow] No action resolved for', item.route);
+                            }
+                        }).catch((err) => {
+                            console.error('[HR Flow] Failed to resolve action', item.route, err);
+                        });
+                    });
+                    card.style.cursor = 'pointer';
+                    card.title = 'Open';
                 }
                 panelItems.appendChild(card);
             });
@@ -107,6 +118,8 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 }
             });
         }
+
+        // no details button anymore
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closePanel();
@@ -146,6 +159,11 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
         workflow.addEventListener('mouseleave', showSecondary);
         };
 
-        tryBind();
+        // Initial bind
+        bindWorkflow();
+
+        // Rebind if the form is re-rendered (e.g., returning via breadcrumbs)
+        const observer = new MutationObserver(() => bindWorkflow());
+        observer.observe(document.body, { childList: true, subtree: true });
     });
 });
