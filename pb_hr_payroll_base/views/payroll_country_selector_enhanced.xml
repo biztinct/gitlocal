@@ -227,6 +227,14 @@
                         line-height: 1.5;
                     }
 
+                    /* Action Buttons Container */
+                    .country-action-buttons {
+                        display: flex;
+                        gap: 10px;
+                        justify-content: center;
+                        flex-wrap: wrap;
+                    }
+
                     /* Action Button */
                     .country-action-btn {
                         background: linear-gradient(135deg, #667eea, #764ba2);
@@ -241,12 +249,38 @@
                         text-transform: uppercase;
                         letter-spacing: 1px;
                         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                        flex: 1;
+                        min-width: 120px;
                     }
 
                     .country-action-btn:hover {
                         transform: translateY(-2px);
                         box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
                         background: linear-gradient(135deg, #5a67d8, #6b46c1);
+                    }
+
+                    /* Flow Button - Modern Gradient */
+                    .country-flow-btn {
+                        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 25px;
+                        font-size: 1rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+                        flex: 1;
+                        min-width: 120px;
+                    }
+
+                    .country-flow-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 25px rgba(17, 153, 142, 0.4);
+                        background: linear-gradient(135deg, #0e7c6f, #2ec96a);
                     }
 
                     /* No access button styling - looks disabled but still clickable */
@@ -477,10 +511,15 @@
                                         </strong>
                                     </div>
                                 </div>
-                                
-                                <button class="country-action-btn" t-att-onclick="'navigateToCountry(\'' + dashboard['country'] + '\')'">
-                                    Access Dashboard
-                                </button>
+
+                                <div class="country-action-buttons">
+                                    <button class="country-action-btn" t-att-onclick="'navigateToCountry(\'' + dashboard['country'] + '\')'">
+                                        Access Dashboard
+                                    </button>
+                                    <button class="country-flow-btn" onclick="navigateToFlow()">
+                                        Flow
+                                    </button>
+                                </div>
                             </div>
                         </t>
                     </div>
@@ -534,7 +573,7 @@
                     function navigateToCountry(countryCode) {
                         const loadingOverlay = document.querySelector('.loading-overlay');
                         loadingOverlay.classList.add('active');
-                        
+
                         // Simulate navigation with loading
                         setTimeout(() => {
                             let url;
@@ -562,6 +601,20 @@
                             }
                             window.location.href = url;
                         }, 1500);
+                    }
+
+                    function navigateToFlow() {
+                        const loadingOverlay = document.querySelector('.loading-overlay');
+                        const loadingText = document.querySelector('.loading-text');
+
+                        // Update loading text
+                        loadingText.textContent = 'Opening HR Workflow Flow...';
+                        loadingOverlay.classList.add('active');
+
+                        // Navigate to Flow dashboard
+                        setTimeout(() => {
+                            window.location.href = '/web#action=pb_hr_flow.action_hr_flow_wizard';
+                        }, 1200);
                     }
 
                     function requestAccess(countryCode) {

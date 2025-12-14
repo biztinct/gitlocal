@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_flow_wizard_user,hr.flow.wizard.user,model_hr_flow_wizard,om_hr_payroll.group_hr_payroll_user,1,1,1,1
+access_hr_flow_wizard_manager,hr.flow.wizard.manager,model_hr_flow_wizard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
