@@ -38,7 +38,11 @@ Technical Features:
         'views/hr_flow_views.xml',
         'views/menu_views.xml',
     ],
-    'assets': {},
+    'assets': {
+        'web.assets_backend': [
+            'pb_hr_flow/static/src/js/hr_flow_hover.js',
+        ],
+    },
     'demo': [],
     'installable': True,
     'application': False,

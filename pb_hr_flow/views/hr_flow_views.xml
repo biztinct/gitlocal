@@ -11,10 +11,15 @@
         <field name="model">hr.flow.wizard</field>
         <field name="priority">1</field>
         <field name="arch" type="xml">
-            <form string="HR Workflow Flow" create="false" edit="false" delete="false">
+            <form string="HR Workflow Flow" create="false" edit="false" delete="false" class="hr-flow-form">
                 <sheet>
                     <!-- Advanced CSS Styling with Animations -->
                     <style>
+                        /* Hide create button only for this dashboard */
+                        .hr-flow-form .o_form_view .o_control_panel .o_button_create {
+                            display: none !important;
+                        }
+
                         /* ==========================================
                            GLOBAL STYLES
                            ========================================== */
@@ -234,6 +239,7 @@
                             left: 50%;
                             margin-left: -70px; /* Half of badge width for perfect centering */
                             animation: fadeIn 0.6s ease-out 0.2s both;
+                            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
                         }
 
                         /* Payroll - Top Right (2 o'clock position) */
@@ -320,6 +326,17 @@
                         .secondary-badge:hover {
                             transform: scale(1.15);
                             box-shadow: 0 15px 50px rgba(66, 153, 225, 0.4);
+                        }
+
+                        /* JS-applied state to hide secondary badges immediately */
+                        .secondary-badges.hide-secondary .secondary-badge {
+                            opacity: 0 !important;
+                            transform: scale(0) !important;
+                            pointer-events: none !important;
+                        }
+
+                        .secondary-badges.hide-secondary .secondary-shift {
+                            transform: translateX(-50%) scale(0) !important;
                         }
 
                         .secondary-badge-icon {
@@ -409,6 +426,107 @@
                             display: none !important;
                         }
 
+                        /* ==========================================
+                           TERTIARY SLIDE-IN PANEL
+                           ========================================== */
+                        .tertiary-panel {
+                            position: fixed;
+                            top: 0;
+                            right: -420px;
+                            width: 420px;
+                            height: 100vh;
+                            background: #ffffff;
+                            box-shadow: -12px 0 30px rgba(0, 0, 0, 0.15);
+                            z-index: 9999;
+                            transition: right 0.35s ease, opacity 0.3s ease;
+                            opacity: 0;
+                            display: flex;
+                            flex-direction: column;
+                            padding: 24px;
+                            gap: 16px;
+                            border-left: 1px solid #e2e8f0;
+                        }
+
+                        .tertiary-panel.open {
+                            right: 0;
+                            opacity: 1;
+                        }
+
+                        .tertiary-panel-header {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            gap: 12px;
+                        }
+
+                        .tertiary-panel-title {
+                            font-size: 18px;
+                            font-weight: 700;
+                            color: #1f2937;
+                            margin: 0;
+                        }
+
+                        .tertiary-close {
+                            background: #f1f5f9;
+                            border: none;
+                            border-radius: 50%;
+                            width: 36px;
+                            height: 36px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            color: #475569;
+                        }
+
+                        .tertiary-items {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 12px;
+                        }
+
+                        .tertiary-card {
+                            border: 1px solid #e2e8f0;
+                            border-radius: 10px;
+                            padding: 12px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 6px;
+                            background: #fff;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                            min-height: 88px;
+                        }
+
+                        .tertiary-card:hover {
+                            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+                            transform: translateY(-2px);
+                        }
+
+                        .tertiary-card.is-disabled {
+                            opacity: 0.45;
+                            cursor: not-allowed;
+                            background: #f8fafc;
+                        }
+
+                        .tertiary-card-icon {
+                            font-size: 16px;
+                            color: #2563eb;
+                        }
+
+                        .tertiary-card-title {
+                            font-size: 14px;
+                            font-weight: 700;
+                            color: #111827;
+                            margin: 0;
+                        }
+
+                        .tertiary-card-desc {
+                            font-size: 12px;
+                            color: #4b5563;
+                            margin: 0;
+                        }
+
                         /* Prevent text selection during interactions */
                         .circular-workflow * {
                             user-select: none;
@@ -431,26 +549,7 @@
                             transform: translateX(-50%) scale(1);
                         }
 
-                        /* Hide secondary badges ONLY when hovering over specific primary badges or center */
-                        .circular-workflow:has(.badge-payroll:hover) .secondary-badges .secondary-badge,
-                        .circular-workflow:has(.badge-approval:hover) .secondary-badges .secondary-badge,
-                        .circular-workflow:has(.badge-pay-salary:hover) .secondary-badges .secondary-badge,
-                        .circular-workflow:has(.badge-government:hover) .secondary-badges .secondary-badge,
-                        .circular-workflow:has(.badge-analytics:hover) .secondary-badges .secondary-badge,
-                        .circular-workflow:has(.center-badge:hover) .secondary-badges .secondary-badge {
-                            opacity: 0 !important;
-                            transform: scale(0) !important;
-                            pointer-events: none !important;
-                        }
-
-                        .circular-workflow:has(.badge-payroll:hover) .secondary-badges .secondary-shift,
-                        .circular-workflow:has(.badge-approval:hover) .secondary-badges .secondary-shift,
-                        .circular-workflow:has(.badge-pay-salary:hover) .secondary-badges .secondary-shift,
-                        .circular-workflow:has(.badge-government:hover) .secondary-badges .secondary-shift,
-                        .circular-workflow:has(.badge-analytics:hover) .secondary-badges .secondary-shift,
-                        .circular-workflow:has(.center-badge:hover) .secondary-badges .secondary-shift {
-                            transform: translateX(-50%) scale(0) !important;
-                        }
+                        /* Hide secondary badges when hovering over non-attendance primary badges or center (handled via JS class for reliability) */
 
                         /* When hovering over attendance or secondary badges, shrink other primary badges */
                         .circular-workflow:has(.badge-attendance:hover) .badge-payroll,
@@ -573,7 +672,7 @@
                             <button name="action_open_employee"
                                     type="object"
                                     class="center-badge">
-                                <i class="fa fa-users center-badge-icon"/>
+                                <i class="fa fa-users center-badge-icon"></i>
                                 <span class="center-badge-text">Employee</span>
                             </button>
 
@@ -583,7 +682,7 @@
                             <button name="action_open_attendance"
                                     type="object"
                                     class="primary-badge badge-attendance">
-                                <i class="fa fa-clock-o primary-badge-icon"/>
+                                <i class="fa fa-clock-o primary-badge-icon"></i>
                                 <span class="primary-badge-text">Attendance</span>
                             </button>
 
@@ -591,7 +690,7 @@
                             <button name="action_open_payroll"
                                     type="object"
                                     class="primary-badge badge-payroll">
-                                <i class="fa fa-calculator primary-badge-icon"/>
+                                <i class="fa fa-calculator primary-badge-icon"></i>
                                 <span class="primary-badge-text">Payroll</span>
                             </button>
 
@@ -599,7 +698,7 @@
                             <button name="action_open_approval"
                                     type="object"
                                     class="primary-badge badge-approval">
-                                <i class="fa fa-check-circle primary-badge-icon"/>
+                                <i class="fa fa-check-circle primary-badge-icon"></i>
                                 <span class="primary-badge-text">Approval</span>
                             </button>
 
@@ -607,7 +706,7 @@
                             <button name="action_open_pay_salary"
                                     type="object"
                                     class="primary-badge badge-pay-salary">
-                                <i class="fa fa-money primary-badge-icon"/>
+                                <i class="fa fa-money primary-badge-icon"></i>
                                 <span class="primary-badge-text">Pay Salary</span>
                             </button>
 
@@ -615,7 +714,7 @@
                             <button name="action_open_government_reports"
                                     type="object"
                                     class="primary-badge badge-government">
-                                <i class="fa fa-file-text primary-badge-icon"/>
+                                <i class="fa fa-file-text primary-badge-icon"></i>
                                 <span class="primary-badge-text">Government<br/>Reports</span>
                             </button>
 
@@ -623,35 +722,49 @@
                             <button name="action_open_analytics"
                                     type="object"
                                     class="primary-badge badge-analytics">
-                                <i class="fa fa-line-chart primary-badge-icon"/>
+                                <i class="fa fa-line-chart primary-badge-icon"></i>
                                 <span class="primary-badge-text">Analytics</span>
                             </button>
 
                             <!-- SECONDARY LEVEL: Attendance Submenu (appears on hover) -->
                             <div class="secondary-badges">
                                 <!-- Overtime -->
-                                <button name="action_open_overtime"
-                                        type="object"
-                                        class="secondary-badge secondary-overtime">
-                                    <i class="fa fa-hourglass-end secondary-badge-icon"/>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="overtime"
+                                     class="secondary-badge secondary-overtime">
+                                    <i class="fa fa-hourglass-end secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Overtime</span>
-                                </button>
+                                </div>
 
                                 <!-- Shift -->
-                                <button name="action_open_shift"
-                                        type="object"
-                                        class="secondary-badge secondary-shift">
-                                    <i class="fa fa-calendar secondary-badge-icon"/>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="shift"
+                                     class="secondary-badge secondary-shift">
+                                    <i class="fa fa-calendar secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Shift</span>
-                                </button>
+                                </div>
 
                                 <!-- Timesheet -->
-                                <button name="action_open_timesheet"
-                                        type="object"
-                                        class="secondary-badge secondary-timesheet">
-                                    <i class="fa fa-table secondary-badge-icon"/>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="timesheet"
+                                     class="secondary-badge secondary-timesheet">
+                                    <i class="fa fa-table secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Timesheet</span>
-                                </button>
+                                </div>
+                            </div>
+
+                            <!-- Slide-in Tertiary Panel -->
+                            <div class="tertiary-panel hidden" id="tertiary-panel">
+                                <div class="tertiary-panel-header">
+                                    <h3 class="tertiary-panel-title" id="tertiary-panel-title">Quick Actions</h3>
+                                    <div class="tertiary-close" role="button" tabindex="0" id="tertiary-panel-close" aria-label="Close">
+                                        <i class="fa fa-times"></i>
+                                    </div>
+                                </div>
+                                <div class="tertiary-items" id="tertiary-items"></div>
                             </div>
 
                         </div>
@@ -668,7 +781,7 @@
         <field name="view_mode">form</field>
         <field name="view_id" ref="view_hr_flow_wizard_form"/>
         <field name="target">current</field>
-        <field name="context">{'create': False}</field>
+        <field name="context">{'create': False, 'no_create': True, 'no_create_edit': True}</field>
     </record>
 
 </odoo>
