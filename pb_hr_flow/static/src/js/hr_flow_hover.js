@@ -58,6 +58,13 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 government: !!secondaryGovt,
             });
 
+            // Hard-disable pointer events on the containers themselves (only badges should receive events)
+            secondaryAll.forEach((sec) => {
+                if (sec) {
+                    sec.style.pointerEvents = 'none';
+                }
+            });
+
             const tertiaryData = {
                 payroll: {
                     title: 'Payroll',
@@ -134,34 +141,34 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             const data = tertiaryData[key] || { title: 'Quick Actions', items: [] };
             panelTitle.textContent = data.title;
             panelItems.innerHTML = '';
-            data.items.forEach((item) => {
-                const card = document.createElement('div');
-                card.className = 'tertiary-card' + (item.disabled ? ' is-disabled' : '');
-                card.innerHTML =
-                    '<i class="fa ' + item.icon + ' tertiary-card-icon"></i>' +
-                    '<p class="tertiary-card-title">' + item.label + '</p>' +
-                    '<p class="tertiary-card-desc">' + item.desc + '</p>';
-                if (item.disabled) {
-                    card.title = 'Access required';
-                } else if (item.route) {
-                    card.addEventListener('click', function () {
-                        rpc.query({
-                            model: 'hr.flow.wizard',
-                            method: 'get_tertiary_action',
-                            args: [item.route],
-                        }).then((action) => {
-                            if (action && action.type) {
-                                // Open full screen (target provided by server)
-                                core.bus.trigger('do-action', action);
-                                closePanel();
-                            } else {
-                                console.warn('[HR Flow] No action resolved for', item.route);
-                            }
-                        }).catch((err) => {
-                            console.error('[HR Flow] Failed to resolve action', item.route, err);
+                data.items.forEach((item) => {
+                    const card = document.createElement('div');
+                    card.className = 'tertiary-card' + (item.disabled ? ' is-disabled' : '');
+                    card.innerHTML =
+                        '<i class="fa ' + item.icon + ' tertiary-card-icon"></i>' +
+                        '<p class="tertiary-card-title">' + item.label + '</p>' +
+                        '<p class="tertiary-card-desc">' + item.desc + '</p>';
+                    if (item.disabled) {
+                        card.title = 'Access required';
+                    } else if (item.route) {
+                        card.addEventListener('click', function () {
+                            rpc.query({
+                                model: 'hr.flow.wizard',
+                                method: 'get_tertiary_action',
+                                args: [item.route],
+                            }).then((action) => {
+                                if (action && action.type) {
+                                    // Open full screen (target provided by server)
+                                    core.bus.trigger('do-action', action);
+                                    closePanel();
+                                } else {
+                                    console.warn('[HR Flow] No action resolved for', item.route, action);
+                                }
+                            }).catch((err) => {
+                                console.error('[HR Flow] Failed to resolve action', item.route, err);
+                            });
                         });
-                    });
-                    card.style.cursor = 'pointer';
+                        card.style.cursor = 'pointer';
                     card.title = 'Open';
                 }
                 panelItems.appendChild(card);
@@ -254,6 +261,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 }
                 console.log('[HR Flow] Attendance secondary class AFTER', secondaryAttendance.className);
             });
+            console.log('[HR Flow] Attendance handler bound');
         }
 
         // 2. Payroll: Click to open tertiary panel directly
@@ -268,6 +276,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 hideAllSecondary();
                 openPanel('payroll');
             });
+            console.log('[HR Flow] Payroll handler bound');
         }
 
         // 3. Approval: Click to open approval dashboard (direct action, not tertiary panel)
@@ -288,12 +297,13 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (action && action.type) {
                         core.bus.trigger('do-action', action);
                     } else {
-                        console.warn('[HR Flow] No action resolved for approval-pending');
+                        console.warn('[HR Flow] No action resolved for approval-pending', action);
                     }
                 }).catch((err) => {
                     console.error('[HR Flow] Failed to resolve approval action', err);
                 });
             });
+            console.log('[HR Flow] Approval handler bound');
         }
 
         // 4. Pay Salary: Click to open tertiary panel directly
@@ -308,6 +318,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 hideAllSecondary();
                 openPanel('pay_salary');
             });
+            console.log('[HR Flow] Pay Salary handler bound');
         }
 
         // 5. Government: Click to open tertiary panel directly
@@ -322,6 +333,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 hideAllSecondary();
                 openPanel('govt');
             });
+            console.log('[HR Flow] Government handler bound');
         }
 
         // 6. Analytics: Click for direct action (if needed in future)

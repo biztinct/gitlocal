@@ -287,22 +287,8 @@
                             left: 0;
                             width: 100%;
                             height: 130%; /* Larger area to maintain hover */
-                            pointer-events: none;
+                            pointer-events: none; /* Always click-through; badges handle their own events */
                             z-index: 150;
-                        }
-
-                        /* Enable pointer events for the hover zone */
-                        .badge-attendance:hover ~ .secondary-badges-attendance,
-                        .secondary-badges-attendance:hover,
-                        .badge-payroll:hover ~ .secondary-badges-payroll,
-                        .secondary-badges-payroll:hover,
-                        .badge-approval:hover ~ .secondary-badges-approval,
-                        .secondary-badges-approval:hover,
-                        .badge-pay-salary:hover ~ .secondary-badges-pay-salary,
-                        .secondary-badges-pay-salary:hover,
-                        .badge-government:hover ~ .secondary-badges-govt,
-                        .secondary-badges-govt:hover {
-                            pointer-events: auto;
                         }
 
                         .secondary-badge {
@@ -347,7 +333,7 @@
                             pointer-events: none !important;
                         }
 
-                        /* Prevent hidden secondary containers from blocking clicks on primaries */
+                        /* Containers never capture clicks; only badges do */
                         .secondary-badges-attendance.hide-secondary,
                         .secondary-badges-payroll.hide-secondary,
                         .secondary-badges-approval.hide-secondary,
@@ -356,13 +342,12 @@
                             pointer-events: none !important;
                         }
 
-                        /* When visible, let the container receive events normally */
                         .secondary-badges-attendance:not(.hide-secondary),
                         .secondary-badges-payroll:not(.hide-secondary),
                         .secondary-badges-approval:not(.hide-secondary),
                         .secondary-badges-pay-salary:not(.hide-secondary),
                         .secondary-badges-govt:not(.hide-secondary) {
-                            pointer-events: auto;
+                            pointer-events: none;
                         }
 
                         .secondary-badges-attendance.hide-secondary .secondary-shift,
