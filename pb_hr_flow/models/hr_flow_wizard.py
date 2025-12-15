@@ -235,23 +235,22 @@ class HRFlowWizard(models.TransientModel):
         }
         action_xmlid, menu_xmlid = mapping.get(key, (False, False))
         if not action_xmlid:
-            return {'type': 'ir.actions.act_window_close'}
+            return {'type': 'ir.actions.act_window_close', 'context': {}}
 
         try:
             action = self.env['ir.actions.actions']._for_xml_id(action_xmlid)
         except Exception:
-            return {'type': 'ir.actions.act_window_close'}
+            return {'type': 'ir.actions.act_window_close', 'context': {}}
 
         # open full-screen so breadcrumbs and full controls show
         action['target'] = 'current'
+        action.setdefault('context', {})
 
         # Apply contextual defaults for special cases
         if key == 'payroll-draft-posted':
-            action.setdefault('context', {})
             action['context'] = dict(action['context'], search_default_draft=1, search_default_done=1)
         if key.startswith('govt-'):
             report_type = key.replace('govt-', '')
-            action.setdefault('context', {})
             action['context'] = dict(action['context'], default_report_type=report_type)
 
         # Resolve menu id if present
