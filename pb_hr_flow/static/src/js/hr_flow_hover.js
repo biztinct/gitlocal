@@ -8,6 +8,27 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
 
     domReady(function () {
         console.log('[HR Flow] JS loaded');
+        const STORAGE_KEY = 'hr_flow_state';
+
+        const loadState = () => {
+            try {
+                return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null');
+            } catch (e) {
+                console.warn('[HR Flow] Failed to load state', e);
+                return null;
+            }
+        };
+
+        const saveState = (primary, secondary, panelKey) => {
+            const payload = { primary: primary || null, secondary: secondary || null, panel: panelKey || null };
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            console.log('[HR Flow] State saved', payload);
+        };
+
+        const clearState = () => {
+            sessionStorage.removeItem(STORAGE_KEY);
+            console.log('[HR Flow] State cleared');
+        };
 
         const bindWorkflow = () => {
             let workflow = document.querySelector('.circular-workflow');
@@ -137,7 +158,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 },
             };
 
-        const openPanel = (key) => {
+        let isRestoring = false;
+
+        const openPanel = (key, ctx = {}) => {
             if (!panel) return;
             const data = tertiaryData[key] || { title: 'Quick Actions', items: [] };
             panelTitle.textContent = data.title;
@@ -154,6 +177,10 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     } else if (item.route) {
                         card.addEventListener('click', function () {
                             console.log('[HR Flow] Tertiary card click -> route', item.route);
+                            // Persist state so breadcrumb return restores this panel/secondary
+                            if (!isRestoring) {
+                                saveState(ctx.primary || key, ctx.secondary || item.route, key);
+                            }
                             rpc.query({
                                 model: 'hr.flow.wizard',
                                 method: 'get_tertiary_action',
@@ -181,20 +208,26 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             });
             panel.classList.remove('hidden');
             panel.classList.add('open');
-            console.log('[HR Flow] Panel opened for', key);
+            if (!isRestoring) {
+                saveState(ctx.primary || key, ctx.secondary || null, key);
+            }
+            console.log('[HR Flow] Panel opened for', key, 'ctx', ctx);
         };
 
-        const closePanel = () => {
+        const closePanel = (doClear = false) => {
             if (!panel) return;
             panel.classList.remove('open');
             panel.classList.add('hidden');
+            if (doClear) {
+                clearState();
+            }
         };
 
         if (panelClose) {
-            panelClose.addEventListener('click', closePanel);
+            panelClose.addEventListener('click', () => closePanel(true));
             panelClose.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                    closePanel();
+                    closePanel(true);
                 }
             });
         }
@@ -202,7 +235,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
         // no details button anymore
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closePanel();
+            if (e.key === 'Escape') closePanel(true);
         });
 
         workflow.querySelectorAll('[data-tertiary]').forEach((el) => {
@@ -225,9 +258,12 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             });
         });
 
-        const hideAllSecondary = () => {
+        const hideAllSecondary = (alsoClear = false) => {
             console.log('[HR Flow] Hiding all secondary rings');
             secondaryAll.forEach((sec) => sec && sec.classList.add('hide-secondary'));
+            if (alsoClear) {
+                closePanel(true);
+            }
         };
         const showSecondary = (sec) => {
             if (sec) sec.classList.remove('hide-secondary');
@@ -260,10 +296,10 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 }
                 console.log('[HR Flow] Attendance secondary class BEFORE', secondaryAttendance.className);
                 if (secondaryAttendance.classList.contains('hide-secondary')) {
-                    hideAllSecondary();
+                    hideAllSecondary(true);
                     showSecondary(secondaryAttendance);
                 } else {
-                    hideAllSecondary();
+                    hideAllSecondary(true);
                 }
                 console.log('[HR Flow] Attendance secondary class AFTER', secondaryAttendance.className);
             });
@@ -279,8 +315,8 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     e.stopImmediatePropagation();
                 }
                 console.log('[HR Flow] Payroll clicked - opening tertiary panel');
-                hideAllSecondary();
-                openPanel('payroll');
+                hideAllSecondary(true);
+                openPanel('payroll', { primary: 'payroll' });
             });
             console.log('[HR Flow] Payroll handler bound');
         }
@@ -294,7 +330,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     e.stopImmediatePropagation();
                 }
                 console.log('[HR Flow] Approval clicked - opening approval dashboard');
-                hideAllSecondary();
+                hideAllSecondary(true);
                 rpc.query({
                     model: 'hr.flow.wizard',
                     method: 'get_tertiary_action',
@@ -306,6 +342,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         const payload = { action: action, options: {} };
                         console.log('[HR Flow] Triggering approval do-action payload', payload);
                         core.bus.trigger('do-action', payload);
+                        saveState('approval', null, null);
                     } else {
                         console.warn('[HR Flow] No action resolved for approval-pending', action);
                     }
@@ -325,8 +362,8 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     e.stopImmediatePropagation();
                 }
                 console.log('[HR Flow] Pay Salary clicked - opening tertiary panel');
-                hideAllSecondary();
-                openPanel('pay_salary');
+                hideAllSecondary(true);
+                openPanel('pay_salary', { primary: 'pay_salary' });
             });
             console.log('[HR Flow] Pay Salary handler bound');
         }
@@ -340,8 +377,8 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     e.stopImmediatePropagation();
                 }
                 console.log('[HR Flow] Government clicked - opening tertiary panel');
-                hideAllSecondary();
-                openPanel('govt');
+                hideAllSecondary(true);
+                openPanel('govt', { primary: 'govt' });
             });
             console.log('[HR Flow] Government handler bound');
         }
@@ -354,6 +391,27 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
         //         // Direct action logic here
         //     });
         // }
+
+        // Restore last state if any (runs after handlers are bound so helpers are in scope)
+        const restoreState = () => {
+            const state = loadState();
+            if (!state || (!state.primary && !state.panel)) {
+                return;
+            }
+            console.log('[HR Flow] Restoring state', state);
+            isRestoring = true;
+            hideAllSecondary();
+            if (state.primary === 'attendance' && secondaryAttendance) {
+                showSecondary(secondaryAttendance);
+                if (state.panel) {
+                    openPanel(state.panel, { primary: 'attendance', secondary: state.secondary || state.panel });
+                }
+            } else if (state.panel) {
+                openPanel(state.panel, { primary: state.primary, secondary: state.secondary });
+            }
+            isRestoring = false;
+        };
+        restoreState();
         };
 
         // Initial bind
