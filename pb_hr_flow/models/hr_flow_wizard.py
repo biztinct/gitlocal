@@ -189,7 +189,7 @@ class HRFlowWizard(models.TransientModel):
                                    'hr_attendance.menu_hr_attendance_attendances_overview'),
             'overtime-settings': ('hr_attendance.action_hr_attendance_settings',
                                   'hr_attendance.menu_hr_attendance_settings'),
-            # Shift
+            # Shift - Shift Calendar uses resource.action_resource_calendar_form
             'shift-calendar': ('resource.action_resource_calendar_form',
                                'hr_employee_shift.menu_shift'),
             'shift-templates': ('resource.action_resource_calendar_form',
@@ -211,31 +211,38 @@ class HRFlowWizard(models.TransientModel):
                                   'hr_timesheet.menu_hr_time_tracking'),
             'timesheet-settings': ('hr_timesheet.act_hr_timesheet_line',
                                    'hr_timesheet.menu_hr_time_tracking'),
-            # Payroll
-            'payroll-connector': ('pb_hr_payroll_formula.action_integration_connector', False),
-            'payroll-config': ('pb_hr_payroll_formula.action_formula_config', False),
+            # Payroll - Updated with correct kanban actions
+            'payroll-connector': ('pb_hr_payroll_formula.action_integration_connector_kanban', False),
+            'payroll-config': ('pb_hr_payroll_formula.action_formula_config_kanban', False),
             'payroll-test': ('pb_hr_payroll_formula.action_sample_data', False),
             'payroll-batch': ('pb_hr_payroll_formula.action_payroll_import_batch', False),
             'payroll-payslip': ('om_hr_payroll.action_view_hr_payslip_form', False),
             'payroll-draft-posted': ('om_hr_payroll.action_view_hr_payslip_form', False),
-            # Approval (reuse analytics approval dashboard)
-            'approval-pending': ('payroll_analytics_approval.action_payroll_analytics_dashboard', False),
-            'approval-history': ('payroll_analytics_approval.action_payroll_analytics_dashboard', False),
-            'approval-rules': ('payroll_analytics_approval.action_payroll_analytics_dashboard', False),
-            # Pay Salary
-            'pay-salary-bank': ('om_hr_payroll_account.action_hr_payslip_run', False),
+            # Approval - Updated to use Approval Queue action
+            'approval-pending': ('payroll_analytics_approval.action_payroll_approval_queue', False),
+            'approval-history': ('payroll_analytics_approval.action_payroll_approval_queue', False),
+            'approval-rules': ('payroll_analytics_approval.action_payroll_approval_queue', False),
+            # Pay Salary - Bank Export uses wizard action
+            'pay-salary-bank': ('payroll_analytics_approval.action_payroll_bank_export_wizard', False),
             'pay-salary-payments': ('account.action_account_payments', False),
             'pay-salary-journals': ('account.action_move_journal_line', False),
-            # Government reports (xlsx)
-            'govt-bhxh630': ('pb_hr_govt.action_pb_govt_report_wizard', False),
-            'govt-bhxhdstk01': ('pb_hr_govt.action_pb_govt_report_wizard', False),
-            'govt-d01': ('pb_hr_govt.action_pb_govt_report_wizard', False),
-            'govt-tang': ('pb_hr_govt.action_pb_govt_report_wizard', False),
-            'govt-giam': ('pb_hr_govt.action_pb_govt_report_wizard', False),
+            # Government reports - Handled separately via _get_govt_report_action
+            'govt-bhxh630': ('_govt_report', 'bhxh630'),
+            'govt-bhxhdstk01': ('_govt_report', 'bhxhdstk01'),
+            'govt-d01': ('_govt_report', 'd01'),
+            'govt-tang': ('_govt_report', 'tang_ld'),
+            'govt-giam': ('_govt_report', 'giam_ld'),
+            # Analytics - Uses server action to prepare dashboard
+            'analytics-dashboard': ('pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard', False),
         }
+
         action_xmlid, menu_xmlid = mapping.get(key, (False, False))
         if not action_xmlid:
             return {'type': 'ir.actions.act_window_close', 'context': {}}
+
+        # Handle government reports specially - open the selector wizard
+        if action_xmlid == '_govt_report':
+            return self._get_govt_report_action(menu_xmlid)
 
         try:
             action = self.env['ir.actions.actions']._for_xml_id(action_xmlid)
@@ -249,9 +256,6 @@ class HRFlowWizard(models.TransientModel):
         # Apply contextual defaults for special cases
         if key == 'payroll-draft-posted':
             action['context'] = dict(action['context'], search_default_draft=1, search_default_done=1)
-        if key.startswith('govt-'):
-            report_type = key.replace('govt-', '')
-            action['context'] = dict(action['context'], default_report_type=report_type)
 
         # Resolve menu id if present
         if menu_xmlid:
@@ -259,6 +263,101 @@ class HRFlowWizard(models.TransientModel):
             if menu:
                 action['menu_id'] = menu.id
         return action
+
+    @api.model
+    def _get_govt_report_action(self, report_type):
+        """
+        Return action to directly open the government report wizard.
+        The report_type determines which report will be pre-selected.
+        Skips the selector dashboard and opens the report wizard directly.
+        """
+        try:
+            view_id = self.env.ref('pb_hr_govt.view_pb_govt_report_wizard_form').id
+        except Exception:
+            view_id = False
+
+        return {
+            'name': _('Vietnam Government XLS Reports'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'pb.govt.report.wizard',
+            'view_mode': 'form',
+            'views': [(view_id, 'form')],
+            'target': 'new',
+            'context': {
+                'default_report_type': report_type,
+            },
+        }
+
+    def action_open_approval_dashboard(self):
+        """Open the payroll approval queue dashboard"""
+        self.ensure_one()
+        try:
+            action = self.env['ir.actions.actions']._for_xml_id(
+                'payroll_analytics_approval.action_payroll_approval_queue'
+            )
+            action['target'] = 'current'
+            return action
+        except Exception:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Approval Dashboard'),
+                    'message': _('Approval module not installed or configured'),
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+    def action_open_bank_export(self):
+        """Open the bank export wizard"""
+        self.ensure_one()
+        try:
+            action = self.env['ir.actions.actions']._for_xml_id(
+                'payroll_analytics_approval.action_payroll_bank_export_wizard'
+            )
+            action['target'] = 'new'
+            return action
+        except Exception:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Bank Export'),
+                    'message': _('Bank export module not installed or configured'),
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+    def action_open_analytics_dashboard(self):
+        """Open the HR Analytics Dashboard"""
+        self.ensure_one()
+        try:
+            # Use server action to ensure dashboard record exists
+            action = self.env['ir.actions.actions']._for_xml_id(
+                'pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard'
+            )
+            return action
+        except Exception:
+            # Fallback - try direct window action
+            try:
+                action = self.env['ir.actions.actions']._for_xml_id(
+                    'pb_hr_payroll_analytics.action_open_hr_analytics_dashboard'
+                )
+                action['target'] = 'current'
+                return action
+            except Exception:
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('Analytics Dashboard'),
+                        'message': _('Analytics module not installed or configured'),
+                        'type': 'warning',
+                        'sticky': False,
+                    }
+                }
 
     # ==========================================
     # Defaults / helpers

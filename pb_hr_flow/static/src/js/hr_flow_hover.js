@@ -383,14 +383,38 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Government handler bound');
         }
 
-        // 6. Analytics: Click for direct action (if needed in future)
-        // if (analytics) {
-        //     analytics.addEventListener('click', (e) => {
-        //         e.preventDefault();
-        //         hideAllSecondary();
-        //         // Direct action logic here
-        //     });
-        // }
+        // 6. Analytics: Click to open HR Analytics Dashboard directly
+        const analytics = workflow.querySelector('.badge-analytics');
+        if (analytics) {
+            analytics.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
+                console.log('[HR Flow] Analytics clicked - opening analytics dashboard');
+                hideAllSecondary(true);
+                rpc.query({
+                    model: 'hr.flow.wizard',
+                    method: 'get_tertiary_action',
+                    args: ['analytics-dashboard'],
+                }).then((action) => {
+                    console.log('[HR Flow] Analytics action resolved', action);
+                    if (action && action.type) {
+                        action.context = Object.assign({}, session.user_context || {}, action.context || {});
+                        const payload = { action: action, options: {} };
+                        console.log('[HR Flow] Triggering analytics do-action payload', payload);
+                        core.bus.trigger('do-action', payload);
+                        saveState('analytics', null, null);
+                    } else {
+                        console.warn('[HR Flow] No action resolved for analytics-dashboard', action);
+                    }
+                }).catch((err) => {
+                    console.error('[HR Flow] Failed to resolve analytics action', err);
+                });
+            });
+            console.log('[HR Flow] Analytics handler bound');
+        }
 
         // Restore last state if any (runs after handlers are bound so helpers are in scope)
         const restoreState = () => {
