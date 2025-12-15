@@ -88,6 +88,10 @@ class HRFlowWizard(models.TransientModel):
             }
         }
 
+    def action_open_government_panel(self):
+        """No-op handler to satisfy button name; JS opens the tertiary panel."""
+        return False
+
     def action_open_analytics(self):
         """Open HR analytics"""
         self.ensure_one()
@@ -207,6 +211,27 @@ class HRFlowWizard(models.TransientModel):
                                   'hr_timesheet.menu_hr_time_tracking'),
             'timesheet-settings': ('hr_timesheet.act_hr_timesheet_line',
                                    'hr_timesheet.menu_hr_time_tracking'),
+            # Payroll
+            'payroll-connector': ('pb_hr_payroll_formula.action_integration_connector', False),
+            'payroll-config': ('pb_hr_payroll_formula.action_formula_config', False),
+            'payroll-test': ('pb_hr_payroll_formula.action_sample_data', False),
+            'payroll-batch': ('pb_hr_payroll_formula.action_payroll_import_batch', False),
+            'payroll-payslip': ('om_hr_payroll.action_view_hr_payslip_form', False),
+            'payroll-draft-posted': ('om_hr_payroll.action_view_hr_payslip_form', False),
+            # Approval (reuse analytics approval dashboard)
+            'approval-pending': ('payroll_analytics_approval.action_payroll_analytics_dashboard', False),
+            'approval-history': ('payroll_analytics_approval.action_payroll_analytics_dashboard', False),
+            'approval-rules': ('payroll_analytics_approval.action_payroll_analytics_dashboard', False),
+            # Pay Salary
+            'pay-salary-bank': ('om_hr_payroll_account.action_hr_payslip_run', False),
+            'pay-salary-payments': ('account.action_account_payments', False),
+            'pay-salary-journals': ('account.action_move_journal_line', False),
+            # Government reports (xlsx)
+            'govt-bhxh630': ('pb_hr_govt.action_pb_govt_report_wizard', False),
+            'govt-bhxhdstk01': ('pb_hr_govt.action_pb_govt_report_wizard', False),
+            'govt-d01': ('pb_hr_govt.action_pb_govt_report_wizard', False),
+            'govt-tang': ('pb_hr_govt.action_pb_govt_report_wizard', False),
+            'govt-giam': ('pb_hr_govt.action_pb_govt_report_wizard', False),
         }
         action_xmlid, menu_xmlid = mapping.get(key, (False, False))
         if not action_xmlid:
@@ -219,6 +244,15 @@ class HRFlowWizard(models.TransientModel):
 
         # open full-screen so breadcrumbs and full controls show
         action['target'] = 'current'
+
+        # Apply contextual defaults for special cases
+        if key == 'payroll-draft-posted':
+            action.setdefault('context', {})
+            action['context'] = dict(action['context'], search_default_draft=1, search_default_done=1)
+        if key.startswith('govt-'):
+            report_type = key.replace('govt-', '')
+            action.setdefault('context', {})
+            action['context'] = dict(action['context'], default_report_type=report_type)
 
         # Resolve menu id if present
         if menu_xmlid:

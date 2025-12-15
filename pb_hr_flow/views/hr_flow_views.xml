@@ -277,9 +277,13 @@
                         /* ==========================================
                            SECONDARY BADGES (submenu items)
                            ========================================== */
-                        .secondary-badges {
+                        .secondary-badges-attendance,
+                        .secondary-badges-payroll,
+                        .secondary-badges-approval,
+                        .secondary-badges-pay-salary,
+                        .secondary-badges-govt {
                             position: absolute;
-                            top: -15%; /* Extend upward to cover attendance area */
+                            top: -15%; /* Extend upward to cover hover area */
                             left: 0;
                             width: 100%;
                             height: 130%; /* Larger area to maintain hover */
@@ -287,9 +291,17 @@
                             z-index: 150;
                         }
 
-                        /* Enable pointer events for the attendance hover zone */
-                        .badge-attendance:hover ~ .secondary-badges,
-                        .secondary-badges:hover {
+                        /* Enable pointer events for the hover zone */
+                        .badge-attendance:hover ~ .secondary-badges-attendance,
+                        .secondary-badges-attendance:hover,
+                        .badge-payroll:hover ~ .secondary-badges-payroll,
+                        .secondary-badges-payroll:hover,
+                        .badge-approval:hover ~ .secondary-badges-approval,
+                        .secondary-badges-approval:hover,
+                        .badge-pay-salary:hover ~ .secondary-badges-pay-salary,
+                        .secondary-badges-pay-salary:hover,
+                        .badge-government:hover ~ .secondary-badges-govt,
+                        .secondary-badges-govt:hover {
                             pointer-events: auto;
                         }
 
@@ -325,13 +337,39 @@
                         }
 
                         /* JS-applied state to hide secondary badges immediately */
-                        .secondary-badges.hide-secondary .secondary-badge {
+                        .secondary-badges-attendance.hide-secondary .secondary-badge,
+                        .secondary-badges-payroll.hide-secondary .secondary-badge,
+                        .secondary-badges-approval.hide-secondary .secondary-badge,
+                        .secondary-badges-pay-salary.hide-secondary .secondary-badge,
+                        .secondary-badges-govt.hide-secondary .secondary-badge {
                             opacity: 0 !important;
                             transform: scale(0) !important;
                             pointer-events: none !important;
                         }
 
-                        .secondary-badges.hide-secondary .secondary-shift {
+                        /* Prevent hidden secondary containers from blocking clicks on primaries */
+                        .secondary-badges-attendance.hide-secondary,
+                        .secondary-badges-payroll.hide-secondary,
+                        .secondary-badges-approval.hide-secondary,
+                        .secondary-badges-pay-salary.hide-secondary,
+                        .secondary-badges-govt.hide-secondary {
+                            pointer-events: none !important;
+                        }
+
+                        /* When visible, let the container receive events normally */
+                        .secondary-badges-attendance:not(.hide-secondary),
+                        .secondary-badges-payroll:not(.hide-secondary),
+                        .secondary-badges-approval:not(.hide-secondary),
+                        .secondary-badges-pay-salary:not(.hide-secondary),
+                        .secondary-badges-govt:not(.hide-secondary) {
+                            pointer-events: auto;
+                        }
+
+                        .secondary-badges-attendance.hide-secondary .secondary-shift,
+                        .secondary-badges-payroll.hide-secondary .secondary-shift,
+                        .secondary-badges-approval.hide-secondary .secondary-shift,
+                        .secondary-badges-pay-salary.hide-secondary .secondary-shift,
+                        .secondary-badges-govt.hide-secondary .secondary-shift {
                             transform: translateX(-50%) scale(0) !important;
                         }
 
@@ -363,20 +401,110 @@
 
                         /* Secondary badge positioning for Attendance submenu
                            Pulled closer to center to avoid clipping */
-                        .secondary-overtime {
+                        .secondary-badges-attendance .secondary-overtime {
                             top: 10%;
                             left: 20%;
                         }
 
-                        .secondary-shift {
+                        .secondary-badges-attendance .secondary-shift {
                             top: 5%;
                             left: 50%;
                             transform: translateX(-50%) scale(1);
                         }
 
-                        .secondary-timesheet {
+                        .secondary-badges-attendance .secondary-timesheet {
                             top: 10%;
                             right: 20%;
+                        }
+
+                        /* Secondary badge positioning for Payroll submenu (clustered near payroll node) */
+                        .secondary-badges-payroll .secondary-payroll-connector {
+                            top: 6%;
+                            right: 22%;
+                        }
+
+                        .secondary-badges-payroll .secondary-payroll-config {
+                            top: 0%;
+                            right: 10%;
+                        }
+
+                        .secondary-badges-payroll .secondary-payroll-test {
+                            top: 12%;
+                            right: 4%;
+                        }
+
+                        .secondary-badges-payroll .secondary-payroll-batch {
+                            top: 24%;
+                            right: 10%;
+                        }
+
+                        .secondary-badges-payroll .secondary-payroll-payslip {
+                            top: 22%;
+                            right: 24%;
+                        }
+
+                        .secondary-badges-payroll .secondary-payroll-draft {
+                            top: 34%;
+                            right: 16%;
+                        }
+
+                        /* Secondary badge positioning for Approval submenu */
+                        .secondary-badges-approval .secondary-approval-pending {
+                            top: 42%;
+                            right: 22%;
+                        }
+
+                        .secondary-badges-approval .secondary-approval-history {
+                            top: 48%;
+                            right: 10%;
+                        }
+
+                        .secondary-badges-approval .secondary-approval-rules {
+                            top: 60%;
+                            right: 18%;
+                        }
+
+                        /* Secondary badge positioning for Pay Salary submenu */
+                        .secondary-badges-pay-salary .secondary-pay-salary-bank {
+                            bottom: 6%;
+                            left: 46%;
+                        }
+
+                        .secondary-badges-pay-salary .secondary-pay-salary-payments {
+                            bottom: 0%;
+                            left: 50%;
+                            transform: translateX(-50%) scale(1);
+                        }
+
+                        .secondary-badges-pay-salary .secondary-pay-salary-journals {
+                            bottom: 6%;
+                            right: 46%;
+                        }
+
+                        /* Secondary badge positioning for Government submenu */
+                        .secondary-badges-govt .secondary-govt-bhxh630 {
+                            bottom: 28%;
+                            left: 16%;
+                        }
+
+                        .secondary-badges-govt .secondary-govt-bhxhdstk01 {
+                            bottom: 22%;
+                            left: 8%;
+                        }
+
+                        .secondary-badges-govt .secondary-govt-d01 {
+                            bottom: 32%;
+                            left: 6%;
+                        }
+
+                        .secondary-badges-govt .secondary-govt-giam {
+                            bottom: 38%;
+                            left: 14%;
+                        }
+
+                        .secondary-badges-govt .secondary-govt-tang {
+                            bottom: 34%;
+                            left: 24%;
                         }
 
                         /* ==========================================
@@ -540,58 +668,27 @@
                         }
 
                         /* ==========================================
-                           PURE CSS HOVER INTERACTIONS
+                           CLICK-ONLY INTERACTIONS (no hover)
+                           Secondary badges become visible when JS
+                           removes the hide-secondary class.
                            ========================================== */
 
-                        /* Show secondary badges when hovering anywhere in workflow */
-                        .circular-workflow:hover .secondary-badges .secondary-badge {
-                            opacity: 1;
-                            transform: scale(1);
-                            pointer-events: auto;
+                        .secondary-badges-attendance:not(.hide-secondary) .secondary-badge,
+                        .secondary-badges-payroll:not(.hide-secondary) .secondary-badge,
+                        .secondary-badges-approval:not(.hide-secondary) .secondary-badge,
+                        .secondary-badges-pay-salary:not(.hide-secondary) .secondary-badge,
+                        .secondary-badges-govt:not(.hide-secondary) .secondary-badge {
+                            opacity: 1 !important;
+                            transform: scale(1) !important;
+                            pointer-events: auto !important;
                         }
 
-                        .circular-workflow:hover .secondary-badges .secondary-shift {
-                            transform: translateX(-50%) scale(1);
-                        }
-
-                        /* Hide secondary badges when hovering over non-attendance primary badges or center (handled via JS class for reliability) */
-
-                        /* When hovering over attendance or secondary badges, shrink other primary badges */
-                        .circular-workflow:has(.badge-attendance:hover) .badge-payroll,
-                        .circular-workflow:has(.badge-attendance:hover) .badge-approval,
-                        .circular-workflow:has(.badge-attendance:hover) .badge-pay-salary,
-                        .circular-workflow:has(.badge-attendance:hover) .badge-government,
-                        .circular-workflow:has(.badge-attendance:hover) .badge-analytics,
-                        .circular-workflow:has(.secondary-badges:hover) .badge-payroll,
-                        .circular-workflow:has(.secondary-badges:hover) .badge-approval,
-                        .circular-workflow:has(.secondary-badges:hover) .badge-pay-salary,
-                        .circular-workflow:has(.secondary-badges:hover) .badge-government,
-                        .circular-workflow:has(.secondary-badges:hover) .badge-analytics {
-                            transform: scale(0.7) !important;
-                            opacity: 0.5;
-                        }
-
-                        /* Shrink employee center badge when hovering on attendance or secondary badges */
-                        .circular-workflow:has(.badge-attendance:hover) .center-badge,
-                        .circular-workflow:has(.secondary-badges:hover) .center-badge {
-                            transform: translate(-50%, -50%) scale(0.75);
-                            opacity: 0.6;
-                        }
-
-                        /* Staggered animation delays for secondary badges */
-                        .badge-attendance:hover ~ .secondary-badges .secondary-overtime,
-                        .secondary-badges:hover .secondary-overtime {
-                            transition-delay: 0.1s;
-                        }
-
-                        .badge-attendance:hover ~ .secondary-badges .secondary-shift,
-                        .secondary-badges:hover .secondary-shift {
-                            transition-delay: 0.2s;
-                        }
-
-                        .badge-attendance:hover ~ .secondary-badges .secondary-timesheet,
-                        .secondary-badges:hover .secondary-timesheet {
-                            transition-delay: 0.3s;
+                        .secondary-badges-attendance:not(.hide-secondary) .secondary-shift,
+                        .secondary-badges-payroll:not(.hide-secondary) .secondary-shift,
+                        .secondary-badges-approval:not(.hide-secondary) .secondary-shift,
+                        .secondary-badges-pay-salary:not(.hide-secondary) .secondary-shift,
+                        .secondary-badges-govt:not(.hide-secondary) .secondary-shift {
+                            transform: translateX(-50%) scale(1) !important;
                         }
 
                         /* ==========================================
@@ -684,55 +781,56 @@
                             <!-- PRIMARY LEVEL: 6 Badges in Circle -->
 
                             <!-- 1. Attendance (Top) -->
-                            <button name="action_open_attendance"
-                                    type="object"
-                                    class="primary-badge badge-attendance">
+                            <div role="button"
+                                 tabindex="0"
+                                 class="primary-badge badge-attendance">
                                 <i class="fa fa-clock-o primary-badge-icon"></i>
                                 <span class="primary-badge-text">Attendance</span>
-                            </button>
+                            </div>
 
                             <!-- 2. Payroll (Right Top) -->
-                            <button name="action_open_payroll"
-                                    type="object"
-                                    class="primary-badge badge-payroll">
+                            <div role="button"
+                                 tabindex="0"
+                                 class="primary-badge badge-payroll">
                                 <i class="fa fa-calculator primary-badge-icon"></i>
                                 <span class="primary-badge-text">Payroll</span>
-                            </button>
+                            </div>
 
                             <!-- 3. Approval (Right Bottom) -->
-                            <button name="action_open_approval"
-                                    type="object"
-                                    class="primary-badge badge-approval">
+                            <div role="button"
+                                 tabindex="0"
+                                 class="primary-badge badge-approval">
                                 <i class="fa fa-check-circle primary-badge-icon"></i>
                                 <span class="primary-badge-text">Approval</span>
-                            </button>
+                            </div>
 
                             <!-- 4. Pay Salary (Bottom) -->
-                            <button name="action_open_pay_salary"
-                                    type="object"
-                                    class="primary-badge badge-pay-salary">
+                            <div role="button"
+                                 tabindex="0"
+                                 class="primary-badge badge-pay-salary">
                                 <i class="fa fa-money primary-badge-icon"></i>
                                 <span class="primary-badge-text">Pay Salary</span>
-                            </button>
+                            </div>
 
                             <!-- 5. Government Reports (Left Bottom) -->
-                            <button name="action_open_government_reports"
-                                    type="object"
-                                    class="primary-badge badge-government">
+                            <div role="button"
+                                 tabindex="0"
+                                 data-tertiary="govt"
+                                 class="primary-badge badge-government">
                                 <i class="fa fa-file-text primary-badge-icon"></i>
                                 <span class="primary-badge-text">Government<br/>Reports</span>
-                            </button>
+                            </div>
 
                             <!-- 6. Analytics (Left Top) -->
-                            <button name="action_open_analytics"
-                                    type="object"
-                                    class="primary-badge badge-analytics">
+                            <div role="button"
+                                 tabindex="0"
+                                 class="primary-badge badge-analytics">
                                 <i class="fa fa-line-chart primary-badge-icon"></i>
                                 <span class="primary-badge-text">Analytics</span>
-                            </button>
+                            </div>
 
                             <!-- SECONDARY LEVEL: Attendance Submenu (appears on hover) -->
-                            <div class="secondary-badges">
+                            <div class="secondary-badges-attendance hide-secondary">
                                 <!-- Overtime -->
                                 <div role="button"
                                      tabindex="0"
@@ -758,6 +856,141 @@
                                      class="secondary-badge secondary-timesheet">
                                     <i class="fa fa-table secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Timesheet</span>
+                                </div>
+                            </div>
+
+                            <!-- SECONDARY LEVEL: Payroll Submenu (appears on hover) -->
+                            <div class="secondary-badges-payroll hide-secondary">
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-connector"
+                                     class="secondary-badge secondary-payroll-connector">
+                                    <i class="fa fa-plug secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Connector</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-config"
+                                     class="secondary-badge secondary-payroll-config">
+                                    <i class="fa fa-sliders secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Configure Salary</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-test"
+                                     class="secondary-badge secondary-payroll-test">
+                                    <i class="fa fa-flask secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Test Calculation</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-batch"
+                                     class="secondary-badge secondary-payroll-batch">
+                                    <i class="fa fa-upload secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Batch Run</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-payslip"
+                                     class="secondary-badge secondary-payroll-payslip">
+                                    <i class="fa fa-file-text-o secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Payslip List</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-draft-posted"
+                                     class="secondary-badge secondary-payroll-draft">
+                                    <i class="fa fa-filter secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Draft vs Posted</span>
+                                </div>
+                            </div>
+
+                            <!-- SECONDARY LEVEL: Approval Submenu -->
+                            <div class="secondary-badges-approval hide-secondary">
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="approval-pending"
+                                     class="secondary-badge secondary-approval-pending">
+                                    <i class="fa fa-hourglass-half secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Pending</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="approval-history"
+                                     class="secondary-badge secondary-approval-history">
+                                    <i class="fa fa-history secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">History</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="approval-rules"
+                                     class="secondary-badge secondary-approval-rules">
+                                    <i class="fa fa-cog secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Rules</span>
+                                </div>
+                            </div>
+
+                            <!-- SECONDARY LEVEL: Pay Salary Submenu -->
+                            <div class="secondary-badges-pay-salary hide-secondary">
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="pay-salary-bank"
+                                     class="secondary-badge secondary-pay-salary-bank">
+                                    <i class="fa fa-university secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Bank Export</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="pay-salary-payments"
+                                     class="secondary-badge secondary-pay-salary-payments">
+                                    <i class="fa fa-money secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Payments</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="pay-salary-journals"
+                                     class="secondary-badge secondary-pay-salary-journals">
+                                    <i class="fa fa-book secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Journals</span>
+                                </div>
+                            </div>
+
+                            <!-- SECONDARY LEVEL: Government Reports Submenu -->
+                            <div class="secondary-badges-govt hide-secondary">
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="govt-bhxh630"
+                                     class="secondary-badge secondary-govt-bhxh630">
+                                    <i class="fa fa-file-excel-o secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">BHXH630</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="govt-bhxhdstk01"
+                                     class="secondary-badge secondary-govt-bhxhdstk01">
+                                    <i class="fa fa-file-excel-o secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Mẫu 595</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="govt-d01"
+                                     class="secondary-badge secondary-govt-d01">
+                                    <i class="fa fa-file-excel-o secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">D01-TS</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="govt-giam"
+                                     class="secondary-badge secondary-govt-giam">
+                                    <i class="fa fa-file-excel-o secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Giảm LĐ</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="govt-tang"
+                                     class="secondary-badge secondary-govt-tang">
+                                    <i class="fa fa-file-excel-o secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Tăng LĐ</span>
                                 </div>
                             </div>
 

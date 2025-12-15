@@ -9,16 +9,32 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
         console.log('[HR Flow] JS loaded');
 
         const bindWorkflow = () => {
-            const workflow = document.querySelector('.circular-workflow');
-            if (!workflow || workflow.dataset.hrFlowBound) {
+            let workflow = document.querySelector('.circular-workflow');
+            if (!workflow) {
                 return;
+            }
+
+            // If already bound (e.g., when coming back via breadcrumbs), clone to drop old listeners
+            if (workflow.dataset.hrFlowBound) {
+                const clone = workflow.cloneNode(true);
+                workflow.parentNode.replaceChild(clone, workflow);
+                workflow = clone;
             }
             workflow.dataset.hrFlowBound = '1';
             console.log('[HR Flow] Workflow found and bound');
 
-            const secondary = workflow.querySelector('.secondary-badges');
+            const secondaryAttendance = workflow.querySelector('.secondary-badges-attendance');
+            const secondaryPayroll = workflow.querySelector('.secondary-badges-payroll');
+            const secondaryApproval = workflow.querySelector('.secondary-badges-approval');
+            const secondaryPaySalary = workflow.querySelector('.secondary-badges-pay-salary');
+            const secondaryGovt = workflow.querySelector('.secondary-badges-govt');
+            const secondaryAll = [secondaryAttendance, secondaryPayroll, secondaryApproval, secondaryPaySalary, secondaryGovt].filter(Boolean);
             const nonAttendance = workflow.querySelectorAll('.primary-badge:not(.badge-attendance), .center-badge');
             const attendance = workflow.querySelector('.badge-attendance');
+            const payroll = workflow.querySelector('.badge-payroll');
+            const approval = workflow.querySelector('.badge-approval');
+            const paySalary = workflow.querySelector('.badge-pay-salary');
+            const government = workflow.querySelector('.badge-government');
 
             // Tertiary panel data
             const panel = document.getElementById('tertiary-panel');
@@ -27,8 +43,49 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             const panelClose = document.getElementById('tertiary-panel-close');
 
             console.log('[HR Flow] Workflow found, binding handlers');
+            console.log('[HR Flow] Primaries found', {
+                attendance: !!attendance,
+                payroll: !!payroll,
+                approval: !!approval,
+                paySalary: !!paySalary,
+                government: !!government,
+            });
+            console.log('[HR Flow] Secondary containers', {
+                attendance: !!secondaryAttendance,
+                payroll: !!secondaryPayroll,
+                approval: !!secondaryApproval,
+                paySalary: !!secondaryPaySalary,
+                government: !!secondaryGovt,
+            });
 
             const tertiaryData = {
+                payroll: {
+                    title: 'Payroll',
+                    items: [
+                        { label: 'Connector', icon: 'fa-plug', desc: 'HRIS/Excel connectors', disabled: false, route: 'payroll-connector' },
+                        { label: 'Configure Salary', icon: 'fa-sliders', desc: 'Formulas & structures', disabled: false, route: 'payroll-config' },
+                        { label: 'Test Calculation', icon: 'fa-flask', desc: 'Sample data & validation', disabled: false, route: 'payroll-test' },
+                        { label: 'Batch Run', icon: 'fa-play-circle', desc: 'Import & compute batches', disabled: false, route: 'payroll-batch' },
+                        { label: 'Payslip List', icon: 'fa-list', desc: 'All payslips', disabled: false, route: 'payroll-payslip' },
+                        { label: 'Draft vs Posted', icon: 'fa-filter', desc: 'Quick filters', disabled: false, route: 'payroll-draft-posted' },
+                    ],
+                },
+                approval: {
+                    title: 'Payroll Approval',
+                    items: [
+                        { label: 'Pending Queue', icon: 'fa-clock-o', desc: 'Approve current period', disabled: false, route: 'approval-pending' },
+                        { label: 'History', icon: 'fa-history', desc: 'Past approvals & audits', disabled: false, route: 'approval-history' },
+                        { label: 'Rules', icon: 'fa-gavel', desc: 'Validation & thresholds', disabled: false, route: 'approval-rules' },
+                    ],
+                },
+                pay_salary: {
+                    title: 'Pay Salary',
+                    items: [
+                        { label: 'Bank Export', icon: 'fa-bank', desc: 'Generate payment files', disabled: false, route: 'pay-salary-bank' },
+                        { label: 'Payments', icon: 'fa-money', desc: 'Review payments', disabled: false, route: 'pay-salary-payments' },
+                        { label: 'Journals', icon: 'fa-book', desc: 'Accounting entries', disabled: false, route: 'pay-salary-journals' },
+                    ],
+                },
                 overtime: {
                     title: 'Overtime',
                     items: [
@@ -60,6 +117,16 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         { label: 'Timesheet Settings', icon: 'fa-cog', desc: 'Period locks and rules', disabled: false, route: 'timesheet-settings' },
                     ],
                 },
+                govt: {
+                    title: 'Government Reports',
+                    items: [
+                        { label: 'BHXH630', icon: 'fa-file-excel-o', desc: 'Ốm đau/Thai sản', disabled: false, route: 'govt-bhxh630' },
+                        { label: 'BHXHDSTK01-DV_595', icon: 'fa-file-excel-o', desc: 'Mẫu 595', disabled: false, route: 'govt-bhxhdstk01' },
+                        { label: 'Bảng kê D01-TS', icon: 'fa-file-excel-o', desc: 'D01-TS', disabled: false, route: 'govt-d01' },
+                        { label: 'Báo giảm lao động', icon: 'fa-file-excel-o', desc: 'Giảm LĐ', disabled: false, route: 'govt-giam' },
+                        { label: 'Báo tăng lao động', icon: 'fa-file-excel-o', desc: 'Tăng LĐ', disabled: false, route: 'govt-tang' },
+                    ],
+                },
             };
 
         const openPanel = (key) => {
@@ -85,7 +152,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         }).then((action) => {
                             if (action && action.type) {
                                 // Open full screen (target provided by server)
-                                core.bus.trigger('do-action', { action: action });
+                                core.bus.trigger('do-action', action);
                                 closePanel();
                             } else {
                                 console.warn('[HR Flow] No action resolved for', item.route);
@@ -128,7 +195,12 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
         workflow.querySelectorAll('[data-tertiary]').forEach((el) => {
             const handler = (e) => {
                 e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
                 const key = el.getAttribute('data-tertiary');
+                console.log('[HR Flow] Tertiary element clicked:', key);
                 openPanel(key);
             };
             console.log('[HR Flow] Binding tertiary click', el.getAttribute('data-tertiary'));
@@ -140,30 +212,145 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             });
         });
 
-        const hideSecondary = () => {
-            if (secondary) secondary.classList.add('hide-secondary');
+        const hideAllSecondary = () => {
+            console.log('[HR Flow] Hiding all secondary rings');
+            secondaryAll.forEach((sec) => sec && sec.classList.add('hide-secondary'));
         };
-        const showSecondary = () => {
-            if (secondary) secondary.classList.remove('hide-secondary');
+        const showSecondary = (sec) => {
+            if (sec) sec.classList.remove('hide-secondary');
+            console.log('[HR Flow] Showing secondary ring', sec && sec.className);
         };
 
-        nonAttendance.forEach((el) => {
-            el.addEventListener('mouseenter', hideSecondary);
-            el.addEventListener('mouseleave', showSecondary);
+        // Start hidden
+        hideAllSecondary();
+
+        // Debug: log any click inside workflow to ensure events are firing
+        workflow.addEventListener('click', (e) => {
+            console.log('[HR Flow] Workflow click detected on', e.target && e.target.className);
         });
 
+        // CLICK-ONLY INTERACTIONS (No Hover)
+
+        // 1. Attendance: Click to toggle secondary badges visibility
         if (attendance) {
-            attendance.addEventListener('mouseenter', showSecondary);
+            attendance.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
+                console.log('[HR Flow] Attendance clicked - toggling secondary badges');
+                // Toggle attendance secondary badges
+                if (!secondaryAttendance) {
+                    console.warn('[HR Flow] Attendance secondary container missing');
+                    return;
+                }
+                console.log('[HR Flow] Attendance secondary class BEFORE', secondaryAttendance.className);
+                if (secondaryAttendance.classList.contains('hide-secondary')) {
+                    hideAllSecondary();
+                    showSecondary(secondaryAttendance);
+                } else {
+                    hideAllSecondary();
+                }
+                console.log('[HR Flow] Attendance secondary class AFTER', secondaryAttendance.className);
+            });
         }
 
-        workflow.addEventListener('mouseleave', showSecondary);
+        // 2. Payroll: Click to open tertiary panel directly
+        if (payroll) {
+            payroll.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
+                console.log('[HR Flow] Payroll clicked - opening tertiary panel');
+                hideAllSecondary();
+                openPanel('payroll');
+            });
+        }
+
+        // 3. Approval: Click to open approval dashboard (direct action, not tertiary panel)
+        if (approval) {
+            approval.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
+                console.log('[HR Flow] Approval clicked - opening approval dashboard');
+                hideAllSecondary();
+                rpc.query({
+                    model: 'hr.flow.wizard',
+                    method: 'get_tertiary_action',
+                    args: ['approval-pending'],
+                }).then((action) => {
+                    if (action && action.type) {
+                        core.bus.trigger('do-action', action);
+                    } else {
+                        console.warn('[HR Flow] No action resolved for approval-pending');
+                    }
+                }).catch((err) => {
+                    console.error('[HR Flow] Failed to resolve approval action', err);
+                });
+            });
+        }
+
+        // 4. Pay Salary: Click to open tertiary panel directly
+        if (paySalary) {
+            paySalary.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
+                console.log('[HR Flow] Pay Salary clicked - opening tertiary panel');
+                hideAllSecondary();
+                openPanel('pay_salary');
+            });
+        }
+
+        // 5. Government: Click to open tertiary panel directly
+        if (government) {
+            government.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
+                console.log('[HR Flow] Government clicked - opening tertiary panel');
+                hideAllSecondary();
+                openPanel('govt');
+            });
+        }
+
+        // 6. Analytics: Click for direct action (if needed in future)
+        // if (analytics) {
+        //     analytics.addEventListener('click', (e) => {
+        //         e.preventDefault();
+        //         hideAllSecondary();
+        //         // Direct action logic here
+        //     });
+        // }
         };
 
         // Initial bind
         bindWorkflow();
 
         // Rebind if the form is re-rendered (e.g., returning via breadcrumbs)
-        const observer = new MutationObserver(() => bindWorkflow());
+        // Use debounce to prevent infinite loop from MutationObserver
+        let rebindTimer;
+        const observer = new MutationObserver(() => {
+            clearTimeout(rebindTimer);
+            rebindTimer = setTimeout(() => {
+                const workflow = document.querySelector('.circular-workflow');
+                // Only rebind if workflow exists and is not already bound
+                if (workflow && !workflow.dataset.hrFlowBound) {
+                    console.log('[HR Flow] Detected new workflow, rebinding');
+                    bindWorkflow();
+                }
+            }, 100);
+        });
         observer.observe(document.body, { childList: true, subtree: true });
     });
 });
