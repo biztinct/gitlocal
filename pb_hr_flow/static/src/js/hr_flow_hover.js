@@ -4,6 +4,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
     const domReady = require('web.dom_ready');
     const rpc = require('web.rpc');
     const core = require('web.core');
+    const session = require('web.session');
 
     domReady(function () {
         console.log('[HR Flow] JS loaded');
@@ -152,14 +153,19 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         card.title = 'Access required';
                     } else if (item.route) {
                         card.addEventListener('click', function () {
+                            console.log('[HR Flow] Tertiary card click -> route', item.route);
                             rpc.query({
                                 model: 'hr.flow.wizard',
                                 method: 'get_tertiary_action',
                                 args: [item.route],
                             }).then((action) => {
+                                console.log('[HR Flow] Action resolved for route', item.route, action);
                                 if (action && action.type) {
-                                    // Open full screen (target provided by server)
-                                    core.bus.trigger('do-action', action);
+                                    // Ensure context exists; merge with user_context to prevent undefined
+                                    action.context = Object.assign({}, session.user_context || {}, action.context || {});
+                                    const payload = { action: action, options: {} };
+                                    console.log('[HR Flow] Triggering do-action payload', payload);
+                                    core.bus.trigger('do-action', payload);
                                     closePanel();
                                 } else {
                                     console.warn('[HR Flow] No action resolved for', item.route, action);
@@ -294,8 +300,12 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     method: 'get_tertiary_action',
                     args: ['approval-pending'],
                 }).then((action) => {
+                    console.log('[HR Flow] Approval action resolved', action);
                     if (action && action.type) {
-                        core.bus.trigger('do-action', action);
+                        action.context = Object.assign({}, session.user_context || {}, action.context || {});
+                        const payload = { action: action, options: {} };
+                        console.log('[HR Flow] Triggering approval do-action payload', payload);
+                        core.bus.trigger('do-action', payload);
                     } else {
                         console.warn('[HR Flow] No action resolved for approval-pending', action);
                     }
