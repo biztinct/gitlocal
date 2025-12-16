@@ -180,22 +180,14 @@ class HRFlowWizard(models.TransientModel):
             'overtime-request': ('ohrms_overtime.hr_overtime_action', False),
             'overtime-approve': ('_overtime_approve', False),  # Custom action with domain filter
             'overtime-rules': ('ohrms_overtime.hr_overtime_type_action', False),
-            'overtime-schedules': ('resource.action_resource_calendar_form',
-                                   'hr_employee_shift.menu_shift'),
             'overtime-analytics': ('hr_attendance.hr_attendance_report_action', False),
             'overtime-settings': ('hr_attendance.action_hr_attendance_settings',
                                   'hr_attendance.menu_hr_attendance_settings'),
-            # Shift - Shift Calendar uses resource.action_resource_calendar_form
-            'shift-calendar': ('resource.action_resource_calendar_form',
-                               'hr_employee_shift.menu_shift'),
-            'shift-templates': ('resource.action_resource_calendar_form',
-                                'hr_employee_shift.menu_conf_shift'),
-            'shift-swap': ('hr_employee_shift.generate_schedule_action_window',
-                           'hr_employee_shift.menu_shift_schedule_generate_id_menu'),
-            'shift-compliance': ('hr_attendance.hr_attendance_action',
-                                 'hr_attendance.menu_hr_attendance_view_attendances'),
-            'shift-attendance': ('hr_attendance.hr_attendance_action_employee',
-                                 'hr_attendance.menu_hr_attendance_view_attendances'),
+            # Shift - Updated to use hr_shift module actions
+            'shift-calendar': ('hr_shift.shift_planning_action', False),
+            'shift-templates': ('hr_shift.shift_template_action', False),
+            'shift-planning': ('hr_shift.shift_planning_action', False),
+            'shift-my-calendar': ('hr_shift.my_shifts_planning_action', False),
             'shift-settings': ('hr_attendance.action_hr_attendance_settings',
                                'hr_attendance.menu_hr_attendance_settings'),
             # Timesheet
@@ -212,8 +204,8 @@ class HRFlowWizard(models.TransientModel):
             'payroll-config': ('pb_hr_payroll_formula.action_formula_config_kanban', False),
             'payroll-test': ('pb_hr_payroll_formula.action_sample_data', False),
             'payroll-batch': ('pb_hr_payroll_formula.action_payroll_import_batch', False),
+            'payroll-batch-workflow': ('om_hr_payroll.action_hr_payslip_run_tree', False),
             'payroll-payslip': ('om_hr_payroll.action_view_hr_payslip_form', False),
-            'payroll-draft-posted': ('om_hr_payroll.action_view_hr_payslip_form', False),
             # Approval - Updated to use Approval Queue action
             'approval-pending': ('payroll_analytics_approval.action_payroll_approval_queue', False),
             'approval-history': ('payroll_analytics_approval.action_payroll_approval_queue', False),
@@ -253,9 +245,7 @@ class HRFlowWizard(models.TransientModel):
         action['target'] = 'current'
         action.setdefault('context', {})
 
-        # Apply contextual defaults for special cases
-        if key == 'payroll-draft-posted':
-            action['context'] = dict(action['context'], search_default_draft=1, search_default_done=1)
+        # No special context handling needed for current routes
 
         # Resolve menu id if present
         if menu_xmlid:
