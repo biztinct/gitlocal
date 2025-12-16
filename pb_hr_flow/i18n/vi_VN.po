@@ -1,0 +1,459 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_hr_flow
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-16 02:55+0000\n"
+"PO-Revision-Date: 2025-12-16 02:55+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-book secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Journals</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-calculator primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Payroll</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-calendar secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Shift</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-check-circle primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Approval</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-clock-o primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Attendance</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-cog secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Rules</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">BHXH630</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">D01-TS</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Giảm LĐ</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Mẫu 595</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-file-excel-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Tăng LĐ</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-file-text primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Government<br/>Reports</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-file-text-o secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Payslip List</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-filter secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Draft vs Posted</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-flask secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Test Calculation</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-history secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">History</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-hourglass-end secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Overtime</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-hourglass-half secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Pending</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-line-chart primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Analytics</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-money primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Pay Salary</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-money secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Payments</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-plug secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Connector</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-sliders secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Configure Salary</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-table secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Timesheet</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-university secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Bank Export</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-upload secondary-badge-icon\"/>\n"
+"                                    <span class=\"secondary-badge-text\">Batch Run</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid ""
+"<i class=\"fa fa-users center-badge-icon\"/>\n"
+"                                <span class=\"center-badge-text\">Employee</span>"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Analytics"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Analytics Dashboard"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Analytics action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Analytics module not installed or configured"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Approval Dashboard"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Approval module not installed or configured"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Attendance"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Attendance action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Bank Export"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Bank export module not installed or configured"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid "Close"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Employees"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__name
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+#, python-format
+msgid "Flow Dashboard"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Government Reports"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Government reports action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.actions.act_window,name:pb_hr_flow.action_hr_flow_wizard
+#: model:ir.ui.menu,name:pb_hr_flow.menu_hr_workflow_flow
+msgid "HR Workflow Flow"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model,name:pb_hr_flow.model_hr_flow_wizard
+msgid "HR Workflow Flow Dashboard"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Overtime"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Overtime Approval Queue"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Overtime action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Pay Salary"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Pay salary action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Payroll"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Payroll action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
+msgid "Quick Actions"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Salary Approval"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Salary approval action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Shift"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Shift action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Timesheet"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Timesheet action will be configured here"
+msgstr ""
+
+#. module: pb_hr_flow
+#. odoo-python
+#: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
+#, python-format
+msgid "Vietnam Government XLS Reports"
+msgstr ""
