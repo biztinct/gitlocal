@@ -193,7 +193,11 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                                     const payload = { action: action, options: {} };
                                     console.log('[HR Flow] Triggering do-action payload', payload);
                                     core.bus.trigger('do-action', payload);
-                                    closePanel();
+                                    // Only close panel for full-screen actions (target: 'current')
+                                    // Keep panel open for modal wizards (target: 'new') so user can select another item
+                                    if (action.target !== 'new') {
+                                        closePanel();
+                                    }
                                 } else {
                                     console.warn('[HR Flow] No action resolved for', item.route, action);
                                 }
