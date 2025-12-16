@@ -177,16 +177,12 @@ class HRFlowWizard(models.TransientModel):
         # Map keys to action xmlid and optional menu xmlid
         mapping = {
             # Overtime
-            'overtime-request': ('hr_attendance.hr_attendance_overtime_action',
-                                 'hr_attendance.menu_hr_attendance_attendances_overview'),
-            'overtime-approve': ('hr_attendance.hr_attendance_action_overview',
-                                 'hr_attendance.menu_hr_attendance_attendances_overview'),
-            'overtime-rules': ('hr_attendance_reason.action_hr_attendance_reason',
-                               'hr_attendance.hr_attendance_reason_menu'),
+            'overtime-request': ('ohrms_overtime.hr_overtime_action', False),
+            'overtime-approve': ('_overtime_approve', False),  # Custom action with domain filter
+            'overtime-rules': ('ohrms_overtime.hr_overtime_type_action', False),
             'overtime-schedules': ('resource.action_resource_calendar_form',
                                    'hr_employee_shift.menu_shift'),
-            'overtime-analytics': ('hr_attendance.hr_attendance_action_overview',
-                                   'hr_attendance.menu_hr_attendance_attendances_overview'),
+            'overtime-analytics': ('hr_attendance.hr_attendance_report_action', False),
             'overtime-settings': ('hr_attendance.action_hr_attendance_settings',
                                   'hr_attendance.menu_hr_attendance_settings'),
             # Shift - Shift Calendar uses resource.action_resource_calendar_form
@@ -240,9 +236,13 @@ class HRFlowWizard(models.TransientModel):
         if not action_xmlid:
             return {'type': 'ir.actions.act_window_close', 'context': {}}
 
-        # Handle government reports specially - open the selector wizard
+        # Handle government reports specially - open the report wizard directly
         if action_xmlid == '_govt_report':
             return self._get_govt_report_action(menu_xmlid)
+
+        # Handle overtime approval queue - open with domain filter for pending approvals
+        if action_xmlid == '_overtime_approve':
+            return self._get_overtime_approve_action()
 
         try:
             action = self.env['ir.actions.actions']._for_xml_id(action_xmlid)
@@ -286,6 +286,31 @@ class HRFlowWizard(models.TransientModel):
             'context': {
                 'default_report_type': report_type,
             },
+        }
+
+    @api.model
+    def _get_overtime_approve_action(self):
+        """
+        Return action to open overtime requests pending approval (Manager Approval Queue).
+        Filters to show only requests in 'f_approve' state.
+        """
+        try:
+            # Try to get the view IDs
+            tree_view_id = self.env.ref('ohrms_overtime.hr_overtime_tree_view').id
+            form_view_id = self.env.ref('ohrms_overtime.hr_overtime_form_view').id
+        except Exception:
+            tree_view_id = False
+            form_view_id = False
+
+        return {
+            'name': _('Overtime Approval Queue'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.overtime',
+            'view_mode': 'tree,form',
+            'views': [(tree_view_id, 'tree'), (form_view_id, 'form')],
+            'domain': [('state', '=', 'f_approve')],
+            'target': 'current',
+            'context': {},
         }
 
     def action_open_approval_dashboard(self):
