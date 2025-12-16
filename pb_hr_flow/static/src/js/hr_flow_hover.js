@@ -94,9 +94,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         { label: 'Connector', icon: 'fa-plug', desc: 'HRIS/Excel connectors', disabled: false, route: 'payroll-connector' },
                         { label: 'Configure Salary', icon: 'fa-sliders', desc: 'Formulas & structures', disabled: false, route: 'payroll-config' },
                         { label: 'Test Calculation', icon: 'fa-flask', desc: 'Sample data & validation', disabled: false, route: 'payroll-test' },
-                        { label: 'Batch Run', icon: 'fa-play-circle', desc: 'Import & compute batches', disabled: false, route: 'payroll-batch' },
+                        { label: 'Batch Compute', icon: 'fa-play-circle', desc: 'Import & compute batches', disabled: false, route: 'payroll-batch' },
+                        { label: 'Batch Workflow', icon: 'fa-filter', desc: 'Payslip batches & runs', disabled: false, route: 'payroll-batch-workflow' },
                         { label: 'Payslip List', icon: 'fa-list', desc: 'All payslips', disabled: false, route: 'payroll-payslip' },
-                        { label: 'Draft vs Posted', icon: 'fa-filter', desc: 'Quick filters', disabled: false, route: 'payroll-draft-posted' },
                     ],
                 },
                 approval: {
@@ -121,7 +121,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         { label: 'Request Overtime', icon: 'fa-send', desc: 'Submit overtime request', disabled: false, route: 'overtime-request' },
                         { label: 'Approve Overtime', icon: 'fa-check-square', desc: 'Manager approval queue', disabled: false, route: 'overtime-approve' },
                         { label: 'Overtime Policy/Rules', icon: 'fa-balance-scale', desc: 'Configure rates and caps', disabled: false, route: 'overtime-rules' },
-                        { label: 'Overtime Schedules', icon: 'fa-calendar-plus-o', desc: 'Plan OT by date/shift', disabled: false, route: 'overtime-schedules' },
                         { label: 'Overtime Analytics', icon: 'fa-bar-chart', desc: 'Hours and costs overview', disabled: false, route: 'overtime-analytics' },
                         { label: 'Overtime Settings', icon: 'fa-cog', desc: 'Geofence/reasons & defaults', disabled: false, route: 'overtime-settings' },
                     ],
@@ -129,11 +128,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 shift: {
                     title: 'Shift',
                     items: [
-                        { label: 'Shift Calendar', icon: 'fa-calendar', desc: 'Assign and manage shifts', disabled: false, route: 'shift-calendar' },
+                        { label: 'Shift Planning', icon: 'fa-calendar', desc: 'Plan and manage shifts', disabled: false, route: 'shift-calendar' },
                         { label: 'Shift Templates', icon: 'fa-clone', desc: 'Reusable shift patterns', disabled: false, route: 'shift-templates' },
-                        { label: 'Shift Swap/Requests', icon: 'fa-exchange', desc: 'Employee swap/change requests', disabled: false, route: 'shift-swap' },
-                        { label: 'Shift Compliance', icon: 'fa-shield', desc: 'Conflicts and rest checks', disabled: false, route: 'shift-compliance' },
-                        { label: 'Shift Attendance', icon: 'fa-clock-o', desc: 'Attendance filtered by shift', disabled: false, route: 'shift-attendance' },
+                        { label: 'Shift Calendar', icon: 'fa-calendar-check-o', desc: 'My shift calendar', disabled: false, route: 'shift-my-calendar' },
                         { label: 'Shift Settings', icon: 'fa-sliders', desc: 'Locations, geofence, reasons', disabled: false, route: 'shift-settings' },
                     ],
                 },

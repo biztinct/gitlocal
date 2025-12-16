@@ -872,7 +872,14 @@
                                      data-tertiary="payroll-batch"
                                      class="secondary-badge secondary-payroll-batch">
                                     <i class="fa fa-upload secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Batch Run</span>
+                                    <span class="secondary-badge-text">Batch Compute</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-batch-workflow"
+                                     class="secondary-badge secondary-payroll-draft">
+                                    <i class="fa fa-filter secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Batch Workflow</span>
                                 </div>
                                 <div role="button"
                                      tabindex="0"
@@ -880,13 +887,6 @@
                                      class="secondary-badge secondary-payroll-payslip">
                                     <i class="fa fa-file-text-o secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Payslip List</span>
-                                </div>
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="payroll-draft-posted"
-                                     class="secondary-badge secondary-payroll-draft">
-                                    <i class="fa fa-filter secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Draft vs Posted</span>
                                 </div>
                             </div>
 
