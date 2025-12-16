@@ -1,0 +1,4938 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_hr_payroll_formula
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-16 02:54+0000\n"
+"PO-Revision-Date: 2025-12-16 02:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_payroll_formula
+#: model:res.groups,comment:pb_hr_payroll_formula.group_formula_manager
+msgid ""
+"\n"
+"                Can create, edit, and manage formula configurations.\n"
+"                Can manage sample data and run tests.\n"
+"            "
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:res.groups,comment:pb_hr_payroll_formula.group_formula_user
+msgid ""
+"\n"
+"                Can view formula configurations and use them for payroll calculation.\n"
+"                Cannot create or modify configurations.\n"
+"            "
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:res.groups,comment:pb_hr_payroll_formula.group_formula_admin
+msgid ""
+"\n"
+"                Full access to all formula and integration features.\n"
+"                Can manage external system connectors and credentials.\n"
+"            "
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__column_type
+msgid ""
+"\n"
+"       - Input: Values come from external data source (Zoho, Excel, etc.)\n"
+"       - Formula: Calculated using Excel formula\n"
+"       - Constant: Fixed value for all employees\n"
+"       "
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_code
+msgid ""
+"\n"
+"Python expression to transform the value.\n"
+"Available variables:\n"
+"- value: The source value\n"
+"- record: The full source record (dict)\n"
+"- env: Odoo environment\n"
+"\n"
+"Example: value * 1.1 if value > 1000 else value\n"
+"        "
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "%d Python formulas successfully regenerated."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "%d fields discovered"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid ""
+"%d formulas regenerated, %d errors:\n"
+"%s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "%d input columns loaded. Enter values and click \"Sync to JSON\"."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid ""
+"%d input values synced and %d formula results computed. Check the Computed "
+"Results tab."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#, python-format
+msgid "%d records synced successfully"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "%d rules imported from Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "%d rules imported from JSON"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "%d rules imported successfully"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "%d tests executed. Check results for details."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "%s - %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "%s - Contract"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payroll_structure_formula.py:0
+#, python-format
+msgid "%s Formula Config"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payroll_structure_formula.py:0
+#, python-format
+msgid "%s Formula Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "%s formula(s) have errors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid ""
+"<i class=\"fa fa-ban\"/> Circular references detected! Please fix formula "
+"dependencies."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid ""
+"<i class=\"fa fa-building fa-2x text-info\"/>\n"
+"                                <br/><small>SAP SuccessFactors</small>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid "<i class=\"fa fa-building text-info\"/> SAP SuccessFactors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid ""
+"<i class=\"fa fa-calendar fa-2x text-warning\"/>\n"
+"                                <br/><small>Workday</small>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid "<i class=\"fa fa-calendar text-warning\"/> Workday"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid ""
+"<i class=\"fa fa-check-circle\"/>\n"
+"                                            <strong>Note:</strong> Changes are automatically saved when you click Sync &amp; Compute"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid "<i class=\"fa fa-clock-o\"/> Last sync:"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid ""
+"<i class=\"fa fa-cloud fa-2x text-primary\"/>\n"
+"                                <br/><small>Zoho People</small>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid "<i class=\"fa fa-cloud text-primary\"/> Zoho People"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid ""
+"<i class=\"fa fa-database fa-2x text-danger\"/>\n"
+"                                <br/><small>Oracle HCM</small>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid "<i class=\"fa fa-database text-danger\"/> Oracle HCM"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid ""
+"<i class=\"fa fa-exclamation-triangle\"/> Some formulas have errors. Please "
+"fix them before activating."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid ""
+"<i class=\"fa fa-file-excel-o fa-2x text-success\"/>\n"
+"                                <br/><small>Excel Import</small>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid "<i class=\"fa fa-file-excel-o text-success\"/> Excel File Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_kanban
+msgid ""
+"<span class=\"badge text-bg-danger\">\n"
+"                                            <i class=\"fa fa-times\"/> Invalid\n"
+"                                        </span>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_kanban
+msgid ""
+"<span class=\"badge text-bg-success\">\n"
+"                                            <i class=\"fa fa-check\"/> Valid\n"
+"                                        </span>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "<span class=\"o_stat_text\">Open Grid</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "<span class=\"o_stat_text\">Payroll Import</span>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid ""
+"<span class=\"text-muted\">Country:</span>\n"
+"                                            <br/>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid ""
+"<span class=\"text-muted\">Type:</span>\n"
+"                                            <br/>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "<strong>How to use:</strong>"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__name
+msgid "A descriptive name for this formula configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__api_endpoint
+msgid "API Endpoint"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__api_key
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__auth_type__api_key
+msgid "API Key"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "API Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__api_version
+msgid "API Version"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__abs
+msgid "Absolute Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__access_token
+msgid "Access Token"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_needaction
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_needaction
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Activate"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__active
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__active
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__active
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__active
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__state__active
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "Active"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_structure__active_formula_config_id
+msgid "Active Formula Config"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_exception_decoration
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_exception_decoration
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_state
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_state
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_type_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_type_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Add Column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__add
+msgid "Add Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__description
+msgid "Additional notes about this sample data set"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__all
+msgid "All Countries"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__all_passed
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "All Passed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__validation_status__passed
+msgid "All Tests Passed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "All formulas are valid!"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "All formulas are valid."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "All formulas validated successfully."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "All tests passed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "All valid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_kanban
+msgid "All values match!"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_editable
+msgid "Allow editing values in sample data rows"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__anonymize
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__anonymize
+msgid "Anonymize Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_sync_wizard__anonymize
+msgid "Anonymize employee names in sample data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__is_anonymized
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Anonymized"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__appears_on_payslip
+msgid "Appears on Payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Apply (Enter)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Archive"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__state__archived
+msgid "Archived"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Are you sure you want to delete column %s (%s)?"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_attachment_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_attachment_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Authentication"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__auth_type
+msgid "Authentication Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__oauth_authorize_url
+msgid "Authorization URL"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__theme__auto
+msgid "Auto (System)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__auto_create_contracts
+msgid "Auto-Create Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__auto_create_employees
+msgid "Auto-Create Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__create_mappings
+msgid "Auto-Create Mappings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
+msgid "Auto-Map"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__column_letter
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_column_letter
+msgid "Auto-assigned Excel-style column letter (A, B, C...Z, AA, AB, etc.)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__python_formula
+msgid "Auto-generated Python code from Excel formula"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__sync_interval
+msgid "Automatic sync interval in minutes (0 = manual only)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__auto_create_contracts
+msgid "Automatically create contracts for new employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__auto_create_employees
+msgid "Automatically create employees for unmatched records"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_sync_wizard__create_mappings
+msgid "Automatically suggest field mappings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__api_endpoint
+msgid "Base URL for API calls"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__auth_type__basic
+msgid "Basic Authentication"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__name
+msgid "Batch Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__payslip_run_id
+msgid "Batch-generated payslip run containing the created payslips."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__auth_type__bearer
+msgid "Bearer Token"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_type__formula
+msgid "Calculated (formula)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__calculation_method
+msgid "Calculation Method"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__kh
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__kh
+msgid "Cambodia"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_compute_sample_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_match_wizard_form
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Cancel (Esc)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__cancelled
+msgid "Cancelled"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid ""
+"Cannot activate configuration with errors or circular references. Please "
+"validate and fix all issues first."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
+#, python-format
+msgid "Cannot convert value '%s' to number for field '%s'"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Cannot create employee: Name is required"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__category_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Category"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__text_align__center
+msgid "Center"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_compute_sample_wizard_form
+msgid "Check Calculations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Check the <b>Computed Results</b> tab to see results"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__has_circular_ref
+msgid "Circular Reference"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Clear Formula"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Click <b>Load Input Columns</b> to populate the table"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Click <b>Sync &amp; Compute</b> to automatically save and run formulas"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__client_id
+msgid "Client ID"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__client_secret
+msgid "Client Secret"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Close"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__code
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_code
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+#, python-format
+msgid "Code"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__employee_code
+msgid "Code from Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Col"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_letter
+msgid "Column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__column_letter
+msgid "Column Letter"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Column Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__column_type
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Column Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#, python-format
+msgid "Column added"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Column added successfully"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Column deleted"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Column duplicated"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__column_width
+msgid "Column width in pixels"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#, python-format
+msgid "Columns reordered"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__company_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__done
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Completed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__formula_computation_log
+msgid "Computation Log"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__computed_value
+msgid "Computed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Computed Results"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Computed Values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__computed_values_json
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__computed_values_json
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__formula_computed_values
+msgid "Computed Values (JSON)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__computed_values_html
+msgid "Computed Values (Table)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__formula_computed_values
+msgid "Computed values from formula engine"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "Computed values have been copied to expected values."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Config"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__config_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__config_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__config_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__name
+msgid "Configuration Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.constraint,message:pb_hr_payroll_formula.constraint_hr_formula_config_code_uniq
+msgid "Configuration code must be unique per company!"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Configuration exported"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_configs
+msgid "Configurations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_integration_connector
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_integration_connector_kanban
+msgid ""
+"Configure connections to Zoho People, SAP SuccessFactors,\n"
+"                Workday, Oracle HCM, or import data from Excel files."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_match_wizard_form
+msgid "Confirm"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_integration_connector
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_integration_connector_kanban
+msgid "Connect to external HR systems"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connection_status__connected
+msgid "Connected"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Connected to %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connection_status__connecting
+msgid "Connecting..."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Connection"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Connection Failed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Connection Successful"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Connection Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Connection test failed: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__connector_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__connector_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__connector_id
+msgid "Connector"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Connector Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__name
+msgid "Connector Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__connector_type
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__connector_type
+msgid "Connector Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Connector Types:"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_integration_connectors
+msgid "Connectors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_input_line__column_type__constant
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Constant"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Constant Columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__constant_value
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_type__constant
+msgid "Constant Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_compute_sample_wizard_form
+msgid "Continue"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Conversion failed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Converted Python"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "Copied"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Copy"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__include_expected
+msgid "Copy computed values as expected results for validation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Copy to Expected"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__country_code
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__country_code
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Country"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__country_code
+msgid "Country Filter"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__country_id
+msgid "Country Reference"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__create_input_columns
+msgid "Create Input Columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__create_new
+msgid "Create New Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__create_payslips
+msgid "Create Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__sync_mode__sample
+msgid "Create Sample Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_import_wizard__create_input_columns
+msgid "Create input columns for salary rules that use inputs"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__create_payslips
+msgid "Create payslips for matched/created employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_formula_rule
+msgid ""
+"Create rules with Excel-like column letters and formulas.\n"
+"                Use column types: Input (from data source), Formula (calculated), or Constant."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_sample_data
+msgid "Create sample data for formula testing"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_formula_config
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_formula_config_kanban
+msgid "Create your first Formula Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_payroll_import_batch
+msgid "Create your first Payroll Import Batch"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Created"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__created_contract_ids
+msgid "Created Contracts"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__created_employee_ids
+#, python-format
+msgid "Created Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__created_payslip_ids
+#, python-format
+msgid "Created Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Created Records"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__create_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__create_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__payslip_id
+msgid "Created payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Credentials"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__currency_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__currency_id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__number_format__currency
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__currency
+msgid "Currency"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payroll_period__current
+msgid "Current Month"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payroll_period__custom
+msgid "Custom Period"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__theme__dark
+msgid "Dark Theme"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__loaded
+msgid "Data Loaded"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__source
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Data Source"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__connector_id
+msgid "Data Source Connector"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__file_data_start_row
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_data_start_row
+msgid "Data Start Row"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_match_wizard_form
+msgid "Data from Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__is_anonymized
+msgid "Data has been anonymized (names/IDs removed)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__date
+msgid "Date"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__date_from
+msgid "Date From"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Date Range"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__date_to
+msgid "Date To"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__source_date
+msgid "Date when sample data was captured"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__datetime
+msgid "Date/Time"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__float
+msgid "Decimal"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__decimal_places
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_decimals
+msgid "Decimal Places"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__default_column_width
+msgid "Default Column Width (px)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__credit_account_id
+msgid "Default Credit Account"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__debit_account_id
+msgid "Default Debit Account"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__default_value
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__default_value
+msgid "Default Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__credit_account_id
+msgid ""
+"Default credit account to assign when creating salary rules from this "
+"formula configuration."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__debit_account_id
+msgid ""
+"Default debit account to assign when creating salary rules from this formula"
+" configuration."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__default_value
+msgid "Default value when source field is empty"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_formula_rule
+msgid "Define formula-based salary rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Delete"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Delete Column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__formula_dependencies
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Dependencies"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__description
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__description
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__description
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Description"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__name
+msgid ""
+"Descriptive name (e.g., 'Employee A', 'High Earner', 'Part-time Worker')"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__description
+msgid "Detailed description of this configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__formula_computation_log
+msgid "Detailed log of formula computations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__sequence
+msgid "Determines column order. Lower numbers appear first (left)."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__sequence
+msgid "Determines display order"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__difference
+msgid "Difference"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__direct
+msgid "Direct Copy"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connection_status__disconnected
+msgid "Disconnected"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Discover Fields"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__discrepancy_count
+msgid "Discrepancies"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__discrepancy_percent
+msgid "Discrepancy %"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Display"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__display_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_name
+msgid "Display name of the column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__name
+msgid "Display name shown in column header"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__divide
+msgid "Divide by Factor"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
+#, python-format
+msgid "Division by zero in transformation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__state__done
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payslip_state__done
+msgid "Done"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form
+msgid "Download Template"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payslip_state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__draft
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__draft
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Draft"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Duplicate"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Duplicate Column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Duplicate rule codes found! Each rule must have a unique code."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Edit Formula"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Edit Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_editable
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__is_editable
+msgid "Editable"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__employee_email
+msgid "Email from Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_id
+msgid "Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_code
+msgid "Employee Code"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_email
+msgid "Employee Email"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__matched
+msgid "Employee Matched"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Employee Matching"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_name
+msgid "Employee Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_code
+msgid "Employee code/ID from Excel (used for matching)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_email
+msgid "Employee email from Excel (used for matching)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_name
+msgid "Employee name from Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__employee_ids
+msgid "Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__matched
+msgid "Employees Matched"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Endpoint"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Enter formula (e.g., =A1+B1*0.08)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Enter test values for each input column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_test_result__status__error
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connection_status__error
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__error
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__error
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Error"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__error_lines
+msgid "Error Lines"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Error Log"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__error_message
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__error_message
+msgid "Error Message"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__validation_message
+msgid "Error message if formula is invalid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Errors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Errors found:\n"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__source_sample_value
+msgid "Example value from source system"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Examples"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+msgid "Excel File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__excel
+msgid "Excel File Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__excel_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Excel Formula"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_rule
+msgid "Excel Formula Salary Rule"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Excel Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Excel Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Excel import is only available for Excel connector"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_letter
+msgid "Excel-style column letter (A, B, C...)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__excel_formula
+msgid ""
+"Excel-style formula (e.g., =A1+B1*0.08, =SUM(A1:C1), =IF(A1>1000,B1*0.1,0))"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__import_file
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__source_type__excel
+msgid "Excel/CSV File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__expected_value
+msgid "Expected"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Expected Results"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Expected Values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__expected_values_json
+msgid "Expected Values (JSON)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Export failed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_value
+msgid "Factor/Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__validation_status__failed
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_test_result__status__failed
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__last_sync_status__failed
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Failed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Failed to add column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Failed to delete column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Failed to duplicate column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Failed to fetch fields: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#, python-format
+msgid "Failed to initialize grid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#, python-format
+msgid "Failed to load file"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Failed to parse file: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "Failed to read Excel file: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#, python-format
+msgid "Failed to reorder columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#, python-format
+msgid "Failed to save changes"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#, python-format
+msgid "Failed to save formula"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Features"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Fetch Fields"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
+msgid "Field Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_field_mapping
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__field_mapping_ids
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_integration_mappings
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_tree
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+#, python-format
+msgid "Field Mappings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__source_field
+msgid ""
+"Field name or path in source system (e.g., 'base_salary', "
+"'employee.department.name')"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__data_source_field
+msgid "Field path in source data (e.g., 'base_salary', 'hours_worked')"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__field_count
+msgid "Fields Discovered"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Fields Fetched"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "File Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "File Sample %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "File Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "File Upload"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__import_filename
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__import_filename
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__import_filename
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__import_filename
+msgid "Filename"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__file_data_start_row
+msgid "First row containing data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+msgid "First row headers; subsequent rows are samples."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__match_by_code
+msgid "First try to match employees by their code/ID"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__constant_value
+msgid "Fixed value for constant columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_follower_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_follower_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_partner_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_partner_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__activity_type_icon
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__activity_type_icon
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_decimals
+msgid "For rounding transformation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Formatting"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+#, python-format
+msgid "Formula"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:res.groups,name:pb_hr_payroll_formula.group_formula_admin
+msgid "Formula Administrator"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Formula Columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_formula.py:0
+#, python-format
+msgid "Formula Computation Log"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_structure__formula_config_count
+msgid "Formula Configs"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__config_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__config_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__formula_config_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__formula_config_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__formula_config_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Formula Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Formula Configuration Grid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_import_wizard
+msgid "Formula Configuration Import Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payroll_structure_formula.py:0
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_formula_config
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_structure__formula_config_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_tree
+#, python-format
+msgid "Formula Configurations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip__calculation_method__formula
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_root
+msgid "Formula Engine"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
+msgid "Formula Grid Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:res.groups,name:pb_hr_payroll_formula.group_formula_manager
+msgid "Formula Manager"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.module.category,name:pb_hr_payroll_formula.module_category_formula_payroll
+msgid "Formula Payroll"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__rule_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Formula Rule"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_formula_rule
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__formula_rule_count
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__rule_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_tree
+msgid "Formula Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_sample_data
+msgid "Formula Sample Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_sample_input_line
+msgid "Formula Sample Input Line"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_test_result
+msgid "Formula Test Result"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:res.groups,name:pb_hr_payroll_formula.group_formula_user
+msgid "Formula User"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+#, python-format
+msgid "Formula cannot reference its own column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__computed_values_json
+msgid "Formula computation results as JSON"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_formula.py:0
+#, python-format
+msgid ""
+"Formula configuration '%s' is not active. Please activate it before using "
+"for payroll."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__formula_config_id
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__formula_config_id
+msgid "Formula configuration to use for salary calculations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__formula_config_id
+msgid "Formula configuration used for computation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_formula_config
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_formula_config_kanban
+msgid ""
+"Formula configurations allow you to define Excel-like formulas\n"
+"                for salary calculations. Create rules, assign column letters,\n"
+"                and define formulas using familiar Excel syntax."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+#, python-format
+msgid "Formula must start with '='"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_rule_id
+msgid "Formula rule to receive this value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#, python-format
+msgid "Formula saved"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_valid
+msgid "Formula validation status"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.module.category,description:pb_hr_payroll_formula.module_category_formula_payroll
+msgid "Formula-based payroll calculation module"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Formulas"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Formulas Regenerated"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Formulas converted to Python"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__source_type__employee
+msgid "From Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__employees
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "From Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__excel
+msgid "From Excel File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__payslips
+msgid "From Existing Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__salary_rules
+msgid "From Existing Salary Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__json
+msgid "From JSON File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__structure
+msgid "From Payroll Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__source_type__payslip
+msgid "From Payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "From Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__frozen_columns
+msgid "Frozen Columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__sync_mode__full
+msgid "Full Sync"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__random
+msgid "Generate Random Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_formula_sample_data_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+#, python-format
+msgid "Generate Sample Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+msgid "Generate Samples"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Generate Test Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "Generated Samples"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Grid Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__theme
+msgid "Grid Theme"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Group By"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "HR System Connector"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_integration_connector
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_integration_connector_kanban
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_tree
+msgid "HR System Connectors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_integration_connector
+msgid "HR System Integration Connector"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__connector_id
+msgid "HR system connector for importing payroll input data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__computed_values_html
+msgid "HTML table view of computed values for quick inspection"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__has_circular_refs
+msgid "Has Circular References"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__has_errors
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "Has Errors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__has_formula_errors
+msgid "Has Formula Errors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__has_message
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__has_message
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__file_header_row
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_header_row
+msgid "Header Row"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__source_field_label
+msgid "Human-readable name from source system"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_exception_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_exception_icon
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__activity_exception_icon
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__activity_exception_icon
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Identification"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__message_needaction
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__message_needaction
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__message_has_error
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__message_has_sms_error
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__message_has_error
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__message_has_sms_error
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_has_error
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__match_by_email
+msgid "If code match fails, try matching by email"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form
+msgid "Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__batch_id
+msgid "Import Batch"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Import Batch Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_import_batches
+msgid "Import Batches"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Import Excel File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__import_file
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__import_file
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__import_file
+msgid "Import File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_formula_import_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form
+msgid "Import Formula Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__line_id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Import Line"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__import_line_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_tree
+msgid "Import Lines"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__import_source
+msgid "Import Source"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_sample_data
+msgid ""
+"Import data from real employees/payslips (anonymized) or create\n"
+"                manual test cases to validate your formula configurations."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Import from Payroll Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Import from Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_payroll_import_batch
+msgid ""
+"Import payroll data from Excel files and automatically create\n"
+"                employees, contracts, and payslips using formula-based calculations."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__source_type__import
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__file
+msgid "Imported from File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "In Progress"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__include_expected
+msgid "Include Expected Values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__in
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__in
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "India"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__id
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__id
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "Indonesia"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_input_line__column_type__input
+#, python-format
+msgid "Input"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__column_type__input
+msgid "Input (from data source)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Input Columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "Input Lines Generated"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__input_rule_count
+msgid "Input Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Input Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__input_line_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Input Values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__input_values_json
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__formula_input_values
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Input Values (JSON)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Input Values (Table)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__formula_input_values
+msgid "Input values used for formula computation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
+#, python-format
+msgid "Input: %s -> Output: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Insert Column Left"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Insert Column Right"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__number_format__integer
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__integer
+msgid "Integer"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__source_type__connector
+msgid "Integration Connector"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_integration_sync_wizard
+msgid "Integration Data Sync Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_integration_field_mapping
+msgid "Integration Field Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_integrations
+msgid "Integrations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Invalid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "Invalid JSON file: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+#, python-format
+msgid "Invalid column reference: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "Invalid import source"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_is_follower
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_is_follower
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__is_mapped
+msgid "Is Mapped"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "JSON Input Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__expected_values_json
+msgid "JSON object with expected calculated values for comparison"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__computed_values_json
+msgid "JSON object with formula-computed values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__input_values_json
+msgid ""
+"JSON object with input column values: {'BASIC': 10000, 'HOURS': 176, ...}"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__payroll_journal_id
+msgid ""
+"Journal to use when creating payslips. If empty, falls back to the "
+"configuration's journal or the first general journal."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_import_wizard__preserve_existing
+msgid "Keep existing rules in the configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "Label"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__name
+msgid "Label/Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__last_computed
+msgid "Last Computed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_error
+msgid "Last Error"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_import_filename
+msgid "Last Filename"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Last Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_import_file
+msgid "Last Imported File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line____last_update
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_sync
+msgid "Last Sync"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_sync_message
+msgid "Last Sync Message"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_sync_status
+msgid "Last Sync Status"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__write_uid
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__write_date
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__last_validated
+msgid "Last Validated"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+msgid "Leave empty to use all active employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_sync_wizard__config_id
+msgid "Leave empty to use connector's linked configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+msgid "Leave empty to use recent payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__text_align__left
+msgid "Left"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__theme__light
+msgid "Light Theme"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__rule_id
+msgid "Link to the formula rule this input corresponds to"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__structure_id
+msgid "Link to the payroll structure this config applies to"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__salary_rule_id
+msgid "Linked Salary Rule"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__formula_dependencies
+msgid "List of columns this formula depends on"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Load File"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Load Input Columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "Loading grid..."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_main_attachment_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_main_attachment_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__my
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__my
+msgid "Malaysia"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__source_type__manual
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__manual
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__source_type__manual
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Manual Entry"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Manual Match"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__map_categories
+msgid "Map Categories"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__state__mapping
+msgid "Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
+#, python-format
+msgid "Mapping Error"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
+#, python-format
+msgid "Mapping Test"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__mapping_count
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Mappings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_required
+msgid "Mark as required input for payroll calculation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_line.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_match_wizard_form
+#, python-format
+msgid "Match Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_payroll_import_line_match_wizard
+msgid "Match Employee Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Match Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_match_wizard_form
+msgid "Match To"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__match_by_email
+msgid "Match by Email"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__match_by_code
+msgid "Match by Employee Code"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__employee_id
+msgid "Match to Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__matched_employees
+msgid "Matched Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Matched Records"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_id
+msgid "Matched or created employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__max_discrepancy
+msgid "Max Discrepancy %"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__max_value
+msgid "Max Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__max_records
+msgid "Maximum Records"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__max_salary
+msgid "Maximum Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__max_value
+msgid "Maximum allowed value (leave empty for no limit)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__max_discrepancy
+msgid "Maximum discrepancy percentage among all columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_sync_wizard__max_records
+msgid "Maximum number of records to sync"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_has_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_has_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__calculation_method
+msgid "Method used to compute this payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__min_value
+msgid "Min Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__min_salary
+msgid "Minimum Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__min_value
+msgid "Minimum allowed value (leave empty for no limit)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_value
+msgid "Multiplication factor, divisor, or value to add/subtract"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__multiply
+msgid "Multiply by Factor"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__my_activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_name
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__employee_name
+msgid "Name from Excel"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__file_sheet_name
+msgid "Name of sheet to import (leave empty for first sheet)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_sheet_name
+msgid "Name of the Excel sheet to import (leave empty for first sheet)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__is_new_employee
+msgid "New Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__new_employees
+msgid "New Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_import_new
+msgid "New Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "New Import Batch"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_payroll_import_batch_new
+#, python-format
+msgid "New Payroll Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_calendar_event_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_date_deadline
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_summary
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_summary
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_type_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_type_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "No Input Values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payroll_structure_formula.py:0
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_formula.py:0
+#, python-format
+msgid ""
+"No active formula configuration found. Please create and activate a formula "
+"configuration first."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "No data found in file."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#, python-format
+msgid "No field mappings configured"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_formula.py:0
+#, python-format
+msgid ""
+"No formula configuration found for this payslip. Please configure formula "
+"rules or use standard computation."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid ""
+"No general journal found for company %s. Please set a Payroll Journal on the"
+" batch or configuration."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "No headers matched any rule codes or names."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "No sample data could be generated"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "No sample data yet. Add sample data to test your formulas."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/compute_sample_wizard.py:0
+#, python-format
+msgid "No sample selected."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_test_results
+msgid "No test results yet"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_kanban
+msgid "Not tested yet"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__note
+msgid "Note"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__notes
+msgid "Notes"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__number_format__number
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__number
+msgid "Number"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__number_format
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Number Format"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_needaction_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__sample_count
+msgid "Number of Samples"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__frozen_columns
+msgid "Number of columns to freeze on the left"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__discrepancy_count
+msgid "Number of columns with value mismatch"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_has_error_counter
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__message_needaction_counter
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__message_needaction_counter
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__message_has_error_counter
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__message_has_error_counter
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__sample_count
+msgid "Number of random samples to generate"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__auth_type__oauth2
+msgid "OAuth 2.0"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "OAuth 2.0 Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__oauth_scope
+msgid "OAuth Scope"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "On Payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__payroll_journal_id
+msgid ""
+"Optional default journal to use when creating payslips from this "
+"configuration."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__salary_rule_id
+msgid "Optional link to standard Odoo salary rule"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_import_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Options"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__oracle
+msgid "Oracle HCM"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__source_employee_id
+msgid "Original employee (for anonymized data)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__source_payslip_id
+msgid "Original payslip used for expected values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__raw_data_json
+msgid "Original row data from Excel as JSON"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__last_sync_status__partial
+msgid "Partial Success"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__validation_status__passed
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_test_result__status__passed
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Passed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__password
+msgid "Password"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Paste"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_payslip
+msgid "Pay Slip"
+msgstr "Phiếu lương"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_payroll_import_batch
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_import
+msgid "Payroll Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_payroll_import_batch
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Payroll Import Batch"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_tree
+msgid "Payroll Import Batches"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_payroll_import_line
+msgid "Payroll Import Line"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__payroll_journal_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__payroll_journal_id
+msgid "Payroll Journal"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__payroll_period
+msgid "Payroll Period"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__structure_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__structure_id
+msgid "Payroll Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__payslip_id
+msgid "Payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Payslip Options"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__payslip_run_id
+msgid "Payslip Run"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__payslip_state
+msgid "Payslip State"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__payslip_ids
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__validation_status__pending
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Pending"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__validation_status__pending
+msgid "Pending Validation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__number_format__percentage
+msgid "Percentage"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Period"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__date_to
+msgid "Period End"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__date_from
+msgid "Period Start"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__ph
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__ph
+msgid "Philippines"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid ""
+"Please click \"Load Input Columns\" first to populate the table, then enter "
+"values before computing."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Please load data first."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Please match employees first."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
+#, python-format
+msgid "Please provide a sample value to test"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Please select a Formula Configuration first."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Please select a column first"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "Please select a data source"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "Please select a payroll structure"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#, python-format
+msgid "Please select a target configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_line.py:0
+#, python-format
+msgid "Please select an employee or mark as new"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "Please select salary rules to import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "Please upload a JSON file"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "Please upload a file"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#, python-format
+msgid "Please upload a file first"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Please upload a file first."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "Please upload an Excel file"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Please validate data first."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__preserve_existing
+msgid "Preserve Existing Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_import_wizard__map_categories
+msgid "Preserve salary rule categories"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__state__preview
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Preview"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__preview_data
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Preview Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__sync_mode__preview
+msgid "Preview Only"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payroll_period__previous
+msgid "Previous Month"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Process All"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__processed
+msgid "Processed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__processed_lines
+msgid "Processed Lines"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__processing
+msgid "Processing"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__processing_log
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Processing Log"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+#, python-format
+msgid "Processing failed: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__python_formula
+msgid "Python Code"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_code
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__python
+msgid "Python Expression"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__is_required
+msgid "Raise error if this field is missing in source data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
+msgid "Random Generation Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Raw Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__raw_data_json
+msgid "Raw Data (JSON)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_line.py:0
+#, python-format
+msgid "Raw Data - Row %d"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Recompute"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "Recomputed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__record_count
+msgid "Records Found"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__code
+msgid "Reference Code"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__refresh_token
+msgid "Refresh Token"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Refresh all Python formulas using latest conversion engine"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Regenerate Formulas"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Regeneration Complete with Errors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__anonymize
+msgid "Replace employee names with generic identifiers"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_required
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__is_required
+msgid "Required"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
+#, python-format
+msgid "Required field '%s' is missing in source data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Reset to Draft"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_user_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_user_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Results"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Retry"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__text_align__right
+msgid "Right"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__round
+msgid "Round to Decimals"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__sequence
+msgid "Row #"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_line.py:0
+#, python-format
+msgid "Row %d: Missing employee name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_line.py:0
+#, python-format
+msgid "Row %d: Missing required field '%s' (%s)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__grid_row_height
+msgid "Row Height (px)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__file_header_row
+msgid "Row number containing column headers"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_header_row
+msgid "Row number containing column headers (1-based)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_data_start_row
+msgid "Row number where data starts (1-based)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__rule_code
+msgid "Rule Code"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__rule_name
+msgid "Rule Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.constraint,message:pb_hr_payroll_formula.constraint_hr_formula_rule_code_config_uniq
+msgid "Rule code must be unique within the configuration!"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__rule_count
+msgid "Rules Count"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Run All Tests"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_compute_wizard
+msgid "Run Sync & Compute"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
+#, python-format
+msgid "Run Tests"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_test_results
+msgid "Run tests on sample data to see results here."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__sap
+msgid "SAP SuccessFactors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_has_sms_error
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__salary_rule_ids
+msgid "Salary Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_payroll_structure
+msgid "Salary Structure"
+msgstr "Cấu trúc lương"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_formula_config_kanban
+msgid "Salary Structure Configurations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__category_id
+msgid "Salary rule category for grouping"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_code
+msgid "Salary rule code (e.g., BASIC, HRA)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__sample_id
+msgid "Sample"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__sample_count
+msgid "Sample Count"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_sample_data
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__sample_data_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__sample_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__sample_id
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_sample_data
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_tree
+#, python-format
+msgid "Sample Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Sample Data & Testing"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_sample_data_wizard
+msgid "Sample Data Generation Wizard"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Sample Info"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__name
+msgid "Sample Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__source_sample_value
+msgid "Sample Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "Sample data values have been recomputed."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "Search Formula Configurations"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Search Formula Rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Search Import Batches"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Search Sample Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__employee_id
+msgid "Select existing employee to match"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__sequence
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Set to Draft"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_settings
+#, python-format
+msgid "Settings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__state__setup
+msgid "Setup"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__file_sheet_name
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_sheet_name
+msgid "Sheet Name"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__show_column_letters
+msgid "Show Column Letters"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__show_formula_bar
+msgid "Show Formula Bar"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__show_gridlines
+msgid "Show Gridlines"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_visible_in_grid
+msgid "Show this column in the Excel grid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__appears_on_payslip
+msgid "Show this component on payslip document"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__sg
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__sg
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "Singapore"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
+msgid "Skip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__source_type
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "Source"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Source Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__source_data_type
+msgid "Source Data Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__source_date
+msgid "Source Date"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__source_employee_id
+msgid "Source Employee"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__source_field_label
+msgid "Source Field Label"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__data_source_field
+msgid "Source Field Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__source_field
+msgid "Source Field Path"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__source_payslip_id
+msgid "Source Payslip"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__source_type
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+msgid "Source Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip__calculation_method__spreadsheet
+msgid "Spreadsheet Import"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payslip__calculation_method__standard
+msgid "Standard (Salary Rules)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Start Testing"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__state
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
+msgid "State"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__payslip_state
+msgid "State to set for created payslips"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "Statistics"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__state
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__validation_status
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__status
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__connection_status
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__state
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__state
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Status"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__activity_state
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__activity_state
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "Structure"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__subtract
+msgid "Subtract Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__last_sync_status__success
+msgid "Success"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_formula.py:0
+#, python-format
+msgid "Switched to Formula Mode"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "Sync"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_compute_sample_wizard
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Sync & Compute"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+#, python-format
+msgid "Sync Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Sync Data from External System"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_integration_sync_wizard
+msgid "Sync External Data"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__sync_interval
+msgid "Sync Interval (minutes)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__sync_mode
+msgid "Sync Mode"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Sync Now"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Sync completed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Sync failed: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "Synced & Computed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
+msgid "Target"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_rule_code
+msgid "Target Code"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_column_letter
+msgid "Target Column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__config_id
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__config_id
+msgid "Target Configuration"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_rule_id
+msgid "Target Formula Rule"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
+msgid "Test Connection"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__test_date
+msgid "Test Date"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_test_result_form
+msgid "Test Info"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
+msgid "Test Mapping"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_test_result_form
+msgid "Test Result"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_test_results
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__test_result_ids
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_test_results
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_test_result_tree
+msgid "Test Results"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Test execution failed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__state__testing
+#: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_testing
+msgid "Testing"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Tests"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Tests Complete"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__validation_status__failed
+msgid "Tests Failed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__string
+msgid "Text"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__text_align
+msgid "Text Alignment"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__th
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__th
+msgid "Thailand"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_structure__active_formula_config_id
+msgid "The currently active formula configuration for this structure"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__value
+msgid "The input value for this column"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/compute_sample_wizard.py:0
+#, python-format
+msgid ""
+"The input values you enter here are computed for testing only. This does not"
+" impact any live or posted payroll data."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "This will create employees, contracts and payslips. Continue?"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "Toggle Theme"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__token_expiry
+msgid "Token Expiry"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__oauth_token_url
+msgid "Token URL"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Token refresh failed: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#, python-format
+msgid "Token refresh is only available for OAuth 2.0"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "Tokens"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__total_lines
+msgid "Total Lines"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__total_synced_employees
+msgid "Total Synced Employees"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__total_synced_records
+msgid "Total Synced Records"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_type
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
+msgid "Transformation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__is_new_employee
+msgid "True if employee needs to be created"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__has_circular_ref
+msgid "True if formula creates a circular reference"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_type
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+#, python-format
+msgid "Type"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__activity_exception_decoration
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__activity_exception_decoration
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+#, python-format
+msgid "Unbalanced parentheses"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__code
+msgid "Unique code for this configuration (e.g., VN_STD_2024)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__code
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_rule_code
+msgid "Unique code for this rule (e.g., BASIC, HRA, PIT)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
+#: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
+#, python-format
+msgid "Unknown connector type: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__unmatched
+msgid "Unmatched"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__default_if_empty
+msgid "Use Default if Empty"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_structure__use_formula_computation
+msgid "Use Formula Computation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_structure__use_formula_computation
+msgid "Use formula-based computation instead of standard salary rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__input_line_ids
+msgid "User-friendly input values for testing"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__username
+msgid "Username"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/hr_payslip_formula.py:0
+#, python-format
+msgid "Using configuration: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_valid
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
+msgid "Valid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+#, python-format
+msgid "Validate"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
+#, python-format
+msgid "Validate All"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "Validate Formulas"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__state__validated
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__validated
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__validated
+msgid "Validated"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__last_validated_by
+msgid "Validated By"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Validation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Validation Complete"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "Validation Log"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__validation_message
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__validation_message
+msgid "Validation Message"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__validation_status
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Validation Status"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "Validation failed"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
+#, python-format
+msgid "Validation failed. Please fix errors before activating."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__value
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "Value"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
+#, python-format
+msgid "Value Comparison: %s"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__default_value
+msgid "Value to use when source field is empty"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_test_result_form
+msgid "Values"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__vn
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__country_code__vn
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
+msgid "Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
+#, python-format
+msgid "View Dependencies"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "Visibility"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_visible_in_grid
+msgid "Visible in Grid"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payslip_state__verify
+msgid "Waiting"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__validation_status__warning
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_test_result__status__warning
+msgid "Warning"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__validation_status__warning
+msgid "Warnings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__website_message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__website_message_ids
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__website_message_ids
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__website_message_ids
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__is_editable
+msgid "Whether this value can be edited (only input columns are editable)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__column_width
+msgid "Width (px)"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__workday
+msgid "Workday"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__boolean
+msgid "Yes/No"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__zoho
+msgid "Zoho People"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "Zoom In"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "Zoom Out"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "columns"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_kanban
+msgid "discrepancies"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "e.g., =A1+B1*0.08"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "e.g., BASIC"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "e.g., Basic Salary"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "e.g., High Earner Sample"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
+msgid "e.g., Vietnam Standard Payroll 2024"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
+msgid "e.g., Zoho People - Vietnam"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
+msgid "e.g., basic_salary"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "errors"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
+#, python-format
+msgid "fx"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
+msgid "lines have errors. Please review and fix before processing."
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
+msgid "mappings"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#, python-format
+msgid "openpyxl library required for template generation"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
+#: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
+#, python-format
+msgid "openpyxl library required. Install with: pip install openpyxl"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_kanban
+msgid "rules"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
+#, python-format
+msgid "samples"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "{\"BASIC\": 10000000, \"HRA\": 2000000, ...}"
+msgstr ""
+
+#. module: pb_hr_payroll_formula
+#: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
+msgid "{\"GROSS\": 12500000, \"NET\": 10000000, ...}"
+msgstr ""
