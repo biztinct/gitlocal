@@ -548,7 +548,7 @@
                             transform: translate(30px, -50%);
                             background: #ffffff;
                             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
-                            z-index: 9999;
+                            z-index: 1040; /* Below Odoo modal dialogs (1050+) */
                             transition: transform 0.35s ease, opacity 0.3s ease;
                             opacity: 0;
                             display: flex;
