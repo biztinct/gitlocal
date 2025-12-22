@@ -221,6 +221,11 @@ class HRFlowWizard(models.TransientModel):
             'govt-d01': ('_govt_report', 'd01'),
             'govt-tang': ('_govt_report', 'tang_ld'),
             'govt-giam': ('_govt_report', 'giam_ld'),
+            'govt-monthly-bhxh630': ('pb_hr_govt.action_govt_monthly_bhxh630', False),
+            'govt-monthly-bhxhdstk01': ('pb_hr_govt.action_govt_monthly_bhxhdstk01', False),
+            'govt-monthly-d01': ('pb_hr_govt.action_govt_monthly_bangke_d01', False),
+            'govt-monthly-giam': ('pb_hr_govt.action_govt_monthly_giam_ld', False),
+            'govt-monthly-tang': ('pb_hr_govt.action_govt_monthly_tang_ld', False),
             # Analytics - Uses server action to prepare dashboard
             'analytics-dashboard': ('pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard', False),
         }

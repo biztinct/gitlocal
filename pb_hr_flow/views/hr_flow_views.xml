@@ -650,6 +650,38 @@
                             margin: 0;
                         }
 
+                        .govt-monthly-dialog {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                            gap: 12px;
+                            padding: 8px 4px;
+                        }
+
+                        .govt-monthly-button {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 8px;
+                            padding: 12px 14px;
+                            border-radius: 10px;
+                            border: 1px solid #d8e2f0;
+                            background: #f8fafc;
+                            color: #1f2d3d;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+                        }
+
+                        .govt-monthly-button:hover {
+                            border-color: #a9c5ff;
+                            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.16);
+                            transform: translateY(-1px);
+                        }
+
+                        .govt-monthly-button i {
+                            color: #2563eb;
+                        }
+
                         /* Prevent text selection during interactions */
                         .circular-workflow * {
                             user-select: none;
