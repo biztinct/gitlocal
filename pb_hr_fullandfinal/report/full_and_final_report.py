@@ -129,6 +129,7 @@ class ReportFullAndFinal(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         employees = self.env['hr.employee'].browse(docids)
+        vnd_currency = self.env['res.currency'].search([('name', '=', 'VND')], limit=1)
         payslip_data = {}
         for employee in employees:
             payslip = self.env['hr.payslip'].search(
@@ -137,9 +138,15 @@ class ReportFullAndFinal(models.AbstractModel):
                 limit=1,
             )
             components = self._compute_components(payslip)
+            settlement_date = employee.departure_date or (payslip.date_to if payslip else False)
+            settlement_month = ''
+            if settlement_date:
+                settlement_month = settlement_date.strftime('%m/%Y')
             payslip_data[employee.id] = {
                 'payslip': payslip,
                 'components': components,
+                'currency': vnd_currency or employee.company_id.currency_id,
+                'settlement_month': settlement_month,
             }
         return {
             'doc_ids': employees.ids,
