@@ -15,48 +15,219 @@
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
                     <div class="page">
-                        <h2>Full and Final Settlement</h2>
-                        <p>
-                            <strong>Employee:</strong>
-                            <span t-esc="o.name"/>
-                        </p>
-                        <p>
-                            <strong>Last Date in Company:</strong>
-                            <span t-field="o.departure_date"/>
-                        </p>
+                        <table style="width: 100%; border: 0;" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 40%; vertical-align: top;">
+                                        <t t-if="o.company_id.logo">
+                                            <img t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 90px;" alt="Company Logo"/>
+                                        </t>
+                                    </td>
+                                    <td style="width: 60%; text-align: right; vertical-align: middle;">
+                                        <h2>Full and Final Settlement</h2>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                         <t t-set="data" t-value="payslip_data.get(o.id) or {}"/>
-                        <t t-if="data.get('payslip')">
-                            <p>
-                                <strong>Latest Payslip Period:</strong>
-                                <span t-field="data['payslip'].date_from"/>
-                                <span>-</span>
-                                <span t-field="data['payslip'].date_to"/>
-                            </p>
-                            <table class="table table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Description</th>
-                                        <th class="text-right">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Net Pay (latest payslip)</td>
-                                        <td class="text-right">
-                                            <span t-esc="data.get('net_amount')"
+                        <t t-set="components" t-value="data.get('components') or {}"/>
+
+                        <table class="table table-sm" style="width: 100%; margin-top: 10px;">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 25%;"><strong>Employee ID / Mã NV</strong></td>
+                                    <td style="width: 25%;"><span t-esc="o.employee_id or ''"/></td>
+                                    <td style="width: 25%;"><strong>Department / Phòng ban</strong></td>
+                                    <td style="width: 25%;"><span t-field="o.department_id"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Position / Chức danh</strong></td>
+                                    <td><span t-field="o.job_id"/></td>
+                                    <td><strong>Date of Joining / Ngày vào làm</strong></td>
+                                    <td><span t-field="o.contract_id.date_start"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Exit Reason / Lý do nghỉ việc</strong></td>
+                                    <td colspan="3"><span t-field="o.departure_reason_id"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Last Date in Company</strong></td>
+                                    <td><span t-field="o.departure_date"/></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-sm" style="width: 100%; margin-top: 10px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">EARNINGS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Basic Salary / Lương cơ bản</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('basic_salary', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Allowances / Phụ cấp</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('allowances', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Overtime / Tăng ca</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('overtime', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Bonus / Thưởng</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('bonus', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Unused Leave / Phép chưa dùng</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('unused_leave', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other / Khác</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('other_earnings', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TOTAL EARNINGS / TỔNG THU (A)</strong></td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <span t-esc="components.get('total_earnings', 0.0)"
                                                   t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </t>
-                        <t t-if="not data.get('payslip')">
-                            <p>No payslip found for this employee.</p>
-                        </t>
-                        <p>
-                            <strong>Notes:</strong>
-                            Final settlement amounts can be adjusted as per company policy.
-                        </p>
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-sm" style="width: 100%; margin-top: 10px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">DEDUCTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Personal Income Tax / Thuế TNCN</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('personal_income_tax', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Social Insurance / BHXH</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('social_insurance', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Health Insurance / BHYT</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('health_insurance', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Unemployment Insurance / BHTN</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('unemployment_insurance', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Loan / Advance / Tạm ứng</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('loan_advance', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other / Khác</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('other_deductions', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TOTAL DEDUCTIONS / TỔNG KHẤU TRỪ (B)</strong></td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <span t-esc="components.get('total_deductions', 0.0)"
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-sm" style="width: 100%; margin-top: 10px;">
+                            <thead>
+                                <tr>
+                                    <th colspan="2">NET SETTLEMENT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Total Earnings (A)</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('total_earnings', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Total Deductions (B)</td>
+                                    <td class="text-right">
+                                        <span t-esc="components.get('total_deductions', 0.0)"
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>NET PAYABLE (A-B)</strong></td>
+                                    <td class="text-right">
+                                        <strong>
+                                            <span t-esc="components.get('net_payable', 0.0)"
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Amount in Words / Bằng chữ</td>
+                                    <td>
+                                        <span t-esc="o.company_id.currency_id.amount_to_text(components.get('net_payable', 0.0)) if o.company_id.currency_id else ''"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Payment Method / Hình thức</td>
+                                    <td>Bank / Cash</td>
+                                </tr>
+                                <tr>
+                                    <td>Payment Date / Ngày thanh toán</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </t>
             </t>
