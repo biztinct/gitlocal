@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_full_and_final_employee_tree" model="ir.ui.view">
+        <field name="name">hr.employee.full.and.final.tree</field>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <tree string="Full and Final" create="0" edit="0">
+                <field name="name" string="Employee Name"/>
+                <field name="departure_date" string="Last Date in Company"/>
+                <button name="action_download_full_and_final"
+                        type="object"
+                        string="Download Full and Final"
+                        class="oe_highlight"
+                        icon="fa-download"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_full_and_final_employees" model="ir.actions.act_window">
+        <field name="name">Full and Final</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_full_and_final_employee_tree"/>
+        <field name="domain">[('departure_date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('departure_date', '&lt;', (context_today() + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+</odoo>

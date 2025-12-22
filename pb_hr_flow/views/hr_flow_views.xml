@@ -433,6 +433,11 @@
                             right: 16%;
                         }
 
+                        .secondary-badges-payroll .secondary-payroll-full-final {
+                            top: 38%;
+                            right: 6%;
+                        }
+
                         /* Secondary badge positioning for Approval submenu */
                         .secondary-badges-approval .secondary-approval-pending {
                             top: 42%;
@@ -887,6 +892,13 @@
                                      class="secondary-badge secondary-payroll-payslip">
                                     <i class="fa fa-file-text-o secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Payslip List</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll-full-and-final"
+                                     class="secondary-badge secondary-payroll-full-final">
+                                    <i class="fa fa-file-pdf-o secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Full and Final</span>
                                 </div>
                             </div>
 

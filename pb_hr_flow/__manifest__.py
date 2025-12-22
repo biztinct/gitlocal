@@ -30,6 +30,7 @@ Technical Features:
     'depends': [
         'om_hr_payroll',
         'pb_hr_payroll_base',
+        'pb_hr_fullandfinal',
         'hr',
         'hr_contract',
     ],

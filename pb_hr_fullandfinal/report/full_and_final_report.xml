@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+        id="action_report_full_and_final"
+        model="hr.employee"
+        string="Full and Final"
+        report_type="qweb-pdf"
+        name="pb_hr_fullandfinal.report_full_and_final_document"
+        file="pb_hr_fullandfinal.report_full_and_final_document"
+        print_report_name="'Full and Final - %s' % (object.name)"
+    />
+
+    <template id="report_full_and_final_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Full and Final Settlement</h2>
+                        <p>
+                            <strong>Employee:</strong>
+                            <span t-esc="o.name"/>
+                        </p>
+                        <p>
+                            <strong>Last Date in Company:</strong>
+                            <span t-field="o.departure_date"/>
+                        </p>
+                        <t t-set="data" t-value="payslip_data.get(o.id) or {}"/>
+                        <t t-if="data.get('payslip')">
+                            <p>
+                                <strong>Latest Payslip Period:</strong>
+                                <span t-field="data['payslip'].date_from"/>
+                                <span>-</span>
+                                <span t-field="data['payslip'].date_to"/>
+                            </p>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th class="text-right">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Net Pay (latest payslip)</td>
+                                        <td class="text-right">
+                                            <span t-esc="data.get('net_amount')"
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                        <t t-if="not data.get('payslip')">
+                            <p>No payslip found for this employee.</p>
+                        </t>
+                        <p>
+                            <strong>Notes:</strong>
+                            Final settlement amounts can be adjusted as per company policy.
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
