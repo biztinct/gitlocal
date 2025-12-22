@@ -148,7 +148,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 govt: {
                     title: 'Government Reports',
                     items: [
-                        { label: 'Monthly Generated', icon: 'fa-calendar', desc: 'Báo cáo tháng', disabled: false, route: 'govt-monthly-generated' },
+                        { label: 'Monthly Generated Tax Reports', icon: 'fa-calendar', desc: 'Báo cáo thuế tháng', disabled: false, route: 'govt-monthly-generated', className: 'tertiary-card-wide' },
                         { label: 'BHXH630', icon: 'fa-file-excel-o', desc: 'Ốm đau/Thai sản', disabled: false, route: 'govt-bhxh630' },
                         { label: 'BHXHDSTK01-DV_595', icon: 'fa-file-excel-o', desc: 'Mẫu 595', disabled: false, route: 'govt-bhxhdstk01' },
                         { label: 'Bảng kê D01-TS', icon: 'fa-file-excel-o', desc: 'D01-TS', disabled: false, route: 'govt-d01' },
@@ -208,12 +208,19 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 $content.append($btn);
             });
             monthlyDialog = new Dialog(null, {
-                title: 'Monthly Generated',
+                title: 'Monthly Generated Tax Reports',
                 $content: $content,
-                buttons: [{ text: 'Close', close: true }],
+                buttons: [{ text: 'CLOSE', close: true }],
                 size: 'medium',
             });
             monthlyDialog.open();
+            const applyDialogClass = () => {
+                if (monthlyDialog && monthlyDialog.$modal) {
+                    monthlyDialog.$modal.addClass('govt-monthly-modal');
+                }
+            };
+            applyDialogClass();
+            setTimeout(applyDialogClass, 0);
         };
 
         const openPanel = (key, ctx = {}) => {
@@ -224,6 +231,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 data.items.forEach((item) => {
                     const card = document.createElement('div');
                     card.className = 'tertiary-card' + (item.disabled ? ' is-disabled' : '');
+                    if (item.className) {
+                        item.className.split(' ').forEach((cls) => card.classList.add(cls));
+                    }
                     card.innerHTML =
                         '<i class="fa ' + item.icon + ' tertiary-card-icon"></i>' +
                         '<p class="tertiary-card-title">' + item.label + '</p>' +
