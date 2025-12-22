@@ -31,6 +31,7 @@ Technical Features:
         'om_hr_payroll',
         'pb_hr_payroll_base',
         'pb_hr_fullandfinal',
+        'pb_hr_govt',
         'hr',
         'hr_contract',
     ],

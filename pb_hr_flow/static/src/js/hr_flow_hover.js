@@ -5,6 +5,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
     const rpc = require('web.rpc');
     const core = require('web.core');
     const session = require('web.session');
+    const Dialog = require('web.Dialog');
 
     domReady(function () {
         console.log('[HR Flow] JS loaded');
@@ -147,6 +148,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 govt: {
                     title: 'Government Reports',
                     items: [
+                        { label: 'Monthly Generated', icon: 'fa-calendar', desc: 'Báo cáo tháng', disabled: false, route: 'govt-monthly-generated' },
                         { label: 'BHXH630', icon: 'fa-file-excel-o', desc: 'Ốm đau/Thai sản', disabled: false, route: 'govt-bhxh630' },
                         { label: 'BHXHDSTK01-DV_595', icon: 'fa-file-excel-o', desc: 'Mẫu 595', disabled: false, route: 'govt-bhxhdstk01' },
                         { label: 'Bảng kê D01-TS', icon: 'fa-file-excel-o', desc: 'D01-TS', disabled: false, route: 'govt-d01' },
@@ -157,6 +159,62 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             };
 
         let isRestoring = false;
+        let monthlyDialog = null;
+
+        const runTertiaryAction = (route, closePanelOnSuccess = true) => {
+            rpc.query({
+                model: 'hr.flow.wizard',
+                method: 'get_tertiary_action',
+                args: [route],
+            }).then((action) => {
+                console.log('[HR Flow] Action resolved for route', route, action);
+                if (action && action.type) {
+                    action.context = Object.assign({}, session.user_context || {}, action.context || {});
+                    const payload = { action: action, options: {} };
+                    console.log('[HR Flow] Triggering do-action payload', payload);
+                    core.bus.trigger('do-action', payload);
+                    if (closePanelOnSuccess && action.target !== 'new') {
+                        closePanel();
+                    }
+                } else {
+                    console.warn('[HR Flow] No action resolved for', route, action);
+                }
+            }).catch((err) => {
+                console.error('[HR Flow] Failed to resolve action', route, err);
+            });
+        };
+
+        const openGovtMonthlyDialog = () => {
+            if (monthlyDialog) {
+                monthlyDialog.close();
+                monthlyDialog = null;
+            }
+            const $content = $('<div/>', { class: 'govt-monthly-dialog' });
+            const buttons = [
+                { label: 'Download BHXH630', route: 'govt-monthly-bhxh630' },
+                { label: 'Download BHXHDSTK01-DV_595', route: 'govt-monthly-bhxhdstk01' },
+                { label: 'Download Bảng kê D01-TS', route: 'govt-monthly-d01' },
+                { label: 'Download Báo giảm lao động', route: 'govt-monthly-giam' },
+                { label: 'Download Báo tăng lao động', route: 'govt-monthly-tang' },
+            ];
+            buttons.forEach((btn) => {
+                const $btn = $('<button/>', {
+                    type: 'button',
+                    class: 'govt-monthly-button',
+                });
+                $btn.append($('<i/>', { class: 'fa fa-file-excel-o' }));
+                $btn.append($('<span/>').text(btn.label));
+                $btn.on('click', () => runTertiaryAction(btn.route, false));
+                $content.append($btn);
+            });
+            monthlyDialog = new Dialog(null, {
+                title: 'Monthly Generated',
+                $content: $content,
+                buttons: [{ text: 'Close', close: true }],
+                size: 'medium',
+            });
+            monthlyDialog.open();
+        };
 
         const openPanel = (key, ctx = {}) => {
             if (!panel) return;
@@ -179,29 +237,11 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                             if (!isRestoring) {
                                 saveState(ctx.primary || key, ctx.secondary || item.route, key);
                             }
-                            rpc.query({
-                                model: 'hr.flow.wizard',
-                                method: 'get_tertiary_action',
-                                args: [item.route],
-                            }).then((action) => {
-                                console.log('[HR Flow] Action resolved for route', item.route, action);
-                                if (action && action.type) {
-                                    // Ensure context exists; merge with user_context to prevent undefined
-                                    action.context = Object.assign({}, session.user_context || {}, action.context || {});
-                                    const payload = { action: action, options: {} };
-                                    console.log('[HR Flow] Triggering do-action payload', payload);
-                                    core.bus.trigger('do-action', payload);
-                                    // Only close panel for full-screen actions (target: 'current')
-                                    // Keep panel open for modal wizards (target: 'new') so user can select another item
-                                    if (action.target !== 'new') {
-                                        closePanel();
-                                    }
-                                } else {
-                                    console.warn('[HR Flow] No action resolved for', item.route, action);
-                                }
-                            }).catch((err) => {
-                                console.error('[HR Flow] Failed to resolve action', item.route, err);
-                            });
+                            if (item.route === 'govt-monthly-generated') {
+                                openGovtMonthlyDialog();
+                                return;
+                            }
+                            runTertiaryAction(item.route, true);
                         });
                         card.style.cursor = 'pointer';
                     card.title = 'Open';

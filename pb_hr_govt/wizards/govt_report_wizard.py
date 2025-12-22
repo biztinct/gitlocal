@@ -1,6 +1,8 @@
 # Copyright 2025
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models
 
 
@@ -120,6 +122,28 @@ class PbGovtReportWizard(models.TransientModel):
         if not action_xmlid:
             return False
         return self.env.ref(action_xmlid).report_action(self)
+
+    @api.model
+    def action_export_monthly(self, report_type):
+        report_map = {
+            "bhxh630": "pb_hr_govt.report_bhxh630_xlsx",
+            "bhxhdstk01": "pb_hr_govt.report_bhxhdstk01_xlsx",
+            "bangke_d01": "pb_hr_govt.report_bangke_d01_xlsx",
+            "giam_ld": "pb_hr_govt.report_giam_ld_xlsx",
+            "tang_ld": "pb_hr_govt.report_tang_ld_xlsx",
+        }
+        action_xmlid = report_map.get(report_type)
+        if not action_xmlid:
+            return False
+        date_from = fields.Date.today().replace(day=1)
+        date_to = date_from + relativedelta(months=1, days=-1)
+        wizard = self.create({
+            "company_id": self.env.company.id,
+            "report_type": report_type,
+            "date_from": date_from,
+            "date_to": date_to,
+        })
+        return self.env.ref(action_xmlid).report_action(wizard)
 
     def action_mail_report(self):
         """Show notification about mail report feature."""
