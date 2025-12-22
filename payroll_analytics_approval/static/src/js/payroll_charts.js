@@ -770,6 +770,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 return;
             }
 
+            var recordId = this.renderer && this.renderer.state && this.renderer.state.res_id;
             var html = '';
             Object.keys(components).forEach(function (code) {
                 var component = components[code];
@@ -800,8 +801,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 var statusText = status === 'alert' ? 'Alert' :
                                 status === 'warning' ? 'Warning' : 'Normal';
 
-                html += '<tr>';
-                html += '<td><strong>' + (component.name || code) + '</strong></td>';
+                html += '<tr class="analysis-row-clickable" data-component-code="' + code + '">';
+                html += '<td><strong>' + (component.name || '') + '</strong></td>';
                 html += '<td>' + new Intl.NumberFormat().format(currentTotal) + '</td>';
                 html += '<td>' + new Intl.NumberFormat().format(previousTotal) + '</td>';
                 html += '<td>' + new Intl.NumberFormat().format(component.average || 0) + '</td>';
@@ -811,6 +812,31 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             });
 
             tbody.innerHTML = html;
+
+            if (!recordId) {
+                return;
+            }
+
+            var self = this;
+            tbody.querySelectorAll('tr[data-component-code]').forEach(function (row) {
+                row.addEventListener('click', function () {
+                    var componentCode = row.getAttribute('data-component-code');
+                    if (!componentCode) {
+                        return;
+                    }
+                    rpc.query({
+                        model: 'payroll.analytics',
+                        method: 'action_open_component_details',
+                        args: [[recordId], componentCode],
+                    }).then(function (action) {
+                        if (action && action.type) {
+                            core.bus.trigger('do-action', { action: action, options: {} });
+                        }
+                    }).catch(function (error) {
+                        console.error('Failed to open component details:', error);
+                    });
+                });
+            });
         },
 
         _generateRecommendations: function (components, comparison, alerts) {

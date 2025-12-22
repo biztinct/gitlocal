@@ -9,3 +9,4 @@ access_payroll_analytics_settings_public,payroll.analytics.settings.public,model
 access_payroll_component_mapping_public,payroll.component.mapping.public,model_payroll_component_mapping,,1,0,0,0
 access_dashboard_tile_config_public,dashboard.tile.config.public,model_dashboard_tile_config,,1,0,0,0
 access_payroll_comparison_wizard_public,payroll.comparison.wizard.public,model_payroll_comparison_wizard,,1,1,1,1
+access_payroll_analytics_component_detail_user,payroll.analytics.component.detail.user,model_payroll_analytics_component_detail,pb_hr_payroll_base.group_payroll_base_user,1,1,1,1

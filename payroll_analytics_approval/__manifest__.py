@@ -46,6 +46,7 @@
         
         # Views
         'views/payroll_analytics_dashboard.xml',
+        'views/payroll_component_detail_views.xml',
         'views/payroll_approval_views.xml',
         'views/payroll_comparison_views.xml',
         'views/bank_export_views.xml',
