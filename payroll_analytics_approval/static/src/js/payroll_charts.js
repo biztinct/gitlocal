@@ -203,28 +203,38 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         parsedAlerts = [];
                     }
 
-                    // Update metric cards
-                    self._updateMetricCards(parsedMetrics, parsedComparison);
+                    var recordId = self.renderer && self.renderer.state && self.renderer.state.res_id;
+                    var renderDashboard = function () {
+                        // Update metric cards
+                        self._updateMetricCards(parsedMetrics, parsedComparison);
 
-                    // Create charts if we have data
-                    if (Object.keys(parsedComponents).length > 0) {
-                        self._createCharts(parsedComponents, parsedComparison);
-                    } else {
-                        console.warn('No salary components data available for charts');
-                        self._showNoDataMessage();
-                    }
+                        // Create charts if we have data
+                        if (Object.keys(parsedComponents).length > 0) {
+                            self._createCharts(parsedComponents, parsedComparison);
+                        } else {
+                            console.warn('No salary components data available for charts');
+                            self._showNoDataMessage();
+                        }
 
-                    // Display alerts - now safe since parsedAlerts is guaranteed to be an array
-                    self._displayAnomalyAlerts(parsedAlerts);
+                        // Display alerts - now safe since parsedAlerts is guaranteed to be an array
+                        self._displayAnomalyAlerts(parsedAlerts);
 
-                    // Populate analysis table
-                    if (Object.keys(parsedComponents).length > 0) {
-                        self._populateAnalysisTable(parsedComponents, parsedComparison);
-                        self._generateRecommendations(parsedComponents, parsedComparison, parsedAlerts);
-                    }
+                        // Populate analysis table
+                        if (Object.keys(parsedComponents).length > 0) {
+                            self._populateAnalysisTable(parsedComponents, parsedComparison);
+                            self._generateRecommendations(parsedComponents, parsedComparison, parsedAlerts);
+                        }
 
-                    // Add animations
-                    self._addAnimations();
+                        // Add animations
+                        self._addAnimations();
+                    };
+
+                    self._hydrateComponentNames(parsedComponents, recordId).then(function (updatedComponents) {
+                        parsedComponents = updatedComponents;
+                        renderDashboard();
+                    }).catch(function () {
+                        renderDashboard();
+                    });
                     
                 } catch (error) {
                     console.error('Error setting up dashboard:', error);
@@ -274,6 +284,39 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 console.error('Error getting field value for ' + fieldName + ':', e);
                 return null;
             }
+        },
+
+        _hydrateComponentNames: function (components, recordId) {
+            if (!recordId) {
+                return Promise.resolve(components);
+            }
+
+            var codes = Object.keys(components).filter(function (code) {
+                var name = components[code] && components[code].name;
+                return !name || String(name).toUpperCase() === String(code).toUpperCase();
+            });
+
+            if (!codes.length) {
+                return Promise.resolve(components);
+            }
+
+            return rpc.query({
+                model: 'payroll.analytics',
+                method: 'get_component_name_map',
+                args: [[recordId], codes],
+            }).then(function (nameMap) {
+                if (nameMap) {
+                    Object.keys(nameMap).forEach(function (code) {
+                        if (components[code]) {
+                            components[code].name = nameMap[code] || components[code].name;
+                        }
+                    });
+                }
+                return components;
+            }).catch(function (error) {
+                console.error('Failed to load component names:', error);
+                return components;
+            });
         },
 
         _updateMetricCards: function(metrics, comparison) {
