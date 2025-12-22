@@ -157,7 +157,7 @@
                                 <table class="table table-striped analysis-table">
                                     <thead>
                                         <tr>
-                                            <th>Component</th>
+                                            <th>COMPONENT NAME</th>
                                             <th>Current Total</th>
                                             <th>Previous Total</th>
                                             <th>Average/Employee</th>

@@ -203,6 +203,14 @@
     border-bottom: 1px solid #ecf0f1;
 }
 
+.analysis-row-clickable {
+    cursor: pointer;
+}
+
+.analysis-row-clickable:hover {
+    background-color: #f8fafc;
+}
+
 .variance-positive { color: #27ae60 !important; }
 .variance-negative { color: #e74c3c !important; }
 

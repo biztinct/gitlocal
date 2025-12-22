@@ -559,6 +559,67 @@ class PayrollAnalytics(models.Model):
                 })
         
         return alerts
+
+    def _component_employee_totals(self, payslips, component_code):
+        totals = defaultdict(float)
+        lines = payslips.mapped('line_ids').filtered(lambda line: line.code == component_code)
+        for line in lines:
+            totals[line.employee_id.id] += line.total
+        return totals
+
+    def action_open_component_details(self, component_code):
+        self.ensure_one()
+        if not component_code:
+            return False
+
+        Detail = self.env['payroll.analytics.component.detail']
+        Detail.search([
+            ('analytics_id', '=', self.id),
+            ('component_code', '=', component_code),
+        ]).unlink()
+
+        current_payslips = self._get_payslips_for_period(self.country, self.date_from, self.date_to)
+        prev_month_start = (self.date_from - relativedelta(months=1)).replace(day=1)
+        prev_month_end = prev_month_start + relativedelta(months=1, days=-1)
+        previous_payslips = self._get_payslips_for_period(self.country, prev_month_start, prev_month_end)
+
+        current_totals = self._component_employee_totals(current_payslips, component_code)
+        previous_totals = self._component_employee_totals(previous_payslips, component_code)
+
+        employee_ids = set(current_totals.keys()) | set(previous_totals.keys())
+        component_name = self._get_component_name(component_code)
+        values = []
+        for employee_id in employee_ids:
+            values.append({
+                'analytics_id': self.id,
+                'component_code': component_code,
+                'component_name': component_name,
+                'employee_id': employee_id,
+                'current_total': current_totals.get(employee_id, 0.0),
+                'previous_total': previous_totals.get(employee_id, 0.0),
+                'currency_id': self.currency_id.id,
+            })
+        if values:
+            Detail.create(values)
+
+        view_id = self.env.ref('payroll_analytics_approval.view_payroll_component_detail_tree').id
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'{component_name} - Detail',
+            'res_model': 'payroll.analytics.component.detail',
+            'view_mode': 'tree',
+            'views': [(view_id, 'tree')],
+            'target': 'current',
+            'domain': [
+                ('analytics_id', '=', self.id),
+                ('component_code', '=', component_code),
+            ],
+            'context': {
+                'create': False,
+                'edit': False,
+                'delete': False,
+            },
+        }
     
     def action_approve_payroll(self):
         """Final approval action"""
