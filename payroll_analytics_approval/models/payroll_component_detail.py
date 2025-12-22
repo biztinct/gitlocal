@@ -23,8 +23,8 @@ class PayrollAnalyticsComponentDetail(models.TransientModel):
             prev = record.previous_total
             curr = record.current_total
             if prev:
-                record.variance_percent = ((curr - prev) / abs(prev)) * 100
+                record.variance_percent = (curr - prev) / abs(prev)
             elif curr:
-                record.variance_percent = 100.0
+                record.variance_percent = 1.0
             else:
                 record.variance_percent = 0.0
