@@ -373,14 +373,14 @@ class PayrollAnalytics(models.Model):
                     'total': total,
                     'average': average,
                     'count': len(lines),
-                    'name': self._get_component_name(code)
+                    'name': self._get_component_name(code, country)
                 }
         
         # Historical comparison with improved variance calculation
         comparison_data = self._get_historical_comparison(country, date_from, salary_components)
         
         # Anomaly detection
-        anomaly_alerts = self._detect_anomalies(salary_components, comparison_data)
+        anomaly_alerts = self._detect_anomalies(salary_components, comparison_data, country)
         
         return {
             'employee_metrics': json.dumps(employee_metrics),
@@ -389,7 +389,7 @@ class PayrollAnalytics(models.Model):
             'anomaly_alerts': json.dumps(anomaly_alerts)
         }
     
-    def _get_component_name(self, code):
+    def _get_component_name(self, code, country=None):
         """Get display name for component code"""
         mapping = {
             # Vietnam components
@@ -436,7 +436,38 @@ class PayrollAnalytics(models.Model):
             'PT': 'Professional Tax',
             'TDS': 'Tax Deducted at Source'
         }
-        return mapping.get(code, code)
+        if not code:
+            return ''
+
+        normalized_code = code.strip()
+        if normalized_code in mapping:
+            return mapping[normalized_code]
+
+        if country and 'hr.formula.rule' in self.env:
+            formula_rule = self.env['hr.formula.rule'].search([
+                ('code', '=', normalized_code),
+                ('config_id.country_code', '=', country),
+                ('config_id.active', '=', True),
+            ], limit=1)
+            if formula_rule and formula_rule.name:
+                return formula_rule.name
+
+            component_mapping = self.env['payroll.component.mapping'].search([
+                ('country', '=', country),
+                ('code', '=', normalized_code),
+            ], limit=1)
+            if component_mapping and component_mapping.name:
+                return component_mapping.name
+
+        salary_rule = self.env['hr.salary.rule'].search([('code', '=', normalized_code)], limit=1)
+        if salary_rule and salary_rule.name:
+            return salary_rule.name
+
+        component_mapping = self.env['payroll.component.mapping'].search([('code', '=', normalized_code)], limit=1)
+        if component_mapping and component_mapping.name:
+            return component_mapping.name
+
+        return normalized_code.replace('_', ' ').title()
     
     def _get_historical_comparison(self, country, current_date, current_components):
         """Get historical data for comparison with improved variance calculation"""
@@ -527,7 +558,7 @@ class PayrollAnalytics(models.Model):
         
         return comparison
     
-    def _detect_anomalies(self, current_components, comparison_data):
+    def _detect_anomalies(self, current_components, comparison_data, country=None):
         """Detect anomalies and generate alerts"""
         alerts = []
         
@@ -540,10 +571,10 @@ class PayrollAnalytics(models.Model):
                     alerts.append({
                         'type': 'variance',
                         'component': code,
-                        'component_name': self._get_component_name(code),
+                        'component_name': self._get_component_name(code, country),
                         'variance': variance,
                         'severity': severity,
-                        'message': f"{self._get_component_name(code)} shows {abs(variance):.1f}% {direction} from last month"
+                        'message': f"{self._get_component_name(code, country)} shows {abs(variance):.1f}% {direction} from last month"
                     })
         
         # Check for zero components that should have values
@@ -553,9 +584,9 @@ class PayrollAnalytics(models.Model):
                 alerts.append({
                     'type': 'zero_value',
                     'component': code,
-                    'component_name': self._get_component_name(code),
+                    'component_name': self._get_component_name(code, country),
                     'severity': 'high',
-                    'message': f"{self._get_component_name(code)} is zero - this may indicate an error"
+                    'message': f"{self._get_component_name(code, country)} is zero - this may indicate an error"
                 })
         
         return alerts
@@ -587,7 +618,7 @@ class PayrollAnalytics(models.Model):
         previous_totals = self._component_employee_totals(previous_payslips, component_code)
 
         employee_ids = set(current_totals.keys()) | set(previous_totals.keys())
-        component_name = self._get_component_name(component_code)
+        component_name = self._get_component_name(component_code, self.country)
         values = []
         for employee_id in employee_ids:
             values.append({
@@ -620,6 +651,13 @@ class PayrollAnalytics(models.Model):
                 'delete': False,
             },
         }
+
+    def get_component_name_map(self, codes):
+        self.ensure_one()
+        name_map = {}
+        for code in codes or []:
+            name_map[code] = self._get_component_name(code, self.country)
+        return name_map
     
     def action_approve_payroll(self):
         """Final approval action"""
