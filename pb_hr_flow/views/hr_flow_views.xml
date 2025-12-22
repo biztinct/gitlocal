@@ -650,6 +650,26 @@
                             margin: 0;
                         }
 
+                        .tertiary-card-wide {
+                            grid-column: 1 / -1;
+                            justify-self: center;
+                            width: 100%;
+                            max-width: 320px;
+                        }
+
+                        .govt-monthly-modal .modal-header {
+                            justify-content: center;
+                        }
+
+                        .govt-monthly-modal .modal-title {
+                            width: 100%;
+                            text-align: center;
+                        }
+
+                        .govt-monthly-modal .modal-footer {
+                            justify-content: center;
+                        }
+
                         .govt-monthly-dialog {
                             display: grid;
                             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
