@@ -34,6 +34,8 @@ Technical Features:
         'pb_hr_govt',
         'hr',
         'hr_contract',
+        'hr_holidays',
+        'hr_holidays_public',
     ],
     'data': [
         'security/ir.model.access.csv',

@@ -402,6 +402,11 @@
                             right: 20%;
                         }
 
+                        .secondary-badges-attendance .secondary-leaves {
+                            top: 26%;
+                            right: 26%;
+                        }
+
                         /* Secondary badge positioning for Payroll submenu (clustered near payroll node) */
                         .secondary-badges-payroll .secondary-payroll-connector {
                             top: 6%;
@@ -898,6 +903,13 @@
                                      class="secondary-badge secondary-timesheet">
                                     <i class="fa fa-table secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Timesheet</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="leaves"
+                                     class="secondary-badge secondary-leaves">
+                                    <i class="fa fa-leaf secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Leaves</span>
                                 </div>
                             </div>
 

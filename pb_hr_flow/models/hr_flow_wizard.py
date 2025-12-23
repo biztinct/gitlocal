@@ -199,6 +199,11 @@ class HRFlowWizard(models.TransientModel):
                                   'hr_timesheet.menu_hr_time_tracking'),
             'timesheet-settings': ('hr_timesheet.act_hr_timesheet_line',
                                    'hr_timesheet.menu_hr_time_tracking'),
+            # Leaves
+            'leaves-dashboard': ('hr_holidays.hr_leave_action_new_request', False),
+            'leaves-accrual': ('hr_holidays.open_view_accrual_plans', False),
+            'leaves-public-holidays': ('hr_holidays_public.open_holidays_public_view', False),
+            'leaves-approvals': ('hr_holidays.hr_leave_action_action_approve_department', False),
             # Payroll - Updated with correct kanban actions
             'payroll-connector': ('pb_hr_payroll_formula.action_integration_connector_kanban', False),
             'payroll-config': ('pb_hr_payroll_formula.action_formula_config_kanban', False),
