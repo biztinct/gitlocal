@@ -145,6 +145,15 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         { label: 'Timesheet Settings', icon: 'fa-cog', desc: 'Period locks and rules', disabled: false, route: 'timesheet-settings' },
                     ],
                 },
+                leaves: {
+                    title: 'Leaves',
+                    items: [
+                        { label: 'Leave Dashboard', icon: 'fa-dashboard', desc: 'Leave overview', disabled: false, route: 'leaves-dashboard' },
+                        { label: 'Accrual Plan', icon: 'fa-list-alt', desc: 'Accrual policies', disabled: false, route: 'leaves-accrual' },
+                        { label: 'Public Holidays', icon: 'fa-calendar', desc: 'Holiday calendar', disabled: false, route: 'leaves-public-holidays' },
+                        { label: 'Approvals', icon: 'fa-check-square-o', desc: 'Leave requests', disabled: false, route: 'leaves-approvals' },
+                    ],
+                },
                 govt: {
                     title: 'Government Reports',
                     items: [
