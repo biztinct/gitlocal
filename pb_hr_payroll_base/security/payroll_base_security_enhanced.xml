@@ -82,7 +82,27 @@
             <field name="comment">Access to Cambodia payroll system</field>
         </record>
 
-        <!-- Analytics groups are now defined in payroll_analytics_approval module -->
+        <!-- Analytics Groups -->
+        <record id="group_payroll_analytics_user" model="res.groups">
+            <field name="name">Payroll Analytics User</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[(4, ref('group_payroll_base_user'))]"/>
+            <field name="comment">Can view payroll analytics and reports</field>
+        </record>
+
+        <record id="group_payroll_analytics_manager" model="res.groups">
+            <field name="name">Payroll Analytics Manager</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[(4, ref('group_payroll_analytics_user')), (4, ref('group_payroll_base_manager'))]"/>
+            <field name="comment">Can manage payroll analytics, approve payrolls, and export bank files</field>
+        </record>
+
+        <record id="group_payroll_final_approver" model="res.groups">
+            <field name="name">Payroll Final Approver</field>
+            <field name="category_id" ref="base.module_category_human_resources"/>
+            <field name="implied_ids" eval="[(4, ref('group_payroll_analytics_manager'))]"/>
+            <field name="comment">Can perform final approval of payroll batches</field>
+        </record>
 
         <record id="group_payroll_integration_user" model="res.groups">
             <field name="name">Payroll Integration User</field>

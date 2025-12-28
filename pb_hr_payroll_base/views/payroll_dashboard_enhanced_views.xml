@@ -284,8 +284,8 @@
                             <!-- Enhanced Action Buttons -->
                             <div class="country-card-actions-enhanced">
                                 <!-- New workflow button to open HR Flow dashboard -->
-                                <button type="action"
-                                        name="%(pb_hr_flow.action_hr_flow_wizard)d"
+                                <button type="object"
+                                        name="action_open_hr_flow_wizard"
                                         class="btn btn-secondary dashboard-access-btn">
                                     <i class="fa fa-sitemap"/> Workflow
                                 </button>
@@ -394,12 +394,5 @@
             </p>
         </field>
     </record>
-
-    <!-- Menu Integration -->
-    <menuitem id="menu_country_selector_enhanced" 
-              name="Country Selector" 
-              parent="pb_hr_payroll_base.menu_payroll_backup_root"
-              action="action_enhanced_country_selector"
-              sequence="3"/>
 
 </odoo>

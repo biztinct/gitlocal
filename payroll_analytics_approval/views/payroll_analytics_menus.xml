@@ -104,7 +104,7 @@
               parent="menu_payroll_analytics"
               action="action_payroll_bank_export_wizard"
               sequence="20"
-              groups="payroll_analytics_approval.group_payroll_analytics_manager"/>
+              groups="pb_hr_payroll_base.group_payroll_analytics_manager"/>
 
     
 

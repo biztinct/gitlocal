@@ -437,6 +437,16 @@ class PayrollDashboard(models.Model):
         
         return action
 
+    def action_open_hr_flow_wizard(self):
+        """Open HR Flow wizard if the module is installed."""
+        self.ensure_one()
+
+        action = self.env.ref('pb_hr_flow.action_hr_flow_wizard', raise_if_not_found=False)
+        if action:
+            return action.read()[0]
+
+        raise UserError(_('HR Flow module is not installed. Please install pb_hr_flow to use Workflow.'))
+
     def action_get_employee_data(self):
         """Get employee data - ENHANCED with multiple import options"""
         return {

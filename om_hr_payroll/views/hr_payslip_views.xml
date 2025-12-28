@@ -403,33 +403,6 @@
             <field name="context">{'search_default_employee_id': [active_id], 'default_employee_id': active_id}</field>
         </record>
 
-<!--Biztinct rearranged menu items-->
-
-        <menuitem id="menu_payslip_root"
-                  name = "Payslips"
-                  parent="menu_hr_payroll_root"
-                  groups="om_hr_payroll.group_hr_payroll_user"
-                  sequence="50"/>
-
-        <menuitem id="menu_payslip_batch"
-                  name = "Batch Payslips"
-                  action="action_hr_payslip_run_tree"
-                  parent="menu_payslip_root"/>
-
-        <menuitem id="menu_payslip_individual"
-                  name = "Employee Payslips"
-                  action="action_view_hr_payslip_form"
-                  parent="menu_payslip_root" />
-                  <!--groups="om_hr_payroll.group_hr_payroll_user"/>-->
-
-        <menuitem id="menu_payslip_line"
-                  name = "Pay components"
-                  action="action_view_hr_payslip_line"
-                  parent="menu_payslip_root"/>
-
-
-<!-- Rearrange ends -->
-
 <!-- To be deleted
 <record id="om_hr_payroll.action_open_payslip_spreadsheet" model="ir.actions.server">
   <field name="name">Edit Payslip Spreadsheet</field>
@@ -860,6 +833,33 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                 'order': 'date_end desc'
             }</field>
         </record>
+
+<!--Biztinct rearranged menu items-->
+
+        <menuitem id="menu_payslip_root"
+                  name="Payslips"
+                  parent="menu_hr_payroll_root"
+                  groups="om_hr_payroll.group_hr_payroll_user"
+                  sequence="50"/>
+
+        <menuitem id="menu_payslip_batch"
+                  name="Batch Payslips"
+                  action="action_hr_payslip_run_tree"
+                  parent="menu_payslip_root"/>
+
+        <menuitem id="menu_payslip_individual"
+                  name="Employee Payslips"
+                  action="action_view_hr_payslip_form"
+                  parent="menu_payslip_root"/>
+                  <!--groups="om_hr_payroll.group_hr_payroll_user"/>-->
+
+        <menuitem id="menu_payslip_line"
+                  name="Pay components"
+                  action="action_view_hr_payslip_line"
+                  parent="menu_payslip_root"/>
+
+
+<!-- Rearrange ends -->
 
 
 
