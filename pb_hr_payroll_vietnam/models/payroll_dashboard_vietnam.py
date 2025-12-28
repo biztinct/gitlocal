@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models
+from odoo import _, models
+from odoo.exceptions import UserError
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -14,7 +15,10 @@ class PayrollDashboardVietnam(models.Model):
         ensures a kanban view is the first one shown so the New button is immediately
         available.
         """
-        action = self.env.ref('pb_hr_payroll_formula.action_payroll_import_batch').read()[0]
+        action_ref = self.env.ref('pb_hr_payroll_formula.action_payroll_import_batch', raise_if_not_found=False)
+        if not action_ref:
+            raise UserError(_('Payroll import batches are unavailable. Install pb_hr_payroll_formula to use this feature.'))
+        action = action_ref.read()[0]
 
         kanban_view = self.env.ref('pb_hr_payroll_vietnam.view_payroll_import_batch_kanban_vn', raise_if_not_found=False)
         tree_view = self.env.ref('pb_hr_payroll_formula.view_payroll_import_batch_tree', raise_if_not_found=False)
