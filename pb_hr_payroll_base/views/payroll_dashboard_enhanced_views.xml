@@ -287,10 +287,7 @@
                                 <button type="object"
                                         name="action_open_hr_flow_wizard"
                                         class="btn btn-secondary dashboard-access-btn">
-                                    <i class="fa fa-sitemap"/> Workflow
-                                </button>
-                                <button name="action_view_country_dashboard" type="object" class="btn btn-primary dashboard-access-btn">
-                                    <i class="fa fa-dashboard"/> Access Dashboard
+                                    <i class="fa fa-sitemap"/> Dashboard
                                 </button>
                                 <button name="action_refresh_analytics" type="object" class="btn btn-outline-secondary btn-sm">
                                     <i class="fa fa-refresh"/> Refresh
@@ -379,7 +376,7 @@
 
     <!-- Enhanced Country Selector Action -->
     <record id="action_enhanced_country_selector" model="ir.actions.act_window">
-        <field name="name">Enhanced Country Selector</field>
+        <field name="name">Country Selector</field>
         <field name="res_model">payroll.dashboard</field>
         <field name="view_mode">kanban</field>
         <field name="view_id" ref="view_payroll_dashboard_kanban_enhanced"/>
