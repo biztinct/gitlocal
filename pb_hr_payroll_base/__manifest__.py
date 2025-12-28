@@ -79,12 +79,12 @@ for all country-specific modules while maintaining clean separation of concerns.
         'wizards/payroll_import_wizard_views.xml',
         
         # Views
-        'views/payroll_menu_base.xml',                          # Base menu structure - Load first to define parent menus
+        'views/payroll_dashboard_enhanced_views.xml',           # Enhanced dashboard with actions used by menus
+        'views/payroll_menu_base.xml',                          # Base menu structure - Load after actions are defined
         'views/payroll_setup_guide.xml',                        # Setup guide for all countries
         'views/hr_payroll_structure_base_views.xml',            # HR payroll structure base views
         'views/additional_actions.xml',                         # Additional actions
         'views/payroll_base_dashboard.xml',                     # Base dashboard views
-        'views/payroll_dashboard_enhanced_views.xml',           # Enhanced dashboard with animations
         'views/payroll_country_selector_enhanced.xml',          # Enhanced country selector
         'views/salary_configuration_workflow.xml',              # Salary configuration workflow dashboard
         'views/payroll_analytics_views.xml',                    # Analytics views
