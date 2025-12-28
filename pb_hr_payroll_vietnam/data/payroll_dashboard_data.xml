@@ -3,7 +3,7 @@
     <data noupdate="0">
         <!-- Vietnam-specific dashboard record inheriting from base -->
         <record id="vietnam_payroll_dashboard" model="payroll.dashboard">
-            <field name="name">Batch Payslips</field>
+            <field name="name">Vietnam</field>
             <field name="country">VN</field>
             <field name="sequence">10</field>
             <field name="active">True</field>

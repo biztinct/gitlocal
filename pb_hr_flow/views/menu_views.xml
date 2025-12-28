@@ -8,7 +8,7 @@
     <!-- HR Flow Menu under Payroll -->
     <menuitem id="menu_hr_workflow_flow"
               name="HR Workflow Flow"
-              parent="om_hr_payroll.menu_hr_payroll_root"
+              parent="hr.menu_hr_root"
               action="action_hr_flow_wizard"
               sequence="5"
               groups="om_hr_payroll.group_hr_payroll_user"/>
