@@ -1,0 +1,166 @@
+# BANG LUONG MAU 2.xlsx translations
+
+| Worksheet | Cell | Vietnamese | English |
+| --- | --- | --- | --- |
+| Template Payroll | AU4 | Lunch
+Max
+(730,000đ) | Lunch
+Max
+(730,000 VND) |
+| Template Payroll | BT4 | Đối tượng tính thuế TNCN | Personal income tax subjects |
+| Template Payroll | BU4 | Tham gia Công đoàn | Participation in Trade Union |
+| Template Payroll | BV4 | Tham gia Tang chế | Participation in bereavement |
+| Template Payroll | BW4 | Số đám tang phát sinh trong kỳ | Number of funerals occurring in the period |
+| Template Payroll | D6 | Nguyễn Thị Hà | Nguyen Thi Ha |
+| Template Payroll | D8 | Phùng Mạnh Hà | Phung Manh Ha |
+| Template Payroll | D10 | Nguyễn Đức Khánh | Nguyen Duc Khanh |
+| Template Payroll | D11 | Nguyễn Sơn Tùng | Nguyen Son Tung |
+| Template Payroll | D13 | Nguyễn Quang Cường | Nguyen Quang Cuong |
+| Template Payroll | D15 | Phạm Đức Kiên | Pham Duc Kien |
+| Template Payroll | D17 | Nguyễn Văn Quân | Nguyen Van Quan |
+| Template Payroll | D18 | Ngô Văn Tuấn | Nggo Van Tuan |
+| PC cơm  | A1 | CÔNG TY TNHH THISO RETAIL  | THIO RETAIL COMPANY LIMITED |
+| PC cơm  | A2 | Siêu thị EMART PVT | EMART PVT Supermarket |
+| PC cơm  | A3 | PHỤ CẤP TIỀN CƠM THÁNG 4/2025 | FOOD ALLOWANCE FOR APRIL 2025 |
+| PC cơm  | C5 | Họ tên | Full name |
+| PC cơm  | D5 | Ngày vào làm | Day of work |
+| PC cơm  | E5 | Phòng/Ban | Department/Department |
+| PC cơm  | F5 | Số ngày làm việc thực tế (trừ Lễ/Tết) | Actual working days (except Holidays/New Year) |
+| PC cơm  | G5 | Số ngày làm thêm giờ từ đủ 4 tiếng | Number of overtime days from 4 full hours |
+| PC cơm  | H5 | Số ngày làm Lễ/Tết  | Number of days worked on Holidays/Tet |
+| PC cơm  | I5 | Số tiền theo ngày làm việc thực tế (trừ Lễ/Tết) | Amount of money based on actual working days (except Holidays/Tet) |
+| PC cơm  | J5 | Số tiền  làm thêm giờ từ đủ 4 tiếng | Amount of overtime worked from full 4 hours |
+| PC cơm  | K5 | Số tiền làm ngày Lễ/Tết  | Amount of work paid on Holidays/Tet |
+| PC cơm  | L5 | Tổng số tiền | Total amount money |
+| PC cơm  | M5 | Ghi chú | Note |
+| PC cơm  | C7 | Nguyễn Thị Hà | Nguyen Thi Ha |
+| PC cơm  | C8 | Phùng Mạnh Hà | Phung Manh Ha |
+| PC cơm  | C9 | Nguyễn Đức Khánh | Nguyen Duc Khanh |
+| PC cơm  | C10 | Nguyễn Sơn Tùng | Nguyen Son Tung |
+| PC cơm  | C11 | Nguyễn Quang Cường | Nguyen Quang Cuong |
+| PC cơm  | C12 | Phạm Đức Kiên | Pham Duc Kien |
+| PC cơm  | C13 | Nguyễn Văn Quân | Nguyen Van Quan |
+| PC cơm  | C14 | Ngô Văn Tuấn | Nggo Van Tuan |
+| PC cơm  | A15 | TỔNG | TOTAL |
+| PC cơm  | B18 | Lập bảng | Tabling |
+| PC cơm  | E18 | Kiểm tra | Inspection |
+| PC cơm  | L18 | Phê duyệt | Approval |
+| TimeTB 2 | B1 | CÔNG TY TNHH THISO RETAIL  | THIO RETAIL COMPANY LIMITED |
+| TimeTB 2 | AO8 | Tổng ngày OFF  | Total OFF days |
+| TimeTB 2 | AP8 | Nghỉ không hưởng lương | Unpaid leave |
+| TimeTB 2 | AQ8 | Nghỉ hưởng lương
+ (Nghỉ Phép/ Nghỉ Bù/ Nghỉ chế độ/ Nghỉ Lễ) | Paid leave
+ (Vacation / Compensation / Leave / Holiday) |
+| TimeTB 2 | AR8 | Ngày đi làm thực tế  | Actual working days |
+| TimeTB 2 | AS8 | Tổng cộng | Total |
+| TimeTB 2 | AT8 | Điều chỉnh công | Work adjustment |
+| TimeTB 2 | AU8 | Tổng ngày công trả lương | Total paid workdays |
+| TimeTB 2 | AV8 | Tổng ngày công trả PC cơm thường | Total working days paid regular meals |
+| TimeTB 2 | AW8 | Tổng ngày công trả PC cơm Lễ tết | Total working days pay for meals during Tet holidays |
+| TimeTB 2 | AX8 | Tổng ngày công trả PC cơm tăng ca | Total workdays pay for overtime meals |
+| TimeTB 2 | AY8 | Ghi chú | Note |
+| TimeTB 2 | D11 | Nguyễn Thị Hà | Nguyen Thi Ha |
+| TimeTB 2 | D12 | Phùng Mạnh Hà | Phung Manh Ha |
+| TimeTB 2 | D13 | Nguyễn Đức Khánh | Nguyen Duc Khanh |
+| TimeTB 2 | D14 | Nguyễn Sơn Tùng | Nguyen Son Tung |
+| TimeTB 2 | D15 | Nguyễn Quang Cường | Nguyen Quang Cuong |
+| TimeTB 2 | D16 | Phạm Đức Kiên | Pham Duc Kien |
+| TimeTB 2 | D17 | Nguyễn Văn Quân | Nguyen Van Quan |
+| TimeTB 2 | D18 | Ngô Văn Tuấn | Nggo Van Tuan |
+| TimeTB 2 | C22 | Quy định ký hiệu chấm công | Regulations on timekeeping symbols |
+| TimeTB 2 | D23 | Đi làm 01 ngày | Go to work 01 day |
+| TimeTB 2 | D24 | Nghĩ Lễ, Tết | Holidays, Tet |
+| TimeTB 2 | D25 | Nghỉ 1 ngày OFFca hàng tuần | 1 day off OFF weekly shifts |
+| TimeTB 2 | D26 |  Annual Leave/ Nghỉ phép năm 01 ngày | Annual Leave/ Annual leave 01 day |
+| TimeTB 2 | D27 | 1/2 Annual Leave/ Nghỉ phép năm 1/2 ngày + Đi làm 1/2 ngày | 1/2 Annual Leave/Annual leave 1/2 day + Work 1/2 day |
+| TimeTB 2 | D28 | Full paid leave for personal affairs/Nghỉ việc riêng có hưởng lương 01 ngày (kết hôn, tang chế...) | Full paid leave for personal affairs/Personal leave with pay for 01 day (marriage, bereavement...) |
+| TimeTB 2 | D29 | Unpaid leave/ Nghỉ việc riêng không hưởng lương 01 ngày | Unpaid leave/Personal leave without pay for 01 day |
+| TimeTB 2 | D30 | 1/2 Unpaid leave/ Nghỉ việc không hưởng lương 1/2 ngày + Đi làm 1/2 ngày | 1/2 Unpaid leave/Leave without pay for 1/2 day + Work 1/2 day |
+| TimeTB 2 | D31 | Sick leave / Nghỉ bệnh (hưởng BHXH) | Sick leave / Sick leave (entitled to social insurance) |
+| TimeTB 2 | D32 | Maternity leave / Nghỉ thai sản | Maternity leave / Maternity leave |
+| TimeTB 2 | D33 | Children care leave / Nghỉ con ốm/ vợ sinh (hưởng BHXH) | Children care leave / Sick child leave / wife's birth leave (social insurance benefits) |
+| TimeTB 2 | D34 | Lactation leave/ Về sớm/đi trễ 1 tiếng/nghỉ 1 ngày sau 7 ngày làm việc | Lactation leave/ Leave early/ stay 1 hour late/ take 1 day off after 7 working days |
+| TimeTB 2 | D35 | Sabbatical leave /Nghỉ để đi học/nâng cao kiến thức, đi công tác | Sabbatical leave / Leave to study / improve knowledge, go on business trips |
+| TimeTB 2 | D36 | Compensation leave ( in-lieu day-off)/ Nghỉ bù 1 ngày | Compensation leave (in-lieu day-off)/ Compensation leave 1 day |
+| TimeTB 2 | D37 |  1/2 Compensation leave ( in-lieu day-off)/ Nghỉ bù 1/2 ngày + Đi làm 1/2 ngày | 1/2 Compensation leave (in-lieu day-off)/ Compensation leave 1/2 day + Work 1/2 days |
+|  TimeTB 1 | A1 | CÔNG TY TNHH THISO RETAIL  | THIO RETAIL COMPANY LIMITED |
+|  TimeTB 1 | C5 | Có đi làm | Yes go to work |
+|  TimeTB 1 | C6 | Ngày nghỉ hàng tuần | Weekly day off |
+|  TimeTB 1 | C7 | Nghỉ 01 ngày phép năm | Take 01 day of annual leave |
+|  TimeTB 1 | C8 | Nghỉ 0,5 ngày phép năm | Take 0.5 days of annual leave |
+|  TimeTB 1 | C9 | Nghỉ hưởng BHXH | Leave to enjoy social insurance |
+|  TimeTB 1 | C10 | Nghỉ thai sản | Maternity leave |
+|  TimeTB 1 | C11 | Nghỉ lễ | Holiday |
+|  TimeTB 1 | C12 | Nghỉ bù 01 ngày | Take 1 day off |
+|  TimeTB 1 | C13 | Nghỉ bù 0,5 ngày | Take 0.5 days off |
+|  TimeTB 1 | C14 | Nghỉ 01 ngày có lương (kết hôn, tang gia) | 1 day off with pay (marriage, funeral) |
+|  TimeTB 1 | C15 | Nghỉ 0,5 ngày có lương (kết hôn, tang gia) | 0.5 days paid leave (marriage, funeral) |
+|  TimeTB 1 | C16 | Nghỉ 01 ngày không lương | 1 day off without pay |
+|  TimeTB 1 | E19 | Bộ Phận | Part |
+|  TimeTB 1 | AK19 | Tổng ngày Off | Total Days Off |
+|  TimeTB 1 | AM19 | Nghỉ hưởng lương
+ (Nghỉ Phép/ Nghỉ Bù/ Nghỉ chế độ/ Nghỉ Lễ) | Paid leave
+ (Vacation / Compensation / Leave / Holiday) |
+|  TimeTB 1 | AN19 | Tổng ngày nghỉ có lương | Total paid leave days |
+|  TimeTB 1 | AO19 | Tổng ngày nghỉ không lương | Total days off without pay |
+|  TimeTB 1 | AT19 | Ngày đi làm thực tế  | Actual working days |
+|  TimeTB 1 | AU19 | NGÀY CÔNG TÍNH LƯƠNG  | SALARY CALCULATION DAY |
+|  TimeTB 1 | D22 | Nguyễn Văn Quân | Nguyen Van Quan |
+|  TimeTB 1 | D23 | Ngô Văn Tuấn | Nggo Van Tuan |
+|  TimeTB 1 | C34 | Quy định ký hiệu chấm công | Regulations on timekeeping symbols |
+|  TimeTB 1 | D35 | Đi làm 01 ngày | Go to work 01 day |
+|  TimeTB 1 | D36 | Nghĩ Lễ, Tết | Holidays, Tet |
+|  TimeTB 1 | D37 | Nghỉ 1 ngày OFFca hàng tuần | 1 day off OFF weekly shifts |
+|  TimeTB 1 | D38 |  Annual Leave/ Nghỉ phép năm 01 ngày | Annual Leave/ Annual leave 01 day |
+|  TimeTB 1 | D39 | 1/2 Annual Leave/ Nghỉ phép năm 1/2 ngày + Đi làm 1/2 ngày | 1/2 Annual Leave/Annual leave 1/2 day + Work 1/2 day |
+|  TimeTB 1 | D40 | Full paid leave for personal affairs/Nghỉ việc riêng có hưởng lương 01 ngày (kết hôn, tang chế...) | Full paid leave for personal affairs/Personal leave with pay for 01 day (marriage, bereavement...) |
+|  TimeTB 1 | D41 | Unpaid leave/ Nghỉ việc riêng không hưởng lương 01 ngày | Unpaid leave/Personal leave without pay for 01 day |
+|  TimeTB 1 | D42 | 1/2 Unpaid leave/ Nghỉ việc không hưởng lương 1/2 ngày + Đi làm 1/2 ngày | 1/2 Unpaid leave/Leave without pay for 1/2 day + Work 1/2 day |
+|  TimeTB 1 | D43 | Sick leave / Nghỉ bệnh (hưởng BHXH) | Sick leave / Sick leave (entitled to social insurance) |
+|  TimeTB 1 | D44 | Maternity leave / Nghỉ thai sản | Maternity leave / Maternity leave |
+|  TimeTB 1 | D45 | Children care leave / Nghỉ con ốm/ vợ sinh (hưởng BHXH) | Children care leave / Sick child leave / wife's birth leave (social insurance benefits) |
+|  TimeTB 1 | D46 | Lactation leave/ Về sớm/đi trễ 1 tiếng/nghỉ 1 ngày sau 7 ngày làm việc | Lactation leave/ Leave early/ stay 1 hour late/ take 1 day off after 7 working days |
+|  TimeTB 1 | D47 | Sabbatical leave /Nghỉ để đi học/nâng cao kiến thức, đi công tác | Sabbatical leave / Leave to study / improve knowledge, go on business trips |
+|  TimeTB 1 | D48 | Compensation leave ( in-lieu day-off)/ Nghỉ bù 1 ngày | Compensation leave (in-lieu day-off)/ Compensation leave 1 day |
+|  TimeTB 1 | D49 |  1/2 Compensation leave ( in-lieu day-off)/ Nghỉ bù 1/2 ngày + Đi làm 1/2 ngày | 1/2 Compensation leave (in-lieu day-off)/ Compensation leave 1/2 day + Work 1/2 days |
+| OT  | C7 | Nguyễn Thị Hà | Nguyen Thi Ha |
+| OT  | C8 | Phùng Mạnh Hà | Phung Manh Ha |
+| OT  | C9 | Nguyễn Đức Khánh | Nguyen Duc Khanh |
+| OT  | C10 | Nguyễn Sơn Tùng | Nguyen Son Tung |
+| OT  | C11 | Nguyễn Quang Cường | Nguyen Quang Cuong |
+| OT  | U11 | HĐTV | HĐTV |
+| OT  | C12 | Phạm Đức Kiên | Pham Duc Kien |
+| OT  | C13 | Nguyễn Văn Quân | Nguyen Van Quan |
+| OT  | C14 | Ngô Văn Tuấn | Nggo Van Tuan |
+| OT  | U14 | HĐTV | HĐTV |
+| NS | C11 | Nguyễn Đức Khánh | Nguyen Duc Khanh |
+| NS | C12 | Nguyễn Sơn Tùng | Nguyen Son Tung |
+| NS | C13 | Nguyễn Quang Cường | Nguyen Quang Cuong |
+| NS | C14 | Phạm Đức Kiên | Pham Duc Kien |
+| NS | C15 | Nguyễn Văn Quân | Nguyen Van Quan |
+| NS | C16 | Ngô Văn Tuấn | Nggo Van Tuan |
+| Incentive | E8 | Nghỉ việc | Quit one's job |
+| Incentive | C9 | Phạm Đức Kiên | Pham Duc Kien |
+| Incentive | C10 | Nguyễn Văn Quân | Nguyen Van Quan |
+| Incentive | C11 | Ngô Văn Tuấn | Nggo Van Tuan |
+| Others | A3 | 366 Phan Văn Trị, P5, Q. Gò Vấp, TPHCM | 366 Phan Van Tri, Ward 5, Go Vap District, HCMC |
+| Others | A5 | 1. Phụ cấp điều phối giao hàng | 1. Delivery coordination allowance |
+| Others | D6 | Phụ cấp điều phối | Coordination allowance |
+| Others | E6 | Ngày công tính lương | Workdays for salary calculation |
+| Others | C9 | Phùng Mạnh Hà | Phung Manh Ha |
+| Others | A12 | 2. Thâm niên CASHIER  | 2. Seniority CASHIER |
+| Others | D13 | Thâm niên CASHIER  | Seniority CASHIER |
+| Others | E13 | Thâm niên CASHIER bổ sung | Additional CASHIER seniority |
+| Others | C14 | Nguyễn Đức Khánh | Nguyen Duc Khanh |
+| Others | C15 | Nguyễn Sơn Tùng | Nguyen Son Tung |
+| Others | A19 | 3. Ngày phép/công bổ sung (AL payment) | 3. Additional leave/work days (AL payment) |
+| Benefit tính thuế | B1 | Mã Nhân viên | Employee Code |
+| Benefit tính thuế | C1 | Họ và tên | Full name |
+| Benefit tính thuế | D1 | Khen thưởng hàng tháng | Monthly bonus |
+| Benefit tính thuế | E1 | Sinh nhật (Công ty) | Birthday (Company) |
+| Benefit tính thuế | F1 | Thâm niên | Seniority |
+| Benefit tính thuế | H1 | Tổng phúc lợi tính thuế | Total taxable benefits |
+| Benefit tính thuế | C2 | Nguyễn Thị Hà | Nguyen Thi Ha |
+| Benefit tính thuế | C3 | Phùng Mạnh Hà | Phung Manh Ha |
+| Benefit tính thuế | C4 | Nguyễn Đức Khánh | Nguyen Duc Khanh |
+| Benefit tính thuế | C5 | Nguyễn Sơn Tùng | Nguyen Son Tung |

@@ -1,0 +1,252 @@
+# BANG LUONG MAU 3.xlsx translations
+
+| Worksheet | Cell | Vietnamese | English |
+| --- | --- | --- | --- |
+| Bangluong | A1 | CÔNG TY TNHH SẢN XUẤT KEO VÀ DUNG DỊCH CHUYÊN DỤNG Ô TÔ CHU LAI | CHU LAI AUTOMOTIVE SPECIALIZED ADHESIVE AND SOLUTION PRODUCTION COMPANY LIMITED |
+| Bangluong | A2 | Địa chỉ: KCN Ô tô Chu Lai Trường Hải - Tam Hiệp - Núi Thành - Quảng Nam | Address: Chu Lai Truong Hai Automobile Industrial Park - Tam Hiep - Nui Thanh - Quang Nam |
+| Bangluong | A3 | BẢNG THANH TOÁN TIỀN LƯƠNG THÁNG 11 NĂM 2025 | TABLE SALARY PAYMENT NOVEMBER 2025 |
+| Bangluong | AD3 | THÊM | ADD |
+| Bangluong | AS3 | CHỈNH | ADJUST |
+| Bangluong | BG3 | THÊM | ADD |
+| Bangluong | BS3 | CHỈNH | ADJUST |
+| Bangluong | CW3 | CHỈNH | ADJUST |
+| Bangluong | EX3 | THỐNG KÊ LƯƠNG KỲ 1 | 1st SALARY STATISTICS |
+| Bangluong | B6 | Tháng 11 | November |
+| Bangluong | C8 | Họ và tên | Full name |
+| Bangluong | D8 | Mức lương HĐLĐ | Labor contract salary |
+| Bangluong | E8 | Phụ cấp (PCCC, ATVSV) | Allowances (Fire protection, ATVSV) |
+| Bangluong | F8 | Mức Lương HĐLĐ + Phụ cấp | Labor Contract Salary + Allowances level |
+| Bangluong | G8 | Mức lương HĐTV | Salary level of Board of Directors |
+| Bangluong | H8 | Định mức thưởng HQCV | HQCV bonus norms |
+| Bangluong | I8 | Định mức thưởng HQCV Bổ sung | Additional HQCV bonus norms |
+| Bangluong | J8 | Tổng Định mức thưởng HQCV | Total HQCV bonus norms |
+| Bangluong | K8 | ML HĐLĐ+ PC + Định mức thưởng HQCV | ML Labor Contract+ PC + Bonus norms HQCV |
+| Bangluong | L8 | Tỷ lệ % tạm ứng thưởng HQCV | Percentage of HQCV bonus advance |
+| Bangluong | M8 | Ngày công trong tháng | Workdays in the month |
+| Bangluong | AF8 | Các khoản được hưởng trong tháng | Amounts received during the month |
+| Bangluong | BK8 | Tổng thu nhập | Total income |
+| Bangluong | BL8 | Tổng thu nhập đã tạm ứng kỳ I | Total advanced income for period I |
+| Bangluong | BM8 | Tổng thu nhập còn lại kỳ II | Total remaining income for period II |
+| Bangluong | BN8 | Các khoản khấu trừ lương | Salary deductions |
+| Bangluong | BV8 | Các khoản thu hộ/thu khác | Other fees/collections |
+| Bangluong | CF8 | Tổng giảm trừ kỳ II | Total deductions for period II |
+| Bangluong | CG8 | Thực nhận kỳ II | Actual receipt for period II |
+| Bangluong | CH8 | PHỤ | SEPTEMBER |
+| Bangluong | CI8 | VÙNG DỮ LIỆU PHỤ ĐỂ TÍNH LƯƠNG | SUB DATA AREA FOR CALCULATION OF SALARY |
+| Bangluong | CT8 | VÙNG TÍNH THUẾ TNCN | PERSONAL PIT TAX CALCULATION AREA |
+| Bangluong | DF8 | VÙNG TÍNH PHỤ CẤP NHÂN SỰ BIỆT PHÁI | AREA FOR CALCULATION OF EMPLOYMENT ALLOWANCES DIFFERENCES |
+| Bangluong | DX8 | VÙNG THEO DÕI LƯƠNG NGỪNG VIỆC | WORK STOP WAGE MONITORING AREA |
+| Bangluong | EM8 | VÙNG EMAIL LƯƠNG | SALARY EMAIL AREA |
+| Bangluong | EV8 | VÙNG LƯƠNG THỰC TẾ TỪ HRM | ACTUAL SALARY AREA FROM HRM |
+| Bangluong | FE8 | VÙNG THÔNG TIN NHÂN SỰ | HUMAN RESOURCE INFORMATION AREA |
+| Bangluong | M9 | Công đi làm ngày thường | Cong goes to work on weekdays |
+| Bangluong | N9 | Tăng ca ngày thường | Overtime on weekdays |
+| Bangluong | O9 | Chủ nhật (Chu Lai) | Sunday (Chu Lai) |
+| Bangluong | P9 | Tổng công Chủ nhật
+(BP) | General attack Sunday
+(BP) |
+| Bangluong | Q9 | Công phụ cấp ban đêm | Night allowance |
+| Bangluong | T9 | Hiếu, hỉ | Filial piety, joy |
+| Bangluong | U9 | Làm việc ngày Lễ Tết  | Working on Holidays |
+| Bangluong | W9 | Nghỉ Lễ, Tết  | Holidays and Tet |
+| Bangluong | X9 | Ngày nghỉ Thứ 7 | Day off Saturday |
+| Bangluong | Z9 | Ngày ngừng việc trong tháng | Date of work stoppage in the month |
+| Bangluong | AB9 | Phép năm tồn 2024 | The year of existence is 2024 |
+| Bangluong | AC9 | Ngày ngừng BKK (do cúp điện, thiên tai..) | Stop date of BKK (due to power outage, natural disaster...) |
+| Bangluong | AD9 | Ngày phép năm nghỉ việc | Annual leave from work |
+| Bangluong | AE9 | Ngày phép năm đã nghĩ  | Annual leave has been thought of |
+| Bangluong | AF9 | Lương
+Ngày thường | Salary
+Ordinary day |
+| Bangluong | AG9 | Lương Tăng ca | Luong Sang Ca |
+| Bangluong | AH9 | Lương chủ nhật | Sunday salary |
+| Bangluong | AI9 | Lương P/c ca đêm | Night shift P/c salary |
+| Bangluong | AJ9 | Để trống | Leave blank |
+| Bangluong | AL9 | Lương Hiếu, Hỉ | Luong Hieu, Hi |
+| Bangluong | AM9 | Lương làm việc ngày Lễ Tết | Salary for working on holidays |
+| Bangluong | AN9 | Lương nghỉ Lễ/tết | Holiday/Tet holiday salary |
+| Bangluong | AO9 | Chế độ thứ T7 | The 7th regime |
+| Bangluong | AP9 | Phụ cấp công tác | Working allowances |
+| Bangluong | AR9 | Tiền cơm | Food money |
+| Bangluong | AS9 | Bồi dưỡng PHSK | Nursing care training |
+| Bangluong | AT9 | Truy lĩnh Bồi dưỡng PHSK | Back pay for health care training |
+| Bangluong | AU9 | Lương trả thêm cho LĐ nữ cho thời gian không nghỉ khi hành kinh) | Extra salary paid to female employees for non-stop time during menstruation) |
+| Bangluong | AV9 | Phụ cấp PCCC (ĐT, ĐP), Phụ cấp AT-VSV | Fire protection allowance (DT, DP), AT-VSV allowance |
+| Bangluong | AW9 | Tiền lương ngừng việc | Stop salary job |
+| Bangluong | AX9 | Phép năm đã nghỉ | Annual leave taken |
+| Bangluong | AY9 | Tiền phép năm tồn 2024 | Outstanding annual leave 2024 |
+| Bangluong | AZ9 | Thưởng Nhân sự hỗ trợ | Support personnel bonus |
+| Bangluong | BA9 | Trả tiền bảo hiểm xã hội | Social insurance payment |
+| Bangluong | BB9 | Trả tiền công đoàn thu dư | Payment of union fees Surplus |
+| Bangluong | BC9 | Truy lĩnh lương/ Phép năm | Back pay/Annual leave |
+| Bangluong | BD9 | Tiền lương TNLĐ | Work accident salary |
+| Bangluong | BE9 | Trợ cấp TNLĐ | Work accident allowance |
+| Bangluong | BF9 | Trợ cấp thôi việc/ mất việc làm | Severance/job loss allowance |
+| Bangluong | BG9 | Thanh toán Phép năm nghỉ việc | Payment of Annual leave Job |
+| Bangluong | BH9 | Hỗ trợ Công ty | Company Support |
+| Bangluong | BJ9 | Tạm ứng thưởng HQCV | Advance of HQCV bonus |
+| Bangluong | BR9 | Thu bổ sung BHXH | Additional collection of social insurance |
+| Bangluong | BS9 | Thu bổ sung phí công đoàn (0.5%) | Additional collection of union fees (0.5%) |
+| Bangluong | BT9 | Thuế TNCN | Personal income tax |
+| Bangluong | BU9 | Thu bổ sung công đoàn | Additional collection of union fees |
+| Bangluong | BV9 | Thu tiền điện thoại vượt mức | Excessive phone bill collection |
+| Bangluong | BW9 | Truy thu tiền lương/Phép năm | Collection of salary/annual leave |
+| Bangluong | BY9 | Tiền phúng điếu | Funeral money |
+| Bangluong | BZ9 | Thu bổ sung thuế TNCN | Additional collection of personal income tax |
+| Bangluong | CA9 | Khấu trừ tiền mua xe ưu đãi | Deduction of premium car purchase |
+| Bangluong | CB9 | Thu tiền nhà ở KBT | Collection of housing rent in the Park |
+| Bangluong | CC9 | Thu hộ tiền Bảo hiểm Công ty AEC | Collection of AEC Company Insurance money |
+| Bangluong | CD9 | Thu hộ ….. | Collection on behalf ….. |
+| Bangluong | CE9 | Thu hộ ….. | Collection on behalf ….. |
+| Bangluong | CI9 | Là Nữ (không bao gồm Nhân sự đang mang thai) | Female (excluding pregnant personnel) |
+| Bangluong | CJ9 | MÃ ATVSV | MÃ ATVSV |
+| Bangluong | CM9 | Kiểm tra đối tượng hưởng lương | Checking subjects receiving salary |
+| Bangluong | CN9 | Kiểm tra đối tượng hưởng tăng ca | Checking subjects entitled to overtime |
+| Bangluong | CO9 | Thuộc đối tượng hưởng Tăng ca Cơ điện | Belonging to subjects entitled to Basic overtime electricity |
+| Bangluong | CQ9 | MỨC TIỀN | SATE |
+| Bangluong | CR9 | Trừ tiền tang chế | Deduction of funeral money |
+| Bangluong | CT9 | BHXH, BHYT, BHTN (NLĐ đóng 10.5%) - Thu ky I | Social insurance, health insurance, unemployment insurance (Employees pay 10.5%) - Monthly salary |
+| Bangluong | CU9 | Thưởng khác | Other bonuses |
+| Bangluong | CV9 | Lương tháng 13 (Thưởng 2024) | Monthly salary 13 (Bonus 2024) |
+| Bangluong | CW9 | THU 
+NHẬP CHỊU  THUẾ TNCN | THU 
+INCOME SUBJECT TO PIT TAX |
+| Bangluong | CX9 | SỐ NGƯỜI PHỤ THUỘC | NUMBER OF DEPENDENTS |
+| Bangluong | CY9 | GIẢM TRỪ GIA CẢNH | FAMILY REDUCTION |
+| Bangluong | CZ9 | GIẢM TRỪ BẢN THÂN | PERSONAL REDUCTION |
+| Bangluong | DA9 | TỔNG GIẢM TRỪ | TOTAL DEDUCTION |
+| Bangluong | DB9 | TỔNG THU 
+NHẬP TÍNH
+ THUẾ TNCN | TOTAL REVENUE 
+ENTER CHARACTERS
+ Personal income tax |
+| Bangluong | DC9 | Thuế TNCN tháng | Monthly personal income tax |
+| Bangluong | DD9 | Thuế TNCN đã trừ kỳ 1 | Personal income tax deducted period 1 |
+| Bangluong | DF9 | ĐỐI TƯỢNG BIỆT PHÁI | DIFFERENT SUBJECTS |
+| Bangluong | DG9 | Mức P/c Biệt phái Lào/ Cam | P/c rate Secondment Lao/Camera |
+| Bangluong | DH9 | Mức P/c Biệt phái Myanmar | Special P/c level Myanmar Sect |
+| Bangluong | DI9 | Mức P/c Biệt phái trong Nước | P/c Rate Domestic Secondment |
+| Bangluong | DJ9 | Mức P/c Biệt phái Hàn Quốc | P/c Level Korean Secondment |
+| Bangluong | DK9 | Công chính Biệt phái | Public Works Secondment |
+| Bangluong | DO9 | Công Chủ nhật Biệt phái | Sunday Public Secondment |
+| Bangluong | DS9 | Phụ cấp Biệt phái | Special Allowance faction |
+| Bangluong | DT9 | Định mức điện thoại | Phone allowance |
+| Bangluong | DU9 | Phụ cấp Điện thoại | Phone Allowance |
+| Bangluong | DV9 | Tiền lương Chủ nhật | Sunday Salary |
+| Bangluong | DX9 | Tháng 01 | January |
+| Bangluong | DY9 | Tháng 02 | February |
+| Bangluong | DZ9 | Tháng 03 | Month 03 |
+| Bangluong | EA9 | Tháng 04 | April |
+| Bangluong | EB9 | Tháng 05 | May |
+| Bangluong | EC9 | Tháng 06 | June |
+| Bangluong | ED9 | Tháng 07 | July |
+| Bangluong | EE9 | Tháng 08 | August |
+| Bangluong | EF9 | Tháng 09 | September |
+| Bangluong | EG9 | Tháng 10 | October |
+| Bangluong | EH9 | Tháng 11 | November |
+| Bangluong | EI9 | Tháng 12 | December |
+| Bangluong | EJ9 | Số ngày TNV 14 ngày đầu | Number of volunteer days 14 days beginning |
+| Bangluong | EK9 | Số ngày TNV từ ngày 15 trở đi | Number of volunteer days from the 15th onwards |
+| Bangluong | EM9 | Công đoàn thu kỳ 1 | Fourth union period 1 |
+| Bangluong | EN9 | Tang chế kỳ 1 (22 tin) | Bereavement period 1 (22 news) |
+| Bangluong | EP9 | Tổng giảm trừ kỳ 1 | Total deductions period 1 |
+| Bangluong | EQ9 | Tổng giảm trừ cả tháng | Total deductions for whole period month |
+| Bangluong | ER9 | Thực nhận kỳ 1 | Realization part 1 |
+| Bangluong | ES9 | Thực nhận cả tháng | Actual receipt for the whole month |
+| Bangluong | ET9 | MAIL LƯƠNG | MAIL SALARY |
+| Bangluong | EV9 | Ngày hiệu lực lương | Effective date of salary |
+| Bangluong | EW9 | Ngạch | Category |
+| Bangluong | EX9 | Mức lương | Salary |
+| Bangluong | EY9 | Các khoản phụ cấp được hưởng | Allowments are paid benefit |
+| Bangluong | FC9 | Tổng lương và các khoản PC khác | Total salary and other PC payments |
+| Bangluong | FE9 | Tình trạng | Status |
+| Bangluong | FF9 | Từ ngày | From date |
+| Bangluong | FG9 | Đến ngày | Come day |
+| Bangluong | FH9 | Giới tính | Sex |
+| Bangluong | FI9 | Chức vụ | Position |
+| Bangluong | FJ9 | Bộ phận | Part |
+| Bangluong | FK9 | Đơn vị | Unit |
+| Bangluong | FL9 | Pháp nhân chi lương | Legal entity pays salary |
+| Bangluong | FM9 | Ngân hàng | Bank |
+| Bangluong | FN9 | Số tài khoản | Account number |
+| Bangluong | FO9 | MAIL LƯƠNG | MAIL SALARY |
+| Bangluong | Q10 | Ngày thường | Ordinary day |
+| Bangluong | R10 | Ngày Chủ nhật | Sunday |
+| Bangluong | S10 | Lễ tết | Tet holiday |
+| Bangluong | U10 | Chính | Main |
+| Bangluong | V10 | Tăng ca | Overtime |
+| Bangluong | X10 | Đi làm | Go to work |
+| Bangluong | Y10 | Nghỉ | Rest |
+| Bangluong | Z10 | 14 ngày đầu | First 14 days |
+| Bangluong | AA10 | Từ ngày 15 trở đi | From the 15th onwards |
+| Bangluong | AP10 | Lương | Wage |
+| Bangluong | AQ10 | Tiền ĐT | Phone money |
+| Bangluong | DK10 | Lào/ Cam | Laos/ Orange |
+| Bangluong | DM10 | Trong nước | Domestic |
+| Bangluong | DN10 | Hàn quốc | Korea |
+| Bangluong | DO10 | Lào/ Cam | Laos/ Orange |
+| Bangluong | DQ10 | Trong nước | Domestic |
+| Bangluong | DR10 | Hàn quốc | Korea |
+| Bangluong | EY10 | PC chức danh | PC title |
+| Bangluong | EZ10 | PC kiêm nhiệm | PC concurrently |
+| Bangluong | FA10 | PC thâm niên | PC seniority |
+| Bangluong | FB10 | Tổng PC | Total PC |
+| Bangluong | CO11 | TC CĐ | TC CĐ |
+| Bangluong | CR11 | Trừ tiền | Deduct |
+| Bangluong | DK11 | NHẬP | IMPORT |
+| Bangluong | DL11 | NHẬP | IMPORT |
+| Bangluong | DM11 | NHẬP | IMPORT |
+| Bangluong | DN11 | NHẬP | IMPORT |
+| Bangluong | DO11 | NHẬP | IMPORT |
+| Bangluong | DP11 | NHẬP | IMPORT |
+| Bangluong | DQ11 | NHẬP | IMPORT |
+| Bangluong | DR11 | NHẬP | IMPORT |
+| Bangluong | A12 | CÔNG TY TNHH SẢN XUẤT NỘI THẤT Ô TÔ THACO | THACO AUTOMOBILE INTERIOR MANUFACTURING COMPANY LIMITED |
+| Bangluong | FP12 | SỐ PHÉP | LICENSE NUMBER |
+| Bangluong | FQ12 | SỐ TIỀN | NUMBER MONEY |
+| Bangluong | C13 | Nguyễn Thanh Kiều | Nguyen Thanh Kieu |
+| Bangluong | CR13 | Trừ tiền | Deduct |
+| Bangluong | FH13 | Nữ | Female |
+| Bangluong | FI13 | Công nhân Lắp ráp dây điện | Electrical Wire Assembly Worker |
+| Bangluong | FJ13 | Chuyền sản xuất Dây điện Tải Bus | Bus Loading Wire Production Line |
+| Bangluong | FK13 | Công ty Nội thất ô tô Tải, Bus | Automobile Interior Company Truck, Bus |
+| Bangluong | FL13 | Công ty TNHH Sản xuất Nội thất Ô tô THACO | THACO Auto Interior Manufacturing Company Limited |
+| Bangluong | C14 | Trần Thị Ngọc Giàu | Tran Thi Ngoc Giau |
+| Bangluong | CM14 | Lương tháng |  |
+| Bangluong | CR14 | Trừ tiền | Deduct |
+| Bangluong | FI14 | Phó Quản đốc Xưởng Lắp ráp | Deputy Foreman of Assembly Workshop assembled |
+| Bangluong | FJ14 | Chuyền sản xuất nội thất dân dụng | Civil furniture production line |
+| Bangluong | FK14 | Công ty Nội thất ô tô Tải, Bus | Automobile Interior Company Truck, Bus |
+| Bangluong | FL14 | Công ty TNHH Sản xuất Nội thất Ô tô THACO | THACO Auto Interior Manufacturing Company Limited |
+| Bangluong | C15 | Lê Thị Hà | Le Thi Ha |
+| Bangluong | CR15 | Trừ tiền | Deduct |
+| Bangluong | FI15 | Công nhân Lắp ráp | Assembly Worker |
+| Bangluong | FJ15 | Chuyền sản xuất nội thất dân dụng | Civil furniture production line |
+| Bangluong | FK15 | Công ty Nội thất ô tô Tải, Bus | Automobile Interior Company Truck, Bus |
+| Bangluong | FL15 | Công ty TNHH Sản xuất Nội thất Ô tô THACO | THACO Auto Interior Manufacturing Company Limited |
+| Bangluong | C16 | Ong Thị Đông | Ong Thi Dong |
+| Bangluong | CR16 | Trừ tiền | Deduct |
+| Bangluong | FI16 | Công nhân Lắp ráp | Assembly Worker |
+| Bangluong | FJ16 | Chuyền sản xuất nội thất dân dụng | Civil furniture production line |
+| Bangluong | FK16 | Công ty Nội thất ô tô Tải, Bus | Automobile Interior Company Truck, Bus |
+| Bangluong | FL16 | Công ty TNHH Sản xuất Nội thất Ô tô THACO | THACO Auto Interior Manufacturing Company Limited |
+| Bangluong | C17 | Âu Thị Thanh Nguyệt | Au Thi Thanh Nguyet |
+| Bangluong | CR17 | Trừ tiền | Deduct |
+| Bangluong | FH17 | Nữ | Female |
+| Bangluong | FI17 | Công nhân Sản xuất Nệm | Mattress Production Worker |
+| Bangluong | FJ17 | Phòng kỹ thuật | Technical Department |
+| Bangluong | FK17 | Công ty Nội thất ô tô Tải, Bus | Automobile Interior Company Truck, Bus |
+| Bangluong | FL17 | Công ty TNHH Sản xuất Nội thất Ô tô THACO | THACO Auto Interior Manufacturing Company Limited |
+| Bangluong | C18 | Nguyễn Thị Phương Anh | Nguyen Thi Phuong Anh |
+| Bangluong | CR18 | Trừ tiền | Deduct |
+| Bangluong | FI18 | Công nhân Cấp phát vật tư | Level Worker Distributing materials |
+| Bangluong | FJ18 | Chuyền sản xuất nội thất dân dụng | Civil furniture production line |
+| Bangluong | FK18 | Công ty Nội thất ô tô Tải, Bus | Automobile Interior Company Truck, Bus |
+| Bangluong | FL18 | Công ty TNHH Sản xuất Nội thất Ô tô THACO | THACO Auto Interior Manufacturing Company Limited |
+| Bangluong | C19 | Võ Thị Lài | Vo Thi Lai |
+| Bangluong | CR19 | Trừ tiền | Deduct |
+| Bangluong | FH19 | Nữ | Female |
+| Bangluong | FI19 | Công nhân Lắp ráp | Assembly Worker |
+| Bangluong | FJ19 | Chuyền sản xuất nội thất dân dụng | Civil furniture production line |
+| Bangluong | FK19 | Công ty Nội thất ô tô Tải, Bus | Automobile Interior Company Truck, Bus |
+| Bangluong | FL19 | Công ty TNHH Sản xuất Nội thất Ô tô THACO | THACO Auto Interior Manufacturing Company Limited |
