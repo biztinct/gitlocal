@@ -284,58 +284,28 @@ class MultiSheetImportWizard(models.TransientModel):
             all_components = []
             seen_codes = set()
 
-            _logger.info(f"=== WIZARD: Processing {len(selected_sheets)} selected sheets ===")
-
             for sheet_line in selected_sheets:
-                _logger.info(f"Processing sheet: {sheet_line.sheet_name}")
                 sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
 
-                # Get data rows to detect formula columns
                 data_start_row = sheet_data['data_start_row']
                 header_row = sheet_data['header_row']
 
-                _logger.info(
-                    f"Sheet '{sheet_line.sheet_name}': "
-                    f"header_row={header_row}, data_start_row={data_start_row}, "
-                    f"headers_count={len(sheet_data['headers'])}, "
-                    f"data_rows_count={len(sheet_data['data_rows'])}"
-                )
-
-                # Log first few headers for debugging
-                for idx, h in enumerate(sheet_data['headers'][:10]):
-                    _logger.info(
-                        f"  Header {idx}: col={h.get('column_letter')}, "
-                        f"value='{h.get('value')}', "
-                        f"component_type='{h.get('component_type')}', "
-                        f"from_vertical_merge={h.get('from_vertical_merge')}"
-                    )
-
-                # Check for empty columns between valid columns
+                # Check for empty columns (skip but preserve positions for formula validity)
                 value_sheet = connector.workbook[sheet_line.sheet_name]
-                empty_columns = self._detect_empty_columns_between_valid(
+                self._detect_empty_columns_between_valid(
                     sheet_data['headers'], value_sheet, header_row
                 )
-                # Skip empty columns but preserve original Excel column letters so formulas remain valid
-                if empty_columns:
-                    _logger.info(
-                        f"Excel import: skipping {len(empty_columns)} empty column(s) in sheet '{sheet_line.sheet_name}': "
-                        f"{', '.join(empty_columns)}. Original column positions preserved for formula references."
-                    )
 
-                # Detect formula columns by checking the first data row
+                # Detect formula columns
                 formula_columns = self._detect_formula_columns(
                     formula_sheet, data_start_row, sheet_data['headers']
                 )
-                _logger.info(f"  Formula columns detected: {list(formula_columns.keys())}")
 
                 # Detect colored constant pairs (red label + green value)
-                # IMPORTANT: Use formula_sheet (data_only=False) to preserve color information
-                # The value_sheet is from connector.workbook which uses data_only=True and strips formatting
                 constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row)
-                _logger.info(f"  Colored constant pairs detected: {len(constant_pairs)}")
 
-                # Also scan formulas to find referenced cells above header row that weren't detected by color
+                # Also scan formulas for referenced cells above header row
                 formula_referenced_constants = self._detect_formula_referenced_constants(
                     formula_columns, formula_sheet, header_row
                 )
@@ -346,12 +316,6 @@ class MultiSheetImportWizard(models.TransientModel):
                     if ref_const['original_cell'] not in detected_cells:
                         constant_pairs.append(ref_const)
                         detected_cells.add(ref_const['original_cell'])
-                        _logger.info(
-                            f"  Added formula-referenced constant at {ref_const['original_cell']} "
-                            f"(name='{ref_const['name']}', value={ref_const['value']})"
-                        )
-
-                _logger.info(f"  Total constant pairs after formula scan: {len(constant_pairs)}")
 
                 # Build cell mapping for formula reference updates
                 cell_to_column_mapping = {}
@@ -360,9 +324,6 @@ class MultiSheetImportWizard(models.TransientModel):
                     new_col_letter = self._generate_extended_column_letter(constant_start_index + idx)
                     cell_to_column_mapping[pair['original_cell']] = new_col_letter
                     pair['new_column_letter'] = new_col_letter
-                    _logger.info(
-                        f"  Constant mapping: {pair['original_cell']} -> {new_col_letter}"
-                    )
 
                 for header_info in sheet_data['headers']:
                     col_letter = header_info['column_letter']
@@ -441,17 +402,10 @@ class MultiSheetImportWizard(models.TransientModel):
                         'data_source': 'manual',
                     }
                     all_components.append(component)
-                    _logger.info(
-                        f"  Added constant component: {code} = {constant_value} "
-                        f"(col={pair['new_column_letter']}, from {pair['original_cell']})"
-                    )
 
             # Create component preview records
-            _logger.info(f"=== WIZARD: Creating {len(all_components)} component preview records ===")
             for comp in all_components:
                 self.env['hr.formula.multisheet.component.preview'].create(comp)
-
-            _logger.info(f"=== WIZARD: Total components created: {len(self.component_preview_ids)} ===")
 
             self.state = 'review_components'
             return self._return_wizard_action()
@@ -686,30 +640,19 @@ class MultiSheetImportWizard(models.TransientModel):
                             'row': row_num,
                         })
 
-                        _logger.info(
-                            f"Found colored constant pair at row {row_num}: "
-                            f"name='{name}', value={value}, cell={original_cell_ref}"
-                        )
-
         return constant_pairs
 
     def _detect_formula_referenced_constants(self, formula_columns, sheet, header_row):
         """
         Scan formulas to find cell references above header row that might be constants.
-
         This catches constants like $CF$3 that may not have been detected by color.
         """
         import re
-        from openpyxl.utils import get_column_letter, column_index_from_string
+        from openpyxl.utils import column_index_from_string
 
         found_constants = []
         seen_cells = set()
-
-        # Pattern to match cell references like: CF3, $CF$3, $CF3, CF$3
         cell_ref_pattern = r'\$?([A-Z]+)\$?(\d+)'
-
-        _logger.info(f"  === SCANNING FORMULAS FOR CONSTANT REFERENCES ===")
-        _logger.info(f"  Header row: {header_row}, scanning for refs to rows 1-{header_row-1}")
 
         for col_letter, formula_info in formula_columns.items():
             formula = formula_info.get('formula', '') if isinstance(formula_info, dict) else formula_info
@@ -723,7 +666,6 @@ class MultiSheetImportWizard(models.TransientModel):
                     continue
 
                 cell_ref = f"{col_match}{row_num}"
-
                 if cell_ref in seen_cells:
                     continue
                 seen_cells.add(cell_ref)
@@ -736,7 +678,6 @@ class MultiSheetImportWizard(models.TransientModel):
                     if value is None:
                         continue
 
-                    # Try to get a name from the cell to the left
                     name = None
                     if col_idx > 1:
                         left_cell = sheet.cell(row=row_num, column=col_idx - 1)
@@ -745,10 +686,6 @@ class MultiSheetImportWizard(models.TransientModel):
 
                     if not name:
                         name = f"Constant_{col_match}{row_num}"
-
-                    _logger.info(
-                        f"    Found formula reference to {cell_ref}: value={value}, name='{name}'"
-                    )
 
                     found_constants.append({
                         'name': name,
@@ -760,9 +697,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     })
 
                 except Exception as e:
-                    _logger.warning(f"    Error processing cell {cell_ref}: {e}")
+                    _logger.warning(f"Error processing cell {cell_ref}: {e}")
 
-        _logger.info(f"  === END FORMULA SCAN: Found {len(found_constants)} constant references ===")
         return found_constants
 
     def _generate_extended_column_letter(self, index):
@@ -779,51 +715,29 @@ class MultiSheetImportWizard(models.TransientModel):
         return result
 
     def _update_formula_references(self, formula, cell_mapping):
-        """Update formula to replace original cell references with new column letters."""
+        """
+        Update formula to replace original cell references with new column letters.
+        e.g., {'CE3': 'ZA'} -> replaces $CE$3 or CE3 with ZA2
+        """
         import re
 
         if not formula or not cell_mapping:
             return formula
-
-        _logger.info(f"=== FORMULA REFERENCE UPDATE ===")
-        _logger.info(f"Original formula: {formula}")
-        _logger.info(f"Cell mapping: {cell_mapping}")
 
         updated_formula = formula
         sorted_refs = sorted(cell_mapping.keys(), key=len, reverse=True)
 
         for original_ref in sorted_refs:
             new_col = cell_mapping[original_ref]
-
-            # Parse the cell reference to separate column letters from row number
-            # Cell refs like: CE3, CE13, ABC123
             cell_match = re.match(r'^([A-Za-z]+)(\d+)$', original_ref)
             if not cell_match:
-                _logger.warning(f"Could not parse cell reference: {original_ref}")
                 continue
 
-            col_letters = cell_match.group(1)  # e.g., 'CE'
-            row_num = cell_match.group(2)      # e.g., '3' or '13'
-
-            # Build pattern to match: CE3, $CE3, CE$3, $CE$3
-            # Using proper escaping and optional $ signs
+            col_letters = cell_match.group(1)
+            row_num = cell_match.group(2)
             pattern = r'\$?' + col_letters + r'\$?' + row_num + r'(?![0-9A-Za-z])'
             replacement = f"{new_col}2"
-
-            # Check if pattern matches in formula
-            matches = re.findall(pattern, updated_formula, flags=re.IGNORECASE)
-            _logger.info(f"  Pattern '{pattern}' -> matches found: {matches}")
-
-            before = updated_formula
             updated_formula = re.sub(pattern, replacement, updated_formula, flags=re.IGNORECASE)
-
-            if before != updated_formula:
-                _logger.info(f"  Replaced '{original_ref}' variants with '{replacement}'")
-
-        if updated_formula != formula:
-            _logger.info(f"Updated formula: '{formula}' -> '{updated_formula}'")
-        else:
-            _logger.info(f"No changes made to formula")
 
         return updated_formula
 
@@ -910,6 +824,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     'component_type': comp.component_type,
                     'source_sheet_name': comp.source_sheet,
                     'original_column_letter': comp.column_letter,
+                    'forced_column_letter': comp.column_letter,  # Preserve actual Excel column position for ALL rules
                     'data_source': comp.data_source,
                 }
 
@@ -917,9 +832,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     rule_vals['excel_formula'] = comp.excel_formula
 
                 # Handle constant components (from colored cell pairs)
-                # Use forced_column_letter for constants to preserve ZA, ZB, etc.
                 if comp.column_type == 'constant':
-                    rule_vals['forced_column_letter'] = comp.column_letter
                     if comp.sample_value:
                         try:
                             rule_vals['constant_value'] = float(comp.sample_value)
