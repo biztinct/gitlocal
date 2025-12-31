@@ -210,6 +210,18 @@ class HrFormulaConfig(models.Model):
         store=True
     )
 
+    error_details = fields.Text(
+        string='Error Details',
+        compute='_compute_error_details',
+        help="Detailed list of formulas with errors"
+    )
+
+    circular_ref_details = fields.Text(
+        string='Circular Reference Details',
+        compute='_compute_circular_ref_details',
+        help="Detailed list of formulas with circular references"
+    )
+
     # ==========================================
     # UI SETTINGS
     # ==========================================
@@ -339,6 +351,40 @@ class HrFormulaConfig(models.Model):
             record.has_errors = any(
                 not r.is_valid for r in record.rule_ids if r.excel_formula
             )
+
+    @api.depends('rule_ids.is_valid', 'rule_ids.validation_message')
+    def _compute_error_details(self):
+        for record in self:
+            invalid_rules = record.rule_ids.filtered(
+                lambda r: r.excel_formula and not r.is_valid
+            )
+            if invalid_rules:
+                details = []
+                for rule in invalid_rules:
+                    error_msg = rule.validation_message or _("Unknown error")
+                    details.append(
+                        f"• Column {rule.column_letter} ({rule.code}): {error_msg}"
+                    )
+                record.error_details = "\n".join(details)
+            else:
+                record.error_details = False
+
+    @api.depends('rule_ids.has_circular_ref')
+    def _compute_circular_ref_details(self):
+        for record in self:
+            circular_rules = record.rule_ids.filtered('has_circular_ref')
+            if circular_rules:
+                details = []
+                for rule in circular_rules:
+                    formula_preview = (rule.excel_formula or '')[:50]
+                    if len(rule.excel_formula or '') > 50:
+                        formula_preview += "..."
+                    details.append(
+                        f"• Column {rule.column_letter} ({rule.code}): {formula_preview}"
+                    )
+                record.circular_ref_details = "\n".join(details)
+            else:
+                record.circular_ref_details = False
 
     # ==========================================
     # CONSTRAINTS
