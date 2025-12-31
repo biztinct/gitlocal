@@ -9,22 +9,24 @@
         <field name="name">hr.formula.rule.tree</field>
         <field name="model">hr.formula.rule</field>
         <field name="arch" type="xml">
-            <tree string="Formula Rules" editable="bottom" default_order="sequence">
+            <tree string="Formula Rules" editable="bottom" default_order="sequence"
+                  decoration-success="column_type == 'formula'"
+                  decoration-info="column_type == 'input'">
                 <field name="sequence" widget="handle"/>
-                <field name="column_letter" readonly="1"
-                       decoration-bf="column_type == 'formula'"
-                       decoration-success="column_type == 'input'"
-                       decoration-muted="column_type == 'constant'"/>
-                <field name="name"/>
+                <field name="column_letter" readonly="1" string="Col"/>
+                <field name="name" string="Component"/>
+                <field name="component_type" string="Category"/>
                 <field name="code"/>
-                <field name="column_type"/>
+                <field name="column_type" string="Type"/>
+                <field name="data_source" string="Source"/>
                 <field name="excel_formula" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
                 <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
                 <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
-                <field name="default_value"/>
-                <field name="number_format"/>
+                <field name="default_value" optional="show"/>
+                <field name="number_format" optional="hide"/>
+                <field name="source_sheet_name" optional="hide"/>
                 <field name="is_valid" widget="boolean" readonly="1"/>
-                <field name="appears_on_payslip"/>
+                <field name="appears_on_payslip" optional="show"/>
             </tree>
         </field>
     </record>
@@ -116,6 +118,38 @@
                                 </group>
                             </group>
                         </page>
+
+                        <!-- Data Source Settings (Multi-Sheet Import) -->
+                        <page string="Data Source" name="data_source">
+                            <group>
+                                <group string="Component Classification">
+                                    <field name="component_type"/>
+                                    <field name="source_sheet_name" readonly="1"/>
+                                    <field name="original_column_letter" readonly="1"/>
+                                </group>
+                                <group string="Data Source Configuration">
+                                    <field name="data_source"/>
+                                    <field name="integration_connector_id"
+                                           attrs="{'invisible': [('data_source', '!=', 'integration')],
+                                                   'required': [('data_source', '=', 'integration')]}"
+                                           options="{'no_create': True}"/>
+                                    <field name="source_field_mapping"
+                                           attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
+                                </group>
+                            </group>
+                            <group string="Information" class="oe_read_only">
+                                <div class="alert alert-info" role="alert">
+                                    <strong>Data Source Options:</strong>
+                                    <ul class="mb-0">
+                                        <li><b>Excel Import:</b> Values come from the primary Excel file during import</li>
+                                        <li><b>Integration Connector:</b> Values fetched from external system (Zoho, SAP, etc.)</li>
+                                        <li><b>Calculated (Formula):</b> Computed from other fields using formula</li>
+                                        <li><b>Manual Entry:</b> User enters value manually for each payslip</li>
+                                        <li><b>Not Populated:</b> Field exists in structure but has no data source</li>
+                                    </ul>
+                                </div>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
@@ -187,12 +221,21 @@
                 <field name="code"/>
                 <field name="column_letter"/>
                 <field name="excel_formula"/>
+                <field name="component_type"/>
+                <field name="source_sheet_name"/>
                 <filter name="input_columns" string="Input Columns"
                         domain="[('column_type', '=', 'input')]"/>
                 <filter name="formula_columns" string="Formula Columns"
                         domain="[('column_type', '=', 'formula')]"/>
                 <filter name="constant_columns" string="Constant Columns"
                         domain="[('column_type', '=', 'constant')]"/>
+                <separator/>
+                <filter name="data_source_excel" string="From Excel"
+                        domain="[('data_source', '=', 'excel')]"/>
+                <filter name="data_source_integration" string="From Integration"
+                        domain="[('data_source', '=', 'integration')]"/>
+                <filter name="data_source_none" string="No Data Source"
+                        domain="[('data_source', '=', 'none')]"/>
                 <separator/>
                 <filter name="valid" string="Valid"
                         domain="[('is_valid', '=', True)]"/>
@@ -204,6 +247,12 @@
                 <group expand="0" string="Group By">
                     <filter name="group_type" string="Column Type"
                             context="{'group_by': 'column_type'}"/>
+                    <filter name="group_data_source" string="Data Source"
+                            context="{'group_by': 'data_source'}"/>
+                    <filter name="group_component_type" string="Component Type"
+                            context="{'group_by': 'component_type'}"/>
+                    <filter name="group_sheet" string="Source Sheet"
+                            context="{'group_by': 'source_sheet_name'}"/>
                     <filter name="group_category" string="Category"
                             context="{'group_by': 'category_id'}"/>
                     <filter name="group_format" string="Number Format"

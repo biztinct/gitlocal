@@ -571,3 +571,409 @@ class ExcelConnector(BaseHRConnector):
         output = io.BytesIO()
         wb.save(output)
         return output.getvalue()
+
+    # ==========================================
+    # MULTI-SHEET LOADING (for Multi-Worksheet Import)
+    # ==========================================
+
+    def load_workbook_multisheet(
+        self,
+        file_content: bytes,
+        include_formulas: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Load all sheets from an Excel workbook with metadata.
+
+        Args:
+            file_content: Excel file content as bytes
+            include_formulas: If True, also load formula workbook
+
+        Returns:
+            Dictionary with workbook metadata and sheet information
+        """
+        if not OPENPYXL_AVAILABLE:
+            raise ImportError("openpyxl required for multi-sheet loading")
+
+        result = {
+            'sheet_names': [],
+            'sheets': {},
+            'active_sheet': None,
+            'total_sheets': 0,
+        }
+
+        try:
+            # Load data workbook (with calculated values)
+            self.workbook = openpyxl.load_workbook(
+                io.BytesIO(file_content),
+                data_only=True
+            )
+
+            # Optionally load formula workbook
+            formula_workbook = None
+            if include_formulas:
+                formula_workbook = openpyxl.load_workbook(
+                    io.BytesIO(file_content),
+                    data_only=False
+                )
+
+            result['sheet_names'] = self.workbook.sheetnames
+            result['total_sheets'] = len(self.workbook.sheetnames)
+            result['active_sheet'] = self.workbook.active.title
+
+            # Analyze each sheet
+            for sheet_name in self.workbook.sheetnames:
+                sheet = self.workbook[sheet_name]
+                formula_sheet = formula_workbook[sheet_name] if formula_workbook else None
+
+                sheet_info = self._analyze_sheet(sheet, formula_sheet)
+                sheet_info['name'] = sheet_name
+                result['sheets'][sheet_name] = sheet_info
+
+            _logger.info(
+                f"Loaded workbook with {result['total_sheets']} sheets: "
+                f"{', '.join(result['sheet_names'])}"
+            )
+
+            return result
+
+        except Exception as e:
+            _logger.exception(f"Multi-sheet loading failed: {e}")
+            raise
+
+    def _analyze_sheet(
+        self,
+        sheet: 'openpyxl.worksheet.worksheet.Worksheet',
+        formula_sheet: Optional['openpyxl.worksheet.worksheet.Worksheet'] = None
+    ) -> Dict[str, Any]:
+        """
+        Analyze a single worksheet for metadata.
+
+        Args:
+            sheet: Data worksheet
+            formula_sheet: Formula worksheet (same sheet, loaded with formulas)
+
+        Returns:
+            Sheet analysis dictionary
+        """
+        from ..formula_engine.header_detector import HeaderDetector
+        from ..formula_engine.merged_cell_parser import MergedCellParser
+
+        # Basic dimensions
+        analysis = {
+            'max_row': sheet.max_row or 0,
+            'max_column': sheet.max_column or 0,
+            'merged_cell_count': len(list(sheet.merged_cells.ranges)),
+            'has_formulas': False,
+            'references_other_sheets': False,
+            'detected_header_row': 1,
+            'detected_data_start_row': 2,
+            'header_detection_confidence': 0.0,
+            'component_types': {},
+            'formulas_referencing_sheets': [],
+        }
+
+        # Detect header row
+        try:
+            detector = HeaderDetector(sheet)
+            detection = detector.detect_with_confidence()
+            analysis['detected_header_row'] = detection['header_row']
+            analysis['detected_data_start_row'] = detection['data_start_row']
+            analysis['header_detection_confidence'] = detection['confidence_score']
+            analysis['headers'] = [h['value'] for h in detection['headers'] if h['value']]
+        except Exception as e:
+            _logger.warning(f"Header detection failed: {e}")
+            analysis['headers'] = []
+
+        # Extract component types from merged cells
+        try:
+            parser = MergedCellParser(sheet)
+            analysis['component_types'] = parser.extract_component_types(
+                analysis['detected_header_row']
+            )
+            analysis['merged_structure'] = parser.analyze_structure()
+        except Exception as e:
+            _logger.warning(f"Merged cell parsing failed: {e}")
+
+        # Check for formulas and cross-sheet references
+        if formula_sheet:
+            cross_sheet_pattern = r"'[^']+'\![A-Z]+"
+            import re
+
+            for row in formula_sheet.iter_rows():
+                for cell in row:
+                    if isinstance(cell.value, str) and cell.value.startswith('='):
+                        analysis['has_formulas'] = True
+
+                        # Check for cross-sheet references
+                        if re.search(cross_sheet_pattern, cell.value):
+                            analysis['references_other_sheets'] = True
+                            # Extract referenced sheet names
+                            refs = re.findall(r"'([^']+)'!", cell.value)
+                            for ref in refs:
+                                if ref not in analysis['formulas_referencing_sheets']:
+                                    analysis['formulas_referencing_sheets'].append(ref)
+
+        return analysis
+
+    def load_sheet_with_detection(
+        self,
+        sheet_name: str,
+        auto_detect_header: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Load a specific sheet with automatic header detection.
+
+        Args:
+            sheet_name: Name of sheet to load
+            auto_detect_header: Whether to auto-detect header row
+
+        Returns:
+            Dictionary with headers, data, and metadata
+        """
+        if not self.workbook:
+            raise ValueError("Workbook not loaded. Call load_workbook_multisheet first.")
+
+        if sheet_name not in self.workbook.sheetnames:
+            raise ValueError(f"Sheet '{sheet_name}' not found in workbook")
+
+        sheet = self.workbook[sheet_name]
+
+        from openpyxl.utils import get_column_letter
+        from ..formula_engine.header_detector import HeaderDetector
+        from ..formula_engine.merged_cell_parser import MergedCellParser
+
+        # Always create detector (needed for get_headers even if not auto-detecting)
+        detector = HeaderDetector(sheet)
+
+        # Detect header row
+        if auto_detect_header:
+            header_row, data_start_row, details = detector.detect_header_row()
+        else:
+            header_row = 1
+            data_start_row = 2
+            details = {}
+
+        # Extract component types from horizontal merges above header
+        parser = MergedCellParser(sheet)
+        component_types = parser.extract_component_types(header_row)
+        column_info = parser.get_column_info(header_row)
+
+        # Extract headers using HeaderDetector.get_headers() to handle vertical merges
+        # This properly extracts headers from:
+        # 1. Regular cells in the header row
+        # 2. Vertical merges that span down to the header row (e.g., "TT", "MSNV" in row 1-2)
+        raw_headers = detector.get_headers(header_row)
+
+        _logger.info(
+            f"load_sheet_with_detection: sheet='{sheet_name}', "
+            f"header_row={header_row}, data_start_row={data_start_row}, "
+            f"raw_headers_count={len(raw_headers)}, "
+            f"component_types_count={len(component_types)}"
+        )
+
+        headers = []
+        for h in raw_headers:
+            if h.get('value'):
+                col_letter = h.get('column_letter')
+                headers.append({
+                    'column_letter': col_letter,
+                    'column_index': h.get('column_index', 0),
+                    'value': h['value'],
+                    'component_type': component_types.get(col_letter),
+                    'from_vertical_merge': h.get('from_vertical_merge', False),
+                })
+
+        _logger.info(f"  -> Filtered headers with values: {len(headers)}")
+
+        # Extract data rows
+        data_rows = []
+        for row in sheet.iter_rows(min_row=data_start_row):
+            row_data = {}
+            for cell in row:
+                col_letter = get_column_letter(cell.column)
+                header = next(
+                    (h for h in headers if h['column_letter'] == col_letter),
+                    None
+                )
+                if header:
+                    row_data[header['value']] = cell.value
+
+            # Skip empty rows
+            if any(v is not None for v in row_data.values()):
+                data_rows.append(row_data)
+
+        return {
+            'sheet_name': sheet_name,
+            'header_row': header_row,
+            'data_start_row': data_start_row,
+            'detection_details': details,
+            'headers': headers,
+            'component_types': component_types,
+            'data_rows': data_rows,
+            'total_rows': len(data_rows),
+            'total_columns': len(headers),
+        }
+
+    def get_sheet_formulas(self, sheet_name: str) -> List[Dict[str, Any]]:
+        """
+        Extract all formulas from a specific sheet.
+
+        Args:
+            sheet_name: Name of the sheet
+
+        Returns:
+            List of formula information dictionaries
+        """
+        if not OPENPYXL_AVAILABLE:
+            return []
+
+        formulas = []
+
+        # Need to reload with formulas
+        # This assumes we have access to the original file content
+        # In practice, this would be called during the wizard flow
+
+        _logger.warning("get_sheet_formulas requires formula workbook - not implemented in this context")
+        return formulas
+
+    def build_sheet_column_mapping(
+        self,
+        sheet_name: str,
+        code_generator: callable = None
+    ) -> Dict[str, str]:
+        """
+        Build column letter to code mapping for a sheet.
+
+        Used for cross-sheet formula resolution.
+
+        Args:
+            sheet_name: Name of the sheet
+            code_generator: Optional function to generate codes from headers.
+                           Signature: (header: str, existing_codes: set) -> str
+
+        Returns:
+            Dictionary mapping column letters to codes
+        """
+        if not self.workbook or sheet_name not in self.workbook.sheetnames:
+            return {}
+
+        sheet_data = self.load_sheet_with_detection(sheet_name)
+        existing_codes = set()
+        column_mapping = {}
+
+        for header in sheet_data['headers']:
+            col_letter = header['column_letter']
+            header_value = header['value']
+
+            if code_generator:
+                code = code_generator(header_value, existing_codes)
+            else:
+                code = self._generate_code_from_header(header_value, existing_codes)
+
+            column_mapping[col_letter] = code
+            existing_codes.add(code)
+
+        return column_mapping
+
+    def _generate_code_from_header(
+        self,
+        header: str,
+        existing_codes: set
+    ) -> str:
+        """
+        Generate a unique code from a header value.
+
+        Handles numeric headers (0, 1, 2) and special characters.
+
+        Args:
+            header: Header value
+            existing_codes: Set of already used codes
+
+        Returns:
+            Generated unique code
+        """
+        import re
+
+        header_str = str(header).strip()
+
+        # Handle pure numeric headers
+        if header_str.isdigit():
+            base_code = f'COL_{header_str}'
+        else:
+            # Clean special characters, convert to uppercase
+            base_code = re.sub(r'[^A-Za-z0-9]', '', header_str).upper()
+            if not base_code:
+                base_code = 'UNNAMED'
+
+        # Ensure unique
+        code = base_code
+        suffix = 1
+        while code in existing_codes:
+            code = f"{base_code}_{suffix}"
+            suffix += 1
+
+        return code
+
+    def analyze_cross_sheet_formulas(
+        self,
+        file_content: bytes
+    ) -> Dict[str, Any]:
+        """
+        Analyze formulas across all sheets to identify dependencies.
+
+        Args:
+            file_content: Excel file content
+
+        Returns:
+            Cross-sheet dependency analysis
+        """
+        from ..formula_engine.cross_sheet_resolver import CrossSheetResolver
+        import re
+
+        # Load formula workbook
+        formula_wb = openpyxl.load_workbook(
+            io.BytesIO(file_content),
+            data_only=False
+        )
+
+        analysis = {
+            'sheets': {},
+            'cross_references': [],
+            'dependency_graph': {},
+        }
+
+        cross_sheet_pattern = re.compile(r"'([^']+)'!\$?([A-Z]+)\$?(\d*)")
+
+        for sheet_name in formula_wb.sheetnames:
+            sheet = formula_wb[sheet_name]
+            sheet_analysis = {
+                'formula_count': 0,
+                'cross_refs': [],
+                'depends_on_sheets': set(),
+            }
+
+            for row in sheet.iter_rows():
+                for cell in row:
+                    if isinstance(cell.value, str) and cell.value.startswith('='):
+                        sheet_analysis['formula_count'] += 1
+
+                        # Find cross-sheet references
+                        matches = cross_sheet_pattern.findall(cell.value)
+                        for ref_sheet, col, row_num in matches:
+                            ref_info = {
+                                'source_sheet': sheet_name,
+                                'source_cell': f"{cell.column_letter}{cell.row}",
+                                'target_sheet': ref_sheet,
+                                'target_column': col,
+                                'target_row': row_num or 'any',
+                                'formula': cell.value,
+                            }
+                            sheet_analysis['cross_refs'].append(ref_info)
+                            sheet_analysis['depends_on_sheets'].add(ref_sheet)
+                            analysis['cross_references'].append(ref_info)
+
+            sheet_analysis['depends_on_sheets'] = list(sheet_analysis['depends_on_sheets'])
+            analysis['sheets'][sheet_name] = sheet_analysis
+            analysis['dependency_graph'][sheet_name] = sheet_analysis['depends_on_sheets']
+
+        return analysis

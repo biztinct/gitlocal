@@ -719,3 +719,33 @@ class HrFormulaConfig(models.Model):
                 'default_source_type': 'excel',
             },
         }
+
+    def action_delete_all_rules(self):
+        """Delete all salary component rules from this configuration"""
+        self.ensure_one()
+        rule_count = len(self.rule_ids)
+        if rule_count == 0:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('No Components'),
+                    'message': _('There are no salary components to delete.'),
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+        self.rule_ids.unlink()
+        _logger.info(f"Deleted {rule_count} salary component rules from config {self.code}")
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Components Deleted'),
+                'message': _('%d salary components have been deleted.') % rule_count,
+                'type': 'success',
+                'sticky': False,
+            }
+        }

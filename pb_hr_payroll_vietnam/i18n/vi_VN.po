@@ -1127,3 +1127,372 @@ msgstr "Số năm kinh nghiệm"
 #: model:ir.model.fields,field_description:pb_hr_payroll_vietnam.field_vietnam_employee_import_wizard__zoho_api_url
 msgid "Zoho API URL"
 msgstr "URL API Zoho"
+
+msgid "TT"
+msgstr "No."
+
+msgid "MSNV"
+msgstr "Emp. ID"
+
+msgid "Họ và tên"
+msgstr "Full Name"
+
+msgid "TĐ"
+msgstr "Level"
+
+msgid "Ngạch lương"
+msgstr "Salary Rank"
+
+msgid "Ngày vào"
+msgstr "Join Date"
+
+msgid "Mức lương HĐLĐ"
+msgstr "Labor Contract Salary"
+
+msgid "Mức lương HĐTV"
+msgstr "Probation Contract Salary"
+
+msgid "Định mức thưởng HQCV"
+msgstr "Performance Bonus Norm"
+
+msgid "Tổng định mức thưởng HQCV"
+msgstr "Total Performance Bonus Norm"
+
+msgid "Tổng thu nhập (Mức lương + Định mức thưởng HQCV)"
+msgstr "Total Income (Salary + Perf. Bonus Norm)"
+
+msgid "Tỷ lệ % tạm ứng thưởng HQCV"
+msgstr "Performance Bonus Advance Rate %"
+
+msgid "Mức lương tính chế độ ngừng việc"
+msgstr "Suspension Salary Rate"
+
+msgid "Tạm ngừng việc 14 ngày đầu"
+msgstr "Suspension 1st 14 Days"
+
+msgid "Tạm ngừng việc từ 15 ngày trở đi"
+msgstr "Suspension from 15th Day+"
+
+msgid "Ngày công trong tháng"
+msgstr "Working Days in Month"
+
+msgid "Công chính"
+msgstr "Standard Work Days"
+
+msgid "Công giao ca"
+msgstr "Shift Handover Days"
+
+msgid "Công Tăng ca ngày thường"
+msgstr "Normal Overtime Days"
+
+msgid "Công Chủ nhật"
+msgstr "Sunday Work Days"
+
+msgid "Công ngày lễ, tết"
+msgstr "Holiday/Tet Work Days"
+
+msgid "Đi làm lễ, tết"
+msgstr "Worked Holidays"
+
+msgid "Trùng ca"
+msgstr "Shift Overlap"
+
+msgid "Nghỉ lễ, tết"
+msgstr "Holiday Off"
+
+msgid "Hiếu, hỉ"
+msgstr "Funeral/Wedding"
+
+msgid "Ngày PN thanh toán T11/2025"
+msgstr "Paid Annual Leave Days Nov 2025"
+
+msgid "Ngày ngừng việc"
+msgstr "Work Suspension Days"
+
+msgid "14 ngày đầu"
+msgstr "First 14 Days"
+
+msgid "Từ ngày 15 trở đi"
+msgstr "From 15th Day Onwards"
+
+msgid "Ngày nghỉ hưởng BHXH"
+msgstr "Social Insurance Leave Days"
+
+msgid "Công ngày thứ 7"
+msgstr "Saturday Work Days"
+
+msgid "Đi làm T7"
+msgstr "Worked Sat"
+
+msgid "Nghỉ T7"
+msgstr "Off Sat"
+
+msgid "Công phụ cấp"
+msgstr "Allowance Days"
+
+msgid "Phụ cấp ban đêm"
+msgstr "Night Shift Allowance"
+
+msgid "Phụ cấp đứng làm việc"
+msgstr "Standing Allowance"
+
+msgid "Ngày PN chưa nghỉ năm 2025"
+msgstr "Unused Annual Leave Days 2025"
+
+msgid "Các khoản được hưởng trong tháng"
+msgstr "Monthly Entitlements"
+
+msgid "Lương Ngày thường"
+msgstr "Normal Day Salary"
+
+msgid "Lương Tăng ca thường"
+msgstr "Normal Overtime Salary"
+
+msgid "Lương chủ nhật"
+msgstr "Sunday Salary"
+
+msgid "Lương ngày lễ, tết"
+msgstr "Holiday/Tet Salary"
+
+msgid "Làm việc ngày lễ, tết"
+msgstr "Work on Holidays"
+
+msgid "Lương Hiếu, Hỉ"
+msgstr "Funeral/Wedding Salary"
+
+msgid "Lương phép PN thanh toán T11"
+msgstr "Annual Leave Pay (Nov)"
+
+msgid "Lương ngừng việc"
+msgstr "Suspension Salary"
+
+msgid "Lương chế độ T7"
+msgstr "Saturday Salary"
+
+msgid "Thu nhập phụ cấp"
+msgstr "Allowance Income"
+
+msgid "Phép năm chưa nghỉ năm 2025"
+msgstr "Unused Annual Leave Pay 2025"
+
+msgid "Tạm ứng thưởng HQCV"
+msgstr "Perf. Bonus Advance"
+
+msgid "Thu nhập khác (Phụ cấp thai sản, hỗ trợ thôi việc...)"
+msgstr "Other Income (Maternity, Severance...)"
+
+msgid "Tổng thu nhập tháng 11"
+msgstr "Total Income Nov"
+
+msgid "Chi quà 2/9"
+msgstr "Gift 2/9 (National Day)"
+
+msgid "Thu nhập đã tạm ứng kỳ 1/11"
+msgstr "Income Advanced Period 1/Nov"
+
+msgid "Thu nhập còn lại trong tháng"
+msgstr "Remaining Income in Month"
+
+msgid "Lương tạm ngừng việc"
+msgstr "Suspension Salary"
+
+msgid "Phụ cấp bồi dưỡng làm việc"
+msgstr "Work Support Allowance"
+
+msgid "Thu nhập khác (Phép năm thôi việc, Hỗ trợ thôi việc,...)"
+msgstr "Other Income (Unused Leave on Termination, Severance Support...)"
+
+msgid "Tiền công giao xe 20% chi cùng lương kỳ 2/11"
+msgstr "Vehicle Delivery Pay 20% (Paid w/ Period 2 Nov)"
+
+msgid "Thu nhập hoàn thuế năm.."
+msgstr "Annual Tax Refund Income"
+
+msgid "Chi quà 1/6"
+msgstr "Gift 1/6 (Children's Day)"
+
+msgid "Tổng thu nhập còn lại trong tháng 11"
+msgstr "Total Remaining Income Nov"
+
+msgid "Các khoản giảm trừ kỳ trong tháng"
+msgstr "Monthly Deductions"
+
+msgid "BHXH"
+msgstr "Social Ins."
+
+msgid "BHYT"
+msgstr "Health Ins."
+
+msgid "BHTN"
+msgstr "Unemp. Ins."
+
+msgid "BHXH, BHYT, BHTN"
+msgstr "Total Insurance (SI, HI, UI)"
+
+msgid "(LHĐLĐ * 10.5%)"
+msgstr "(Labor Contract Salary * 10.5%)"
+
+msgid "Phí công đoàn"
+msgstr "Trade Union Fee"
+
+msgid "(LHĐLĐ * 1%)"
+msgstr "(Labor Contract Salary * 1%)"
+
+msgid "Phí đoàn thanh niên (dưới 30 tuổi)"
+msgstr "Youth Union Fee (< 30 years old)"
+
+msgid "5.000đ/người"
+msgstr "5,000 VND/person"
+
+msgid "Tiền phúng điếu"
+msgstr "Funeral Contribution"
+
+msgid "Cước điện thoại T10/2025"
+msgstr "Phone Bill Oct 2025"
+
+msgid "Thuế TNCN T11"
+msgstr "PIT Nov"
+
+msgid "Thu thuế TNCN T1/2024 lần 1"
+msgstr "PIT Collection Jan 2024 (1st)"
+
+msgid "Giảm trừ khác (thu hộ tiền ủng hộ Nguyễn Tấn Dũng, thu nợ kỳ trước, thu hộ tiền bồi thường,...)"
+msgstr "Other Deductions (Donation collection, prev. debt collection, compensation collection...)"
+
+msgid "Tổng giảm trừ"
+msgstr "Total Deductions"
+
+msgid "Thực nhận"
+msgstr "Net Pay"
+
+msgid "Thu vào kỳ sau"
+msgstr "Collected Next Period"
+
+msgid "KIỂM TRA"
+msgstr "CHECK"
+
+msgid "THUẾ THU NHẬP CÁ NHÂN"
+msgstr "PERSONAL INCOME TAX (PIT)"
+
+msgid "MA BH"
+msgstr "Ins. Code"
+
+msgid "Ma KPCD"
+msgstr "Union Code"
+
+msgid "Kiểm tra đối tượng hưởng lương"
+msgstr "Salary Eligibility Check"
+
+msgid "Kiểm tra đối tượng hưởng tăng ca"
+msgstr "OT Eligibility Check"
+
+msgid "BD PHSK"
+msgstr "Health Rehab Support"
+
+msgid "MỨC TIỀN"
+msgstr "Amount"
+
+msgid "Trừ tiền tang chế"
+msgstr "Funeral Deduction"
+
+msgid "Thu nhập ngoài bảng lương đưa vào tính thuế"
+msgstr "Non-payroll Taxable Income"
+
+msgid "Tiền ăn vượt mức"
+msgstr "Excess Meal Allow."
+
+msgid "Thu nhập còn phải chi tháng 1"
+msgstr "Income Payable Jan"
+
+msgid "Tiền thưởng"
+msgstr "Bonus"
+
+msgid "Thu nhập 100% giao xe"
+msgstr "100% Vehicle Delivery Income"
+
+msgid "THU NHẬP CHỊU THUẾ TNCN"
+msgstr "PIT Taxable Income"
+
+msgid "SỐ NGƯỜI PHỤ THUỘC"
+msgstr "NO. OF DEPENDENTS"
+
+msgid "GIẢM TRỪ GIA CẢNH"
+msgstr "DEPENDENT RELIEF"
+
+msgid "GIẢM TRỪ BẢN THÂN"
+msgstr "PERSONAL RELIEF"
+
+msgid "TỔNG GIẢM TRỪ"
+msgstr "TOTAL RELIEF"
+
+msgid "TỔNG THU NHẬP TÍNH THUẾ TNCN"
+msgstr "TOTAL ASSESSABLE INCOME (PIT)"
+
+msgid "Khoản đc giảm trừ trong thuế"
+msgstr "Tax Deductible Items"
+
+msgid "Hỗ trợ thôi việc, trợ cấp thôi việc"
+msgstr "Severance Support, Severance Allowance"
+
+msgid "Truy lĩnh PC ĐH cho LX trung chuyển làm việc MT ĐH T3-T6/2025"
+msgstr "Retro. Hazardous Allow. for Shuttle Drivers (Mar-Jun 2025)"
+
+msgid "Trả lại tiền thu ĐTDĐ Tháng 8 - Chi nhánh"
+msgstr "Refund of Mobile Phone Deduction Aug - Branch"
+
+msgid "Truy thu BH"
+msgstr "Retroactive Ins. Collection"
+
+msgid "Truy lĩnh BHXH"
+msgstr "Retroactive SI Payment"
+
+msgid "BHXH đã thu (số trong bảng đóng BHXH)"
+msgstr "SI Collected (Amount in SI Contribution Table)"
+
+msgid "KỲ I"
+msgstr "PERIOD I"
+
+msgid "PC ThN"
+msgstr "Seniority Allow."
+
+msgid "PC chức danh"
+msgstr "Position Allow."
+
+msgid "PC kiêm nhiệm"
+msgstr "Concurrent Position Allow."
+
+msgid "PC biệt phái"
+msgstr "Secondment Allow."
+
+msgid "Tổng PC"
+msgstr "Total Allow."
+
+msgid "Chức vụ"
+msgstr "Position"
+
+msgid "Bộ phận"
+msgstr "Department"
+
+msgid "Mail"
+msgstr "Email"
+
+msgid "Khu vực đóng góp tang chế"
+msgstr "Funeral Contribution Area"
+
+msgid "TÀI KHOẢN NGÂN HÀNG"
+msgstr "BANK ACCOUNT"
+
+msgid "ICB"
+msgstr "ICB"
+
+msgid "VCB"
+msgstr "VCB"
+
+msgid "NH khác"
+msgstr "Other Bank"
+
+msgid "CCCD"
+msgstr "Citizen ID"
+
+msgid "GHI CHÚ"
+msgstr "NOTES"
