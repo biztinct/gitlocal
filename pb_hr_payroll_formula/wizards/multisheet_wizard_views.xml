@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         MULTI-SHEET IMPORT WIZARD VIEWS
+         ========================================== -->
+
+    <!-- Main Wizard Form View -->
+    <record id="view_multisheet_import_wizard_form" model="ir.ui.view">
+        <field name="name">hr.formula.multisheet.import.wizard.form</field>
+        <field name="model">hr.formula.multisheet.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Multi-Sheet Excel Import">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="upload,select_sheets,review_components,confirm"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <span attrs="{'invisible': [('state', '!=', 'upload')]}">
+                                Upload Excel File
+                            </span>
+                            <span attrs="{'invisible': [('state', '!=', 'select_sheets')]}">
+                                Select Worksheets
+                            </span>
+                            <span attrs="{'invisible': [('state', '!=', 'review_components')]}">
+                                Review Components
+                            </span>
+                            <span attrs="{'invisible': [('state', '!=', 'map_missing')]}">
+                                Map Missing Fields
+                            </span>
+                            <span attrs="{'invisible': [('state', '!=', 'confirm')]}">
+                                Confirm Import
+                            </span>
+                        </h1>
+                    </div>
+
+                    <!-- Step 1: Upload File -->
+                    <group attrs="{'invisible': [('state', '!=', 'upload')]}">
+                        <group string="Target Configuration">
+                            <field name="config_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Excel File">
+                            <field name="import_file" filename="import_filename"/>
+                            <field name="import_filename" invisible="1"/>
+                        </group>
+                        <group string="Instructions" class="oe_read_only">
+                            <div class="alert alert-info" role="alert">
+                                <p><strong>Multi-Sheet Import Wizard</strong></p>
+                                <p>This wizard will analyze your Excel file and:</p>
+                                <ul>
+                                    <li>Detect all worksheets in the workbook</li>
+                                    <li>Auto-detect header rows based on content patterns</li>
+                                    <li>Extract component types from merged cells</li>
+                                    <li>Resolve cross-worksheet formula references</li>
+                                </ul>
+                                <p>Supported formats: .xlsx, .xls</p>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Step 2: Select Worksheets -->
+                    <group attrs="{'invisible': [('state', '!=', 'select_sheets')]}">
+                        <group string="Available Worksheets">
+                            <field name="available_sheet_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="is_selected" widget="boolean_toggle"/>
+                                    <field name="is_main_sheet" widget="boolean_toggle"/>
+                                    <field name="sheet_name" readonly="1"/>
+                                    <field name="detected_header_row"/>
+                                    <field name="column_count" readonly="1"/>
+                                    <field name="row_count" readonly="1"/>
+                                    <field name="has_formulas" widget="boolean" readonly="1"/>
+                                    <field name="references_other_sheets" widget="boolean" readonly="1"/>
+                                    <field name="header_confidence" widget="progressbar" readonly="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Primary Key">
+                            <field name="primary_key_column"
+                                   placeholder="e.g., Employee ID"/>
+                        </group>
+                        <group string="Instructions" class="oe_read_only">
+                            <div class="alert alert-info" role="alert">
+                                <ul>
+                                    <li><strong>Include:</strong> Select worksheets to process</li>
+                                    <li><strong>Main Sheet:</strong> Designate ONE sheet as the primary payroll structure</li>
+                                    <li><strong>Header Row:</strong> Adjust if auto-detection was incorrect</li>
+                                    <li><strong>Primary Key:</strong> Column used to match data across worksheets</li>
+                                </ul>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Step 3: Review Components -->
+                    <group attrs="{'invisible': [('state', '!=', 'review_components')]}">
+                        <group string="Import Statistics" class="oe_read_only">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-primary">
+                                                <field name="import_count" class="o_stat_value"/>
+                                            </h5>
+                                            <p class="card-text">Components to Import</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-success">
+                                                <field name="formula_count" class="o_stat_value"/>
+                                            </h5>
+                                            <p class="card-text">Formulas Detected</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-warning">
+                                                <field name="duplicate_count" class="o_stat_value"/>
+                                            </h5>
+                                            <p class="card-text">Duplicates Found</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </group>
+                        <group string="Instructions" class="oe_read_only">
+                            <div class="alert alert-info" role="alert">
+                                <p><strong>Review Detected Components</strong></p>
+                                <ul>
+                                    <li><strong>Component:</strong> Field name from your Excel header row</li>
+                                    <li><strong>Component Type:</strong> Category from merged cells above the header (e.g., "Workdays", "Amounts received")</li>
+                                    <li><strong>Type:</strong> Input (manual data entry) or Formula (auto-calculated)</li>
+                                    <li><strong>Sample:</strong> Example value from first data row</li>
+                                </ul>
+                                <p>Uncheck "Include" to skip importing a component. Edit Code/Name if needed.</p>
+                            </div>
+                        </group>
+                        <group string="Detected Components">
+                            <field name="component_preview_ids" nolabel="1">
+                                <tree editable="bottom" decoration-muted="not include_in_import"
+                                      decoration-warning="is_duplicate"
+                                      decoration-success="column_type == 'formula'">
+                                    <field name="include_in_import" widget="boolean_toggle"/>
+                                    <field name="original_header" string="Component"/>
+                                    <field name="component_type" string="Category"/>
+                                    <field name="column_type" string="Type"/>
+                                    <field name="data_source" string="Source"/>
+                                    <field name="sample_value" string="Sample"/>
+                                    <field name="excel_formula" string="Formula"
+                                           attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
+                                    <field name="source_sheet" string="Sheet"/>
+                                    <field name="column_letter" string="Col"/>
+                                    <field name="generated_code" string="Code"/>
+                                    <field name="generated_name" string="Name"/>
+                                    <field name="is_duplicate" widget="boolean" readonly="1" optional="hide"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Import Options" col="4">
+                            <field name="preserve_existing"/>
+                            <field name="merge_duplicates"/>
+                            <field name="update_existing"/>
+                        </group>
+                    </group>
+
+                    <!-- Step 4: Map Missing Fields -->
+                    <group attrs="{'invisible': [('state', '!=', 'map_missing')]}">
+                        <group string="Missing Fields" class="oe_read_only">
+                            <div class="alert alert-warning" role="alert">
+                                <p><strong>Some fields in your configuration are not present in the Excel file.</strong></p>
+                                <p>For each missing field, specify how it should be populated:</p>
+                                <ul>
+                                    <li><strong>Not Populated:</strong> Leave empty during import</li>
+                                    <li><strong>From Integration:</strong> Fetch from external system (Zoho, SAP, etc.)</li>
+                                    <li><strong>Manual Entry:</strong> User will enter manually on each payslip</li>
+                                </ul>
+                            </div>
+                        </group>
+                        <group string="Configure Missing Fields">
+                            <field name="missing_field_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="field_code" readonly="1"/>
+                                    <field name="field_name" readonly="1"/>
+                                    <field name="data_source"/>
+                                    <field name="integration_connector_id"
+                                           attrs="{'invisible': [('data_source', '!=', 'integration')],
+                                                   'required': [('data_source', '=', 'integration')]}"
+                                           options="{'no_create': True}"/>
+                                    <field name="integration_field_name"
+                                           attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+
+                    <!-- Step 5: Confirm -->
+                    <group attrs="{'invisible': [('state', '!=', 'confirm')]}">
+                        <group string="Import Summary">
+                            <div class="row mb-3">
+                                <div class="col-md-4 text-center">
+                                    <div class="card bg-primary text-white">
+                                        <div class="card-body py-2">
+                                            <h3 class="mb-0"><field name="import_count"/></h3>
+                                            <small>Components to Import</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="card bg-success text-white">
+                                        <div class="card-body py-2">
+                                            <h3 class="mb-0"><field name="formula_count"/></h3>
+                                            <small>Formulas</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="card bg-warning">
+                                        <div class="card-body py-2">
+                                            <h3 class="mb-0"><field name="duplicate_count"/></h3>
+                                            <small>Duplicates</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </group>
+                        <group string="Target Configuration" class="oe_read_only">
+                            <field name="config_id" readonly="1"/>
+                            <field name="main_sheet_name" readonly="1"/>
+                        </group>
+                        <group string="Components Preview (First 10)" class="oe_read_only">
+                            <field name="component_preview_ids" nolabel="1" readonly="1">
+                                <tree limit="10" decoration-success="column_type == 'formula'">
+                                    <field name="original_header" string="Component"/>
+                                    <field name="component_type" string="Category"/>
+                                    <field name="column_type" string="Type"/>
+                                    <field name="data_source" string="Source"/>
+                                    <field name="generated_code" string="Code"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Final Review" class="oe_read_only">
+                            <div class="alert alert-success" role="alert">
+                                <p><strong>Ready to Import!</strong></p>
+                                <p>Review the summary above, then click "Execute Import" to create formula rules.</p>
+                                <ul class="mb-0">
+                                    <li><strong>Input components</strong> will use data from Excel/Integration</li>
+                                    <li><strong>Formula components</strong> will be auto-calculated</li>
+                                    <li><strong>Category</strong> groups components under merged cell headers</li>
+                                </ul>
+                            </div>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <!-- Step 1 Buttons -->
+                    <button name="action_analyze_file" type="object"
+                            string="Analyze File" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'upload')]}"/>
+
+                    <!-- Step 2 Buttons -->
+                    <button name="action_back" type="object"
+                            string="Back" class="btn-secondary"
+                            attrs="{'invisible': [('state', '=', 'upload')]}"/>
+                    <button name="action_process_sheets" type="object"
+                            string="Process Sheets" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'select_sheets')]}"/>
+
+                    <!-- Step 3 Buttons -->
+                    <button name="action_detect_missing_fields" type="object"
+                            string="Continue" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'review_components')]}"/>
+
+                    <!-- Step 4 Buttons -->
+                    <button name="action_skip_missing" type="object"
+                            string="Skip" class="btn-secondary"
+                            attrs="{'invisible': [('state', '!=', 'map_missing')]}"/>
+                    <button name="action_apply_missing_mapping" type="object"
+                            string="Apply and Continue" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'map_missing')]}"/>
+
+                    <!-- Step 5 Buttons -->
+                    <button name="action_execute_import" type="object"
+                            string="Execute Import" class="btn-success"
+                            attrs="{'invisible': [('state', '!=', 'confirm')]}"/>
+
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_multisheet_import_wizard" model="ir.actions.act_window">
+        <field name="name">Multi-Sheet Excel Import</field>
+        <field name="res_model">hr.formula.multisheet.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+    <!-- ==========================================
+         SHEET LINE VIEWS (Embedded)
+         ========================================== -->
+
+    <record id="view_multisheet_sheet_line_tree" model="ir.ui.view">
+        <field name="name">hr.formula.multisheet.sheet.line.tree</field>
+        <field name="model">hr.formula.multisheet.sheet.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="is_selected" widget="boolean_toggle"/>
+                <field name="is_main_sheet" widget="boolean_toggle"/>
+                <field name="sheet_name" readonly="1"/>
+                <field name="detected_header_row"/>
+                <field name="column_count" readonly="1"/>
+                <field name="row_count" readonly="1"/>
+                <field name="has_formulas" widget="boolean" readonly="1"/>
+                <field name="references_other_sheets" widget="boolean" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         COMPONENT PREVIEW VIEWS (Embedded)
+         ========================================== -->
+
+    <record id="view_multisheet_component_preview_tree" model="ir.ui.view">
+        <field name="name">hr.formula.multisheet.component.preview.tree</field>
+        <field name="model">hr.formula.multisheet.component.preview</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" decoration-muted="not include_in_import"
+                  decoration-warning="is_duplicate">
+                <field name="include_in_import" widget="boolean_toggle"/>
+                <field name="source_sheet"/>
+                <field name="column_letter"/>
+                <field name="original_header"/>
+                <field name="generated_code"/>
+                <field name="generated_name"/>
+                <field name="component_type"/>
+                <field name="column_type"/>
+                <field name="excel_formula"/>
+                <field name="is_duplicate" widget="boolean" readonly="1"/>
+                <field name="data_source"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         MISSING FIELD VIEWS (Embedded)
+         ========================================== -->
+
+    <record id="view_multisheet_missing_field_tree" model="ir.ui.view">
+        <field name="name">hr.formula.multisheet.missing.field.tree</field>
+        <field name="model">hr.formula.multisheet.missing.field</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="field_code" readonly="1"/>
+                <field name="field_name" readonly="1"/>
+                <field name="data_source"/>
+                <field name="integration_connector_id"
+                       attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
+                <field name="integration_field_name"
+                       attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

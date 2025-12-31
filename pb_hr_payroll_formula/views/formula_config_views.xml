@@ -144,20 +144,23 @@
                             </group>
                             <field name="rule_ids" nolabel="1">
                                 <tree editable="bottom" decoration-danger="not is_valid"
-                                      decoration-warning="has_circular_ref">
+                                      decoration-warning="has_circular_ref"
+                                      decoration-success="column_type == 'formula'">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="column_letter" readonly="1"/>
+                                    <field name="column_letter" readonly="1" string="Col"/>
+                                    <field name="name" string="Component"/>
+                                    <field name="component_type" string="Category"/>
                                     <field name="code"/>
-                                    <field name="name"/>
-                                    <field name="column_type"/>
+                                    <field name="column_type" string="Type"/>
+                                    <field name="data_source" string="Source"/>
                                     <field name="category_id"/>
                                     <field name="excel_formula" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
                                     <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
                                     <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
-                                    <field name="number_format"/>
-                                    <field name="appears_on_payslip"/>
+                                    <field name="number_format" optional="hide"/>
+                                    <field name="appears_on_payslip" optional="hide"/>
                                     <field name="is_valid" readonly="1"/>
-                                    <field name="validation_message" readonly="1"/>
+                                    <field name="validation_message" readonly="1" optional="hide"/>
                                     <field name="has_circular_ref" invisible="1"/>
                                 </tree>
                             </field>
@@ -330,6 +333,9 @@
                             class="btn-primary" icon="fa-check"/>
                     <button name="action_run_tests" string="Run Tests" type="object"
                             class="btn-secondary" icon="fa-flask"/>
+                    <button name="action_delete_all_rules" string="Delete Salary Components" type="object"
+                            class="btn-danger" icon="fa-trash"
+                            confirm="Are you sure you want to delete ALL salary components? This action cannot be undone."/>
                     <field name="state" widget="statusbar" readonly="1"/>
                 </header>
                 <sheet>
@@ -339,15 +345,16 @@
 
                     <!-- Formula Rules Grid (Editable Tree) -->
                     <field name="rule_ids" nolabel="1">
-                        <tree string="Formula Rules" editable="bottom" default_order="sequence">
+                        <tree string="Formula Rules" editable="bottom" default_order="sequence"
+                              decoration-success="column_type == 'formula'"
+                              decoration-info="column_type == 'input'">
                             <field name="sequence" widget="handle"/>
-                            <field name="column_letter" readonly="1" string="Col"
-                                   decoration-bf="column_type == 'formula'"
-                                   decoration-success="column_type == 'input'"
-                                   decoration-muted="column_type == 'constant'"/>
-                            <field name="name"/>
+                            <field name="column_letter" readonly="1" string="Col"/>
+                            <field name="name" string="Component"/>
+                            <field name="component_type" string="Category"/>
                             <field name="code"/>
-                            <field name="column_type"/>
+                            <field name="column_type" string="Type"/>
+                            <field name="data_source" string="Source"/>
                             <field name="excel_formula"
                                    attrs="{'invisible': [('column_type', '!=', 'formula')], 'required': [('column_type', '=', 'formula')]}"/>
                             <field name="data_source_field"

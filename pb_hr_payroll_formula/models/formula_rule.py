@@ -98,6 +98,57 @@ class HrFormulaRule(models.Model):
        """)
 
     # ==========================================
+    # COMPONENT TYPE & DATA SOURCE (Multi-Sheet Import)
+    # ==========================================
+    component_type = fields.Char(
+        string='Component Type',
+        help="Category from merged cell above column header (e.g., 'Deductions', 'Allowances', 'Earnings'). "
+             "Extracted during multi-worksheet import from merged cells spanning the column."
+    )
+
+    data_source = fields.Selection([
+        ('excel', 'Excel Import'),
+        ('integration', 'Integration Connector'),
+        ('formula', 'Calculated (Formula)'),
+        ('manual', 'Manual Entry'),
+        ('none', 'Not Populated'),
+    ], string='Data Source', default='excel',
+       help="Where this component's data comes from during payroll import:\n"
+            "- Excel Import: Data comes from the primary Excel file\n"
+            "- Integration Connector: Data fetched from external system (Zoho, SAP, etc.)\n"
+            "- Calculated: Computed from other fields using formula\n"
+            "- Manual Entry: User enters value manually\n"
+            "- Not Populated: Field exists but has no data source")
+
+    integration_connector_id = fields.Many2one(
+        'hr.integration.connector',
+        string='Integration Connector',
+        help="If data_source is 'integration', specifies which connector provides data for this field. "
+             "The connector must be configured and active."
+    )
+
+    source_field_mapping = fields.Char(
+        string='Integration Field',
+        help="Field name in the integration connector that maps to this component. "
+             "Used when data_source is 'integration' to identify which field to fetch."
+    )
+
+    source_sheet_name = fields.Char(
+        string='Source Sheet',
+        help="Name of the worksheet this component was imported from (for multi-sheet Excel files)"
+    )
+
+    original_column_letter = fields.Char(
+        string='Original Column',
+        help="Original Excel column letter from the source file (before reordering)"
+    )
+
+    forced_column_letter = fields.Char(
+        string='Forced Column Letter',
+        help="If set, this column letter is used instead of auto-computed. Used for constants at ZA, ZB, etc."
+    )
+
+    # ==========================================
     # FORMULA (for formula type)
     # ==========================================
     excel_formula = fields.Char(
@@ -233,22 +284,30 @@ class HrFormulaRule(models.Model):
         for record in self:
             record.display_name = f"{record.column_letter}: {record.name} ({record.code})"
 
-    @api.depends('sequence', 'config_id', 'name', 'code')
+    @api.depends('sequence', 'config_id', 'name', 'code', 'forced_column_letter')
     def _compute_column_letter(self):
         """Compute Excel-style column letter based on sequence order.
 
         For saved records: compute based on sequence order among saved siblings.
         For unsaved records with data: show provisional letter.
         For empty unsaved records: show blank.
+
+        If forced_column_letter is set, use that instead (for constants at ZA, ZB, etc.)
         """
         for record in self:
+            # If forced_column_letter is set, use it directly (for constants)
+            if record.forced_column_letter:
+                record.column_letter = record.forced_column_letter
+                continue
+
             if not record.config_id:
                 # No config - blank
                 record.column_letter = ''
             elif isinstance(record.id, int):
                 # Saved record - compute position among saved siblings
+                # Exclude records with forced_column_letter from the sequence calculation
                 saved_siblings = record.config_id.rule_ids.filtered(
-                    lambda r: isinstance(r.id, int)
+                    lambda r: isinstance(r.id, int) and not r.forced_column_letter
                 )
                 sorted_siblings = saved_siblings.sorted(
                     key=lambda r: (r.sequence or 0, r.id)
@@ -264,9 +323,9 @@ class HrFormulaRule(models.Model):
                 # Unsaved record
                 if record.name or record.code:
                     # Has data - show provisional letter
-                    # Count saved records
+                    # Count saved records (excluding those with forced_column_letter)
                     saved_count = len(record.config_id.rule_ids.filtered(
-                        lambda r: isinstance(r.id, int)
+                        lambda r: isinstance(r.id, int) and not r.forced_column_letter
                     ))
                     # Count unsaved records WITH DATA that come before this one
                     # Use sequence and id string for ordering
@@ -274,6 +333,7 @@ class HrFormulaRule(models.Model):
                     unsaved_with_data_before = len(record.config_id.rule_ids.filtered(
                         lambda r: not isinstance(r.id, int) and
                         (r.name or r.code) and
+                        not r.forced_column_letter and
                         (r.sequence or 0, str(r.id)) < current_key
                     ))
                     record.column_letter = self._index_to_letter(saved_count + unsaved_with_data_before)

@@ -21,6 +21,10 @@ Key Features:
 * Multi-system HR integration (Zoho People, Excel Import, SAP, Workday, Oracle HCM)
 * Advanced sample data testing with anonymized employee comparison
 * Seamless integration with existing payroll workflow
+* Multi-worksheet Excel import with dynamic header detection
+* Component type extraction from merged cells
+* Cross-worksheet formula resolution
+* Data source mapping for missing fields
 
 Technical Features:
 ------------------
@@ -59,6 +63,7 @@ License: LGPL-3
         'views/payroll_import_views.xml',
         # Wizards (actions used by views below)
         'wizards/wizard_views.xml',
+        'wizards/multisheet_wizard_views.xml',
         'views/sample_data_views.xml',
         'views/menu_views.xml',
         'views/hr_payslip_formula_views.xml',
