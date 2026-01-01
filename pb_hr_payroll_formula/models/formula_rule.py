@@ -190,6 +190,7 @@ class HrFormulaRule(models.Model):
     constant_value = fields.Float(
         string='Constant Value',
         default=0.0,
+        digits=(16, 6),  # Allow up to 6 decimal places for percentages like 0.015
         help="Fixed value for constant columns"
     )
 

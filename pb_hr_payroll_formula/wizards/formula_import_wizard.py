@@ -326,6 +326,12 @@ class FormulaImportWizard(models.TransientModel):
         # IMPORTANT: Use formula_sheet (data_only=False) to preserve color information
         # The 'sheet' variable is from data_only=True which strips formatting
         constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row)
+
+        # Detect blue font color constants (percentages and other values)
+        # Scan up to data_start_row + 2 to catch constants in sub-header rows
+        scan_up_to_row = data_start_row + 2  # Include potential sub-header rows
+        blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row)
+
         # Also scan formulas to find referenced cells above header row that weren't detected by color
         formula_referenced_constants = self._detect_formula_referenced_constants(
             formula_columns, formula_sheet, header_row
@@ -333,6 +339,14 @@ class FormulaImportWizard(models.TransientModel):
 
         # Add any formula-referenced constants not already detected by color
         detected_cells = {p['original_cell'] for p in constant_pairs}
+
+        # Add blue constants (they have ConstantA, ConstantB naming)
+        for blue_const in blue_constants:
+            if blue_const['original_cell'] not in detected_cells:
+                constant_pairs.append(blue_const)
+                detected_cells.add(blue_const['original_cell'])
+
+        # Add formula-referenced constants
         for ref_const in formula_referenced_constants:
             if ref_const['original_cell'] not in detected_cells:
                 constant_pairs.append(ref_const)
@@ -398,6 +412,7 @@ class FormulaImportWizard(models.TransientModel):
 
         # Create constant rules from colored pairs at the very end
         constant_rules_created = 0
+        blue_constants_created = 0
         for pair in constant_pairs:
             name = pair['name']
             code = self._generate_code_from_label(name, existing_codes)
@@ -414,6 +429,13 @@ class FormulaImportWizard(models.TransientModel):
                     f"Could not convert constant value '{pair['value']}' to float for '{name}'"
                 )
 
+            # Build informative data_source_field
+            data_source_info = f"From cell {pair['original_cell']}"
+            if pair.get('was_percentage'):
+                original_val = pair.get('original_value', pair['value'])
+                data_source_info = f"From cell {pair['original_cell']} ({original_val} -> {constant_value})"
+                blue_constants_created += 1
+
             values = {
                 'config_id': self.config_id.id,
                 'name': name,
@@ -425,7 +447,7 @@ class FormulaImportWizard(models.TransientModel):
                 'component_type': 'Constant',
                 'constant_value': constant_value,
                 'data_source': 'manual',
-                'data_source_field': f"From cell {pair['original_cell']}",
+                'data_source_field': data_source_info,
                 'number_format': False,
             }
 
@@ -440,6 +462,8 @@ class FormulaImportWizard(models.TransientModel):
         msg_parts = [_('%d rules imported from Excel (header row %d)') % (len(created_rules), header_row)]
         if constant_rules_created > 0:
             msg_parts.append(_('%d constant rules added (ZA onwards)') % constant_rules_created)
+        if blue_constants_created > 0:
+            msg_parts.append(_('%d blue constants (converted from %%)') % blue_constants_created)
 
         return {
             'type': 'ir.actions.client',
@@ -501,6 +525,182 @@ class FormulaImportWizard(models.TransientModel):
     # --------------------------------------------------
     # Helpers
     # --------------------------------------------------
+    def _parse_percentage_value(self, value):
+        """
+        Parse a percentage value and convert to decimal.
+
+        Examples:
+            "8%" -> 0.08
+            "1.5%" -> 0.015
+            "100%" -> 1.0
+            0.08 (already decimal) -> 0.08
+            8 (just number) -> 8.0
+
+        Returns:
+            Tuple of (decimal_value, was_percentage)
+        """
+        if value is None:
+            return 0.0, False
+
+        # If it's already a number (float/int)
+        if isinstance(value, (int, float)):
+            # Check if it looks like a small decimal that might be a percentage
+            # e.g., 0.08 from Excel when cell is formatted as percentage
+            return float(value), False
+
+        # If it's a string, check for percentage sign
+        str_value = str(value).strip()
+        if str_value.endswith('%'):
+            try:
+                # Remove % and convert to decimal
+                num_part = str_value[:-1].strip()
+                decimal_value = float(num_part) / 100.0
+                return decimal_value, True
+            except ValueError:
+                return 0.0, False
+
+        # Try to convert as regular number
+        try:
+            return float(str_value), False
+        except ValueError:
+            return 0.0, False
+
+    def _detect_blue_constant_cells(self, sheet, scan_up_to_row):
+        """
+        Detect cells with blue font color that contain constant values.
+
+        Scans all rows up to scan_up_to_row for cells with blue font.
+        Blue is detected when B > R and B > G in the RGB color.
+
+        For cells that are percentages (e.g., "8%"), converts to decimal (0.08).
+
+        Returns list of dictionaries with:
+            - name: Generated name (ConstantA, ConstantB, etc.)
+            - value: The numeric value (percentages converted to decimals)
+            - original_cell: Cell reference like "AY11"
+            - original_col_letter: Column letter
+            - original_col_idx: Column index
+            - row: Row number
+            - was_percentage: Boolean if value was originally a percentage
+        """
+        from openpyxl.utils import get_column_letter
+
+        _logger.info(f"=== BLUE CONSTANT DETECTION START ===")
+        _logger.info(f"Scanning rows 1 to {scan_up_to_row - 1}")
+
+        blue_constants = []
+        constant_index = 0  # For naming ConstantA, ConstantB, etc.
+        cells_with_color_checked = 0
+
+        def is_blue_color(cell, cell_ref=""):
+            """Check if cell has blue FONT color (any shade where B > R and B > G)."""
+            try:
+                font = cell.font
+                if not font or not font.color:
+                    return False, None
+
+                color = font.color
+                color_info = f"type={color.type}"
+
+                # Check RGB color
+                if color.type == 'rgb' and color.rgb:
+                    rgb = str(color.rgb).upper()
+                    color_info += f", rgb={rgb}"
+                    if len(rgb) >= 6:
+                        # Handle ARGB (8 chars) or RGB (6 chars)
+                        if len(rgb) == 8:
+                            r = int(rgb[2:4], 16)
+                            g = int(rgb[4:6], 16)
+                            b = int(rgb[6:8], 16)
+                        else:
+                            r = int(rgb[0:2], 16)
+                            g = int(rgb[2:4], 16)
+                            b = int(rgb[4:6], 16)
+
+                        color_info += f" -> R={r}, G={g}, B={b}"
+
+                        # Blue: B is dominant (B > R and B > G)
+                        if b > r and b > g and b > 100:
+                            return True, color_info
+
+                # Check indexed colors (common blue indices)
+                elif color.type == 'indexed':
+                    color_info += f", indexed={color.indexed}"
+                    if color.indexed in [4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56]:
+                        return True, color_info
+
+                # Check theme colors (theme 4, 5, 8 are often blue variants)
+                elif color.type == 'theme':
+                    color_info += f", theme={color.theme}"
+                    if color.theme in [4, 5, 8]:
+                        return True, color_info
+
+                return False, color_info
+
+            except Exception as e:
+                return False, f"error: {e}"
+
+        def generate_constant_name(index):
+            """Generate ConstantA, ConstantB, ..., ConstantZ, ConstantAA, etc."""
+            result = ""
+            idx = index
+            while True:
+                result = chr(ord('A') + (idx % 26)) + result
+                idx = idx // 26 - 1
+                if idx < 0:
+                    break
+            return f"Constant{result}"
+
+        # Scan all rows up to scan_up_to_row
+        for row_num in range(1, scan_up_to_row):
+            for col_idx in range(1, (sheet.max_column or 1) + 1):
+                cell = sheet.cell(row=row_num, column=col_idx)
+
+                # Skip empty cells
+                if cell.value is None:
+                    continue
+
+                col_letter = get_column_letter(col_idx)
+                cell_ref = f"{col_letter}{row_num}"
+
+                # Check if cell has font color
+                is_blue, color_info = is_blue_color(cell, cell_ref)
+                if color_info:
+                    cells_with_color_checked += 1
+                    # Log cells with any color info for debugging
+                    if cells_with_color_checked <= 20:  # Limit logging
+                        _logger.info(f"  Cell {cell_ref} value='{cell.value}' color: {color_info} -> is_blue={is_blue}")
+
+                # Check if cell has blue font
+                if is_blue:
+                    # Parse the value (handles percentages)
+                    decimal_value, was_percentage = self._parse_percentage_value(cell.value)
+
+                    # Generate name
+                    name = generate_constant_name(constant_index)
+                    constant_index += 1
+
+                    blue_constants.append({
+                        'name': name,
+                        'value': decimal_value,
+                        'original_value': cell.value,  # Keep original for reference
+                        'original_cell': cell_ref,
+                        'original_col_letter': col_letter,
+                        'original_col_idx': col_idx,
+                        'row': row_num,
+                        'was_percentage': was_percentage,
+                    })
+
+                    _logger.info(
+                        f"  -> BLUE CONSTANT FOUND: {cell_ref} = {cell.value} "
+                        f"-> {name} = {decimal_value}"
+                        f"{' (converted from %)' if was_percentage else ''}"
+                    )
+
+        _logger.info(f"=== BLUE CONSTANT DETECTION END: {len(blue_constants)} found, {cells_with_color_checked} cells with color checked ===")
+
+        return blue_constants
+
     def _detect_colored_constant_pairs(self, sheet, header_row):
         """
         Detect red/green colored cell pairs that represent constants.
