@@ -40,6 +40,8 @@ class MultiSheetImportWizard(models.TransientModel):
     state = fields.Selection([
         ('upload', 'Upload File'),
         ('select_sheets', 'Select Worksheets'),
+        ('select_columns', 'Select Columns'),
+        ('configure_order', 'Configure Order'),
         ('review_components', 'Review Components'),
         ('map_missing', 'Map Missing Fields'),
         ('confirm', 'Confirm Import'),
@@ -76,6 +78,44 @@ class MultiSheetImportWizard(models.TransientModel):
     main_sheet_name = fields.Char(
         string='Main Worksheet',
         help="Primary worksheet containing the main payroll structure"
+    )
+
+    # ==========================================
+    # COLUMN SELECTION (Step 3)
+    # ==========================================
+    column_selection_ids = fields.One2many(
+        'hr.formula.multisheet.column.selection',
+        'wizard_id',
+        string='Column Selections',
+        help="Columns available for selection from each worksheet"
+    )
+
+    # ==========================================
+    # APPEND ORDER (Step 4)
+    # ==========================================
+    append_order_ids = fields.One2many(
+        'hr.formula.multisheet.append.order',
+        'wizard_id',
+        string='Append Order',
+        help="Order in which worksheets are appended to form the final structure"
+    )
+
+    # ==========================================
+    # CROSS-SHEET RESOLUTION STATS
+    # ==========================================
+    cross_sheet_formula_count = fields.Integer(
+        string='Cross-Sheet Formulas',
+        compute='_compute_cross_sheet_stats'
+    )
+
+    resolved_formula_count = fields.Integer(
+        string='Resolved Formulas',
+        compute='_compute_cross_sheet_stats'
+    )
+
+    unresolved_formula_count = fields.Integer(
+        string='Unresolved Formulas',
+        compute='_compute_cross_sheet_stats'
     )
 
     # ==========================================
@@ -176,6 +216,25 @@ class MultiSheetImportWizard(models.TransientModel):
             rec.duplicate_count = len(rec.component_preview_ids.filtered('is_duplicate'))
             rec.formula_count = len(previews.filtered(lambda p: p.column_type == 'formula'))
 
+    @api.depends('component_preview_ids')
+    def _compute_cross_sheet_stats(self):
+        """Compute statistics about cross-sheet formula resolution."""
+        for rec in self:
+            formula_previews = rec.component_preview_ids.filtered(
+                lambda p: p.column_type == 'formula' and p.excel_formula
+            )
+            # Count formulas with cross-sheet references (contain '!' pattern)
+            cross_sheet = formula_previews.filtered(
+                lambda p: "!" in (p.excel_formula or '')
+            )
+            rec.cross_sheet_formula_count = len(cross_sheet)
+            # Resolved = has resolved_formula and it's different from original
+            resolved = cross_sheet.filtered(
+                lambda p: p.resolved_formula and p.resolved_formula != p.excel_formula
+            )
+            rec.resolved_formula_count = len(resolved)
+            rec.unresolved_formula_count = rec.cross_sheet_formula_count - rec.resolved_formula_count
+
     @api.depends('component_preview_ids', 'missing_field_ids')
     def _compute_summary(self):
         for rec in self:
@@ -243,10 +302,13 @@ class MultiSheetImportWizard(models.TransientModel):
             raise UserError(_("Failed to analyze file: %s") % str(e))
 
     # ==========================================
-    # STEP 2: SELECT WORKSHEETS
+    # STEP 2: SELECT WORKSHEETS -> STEP 3: SELECT COLUMNS
     # ==========================================
     def action_process_sheets(self):
-        """Process selected sheets and generate component preview."""
+        """
+        Process selected sheets and populate column selection records.
+        Transitions to select_columns state where user can choose columns.
+        """
         self.ensure_one()
 
         selected_sheets = self.available_sheet_ids.filtered('is_selected')
@@ -271,7 +333,331 @@ class MultiSheetImportWizard(models.TransientModel):
 
             # Load formula workbook for detecting formulas
             import openpyxl
-            import io
+            formula_workbook = openpyxl.load_workbook(
+                io.BytesIO(file_content),
+                data_only=False
+            )
+
+            # Clear existing column selections
+            self.column_selection_ids.unlink()
+
+            # Analyze cross-sheet references in main sheet to mark required columns
+            main_sheet = main_sheets[0]
+            main_formula_sheet = formula_workbook[main_sheet.sheet_name]
+            main_data = connector.load_sheet_with_detection(main_sheet.sheet_name)
+            main_formula_columns = self._detect_formula_columns(
+                main_formula_sheet, main_data['data_start_row'], main_data['headers']
+            )
+
+            # Find all cross-sheet references from main sheet
+            cross_sheet_refs = self._extract_cross_sheet_references(main_formula_columns)
+
+            # Process each selected sheet and create column selections
+            column_lines = []
+            for sheet_line in selected_sheets:
+                sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
+                formula_sheet = formula_workbook[sheet_line.sheet_name]
+
+                data_start_row = sheet_data['data_start_row']
+                header_row = sheet_data['header_row']
+
+                # Detect formula columns
+                formula_columns = self._detect_formula_columns(
+                    formula_sheet, data_start_row, sheet_data['headers']
+                )
+
+                for idx, header_info in enumerate(sheet_data['headers']):
+                    col_letter = header_info['column_letter']
+
+                    # Check for cross-sheet formula references
+                    has_cross_ref = False
+                    cross_formula = ''
+                    if col_letter in formula_columns:
+                        formula = formula_columns[col_letter].get('formula', '')
+                        has_cross_ref = bool(re.search(r"'[^']+'\s*!", formula) or re.search(r"[A-Za-z_]+!", formula))
+                        cross_formula = formula if has_cross_ref else ''
+
+                    # Check if this column is referenced by main sheet
+                    is_referenced = self._is_column_referenced(
+                        sheet_line.sheet_name, col_letter, idx + 1, cross_sheet_refs
+                    )
+
+                    # Get sample value
+                    sample = ''
+                    if sheet_data['data_rows']:
+                        sample = str(sheet_data['data_rows'][0].get(header_info['value'], ''))[:50]
+
+                    column_lines.append({
+                        'wizard_id': self.id,
+                        'sheet_line_id': sheet_line.id,
+                        'sequence': idx * 10,
+                        'column_letter': col_letter,
+                        'column_index': idx,
+                        'original_header': header_info['value'],
+                        'component_type': header_info.get('component_type') or '',
+                        'is_selected': True,  # All columns selected by default
+                        'column_type': 'formula' if col_letter in formula_columns else 'input',
+                        'sample_value': sample,
+                        'has_cross_sheet_ref': has_cross_ref,
+                        'cross_sheet_formula': cross_formula,
+                        'is_referenced_by_main': is_referenced,
+                    })
+
+            # Create column selection records
+            for col_data in column_lines:
+                self.env['hr.formula.multisheet.column.selection'].create(col_data)
+
+            self.state = 'select_columns'
+            return self._return_wizard_action()
+
+        except Exception as e:
+            _logger.exception("Failed to process worksheets")
+            raise UserError(_("Failed to process worksheets: %s") % str(e))
+
+    def _extract_cross_sheet_references(self, formula_columns):
+        """
+        Extract all cross-sheet references from formulas.
+
+        Returns a dict: {sheet_name: [{'col_index': N, 'col_letter': 'XX', 'formula_col': 'YY'}, ...]}
+        """
+        cross_refs = {}
+
+        # Patterns for VLOOKUP and direct sheet references
+        vlookup_pattern = re.compile(
+            r"VLOOKUP\s*\([^,]+,\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*(\d+)",
+            re.IGNORECASE
+        )
+        sumif_pattern = re.compile(
+            r"SUMIF\s*\([^,]*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)",
+            re.IGNORECASE
+        )
+        direct_pattern = re.compile(
+            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?(\d+)",
+            re.IGNORECASE
+        )
+
+        for col_letter, formula_info in formula_columns.items():
+            formula = formula_info.get('formula', '') if isinstance(formula_info, dict) else formula_info
+
+            # Find VLOOKUP references
+            for match in vlookup_pattern.finditer(formula):
+                sheet_name = match.group(1).strip()
+                start_col = match.group(2).upper()
+                col_index = int(match.group(4))
+                # Calculate actual column: start_col + col_index - 1
+                start_idx = self._column_letter_to_index(start_col)
+                target_idx = start_idx + col_index - 1
+                target_col = self._index_to_column_letter(target_idx)
+
+                if sheet_name not in cross_refs:
+                    cross_refs[sheet_name] = []
+                cross_refs[sheet_name].append({
+                    'col_index': target_idx,
+                    'col_letter': target_col,
+                    'formula_col': col_letter,
+                    'type': 'vlookup',
+                })
+
+            # Find SUMIF references
+            for match in sumif_pattern.finditer(formula):
+                sheet_name = match.group(1).strip()
+                col_letter_ref = match.group(2).upper()
+                col_idx = self._column_letter_to_index(col_letter_ref)
+
+                if sheet_name not in cross_refs:
+                    cross_refs[sheet_name] = []
+                cross_refs[sheet_name].append({
+                    'col_index': col_idx,
+                    'col_letter': col_letter_ref,
+                    'formula_col': col_letter,
+                    'type': 'sumif',
+                })
+
+            # Find direct references
+            for match in direct_pattern.finditer(formula):
+                sheet_name = match.group(1).strip()
+                col_letter_ref = match.group(2).upper()
+                col_idx = self._column_letter_to_index(col_letter_ref)
+
+                if sheet_name not in cross_refs:
+                    cross_refs[sheet_name] = []
+                cross_refs[sheet_name].append({
+                    'col_index': col_idx,
+                    'col_letter': col_letter_ref,
+                    'formula_col': col_letter,
+                    'type': 'direct',
+                })
+
+        return cross_refs
+
+    def _is_column_referenced(self, sheet_name, col_letter, col_index, cross_refs):
+        """Check if a column is referenced by main sheet formulas."""
+        sheet_name_lower = sheet_name.strip().lower()
+        for ref_sheet, refs in cross_refs.items():
+            if ref_sheet.strip().lower() == sheet_name_lower:
+                for ref in refs:
+                    if ref['col_letter'] == col_letter or ref['col_index'] == col_index - 1:
+                        return True
+        return False
+
+    def _column_letter_to_index(self, col_letter):
+        """Convert column letter to 0-based index (A=0, B=1, ...)."""
+        result = 0
+        for char in col_letter.upper():
+            result = result * 26 + (ord(char) - ord('A') + 1)
+        return result - 1
+
+    def _index_to_column_letter(self, index):
+        """Convert 0-based index to column letter (0=A, 1=B, ...)."""
+        result = ""
+        idx = index
+        while True:
+            result = chr(ord('A') + (idx % 26)) + result
+            idx = idx // 26 - 1
+            if idx < 0:
+                break
+        return result
+
+    # ==========================================
+    # STEP 3: SELECT COLUMNS -> STEP 4: CONFIGURE ORDER
+    # ==========================================
+    def action_configure_order(self):
+        """
+        Validate column selection and create append order records.
+        Blocks if required columns (referenced by main sheet) are not selected.
+        """
+        self.ensure_one()
+
+        # Validate: Check all cross-sheet references can be resolved
+        validation_errors = self._validate_column_selection()
+        if validation_errors:
+            error_msg = _("Cannot proceed. The following columns are required by main sheet formulas but are not selected:\n\n")
+            for error in validation_errors:
+                error_msg += f"• {error['sheet']}: Column {error['col']} ({error['header']}) - used in {error['formula_col']}\n"
+            error_msg += _("\nPlease select these columns to continue.")
+            raise UserError(error_msg)
+
+        # Clear existing append order
+        self.append_order_ids.unlink()
+
+        # Create append order records
+        selected_sheets = self.available_sheet_ids.filtered('is_selected')
+        order_lines = []
+
+        # Main sheet first (sequence 0)
+        main_sheet = selected_sheets.filtered('is_main_sheet')
+        if main_sheet:
+            order_lines.append({
+                'wizard_id': self.id,
+                'sheet_line_id': main_sheet.id,
+                'append_sequence': 0,
+            })
+
+        # Other sheets with sequence 10, 20, 30...
+        other_sheets = selected_sheets.filtered(lambda s: not s.is_main_sheet)
+        for idx, sheet_line in enumerate(other_sheets.sorted('sheet_name')):
+            order_lines.append({
+                'wizard_id': self.id,
+                'sheet_line_id': sheet_line.id,
+                'append_sequence': (idx + 1) * 10,
+            })
+
+        # Create records
+        for order_data in order_lines:
+            self.env['hr.formula.multisheet.append.order'].create(order_data)
+
+        self.state = 'configure_order'
+        return self._return_wizard_action()
+
+    def _validate_column_selection(self):
+        """
+        Validate that all columns referenced by main sheet formulas are selected.
+        Returns list of validation errors, empty if valid.
+        """
+        errors = []
+        main_sheet = self.available_sheet_ids.filtered('is_main_sheet')
+        if not main_sheet:
+            return errors
+
+        # Re-extract cross-sheet references
+        try:
+            file_content = base64.b64decode(self.import_file)
+
+            from ..integrations import ExcelConnector
+            import openpyxl
+            connector = ExcelConnector(None)
+            connector.load_workbook_multisheet(file_content, include_formulas=True)
+
+            formula_workbook = openpyxl.load_workbook(
+                io.BytesIO(file_content),
+                data_only=False
+            )
+
+            main_formula_sheet = formula_workbook[main_sheet.sheet_name]
+            main_data = connector.load_sheet_with_detection(main_sheet.sheet_name)
+            main_formula_columns = self._detect_formula_columns(
+                main_formula_sheet, main_data['data_start_row'], main_data['headers']
+            )
+            cross_refs = self._extract_cross_sheet_references(main_formula_columns)
+
+            # Check each reference against selected columns
+            for sheet_name, refs in cross_refs.items():
+                # Find the sheet line
+                sheet_line = self.available_sheet_ids.filtered(
+                    lambda s: s.sheet_name.strip().lower() == sheet_name.strip().lower()
+                )
+                if not sheet_line:
+                    continue  # Sheet not even selected
+
+                if not sheet_line.is_selected:
+                    # Whole sheet not selected - error
+                    for ref in refs:
+                        errors.append({
+                            'sheet': sheet_name,
+                            'col': ref['col_letter'],
+                            'header': f"Column {ref['col_letter']}",
+                            'formula_col': ref['formula_col'],
+                        })
+                    continue
+
+                # Check individual columns
+                for ref in refs:
+                    col_selection = self.column_selection_ids.filtered(
+                        lambda c: c.sheet_line_id.id == sheet_line.id and
+                                  (c.column_letter == ref['col_letter'] or
+                                   c.column_index == ref['col_index'])
+                    )
+                    if col_selection and not col_selection.is_selected:
+                        errors.append({
+                            'sheet': sheet_name,
+                            'col': ref['col_letter'],
+                            'header': col_selection.original_header or f"Column {ref['col_letter']}",
+                            'formula_col': ref['formula_col'],
+                        })
+
+        except Exception as e:
+            _logger.warning(f"Validation failed: {e}")
+
+        return errors
+
+    # ==========================================
+    # STEP 4: CONFIGURE ORDER -> STEP 5: REVIEW COMPONENTS
+    # ==========================================
+    def action_process_with_resolution(self):
+        """
+        Build final component list with cross-sheet formula resolution.
+        Assigns new column letters based on append order.
+        """
+        self.ensure_one()
+
+        try:
+            file_content = base64.b64decode(self.import_file)
+
+            from ..integrations import ExcelConnector
+            import openpyxl
+            connector = ExcelConnector(None)
+            connector.load_workbook_multisheet(file_content, include_formulas=True)
+
             formula_workbook = openpyxl.load_workbook(
                 io.BytesIO(file_content),
                 data_only=False
@@ -280,92 +666,51 @@ class MultiSheetImportWizard(models.TransientModel):
             # Clear existing previews
             self.component_preview_ids.unlink()
 
-            # Process each selected sheet
+            # Build column mapping: (sheet_name, orig_col) -> new_col
+            column_mapping = {}
+            current_col_index = 0
             all_components = []
             seen_codes = set()
 
-            for sheet_line in selected_sheets:
+            # Get sheets in append order
+            ordered_sheets = self.append_order_ids.sorted('append_sequence')
+
+            for order_rec in ordered_sheets:
+                sheet_line = order_rec.sheet_line_id
+
+                # Get selected columns for this sheet in order
+                selected_cols = self.column_selection_ids.filtered(
+                    lambda c: c.sheet_line_id.id == sheet_line.id and c.is_selected
+                ).sorted('sequence')
+
                 sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
 
-                data_start_row = sheet_data['data_start_row']
-                header_row = sheet_data['header_row']
-
-                # Check for empty columns (skip but preserve positions for formula validity)
-                value_sheet = connector.workbook[sheet_line.sheet_name]
-                self._detect_empty_columns_between_valid(
-                    sheet_data['headers'], value_sheet, header_row
-                )
-
-                # Detect formula columns
+                # Detect formula columns for this sheet
                 formula_columns = self._detect_formula_columns(
-                    formula_sheet, data_start_row, sheet_data['headers']
+                    formula_sheet, sheet_data['data_start_row'], sheet_data['headers']
                 )
 
-                # Detect colored constant pairs (red label + green value)
-                constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row)
+                for col_sel in selected_cols:
+                    # Assign new column letter
+                    new_col_letter = self._index_to_column_letter(current_col_index)
 
-                # Detect blue font color constants (percentages and other values)
-                # Scan up to data_start_row + 2 to catch constants in sub-header rows
-                scan_up_to_row = data_start_row + 2  # Include potential sub-header rows
-                blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row)
+                    # Store mapping for cross-sheet resolution
+                    sheet_key = sheet_line.sheet_name.strip().lower()
+                    column_mapping[(sheet_key, col_sel.column_letter)] = new_col_letter
+                    column_mapping[(sheet_key, col_sel.column_index)] = new_col_letter
 
-                # Also scan formulas for referenced cells above header row
-                formula_referenced_constants = self._detect_formula_referenced_constants(
-                    formula_columns, formula_sheet, header_row
-                )
+                    # Get formula if any
+                    excel_formula = ''
+                    if col_sel.column_letter in formula_columns:
+                        excel_formula = formula_columns[col_sel.column_letter].get('formula', '')
 
-                # Add any formula-referenced constants not already detected by color
-                detected_cells = {p['original_cell'] for p in constant_pairs}
-
-                # Add blue constants (they have ConstantA, ConstantB naming)
-                for blue_const in blue_constants:
-                    if blue_const['original_cell'] not in detected_cells:
-                        constant_pairs.append(blue_const)
-                        detected_cells.add(blue_const['original_cell'])
-
-                # Add formula-referenced constants
-                for ref_const in formula_referenced_constants:
-                    if ref_const['original_cell'] not in detected_cells:
-                        constant_pairs.append(ref_const)
-                        detected_cells.add(ref_const['original_cell'])
-
-                # Build cell mapping for formula reference updates
-                cell_to_column_mapping = {}
-                constant_start_index = len([c for c in all_components if c.get('column_type') == 'constant'])
-                for idx, pair in enumerate(constant_pairs):
-                    new_col_letter = self._generate_extended_column_letter(constant_start_index + idx)
-                    cell_to_column_mapping[pair['original_cell']] = new_col_letter
-                    pair['new_column_letter'] = new_col_letter
-
-                for header_info in sheet_data['headers']:
-                    col_letter = header_info['column_letter']
-
-                    # Generate code from header
-                    code = self._generate_code(header_info['value'], seen_codes)
+                    # Generate unique code
+                    code = self._generate_code(col_sel.original_header, seen_codes)
                     seen_codes.add(code)
 
-                    # Determine column type based on formula detection
-                    column_type = 'input'
-                    excel_formula = ''
-                    sample_value = ''
-
-                    if col_letter in formula_columns:
-                        column_type = 'formula'
-                        excel_formula = formula_columns[col_letter].get('formula', '')
-                        # Update formula references if we have constant mappings
-                        if cell_to_column_mapping:
-                            excel_formula = self._update_formula_references(excel_formula, cell_to_column_mapping)
-
-                    # Get sample value from first data row
-                    if sheet_data['data_rows']:
-                        sample_value = str(sheet_data['data_rows'][0].get(header_info['value'], ''))[:50]
-
-                    # Check if this is a duplicate across sheets
-                    is_duplicate = code in [c['generated_code'] for c in all_components]
-
                     # Determine data source
-                    if column_type == 'formula':
+                    if col_sel.column_type == 'formula':
                         data_source = 'formula'
                     else:
                         data_source = 'excel'
@@ -373,66 +718,143 @@ class MultiSheetImportWizard(models.TransientModel):
                     component = {
                         'wizard_id': self.id,
                         'source_sheet': sheet_line.sheet_name,
-                        'column_letter': col_letter,
-                        'original_header': header_info['value'],
+                        'column_letter': new_col_letter,
+                        'original_header': col_sel.original_header,
                         'generated_code': code,
-                        'generated_name': header_info['value'],
-                        'component_type': header_info.get('component_type') or '',
-                        'column_type': column_type,
+                        'generated_name': col_sel.original_header,
+                        'component_type': col_sel.component_type or '',
+                        'column_type': col_sel.column_type,
                         'excel_formula': excel_formula,
-                        'sample_value': sample_value,
-                        'is_duplicate': is_duplicate,
-                        'include_in_import': not is_duplicate or sheet_line.is_main_sheet,
-                        'is_in_excel': True,
-                        'data_source': data_source,
-                    }
-                    all_components.append(component)
-
-                # Add constant components from colored pairs at the end
-                for pair in constant_pairs:
-                    code = self._generate_code(pair['name'], seen_codes)
-                    seen_codes.add(code)
-
-                    try:
-                        constant_value = float(pair['value'])
-                    except (ValueError, TypeError):
-                        constant_value = 0.0
-
-                    # Build informative sample value (includes percentage conversion info)
-                    if pair.get('was_percentage'):
-                        original_val = pair.get('original_value', pair['value'])
-                        sample_val = f"{constant_value} (from {original_val})"
-                    else:
-                        sample_val = str(constant_value)
-
-                    component = {
-                        'wizard_id': self.id,
-                        'source_sheet': sheet_line.sheet_name,
-                        'column_letter': pair['new_column_letter'],
-                        'original_header': pair['name'],
-                        'generated_code': code,
-                        'generated_name': pair['name'],
-                        'component_type': 'Constant',
-                        'column_type': 'constant',
-                        'excel_formula': '',
-                        'sample_value': sample_val,
+                        'resolved_formula': '',  # Will be filled during resolution
+                        'sample_value': col_sel.sample_value,
                         'is_duplicate': False,
                         'include_in_import': True,
                         'is_in_excel': True,
-                        'data_source': 'manual',
+                        'data_source': data_source,
+                        '_original_col': col_sel.column_letter,
                     }
                     all_components.append(component)
+                    current_col_index += 1
+
+            # Now resolve cross-sheet formulas
+            for component in all_components:
+                if component['excel_formula']:
+                    resolved = self._resolve_cross_sheet_formula(
+                        component['excel_formula'],
+                        column_mapping
+                    )
+                    component['resolved_formula'] = resolved
+                    # If resolution happened, use resolved formula
+                    if resolved != component['excel_formula']:
+                        component['excel_formula'] = resolved
 
             # Create component preview records
             for comp in all_components:
+                # Remove internal tracking field
+                comp.pop('_original_col', None)
                 self.env['hr.formula.multisheet.component.preview'].create(comp)
 
             self.state = 'review_components'
             return self._return_wizard_action()
 
         except Exception as e:
-            _logger.exception("Failed to process worksheets")
-            raise UserError(_("Failed to process worksheets: %s") % str(e))
+            _logger.exception("Failed to process sheets with resolution")
+            raise UserError(_("Failed to process sheets: %s") % str(e))
+
+    def _resolve_cross_sheet_formula(self, formula, column_mapping):
+        """
+        Resolve cross-sheet references in a formula to simple column references.
+
+        VLOOKUP(B4,'TimeTB 2'!$C$4:$AU$11,45,0) → DM2
+        SUMIF(Others!$B$8:$B$15,$B4,Others!$F$8:$F$15) → SUMIF(XX:XX,$B4,YY:YY)
+        """
+        if not formula:
+            return formula
+
+        result = formula
+
+        # Resolve VLOOKUP: Replace entire VLOOKUP with simple column reference
+        vlookup_pattern = re.compile(
+            r"VLOOKUP\s*\([^,]+,\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?[A-Z]+\$?\d*,\s*(\d+),\s*[^)]+\)",
+            re.IGNORECASE
+        )
+
+        def resolve_vlookup(match):
+            sheet_name = match.group(1).strip().lower()
+            start_col = match.group(2).upper()
+            col_index = int(match.group(3))
+
+            # Calculate target column
+            start_idx = self._column_letter_to_index(start_col)
+            target_idx = start_idx + col_index - 1
+            target_col = self._index_to_column_letter(target_idx)
+
+            # Look up new column
+            new_col = column_mapping.get((sheet_name, target_col))
+            if not new_col:
+                new_col = column_mapping.get((sheet_name, target_idx))
+
+            if new_col:
+                return f"{new_col}2"  # Simple reference to row 2 (data row placeholder)
+            else:
+                return "0"  # Unresolved - return 0
+
+        result = vlookup_pattern.sub(resolve_vlookup, result)
+
+        # Resolve SUMIF: Replace range references
+        sumif_pattern = re.compile(
+            r"SUMIF\s*\(\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*([^,]+),\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*\s*\)",
+            re.IGNORECASE
+        )
+
+        def resolve_sumif(match):
+            criteria_sheet = match.group(1).strip().lower()
+            criteria_col = match.group(2).upper()
+            criteria = match.group(4)
+            sum_sheet = match.group(5).strip().lower()
+            sum_col = match.group(6).upper()
+
+            new_criteria_col = column_mapping.get((criteria_sheet, criteria_col))
+            if not new_criteria_col:
+                idx = self._column_letter_to_index(criteria_col)
+                new_criteria_col = column_mapping.get((criteria_sheet, idx))
+
+            new_sum_col = column_mapping.get((sum_sheet, sum_col))
+            if not new_sum_col:
+                idx = self._column_letter_to_index(sum_col)
+                new_sum_col = column_mapping.get((sum_sheet, idx))
+
+            if new_criteria_col and new_sum_col:
+                return f"SUMIF({new_criteria_col}:{new_criteria_col},{criteria},{new_sum_col}:{new_sum_col})"
+            else:
+                return "0"
+
+        result = sumif_pattern.sub(resolve_sumif, result)
+
+        # Resolve direct references: 'Sheet'!A4 -> NewCol4
+        direct_pattern = re.compile(
+            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?(\d+)",
+            re.IGNORECASE
+        )
+
+        def resolve_direct(match):
+            sheet_name = match.group(1).strip().lower()
+            col = match.group(2).upper()
+            row = match.group(3)
+
+            new_col = column_mapping.get((sheet_name, col))
+            if not new_col:
+                idx = self._column_letter_to_index(col)
+                new_col = column_mapping.get((sheet_name, idx))
+
+            if new_col:
+                return f"{new_col}{row}"
+            else:
+                return "0"
+
+        result = direct_pattern.sub(resolve_direct, result)
+
+        return result
 
     def _detect_formula_columns(self, formula_sheet, data_start_row, headers):
         """
@@ -1116,7 +1538,8 @@ class MultiSheetImportWizard(models.TransientModel):
     def action_back(self):
         """Navigate to previous step."""
         self.ensure_one()
-        state_order = ['upload', 'select_sheets', 'review_components', 'map_missing', 'confirm']
+        state_order = ['upload', 'select_sheets', 'select_columns', 'configure_order',
+                       'review_components', 'map_missing', 'confirm']
         current_idx = state_order.index(self.state)
         if current_idx > 0:
             # Skip map_missing if no missing fields
@@ -1373,3 +1796,205 @@ class MultiSheetMissingField(models.TransientModel):
         if self.data_source != 'integration':
             self.integration_connector_id = False
             self.integration_field_name = False
+
+
+class MultiSheetColumnSelection(models.TransientModel):
+    """
+    Column selection for multi-sheet import wizard.
+
+    Stores per-worksheet column selections, allowing users to choose
+    which columns to include from each selected worksheet.
+    """
+    _name = 'hr.formula.multisheet.column.selection'
+    _description = 'Multi-Sheet Import Column Selection'
+    _order = 'sheet_line_id, sequence'
+
+    wizard_id = fields.Many2one(
+        'hr.formula.multisheet.import.wizard',
+        string='Wizard',
+        ondelete='cascade',
+        required=True
+    )
+
+    sheet_line_id = fields.Many2one(
+        'hr.formula.multisheet.sheet.line',
+        string='Sheet',
+        ondelete='cascade',
+        required=True
+    )
+
+    # Column identity
+    sequence = fields.Integer(default=10)
+
+    column_letter = fields.Char(
+        string='Column',
+        readonly=True
+    )
+
+    column_index = fields.Integer(
+        string='Index',
+        readonly=True
+    )
+
+    original_header = fields.Char(
+        string='Header',
+        readonly=True
+    )
+
+    # Component type from merged cells above
+    component_type = fields.Char(
+        string='Category',
+        readonly=True,
+        help="Component type extracted from merged cell above the header"
+    )
+
+    # Selection controls
+    is_selected = fields.Boolean(
+        string='Include',
+        default=True
+    )
+
+    # Preview data
+    column_type = fields.Selection([
+        ('input', 'Input'),
+        ('formula', 'Formula'),
+        ('constant', 'Constant')
+    ], string='Type', readonly=True, default='input')
+
+    sample_value = fields.Char(
+        string='Sample',
+        readonly=True
+    )
+
+    # Cross-sheet reference info
+    has_cross_sheet_ref = fields.Boolean(
+        string='Cross-Sheet Ref',
+        readonly=True,
+        help="This column's formula references other worksheets"
+    )
+
+    cross_sheet_formula = fields.Char(
+        string='Formula',
+        readonly=True,
+        help="The formula containing cross-sheet references"
+    )
+
+    is_referenced_by_main = fields.Boolean(
+        string='Referenced by Main',
+        readonly=True,
+        help="This column is referenced by formulas in the main worksheet"
+    )
+
+
+class MultiSheetAppendOrder(models.TransientModel):
+    """
+    Worksheet append order for multi-sheet import wizard.
+
+    Controls the order in which auxiliary worksheets are appended
+    to the main worksheet to form the final component structure.
+    """
+    _name = 'hr.formula.multisheet.append.order'
+    _description = 'Multi-Sheet Import Append Order'
+    _order = 'append_sequence'
+
+    wizard_id = fields.Many2one(
+        'hr.formula.multisheet.import.wizard',
+        string='Wizard',
+        ondelete='cascade',
+        required=True
+    )
+
+    sheet_line_id = fields.Many2one(
+        'hr.formula.multisheet.sheet.line',
+        string='Sheet',
+        ondelete='cascade',
+        required=True
+    )
+
+    sheet_name = fields.Char(
+        related='sheet_line_id.sheet_name',
+        string='Worksheet',
+        readonly=True
+    )
+
+    is_main_sheet = fields.Boolean(
+        related='sheet_line_id.is_main_sheet',
+        string='Main',
+        readonly=True
+    )
+
+    # Append order (main sheet is always 0)
+    append_sequence = fields.Integer(
+        string='Order',
+        default=10
+    )
+
+    # Statistics
+    selected_column_count = fields.Integer(
+        string='Selected Columns',
+        compute='_compute_stats'
+    )
+
+    total_column_count = fields.Integer(
+        string='Total Columns',
+        compute='_compute_stats'
+    )
+
+    # Preview info
+    start_column_letter = fields.Char(
+        string='Start Col',
+        compute='_compute_column_range'
+    )
+
+    end_column_letter = fields.Char(
+        string='End Col',
+        compute='_compute_column_range'
+    )
+
+    @api.depends('sheet_line_id', 'wizard_id.column_selection_ids')
+    def _compute_stats(self):
+        """Compute column selection statistics."""
+        for rec in self:
+            if rec.sheet_line_id and rec.wizard_id:
+                sheet_cols = rec.wizard_id.column_selection_ids.filtered(
+                    lambda c: c.sheet_line_id.id == rec.sheet_line_id.id
+                )
+                rec.total_column_count = len(sheet_cols)
+                rec.selected_column_count = len(sheet_cols.filtered('is_selected'))
+            else:
+                rec.total_column_count = 0
+                rec.selected_column_count = 0
+
+    @api.depends('append_sequence', 'wizard_id.append_order_ids', 'wizard_id.column_selection_ids')
+    def _compute_column_range(self):
+        """Compute the column range this sheet will occupy after appending."""
+        for rec in self:
+            if not rec.wizard_id or not rec.sheet_line_id:
+                rec.start_column_letter = ''
+                rec.end_column_letter = ''
+                continue
+
+            # Calculate cumulative column count for sheets before this one
+            ordered = rec.wizard_id.append_order_ids.sorted('append_sequence')
+            start_idx = 0
+            for order_rec in ordered:
+                if order_rec.id == rec.id:
+                    break
+                start_idx += order_rec.selected_column_count
+
+            end_idx = start_idx + rec.selected_column_count - 1
+
+            # Convert to column letters
+            rec.start_column_letter = rec._index_to_column_letter(start_idx) if rec.selected_column_count > 0 else ''
+            rec.end_column_letter = rec._index_to_column_letter(end_idx) if rec.selected_column_count > 0 else ''
+
+    def _index_to_column_letter(self, index):
+        """Convert 0-based column index to Excel column letter (A, B, ..., Z, AA, AB, ...)."""
+        result = ""
+        idx = index
+        while True:
+            result = chr(ord('A') + (idx % 26)) + result
+            idx = idx // 26 - 1
+            if idx < 0:
+                break
+        return result

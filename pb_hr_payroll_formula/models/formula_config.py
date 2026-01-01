@@ -718,6 +718,30 @@ class HrFormulaConfig(models.Model):
         }
 
     # ==========================================
+    # IMPORT FROM EXCEL (MULTI-SHEET WIZARD)
+    # ==========================================
+    def action_import_from_excel_multisheet(self):
+        """Open multi-sheet Excel import wizard with enhanced features.
+
+        This wizard provides:
+        - Worksheet selection with checkboxes
+        - Per-sheet column selection
+        - Append order configuration
+        - Cross-sheet formula resolution (VLOOKUP, SUMIF, etc.)
+        """
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Import from Excel (Multi-Sheet)'),
+            'res_model': 'hr.formula.multisheet.import.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_config_id': self.id,
+            }
+        }
+
+    # ==========================================
     # GENERATE SAMPLE DATA
     # ==========================================
     def action_generate_sample_data(self):

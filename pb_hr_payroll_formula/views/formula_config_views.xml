@@ -42,6 +42,10 @@
                             type="object" class="btn-secondary"
                             attrs="{'invisible': [('structure_id', '=', False)]}"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
+                    <button name="action_import_from_excel_multisheet" string="Import from Excel"
+                            type="object" class="btn-secondary" icon="fa-file-excel-o"
+                            groups="pb_hr_payroll_formula.group_formula_manager"
+                            title="Import salary components from multi-sheet Excel file with cross-sheet formula resolution"/>
                     <button name="action_regenerate_formulas" string="Regenerate Formulas"
                             type="object" class="btn-secondary" icon="fa-refresh"
                             attrs="{'invisible': [('rule_count', '=', 0)]}"

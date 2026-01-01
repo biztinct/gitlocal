@@ -33,8 +33,14 @@ class ExcelConnector(BaseHRConnector):
     - Data preview
     """
 
-    def __init__(self, connector_record):
-        super().__init__(connector_record)
+    def __init__(self, connector_record=None):
+        # ExcelConnector can work without a connector record for standalone usage
+        # (e.g., parsing Excel files without Odoo integration)
+        if connector_record is not None:
+            super().__init__(connector_record)
+        else:
+            self.connector = None
+            self.env = None
         self.workbook = None
         self.headers = []
         self.data_rows = []
