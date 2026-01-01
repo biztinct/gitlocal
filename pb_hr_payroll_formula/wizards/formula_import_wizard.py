@@ -651,6 +651,26 @@ class FormulaImportWizard(models.TransientModel):
                     break
             return f"Constant{result}"
 
+        def get_column_header_label(row_num, col_idx):
+            """
+            Look at the row immediately above to get a header label for this column.
+            This appends context like _BHXH, _BHYT to the constant name.
+            """
+            if row_num <= 1:
+                return None
+
+            # Check the row immediately above
+            header_cell = sheet.cell(row=row_num - 1, column=col_idx)
+            if header_cell.value and isinstance(header_cell.value, str):
+                label = str(header_cell.value).strip()
+                # Clean up the label - remove special chars, keep alphanumeric and underscore
+                import re
+                clean_label = re.sub(r'[^A-Za-z0-9_]', '', label)
+                if clean_label:
+                    return clean_label
+
+            return None
+
         # Scan all rows up to scan_up_to_row
         for row_num in range(1, scan_up_to_row):
             for col_idx in range(1, (sheet.max_column or 1) + 1):
@@ -676,9 +696,16 @@ class FormulaImportWizard(models.TransientModel):
                     # Parse the value (handles percentages)
                     decimal_value, was_percentage = self._parse_percentage_value(cell.value)
 
-                    # Generate name
-                    name = generate_constant_name(constant_index)
+                    # Generate base name (ConstantA, ConstantB, etc.)
+                    base_name = generate_constant_name(constant_index)
                     constant_index += 1
+
+                    # Look for header label in row above to append context
+                    header_label = get_column_header_label(row_num, col_idx)
+                    if header_label:
+                        name = f"{base_name}_{header_label}"
+                    else:
+                        name = base_name
 
                     blue_constants.append({
                         'name': name,
