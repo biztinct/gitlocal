@@ -13,7 +13,7 @@
             <form string="Multi-Sheet Excel Import">
                 <header>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="upload,select_sheets,review_components,confirm"/>
+                           statusbar_visible="upload,select_sheets,select_columns,configure_order,review_components,confirm"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -23,6 +23,12 @@
                             </span>
                             <span attrs="{'invisible': [('state', '!=', 'select_sheets')]}">
                                 Select Worksheets
+                            </span>
+                            <span attrs="{'invisible': [('state', '!=', 'select_columns')]}">
+                                Select Columns
+                            </span>
+                            <span attrs="{'invisible': [('state', '!=', 'configure_order')]}">
+                                Configure Append Order
                             </span>
                             <span attrs="{'invisible': [('state', '!=', 'review_components')]}">
                                 Review Components
@@ -93,7 +99,102 @@
                         </group>
                     </group>
 
-                    <!-- Step 3: Review Components -->
+                    <!-- Step 3: Select Columns -->
+                    <group attrs="{'invisible': [('state', '!=', 'select_columns')]}">
+                        <group string="Instructions" class="oe_read_only">
+                            <div class="alert alert-info" role="alert">
+                                <p><strong>Select Columns to Import</strong></p>
+                                <ul>
+                                    <li>Each tab shows columns from a selected worksheet</li>
+                                    <li>All columns are selected by default</li>
+                                    <li>Uncheck columns you don't want to import</li>
+                                    <li><span class="badge bg-warning text-dark">⚠</span> Columns referenced by main sheet formulas are highlighted</li>
+                                </ul>
+                            </div>
+                        </group>
+                        <notebook>
+                            <page string="Column Selection" name="column_selection">
+                                <field name="column_selection_ids" nolabel="1">
+                                    <tree editable="bottom" decoration-warning="is_referenced_by_main and not is_selected"
+                                          decoration-info="has_cross_sheet_ref"
+                                          create="false" delete="false">
+                                        <field name="sheet_line_id" readonly="1" string="Sheet"/>
+                                        <field name="is_selected" widget="boolean_toggle"/>
+                                        <field name="column_letter" string="Col" readonly="1"/>
+                                        <field name="original_header" string="Header" readonly="1"/>
+                                        <field name="component_type" string="Category" readonly="1" optional="show"/>
+                                        <field name="column_type" string="Type" readonly="1"/>
+                                        <field name="sample_value" string="Sample" readonly="1" optional="show"/>
+                                        <field name="has_cross_sheet_ref" widget="boolean" string="Cross-Ref" readonly="1" optional="show"/>
+                                        <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="show"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                        <group string="Selection Summary" class="oe_read_only">
+                            <div class="alert alert-secondary">
+                                <p><strong>Note:</strong> If you deselect a column that is referenced by a formula in the main worksheet,
+                                the cross-sheet formula cannot be resolved. You will be notified in the next step.</p>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Step 4: Configure Append Order -->
+                    <group attrs="{'invisible': [('state', '!=', 'configure_order')]}">
+                        <group string="Worksheet Append Order">
+                            <field name="append_order_ids" nolabel="1">
+                                <tree editable="bottom" decoration-success="is_main_sheet" create="false" delete="false">
+                                    <field name="append_sequence" widget="handle"/>
+                                    <field name="sheet_name" readonly="1"/>
+                                    <field name="is_main_sheet" widget="boolean" readonly="1" string="Main"/>
+                                    <field name="selected_column_count" string="Columns"/>
+                                    <field name="start_column_letter" string="Start" readonly="1"/>
+                                    <field name="end_column_letter" string="End" readonly="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group string="Cross-Sheet Formula Statistics" class="oe_read_only">
+                            <div class="row mb-3">
+                                <div class="col-md-4 text-center">
+                                    <div class="card bg-info text-white">
+                                        <div class="card-body py-2">
+                                            <h4 class="mb-0"><field name="cross_sheet_formula_count"/></h4>
+                                            <small>Cross-Sheet Formulas</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="card bg-success text-white">
+                                        <div class="card-body py-2">
+                                            <h4 class="mb-0"><field name="resolved_formula_count"/></h4>
+                                            <small>Can Be Resolved</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="card bg-danger text-white">
+                                        <div class="card-body py-2">
+                                            <h4 class="mb-0"><field name="unresolved_formula_count"/></h4>
+                                            <small>Cannot Resolve</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </group>
+                        <group string="Instructions" class="oe_read_only">
+                            <div class="alert alert-info" role="alert">
+                                <p><strong>Configure Append Order</strong></p>
+                                <ul>
+                                    <li>The <strong>Main Worksheet</strong> columns come first (locked at top)</li>
+                                    <li>Drag auxiliary worksheets to reorder them</li>
+                                    <li><strong>Start/End columns</strong> show where each worksheet's columns will be placed in the final structure</li>
+                                    <li>Cross-sheet formula references (like VLOOKUP) will be resolved to new column positions</li>
+                                </ul>
+                            </div>
+                        </group>
+                    </group>
+
+                    <!-- Step 5: Review Components -->
                     <group attrs="{'invisible': [('state', '!=', 'review_components')]}">
                         <group string="Import Statistics" class="oe_read_only">
                             <div class="row">
@@ -258,25 +359,37 @@
                     </group>
                 </sheet>
                 <footer>
-                    <!-- Step 1 Buttons -->
+                    <!-- Step 1: Upload - Buttons -->
                     <button name="action_analyze_file" type="object"
                             string="Analyze File" class="btn-primary"
                             attrs="{'invisible': [('state', '!=', 'upload')]}"/>
 
-                    <!-- Step 2 Buttons -->
+                    <!-- Back Button (shown for all steps except upload) -->
                     <button name="action_back" type="object"
                             string="Back" class="btn-secondary"
                             attrs="{'invisible': [('state', '=', 'upload')]}"/>
+
+                    <!-- Step 2: Select Sheets - Buttons -->
                     <button name="action_process_sheets" type="object"
-                            string="Process Sheets" class="btn-primary"
+                            string="Select Columns" class="btn-primary"
                             attrs="{'invisible': [('state', '!=', 'select_sheets')]}"/>
 
-                    <!-- Step 3 Buttons -->
+                    <!-- Step 3: Select Columns - Buttons -->
+                    <button name="action_configure_order" type="object"
+                            string="Configure Order" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'select_columns')]}"/>
+
+                    <!-- Step 4: Configure Order - Buttons -->
+                    <button name="action_process_with_resolution" type="object"
+                            string="Process &amp; Resolve" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'configure_order')]}"/>
+
+                    <!-- Step 5: Review Components - Buttons -->
                     <button name="action_detect_missing_fields" type="object"
                             string="Continue" class="btn-primary"
                             attrs="{'invisible': [('state', '!=', 'review_components')]}"/>
 
-                    <!-- Step 4 Buttons -->
+                    <!-- Step 6: Map Missing - Buttons -->
                     <button name="action_skip_missing" type="object"
                             string="Skip" class="btn-secondary"
                             attrs="{'invisible': [('state', '!=', 'map_missing')]}"/>
@@ -284,7 +397,7 @@
                             string="Apply and Continue" class="btn-primary"
                             attrs="{'invisible': [('state', '!=', 'map_missing')]}"/>
 
-                    <!-- Step 5 Buttons -->
+                    <!-- Step 7: Confirm - Buttons -->
                     <button name="action_execute_import" type="object"
                             string="Execute Import" class="btn-success"
                             attrs="{'invisible': [('state', '!=', 'confirm')]}"/>
@@ -366,6 +479,50 @@
                        attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
                 <field name="integration_field_name"
                        attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         COLUMN SELECTION VIEWS (Embedded)
+         ========================================== -->
+
+    <record id="view_multisheet_column_selection_tree" model="ir.ui.view">
+        <field name="name">hr.formula.multisheet.column.selection.tree</field>
+        <field name="model">hr.formula.multisheet.column.selection</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" decoration-warning="is_referenced_by_main and not is_selected"
+                  decoration-info="has_cross_sheet_ref" create="false" delete="false">
+                <field name="sheet_line_id" readonly="1" string="Sheet"/>
+                <field name="is_selected" widget="boolean_toggle"/>
+                <field name="column_letter" string="Column" readonly="1"/>
+                <field name="original_header" string="Header" readonly="1"/>
+                <field name="component_type" string="Category" readonly="1" optional="show"/>
+                <field name="column_type" string="Type" readonly="1"/>
+                <field name="sample_value" string="Sample" readonly="1" optional="show"/>
+                <field name="has_cross_sheet_ref" widget="boolean" string="Cross-Ref" readonly="1" optional="show"/>
+                <field name="cross_sheet_formula" string="Formula" readonly="1" optional="hide"/>
+                <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         APPEND ORDER VIEWS (Embedded)
+         ========================================== -->
+
+    <record id="view_multisheet_append_order_tree" model="ir.ui.view">
+        <field name="name">hr.formula.multisheet.append.order.tree</field>
+        <field name="model">hr.formula.multisheet.append.order</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" decoration-success="is_main_sheet" create="false" delete="false">
+                <field name="append_sequence" widget="handle"/>
+                <field name="sheet_name" readonly="1"/>
+                <field name="is_main_sheet" widget="boolean" readonly="1" string="Main"/>
+                <field name="selected_column_count" string="Selected Cols" readonly="1"/>
+                <field name="total_column_count" string="Total Cols" readonly="1"/>
+                <field name="start_column_letter" string="Start Col" readonly="1"/>
+                <field name="end_column_letter" string="End Col" readonly="1"/>
             </tree>
         </field>
     </record>
