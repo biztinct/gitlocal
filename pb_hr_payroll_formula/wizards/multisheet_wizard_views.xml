@@ -128,6 +128,9 @@
                                         <field name="column_type" string="Type" readonly="1"/>
                                         <field name="sample_value" string="Sample" readonly="1"/>
                                         <field name="has_cross_sheet_ref" widget="boolean" string="Cross-Ref" readonly="1" optional="hide"/>
+                                        <field name="is_referenced_by_other_sheet" widget="boolean" string="Ref By Other" readonly="1" optional="show"/>
+                                        <field name="refers_to_sheet_names" string="Refers To" readonly="1" optional="show"/>
+                                        <field name="referenced_by_sheet_names" string="Ref By Sheets" readonly="1" optional="show"/>
                                         <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="hide"/>
                                     </tree>
                                 </field>
@@ -443,6 +446,9 @@
                 <field name="column_type" string="Type" readonly="1"/>
                 <field name="sample_value" string="Sample" readonly="1" optional="show"/>
                 <field name="has_cross_sheet_ref" widget="boolean" string="Cross-Ref" readonly="1" optional="show"/>
+                <field name="is_referenced_by_other_sheet" widget="boolean" string="Ref By Other" readonly="1" optional="show"/>
+                <field name="refers_to_sheet_names" string="Refers To" readonly="1" optional="show"/>
+                <field name="referenced_by_sheet_names" string="Ref By Sheets" readonly="1" optional="show"/>
                 <field name="cross_sheet_formula" string="Formula" readonly="1" optional="hide"/>
                 <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="show"/>
             </tree>

@@ -390,16 +390,18 @@ class MultiSheetImportWizard(models.TransientModel):
                         'constant_cell_ref': cell_ref,
                     })
 
+            if constant_cell_mapping:
+                for ctx in sheet_context.values():
+                    for col_letter, info in ctx['formula_columns'].items():
+                        formula = info.get('formula', '')
+                        updated = self._update_formula_references(formula, constant_cell_mapping)
+                        if updated != formula:
+                            info['formula'] = updated
+
             # Analyze cross-sheet references in main sheet to mark required columns
             main_sheet = main_sheets[0]
             main_ctx = sheet_context[main_sheet.id]
             main_formula_columns = main_ctx['formula_columns']
-            if constant_cell_mapping:
-                for col_letter, info in main_formula_columns.items():
-                    formula = info.get('formula', '')
-                    updated = self._update_formula_references(formula, constant_cell_mapping)
-                    if updated != formula:
-                        info['formula'] = updated
 
             # Find all cross-sheet references from main sheet
             cross_sheet_refs = self._extract_cross_sheet_references(main_formula_columns)
@@ -413,13 +415,6 @@ class MultiSheetImportWizard(models.TransientModel):
                 data_sheet = ctx['data_sheet']
                 formula_columns = ctx['formula_columns']
 
-                if constant_cell_mapping:
-                    for col_letter, info in formula_columns.items():
-                        formula = info.get('formula', '')
-                        updated = self._update_formula_references(formula, constant_cell_mapping)
-                        if updated != formula:
-                            info['formula'] = updated
-
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
 
@@ -427,7 +422,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     has_cross_ref = False
                     cross_formula = ''
                     if col_letter in formula_columns:
-                        formula = formula_columns[col_letter].get('formula', '')
+                        formula_info = formula_columns[col_letter]
+                        formula = formula_info.get('formula', '') if isinstance(formula_info, dict) else formula_info
                         has_cross_ref = bool(re.search(r"'[^']+'\s*!", formula) or re.search(r"[A-Za-z_]+!", formula))
                         cross_formula = formula if has_cross_ref else ''
 
@@ -1602,6 +1598,10 @@ class MultiSheetImportWizard(models.TransientModel):
                     lambda r: r.code == comp.generated_code
                 )
 
+                sequence = None
+                if comp.column_letter:
+                    sequence = self._column_letter_to_index(comp.column_letter) + 1
+
                 rule_vals = {
                     'config_id': self.config_id.id,
                     'name': comp.generated_name,
@@ -1613,6 +1613,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     'forced_column_letter': comp.column_letter,  # Preserve actual Excel column position for ALL rules
                     'data_source': comp.data_source,
                 }
+                if sequence is not None:
+                    rule_vals['sequence'] = sequence
 
                 if comp.column_type == 'formula' and comp.excel_formula:
                     rule_vals['excel_formula'] = comp.excel_formula
@@ -2036,6 +2038,157 @@ class MultiSheetColumnSelection(models.TransientModel):
         readonly=True,
         help="This column is referenced by formulas in the main worksheet"
     )
+
+    is_referenced_by_other_sheet = fields.Boolean(
+        string='Referenced by Other',
+        compute='_compute_cross_sheet_reference_info',
+        readonly=True,
+        help="This column is referenced by formulas in other worksheets"
+    )
+
+    refers_to_sheet_names = fields.Char(
+        string='Refers To Sheets',
+        compute='_compute_cross_sheet_reference_info',
+        readonly=True,
+        help="Worksheets referenced by this column's formula"
+    )
+
+    referenced_by_sheet_names = fields.Char(
+        string='Referenced By Sheets',
+        compute='_compute_cross_sheet_reference_info',
+        readonly=True,
+        help="Worksheets that reference this column"
+    )
+
+    @api.depends(
+        'wizard_id.column_selection_ids.cross_sheet_formula',
+        'wizard_id.column_selection_ids.sheet_name',
+        'wizard_id.column_selection_ids.column_letter'
+    )
+    def _compute_cross_sheet_reference_info(self):
+        for wizard in self.mapped('wizard_id'):
+            lines = wizard.column_selection_ids
+            references_by_component = {}
+            referenced_by_component = {}
+            sheet_name_map = {
+                self._normalize_sheet_name(line.sheet_name): line.sheet_name
+                for line in lines
+                if line.sheet_name
+            }
+
+            for line in lines:
+                if not line.cross_sheet_formula:
+                    continue
+                source_key = self._normalize_sheet_name(line.sheet_name)
+                source_col = (line.column_letter or '').upper()
+                for ref in self._extract_cross_sheet_references_from_formula(line.cross_sheet_formula):
+                    target_key = self._normalize_sheet_name(ref['sheet_name'])
+                    if not target_key or target_key == source_key:
+                        continue
+                    target_display = sheet_name_map.get(target_key, ref['sheet_name'])
+                    references_by_component.setdefault(
+                        (source_key, source_col), set()
+                    ).add(target_display)
+                    referenced_by_component.setdefault(
+                        (target_key, ref['col_letter']), set()
+                    ).add(line.sheet_name)
+
+            for line in lines & self:
+                key = (
+                    self._normalize_sheet_name(line.sheet_name),
+                    (line.column_letter or '').upper()
+                )
+                refers_to = references_by_component.get(key, set())
+                referenced_by = referenced_by_component.get(key, set())
+                line.refers_to_sheet_names = ", ".join(sorted(refers_to))
+                line.referenced_by_sheet_names = ", ".join(sorted(referenced_by))
+                line.is_referenced_by_other_sheet = bool(referenced_by)
+
+    @staticmethod
+    def _normalize_sheet_name(sheet_name):
+        return sheet_name.strip().lower() if sheet_name else ''
+
+    def _extract_cross_sheet_references_from_formula(self, formula):
+        """Extract referenced sheet/column pairs from a formula."""
+        if not formula:
+            return []
+
+        refs = set()
+
+        def add_ref(sheet_name, col_letter):
+            if not sheet_name or not col_letter:
+                return
+            refs.add((sheet_name.strip(), col_letter.upper()))
+
+        vlookup_pattern = re.compile(
+            r"VLOOKUP\s*\([^,]+,\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?[A-Z]+\$?\d*,\s*(\d+)",
+            re.IGNORECASE
+        )
+        sumif_pattern = re.compile(
+            r"SUMIF\s*\(\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*([^,]+),\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*\s*\)",
+            re.IGNORECASE
+        )
+        range_pattern = re.compile(
+            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*",
+            re.IGNORECASE
+        )
+        direct_pattern = re.compile(
+            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d+",
+            re.IGNORECASE
+        )
+
+        for match in vlookup_pattern.finditer(formula):
+            sheet_name = match.group(1).strip()
+            start_col = match.group(2).upper()
+            col_index = int(match.group(3))
+            start_idx = self._column_letter_to_index(start_col)
+            target_idx = start_idx + col_index - 1
+            target_col = self._index_to_column_letter(target_idx)
+            add_ref(sheet_name, target_col)
+
+        for match in sumif_pattern.finditer(formula):
+            criteria_sheet = match.group(1).strip()
+            criteria_col = match.group(2).upper()
+            add_ref(criteria_sheet, criteria_col)
+            sum_sheet = match.group(5).strip()
+            sum_col = match.group(6).upper()
+            add_ref(sum_sheet, sum_col)
+
+        for match in range_pattern.finditer(formula):
+            sheet_name = match.group(1).strip()
+            start_col = match.group(2).upper()
+            end_col = match.group(3).upper()
+            add_ref(sheet_name, start_col)
+            add_ref(sheet_name, end_col)
+
+        for match in direct_pattern.finditer(formula):
+            add_ref(match.group(1), match.group(2))
+
+        return [
+            {'sheet_name': sheet_name, 'col_letter': col_letter}
+            for sheet_name, col_letter in sorted(refs)
+        ]
+
+    @staticmethod
+    def _column_letter_to_index(col_letter):
+        """Convert column letter to 0-based index (A=0, B=1, ...)."""
+        result = 0
+        for char in col_letter.upper():
+            result = result * 26 + (ord(char) - ord('A') + 1)
+        return result - 1
+
+    @staticmethod
+    def _index_to_column_letter(index):
+        """Convert 0-based index to column letter (0=A, 1=B, ...)."""
+        result = ""
+        idx = index
+        while True:
+            result = chr(ord('A') + (idx % 26)) + result
+            idx = idx // 26 - 1
+            if idx < 0:
+                break
+        return result
+
 
 
 class MultiSheetAppendOrder(models.TransientModel):
