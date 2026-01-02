@@ -5,6 +5,7 @@
          MULTI-SHEET IMPORT WIZARD VIEWS
          ========================================== -->
 
+
     <!-- Main Wizard Form View -->
     <record id="view_multisheet_import_wizard_form" model="ir.ui.view">
         <field name="name">hr.formula.multisheet.import.wizard.form</field>
@@ -83,7 +84,7 @@
                                         <field name="column_count" readonly="1" string="Cols"/>
                                         <field name="row_count" readonly="1" string="Rows"/>
                                         <field name="has_formulas" widget="boolean" readonly="1" string="Formulas"/>
-                                        <field name="references_other_sheets" widget="boolean" readonly="1" string="Cross-Ref" optional="hide"/>
+                                        <field name="references_other_sheets" widget="boolean" readonly="1" string="Refs Others" optional="show"/>
                                         <field name="header_confidence" widget="progressbar" readonly="1" optional="hide"/>
                                     </tree>
                                 </field>
@@ -96,6 +97,7 @@
                                     <li><strong>Main Sheet:</strong> Designate ONE sheet as the primary payroll structure</li>
                                     <li><strong>Header Row:</strong> Adjust if auto-detection was incorrect</li>
                                     <li><strong>Primary Key:</strong> Column used to match data across worksheets</li>
+                                    <li><strong>Refs Others:</strong> Indicates this sheet has formulas that reference other sheets (e.g., =TAM_UNG!A1)</li>
                                 </ul>
                             </div>
                         </group>
@@ -116,22 +118,22 @@
                                 </div>
                             </group>
                             <group string="Columns by Worksheet" colspan="4">
-                                <field name="column_selection_ids" nolabel="1" colspan="4">
+                                <field name="column_selection_ids" nolabel="1" colspan="4" context="{'tree_view_ref': 'pb_hr_payroll_formula.view_multisheet_column_selection_inline_tree'}">
                                     <tree editable="bottom" decoration-warning="is_referenced_by_main and not is_selected"
                                           decoration-info="has_cross_sheet_ref"
                                           create="false" delete="false">
-                                        <field name="sheet_name" readonly="1" string="Worksheet"/>
-                                        <field name="is_selected" widget="boolean_toggle"/>
-                                        <field name="column_letter" string="Col" readonly="1"/>
-                                        <field name="original_header" string="Header" readonly="1"/>
-                                        <field name="component_type" string="Category" readonly="1" optional="show"/>
-                                        <field name="column_type" string="Type" readonly="1"/>
-                                        <field name="sample_value" string="Sample" readonly="1"/>
-                                        <field name="has_cross_sheet_ref" widget="boolean" string="Cross-Ref" readonly="1" optional="hide"/>
-                                        <field name="is_referenced_by_other_sheet" widget="boolean" string="Ref By Other" readonly="1" optional="show"/>
-                                        <field name="refers_to_sheet_names" string="Refers To" readonly="1" optional="show"/>
-                                        <field name="referenced_by_sheet_names" string="Ref By Sheets" readonly="1" optional="show"/>
-                                        <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="hide"/>
+                                        <field name="sheet_name" readonly="1" string="Worksheet" width="150px"/>
+                                        <field name="is_selected" widget="boolean_toggle" width="70px"/>
+                                        <field name="column_letter" string="Col" readonly="1" width="50px"/>
+                                        <field name="original_header" string="Header" readonly="1" width="200px"/>
+                                        <field name="component_type" string="Category" readonly="1" optional="show" width="150px"/>
+                                        <field name="column_type" string="Type" readonly="1" width="80px"/>
+                                        <field name="sample_value" string="Sample" readonly="1" width="120px"/>
+                                        <field name="has_cross_sheet_ref" widget="boolean" string="Has Ref" readonly="1" optional="show" width="70px"/>
+                                        <field name="is_referenced_by_other_sheet" widget="boolean" string="Ref'd By" readonly="1" optional="show" width="70px"/>
+                                        <field name="refers_to_sheet_names" string="Refers To" readonly="1" optional="show" width="150px"/>
+                                        <field name="referenced_by_sheet_names" string="Ref By Sheets" readonly="1" optional="show" width="150px"/>
+                                        <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="hide" width="70px"/>
                                     </tree>
                                 </field>
                             </group>
@@ -202,19 +204,19 @@
                                     <tree editable="bottom" decoration-muted="not include_in_import"
                                           decoration-warning="is_duplicate"
                                           decoration-success="column_type == 'formula'">
-                                        <field name="include_in_import" widget="boolean_toggle"/>
-                                        <field name="original_header" string="Component"/>
-                                        <field name="component_type" string="Category"/>
-                                        <field name="column_type" string="Type"/>
-                                        <field name="data_source" string="Source"/>
-                                        <field name="sample_value" string="Sample"/>
+                                        <field name="include_in_import" widget="boolean_toggle" width="70px"/>
+                                        <field name="original_header" string="Component" width="180px"/>
+                                        <field name="component_type" string="Category" width="150px"/>
+                                        <field name="column_type" string="Type" width="80px"/>
+                                        <field name="data_source" string="Source" width="100px"/>
+                                        <field name="sample_value" string="Sample" width="120px"/>
                                         <field name="excel_formula" string="Formula"
-                                               attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
-                                        <field name="source_sheet" string="Sheet"/>
-                                        <field name="column_letter" string="Col"/>
-                                        <field name="generated_code" string="Code"/>
-                                        <field name="generated_name" string="Name"/>
-                                        <field name="is_duplicate" widget="boolean" readonly="1" optional="hide"/>
+                                               attrs="{'invisible': [('column_type', '!=', 'formula')]}" width="250px"/>
+                                        <field name="source_sheet" string="Sheet" width="120px"/>
+                                        <field name="column_letter" string="Col" width="50px"/>
+                                        <field name="generated_code" string="Code" width="120px"/>
+                                        <field name="generated_name" string="Name" width="180px"/>
+                                        <field name="is_duplicate" widget="boolean" readonly="1" optional="hide" width="70px"/>
                                     </tree>
                                 </field>
                             </group>

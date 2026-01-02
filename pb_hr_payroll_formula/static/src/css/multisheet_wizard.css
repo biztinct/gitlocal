@@ -1,0 +1,220 @@
+/* ===================================
+   MULTI-SHEET WIZARD TABLE STYLING
+   =================================== */
+
+/* Enable horizontal scrolling for all one2many tree views in wizard */
+.o_form_view .o_field_one2many .o_list_view,
+.o_form_view .o_field_one2many .o_list_renderer {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    max-width: 100% !important;
+}
+
+/* Add scrollbar styling for better UX */
+.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar {
+    height: 10px;
+}
+
+.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Prevent text wrapping in table cells */
+.o_list_view table.o_list_table thead th,
+.o_list_view table.o_list_table tbody td {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Set default minimum width for all columns */
+.o_list_view table.o_list_table thead th,
+.o_list_view table.o_list_table tbody td {
+    min-width: 80px !important;
+    padding: 4px 8px !important;
+}
+
+/* ===================================
+   SPECIFIC COLUMN WIDTH ADJUSTMENTS
+   =================================== */
+
+/* Sheet name columns - wider for long sheet names */
+.o_list_view table.o_list_table thead th[data-name="sheet_name"],
+.o_list_view table.o_list_table tbody td[data-name="sheet_name"] {
+    min-width: 180px !important;
+    max-width: 250px !important;
+}
+
+/* Header/Component name columns - wider for descriptive names */
+.o_list_view table.o_list_table thead th[data-name="original_header"],
+.o_list_view table.o_list_table tbody td[data-name="original_header"] {
+    min-width: 200px !important;
+    max-width: 300px !important;
+}
+
+/* Generated name columns */
+.o_list_view table.o_list_table thead th[data-name="generated_name"],
+.o_list_view table.o_list_table tbody td[data-name="generated_name"] {
+    min-width: 180px !important;
+    max-width: 280px !important;
+}
+
+/* Excel formula columns - need more space */
+.o_list_view table.o_list_table thead th[data-name="excel_formula"],
+.o_list_view table.o_list_table tbody td[data-name="excel_formula"] {
+    min-width: 250px !important;
+    max-width: 450px !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 12px !important;
+}
+
+/* Component type/category columns */
+.o_list_view table.o_list_table thead th[data-name="component_type"],
+.o_list_view table.o_list_table tbody td[data-name="component_type"] {
+    min-width: 150px !important;
+    max-width: 200px !important;
+}
+
+/* Sample value columns */
+.o_list_view table.o_list_table thead th[data-name="sample_value"],
+.o_list_view table.o_list_table tbody td[data-name="sample_value"] {
+    min-width: 120px !important;
+    max-width: 180px !important;
+}
+
+/* Cross-reference sheet name columns */
+.o_list_view table.o_list_table thead th[data-name="refers_to_sheet_names"],
+.o_list_view table.o_list_table tbody td[data-name="refers_to_sheet_names"],
+.o_list_view table.o_list_table thead th[data-name="referenced_by_sheet_names"],
+.o_list_view table.o_list_table tbody td[data-name="referenced_by_sheet_names"] {
+    min-width: 150px !important;
+    max-width: 220px !important;
+}
+
+/* Data source columns */
+.o_list_view table.o_list_table thead th[data-name="data_source"],
+.o_list_view table.o_list_table tbody td[data-name="data_source"] {
+    min-width: 100px !important;
+    max-width: 150px !important;
+}
+
+/* Code columns */
+.o_list_view table.o_list_table thead th[data-name="generated_code"],
+.o_list_view table.o_list_table tbody td[data-name="generated_code"],
+.o_list_view table.o_list_table thead th[data-name="field_code"],
+.o_list_view table.o_list_table tbody td[data-name="field_code"] {
+    min-width: 120px !important;
+    max-width: 180px !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+/* Field name columns */
+.o_list_view table.o_list_table thead th[data-name="field_name"],
+.o_list_view table.o_list_table tbody td[data-name="field_name"] {
+    min-width: 150px !important;
+    max-width: 220px !important;
+}
+
+/* Column type columns */
+.o_list_view table.o_list_table thead th[data-name="column_type"],
+.o_list_view table.o_list_table tbody td[data-name="column_type"] {
+    min-width: 80px !important;
+    max-width: 100px !important;
+}
+
+/* ===================================
+   NARROW COLUMNS (Booleans & Numbers)
+   =================================== */
+
+/* Boolean toggle columns */
+.o_list_view table.o_list_table thead th[data-name="is_selected"],
+.o_list_view table.o_list_table tbody td[data-name="is_selected"],
+.o_list_view table.o_list_table thead th[data-name="is_main_sheet"],
+.o_list_view table.o_list_table tbody td[data-name="is_main_sheet"],
+.o_list_view table.o_list_table thead th[data-name="include_in_import"],
+.o_list_view table.o_list_table tbody td[data-name="include_in_import"],
+.o_list_view table.o_list_table thead th[data-name="has_formulas"],
+.o_list_view table.o_list_table tbody td[data-name="has_formulas"],
+.o_list_view table.o_list_table thead th[data-name="references_other_sheets"],
+.o_list_view table.o_list_table tbody td[data-name="references_other_sheets"],
+.o_list_view table.o_list_table thead th[data-name="has_cross_sheet_ref"],
+.o_list_view table.o_list_table tbody td[data-name="has_cross_sheet_ref"],
+.o_list_view table.o_list_table thead th[data-name="is_referenced_by_other_sheet"],
+.o_list_view table.o_list_table tbody td[data-name="is_referenced_by_other_sheet"],
+.o_list_view table.o_list_table thead th[data-name="is_referenced_by_main"],
+.o_list_view table.o_list_table tbody td[data-name="is_referenced_by_main"],
+.o_list_view table.o_list_table thead th[data-name="is_duplicate"],
+.o_list_view table.o_list_table tbody td[data-name="is_duplicate"] {
+    min-width: 70px !important;
+    max-width: 85px !important;
+    text-align: center !important;
+}
+
+/* Small numeric columns */
+.o_list_view table.o_list_table thead th[data-name="column_count"],
+.o_list_view table.o_list_table tbody td[data-name="column_count"],
+.o_list_view table.o_list_table thead th[data-name="row_count"],
+.o_list_view table.o_list_table tbody td[data-name="row_count"],
+.o_list_view table.o_list_table thead th[data-name="detected_header_row"],
+.o_list_view table.o_list_table tbody td[data-name="detected_header_row"],
+.o_list_view table.o_list_table thead th[data-name="selected_column_count"],
+.o_list_view table.o_list_table tbody td[data-name="selected_column_count"],
+.o_list_view table.o_list_table thead th[data-name="total_column_count"],
+.o_list_view table.o_list_table tbody td[data-name="total_column_count"] {
+    min-width: 60px !important;
+    max-width: 80px !important;
+    text-align: center !important;
+}
+
+/* Column letter fields - very narrow */
+.o_list_view table.o_list_table thead th[data-name="column_letter"],
+.o_list_view table.o_list_table tbody td[data-name="column_letter"],
+.o_list_view table.o_list_table thead th[data-name="start_column_letter"],
+.o_list_view table.o_list_table tbody td[data-name="start_column_letter"],
+.o_list_view table.o_list_table thead th[data-name="end_column_letter"],
+.o_list_view table.o_list_table tbody td[data-name="end_column_letter"] {
+    min-width: 50px !important;
+    max-width: 65px !important;
+    text-align: center !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+/* Sequence/handle columns */
+.o_list_view table.o_list_table thead th[data-name="append_sequence"],
+.o_list_view table.o_list_table tbody td[data-name="append_sequence"] {
+    min-width: 40px !important;
+    max-width: 50px !important;
+}
+
+/* ===================================
+   TABLE HEADER STYLING
+   =================================== */
+
+/* Make headers more readable */
+.o_list_view table.o_list_table thead th {
+    font-weight: 600 !important;
+    background-color: #f8f9fa !important;
+    border-bottom: 2px solid #dee2e6 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+}
+
+/* Add tooltip on hover for truncated text */
+.o_list_view table.o_list_table tbody td {
+    cursor: default !important;
+}
+
+.o_list_view table.o_list_table tbody td:hover {
+    background-color: #f1f3f5 !important;
+}

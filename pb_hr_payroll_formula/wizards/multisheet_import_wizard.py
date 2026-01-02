@@ -1774,8 +1774,9 @@ class MultiSheetSheetLine(models.TransientModel):
     )
 
     references_other_sheets = fields.Boolean(
-        string='Cross-Sheet Refs',
-        readonly=True
+        string='References Other Sheets',
+        readonly=True,
+        help="This worksheet contains formulas that reference cells in other worksheets (e.g., =TAM_UNG!A1)"
     )
 
     header_confidence = fields.Float(
