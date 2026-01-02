@@ -77,6 +77,9 @@ License: LGPL-3
             'pb_hr_payroll_formula/static/src/scss/excel_grid.scss',
             'pb_hr_payroll_formula/static/src/scss/animations.scss',
 
+            # Multi-sheet wizard custom styling
+            'pb_hr_payroll_formula/static/src/css/multisheet_wizard.css',
+
             # NOTE: Custom Excel grid widget JS disabled until proper implementation
             # The standard Odoo tree view is used instead for formula configuration
             # To re-enable custom widget, uncomment the following lines:
