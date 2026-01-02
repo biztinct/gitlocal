@@ -1584,6 +1584,7 @@ class MultiSheetSheetLine(models.TransientModel):
     """Sheet line for multi-sheet import wizard."""
     _name = 'hr.formula.multisheet.sheet.line'
     _description = 'Multi-Sheet Import Sheet Line'
+    _rec_name = 'sheet_name'
     _order = 'sequence, id'
 
     wizard_id = fields.Many2one(
@@ -1821,6 +1822,11 @@ class MultiSheetColumnSelection(models.TransientModel):
         string='Sheet',
         ondelete='cascade',
         required=True
+    )
+    sheet_name = fields.Char(
+        related='sheet_line_id.sheet_name',
+        string='Worksheet',
+        readonly=True
     )
 
     # Column identity

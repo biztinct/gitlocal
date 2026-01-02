@@ -68,24 +68,26 @@
 
                     <!-- Step 2: Select Worksheets -->
                     <group attrs="{'invisible': [('state', '!=', 'select_sheets')]}">
-                        <group string="Available Worksheets">
-                            <field name="available_sheet_ids" nolabel="1">
-                                <tree editable="bottom">
-                                    <field name="is_selected" widget="boolean_toggle"/>
-                                    <field name="is_main_sheet" widget="boolean_toggle"/>
-                                    <field name="sheet_name" readonly="1"/>
-                                    <field name="detected_header_row"/>
-                                    <field name="column_count" readonly="1"/>
-                                    <field name="row_count" readonly="1"/>
-                                    <field name="has_formulas" widget="boolean" readonly="1"/>
-                                    <field name="references_other_sheets" widget="boolean" readonly="1"/>
-                                    <field name="header_confidence" widget="progressbar" readonly="1"/>
-                                </tree>
-                            </field>
-                        </group>
-                        <group string="Primary Key">
-                            <field name="primary_key_column"
-                                   placeholder="e.g., Employee ID"/>
+                        <group col="4">
+                            <group string="Primary Key" colspan="4">
+                                <field name="primary_key_column"
+                                       placeholder="e.g., Employee ID"/>
+                            </group>
+                            <group string="Available Worksheets" colspan="4">
+                                <field name="available_sheet_ids" nolabel="1" colspan="4">
+                                    <tree editable="bottom">
+                                        <field name="is_selected" widget="boolean_toggle" string="Include"/>
+                                        <field name="is_main_sheet" widget="boolean_toggle" string="Main"/>
+                                        <field name="sheet_name" readonly="1" string="Sheet Name"/>
+                                        <field name="detected_header_row" string="Header Row"/>
+                                        <field name="column_count" readonly="1" string="Cols"/>
+                                        <field name="row_count" readonly="1" string="Rows"/>
+                                        <field name="has_formulas" widget="boolean" readonly="1" string="Formulas"/>
+                                        <field name="references_other_sheets" widget="boolean" readonly="1" string="Cross-Ref" optional="hide"/>
+                                        <field name="header_confidence" widget="progressbar" readonly="1" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </group>
                         <group string="Instructions" class="oe_read_only">
                             <div class="alert alert-info" role="alert">
@@ -101,240 +103,170 @@
 
                     <!-- Step 3: Select Columns -->
                     <group attrs="{'invisible': [('state', '!=', 'select_columns')]}">
-                        <group string="Instructions" class="oe_read_only">
-                            <div class="alert alert-info" role="alert">
-                                <p><strong>Select Columns to Import</strong></p>
-                                <ul>
-                                    <li>Each tab shows columns from a selected worksheet</li>
-                                    <li>All columns are selected by default</li>
-                                    <li>Uncheck columns you don't want to import</li>
-                                    <li><span class="badge bg-warning text-dark">⚠</span> Columns referenced by main sheet formulas are highlighted</li>
-                                </ul>
-                            </div>
-                        </group>
-                        <notebook>
-                            <page string="Column Selection" name="column_selection">
-                                <field name="column_selection_ids" nolabel="1">
+                        <group col="4">
+                            <group string="Instructions" class="oe_read_only" colspan="4">
+                                <div class="alert alert-info" role="alert">
+                                    <p><strong>Select Columns to Import</strong></p>
+                                    <ul>
+                                        <li>Each tab shows columns from a selected worksheet</li>
+                                        <li>All columns are selected by default</li>
+                                        <li>Uncheck columns you don't want to import</li>
+                                        <li><span class="badge bg-warning text-dark">⚠</span> Columns referenced by main sheet formulas are highlighted</li>
+                                    </ul>
+                                </div>
+                            </group>
+                            <group string="Columns by Worksheet" colspan="4">
+                                <field name="column_selection_ids" nolabel="1" colspan="4">
                                     <tree editable="bottom" decoration-warning="is_referenced_by_main and not is_selected"
                                           decoration-info="has_cross_sheet_ref"
                                           create="false" delete="false">
-                                        <field name="sheet_line_id" readonly="1" string="Sheet"/>
+                                        <field name="sheet_name" readonly="1" string="Worksheet"/>
                                         <field name="is_selected" widget="boolean_toggle"/>
                                         <field name="column_letter" string="Col" readonly="1"/>
                                         <field name="original_header" string="Header" readonly="1"/>
                                         <field name="component_type" string="Category" readonly="1" optional="show"/>
                                         <field name="column_type" string="Type" readonly="1"/>
-                                        <field name="sample_value" string="Sample" readonly="1" optional="show"/>
-                                        <field name="has_cross_sheet_ref" widget="boolean" string="Cross-Ref" readonly="1" optional="show"/>
-                                        <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="show"/>
+                                        <field name="sample_value" string="Sample" readonly="1"/>
+                                        <field name="has_cross_sheet_ref" widget="boolean" string="Cross-Ref" readonly="1" optional="hide"/>
+                                        <field name="is_referenced_by_main" widget="boolean" string="Required" readonly="1" optional="hide"/>
                                     </tree>
                                 </field>
-                            </page>
-                        </notebook>
-                        <group string="Selection Summary" class="oe_read_only">
-                            <div class="alert alert-secondary">
-                                <p><strong>Note:</strong> If you deselect a column that is referenced by a formula in the main worksheet,
-                                the cross-sheet formula cannot be resolved. You will be notified in the next step.</p>
-                            </div>
+                            </group>
+                            <group string="Selection Summary" class="oe_read_only" colspan="4">
+                                <div class="alert alert-secondary">
+                                    <p><strong>Note:</strong> If you deselect a column that is referenced by a formula in the main worksheet,
+                                    the cross-sheet formula cannot be resolved. You will be notified in the next step.</p>
+                                </div>
+                            </group>
                         </group>
                     </group>
 
                     <!-- Step 4: Configure Append Order -->
                     <group attrs="{'invisible': [('state', '!=', 'configure_order')]}">
-                        <group string="Worksheet Append Order">
-                            <field name="append_order_ids" nolabel="1">
-                                <tree editable="bottom" decoration-success="is_main_sheet" create="false" delete="false">
-                                    <field name="append_sequence" widget="handle"/>
-                                    <field name="sheet_name" readonly="1"/>
-                                    <field name="is_main_sheet" widget="boolean" readonly="1" string="Main"/>
-                                    <field name="selected_column_count" string="Columns"/>
-                                    <field name="start_column_letter" string="Start" readonly="1"/>
-                                    <field name="end_column_letter" string="End" readonly="1"/>
-                                </tree>
-                            </field>
-                        </group>
-                        <group string="Cross-Sheet Formula Statistics" class="oe_read_only">
-                            <div class="row mb-3">
-                                <div class="col-md-4 text-center">
-                                    <div class="card bg-info text-white">
-                                        <div class="card-body py-2">
-                                            <h4 class="mb-0"><field name="cross_sheet_formula_count"/></h4>
-                                            <small>Cross-Sheet Formulas</small>
-                                        </div>
-                                    </div>
+                        <group col="4">
+                            <group string="Worksheet Append Order" colspan="4">
+                                <field name="append_order_ids" nolabel="1" colspan="4">
+                                    <tree editable="bottom" decoration-success="is_main_sheet" create="false" delete="false">
+                                        <field name="append_sequence" widget="handle"/>
+                                        <field name="sheet_name" readonly="1"/>
+                                        <field name="is_main_sheet" widget="boolean" readonly="1" string="Main"/>
+                                        <field name="selected_column_count" string="Columns"/>
+                                        <field name="start_column_letter" string="Start" readonly="1"/>
+                                        <field name="end_column_letter" string="End" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Cross-Sheet Formula Statistics" colspan="4">
+                                <field name="cross_sheet_formula_count" string="Cross-Sheet Formulas"/>
+                                <field name="resolved_formula_count" string="Can Be Resolved"/>
+                                <field name="unresolved_formula_count" string="Cannot Resolve"/>
+                            </group>
+                            <group string="Instructions" class="oe_read_only" colspan="4">
+                                <div class="alert alert-info" role="alert">
+                                    <p><strong>Configure Append Order</strong></p>
+                                    <ul>
+                                        <li>The <strong>Main Worksheet</strong> columns come first (locked at top)</li>
+                                        <li>Drag auxiliary worksheets to reorder them</li>
+                                        <li><strong>Start/End columns</strong> show where each worksheet's columns will be placed</li>
+                                        <li>Cross-sheet formula references will be resolved to new column positions</li>
+                                    </ul>
                                 </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="card bg-success text-white">
-                                        <div class="card-body py-2">
-                                            <h4 class="mb-0"><field name="resolved_formula_count"/></h4>
-                                            <small>Can Be Resolved</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="card bg-danger text-white">
-                                        <div class="card-body py-2">
-                                            <h4 class="mb-0"><field name="unresolved_formula_count"/></h4>
-                                            <small>Cannot Resolve</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </group>
-                        <group string="Instructions" class="oe_read_only">
-                            <div class="alert alert-info" role="alert">
-                                <p><strong>Configure Append Order</strong></p>
-                                <ul>
-                                    <li>The <strong>Main Worksheet</strong> columns come first (locked at top)</li>
-                                    <li>Drag auxiliary worksheets to reorder them</li>
-                                    <li><strong>Start/End columns</strong> show where each worksheet's columns will be placed in the final structure</li>
-                                    <li>Cross-sheet formula references (like VLOOKUP) will be resolved to new column positions</li>
-                                </ul>
-                            </div>
+                            </group>
                         </group>
                     </group>
 
                     <!-- Step 5: Review Components -->
                     <group attrs="{'invisible': [('state', '!=', 'review_components')]}">
-                        <group string="Import Statistics" class="oe_read_only">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="card text-center">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-primary">
-                                                <field name="import_count" class="o_stat_value"/>
-                                            </h5>
-                                            <p class="card-text">Components to Import</p>
-                                        </div>
-                                    </div>
+                        <group col="4">
+                            <group string="Import Statistics" colspan="4">
+                                <field name="import_count" string="Components to Import"/>
+                                <field name="formula_count" string="Formulas Detected"/>
+                                <field name="duplicate_count" string="Duplicates Found"/>
+                            </group>
+                            <group string="Instructions" class="oe_read_only" colspan="4">
+                                <div class="alert alert-info" role="alert">
+                                    <p><strong>Review Detected Components</strong></p>
+                                    <ul>
+                                        <li><strong>Component:</strong> Field name from your Excel header row</li>
+                                        <li><strong>Component Type:</strong> Category from merged cells above header</li>
+                                        <li><strong>Type:</strong> Input (manual data entry) or Formula (auto-calculated)</li>
+                                    </ul>
+                                    <p>Uncheck "Include" to skip importing a component. Edit Code/Name if needed.</p>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="card text-center">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-success">
-                                                <field name="formula_count" class="o_stat_value"/>
-                                            </h5>
-                                            <p class="card-text">Formulas Detected</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card text-center">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-warning">
-                                                <field name="duplicate_count" class="o_stat_value"/>
-                                            </h5>
-                                            <p class="card-text">Duplicates Found</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </group>
-                        <group string="Instructions" class="oe_read_only">
-                            <div class="alert alert-info" role="alert">
-                                <p><strong>Review Detected Components</strong></p>
-                                <ul>
-                                    <li><strong>Component:</strong> Field name from your Excel header row</li>
-                                    <li><strong>Component Type:</strong> Category from merged cells above the header (e.g., "Workdays", "Amounts received")</li>
-                                    <li><strong>Type:</strong> Input (manual data entry) or Formula (auto-calculated)</li>
-                                    <li><strong>Sample:</strong> Example value from first data row</li>
-                                </ul>
-                                <p>Uncheck "Include" to skip importing a component. Edit Code/Name if needed.</p>
-                            </div>
-                        </group>
-                        <group string="Detected Components">
-                            <field name="component_preview_ids" nolabel="1">
-                                <tree editable="bottom" decoration-muted="not include_in_import"
-                                      decoration-warning="is_duplicate"
-                                      decoration-success="column_type == 'formula'">
-                                    <field name="include_in_import" widget="boolean_toggle"/>
-                                    <field name="original_header" string="Component"/>
-                                    <field name="component_type" string="Category"/>
-                                    <field name="column_type" string="Type"/>
-                                    <field name="data_source" string="Source"/>
-                                    <field name="sample_value" string="Sample"/>
-                                    <field name="excel_formula" string="Formula"
-                                           attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
-                                    <field name="source_sheet" string="Sheet"/>
-                                    <field name="column_letter" string="Col"/>
-                                    <field name="generated_code" string="Code"/>
-                                    <field name="generated_name" string="Name"/>
-                                    <field name="is_duplicate" widget="boolean" readonly="1" optional="hide"/>
-                                </tree>
-                            </field>
-                        </group>
-                        <group string="Import Options" col="4">
-                            <field name="preserve_existing"/>
-                            <field name="merge_duplicates"/>
-                            <field name="update_existing"/>
+                            </group>
+                            <group string="Detected Components" colspan="4">
+                                <field name="component_preview_ids" nolabel="1" colspan="4">
+                                    <tree editable="bottom" decoration-muted="not include_in_import"
+                                          decoration-warning="is_duplicate"
+                                          decoration-success="column_type == 'formula'">
+                                        <field name="include_in_import" widget="boolean_toggle"/>
+                                        <field name="original_header" string="Component"/>
+                                        <field name="component_type" string="Category"/>
+                                        <field name="column_type" string="Type"/>
+                                        <field name="data_source" string="Source"/>
+                                        <field name="sample_value" string="Sample"/>
+                                        <field name="excel_formula" string="Formula"
+                                               attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
+                                        <field name="source_sheet" string="Sheet"/>
+                                        <field name="column_letter" string="Col"/>
+                                        <field name="generated_code" string="Code"/>
+                                        <field name="generated_name" string="Name"/>
+                                        <field name="is_duplicate" widget="boolean" readonly="1" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Import Options" colspan="4">
+                                <field name="preserve_existing"/>
+                                <field name="merge_duplicates"/>
+                                <field name="update_existing"/>
+                            </group>
                         </group>
                     </group>
 
-                    <!-- Step 4: Map Missing Fields -->
+                    <!-- Step 6: Map Missing Fields -->
                     <group attrs="{'invisible': [('state', '!=', 'map_missing')]}">
-                        <group string="Missing Fields" class="oe_read_only">
-                            <div class="alert alert-warning" role="alert">
-                                <p><strong>Some fields in your configuration are not present in the Excel file.</strong></p>
-                                <p>For each missing field, specify how it should be populated:</p>
-                                <ul>
-                                    <li><strong>Not Populated:</strong> Leave empty during import</li>
-                                    <li><strong>From Integration:</strong> Fetch from external system (Zoho, SAP, etc.)</li>
-                                    <li><strong>Manual Entry:</strong> User will enter manually on each payslip</li>
-                                </ul>
-                            </div>
-                        </group>
-                        <group string="Configure Missing Fields">
-                            <field name="missing_field_ids" nolabel="1">
-                                <tree editable="bottom">
-                                    <field name="field_code" readonly="1"/>
-                                    <field name="field_name" readonly="1"/>
-                                    <field name="data_source"/>
-                                    <field name="integration_connector_id"
-                                           attrs="{'invisible': [('data_source', '!=', 'integration')],
-                                                   'required': [('data_source', '=', 'integration')]}"
-                                           options="{'no_create': True}"/>
-                                    <field name="integration_field_name"
-                                           attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
-                                </tree>
-                            </field>
+                        <group col="4">
+                            <group string="Missing Fields" class="oe_read_only" colspan="4">
+                                <div class="alert alert-warning" role="alert">
+                                    <p><strong>Some fields in your configuration are not present in the Excel file.</strong></p>
+                                    <p>For each missing field, specify how it should be populated:</p>
+                                    <ul>
+                                        <li><strong>Not Populated:</strong> Leave empty during import</li>
+                                        <li><strong>From Integration:</strong> Fetch from external system (Zoho, SAP, etc.)</li>
+                                        <li><strong>Manual Entry:</strong> User will enter manually on each payslip</li>
+                                    </ul>
+                                </div>
+                            </group>
+                            <group string="Configure Missing Fields" colspan="4">
+                                <field name="missing_field_ids" nolabel="1" colspan="4">
+                                    <tree editable="bottom">
+                                        <field name="field_code" readonly="1"/>
+                                        <field name="field_name" readonly="1"/>
+                                        <field name="data_source"/>
+                                        <field name="integration_connector_id"
+                                               attrs="{'invisible': [('data_source', '!=', 'integration')],
+                                                       'required': [('data_source', '=', 'integration')]}"
+                                               options="{'no_create': True}"/>
+                                        <field name="integration_field_name"
+                                               attrs="{'invisible': [('data_source', '!=', 'integration')]}"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </group>
                     </group>
 
-                    <!-- Step 5: Confirm -->
+                    <!-- Step 7: Confirm -->
                     <group attrs="{'invisible': [('state', '!=', 'confirm')]}">
-                        <group string="Import Summary">
-                            <div class="row mb-3">
-                                <div class="col-md-4 text-center">
-                                    <div class="card bg-primary text-white">
-                                        <div class="card-body py-2">
-                                            <h3 class="mb-0"><field name="import_count"/></h3>
-                                            <small>Components to Import</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="card bg-success text-white">
-                                        <div class="card-body py-2">
-                                            <h3 class="mb-0"><field name="formula_count"/></h3>
-                                            <small>Formulas</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 text-center">
-                                    <div class="card bg-warning">
-                                        <div class="card-body py-2">
-                                            <h3 class="mb-0"><field name="duplicate_count"/></h3>
-                                            <small>Duplicates</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <group string="Import Summary" col="6">
+                            <field name="import_count" string="Components to Import"/>
+                            <field name="formula_count" string="Formulas"/>
+                            <field name="duplicate_count" string="Duplicates"/>
                         </group>
-                        <group string="Target Configuration" class="oe_read_only">
+                        <group string="Target Configuration">
                             <field name="config_id" readonly="1"/>
                             <field name="main_sheet_name" readonly="1"/>
                         </group>
-                        <group string="Components Preview (First 10)" class="oe_read_only">
+                        <group string="Components Preview (First 10)" col="1">
                             <field name="component_preview_ids" nolabel="1" readonly="1">
                                 <tree limit="10" decoration-success="column_type == 'formula'">
                                     <field name="original_header" string="Component"/>
@@ -345,7 +277,7 @@
                                 </tree>
                             </field>
                         </group>
-                        <group string="Final Review" class="oe_read_only">
+                        <group string="Final Review">
                             <div class="alert alert-success" role="alert">
                                 <p><strong>Ready to Import!</strong></p>
                                 <p>Review the summary above, then click "Execute Import" to create formula rules.</p>
