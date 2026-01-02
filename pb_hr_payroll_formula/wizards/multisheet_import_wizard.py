@@ -341,13 +341,65 @@ class MultiSheetImportWizard(models.TransientModel):
             # Clear existing column selections
             self.column_selection_ids.unlink()
 
+            sheet_context = {}
+            for sheet_line in selected_sheets:
+                sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
+                formula_sheet = formula_workbook[sheet_line.sheet_name]
+                data_sheet = connector.workbook[sheet_line.sheet_name]
+                formula_columns = self._detect_formula_columns(
+                    formula_sheet, sheet_data['data_start_row'], sheet_data['headers']
+                )
+                sheet_context[sheet_line.id] = {
+                    'sheet_data': sheet_data,
+                    'formula_sheet': formula_sheet,
+                    'data_sheet': data_sheet,
+                    'formula_columns': formula_columns,
+                }
+
+            constant_lines = []
+            constant_cell_mapping = {}
+            constant_index = 0
+            for sheet_line in selected_sheets:
+                ctx = sheet_context[sheet_line.id]
+                sheet_constants = self._collect_constants_for_sheet(
+                    ctx['formula_sheet'], ctx['sheet_data'], ctx['formula_columns']
+                )
+                for const in sheet_constants:
+                    cell_ref = const.get('original_cell')
+                    if not cell_ref or cell_ref in constant_cell_mapping:
+                        continue
+                    new_col_letter = self._generate_extended_column_letter(constant_index)
+                    constant_index += 1
+                    value = const.get('value')
+                    parsed_value, _was_pct = self._parse_percentage_value(value)
+                    constant_cell_mapping[cell_ref] = new_col_letter
+                    constant_lines.append({
+                        'wizard_id': self.id,
+                        'sheet_line_id': sheet_line.id,
+                        'sequence': 10000 + constant_index,
+                        'column_letter': new_col_letter,
+                        'column_index': 10000 + constant_index,
+                        'original_header': const.get('name') or 'Constant',
+                        'component_type': 'Constant',
+                        'is_selected': True,
+                        'column_type': 'constant',
+                        'sample_value': str(parsed_value)[:50] if value is not None else '',
+                        'has_cross_sheet_ref': False,
+                        'cross_sheet_formula': '',
+                        'is_referenced_by_main': False,
+                        'constant_cell_ref': cell_ref,
+                    })
+
             # Analyze cross-sheet references in main sheet to mark required columns
             main_sheet = main_sheets[0]
-            main_formula_sheet = formula_workbook[main_sheet.sheet_name]
-            main_data = connector.load_sheet_with_detection(main_sheet.sheet_name)
-            main_formula_columns = self._detect_formula_columns(
-                main_formula_sheet, main_data['data_start_row'], main_data['headers']
-            )
+            main_ctx = sheet_context[main_sheet.id]
+            main_formula_columns = main_ctx['formula_columns']
+            if constant_cell_mapping:
+                for col_letter, info in main_formula_columns.items():
+                    formula = info.get('formula', '')
+                    updated = self._update_formula_references(formula, constant_cell_mapping)
+                    if updated != formula:
+                        info['formula'] = updated
 
             # Find all cross-sheet references from main sheet
             cross_sheet_refs = self._extract_cross_sheet_references(main_formula_columns)
@@ -355,16 +407,18 @@ class MultiSheetImportWizard(models.TransientModel):
             # Process each selected sheet and create column selections
             column_lines = []
             for sheet_line in selected_sheets:
-                sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
-                formula_sheet = formula_workbook[sheet_line.sheet_name]
+                ctx = sheet_context[sheet_line.id]
+                sheet_data = ctx['sheet_data']
+                formula_sheet = ctx['formula_sheet']
+                data_sheet = ctx['data_sheet']
+                formula_columns = ctx['formula_columns']
 
-                data_start_row = sheet_data['data_start_row']
-                header_row = sheet_data['header_row']
-
-                # Detect formula columns
-                formula_columns = self._detect_formula_columns(
-                    formula_sheet, data_start_row, sheet_data['headers']
-                )
+                if constant_cell_mapping:
+                    for col_letter, info in formula_columns.items():
+                        formula = info.get('formula', '')
+                        updated = self._update_formula_references(formula, constant_cell_mapping)
+                        if updated != formula:
+                            info['formula'] = updated
 
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
@@ -383,9 +437,9 @@ class MultiSheetImportWizard(models.TransientModel):
                     )
 
                     # Get sample value
-                    sample = ''
-                    if sheet_data['data_rows']:
-                        sample = str(sheet_data['data_rows'][0].get(header_info['value'], ''))[:50]
+                    sample = self._get_sample_value(
+                        sheet_data, data_sheet, formula_sheet, header_info['value'], col_letter
+                    )
 
                     column_lines.append({
                         'wizard_id': self.id,
@@ -402,6 +456,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'cross_sheet_formula': cross_formula,
                         'is_referenced_by_main': is_referenced,
                     })
+
+            column_lines.extend(constant_lines)
 
             # Create column selection records
             for col_data in column_lines:
@@ -671,6 +727,13 @@ class MultiSheetImportWizard(models.TransientModel):
             current_col_index = 0
             all_components = []
             seen_codes = set()
+            constant_cell_mapping = {}
+            constant_selections = self.column_selection_ids.filtered(
+                lambda c: c.is_selected and c.column_type == 'constant' and c.constant_cell_ref
+            )
+            for const in constant_selections:
+                if const.constant_cell_ref not in constant_cell_mapping:
+                    constant_cell_mapping[const.constant_cell_ref] = const.column_letter
 
             # Get sheets in append order
             ordered_sheets = self.append_order_ids.sorted('append_sequence')
@@ -682,6 +745,8 @@ class MultiSheetImportWizard(models.TransientModel):
                 selected_cols = self.column_selection_ids.filtered(
                     lambda c: c.sheet_line_id.id == sheet_line.id and c.is_selected
                 ).sorted('sequence')
+                normal_cols = selected_cols.filtered(lambda c: c.column_type != 'constant')
+                constant_cols = selected_cols.filtered(lambda c: c.column_type == 'constant')
 
                 sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
@@ -690,8 +755,14 @@ class MultiSheetImportWizard(models.TransientModel):
                 formula_columns = self._detect_formula_columns(
                     formula_sheet, sheet_data['data_start_row'], sheet_data['headers']
                 )
+                if constant_cell_mapping:
+                    for col_letter, info in formula_columns.items():
+                        formula = info.get('formula', '')
+                        updated = self._update_formula_references(formula, constant_cell_mapping)
+                        if updated != formula:
+                            info['formula'] = updated
 
-                for col_sel in selected_cols:
+                for col_sel in normal_cols:
                     # Assign new column letter
                     new_col_letter = self._index_to_column_letter(current_col_index)
 
@@ -735,6 +806,28 @@ class MultiSheetImportWizard(models.TransientModel):
                     }
                     all_components.append(component)
                     current_col_index += 1
+
+                for col_sel in constant_cols:
+                    code = self._generate_code(col_sel.original_header, seen_codes)
+                    seen_codes.add(code)
+                    component = {
+                        'wizard_id': self.id,
+                        'source_sheet': sheet_line.sheet_name,
+                        'column_letter': col_sel.column_letter,
+                        'original_header': col_sel.original_header,
+                        'generated_code': code,
+                        'generated_name': col_sel.original_header,
+                        'component_type': col_sel.component_type or 'Constant',
+                        'column_type': 'constant',
+                        'excel_formula': '',
+                        'resolved_formula': '',
+                        'sample_value': col_sel.sample_value,
+                        'is_duplicate': False,
+                        'include_in_import': True,
+                        'is_in_excel': True,
+                        'data_source': 'manual',
+                    }
+                    all_components.append(component)
 
             # Now resolve cross-sheet formulas
             for component in all_components:
@@ -895,6 +988,33 @@ class MultiSheetImportWizard(models.TransientModel):
 
         return formula_columns
 
+    def _get_sample_value(self, sheet_data, data_sheet, formula_sheet, header_value, col_letter):
+        """Get a sample value for a column, falling back to formulas when needed."""
+        if sheet_data.get('data_rows'):
+            for row in sheet_data['data_rows']:
+                if header_value in row and row[header_value] is not None:
+                    return str(row[header_value])[:50]
+
+        data_start_row = sheet_data.get('data_start_row') or (sheet_data.get('header_row', 1) + 1)
+        max_row = data_sheet.max_row if data_sheet else data_start_row
+        scan_end = min(data_start_row + 10, max_row)
+
+        from openpyxl.utils import column_index_from_string
+        col_idx = column_index_from_string(col_letter)
+
+        for row_num in range(data_start_row, scan_end + 1):
+            value = None
+            if data_sheet:
+                value = data_sheet.cell(row=row_num, column=col_idx).value
+            if value is not None:
+                return str(value)[:50]
+            if formula_sheet:
+                formula_value = formula_sheet.cell(row=row_num, column=col_idx).value
+                if isinstance(formula_value, str) and formula_value.startswith('='):
+                    return formula_value[:50]
+
+        return ''
+
     def _detect_empty_columns_between_valid(self, headers, sheet, header_row):
         """
         Detect empty columns between valid columns.
@@ -997,6 +1117,29 @@ class MultiSheetImportWizard(models.TransientModel):
             return float(str_value), False
         except ValueError:
             return 0.0, False
+
+    def _collect_constants_for_sheet(self, formula_sheet, sheet_data, formula_columns):
+        """Collect constant definitions from a sheet using color and formula scans."""
+        header_row = sheet_data.get('header_row', 1)
+        data_start_row = sheet_data.get('data_start_row', header_row + 1)
+
+        constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row)
+        scan_up_to_row = data_start_row + 2
+        blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row)
+        formula_referenced = self._detect_formula_referenced_constants(
+            formula_columns, formula_sheet, header_row
+        )
+
+        constants = []
+        seen_cells = set()
+        for const in constant_pairs + blue_constants + formula_referenced:
+            cell_ref = const.get('original_cell')
+            if not cell_ref or cell_ref in seen_cells:
+                continue
+            seen_cells.add(cell_ref)
+            constants.append(const)
+
+        return constants
 
     def _detect_blue_constant_cells(self, sheet, scan_up_to_row):
         """
@@ -1378,7 +1521,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
             col_letters = cell_match.group(1)
             row_num = cell_match.group(2)
-            pattern = r'\$?' + col_letters + r'\$?' + row_num + r'(?![0-9A-Za-z])'
+            pattern = r"(?:'[^']+'!|[A-Za-z0-9_]+!)?\$?" + col_letters + r"\$?" + row_num + r'(?![0-9A-Za-z])'
             replacement = f"{new_col}2"
             updated_formula = re.sub(pattern, replacement, updated_formula, flags=re.IGNORECASE)
 
@@ -1510,6 +1653,9 @@ class MultiSheetImportWizard(models.TransientModel):
                 "Updated: %d rules"
             ) % (len(created_rules), len(updated_rules))
 
+            next_action = self.config_id.get_formview_action()
+            next_action['target'] = 'current'
+
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
@@ -1518,13 +1664,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     'message': message,
                     'type': 'success',
                     'sticky': False,
-                    'next': {
-                        'type': 'ir.actions.act_window',
-                        'res_model': 'hr.formula.config',
-                        'res_id': self.config_id.id,
-                        'view_mode': 'form',
-                        'target': 'current',
-                    }
+                    'next': next_action,
                 }
             }
 
@@ -1733,6 +1873,7 @@ class MultiSheetComponentPreview(models.TransientModel):
         ('excel', 'Excel Import'),
         ('formula', 'Formula (Calculated)'),
         ('integration', 'Integration'),
+        ('manual', 'Manual Entry'),
         ('none', 'Not Populated'),
     ], string='Data Source', default='excel')
 
@@ -1845,6 +1986,11 @@ class MultiSheetColumnSelection(models.TransientModel):
     original_header = fields.Char(
         string='Header',
         readonly=True
+    )
+    constant_cell_ref = fields.Char(
+        string='Original Cell',
+        readonly=True,
+        help="Original Excel cell reference for detected constants"
     )
 
     # Component type from merged cells above
@@ -1963,7 +2109,7 @@ class MultiSheetAppendOrder(models.TransientModel):
         for rec in self:
             if rec.sheet_line_id and rec.wizard_id:
                 sheet_cols = rec.wizard_id.column_selection_ids.filtered(
-                    lambda c: c.sheet_line_id.id == rec.sheet_line_id.id
+                    lambda c: c.sheet_line_id.id == rec.sheet_line_id.id and c.column_type != 'constant'
                 )
                 rec.total_column_count = len(sheet_cols)
                 rec.selected_column_count = len(sheet_cols.filtered('is_selected'))

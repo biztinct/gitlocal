@@ -256,37 +256,47 @@
                     </group>
 
                     <!-- Step 7: Confirm -->
-                    <group attrs="{'invisible': [('state', '!=', 'confirm')]}">
-                        <group string="Import Summary" col="6">
-                            <field name="import_count" string="Components to Import"/>
-                            <field name="formula_count" string="Formulas"/>
-                            <field name="duplicate_count" string="Duplicates"/>
-                        </group>
-                        <group string="Target Configuration">
-                            <field name="config_id" readonly="1"/>
-                            <field name="main_sheet_name" readonly="1"/>
-                        </group>
-                        <group string="Components Preview (First 10)" col="1">
-                            <field name="component_preview_ids" nolabel="1" readonly="1">
-                                <tree limit="10" decoration-success="column_type == 'formula'">
-                                    <field name="original_header" string="Component"/>
-                                    <field name="component_type" string="Category"/>
-                                    <field name="column_type" string="Type"/>
-                                    <field name="data_source" string="Source"/>
-                                    <field name="generated_code" string="Code"/>
-                                </tree>
-                            </field>
-                        </group>
-                        <group string="Final Review">
-                            <div class="alert alert-success" role="alert">
-                                <p><strong>Ready to Import!</strong></p>
-                                <p>Review the summary above, then click "Execute Import" to create formula rules.</p>
-                                <ul class="mb-0">
-                                    <li><strong>Input components</strong> will use data from Excel/Integration</li>
-                                    <li><strong>Formula components</strong> will be auto-calculated</li>
-                                    <li><strong>Category</strong> groups components under merged cell headers</li>
-                                </ul>
-                            </div>
+                    <group attrs="{'invisible': [('state', '!=', 'confirm')]}" colspan="4">
+                        <group col="4">
+                            <group string="Import Summary" colspan="4">
+                                <field name="import_count" string="Components to Import"/>
+                                <field name="formula_count" string="Formulas"/>
+                                <field name="duplicate_count" string="Duplicates"/>
+                            </group>
+                            <group string="Target Configuration" colspan="4">
+                                <field name="config_id" readonly="1"/>
+                                <field name="main_sheet_name" readonly="1"/>
+                            </group>
+                            <group string="Components Preview (First 10)" colspan="4">
+                                <field name="component_preview_ids" nolabel="1" readonly="1" colspan="4">
+                                    <tree limit="10" decoration-success="column_type == 'formula'">
+                                        <field name="original_header" string="Component"/>
+                                        <field name="component_type" string="Category"/>
+                                        <field name="column_type" string="Type"/>
+                                        <field name="data_source" string="Source"/>
+                                        <field name="generated_code" string="Code"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group string="Final Review" colspan="4">
+                                <group col="2" colspan="4">
+                                    <group>
+                                        <div class="alert alert-success" role="alert">
+                                            <p><strong>Ready to Import!</strong></p>
+                                            <p>Review the summary above, then click "Execute Import" to create formula rules.</p>
+                                        </div>
+                                    </group>
+                                    <group>
+                                        <div class="alert alert-success" role="alert">
+                                            <ul class="mb-0">
+                                                <li><strong>Input components</strong> will use data from Excel/Integration</li>
+                                                <li><strong>Formula components</strong> will be auto-calculated</li>
+                                                <li><strong>Category</strong> groups components under merged cell headers</li>
+                                            </ul>
+                                        </div>
+                                    </group>
+                                </group>
+                            </group>
                         </group>
                     </group>
                 </sheet>
