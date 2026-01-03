@@ -2382,24 +2382,40 @@ class MultiSheetColumnSelection(models.TransientModel):
                 return
             refs.add((sheet_name.strip(), col_letter.upper()))
 
-        vlookup_pattern = re.compile(
-            r"VLOOKUP\s*\([^,]+,\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?[A-Z]+\$?\d*,\s*(\d+)",
+        vlookup_quoted_pattern = re.compile(
+            r"VLOOKUP\s*\([^,]+,\s*'([^']+)'\s*!\s*\$?([A-Z]+)\$?\d*:\$?[A-Z]+\$?\d*,\s*(\d+)",
             re.IGNORECASE
         )
-        sumif_pattern = re.compile(
-            r"SUMIF\s*\(\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*([^,]+),\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*\s*\)",
+        vlookup_unquoted_pattern = re.compile(
+            r"VLOOKUP\s*\([^,]+,\s*([A-Za-z][A-Za-z0-9_]*)\s*!\s*\$?([A-Z]+)\$?\d*:\$?[A-Z]+\$?\d*,\s*(\d+)",
             re.IGNORECASE
         )
-        range_pattern = re.compile(
-            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*",
+        sumif_quoted_pattern = re.compile(
+            r"SUMIF\s*\(\s*'([^']+)'\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*([^,]+),\s*'([^']+)'\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*\s*\)",
             re.IGNORECASE
         )
-        direct_pattern = re.compile(
-            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d+",
+        sumif_unquoted_pattern = re.compile(
+            r"SUMIF\s*\(\s*([A-Za-z][A-Za-z0-9_]*)\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*([^,]+),\s*([A-Za-z][A-Za-z0-9_]*)\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*\s*\)",
+            re.IGNORECASE
+        )
+        range_quoted_pattern = re.compile(
+            r"'([^']+)'\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*",
+            re.IGNORECASE
+        )
+        range_unquoted_pattern = re.compile(
+            r"(?<![A-Za-z0-9_])([A-Za-z][A-Za-z0-9_]*)\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*",
+            re.IGNORECASE
+        )
+        direct_quoted_pattern = re.compile(
+            r"'([^']+)'\s*!\s*\$?([A-Z]+)\$?\d+",
+            re.IGNORECASE
+        )
+        direct_unquoted_pattern = re.compile(
+            r"(?<![A-Za-z0-9_])([A-Za-z][A-Za-z0-9_]*)\s*!\s*\$?([A-Z]+)\$?\d+",
             re.IGNORECASE
         )
 
-        for match in vlookup_pattern.finditer(formula):
+        for match in vlookup_quoted_pattern.finditer(formula):
             sheet_name = match.group(1).strip()
             start_col = match.group(2).upper()
             col_index = int(match.group(3))
@@ -2408,7 +2424,16 @@ class MultiSheetColumnSelection(models.TransientModel):
             target_col = self._index_to_column_letter(target_idx)
             add_ref(sheet_name, target_col)
 
-        for match in sumif_pattern.finditer(formula):
+        for match in vlookup_unquoted_pattern.finditer(formula):
+            sheet_name = match.group(1).strip()
+            start_col = match.group(2).upper()
+            col_index = int(match.group(3))
+            start_idx = self._column_letter_to_index(start_col)
+            target_idx = start_idx + col_index - 1
+            target_col = self._index_to_column_letter(target_idx)
+            add_ref(sheet_name, target_col)
+
+        for match in sumif_quoted_pattern.finditer(formula):
             criteria_sheet = match.group(1).strip()
             criteria_col = match.group(2).upper()
             add_ref(criteria_sheet, criteria_col)
@@ -2416,14 +2441,32 @@ class MultiSheetColumnSelection(models.TransientModel):
             sum_col = match.group(6).upper()
             add_ref(sum_sheet, sum_col)
 
-        for match in range_pattern.finditer(formula):
+        for match in sumif_unquoted_pattern.finditer(formula):
+            criteria_sheet = match.group(1).strip()
+            criteria_col = match.group(2).upper()
+            add_ref(criteria_sheet, criteria_col)
+            sum_sheet = match.group(5).strip()
+            sum_col = match.group(6).upper()
+            add_ref(sum_sheet, sum_col)
+
+        for match in range_quoted_pattern.finditer(formula):
             sheet_name = match.group(1).strip()
             start_col = match.group(2).upper()
             end_col = match.group(3).upper()
             add_ref(sheet_name, start_col)
             add_ref(sheet_name, end_col)
 
-        for match in direct_pattern.finditer(formula):
+        for match in range_unquoted_pattern.finditer(formula):
+            sheet_name = match.group(1).strip()
+            start_col = match.group(2).upper()
+            end_col = match.group(3).upper()
+            add_ref(sheet_name, start_col)
+            add_ref(sheet_name, end_col)
+
+        for match in direct_quoted_pattern.finditer(formula):
+            add_ref(match.group(1), match.group(2))
+
+        for match in direct_unquoted_pattern.finditer(formula):
             add_ref(match.group(1), match.group(2))
 
         return [
