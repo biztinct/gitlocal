@@ -10,6 +10,39 @@
     max-width: 100% !important;
 }
 
+/* Wrapper styling */
+.o_form_view .o_field_one2many {
+    position: relative;
+}
+
+/* Make the list view table extend to full content width */
+.o_form_view .o_field_one2many .o_list_view table.o_list_table {
+    min-width: max-content !important;
+}
+
+/* Style the dual scrollbar wrapper added by JavaScript */
+.dual-scrollbar-wrapper {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dual-scrollbar-wrapper::-webkit-scrollbar {
+    height: 10px;
+}
+
+.dual-scrollbar-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.dual-scrollbar-wrapper::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.dual-scrollbar-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 /* Add scrollbar styling for better UX */
 .o_form_view .o_field_one2many .o_list_view::-webkit-scrollbar {
     height: 10px;
@@ -33,15 +66,27 @@
 .o_list_view table.o_list_table thead th,
 .o_list_view table.o_list_table tbody td {
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
 }
 
-/* Set default minimum width for all columns */
+/* Set default minimum width for all columns - increased to accommodate sort arrows */
 .o_list_view table.o_list_table thead th,
 .o_list_view table.o_list_table tbody td {
-    min-width: 80px !important;
-    padding: 4px 8px !important;
+    min-width: 100px !important;
+    padding: 6px 12px !important;
+}
+
+/* Ensure column headers have enough space for text + sort icon */
+.o_list_view table.o_list_table thead th {
+    padding-right: 24px !important; /* Extra space for sort arrow */
+}
+
+/* Make sure header text doesn't get cut off */
+.o_list_view table.o_list_table thead th .o_column_sortable {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
 }
 
 /* ===================================
@@ -51,8 +96,8 @@
 /* Sheet name columns - wider for long sheet names */
 .o_list_view table.o_list_table thead th[data-name="sheet_name"],
 .o_list_view table.o_list_table tbody td[data-name="sheet_name"] {
-    min-width: 180px !important;
-    max-width: 250px !important;
+    min-width: 200px !important;
+    width: auto !important;
 }
 
 /* Header/Component name columns - wider for descriptive names */
@@ -92,13 +137,55 @@
     max-width: 180px !important;
 }
 
-/* Cross-reference sheet name columns */
+/* Cross-reference sheet name columns - allow wrapping and auto-width */
 .o_list_view table.o_list_table thead th[data-name="refers_to_sheet_names"],
 .o_list_view table.o_list_table tbody td[data-name="refers_to_sheet_names"],
 .o_list_view table.o_list_table thead th[data-name="referenced_by_sheet_names"],
-.o_list_view table.o_list_table tbody td[data-name="referenced_by_sheet_names"] {
-    min-width: 150px !important;
-    max-width: 220px !important;
+.o_list_view table.o_list_table tbody td[data-name="referenced_by_sheet_names"],
+.o_list_view table.o_list_table thead th[data-name="referenced_sheet_names"],
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names"],
+.o_list_view table.o_list_table thead th[data-name="referenced_sheet_names_html"],
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] {
+    min-width: 250px !important;
+    max-width: none !important;
+    width: auto !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+}
+
+/* Style badges in the Depends On column */
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    margin: 2px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+/* Hide the HTML tooltip that shows raw code */
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] {
+    pointer-events: none; /* Disable hover tooltips */
+}
+
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] * {
+    pointer-events: auto; /* Re-enable pointer events for child elements */
+}
+
+/* Remove title attribute that causes tooltip */
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"]::before {
+    content: none !important;
+}
+
+/* Sheet name badge colors - will be set dynamically */
+.o_list_view table.o_list_table tbody td[data-name="sheet_name"] .badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
 }
 
 /* Data source columns */
@@ -136,7 +223,7 @@
    NARROW COLUMNS (Booleans & Numbers)
    =================================== */
 
-/* Boolean toggle columns */
+/* Boolean toggle columns - increased width for header text + sort icon */
 .o_list_view table.o_list_table thead th[data-name="is_selected"],
 .o_list_view table.o_list_table tbody td[data-name="is_selected"],
 .o_list_view table.o_list_table thead th[data-name="is_main_sheet"],
@@ -145,6 +232,14 @@
 .o_list_view table.o_list_table tbody td[data-name="include_in_import"],
 .o_list_view table.o_list_table thead th[data-name="has_formulas"],
 .o_list_view table.o_list_table tbody td[data-name="has_formulas"],
+.o_list_view table.o_list_table thead th[data-name="is_duplicate"],
+.o_list_view table.o_list_table tbody td[data-name="is_duplicate"] {
+    min-width: 90px !important;
+    max-width: 110px !important;
+    text-align: center !important;
+}
+
+/* Slightly wider boolean columns with longer text */
 .o_list_view table.o_list_table thead th[data-name="references_other_sheets"],
 .o_list_view table.o_list_table tbody td[data-name="references_other_sheets"],
 .o_list_view table.o_list_table thead th[data-name="has_cross_sheet_ref"],
@@ -152,11 +247,9 @@
 .o_list_view table.o_list_table thead th[data-name="is_referenced_by_other_sheet"],
 .o_list_view table.o_list_table tbody td[data-name="is_referenced_by_other_sheet"],
 .o_list_view table.o_list_table thead th[data-name="is_referenced_by_main"],
-.o_list_view table.o_list_table tbody td[data-name="is_referenced_by_main"],
-.o_list_view table.o_list_table thead th[data-name="is_duplicate"],
-.o_list_view table.o_list_table tbody td[data-name="is_duplicate"] {
-    min-width: 70px !important;
-    max-width: 85px !important;
+.o_list_view table.o_list_table tbody td[data-name="is_referenced_by_main"] {
+    min-width: 105px !important;
+    max-width: 130px !important;
     text-align: center !important;
 }
 
