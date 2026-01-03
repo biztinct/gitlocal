@@ -2020,12 +2020,19 @@ class MultiSheetSheetLine(models.TransientModel):
                 record.referenced_sheet_names_html = ''
                 continue
 
+            sheet_name_map = {}
+            for line in record.wizard_id.available_sheet_ids:
+                if not line.sheet_name:
+                    continue
+                sheet_name_map[line.sheet_name.strip().lower()] = line.sheet_name
+
             # Build HTML badges with inline colors
             badges = []
             sheet_names = [s.strip() for s in record.referenced_sheet_names.split(',') if s.strip()]
             for sheet_name in sheet_names:
+                display_name = sheet_name_map.get(sheet_name.strip().lower(), sheet_name)
                 # Generate unique color for this sheet
-                bg_color = self._get_unique_color_for_sheet(sheet_name)
+                bg_color = self._get_unique_color_for_sheet(display_name)
                 # Calculate contrasting text color (black or white)
                 # Convert hex to RGB to calculate luminance
                 r = int(bg_color[1:3], 16)
@@ -2039,7 +2046,7 @@ class MultiSheetSheetLine(models.TransientModel):
                     f'style="background-color: {bg_color}; color: {text_color}; '
                     f'margin: 2px; padding: 4px 8px; font-size: 11px; '
                     f'font-weight: 600; border-radius: 4px; display: inline-block;">'
-                    f'{sheet_name}</span>'
+                    f'{display_name}</span>'
                 )
                 badges.append(badge_html)
 
