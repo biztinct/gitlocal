@@ -341,6 +341,7 @@ class HeaderDetector:
             'total_cells': len(row_cells),
             'non_empty_cells': 0,
             'string_cells': 0,
+            'string_cells_with_digits': 0,
             'numeric_cells': 0,
             'date_cells': 0,
             'empty_cells': 0,
@@ -369,6 +370,8 @@ class HeaderDetector:
                     analysis['numeric_cells'] += 1
                 except (ValueError, AttributeError):
                     analysis['string_cells'] += 1
+                    if any(ch.isdigit() for ch in value):
+                        analysis['string_cells_with_digits'] += 1
             elif isinstance(value, (int, float)):
                 analysis['numeric_cells'] += 1
             elif hasattr(value, 'strftime'):  # datetime-like
@@ -410,6 +413,13 @@ class HeaderDetector:
             # Bonus for having many columns
             if analysis['non_empty_cells'] >= self.MIN_COLUMNS:
                 analysis['score'] *= 1.1
+
+            # Penalty for rows with many digit-heavy strings (often data rows)
+            digit_ratio = analysis['string_cells_with_digits'] / max(analysis['string_cells'], 1)
+            if digit_ratio >= 0.6:
+                analysis['score'] *= 0.3
+            elif digit_ratio >= 0.4:
+                analysis['score'] *= 0.6
 
             # Mark as candidate if meets criteria
             # Key change: Must NOT be a category row OR subcategory row
@@ -482,6 +492,44 @@ class HeaderDetector:
                 best_score = analysis['score']
                 best_row = row_num
                 _logger.info(f"  -> New best header candidate: row {row_num} (score={best_score:.2f})")
+
+        best_analysis = next(
+            (a for a in all_analyses if a['row_num'] == best_row),
+            None
+        )
+
+        # Heuristic: if the chosen row looks like data, prefer the nearest header-like row above.
+        if best_row > 1 and best_analysis:
+            best_digit_ratio = (
+                best_analysis['string_cells_with_digits'] /
+                max(best_analysis['string_cells'], 1)
+            )
+            best_looks_like_data = (
+                best_analysis['date_cells'] > 0 or best_digit_ratio >= 0.4
+            )
+            if best_looks_like_data:
+                for offset in range(1, min(4, best_row)):
+                    above_analysis = next(
+                        (a for a in all_analyses if a['row_num'] == best_row - offset),
+                        None
+                    )
+                    if not above_analysis:
+                        continue
+                    above_digit_ratio = (
+                        above_analysis['string_cells_with_digits'] /
+                        max(above_analysis['string_cells'], 1)
+                    )
+                    above_is_header_like = (
+                        above_analysis['string_cells'] >= self.MIN_COLUMNS and
+                        not above_analysis['is_category_row'] and
+                        not above_analysis['is_subcategory_row'] and
+                        above_digit_ratio <= 0.2 and
+                        above_analysis['string_cells'] >= above_analysis['numeric_cells']
+                    )
+                    if above_is_header_like:
+                        best_row = above_analysis['row_num']
+                        best_score = above_analysis['score']
+                        break
 
         # Data starts on the row after header
         data_start_row = best_row + 1
