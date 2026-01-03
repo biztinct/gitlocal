@@ -22,25 +22,48 @@
 
 /* Style the dual scrollbar wrapper added by JavaScript */
 .dual-scrollbar-wrapper {
-    border-bottom: 1px solid #dee2e6;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    height: 20px !important;
+    margin-bottom: 10px !important;
+    width: 100% !important;
+    display: block !important;
+    background: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px !important;
+    position: relative;
+    z-index: 1;
+}
+
+.dual-scrollbar-wrapper > div {
+    height: 1px;
+    background: transparent;
 }
 
 .dual-scrollbar-wrapper::-webkit-scrollbar {
-    height: 10px;
+    height: 12px;
 }
 
 .dual-scrollbar-wrapper::-webkit-scrollbar-track {
     background: #f1f1f1;
-    border-radius: 5px;
+    border-radius: 6px;
+    margin: 2px;
 }
 
 .dual-scrollbar-wrapper::-webkit-scrollbar-thumb {
     background: #888;
-    border-radius: 5px;
+    border-radius: 6px;
+    border: 2px solid #f1f1f1;
 }
 
 .dual-scrollbar-wrapper::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+/* For Firefox */
+.dual-scrollbar-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
 }
 
 /* Add scrollbar styling for better UX */
@@ -166,17 +189,32 @@
 }
 
 /* Hide the HTML tooltip that shows raw code */
-.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] {
-    pointer-events: none; /* Disable hover tooltips */
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"],
+.o_list_view table.o_list_table tbody td[data-name="sheet_name_html"] {
+    pointer-events: none !important; /* Disable hover tooltips */
 }
 
-.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] * {
-    pointer-events: auto; /* Re-enable pointer events for child elements */
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] *,
+.o_list_view table.o_list_table tbody td[data-name="sheet_name_html"] * {
+    pointer-events: auto !important; /* Re-enable pointer events for child elements */
 }
 
 /* Remove title attribute that causes tooltip */
-.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"]::before {
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"]::before,
+.o_list_view table.o_list_table tbody td[data-name="sheet_name_html"]::before {
     content: none !important;
+}
+
+/* Additional tooltip prevention */
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"][title],
+.o_list_view table.o_list_table tbody td[data-name="sheet_name_html"][title] {
+    position: relative;
+}
+
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"][title]::after,
+.o_list_view table.o_list_table tbody td[data-name="sheet_name_html"][title]::after {
+    content: '' !important;
+    display: none !important;
 }
 
 /* Sheet name badge colors - will be set dynamically */

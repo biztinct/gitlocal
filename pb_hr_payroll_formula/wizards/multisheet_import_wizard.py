@@ -359,14 +359,28 @@ class MultiSheetImportWizard(models.TransientModel):
                 sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
                 data_sheet = connector.workbook[sheet_line.sheet_name]
-                formula_columns = self._detect_formula_columns(
+                red_header_cols = self._get_red_header_columns(
+                    formula_sheet, sheet_data['header_row'], sheet_data['headers']
+                )
+                red_data_cols = self._get_red_data_columns(
                     formula_sheet, sheet_data['data_start_row'], sheet_data['headers']
+                )
+                red_data_cols -= red_header_cols
+                skip_cols = red_header_cols | red_data_cols
+
+                formula_columns = self._detect_formula_columns(
+                    formula_sheet,
+                    sheet_data['data_start_row'],
+                    sheet_data['headers'],
+                    skip_columns=skip_cols
                 )
                 sheet_context[sheet_line.id] = {
                     'sheet_data': sheet_data,
                     'formula_sheet': formula_sheet,
                     'data_sheet': data_sheet,
                     'formula_columns': formula_columns,
+                    'red_header_columns': red_header_cols,
+                    'red_data_columns': red_data_cols,
                 }
 
             constant_lines = []
@@ -427,13 +441,18 @@ class MultiSheetImportWizard(models.TransientModel):
                 formula_sheet = ctx['formula_sheet']
                 data_sheet = ctx['data_sheet']
                 formula_columns = ctx['formula_columns']
+                red_header_cols = ctx.get('red_header_columns', set())
+                red_data_cols = ctx.get('red_data_columns', set())
 
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
+                    if col_letter in red_header_cols:
+                        continue
 
                     # Check for cross-sheet formula references
                     has_cross_ref = False
                     cross_formula = ''
+                    is_red_data_column = col_letter in red_data_cols
                     if col_letter in formula_columns:
                         formula_info = formula_columns[col_letter]
                         formula = formula_info.get('formula', '') if isinstance(formula_info, dict) else formula_info
@@ -468,7 +487,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'original_header': header_info['value'],
                         'component_type': header_info.get('component_type') or '',
                         'is_selected': True,  # All columns selected by default
-                        'column_type': 'formula' if col_letter in formula_columns else 'input',
+                        'column_type': 'input' if is_red_data_column else
+                                       ('formula' if col_letter in formula_columns else 'input'),
                         'sample_value': sample,
                         'has_cross_sheet_ref': has_cross_ref,
                         'cross_sheet_formula': cross_formula,
@@ -727,8 +747,18 @@ class MultiSheetImportWizard(models.TransientModel):
 
             main_formula_sheet = formula_workbook[main_sheet.sheet_name]
             main_data = connector.load_sheet_with_detection(main_sheet.sheet_name)
-            main_formula_columns = self._detect_formula_columns(
+            red_header_cols = self._get_red_header_columns(
+                main_formula_sheet, main_data['header_row'], main_data['headers']
+            )
+            red_data_cols = self._get_red_data_columns(
                 main_formula_sheet, main_data['data_start_row'], main_data['headers']
+            )
+            skip_cols = red_header_cols | red_data_cols
+            main_formula_columns = self._detect_formula_columns(
+                main_formula_sheet,
+                main_data['data_start_row'],
+                main_data['headers'],
+                skip_columns=skip_cols
             )
             cross_refs = self._extract_cross_sheet_references(main_formula_columns)
 
@@ -828,8 +858,18 @@ class MultiSheetImportWizard(models.TransientModel):
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
 
                 # Detect formula columns for this sheet
-                formula_columns = self._detect_formula_columns(
+                red_header_cols = self._get_red_header_columns(
+                    formula_sheet, sheet_data['header_row'], sheet_data['headers']
+                )
+                red_data_cols = self._get_red_data_columns(
                     formula_sheet, sheet_data['data_start_row'], sheet_data['headers']
+                )
+                skip_cols = red_header_cols | red_data_cols
+                formula_columns = self._detect_formula_columns(
+                    formula_sheet,
+                    sheet_data['data_start_row'],
+                    sheet_data['headers'],
+                    skip_columns=skip_cols
                 )
                 if constant_cell_mapping:
                     for col_letter, info in formula_columns.items():
@@ -849,7 +889,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
                     # Get formula if any
                     excel_formula = ''
-                    if col_sel.column_letter in formula_columns:
+                    if col_sel.column_type == 'formula' and col_sel.column_letter in formula_columns:
                         excel_formula = formula_columns[col_sel.column_letter].get('formula', '')
 
                     # Generate unique code
@@ -1093,7 +1133,79 @@ class MultiSheetImportWizard(models.TransientModel):
 
         return result
 
-    def _detect_formula_columns(self, formula_sheet, data_start_row, headers):
+    def _get_red_header_columns(self, formula_sheet, header_row, headers):
+        """Return column letters whose header cells have a red background fill."""
+        from openpyxl.utils import column_index_from_string
+
+        red_cols = set()
+        for header in headers:
+            col_letter = header.get('column_letter')
+            if not col_letter:
+                continue
+            col_idx = column_index_from_string(col_letter)
+            cell = formula_sheet.cell(row=header_row, column=col_idx)
+            if self._is_red_fill(cell):
+                red_cols.add(col_letter)
+        return red_cols
+
+    def _get_red_data_columns(self, formula_sheet, data_start_row, headers, sample_rows=3):
+        """Return column letters whose data cells have a red background fill."""
+        from openpyxl.utils import column_index_from_string
+
+        red_cols = set()
+        max_row = formula_sheet.max_row or data_start_row
+        for header in headers:
+            col_letter = header.get('column_letter')
+            if not col_letter:
+                continue
+            col_idx = column_index_from_string(col_letter)
+            checked = 0
+            red_count = 0
+            for row_offset in range(sample_rows):
+                row_num = data_start_row + row_offset
+                if row_num > max_row:
+                    break
+                cell = formula_sheet.cell(row=row_num, column=col_idx)
+                if cell.value is None and not getattr(cell.fill, 'patternType', None):
+                    continue
+                checked += 1
+                if self._is_red_fill(cell):
+                    red_count += 1
+            if checked and (red_count / checked) >= 0.6:
+                red_cols.add(col_letter)
+        return red_cols
+
+    @staticmethod
+    def _is_red_fill(cell):
+        """Check if a cell has a red background fill."""
+        fill = getattr(cell, 'fill', None)
+        if not fill:
+            return False
+
+        pattern = getattr(fill, 'patternType', None) or getattr(fill, 'fill_type', None)
+        if pattern in (None, 'none'):
+            return False
+
+        color = getattr(fill, 'fgColor', None) or getattr(fill, 'start_color', None)
+        if not color:
+            return False
+
+        if color.type == 'rgb' and color.rgb:
+            rgb = str(color.rgb).upper()
+            if len(rgb) >= 6:
+                rgb = rgb[-6:]
+                try:
+                    r = int(rgb[0:2], 16)
+                    g = int(rgb[2:4], 16)
+                    b = int(rgb[4:6], 16)
+                except ValueError:
+                    return False
+                return r >= 150 and g <= 100
+        if color.type == 'indexed':
+            return color.indexed in [2, 10]
+        return False
+
+    def _detect_formula_columns(self, formula_sheet, data_start_row, headers, skip_columns=None):
         """
         Detect which columns contain formulas.
 
@@ -1111,6 +1223,7 @@ class MultiSheetImportWizard(models.TransientModel):
         from openpyxl.utils import column_index_from_string
 
         formula_columns = {}
+        skip_columns = {c.upper() for c in (skip_columns or set())}
 
         # Check first few data rows for formulas
         for row_offset in range(min(5, formula_sheet.max_row - data_start_row + 1)):
@@ -1118,6 +1231,8 @@ class MultiSheetImportWizard(models.TransientModel):
 
             for header in headers:
                 col_letter = header['column_letter']
+                if col_letter.upper() in skip_columns:
+                    continue
                 if col_letter in formula_columns:
                     continue  # Already identified as formula
 
