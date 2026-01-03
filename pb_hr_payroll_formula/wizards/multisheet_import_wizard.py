@@ -1780,7 +1780,12 @@ class MultiSheetImportWizard(models.TransientModel):
 
             col_letters = cell_match.group(1)
             row_num = cell_match.group(2)
-            pattern = r"(?:'[^']+'!|[A-Za-z0-9_]+!)?\$?" + col_letters + r"\$?" + row_num + r'(?![0-9A-Za-z])'
+            pattern = (
+                r"(?<![A-Za-z0-9_])"
+                r"(?:'[^']+'!|[A-Za-z0-9_]+!)?"
+                r"\$?" + col_letters + r"\$?" + row_num +
+                r"(?![0-9A-Za-z_])"
+            )
             replacement = f"{new_col}2"
             updated_formula = re.sub(pattern, replacement, updated_formula, flags=re.IGNORECASE)
 
