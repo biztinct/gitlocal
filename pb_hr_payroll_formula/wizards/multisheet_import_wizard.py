@@ -267,7 +267,8 @@ class MultiSheetImportWizard(models.TransientModel):
             # Use Excel connector for multi-sheet loading
             from ..integrations import ExcelConnector
             connector = ExcelConnector(None)
-            workbook_data = connector.load_workbook_multisheet(file_content)
+            # Explicitly load with formulas to detect cross-sheet references
+            workbook_data = connector.load_workbook_multisheet(file_content, include_formulas=True)
 
             # Clear existing sheet lines
             self.available_sheet_ids.unlink()
@@ -276,6 +277,17 @@ class MultiSheetImportWizard(models.TransientModel):
             sheet_lines = []
             for idx, sheet_name in enumerate(workbook_data['sheet_names']):
                 sheet_info = workbook_data['sheets'][sheet_name]
+
+                # Format referenced sheet names as comma-separated string
+                referenced_sheets = sheet_info.get('formulas_referencing_sheets', [])
+                referenced_sheet_names = ', '.join(referenced_sheets) if referenced_sheets else ''
+
+                # Debug logging
+                if sheet_info.get('has_formulas'):
+                    _logger.info(f"Sheet '{sheet_name}' has formulas: {sheet_info.get('has_formulas')}")
+                    _logger.info(f"Sheet '{sheet_name}' references other sheets: {sheet_info.get('references_other_sheets')}")
+                    _logger.info(f"Sheet '{sheet_name}' referenced sheets list: {referenced_sheets}")
+
                 sheet_lines.append((0, 0, {
                     'wizard_id': self.id,
                     'sheet_name': sheet_name,
@@ -286,6 +298,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     'row_count': sheet_info.get('max_row', 0) - sheet_info.get('detected_data_start_row', 2) + 1,
                     'has_formulas': sheet_info.get('has_formulas', False),
                     'references_other_sheets': sheet_info.get('references_other_sheets', False),
+                    'referenced_sheet_names': referenced_sheet_names,
                     'header_confidence': sheet_info.get('header_detection_confidence', 0.0),
                 }))
 
@@ -424,7 +437,16 @@ class MultiSheetImportWizard(models.TransientModel):
                     if col_letter in formula_columns:
                         formula_info = formula_columns[col_letter]
                         formula = formula_info.get('formula', '') if isinstance(formula_info, dict) else formula_info
-                        has_cross_ref = bool(re.search(r"'[^']+'\s*!", formula) or re.search(r"[A-Za-z_]+!", formula))
+                        # Use improved pattern matching for both quoted and unquoted sheet names
+                        # Quoted: 'Sheet Name'!A1, Unquoted: SheetName!A1
+                        quoted_refs = re.findall(r"'([^']+)'!", formula)
+                        unquoted_refs = re.findall(r"(?<!['\w])([A-Za-z][A-Za-z0-9_\-]*)\s*!", formula)
+                        all_refs = quoted_refs + unquoted_refs
+                        # Filter out Excel functions
+                        valid_refs = [ref for ref in all_refs if ref.upper() not in
+                                     ['IF', 'SUM', 'SUMIF', 'AVERAGE', 'COUNT', 'MAX', 'MIN',
+                                      'VLOOKUP', 'HLOOKUP', 'INDEX', 'MATCH', 'IFERROR']]
+                        has_cross_ref = bool(valid_refs)
                         cross_formula = formula if has_cross_ref else ''
 
                     # Check if this column is referenced by main sheet
@@ -475,28 +497,41 @@ class MultiSheetImportWizard(models.TransientModel):
         cross_refs = {}
 
         # Patterns for VLOOKUP and direct sheet references
-        vlookup_pattern = re.compile(
-            r"VLOOKUP\s*\([^,]+,\s*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*(\d+)",
+        # Quoted patterns - for sheet names with spaces or special chars
+        vlookup_quoted_pattern = re.compile(
+            r"VLOOKUP\s*\([^,]+,\s*'([^']+)'\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*(\d+)",
             re.IGNORECASE
         )
-        sumif_pattern = re.compile(
-            r"SUMIF\s*\([^,]*'?([^'!]+)'?\s*!\s*\$?([A-Z]+)",
+        # Unquoted patterns - for simple sheet names
+        vlookup_unquoted_pattern = re.compile(
+            r"VLOOKUP\s*\([^,]+,\s*([A-Za-z][A-Za-z0-9_\-]*)\s*!\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*(\d+)",
             re.IGNORECASE
         )
-        direct_pattern = re.compile(
-            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?(\d+)",
+        sumif_quoted_pattern = re.compile(
+            r"SUMIF\s*\([^,]*'([^']+)'\s*!\s*\$?([A-Z]+)",
+            re.IGNORECASE
+        )
+        sumif_unquoted_pattern = re.compile(
+            r"SUMIF\s*\([^,]*([A-Za-z][A-Za-z0-9_\-]*)\s*!\s*\$?([A-Z]+)",
+            re.IGNORECASE
+        )
+        direct_quoted_pattern = re.compile(
+            r"'([^']+)'\s*!\s*\$?([A-Z]+)\$?(\d+)",
+            re.IGNORECASE
+        )
+        direct_unquoted_pattern = re.compile(
+            r"(?<!['\w])([A-Za-z][A-Za-z0-9_\-]*)\s*!\s*\$?([A-Z]+)\$?(\d+)",
             re.IGNORECASE
         )
 
         for col_letter, formula_info in formula_columns.items():
             formula = formula_info.get('formula', '') if isinstance(formula_info, dict) else formula_info
 
-            # Find VLOOKUP references
-            for match in vlookup_pattern.finditer(formula):
+            # Find VLOOKUP references (both quoted and unquoted)
+            for match in vlookup_quoted_pattern.finditer(formula):
                 sheet_name = match.group(1).strip()
                 start_col = match.group(2).upper()
                 col_index = int(match.group(4))
-                # Calculate actual column: start_col + col_index - 1
                 start_idx = self._column_letter_to_index(start_col)
                 target_idx = start_idx + col_index - 1
                 target_col = self._index_to_column_letter(target_idx)
@@ -510,8 +545,25 @@ class MultiSheetImportWizard(models.TransientModel):
                     'type': 'vlookup',
                 })
 
-            # Find SUMIF references
-            for match in sumif_pattern.finditer(formula):
+            for match in vlookup_unquoted_pattern.finditer(formula):
+                sheet_name = match.group(1).strip()
+                start_col = match.group(2).upper()
+                col_index = int(match.group(4))
+                start_idx = self._column_letter_to_index(start_col)
+                target_idx = start_idx + col_index - 1
+                target_col = self._index_to_column_letter(target_idx)
+
+                if sheet_name not in cross_refs:
+                    cross_refs[sheet_name] = []
+                cross_refs[sheet_name].append({
+                    'col_index': target_idx,
+                    'col_letter': target_col,
+                    'formula_col': col_letter,
+                    'type': 'vlookup',
+                })
+
+            # Find SUMIF references (both quoted and unquoted)
+            for match in sumif_quoted_pattern.finditer(formula):
                 sheet_name = match.group(1).strip()
                 col_letter_ref = match.group(2).upper()
                 col_idx = self._column_letter_to_index(col_letter_ref)
@@ -525,8 +577,36 @@ class MultiSheetImportWizard(models.TransientModel):
                     'type': 'sumif',
                 })
 
-            # Find direct references
-            for match in direct_pattern.finditer(formula):
+            for match in sumif_unquoted_pattern.finditer(formula):
+                sheet_name = match.group(1).strip()
+                col_letter_ref = match.group(2).upper()
+                col_idx = self._column_letter_to_index(col_letter_ref)
+
+                if sheet_name not in cross_refs:
+                    cross_refs[sheet_name] = []
+                cross_refs[sheet_name].append({
+                    'col_index': col_idx,
+                    'col_letter': col_letter_ref,
+                    'formula_col': col_letter,
+                    'type': 'sumif',
+                })
+
+            # Find direct references (both quoted and unquoted)
+            for match in direct_quoted_pattern.finditer(formula):
+                sheet_name = match.group(1).strip()
+                col_letter_ref = match.group(2).upper()
+                col_idx = self._column_letter_to_index(col_letter_ref)
+
+                if sheet_name not in cross_refs:
+                    cross_refs[sheet_name] = []
+                cross_refs[sheet_name].append({
+                    'col_index': col_idx,
+                    'col_letter': col_letter_ref,
+                    'formula_col': col_letter,
+                    'type': 'direct',
+                })
+
+            for match in direct_unquoted_pattern.finditer(formula):
                 sheet_name = match.group(1).strip()
                 col_letter_ref = match.group(2).upper()
                 col_idx = self._column_letter_to_index(col_letter_ref)
@@ -825,17 +905,25 @@ class MultiSheetImportWizard(models.TransientModel):
                     }
                     all_components.append(component)
 
-            # Now resolve cross-sheet formulas
+            # Now resolve formulas (both same-sheet and cross-sheet references)
             for component in all_components:
                 if component['excel_formula']:
-                    resolved = self._resolve_cross_sheet_formula(
+                    # First resolve same-sheet column references (e.g., I3 -> FS3)
+                    formula_with_same_sheet = self._resolve_same_sheet_formula(
                         component['excel_formula'],
+                        component['source_sheet'],
                         column_mapping
                     )
+
+                    # Then resolve cross-sheet references (e.g., 'OtherSheet'!A1 -> XX1)
+                    resolved = self._resolve_cross_sheet_formula(
+                        formula_with_same_sheet,
+                        column_mapping
+                    )
+
                     component['resolved_formula'] = resolved
-                    # If resolution happened, use resolved formula
-                    if resolved != component['excel_formula']:
-                        component['excel_formula'] = resolved
+                    # Use the fully resolved formula
+                    component['excel_formula'] = resolved
 
             # Create component preview records
             for comp in all_components:
@@ -942,6 +1030,66 @@ class MultiSheetImportWizard(models.TransientModel):
                 return "0"
 
         result = direct_pattern.sub(resolve_direct, result)
+
+        return result
+
+    def _resolve_same_sheet_formula(self, formula, sheet_name, column_mapping):
+        """
+        Resolve same-sheet column references in a formula.
+
+        When columns are reordered during import (e.g., I -> FS, J -> FT, K -> FU),
+        formulas that reference those columns need to be updated.
+
+        Example:
+            Original: =I3+J3+K3
+            After resolution: =FS3+FT3+FU3
+
+        Args:
+            formula: The Excel formula string
+            sheet_name: The name of the sheet this formula belongs to
+            column_mapping: Dictionary mapping (sheet_name, old_col) -> new_col
+
+        Returns:
+            Formula with updated column references
+        """
+        if not formula or not formula.startswith('='):
+            return formula
+
+        result = formula
+        sheet_key = sheet_name.strip().lower()
+
+        # Pattern to match column references in formulas
+        # Matches: A1, $A$1, $A1, A$1, AA123, etc.
+        # But NOT: Sheet!A1 (cross-sheet refs are handled elsewhere)
+        same_sheet_pattern = re.compile(
+            r'(?<![!\w])\$?([A-Z]+)\$?(\d+)(?!\w)',
+            re.IGNORECASE
+        )
+
+        def replace_column(match):
+            old_col = match.group(1).upper()
+            row = match.group(2)
+
+            # Look up the new column letter
+            new_col = column_mapping.get((sheet_key, old_col))
+            if not new_col:
+                # Try by column index
+                try:
+                    idx = self._column_letter_to_index(old_col)
+                    new_col = column_mapping.get((sheet_key, idx))
+                except:
+                    pass
+
+            if new_col:
+                # Preserve $ markers if present
+                prefix = '$' if match.group(0).startswith('$') else ''
+                suffix = '$' if '$' + row in match.group(0) else ''
+                return f"{prefix}{new_col}{suffix}{row}"
+            else:
+                # No mapping found, keep original
+                return match.group(0)
+
+        result = same_sheet_pattern.sub(replace_column, result)
 
         return result
 
@@ -1743,6 +1891,18 @@ class MultiSheetSheetLine(models.TransientModel):
         readonly=True
     )
 
+    sheet_name_html = fields.Html(
+        string='Sheet Name',
+        compute='_compute_sheet_name_html',
+        sanitize=False
+    )
+
+    color = fields.Integer(
+        string='Color Index',
+        compute='_compute_color',
+        store=True
+    )
+
     is_selected = fields.Boolean(
         string='Include',
         default=True
@@ -1779,10 +1939,111 @@ class MultiSheetSheetLine(models.TransientModel):
         help="This worksheet contains formulas that reference cells in other worksheets (e.g., =TAM_UNG!A1)"
     )
 
+    referenced_sheet_names = fields.Char(
+        string='Depends On',
+        readonly=True,
+        help="List of worksheets that this sheet references in formulas"
+    )
+
+    referenced_sheet_names_html = fields.Html(
+        string='Depends On',
+        compute='_compute_referenced_sheet_names_html',
+        sanitize=False
+    )
+
     header_confidence = fields.Float(
         string='Detection Confidence',
         readonly=True
     )
+
+    @api.depends('sheet_name')
+    def _compute_sheet_name_html(self):
+        """Generate colored badge HTML for sheet name."""
+        for record in self:
+            if not record.sheet_name:
+                record.sheet_name_html = ''
+                continue
+
+            # Generate unique color for this sheet
+            bg_color = record._get_unique_color_for_sheet(record.sheet_name)
+            # Calculate contrasting text color
+            r = int(bg_color[1:3], 16)
+            g = int(bg_color[3:5], 16)
+            b = int(bg_color[5:7], 16)
+            luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+            text_color = '#000000' if luminance > 0.5 else '#ffffff'
+
+            record.sheet_name_html = (
+                f'<span class="badge sheet-name-badge" '
+                f'style="background-color: {bg_color}; color: {text_color}; '
+                f'padding: 6px 12px; font-size: 12px; font-weight: 600; '
+                f'border-radius: 4px; display: inline-block;">'
+                f'{record.sheet_name}</span>'
+            )
+
+    @api.depends('sheet_name')
+    def _compute_color(self):
+        """Compute a consistent color index for each sheet based on its name."""
+        for record in self:
+            if record.sheet_name:
+                # Use a better hash distribution to avoid repetitive colors
+                # This ensures similar names get different colors
+                import hashlib
+                hash_bytes = hashlib.md5(record.sheet_name.encode()).digest()
+                hash_val = int.from_bytes(hash_bytes[:4], 'big')
+                # Map to color index (0-11) with better distribution
+                record.color = hash_val % 12
+            else:
+                record.color = 0
+
+    def _get_unique_color_for_sheet(self, sheet_name):
+        """Generate a unique hex color for a sheet name."""
+        import hashlib
+        # Generate a hash of the sheet name
+        hash_bytes = hashlib.md5(sheet_name.encode()).digest()
+        # Use the hash to generate RGB values
+        r = hash_bytes[0]
+        g = hash_bytes[1]
+        b = hash_bytes[2]
+        # Adjust brightness to ensure readable colors (not too dark, not too light)
+        # Keep values in the 50-200 range for good visibility
+        r = 50 + (r % 150)
+        g = 50 + (g % 150)
+        b = 50 + (b % 150)
+        return f'#{r:02x}{g:02x}{b:02x}'
+
+    @api.depends('referenced_sheet_names', 'wizard_id.available_sheet_ids.sheet_name')
+    def _compute_referenced_sheet_names_html(self):
+        """Generate HTML badges with unique color coding for referenced sheet names."""
+        for record in self:
+            if not record.referenced_sheet_names:
+                record.referenced_sheet_names_html = ''
+                continue
+
+            # Build HTML badges with inline colors
+            badges = []
+            sheet_names = [s.strip() for s in record.referenced_sheet_names.split(',') if s.strip()]
+            for sheet_name in sheet_names:
+                # Generate unique color for this sheet
+                bg_color = self._get_unique_color_for_sheet(sheet_name)
+                # Calculate contrasting text color (black or white)
+                # Convert hex to RGB to calculate luminance
+                r = int(bg_color[1:3], 16)
+                g = int(bg_color[3:5], 16)
+                b = int(bg_color[5:7], 16)
+                luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+                text_color = '#000000' if luminance > 0.5 else '#ffffff'
+
+                badge_html = (
+                    f'<span class="badge sheet-badge" '
+                    f'style="background-color: {bg_color}; color: {text_color}; '
+                    f'margin: 2px; padding: 4px 8px; font-size: 11px; '
+                    f'font-weight: 600; border-radius: 4px; display: inline-block;">'
+                    f'{sheet_name}</span>'
+                )
+                badges.append(badge_html)
+
+            record.referenced_sheet_names_html = ' '.join(badges) if badges else ''
 
     @api.onchange('is_main_sheet')
     def _onchange_is_main_sheet(self):

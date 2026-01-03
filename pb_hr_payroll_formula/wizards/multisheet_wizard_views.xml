@@ -77,14 +77,18 @@
                             <group string="Available Worksheets" colspan="4">
                                 <field name="available_sheet_ids" nolabel="1" colspan="4">
                                     <tree editable="bottom">
+                                        <field name="color" invisible="1"/>
                                         <field name="is_selected" widget="boolean_toggle" string="Include"/>
                                         <field name="is_main_sheet" widget="boolean_toggle" string="Main"/>
-                                        <field name="sheet_name" readonly="1" string="Sheet Name"/>
+                                        <field name="sheet_name" invisible="1"/>
+                                        <field name="sheet_name_html" readonly="1" string="Sheet Name" widget="html"/>
                                         <field name="detected_header_row" string="Header Row"/>
                                         <field name="column_count" readonly="1" string="Cols"/>
                                         <field name="row_count" readonly="1" string="Rows"/>
                                         <field name="has_formulas" widget="boolean" readonly="1" string="Formulas"/>
                                         <field name="references_other_sheets" widget="boolean" readonly="1" string="Refs Others" optional="show"/>
+                                        <field name="referenced_sheet_names" invisible="1"/>
+                                        <field name="referenced_sheet_names_html" readonly="1" string="Depends On" optional="show" widget="html"/>
                                         <field name="header_confidence" widget="progressbar" readonly="1" optional="hide"/>
                                     </tree>
                                 </field>
@@ -97,7 +101,8 @@
                                     <li><strong>Main Sheet:</strong> Designate ONE sheet as the primary payroll structure</li>
                                     <li><strong>Header Row:</strong> Adjust if auto-detection was incorrect</li>
                                     <li><strong>Primary Key:</strong> Column used to match data across worksheets</li>
-                                    <li><strong>Refs Others:</strong> Indicates this sheet has formulas that reference other sheets (e.g., =TAM_UNG!A1)</li>
+                                    <li><strong>Refs Others:</strong> Indicates this sheet has formulas that reference other sheets</li>
+                                    <li><strong>Depends On:</strong> Shows which worksheets this sheet references in its formulas</li>
                                 </ul>
                             </div>
                         </group>

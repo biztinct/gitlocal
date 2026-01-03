@@ -702,22 +702,49 @@ class ExcelConnector(BaseHRConnector):
 
         # Check for formulas and cross-sheet references
         if formula_sheet:
-            cross_sheet_pattern = r"'[^']+'\![A-Z]+"
             import re
+            formula_count = 0
+            cross_ref_count = 0
 
             for row in formula_sheet.iter_rows():
                 for cell in row:
                     if isinstance(cell.value, str) and cell.value.startswith('='):
                         analysis['has_formulas'] = True
+                        formula_count += 1
 
-                        # Check for cross-sheet references
-                        if re.search(cross_sheet_pattern, cell.value):
+                        # Log first few formulas for debugging
+                        if formula_count <= 3:
+                            _logger.info(f"Sample formula in sheet {formula_sheet.title}: {cell.value}")
+
+                        # Check for cross-sheet references with multiple patterns
+                        # Pattern 1: Quoted sheet names - 'Sheet Name'!A1
+                        quoted_pattern = r"'([^']+)'!"
+                        quoted_refs = re.findall(quoted_pattern, cell.value)
+
+                        # Pattern 2: Unquoted sheet names - SheetName!A1 or Sheet_Name!A1
+                        # This pattern looks for word characters (letters, numbers, underscores) followed by !
+                        # But excludes cell references like A1!
+                        unquoted_pattern = r"(?<!['\w])([A-Za-z][A-Za-z0-9_\-]*)\s*!"
+                        unquoted_refs = re.findall(unquoted_pattern, cell.value)
+
+                        # Combine both patterns
+                        all_refs = quoted_refs + unquoted_refs
+
+                        if all_refs:
                             analysis['references_other_sheets'] = True
-                            # Extract referenced sheet names
-                            refs = re.findall(r"'([^']+)'!", cell.value)
-                            for ref in refs:
-                                if ref not in analysis['formulas_referencing_sheets']:
-                                    analysis['formulas_referencing_sheets'].append(ref)
+                            cross_ref_count += 1
+                            for ref in all_refs:
+                                # Clean up the reference and avoid duplicates
+                                ref = ref.strip()
+                                if ref and ref not in analysis['formulas_referencing_sheets']:
+                                    # Exclude common Excel functions that might match the pattern
+                                    if ref.upper() not in ['IF', 'SUM', 'AVERAGE', 'COUNT', 'MAX', 'MIN',
+                                                           'VLOOKUP', 'HLOOKUP', 'INDEX', 'MATCH']:
+                                        analysis['formulas_referencing_sheets'].append(ref)
+                                        _logger.info(f"Found cross-sheet reference: '{ref}' in formula: {cell.value}")
+
+            _logger.info(f"Sheet {formula_sheet.title}: Found {formula_count} formulas, {cross_ref_count} with cross-sheet refs")
+            _logger.info(f"Sheet {formula_sheet.title}: Referenced sheets: {analysis['formulas_referencing_sheets']}")
 
         return analysis
 
