@@ -137,11 +137,11 @@
     max-width: 280px !important;
 }
 
-/* Excel formula columns - need more space */
+/* Excel formula columns - need much more space */
 .o_list_view table.o_list_table thead th[data-name="excel_formula"],
 .o_list_view table.o_list_table tbody td[data-name="excel_formula"] {
-    min-width: 250px !important;
-    max-width: 450px !important;
+    min-width: 1000px !important;
+    max-width: none !important;
     font-family: 'Courier New', monospace !important;
     font-size: 12px !important;
 }
@@ -166,14 +166,21 @@
 .o_list_view table.o_list_table thead th[data-name="referenced_by_sheet_names"],
 .o_list_view table.o_list_table tbody td[data-name="referenced_by_sheet_names"],
 .o_list_view table.o_list_table thead th[data-name="referenced_sheet_names"],
-.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names"],
-.o_list_view table.o_list_table thead th[data-name="referenced_sheet_names_html"],
-.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] {
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names"] {
     min-width: 250px !important;
     max-width: none !important;
     width: auto !important;
     white-space: normal !important;
     word-wrap: break-word !important;
+}
+
+/* Depends On badges - extra wide and no wrapping to enable horizontal scrolling */
+.o_list_view table.o_list_table thead th[data-name="referenced_sheet_names_html"],
+.o_list_view table.o_list_table tbody td[data-name="referenced_sheet_names_html"] {
+    min-width: 1000px !important;
+    max-width: none !important;
+    width: auto !important;
+    white-space: nowrap !important;
 }
 
 /* Style badges in the Depends On column */

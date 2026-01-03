@@ -803,6 +803,7 @@ class HrFormulaConfig(models.Model):
                     'message': _('There are no salary components to delete.'),
                     'type': 'warning',
                     'sticky': False,
+                    'next': {'type': 'ir.actions.client', 'tag': 'reload'},
                 }
             }
 
@@ -817,5 +818,6 @@ class HrFormulaConfig(models.Model):
                 'message': _('%d salary components have been deleted.') % rule_count,
                 'type': 'success',
                 'sticky': False,
+                'next': {'type': 'ir.actions.client', 'tag': 'reload'},
             }
         }
