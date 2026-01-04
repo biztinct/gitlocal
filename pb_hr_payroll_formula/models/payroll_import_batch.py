@@ -179,7 +179,7 @@ class HrPayrollImportBatch(models.Model):
     payroll_journal_id = fields.Many2one(
         'account.journal',
         string='Payroll Journal',
-        domain="[('type', '=', 'general'), ('company_id', '=', company_id)]",
+        domain="[('type', '=', 'general'), ('company_id', 'in', allowed_company_ids)]",
         help="Journal to use when creating payslips. If empty, falls back to the configuration's journal or the first general journal."
     )
 
@@ -224,6 +224,12 @@ class HrPayrollImportBatch(models.Model):
         if self.formula_config_id and not self.payroll_journal_id:
             self.payroll_journal_id = self.formula_config_id.payroll_journal_id
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        """Default payroll journal from the first available general journal."""
+        if self.company_id and not self.payroll_journal_id and not self.formula_config_id:
+            self.payroll_journal_id = self._get_first_general_journal(self.company_id)
+
     @api.depends('import_line_ids', 'import_line_ids.state', 'import_line_ids.employee_id')
     def _compute_statistics(self):
         for batch in self:
@@ -256,6 +262,11 @@ class HrPayrollImportBatch(models.Model):
         """Generate sequence name on create"""
         if vals.get('name', _('New Import Batch')) == _('New Import Batch'):
             vals['name'] = self.env['ir.sequence'].next_by_code('hr.payroll.import.batch') or _('New Import Batch')
+        if not vals.get('payroll_journal_id'):
+            company_id = vals.get('company_id') or self.env.company.id
+            journal = self._get_first_general_journal(self.env['res.company'].browse(company_id))
+            if journal:
+                vals['payroll_journal_id'] = journal.id
         return super().create(vals)
 
     def action_load_file(self):
@@ -275,13 +286,23 @@ class HrPayrollImportBatch(models.Model):
         try:
             import base64
             file_content = base64.b64decode(self.import_file)
-            data = connector.load_file(
-                file_content,
-                self.import_filename,
-                header_row=self.file_header_row,
-                data_start_row=self.file_data_start_row,
-                sheet_name=self.file_sheet_name
+            use_multisheet = (
+                self.import_filename and
+                self.import_filename.lower().endswith(('.xlsx', '.xls')) and
+                self.formula_config_id.rule_ids.filtered(lambda r: r.source_sheet_name)
             )
+
+            if use_multisheet:
+                headers, rows = self._load_multisheet_data(file_content, connector)
+                data = {'headers': headers, 'rows': rows}
+            else:
+                data = connector.load_file(
+                    file_content,
+                    self.import_filename,
+                    header_row=self.file_header_row,
+                    data_start_row=self.file_data_start_row,
+                    sheet_name=self.file_sheet_name
+                )
         except Exception as e:
             raise UserError(_("Failed to parse file: %s") % str(e))
 
@@ -300,10 +321,13 @@ class HrPayrollImportBatch(models.Model):
         line_vals_list = []
         for idx, row in enumerate(rows, start=1):
             # Build raw data JSON
-            raw_data = {}
-            for col_idx, header in enumerate(headers):
-                if col_idx < len(row):
-                    raw_data[header] = row[col_idx]
+            if isinstance(row, dict):
+                raw_data = row
+            else:
+                raw_data = {}
+                for col_idx, header in enumerate(headers):
+                    if col_idx < len(row):
+                        raw_data[header] = row[col_idx]
 
             # Extract key fields for matching
             employee_code = self._normalize_code(self._extract_field(raw_data, ['employee_code', 'emp_code', 'code', 'employee_id', 'emp_id', 'id']))
@@ -329,6 +353,89 @@ class HrPayrollImportBatch(models.Model):
 
         # Refresh the form to reflect new state and stats
         return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    def _load_multisheet_data(self, file_content, connector):
+        """Load and merge data across all sheets using primary key matching."""
+        workbook_data = connector.load_workbook_multisheet(file_content, include_formulas=False)
+
+        sheet_summaries = []
+        for sheet_name in workbook_data['sheet_names']:
+            sheet_data = connector.load_sheet_with_detection(sheet_name)
+            headers = [h.get('value') for h in sheet_data.get('headers', []) if h.get('value')]
+            primary_key = self._find_primary_key_header(headers)
+            match_count = self._count_header_matches(headers)
+            sheet_summaries.append({
+                'sheet_name': sheet_name,
+                'headers': headers,
+                'data_rows': sheet_data.get('data_rows', []),
+                'primary_key': primary_key,
+                'match_count': match_count,
+                'row_count': sheet_data.get('total_rows', 0),
+                'col_count': sheet_data.get('total_columns', 0),
+            })
+
+        candidates = [s for s in sheet_summaries if s['primary_key']]
+        if not candidates:
+            raise UserError(_("No primary key column found in any worksheet."))
+
+        candidates.sort(key=lambda s: (s['match_count'], s['col_count'], s['row_count']), reverse=True)
+        main_sheet = candidates[0]
+        main_pk = main_sheet['primary_key']
+
+        self._log(
+            "Multi-sheet import: main sheet '%s' using primary key '%s' (matched %d headers)"
+            % (main_sheet['sheet_name'], main_pk, main_sheet['match_count'])
+        )
+
+        merged_rows = {}
+        for row in main_sheet['data_rows']:
+            pk_value = row.get(main_pk)
+            pk_key = self._normalize_code(pk_value)
+            if not pk_key:
+                continue
+            base_row = row.copy()
+            for header, value in row.items():
+                base_row[f"{main_sheet['sheet_name']}|{header}"] = value
+            merged_rows[pk_key] = base_row
+
+        for sheet in sheet_summaries:
+            if sheet['sheet_name'] == main_sheet['sheet_name']:
+                continue
+
+            pk_header = sheet['primary_key'] or main_pk
+            if not pk_header:
+                continue
+
+            aux_map = {}
+            for row in sheet['data_rows']:
+                pk_value = row.get(pk_header)
+                pk_key = self._normalize_code(pk_value)
+                if not pk_key:
+                    continue
+                aux_map[pk_key] = row
+
+            for pk_key, base_row in merged_rows.items():
+                aux_row = aux_map.get(pk_key)
+                if aux_row:
+                    for header, value in aux_row.items():
+                        if header == pk_header:
+                            continue
+                        base_row[f"{sheet['sheet_name']}|{header}"] = value
+                        if header not in base_row:
+                            base_row[header] = value
+                else:
+                    for header in sheet['headers']:
+                        if header == pk_header:
+                            continue
+                        base_row.setdefault(f"{sheet['sheet_name']}|{header}", None)
+                        base_row.setdefault(header, None)
+
+        header_set = set()
+        for row in merged_rows.values():
+            header_set.update(row.keys())
+        headers = sorted(header_set)
+
+        return headers, list(merged_rows.values())
 
     def action_match_employees(self):
         """Match import lines to existing employees"""
@@ -358,6 +465,18 @@ class HrPayrollImportBatch(models.Model):
 
         # Refresh the form to reflect new state and stats
         return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    def action_view_error_lines(self):
+        """Open import lines filtered to errors for this batch."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Error Lines'),
+            'res_model': 'hr.payroll.import.line',
+            'view_mode': 'tree,form',
+            'domain': [('batch_id', '=', self.id), ('state', '=', 'error')],
+            'context': {'default_batch_id': self.id},
+        }
 
     def _find_employee(self, line):
         """
@@ -589,13 +708,14 @@ class HrPayrollImportBatch(models.Model):
             'date_from': self.date_from,
             'date_to': self.date_to,
             'struct_id': self.formula_config_id.structure_id.id if self.formula_config_id.structure_id else False,
-            'journal_id': self._get_payroll_journal().id,
             'state': 'draft',
             # Store formula computation info
             'calculation_method': 'formula',
             'formula_config_id': self.formula_config_id.id,
             'formula_input_values': json.dumps(input_values),
         }
+        if 'journal_id' in self.env['hr.payslip']._fields:
+            payslip_vals['journal_id'] = self._get_payroll_journal().id
 
         payslip = self.env['hr.payslip'].create(payslip_vals)
 
@@ -618,7 +738,7 @@ class HrPayrollImportBatch(models.Model):
         1) Batch journal (if set)
         2) Configuration journal (if set)
         3) First general journal for the company
-        Raises a clear error if none found.
+        4) Create a default general payroll journal if none exist
         """
         Journal = self.env['account.journal'].with_context(active_test=True)
         if self.payroll_journal_id:
@@ -629,7 +749,47 @@ class HrPayrollImportBatch(models.Model):
         journal = Journal.search([('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1, order='sequence, id')
         if journal:
             return journal
+        journal = self._get_or_create_default_payroll_journal()
+        if journal:
+            self.payroll_journal_id = journal.id
+            return journal
         raise UserError(_("No general journal found for company %s. Please set a Payroll Journal on the batch or configuration.") % (self.company_id.display_name,))
+
+    def _get_first_general_journal(self, company):
+        """Return the first general journal for a company, if any."""
+        if not company:
+            return None
+        Journal = self.env['account.journal'].with_context(active_test=True)
+        return Journal.search([('type', '=', 'general'), ('company_id', '=', company.id)], limit=1, order='sequence, id')
+
+    def _get_or_create_default_payroll_journal(self):
+        """Create a default general journal for payroll if none exist."""
+        self.ensure_one()
+        Journal = self.env['account.journal'].with_context(active_test=True)
+
+        existing = Journal.search([('type', '=', 'general'), ('company_id', '=', self.company_id.id)], limit=1)
+        if existing:
+            return existing
+
+        base_code = 'PAYR'
+        code = base_code
+        suffix = 1
+        while Journal.search([('code', '=', code), ('company_id', '=', self.company_id.id)], limit=1):
+            code = f"{base_code}{suffix}"
+            suffix += 1
+
+        try:
+            journal = Journal.create({
+                'name': _('Payroll Journal'),
+                'code': code,
+                'type': 'general',
+                'company_id': self.company_id.id,
+            })
+        except Exception as e:
+            _logger.warning("Failed to create default payroll journal: %s", e)
+            return None
+
+        return journal
 
     def _compute_and_create_payslip_lines(self, payslip, input_values):
         """
@@ -805,6 +965,17 @@ class HrPayrollImportBatch(models.Model):
         input_values = {}
         config = self.formula_config_id
 
+        def lookup_raw_value(candidates):
+            for key in candidates:
+                if key in raw_data:
+                    return raw_data.get(key)
+            normalized_map = {self._normalize_header_key(k): k for k in raw_data.keys()}
+            for key in candidates:
+                normalized_key = self._normalize_header_key(key)
+                if normalized_key in normalized_map:
+                    return raw_data.get(normalized_map[normalized_key])
+            return None
+
         # First, try using connector field mappings if available
         if config.connector_id:
             for mapping in config.connector_id.field_mapping_ids:
@@ -820,25 +991,33 @@ class HrPayrollImportBatch(models.Model):
             if rule.code not in input_values:
                 # Try to find value from raw data
                 value = None
+                candidates = []
 
                 # First try data_source_field
                 if rule.data_source_field:
-                    value = raw_data.get(rule.data_source_field)
+                    candidates.append(rule.data_source_field)
+
+                # Try sheet-prefixed fields for multisheet imports
+                if rule.source_sheet_name:
+                    if rule.name:
+                        candidates.append(f"{rule.source_sheet_name}|{rule.name}")
+                    if rule.code:
+                        candidates.append(f"{rule.source_sheet_name}|{rule.code}")
 
                 # Then try by rule code
-                if value is None:
-                    value = raw_data.get(rule.code)
+                if rule.code:
+                    candidates.append(rule.code)
 
                 # Then try by column letter
-                if value is None:
-                    value = raw_data.get(rule.column_letter)
+                if rule.column_letter:
+                    candidates.append(rule.column_letter)
 
-                # Then try common variations
-                if value is None:
-                    for key in raw_data.keys():
-                        if key.upper().replace(' ', '_').replace('-', '_') == rule.code.upper():
-                            value = raw_data.get(key)
-                            break
+                # Then try by rule name
+                if rule.name:
+                    candidates.append(rule.name)
+
+                if candidates:
+                    value = lookup_raw_value(candidates)
 
                 if value is not None:
                     try:
@@ -874,6 +1053,40 @@ class HrPayrollImportBatch(models.Model):
                 if _norm(str(key)) == target:
                     return data[key]
         return None
+
+    def _normalize_header_key(self, value):
+        if value is None:
+            return ''
+        return ''.join(ch for ch in str(value).lower() if ch.isalnum())
+
+    def _find_primary_key_header(self, headers):
+        candidates = [
+            'employee_code', 'emp_code', 'emp code', 'emp. code',
+            'employee id', 'employee_id', 'emp id', 'empid',
+            'id no', 'id_no', 'id',
+        ]
+        for candidate in candidates:
+            target = self._normalize_header_key(candidate)
+            for header in headers:
+                if self._normalize_header_key(header) == target:
+                    return header
+        return None
+
+    def _count_header_matches(self, headers):
+        rules = self.formula_config_id.rule_ids
+        lookup = set()
+        for rule in rules:
+            if rule.code:
+                lookup.add(self._normalize_header_key(rule.code))
+            if rule.name:
+                lookup.add(self._normalize_header_key(rule.name))
+            if rule.source_sheet_name:
+                lookup.add(self._normalize_header_key(rule.source_sheet_name))
+        count = 0
+        for header in headers:
+            if self._normalize_header_key(header) in lookup:
+                count += 1
+        return count
 
     def _extract_number(self, data, field_names):
         """Extract numeric field value"""

@@ -147,12 +147,7 @@
 
                         <!-- Computed Results -->
                         <page string="Computed Results" name="computed">
-                            <group>
                                 <field name="computed_values_html" nolabel="1" readonly="1"/>
-                            </group>
-                            <group>
-                                <field name="last_computed" readonly="1"/>
-                            </group>
                         </page>
 
                         <!-- Validation -->

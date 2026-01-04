@@ -258,25 +258,37 @@ class HrFormulaSampleData(models.Model):
                 value = computed.get(rule.code, 0)
                 is_formula = rule.column_type == 'formula'
                 row_style = "background:#f6f8fa;font-weight:bold;" if is_formula else ""
+                formula_value = rule.excel_formula or ''
                 rows_html.append(
                     f"<tr style='{row_style}'>"
-                    f"<td>{rule.column_letter or ''}</td>"
-                    f"<td>{rule.name or ''}</td>"
-                    f"<td>{rule.code or ''}</td>"
-                    f"<td>{rule.excel_formula or ''}</td>"
-                    f"<td style='text-align:right'>{value}</td>"
+                    f"<td style='white-space:nowrap'>{rule.column_letter or ''}</td>"
+                    f"<td style='white-space:normal;word-break:break-word;'>"
+                    f"{rule.source_sheet_name or ''}</td>"
+                    f"<td style='white-space:normal;word-break:break-word;'>{rule.name or ''}</td>"
+                    f"<td style='white-space:normal;word-break:break-word;'>"
+                    f"{rule.code or ''}</td>"
+                    f"<td style='text-align:right;white-space:nowrap'>{value}</td>"
+                    f"<td style='white-space:normal;word-break:break-word;' title='{formula_value}'>"
+                    f"{formula_value}</td>"
                     "</tr>"
                 )
 
             if rows_html:
                 table_html = (
-                    "<table class='table table-sm' style='width:100%'>"
+                    "<div style='width:100%;overflow-x:auto;'>"
+                    "<table class='table table-sm' style='min-width:1200px;width:100%;table-layout:fixed;'>"
                     "<thead><tr>"
-                    "<th>Col</th><th>Label/Name</th><th>Code</th><th>Formula</th><th style='text-align:right'>Value</th>"
+                    "<th style='width:6%'>Col</th>"
+                    "<th style='width:18%'>Section</th>"
+                    "<th style='width:22%'>Label/Name</th>"
+                    "<th style='width:20%'>Code</th>"
+                    "<th style='width:10%;text-align:right'>Value</th>"
+                    "<th style='width:24%'>Formula</th>"
                     "</tr></thead>"
                     "<tbody>"
                     + "".join(rows_html) +
                     "</tbody></table>"
+                    "</div>"
                 )
             else:
                 table_html = "<p class='text-muted'>No computed values available.</p>"
