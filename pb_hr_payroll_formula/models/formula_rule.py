@@ -964,9 +964,9 @@ class HrFormulaRule(models.Model):
                     'values': {k: safe_value(v) for k, v in values.items()},
                     'self': self,
                     'math': __import__('math'),
-                    'sum': sum,
-                    'min': min,
-                    'max': max,
+                    'sum': self._sumlist,
+                    'min': self._minlist,
+                    'max': self._maxlist,
                     'abs': abs,
                     'round': round,
                     'pow': pow,
@@ -1054,10 +1054,73 @@ class HrFormulaRule(models.Model):
         """Excel IF function implementation"""
         return true_val if condition else false_val
 
+    def _coerce_number(self, value):
+        """Convert a value to float for numeric functions, ignoring non-numeric text."""
+        if value is None or value == '':
+            return None
+        if isinstance(value, bool):
+            return 1.0 if value else 0.0
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            cleaned = value.strip().replace(' ', '')
+            if not cleaned:
+                return None
+            try:
+                if ',' in cleaned and '.' in cleaned:
+                    if cleaned.rfind(',') > cleaned.rfind('.'):
+                        cleaned = cleaned.replace('.', '').replace(',', '.')
+                    else:
+                        cleaned = cleaned.replace(',', '')
+                elif ',' in cleaned:
+                    parts = cleaned.split(',')
+                    if all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                    else:
+                        cleaned = cleaned.replace(',', '.')
+                elif '.' in cleaned:
+                    parts = cleaned.split('.')
+                    if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                return float(cleaned)
+            except (ValueError, TypeError):
+                return None
+        return None
+
+    def _sumlist(self, values_list):
+        """Excel SUM that ignores non-numeric values."""
+        if values_list is None:
+            return 0.0
+        total = 0.0
+        for value in values_list:
+            number = self._coerce_number(value)
+            if number is not None:
+                total += number
+        return total
+
+    def _maxlist(self, values_list):
+        """Excel MAX that ignores non-numeric values."""
+        if values_list is None:
+            return 0.0
+        numbers = [self._coerce_number(v) for v in values_list]
+        numbers = [v for v in numbers if v is not None]
+        return max(numbers) if numbers else 0.0
+
+    def _minlist(self, values_list):
+        """Excel MIN that ignores non-numeric values."""
+        if values_list is None:
+            return 0.0
+        numbers = [self._coerce_number(v) for v in values_list]
+        numbers = [v for v in numbers if v is not None]
+        return min(numbers) if numbers else 0.0
+
     def _avg(self, values_list):
         """Excel AVERAGE function implementation"""
-        valid_values = [v for v in values_list if v is not None]
-        return sum(valid_values) / len(valid_values) if valid_values else 0
+        if not values_list:
+            return 0
+        numbers = [self._coerce_number(v) for v in values_list]
+        numbers = [v for v in numbers if v is not None]
+        return sum(numbers) / len(numbers) if numbers else 0
 
     def _iferror(self, value, error_value):
         """Excel IFERROR function implementation
