@@ -1068,12 +1068,22 @@ class MultiSheetImportWizard(models.TransientModel):
                     current_col_index += 1
 
                 for col_sel in constant_cols:
+                    # Assign new column letter to constants (just like normal columns)
+                    new_col_letter = self._index_to_column_letter(current_col_index)
+
+                    # Store mapping for same-sheet resolution
+                    # This is CRITICAL: constants need to be in column_mapping so that
+                    # formulas referencing them can be resolved properly
+                    sheet_key = self._normalize_sheet_key(sheet_line.sheet_name)
+                    column_mapping[(sheet_key, col_sel.column_letter)] = new_col_letter
+                    column_mapping[(sheet_key, col_sel.column_index)] = new_col_letter
+
                     code = self._generate_code(col_sel.original_header, seen_codes)
                     seen_codes.add(code)
                     component = {
                         'wizard_id': self.id,
                         'source_sheet': sheet_line.sheet_name,
-                        'column_letter': col_sel.column_letter,
+                        'column_letter': new_col_letter,  # Use NEW column letter
                         'original_header': col_sel.original_header,
                         'generated_code': code,
                         'generated_name': col_sel.original_header,
@@ -1086,38 +1096,26 @@ class MultiSheetImportWizard(models.TransientModel):
                         'include_in_import': True,
                         'is_in_excel': True,
                         'data_source': 'manual',
+                        '_original_col': col_sel.column_letter,  # Track original column
                     }
                     all_components.append(component)
-
-            # Debug: Log column_mapping for troubleshooting
-            _logger.info("=== COLUMN MAPPING DEBUG ===")
-            for (sheet_key, col_ref), new_col in sorted(column_mapping.items(), key=lambda x: (str(x[0][0]), str(x[0][1]))):
-                _logger.info(f"  column_mapping[({sheet_key!r}, {col_ref!r})] = {new_col!r}")
-            _logger.info("=== END COLUMN MAPPING ===")
+                    current_col_index += 1  # Increment for next column
 
             # Now resolve formulas (both same-sheet and cross-sheet references)
             for component in all_components:
                 if component['excel_formula']:
-                    _logger.info(
-                        f"=== RESOLVING FORMULA for component [{component['generated_code']}] "
-                        f"from sheet [{component['source_sheet']}] ==="
-                    )
-                    _logger.info(f"  Original formula: {component['excel_formula']}")
-
                     # First resolve same-sheet column references (e.g., I3 -> FS3)
                     formula_with_same_sheet = self._resolve_same_sheet_formula(
                         component['excel_formula'],
                         component['source_sheet'],
                         column_mapping
                     )
-                    _logger.info(f"  After same-sheet resolution: {formula_with_same_sheet}")
 
                     # Then resolve cross-sheet references (e.g., 'OtherSheet'!A1 -> XX1)
                     resolved = self._resolve_cross_sheet_formula(
                         formula_with_same_sheet,
                         column_mapping
                     )
-                    _logger.info(f"  After cross-sheet resolution: {resolved}")
 
                     component['resolved_formula'] = resolved
                     # Use the fully resolved formula
@@ -1165,29 +1163,18 @@ class MultiSheetImportWizard(models.TransientModel):
             target_idx = start_idx + col_index - 1
             target_col = self._index_to_column_letter(target_idx)
 
-            _logger.info(
-                f"VLOOKUP DEBUG: raw_sheet='{raw_sheet_name}', normalized='{sheet_name}', "
-                f"start_col='{start_col}', col_index={col_index}, target_col='{target_col}', target_idx={target_idx}"
-            )
-
             # Look up new column
             new_col = column_mapping.get((sheet_name, target_col))
-            _logger.info(f"  Lookup by letter: ({sheet_name!r}, {target_col!r}) -> {new_col!r}")
             if not new_col:
                 new_col = column_mapping.get((sheet_name, target_idx))
-                _logger.info(f"  Lookup by index: ({sheet_name!r}, {target_idx}) -> {new_col!r}")
 
             if new_col:
                 # Return just the code - the formula converter handles codes in column_map.values()
-                # Don't add row number suffix as it prevents proper code recognition
-                _logger.info(f"  VLOOKUP RESOLVED -> {new_col}")
                 return new_col
             else:
-                # List available keys for this sheet for debugging
-                available_keys = [k for k in column_mapping.keys() if k[0] == sheet_name]
-                _logger.warning(
+                _logger.debug(
                     f"VLOOKUP unresolved: sheet='{sheet_name}', target_col='{target_col}', "
-                    f"col_index={col_index}. Available keys for sheet: {available_keys[:10]}... Returning 0."
+                    f"col_index={col_index}. Returning 0."
                 )
                 return "0"  # Unresolved - return 0
 
@@ -1293,12 +1280,6 @@ class MultiSheetImportWizard(models.TransientModel):
             return placeholder
 
         result = cross_sheet_pattern.sub(mask_cross_sheet, result)
-
-        if placeholders:
-            _logger.info(f"  Same-sheet resolution: masked {len(placeholders)} cross-sheet refs")
-            for ph, orig in placeholders.items():
-                _logger.info(f"    {ph} = {orig}")
-            _logger.info(f"  Formula after masking: {result}")
 
         # Pattern to match column references in formulas
         # Matches: A1, $A$1, $A1, A$1, AA123, etc.
@@ -1704,9 +1685,18 @@ class MultiSheetImportWizard(models.TransientModel):
             header_cell = sheet.cell(row=row_num - 1, column=col_idx)
             if header_cell.value and isinstance(header_cell.value, str):
                 label = str(header_cell.value).strip()
+                # Skip formulas - they start with '='
+                if label.startswith('='):
+                    return None
+                # Skip resolved formula patterns (values.get, VLOOKUP, SUMIF, etc.)
+                if 'values.get' in label or 'VLOOKUP' in label.upper() or 'SUMIF' in label.upper():
+                    return None
                 # Clean up the label - remove special chars, keep alphanumeric and underscore
                 import re
                 clean_label = re.sub(r'[^A-Za-z0-9_]', '', label)
+                # Reject labels that look like they contain unresolved formulas
+                if len(clean_label) > 50:  # Unreasonably long labels are likely formula remnants
+                    return None
                 if clean_label:
                     return clean_label
 
@@ -2307,12 +2297,21 @@ class MultiSheetImportWizard(models.TransientModel):
         """Generate a unique code from header value."""
         header_str = str(header).strip()
 
-        if header_str.isdigit():
+        # Skip formula values - they start with '='
+        if header_str.startswith('='):
+            base_code = 'FORMULA_COL'
+        # Skip resolved formula patterns
+        elif 'values.get' in header_str or 'VLOOKUP' in header_str.upper() or 'SUMIF' in header_str.upper():
+            base_code = 'FORMULA_COL'
+        elif header_str.isdigit():
             base_code = f'COL_{header_str}'
         else:
             base_code = re.sub(r'[^A-Za-z0-9]', '', header_str).upper()
             if not base_code:
                 base_code = 'UNNAMED'
+            # Truncate overly long codes (likely formula remnants)
+            if len(base_code) > 40:
+                base_code = base_code[:40]
 
         code = base_code
         suffix = 1

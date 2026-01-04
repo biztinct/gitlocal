@@ -75,6 +75,14 @@ class FormulaEvaluator:
             '_concat': self._excel_concat,
             '_counta': self._excel_counta,
             '_vlookup': self._excel_vlookup,
+            '_sumif': self._excel_sumif,
+            '_sumifs': self._excel_sumifs,
+            '_row': self._excel_row,
+            '_subtotal': self._excel_subtotal,
+            'SUMIF': self._excel_sumif,  # Direct function name for unconverted formulas
+            'SUMIFS': self._excel_sumifs,  # Direct function name for unconverted formulas
+            'ROW': self._excel_row,  # Direct function name for unconverted formulas
+            'SUBTOTAL': self._excel_subtotal,  # Direct function name for unconverted formulas
         }
 
     def evaluate_all(
@@ -368,6 +376,201 @@ class FormulaEvaluator:
                 else:
                     break
             return result
+
+    @staticmethod
+    def _excel_sumif(range_val, criteria, sum_range=None):
+        """
+        Simplified SUMIF for payroll use.
+
+        In the payroll context where formulas are evaluated per-employee row,
+        SUMIF is simplified: if the criteria matches the range value, return
+        the sum_range value (or range_val if sum_range not provided).
+
+        This handles the common pattern:
+        SUMIF(EmpCodeColumn, CurrentEmpCode, AmountColumn)
+        -> If EmpCodeColumn == CurrentEmpCode, return AmountColumn value
+
+        Args:
+            range_val: Value from the range column (criteria column)
+            criteria: The value to match against
+            sum_range: Value to return if match (optional, defaults to range_val)
+
+        Returns:
+            sum_range if criteria matches range_val, else 0
+        """
+        # Handle None values
+        if range_val is None or criteria is None:
+            return 0
+
+        # Convert to comparable types
+        try:
+            # Try numeric comparison first
+            if isinstance(range_val, (int, float)) and isinstance(criteria, (int, float)):
+                if range_val == criteria:
+                    return float(sum_range) if sum_range is not None else float(range_val)
+            # String comparison
+            elif str(range_val).strip().lower() == str(criteria).strip().lower():
+                if sum_range is not None:
+                    try:
+                        return float(sum_range)
+                    except (ValueError, TypeError):
+                        return 0
+                return float(range_val) if isinstance(range_val, (int, float)) else 0
+        except Exception:
+            pass
+
+        return 0
+
+    @staticmethod
+    def _excel_sumifs(sum_range, *criteria_pairs):
+        """
+        Simplified SUMIFS for payroll use.
+
+        Similar to SUMIF but with multiple criteria pairs.
+
+        Args:
+            sum_range: Value to return if all criteria match
+            *criteria_pairs: Pairs of (range_val, criteria) to check
+
+        Returns:
+            sum_range if all criteria match, else 0
+        """
+        if sum_range is None:
+            return 0
+
+        # Process criteria pairs
+        for i in range(0, len(criteria_pairs), 2):
+            if i + 1 >= len(criteria_pairs):
+                break
+            range_val = criteria_pairs[i]
+            criteria = criteria_pairs[i + 1]
+
+            if range_val is None or criteria is None:
+                return 0
+
+            # Check if criteria matches
+            try:
+                if isinstance(range_val, (int, float)) and isinstance(criteria, (int, float)):
+                    if range_val != criteria:
+                        return 0
+                elif str(range_val).strip().lower() != str(criteria).strip().lower():
+                    return 0
+            except Exception:
+                return 0
+
+        # All criteria matched
+        try:
+            return float(sum_range)
+        except (ValueError, TypeError):
+            return 0
+
+    @staticmethod
+    def _excel_row(reference=None):
+        """
+        Excel ROW function.
+
+        In the payroll context where formulas are evaluated per-employee row,
+        ROW() typically returns the current row being processed.
+
+        For simplicity in payroll evaluation, we return 1 (or the row if provided).
+
+        Args:
+            reference: Optional cell reference (not used in simplified version)
+
+        Returns:
+            Row number (defaults to 1 for payroll context)
+        """
+        if reference is not None:
+            # If a row number or reference is provided, try to extract row
+            if isinstance(reference, (int, float)):
+                return int(reference)
+            if isinstance(reference, str):
+                # Try to extract row number from cell reference like "A5"
+                import re
+                match = re.search(r'(\d+)', str(reference))
+                if match:
+                    return int(match.group(1))
+        # Default to row 1 for payroll evaluation context
+        return 1
+
+    @staticmethod
+    def _excel_subtotal(function_num, *args):
+        """
+        Excel SUBTOTAL function.
+
+        SUBTOTAL(function_num, ref1, [ref2], ...) performs calculations
+        based on the function_num:
+
+        Function numbers (ignore hidden values):
+        1 or 101 = AVERAGE
+        2 or 102 = COUNT
+        3 or 103 = COUNTA
+        4 or 104 = MAX
+        5 or 105 = MIN
+        6 or 106 = PRODUCT
+        7 or 107 = STDEV
+        8 or 108 = STDEVP
+        9 or 109 = SUM
+        10 or 110 = VAR
+        11 or 111 = VARP
+
+        Args:
+            function_num: Number indicating which function to use
+            *args: Values to include in the calculation
+
+        Returns:
+            Result of the specified function
+        """
+        if not args:
+            return 0
+
+        # Flatten and filter values
+        values = []
+        for arg in args:
+            if isinstance(arg, (list, tuple)):
+                values.extend([v for v in arg if v is not None and v != ''])
+            elif arg is not None and arg != '':
+                values.append(arg)
+
+        # Convert to numbers where possible
+        numeric_values = []
+        for v in values:
+            try:
+                numeric_values.append(float(v))
+            except (ValueError, TypeError):
+                pass
+
+        if not numeric_values:
+            return 0
+
+        # Map function number to operation (both regular and "ignore hidden" versions)
+        func_num = int(function_num) % 100 if function_num >= 100 else int(function_num)
+
+        try:
+            if func_num == 1:  # AVERAGE
+                return sum(numeric_values) / len(numeric_values) if numeric_values else 0
+            elif func_num == 2:  # COUNT (count numbers only)
+                return len(numeric_values)
+            elif func_num == 3:  # COUNTA (count non-empty)
+                return len(values)
+            elif func_num == 4:  # MAX
+                return max(numeric_values) if numeric_values else 0
+            elif func_num == 5:  # MIN
+                return min(numeric_values) if numeric_values else 0
+            elif func_num == 6:  # PRODUCT
+                result = 1
+                for v in numeric_values:
+                    result *= v
+                return result
+            elif func_num == 9:  # SUM
+                return sum(numeric_values)
+            else:
+                # Unsupported function number, default to SUM
+                _logger.warning(f"SUBTOTAL function_num {function_num} not fully supported, using SUM")
+                return sum(numeric_values)
+        except Exception as e:
+            _logger.warning(f"SUBTOTAL calculation error: {e}")
+            return 0
 
 
 class BatchEvaluator:

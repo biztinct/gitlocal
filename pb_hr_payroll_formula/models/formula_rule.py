@@ -600,6 +600,14 @@ class HrFormulaRule(models.Model):
             r'\bSQRT\(': 'math.sqrt(',
             r'\bCEILING\(': 'math.ceil(',
             r'\bFLOOR\(': 'math.floor(',
+            r'\bSUMIF\(': 'self._sumif(',
+            r'\bSUMIFS\(': 'self._sumifs(',
+            r'\bROW\(': 'self._row(',
+            r'\bSUBTOTAL\(': 'self._subtotal(',
+            r'\bMOD\(': 'self._mod(',
+            r'\bSIGN\(': 'self._sign(',
+            r'\bROUNDUP\(': 'self._roundup(',
+            r'\bROUNDDOWN\(': 'self._rounddown(',
         }
 
         for excel_func, python_func in function_map.items():
@@ -1058,3 +1066,185 @@ class HrFormulaRule(models.Model):
     def _isblank(self, value):
         """Excel ISBLANK function implementation"""
         return value in (None, '')
+
+    def _sumif(self, range_val, criteria, sum_range=None):
+        """
+        Excel SUMIF function implementation.
+
+        In the payroll context where formulas are evaluated per-employee row,
+        SUMIF is simplified: if the criteria matches the range value, return
+        the sum_range value (or range_val if sum_range not provided).
+
+        Args:
+            range_val: Value from the range column (criteria column)
+            criteria: The value to match against
+            sum_range: Value to return if match (optional, defaults to range_val)
+
+        Returns:
+            sum_range if criteria matches range_val, else 0
+        """
+        if range_val is None or criteria is None:
+            return 0
+
+        try:
+            if isinstance(range_val, (int, float)) and isinstance(criteria, (int, float)):
+                if range_val == criteria:
+                    return float(sum_range) if sum_range is not None else float(range_val)
+            elif str(range_val).strip().lower() == str(criteria).strip().lower():
+                if sum_range is not None:
+                    try:
+                        return float(sum_range)
+                    except (ValueError, TypeError):
+                        return 0
+                return float(range_val) if isinstance(range_val, (int, float)) else 0
+        except Exception:
+            pass
+        return 0
+
+    def _sumifs(self, sum_range, *criteria_pairs):
+        """
+        Excel SUMIFS function implementation.
+
+        Similar to SUMIF but with multiple criteria pairs.
+
+        Args:
+            sum_range: Value to return if all criteria match
+            *criteria_pairs: Pairs of (range_val, criteria) to check
+
+        Returns:
+            sum_range if all criteria match, else 0
+        """
+        if sum_range is None:
+            return 0
+
+        for i in range(0, len(criteria_pairs), 2):
+            if i + 1 >= len(criteria_pairs):
+                break
+            range_val = criteria_pairs[i]
+            criteria = criteria_pairs[i + 1]
+
+            if range_val is None or criteria is None:
+                return 0
+
+            try:
+                if isinstance(range_val, (int, float)) and isinstance(criteria, (int, float)):
+                    if range_val != criteria:
+                        return 0
+                elif str(range_val).strip().lower() != str(criteria).strip().lower():
+                    return 0
+            except Exception:
+                return 0
+
+        try:
+            return float(sum_range)
+        except (ValueError, TypeError):
+            return 0
+
+    def _row(self, reference=None):
+        """
+        Excel ROW function implementation.
+
+        In payroll context, ROW() returns the current row being processed.
+        For simplicity, returns 1 (or extracts row from reference if provided).
+
+        Args:
+            reference: Optional cell reference
+
+        Returns:
+            Row number (defaults to 1)
+        """
+        if reference is not None:
+            if isinstance(reference, (int, float)):
+                return int(reference)
+            if isinstance(reference, str):
+                match = re.search(r'(\d+)', str(reference))
+                if match:
+                    return int(match.group(1))
+        return 1
+
+    def _subtotal(self, function_num, *args):
+        """
+        Excel SUBTOTAL function implementation.
+
+        SUBTOTAL(function_num, ref1, [ref2], ...) performs calculations
+        based on function_num:
+        1/101 = AVERAGE, 2/102 = COUNT, 3/103 = COUNTA, 4/104 = MAX,
+        5/105 = MIN, 6/106 = PRODUCT, 9/109 = SUM
+
+        Args:
+            function_num: Function to use
+            *args: Values to calculate
+
+        Returns:
+            Result of the specified function
+        """
+        if not args:
+            return 0
+
+        values = []
+        for arg in args:
+            if isinstance(arg, (list, tuple)):
+                values.extend([v for v in arg if v is not None and v != ''])
+            elif arg is not None and arg != '':
+                values.append(arg)
+
+        numeric_values = []
+        for v in values:
+            try:
+                numeric_values.append(float(v))
+            except (ValueError, TypeError):
+                pass
+
+        if not numeric_values:
+            return 0
+
+        func_num = int(function_num) % 100 if function_num >= 100 else int(function_num)
+
+        try:
+            if func_num == 1:  # AVERAGE
+                return sum(numeric_values) / len(numeric_values) if numeric_values else 0
+            elif func_num == 2:  # COUNT
+                return len(numeric_values)
+            elif func_num == 3:  # COUNTA
+                return len(values)
+            elif func_num == 4:  # MAX
+                return max(numeric_values) if numeric_values else 0
+            elif func_num == 5:  # MIN
+                return min(numeric_values) if numeric_values else 0
+            elif func_num == 6:  # PRODUCT
+                result = 1
+                for v in numeric_values:
+                    result *= v
+                return result
+            elif func_num == 9:  # SUM
+                return sum(numeric_values)
+            else:
+                return sum(numeric_values)
+        except Exception:
+            return 0
+
+    def _mod(self, number, divisor):
+        """Excel MOD function implementation"""
+        if divisor == 0:
+            return 0
+        return number % divisor
+
+    def _sign(self, number):
+        """Excel SIGN function implementation"""
+        if number > 0:
+            return 1
+        elif number < 0:
+            return -1
+        return 0
+
+    def _roundup(self, number, decimals=0):
+        """Excel ROUNDUP function implementation"""
+        import math
+        multiplier = 10 ** int(decimals)
+        return math.ceil(number * multiplier) / multiplier
+
+    def _rounddown(self, number, decimals=0):
+        """Excel ROUNDDOWN function implementation"""
+        import math
+        multiplier = 10 ** int(decimals)
+        return math.floor(number * multiplier) / multiplier
