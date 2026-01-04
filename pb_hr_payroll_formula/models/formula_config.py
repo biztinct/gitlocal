@@ -497,7 +497,7 @@ class HrFormulaConfig(models.Model):
         }
 
     def action_validate_formulas(self):
-        """Validate all formulas in this configuration"""
+        """Validate all formulas (syntax + evaluation) in this configuration"""
         self.ensure_one()
         from ..formula_engine import FormulaValidator
 
@@ -507,8 +507,8 @@ class HrFormulaConfig(models.Model):
         # Build column mapping
         column_map = {r.column_letter: r.code for r in rules}
 
-        # Validate each formula
-        errors = []
+        # PART 1: Syntax Validation
+        syntax_errors = []
         for rule in rules:
             if rule.column_type == 'formula' and rule.excel_formula:
                 is_valid, message = validator.validate_formula(
@@ -520,26 +520,76 @@ class HrFormulaConfig(models.Model):
                     'validation_message': message if not is_valid else ''
                 })
                 if not is_valid:
-                    errors.append(f"{rule.column_letter} ({rule.code}): {message}")
+                    syntax_errors.append(f"• {rule.column_letter} ({rule.code}): {message}")
 
         # Check circular references
         circular = validator.check_circular_references(rules)
         for rule in rules:
             rule.has_circular_ref = rule.code in circular
 
-        if errors:
-            self.validation_message = _("Errors found:\n") + "\n".join(errors)
-        else:
-            self.validation_message = _("All formulas are valid.")
+        # PART 2: Evaluation Testing (if sample data exists)
+        evaluation_errors = []
+        formula_rules = rules.filtered(lambda r: r.column_type == 'formula')
 
+        if self.sample_data_ids:
+            # Clear previous evaluation errors
+            formula_rules.write({
+                'has_evaluation_error': False,
+                'last_evaluation_error': False
+            })
+
+            # Use first sample data for testing
+            sample = self.sample_data_ids[0]
+            input_values = json.loads(sample.input_values_json or '{}')
+
+            # Test each formula
+            _logger.info(f"Testing {len(formula_rules)} formulas with sample data...")
+            for rule in formula_rules:
+                try:
+                    rule.evaluate(input_values)
+                except Exception as e:
+                    _logger.warning(f"Formula evaluation failed for {rule.code}: {e}")
+
+            # Collect evaluation errors
+            error_rules = self.rule_ids.filtered(lambda r: r.has_evaluation_error)
+            for rule in error_rules:
+                # Get first line of error for summary
+                error_summary = rule.last_evaluation_error.split('\n')[1] if rule.last_evaluation_error else 'Unknown error'
+                evaluation_errors.append(f"• {rule.column_letter} ({rule.code}): {error_summary}")
+
+        # PART 3: Build combined error message
+        all_errors = []
+
+        if syntax_errors:
+            all_errors.append("SYNTAX ERRORS:")
+            all_errors.extend(syntax_errors)
+            all_errors.append("")  # Empty line
+
+        if evaluation_errors:
+            all_errors.append("EVALUATION ERRORS:")
+            all_errors.extend(evaluation_errors)
+            all_errors.append("")  # Empty line
+            all_errors.append("→ Click on formulas with red highlighting to see detailed error messages")
+
+        if all_errors:
+            self.validation_message = "\n".join(all_errors)
+            message_type = 'warning'
+            title = _('Formula Errors Found')
+        else:
+            self.validation_message = _("✓ All formulas are valid and evaluate correctly!")
+            message_type = 'success'
+            title = _('Validation Complete')
+
+        # Force reload to show updated error highlights
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _('Validation Complete'),
-                'message': self.validation_message,
-                'type': 'warning' if errors else 'success',
-                'sticky': bool(errors),
+                'title': title,
+                'message': self.validation_message if all_errors else _('All %d formulas validated successfully!') % len(formula_rules),
+                'type': message_type,
+                'sticky': bool(all_errors),
+                'next': {'type': 'ir.actions.client', 'tag': 'reload'} if evaluation_errors else None,
             }
         }
 
@@ -821,3 +871,80 @@ class HrFormulaConfig(models.Model):
                 'next': {'type': 'ir.actions.client', 'tag': 'reload'},
             }
         }
+
+    def action_test_all_formulas(self):
+        """Test evaluate all formulas with sample data and report errors"""
+        self.ensure_one()
+
+        # Check if we have sample data
+        if not self.sample_data_ids:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('No Sample Data'),
+                    'message': _('Please create sample data first to test formula evaluation. '
+                               'Go to Sample Data tab and add test cases.'),
+                    'type': 'warning',
+                    'sticky': True,
+                }
+            }
+
+        # Use the first sample data for testing
+        sample = self.sample_data_ids[0]
+        input_values = json.loads(sample.input_values_json or '{}')
+
+        # Clear previous evaluation errors
+        formula_rules = self.rule_ids.filtered(lambda r: r.column_type == 'formula')
+        formula_rules.write({
+            'has_evaluation_error': False,
+            'last_evaluation_error': False
+        })
+
+        # Evaluate each rule with the sample data
+        _logger.info(f"Testing {len(formula_rules)} formulas with sample data...")
+        for rule in formula_rules:
+            try:
+                rule.evaluate(input_values)
+            except Exception as e:
+                # Error will be captured by the evaluate method
+                _logger.warning(f"Formula test failed for {rule.code}: {e}")
+
+        # Count errors
+        error_rules = self.rule_ids.filtered(lambda r: r.has_evaluation_error)
+        error_count = len(error_rules)
+
+        if error_count > 0:
+            error_list = []
+            for rule in error_rules:
+                error_list.append(f"• {rule.column_letter} ({rule.code}): {rule.name}")
+
+            message = _(
+                "%d formula(s) have evaluation errors:\n\n%s\n\n"
+                "Click on the formula rules with red highlighting to see detailed error messages."
+            ) % (error_count, '\n'.join(error_list[:10]))
+
+            if error_count > 10:
+                message += _("\n... and %d more. Check the list for all errors.") % (error_count - 10)
+
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Formula Evaluation Errors Found'),
+                    'message': message,
+                    'type': 'danger',
+                    'sticky': True,
+                }
+            }
+        else:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('All Formulas Valid'),
+                    'message': _('All %d formulas evaluated successfully without errors!') % len(formula_rules),
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
