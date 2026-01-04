@@ -97,7 +97,8 @@ for all country-specific modules while maintaining clean separation of concerns.
             # NEW Enhanced CSS and JS - Create these 2 files
             'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',  # CREATE THIS FILE
             'pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js',    # CREATE THIS FILE
-            
+            'pb_hr_payroll_base/static/src/js/breadcrumb_override.js',           # Breadcrumb override for country selector
+
             # Chart.js for analytics
             'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
             
