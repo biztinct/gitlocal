@@ -82,6 +82,12 @@
                             <field name="new_employees" widget="statinfo" string="Created"/>
                         </button>
                         <button class="oe_stat_button" type="object"
+                                name="action_view_error_lines"
+                                icon="fa-exclamation-triangle"
+                                attrs="{'invisible': [('error_lines', '=', 0)]}">
+                            <field name="error_lines" widget="statinfo" string="Errors"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
                                 name="action_view_created_payslips"
                                 icon="fa-file-text-o"
                                 attrs="{'invisible': [('state', '!=', 'done')]}">
@@ -187,8 +193,7 @@
                                            attrs="{'invisible': [('create_payslips', '=', False)]}"/>
                                     <field name="payroll_journal_id"
                                            attrs="{'invisible': [('create_payslips', '=', False)]}"
-                                           options="{'no_create': False}"
-                                           groups="base.group_multi_company"/>
+                                           options="{'no_create': False}"/>
                                 </group>
                             </group>
                         </page>
