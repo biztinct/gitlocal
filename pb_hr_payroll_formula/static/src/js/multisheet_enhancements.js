@@ -251,11 +251,235 @@ function addDualScrollbar() {
     console.log('=== DUAL SCROLLBAR: Detection complete ===\n');
 }
 
+// Add autocomplete dropdown for primary key column selection
+function addPrimaryKeyAutocomplete() {
+    console.log('\n=== PRIMARY KEY AUTOCOMPLETE: Starting setup ===');
+
+    // Try multiple selectors to find primary key input fields
+    const selectors = [
+        'input[name="primary_key_column_name"]',
+        'td[data-name="primary_key_column_name"] input',
+        '.o_field_widget[name="primary_key_column_name"] input',
+        'td.o_data_cell[name="primary_key_column_name"] input',
+        'input.o_field_widget[name="primary_key_column_name"]'
+    ];
+
+    let pkInputs = [];
+    for (const selector of selectors) {
+        pkInputs = document.querySelectorAll(selector);
+        console.log(`Selector "${selector}" found ${pkInputs.length} elements`);
+        if (pkInputs.length > 0) {
+            break;
+        }
+    }
+
+    // Fallback: Search for any input in the primary_key_column_name column
+    if (pkInputs.length === 0) {
+        console.log('No inputs found with standard selectors. Searching in table rows...');
+        const availableSheetTable = document.querySelector('.o_field_widget[name="available_sheet_ids"] table');
+        if (availableSheetTable) {
+            // Find all rows
+            const rows = availableSheetTable.querySelectorAll('tbody tr');
+            console.log(`Found ${rows.length} table rows to search`);
+
+            // For each row, find inputs (Odoo renders inputs dynamically in editable tree)
+            rows.forEach((row, idx) => {
+                const inputs = row.querySelectorAll('input[type="text"]');
+                console.log(`Row ${idx}: Found ${inputs.length} text inputs`);
+                inputs.forEach((inp, i) => {
+                    console.log(`  Input ${i}: name="${inp.name}", id="${inp.id}", class="${inp.className}"`);
+                });
+            });
+        }
+    }
+
+    console.log(`Total primary key input fields found: ${pkInputs.length}`);
+
+    pkInputs.forEach((input, index) => {
+        // Skip if already has autocomplete
+        if (input.hasAttribute('data-autocomplete-setup')) {
+            return;
+        }
+
+        // Mark as setup to avoid duplicate processing
+        input.setAttribute('data-autocomplete-setup', 'true');
+
+        // Find the row containing this input
+        const row = input.closest('tr');
+        if (!row) {
+            console.log(`Input ${index}: No parent row found`);
+            return;
+        }
+
+        // Find the available_column_names hidden field in the same row
+        const availableColsInput = row.querySelector('input[name="available_column_names"]');
+        if (!availableColsInput || !availableColsInput.value) {
+            console.log(`Input ${index}: No available columns data found`);
+            return;
+        }
+
+        // Parse available columns JSON
+        let availableColumns = [];
+        try {
+            availableColumns = JSON.parse(availableColsInput.value);
+            console.log(`Input ${index}: Found ${availableColumns.length} available columns:`, availableColumns);
+        } catch (e) {
+            console.warn(`Input ${index}: Failed to parse available columns:`, e);
+            return;
+        }
+
+        if (availableColumns.length === 0) {
+            console.log(`Input ${index}: No columns available for this sheet`);
+            return;
+        }
+
+        // Create datalist element for autocomplete
+        const datalistId = `pk-columns-${index}-${Date.now()}`;
+        let datalist = document.getElementById(datalistId);
+
+        if (!datalist) {
+            datalist = document.createElement('datalist');
+            datalist.id = datalistId;
+
+            // Add options for each available column
+            availableColumns.forEach(col => {
+                const option = document.createElement('option');
+                option.value = col;
+                datalist.appendChild(option);
+            });
+
+            // Insert datalist into DOM
+            input.parentElement.appendChild(datalist);
+        }
+
+        // Link input to datalist
+        input.setAttribute('list', datalistId);
+        input.setAttribute('autocomplete', 'off'); // Disable browser autocomplete
+        input.setAttribute('placeholder', `Select from: ${availableColumns.slice(0, 2).join(', ')}...`);
+
+        console.log(`✓ Input ${index}: Autocomplete setup complete with ${availableColumns.length} options`);
+    });
+
+    console.log('=== PRIMARY KEY AUTOCOMPLETE: Setup complete ===\n');
+
+    // Also set up click event listener for cells that will trigger inline editing
+    setupCellClickListener();
+}
+
+// Setup click listener for primary key column cells to add autocomplete when editing starts
+function setupCellClickListener() {
+    console.log('Setting up click listeners for primary key column cells...');
+
+    const availableSheetTable = document.querySelector('.o_field_widget[name="available_sheet_ids"] table');
+    if (!availableSheetTable) {
+        console.log('Table not found, will retry later');
+        return;
+    }
+
+    // Find all cells in the primary_key_column_name column
+    const pkCells = availableSheetTable.querySelectorAll('td[name="primary_key_column_name"]');
+    console.log(`Found ${pkCells.length} primary key column cells`);
+
+    pkCells.forEach((cell, index) => {
+        // Skip if already has listener
+        if (cell.hasAttribute('data-click-listener-setup')) {
+            return;
+        }
+
+        cell.setAttribute('data-click-listener-setup', 'true');
+
+        // Add click listener
+        cell.addEventListener('click', function(event) {
+            console.log(`Cell ${index} clicked, waiting for input to appear...`);
+
+            // Wait a bit for Odoo to render the input field
+            setTimeout(() => {
+                const input = cell.querySelector('input');
+                if (input) {
+                    console.log(`Input appeared in cell ${index}, setting up autocomplete`);
+                    setupAutocompleteForInput(input, index);
+                } else {
+                    console.log(`No input found in cell ${index} after click`);
+                }
+            }, 100);
+        });
+
+        console.log(`✓ Click listener added to cell ${index}`);
+    });
+}
+
+// Setup autocomplete for a specific input element
+function setupAutocompleteForInput(input, index) {
+    // Skip if already has autocomplete
+    if (input.hasAttribute('data-autocomplete-setup')) {
+        console.log(`Input ${index} already has autocomplete`);
+        return;
+    }
+
+    input.setAttribute('data-autocomplete-setup', 'true');
+
+    // Find the row containing this input
+    const row = input.closest('tr');
+    if (!row) {
+        console.log(`Input ${index}: No parent row found`);
+        return;
+    }
+
+    // Find the available_column_names hidden field in the same row
+    const availableColsInput = row.querySelector('input[name="available_column_names"]');
+    if (!availableColsInput || !availableColsInput.value) {
+        console.log(`Input ${index}: No available columns data found`);
+        return;
+    }
+
+    // Parse available columns JSON
+    let availableColumns = [];
+    try {
+        availableColumns = JSON.parse(availableColsInput.value);
+        console.log(`Input ${index}: Found ${availableColumns.length} available columns:`, availableColumns);
+    } catch (e) {
+        console.warn(`Input ${index}: Failed to parse available columns:`, e);
+        return;
+    }
+
+    if (availableColumns.length === 0) {
+        console.log(`Input ${index}: No columns available for this sheet`);
+        return;
+    }
+
+    // Create datalist element for autocomplete
+    const datalistId = `pk-columns-${index}-${Date.now()}`;
+    let datalist = document.getElementById(datalistId);
+
+    if (!datalist) {
+        datalist = document.createElement('datalist');
+        datalist.id = datalistId;
+
+        // Add options for each available column
+        availableColumns.forEach(col => {
+            const option = document.createElement('option');
+            option.value = col;
+            datalist.appendChild(option);
+        });
+
+        // Insert datalist into DOM
+        document.body.appendChild(datalist); // Append to body instead of input.parentElement
+    }
+
+    // Link input to datalist
+    input.setAttribute('list', datalistId);
+    input.setAttribute('autocomplete', 'off');
+    input.setAttribute('placeholder', `Select from: ${availableColumns.slice(0, 2).join(', ')}...`);
+
+    console.log(`✓ Input ${index}: Autocomplete setup complete with ${availableColumns.length} options`);
+}
+
 // Main enhancement function
 function applyEnhancements() {
     console.log('\n=== APPLYING MULTISHEET ENHANCEMENTS ===');
     removeHtmlTooltips();
     addDualScrollbar();
+    addPrimaryKeyAutocomplete();
     console.log('=== ENHANCEMENTS APPLIED ===\n');
 }
 
@@ -281,6 +505,7 @@ function startObserving() {
     const observer = new MutationObserver((mutations) => {
         let needsUpdate = false;
         let needsTooltipRemoval = false;
+        let needsAutocompleteSetup = false;
 
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
@@ -296,12 +521,25 @@ function startObserving() {
                         node.querySelector('td[data-name="referenced_sheet_names_html"], td[data-name="sheet_name_html"]')) {
                         needsTooltipRemoval = true;
                     }
+
+                    // Check if we added primary key input fields
+                    if (node.matches('input[name="primary_key_column_name"]') ||
+                        node.querySelector('input[name="primary_key_column_name"]')) {
+                        needsAutocompleteSetup = true;
+                    }
                 }
             });
         });
 
         if (needsTooltipRemoval) {
             setTimeout(removeHtmlTooltips, 50);
+        }
+
+        if (needsAutocompleteSetup) {
+            setTimeout(() => {
+                addPrimaryKeyAutocomplete();
+                setupCellClickListener(); // Also setup click listeners
+            }, 100);
         }
 
         if (needsUpdate) {

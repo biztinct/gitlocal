@@ -7,6 +7,7 @@ import json
 import random
 import string
 import datetime
+import re
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import base64
@@ -200,7 +201,7 @@ class SampleDataWizard(models.TransientModel):
         """Generate samples from an uploaded Excel file.
 
         Assumptions:
-        - First row: headers (rule code or name)
+        - Header row exists near the top (rule code or name)
         - Subsequent rows: one sample per row
         """
         if not self.import_file:
@@ -218,23 +219,13 @@ class SampleDataWizard(models.TransientModel):
         except Exception as e:
             raise UserError(_("Failed to read Excel file: %s") % e)
 
-        # Headers
-        headers = [cell.value for cell in sheet[1]]
-        header_indices = {idx: hdr for idx, hdr in enumerate(headers) if hdr}
-
-        # Build mapping header -> rule code (match by code or name)
         rules = self.config_id.rule_ids
-        header_to_code = {}
-        for idx, hdr in header_indices.items():
-            match = rules.filtered(lambda r: r.code == hdr) or rules.filtered(lambda r: r.name == hdr)
-            if match:
-                header_to_code[idx] = match[0].code
-
+        header_to_code, header_row = self._match_headers_to_rules(sheet, rules)
         if not header_to_code:
             raise UserError(_("No headers matched any rule codes or names."))
 
         samples = []
-        for row_idx in range(2, sheet.max_row + 1):
+        for row_idx in range(header_row + 1, sheet.max_row + 1):
             row = [cell.value for cell in sheet[row_idx]]
             if not any(row):
                 continue
@@ -253,6 +244,115 @@ class SampleDataWizard(models.TransientModel):
             })
 
         return samples
+
+    def _normalize_header(self, value, loose=False):
+        """Normalize header strings for matching."""
+        if value is None:
+            return ''
+        text = str(value).strip()
+        if not text:
+            return ''
+        text = re.sub(r'\s+', ' ', text)
+        if loose:
+            return re.sub(r'[^a-z0-9]+', '', text.lower())
+        return text.lower()
+
+    def _match_headers_to_rules(self, sheet, rules):
+        """Find the best header row and map headers to rule codes."""
+        # Build lookup maps
+        code_map = {}
+        name_map = {}
+        sheet_name_map = {}
+        sheet_code_map = {}
+        code_map_loose = {}
+        name_map_loose = {}
+        sheet_name_map_loose = {}
+        sheet_code_map_loose = {}
+
+        for rule in rules:
+            code = rule.code or ''
+            name = rule.name or ''
+            sheet_name = rule.source_sheet_name or ''
+            if code:
+                code_key = self._normalize_header(code)
+                code_map.setdefault(code_key, code)
+                code_map_loose.setdefault(self._normalize_header(code, loose=True), code)
+            if name:
+                name_key = self._normalize_header(name)
+                name_map.setdefault(name_key, code)
+                name_map_loose.setdefault(self._normalize_header(name, loose=True), code)
+            if sheet_name:
+                sheet_key = self._normalize_header(sheet_name)
+                sheet_key_loose = self._normalize_header(sheet_name, loose=True)
+                if name:
+                    sheet_name_map.setdefault((sheet_key, self._normalize_header(name)), code)
+                    sheet_name_map_loose.setdefault((sheet_key_loose, self._normalize_header(name, loose=True)), code)
+                if code:
+                    sheet_code_map.setdefault((sheet_key, self._normalize_header(code)), code)
+                    sheet_code_map_loose.setdefault((sheet_key_loose, self._normalize_header(code, loose=True)), code)
+
+        def match_header(header_value):
+            if not header_value:
+                return None
+            header_text = str(header_value).strip()
+            if not header_text:
+                return None
+
+            strict_key = self._normalize_header(header_text)
+            if strict_key in code_map:
+                return code_map[strict_key]
+            if strict_key in name_map:
+                return name_map[strict_key]
+
+            for delim in ['|', ':', '-', '/']:
+                if delim in header_text:
+                    left, right = header_text.split(delim, 1)
+                    left_key = self._normalize_header(left)
+                    right_key = self._normalize_header(right)
+                    if (left_key, right_key) in sheet_name_map:
+                        return sheet_name_map[(left_key, right_key)]
+                    if (left_key, right_key) in sheet_code_map:
+                        return sheet_code_map[(left_key, right_key)]
+
+            loose_key = self._normalize_header(header_text, loose=True)
+            if loose_key in code_map_loose:
+                return code_map_loose[loose_key]
+            if loose_key in name_map_loose:
+                return name_map_loose[loose_key]
+
+            for delim in ['|', ':', '-', '/']:
+                if delim in header_text:
+                    left, right = header_text.split(delim, 1)
+                    left_key = self._normalize_header(left, loose=True)
+                    right_key = self._normalize_header(right, loose=True)
+                    if (left_key, right_key) in sheet_name_map_loose:
+                        return sheet_name_map_loose[(left_key, right_key)]
+                    if (left_key, right_key) in sheet_code_map_loose:
+                        return sheet_code_map_loose[(left_key, right_key)]
+
+            return None
+
+        best_match_count = 0
+        best_header_to_code = {}
+        best_row = 1
+
+        max_scan = min(sheet.max_row or 1, 10)
+        for row_idx in range(1, max_scan + 1):
+            row_values = [cell.value for cell in sheet[row_idx]]
+            header_indices = {idx: hdr for idx, hdr in enumerate(row_values) if hdr is not None and str(hdr).strip()}
+            header_to_code = {}
+            for idx, hdr in header_indices.items():
+                matched = match_header(hdr)
+                if matched:
+                    header_to_code[idx] = matched
+
+            match_count = len(header_to_code)
+            if match_count > best_match_count:
+                best_match_count = match_count
+                best_header_to_code = header_to_code
+                best_row = row_idx
+
+        return best_header_to_code, best_row
 
     # Helpers -------------------------------------------------------------
     @staticmethod
