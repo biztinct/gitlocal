@@ -396,10 +396,11 @@ class HrFormulaRule(models.Model):
         - Percent literals (8% -> 0.08)
         - Comparison operators (= -> ==)
         """
-        if not formula or not formula.startswith('='):
+        if not formula:
             return formula
 
-        result = formula[1:]  # Remove leading '='
+        formula = formula.strip()
+        result = formula[1:] if formula.startswith('=') else formula
 
         _logger.debug(f"Converting formula: {formula}")
 
@@ -830,10 +831,26 @@ class HrFormulaRule(models.Model):
                     if isinstance(v, (int, float)):
                         return v
                     if isinstance(v, str):
-                        # Try to convert string to number
+                        cleaned = v.strip().replace(' ', '')
+                        if not cleaned:
+                            return 0
                         try:
-                            # Handle comma as decimal separator (European format)
-                            cleaned = v.replace(',', '.').strip()
+                            # Handle thousands separators and decimal marks.
+                            if ',' in cleaned and '.' in cleaned:
+                                if cleaned.rfind(',') > cleaned.rfind('.'):
+                                    cleaned = cleaned.replace('.', '').replace(',', '.')
+                                else:
+                                    cleaned = cleaned.replace(',', '')
+                            elif ',' in cleaned:
+                                parts = cleaned.split(',')
+                                if all(len(p) == 3 for p in parts[1:]):
+                                    cleaned = ''.join(parts)
+                                else:
+                                    cleaned = cleaned.replace(',', '.')
+                            elif '.' in cleaned:
+                                parts = cleaned.split('.')
+                                if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
+                                    cleaned = ''.join(parts)
                             return float(cleaned)
                         except (ValueError, TypeError):
                             # Keep non-numeric strings as-is for comparisons like ="YES"
