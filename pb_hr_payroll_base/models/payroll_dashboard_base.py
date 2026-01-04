@@ -138,6 +138,17 @@ class PayrollDashboard(models.Model):
     auto_sync_enabled = fields.Boolean(string='Auto Sync Enabled', default=False)
     analytics_enabled = fields.Boolean(string='Analytics Enabled', default=True)
 
+    @api.model
+    def default_get(self, fields_list):
+        """Override default_get to set name from context"""
+        res = super(PayrollDashboard, self).default_get(fields_list)
+
+        # If opened from enhanced country selector, set name to 'Payroll Dashboard'
+        if self.env.context.get('enhanced_selector') and 'name' in fields_list:
+            res['name'] = self.env.context.get('default_name', 'Payroll Dashboard')
+
+        return res
+
     def debug_currency_issue(self):
         """Debug currency computation issues"""
         for record in self:

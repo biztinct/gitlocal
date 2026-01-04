@@ -171,22 +171,7 @@ class HrFormulaSampleData(models.Model):
 
             try:
                 input_values = json.loads(record.input_values_json)
-                rules = record.config_id.rule_ids.sorted(key=lambda r: r.sequence)
-
-                # Build results by evaluating each rule in order
-                results = input_values.copy()
-
-                for rule in rules:
-                    if rule.column_type == 'input':
-                        # Use input value or default
-                        if rule.code not in results:
-                            results[rule.code] = rule.default_value
-                    elif rule.column_type == 'constant':
-                        results[rule.code] = rule.constant_value
-                    elif rule.column_type == 'formula':
-                        # Evaluate formula with current results
-                        value = rule.evaluate(results)
-                        results[rule.code] = value
+                results = record._evaluate_rules_with_dependencies(input_values)
 
                 record.computed_values_json = json.dumps(results)
                 record.last_computed = fields.Datetime.now()
@@ -558,43 +543,58 @@ class HrFormulaSampleData(models.Model):
             return {}
 
         try:
-            rules = self.config_id.rule_ids.sorted(key=lambda r: r.sequence)
-            _logger.info(f"Computing formulas for {len(rules)} rules with input values: {input_values}")
-
-            # Build results by evaluating each rule in order
-            results = input_values.copy()
-
-            for rule in rules:
-                _logger.debug(f"Processing rule {rule.column_letter} ({rule.code}) - type: {rule.column_type}")
-
-                if rule.column_type == 'input':
-                    # Use input value or default
-                    if rule.code not in results:
-                        results[rule.code] = rule.default_value or 0.0
-                        _logger.debug(f"  Using default value: {results[rule.code]}")
-                    else:
-                        _logger.debug(f"  Using input value: {results[rule.code]}")
-
-                elif rule.column_type == 'constant':
-                    results[rule.code] = rule.constant_value or 0.0
-                    _logger.debug(f"  Using constant value: {results[rule.code]}")
-
-                elif rule.column_type == 'formula':
-                    # Evaluate formula with current results
-                    try:
-                        _logger.debug(f"  Evaluating formula: {rule.excel_formula}")
-                        value = rule.evaluate(results)
-                        results[rule.code] = value
-                        _logger.debug(f"  Result: {value}")
-                    except Exception as e:
-                        _logger.warning(f"Formula evaluation error for {rule.code}: {e}")
-                        results[rule.code] = 0.0
-
+            results = self._evaluate_rules_with_dependencies(input_values)
             _logger.info(f"Formula computation complete. Results: {results}")
             return results
         except Exception as e:
             _logger.error(f"Error computing formula results: {e}", exc_info=True)
             return {'error': str(e)}
+
+    def _evaluate_rules_with_dependencies(self, input_values):
+        """Evaluate rules using dependency order to handle forward references."""
+        self.ensure_one()
+        rules = self.config_id.rule_ids
+        if not rules:
+            return input_values.copy()
+
+        # Refresh dependency metadata to include recent parsing changes.
+        rules._compute_dependencies()
+        try:
+            from ..formula_engine import FormulaEvaluator
+            evaluator = FormulaEvaluator()
+            sorted_rules = evaluator._topological_sort(rules)
+        except Exception:
+            sorted_rules = rules.sorted(key=lambda r: r.sequence)
+
+        _logger.info(
+            "Computing formulas for %d rules with %d input values",
+            len(sorted_rules),
+            len(input_values)
+        )
+
+        results = input_values.copy()
+        for rule in sorted_rules:
+            _logger.debug("Processing rule %s (%s) - type: %s", rule.column_letter, rule.code, rule.column_type)
+            if rule.column_type == 'input':
+                if rule.code not in results:
+                    results[rule.code] = rule.default_value or 0.0
+                    _logger.debug("  Using default value: %s", results[rule.code])
+                else:
+                    _logger.debug("  Using input value: %s", results[rule.code])
+            elif rule.column_type == 'constant':
+                results[rule.code] = rule.constant_value or 0.0
+                _logger.debug("  Using constant value: %s", results[rule.code])
+            elif rule.column_type == 'formula':
+                try:
+                    _logger.debug("  Evaluating formula: %s", rule.excel_formula)
+                    value = rule.evaluate(results)
+                    results[rule.code] = value
+                    _logger.debug("  Result: %s", value)
+                except Exception as e:
+                    _logger.warning("Formula evaluation error for %s: %s", rule.code, e)
+                    results[rule.code] = 0.0
+
+        return results
 
     @api.onchange('config_id')
     def _onchange_config_id(self):

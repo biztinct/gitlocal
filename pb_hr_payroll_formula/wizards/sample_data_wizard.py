@@ -288,6 +288,15 @@ class SampleDataWizard(models.TransientModel):
             headers = [h.get('value') for h in sheet_data.get('headers', []) if h.get('value')]
             primary_key = self._find_primary_key_header(headers)
             match_count = self._count_header_matches(headers, rules)
+            if (not primary_key or match_count == 0) and connector.workbook:
+                sheet = connector.workbook[sheet_name]
+                _matched, header_row = self._match_headers_to_rules(sheet, rules)
+                if header_row:
+                    fallback_data = self._load_sheet_with_header_row(sheet, header_row)
+                    headers = [h.get('value') for h in fallback_data.get('headers', []) if h.get('value')]
+                    primary_key = self._find_primary_key_header(headers)
+                    match_count = self._count_header_matches(headers, rules)
+                    sheet_data = fallback_data
             sheet_summaries.append({
                 'sheet_name': sheet_name,
                 'headers': headers,
@@ -425,6 +434,43 @@ class SampleDataWizard(models.TransientModel):
                 input_values[rule.code] = self._serialize_value(value)
 
         return input_values
+
+    def _load_sheet_with_header_row(self, sheet, header_row):
+        from openpyxl.utils import get_column_letter
+
+        headers = []
+        for cell in sheet[header_row]:
+            value = cell.value
+            if value is None:
+                continue
+            text = str(value).strip()
+            if not text:
+                continue
+            headers.append({
+                'column_letter': get_column_letter(cell.column),
+                'value': text,
+            })
+
+        header_by_letter = {h['column_letter']: h['value'] for h in headers}
+        data_rows = []
+        for row in sheet.iter_rows(min_row=header_row + 1):
+            row_data = {}
+            for cell in row:
+                col_letter = get_column_letter(cell.column)
+                header = header_by_letter.get(col_letter)
+                if header:
+                    row_data[header] = cell.value
+            if any(v is not None for v in row_data.values()):
+                data_rows.append(row_data)
+
+        return {
+            'headers': headers,
+            'data_rows': data_rows,
+            'total_rows': len(data_rows),
+            'total_columns': len(headers),
+            'header_row': header_row,
+            'data_start_row': header_row + 1,
+        }
 
     def _normalize_header_key(self, value):
         if value is None:

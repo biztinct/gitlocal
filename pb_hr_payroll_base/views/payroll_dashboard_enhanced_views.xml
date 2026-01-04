@@ -210,7 +210,7 @@
         <field name="name">payroll.dashboard.kanban.enhanced</field>
         <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_dashboard_payroll_enhanced" create="false" edit="false">
+            <kanban string="Payroll Dashboard" class="o_kanban_dashboard_payroll_enhanced" create="false" edit="false">
                 <field name="name"/>
                 <field name="country"/>
                 <field name="currency_id"/>
@@ -381,7 +381,7 @@
         <field name="view_mode">kanban</field>
         <field name="view_id" ref="view_payroll_dashboard_kanban_enhanced"/>
         <field name="target">current</field>
-        <field name="context">{'create': False, 'enhanced_selector': True, 'default_name': 'Dashboard'}</field>
+        <field name="context">{'create': False, 'enhanced_selector': True, 'default_name': 'Payroll Dashboard'}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Select Your Payroll Region
