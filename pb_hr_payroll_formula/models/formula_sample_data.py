@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 import json
 import logging
+import re
 
 _logger = logging.getLogger(__name__)
 
@@ -259,6 +260,7 @@ class HrFormulaSampleData(models.Model):
                 is_formula = rule.column_type == 'formula'
                 row_style = "background:#f6f8fa;font-weight:bold;" if is_formula else ""
                 formula_value = rule.excel_formula or ''
+                formula_value = re.sub(r'(?<![A-Za-z0-9_])\$?([A-Z]{1,3})\$?\d+', r'\1', formula_value)
                 rows_html.append(
                     f"<tr style='{row_style}'>"
                     f"<td style='white-space:nowrap'>{rule.column_letter or ''}</td>"

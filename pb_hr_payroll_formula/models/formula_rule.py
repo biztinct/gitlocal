@@ -403,6 +403,10 @@ class HrFormulaRule(models.Model):
 
         _logger.debug(f"Converting formula: {formula}")
 
+        # Normalize same-row references by stripping row numbers (e.g., J5 -> J)
+        # This keeps formulas row-agnostic for single-row evaluation.
+        result = re.sub(r'(?<![A-Za-z0-9_])\$?([A-Z]{1,3})\$?\d+', r'\1', result)
+
         # Build reverse map: code -> column_letter for range expansion
         code_to_letter = {v: k for k, v in column_map.items()}
 
@@ -465,15 +469,17 @@ class HrFormulaRule(models.Model):
 
         result = re.sub(r'\$?([A-Z]+)\$?\d+\s*:\s*\$?([A-Z]+)\$?\d+', replace_range_with_row, result)
 
-        # Convert ranges WITHOUT row numbers - column letters only (e.g., A:C)
+        # Convert ranges WITHOUT row numbers - column letters only (e.g., A:C, AA:AC)
         def replace_range_no_row(m):
             start_col = m.group(1)
             end_col = m.group(2)
-            expanded = expand_range(start_col, end_col)
-            return expanded  # No brackets
+            if start_col in column_map and end_col in column_map:
+                expanded = expand_range(start_col, end_col)
+                return expanded  # No brackets
+            return m.group(0)
 
-        # Match ranges like A:C (single letters) - must come before cell ref replacement
-        result = re.sub(r'\b([A-Z])\s*:\s*([A-Z])\b', replace_range_no_row, result)
+        # Match ranges like A:C, AA:AC - must come before cell ref replacement
+        result = re.sub(r'\b([A-Z]{1,3})\s*:\s*([A-Z]{1,3})\b', replace_range_no_row, result)
 
         # Convert ranges with CODE names (e.g., ACTUALBASI:REIMBURSEM)
         # These are multi-letter codes that look like ranges
