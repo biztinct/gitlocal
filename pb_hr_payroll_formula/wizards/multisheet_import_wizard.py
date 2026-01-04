@@ -132,6 +132,52 @@ class MultiSheetImportWizard(models.TransientModel):
     )
 
     # ==========================================
+    # PRIMARY KEY HELPERS
+    # ==========================================
+    def _resolve_primary_key_column(self, sheet_line, available_cols=None):
+        """Resolve the primary key column name for a sheet line."""
+        import json
+
+        target = self.primary_key_column or sheet_line.primary_key_column_name
+        if not target:
+            return None
+
+        if available_cols is None:
+            try:
+                available_cols = json.loads(sheet_line.available_column_names) if sheet_line.available_column_names else []
+            except Exception:
+                available_cols = []
+
+        if not available_cols:
+            return target
+
+        if target in available_cols:
+            return target
+
+        target_lower = target.strip().lower()
+        for col in available_cols:
+            if col.lower() == target_lower:
+                return col
+
+        _logger.warning(
+            "Primary key '%s' not found in available columns for sheet '%s'. Using provided value anyway.",
+            target,
+            sheet_line.sheet_name,
+        )
+        return target
+
+    @api.onchange('primary_key_column')
+    def _onchange_primary_key_column(self):
+        """Apply the main primary key to all sheets when updated."""
+        if not self.primary_key_column or not self.available_sheet_ids:
+            return
+
+        for sheet in self.available_sheet_ids:
+            matched = self._resolve_primary_key_column(sheet)
+            if matched:
+                sheet.primary_key_column_name = matched
+
+    # ==========================================
     # COMPONENT PREVIEW
     # ==========================================
     component_preview_ids = fields.One2many(
@@ -275,6 +321,12 @@ class MultiSheetImportWizard(models.TransientModel):
 
             # Create sheet lines
             sheet_lines = []
+
+            # Load workbook to extract column names
+            import openpyxl
+            import json
+            wb = openpyxl.load_workbook(io.BytesIO(file_content), data_only=True)
+
             for idx, sheet_name in enumerate(workbook_data['sheet_names']):
                 sheet_info = workbook_data['sheets'][sheet_name]
 
@@ -288,6 +340,64 @@ class MultiSheetImportWizard(models.TransientModel):
                     _logger.info(f"Sheet '{sheet_name}' references other sheets: {sheet_info.get('references_other_sheets')}")
                     _logger.info(f"Sheet '{sheet_name}' referenced sheets list: {referenced_sheets}")
 
+                # Extract column names from header row for primary key dropdown
+                available_columns = []
+                try:
+                    ws = wb[sheet_name]
+                    header_row_num = sheet_info.get('detected_header_row', 1)
+                    if header_row_num and header_row_num > 0:
+                        header_row = list(ws.iter_rows(min_row=header_row_num, max_row=header_row_num, values_only=True))[0]
+
+                        # Extract all non-empty column names
+                        all_columns = []
+                        for col_idx, col_value in enumerate(header_row, start=1):
+                            if col_value and str(col_value).strip():
+                                col_name = str(col_value).strip()
+                                all_columns.append((col_idx, col_name))
+
+                        # Filter out date/day columns (like "Wed", "Thu", "26", "27", etc.)
+                        # Keep only columns that look like data column headers
+                        data_columns = []
+                        for col_idx, col_name in all_columns:
+                            # Skip if column name is:
+                            # - A weekday name (Mon, Tue, Wed, Thu, Fri, Sat, Sun)
+                            # - A short pure number (1-2 digits like "1", "26", "27" - likely date columns)
+                            is_weekday = col_name in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
+                                                     'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+                                                     'Friday', 'Saturday', 'Sunday']
+                            # Only filter out SHORT numeric values (1-2 digits) to avoid filtering legitimate numeric codes
+                            is_short_numeric = col_name.isdigit() and len(col_name) <= 2
+
+                            # Only include if it's NOT a weekday or short number-only column
+                            if not (is_weekday or is_short_numeric):
+                                data_columns.append(col_name)
+
+                        # Fallback: If all columns were filtered out, keep the original columns
+                        # (This handles sheets where all headers might look like numbers but are valid)
+                        if len(data_columns) == 0 and len(all_columns) > 0:
+                            _logger.warning(f"Sheet '{sheet_name}': All columns were filtered out. Using all columns as fallback.")
+                            data_columns = [col_name for col_idx, col_name in all_columns]
+
+                        available_columns = data_columns
+                        _logger.info(f"Sheet '{sheet_name}' has {len(available_columns)} data column headers: {available_columns}")
+                        _logger.debug(f"Sheet '{sheet_name}' total columns before filtering: {len(all_columns)}, after filtering: {len(available_columns)}")
+                except Exception as e:
+                    _logger.warning(f"Could not extract column names from sheet '{sheet_name}': {e}")
+
+                # Auto-set primary key column if wizard's primary_key_column matches one of the columns
+                primary_key_col = None
+                if self.primary_key_column and available_columns:
+                    # Try exact match first
+                    if self.primary_key_column in available_columns:
+                        primary_key_col = self.primary_key_column
+                    else:
+                        # Try case-insensitive match
+                        primary_key_lower = self.primary_key_column.lower()
+                        for col in available_columns:
+                            if col.lower() == primary_key_lower:
+                                primary_key_col = col
+                                break
+
                 sheet_lines.append((0, 0, {
                     'wizard_id': self.id,
                     'sheet_name': sheet_name,
@@ -300,6 +410,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     'references_other_sheets': sheet_info.get('references_other_sheets', False),
                     'referenced_sheet_names': referenced_sheet_names,
                     'header_confidence': sheet_info.get('header_detection_confidence', 0.0),
+                    'available_column_names': json.dumps(available_columns),
+                    'primary_key_column_name': primary_key_col,
                 }))
 
             self.write({
@@ -336,6 +448,31 @@ class MultiSheetImportWizard(models.TransientModel):
             raise UserError(_("Only one worksheet can be designated as the main sheet."))
 
         self.main_sheet_name = main_sheets[0].sheet_name
+
+        if not self.primary_key_column and not selected_sheets.filtered('primary_key_column_name'):
+            raise UserError(_("Please specify the Primary Key Column to use for all worksheets."))
+
+        # Validate primary key columns
+        import json
+        validation_errors = []
+        for sheet in selected_sheets:
+            # Resolve and apply the main primary key to each sheet
+            try:
+                available_cols = json.loads(sheet.available_column_names) if sheet.available_column_names else []
+            except Exception as e:
+                _logger.warning(f"Could not read available columns for sheet {sheet.sheet_name}: {e}")
+                available_cols = []
+
+            resolved_pk = self._resolve_primary_key_column(sheet, available_cols=available_cols)
+            if resolved_pk:
+                sheet.primary_key_column_name = resolved_pk
+            else:
+                validation_errors.append(
+                    _("Sheet '%s': Please specify the Primary Key Column") % sheet.sheet_name
+                )
+
+        if validation_errors:
+            raise UserError('\n\n'.join(validation_errors))
 
         try:
             file_content = base64.b64decode(self.import_file)
@@ -1959,6 +2096,133 @@ class MultiSheetImportWizard(models.TransientModel):
             self.state = state_order[max(0, new_idx)]
         return self._return_wizard_action()
 
+    # ==========================================
+    # PRIMARY KEY MATCHING LOGIC
+    # ==========================================
+    def _merge_sheets_by_primary_key(self, connector):
+        """
+        Merge data from multiple sheets using primary key matching.
+
+        Args:
+            connector: ExcelConnector instance with loaded workbook
+
+        Returns:
+            dict: Merged data with keys:
+                - 'primary_keys': list of all unique primary key values (from main sheet)
+                - 'merged_rows': dict mapping primary_key -> row_data
+                - 'warnings': list of warning messages about missing/extra employees
+                - 'missing_employees': dict mapping sheet_name -> list of missing primary keys
+                - 'extra_employees': dict mapping sheet_name -> list of extra primary keys
+        """
+        import json
+
+        selected_sheets = self.available_sheet_ids.filtered('is_selected')
+        main_sheet = selected_sheets.filtered('is_main_sheet')
+
+        if not main_sheet:
+            raise UserError(_("No main sheet designated for primary key matching"))
+
+        main_sheet = main_sheet[0]
+        auxiliary_sheets = selected_sheets.filtered(lambda s: not s.is_main_sheet)
+
+        # Load main sheet data
+        main_data = connector.load_sheet_with_detection(main_sheet.sheet_name)
+        main_primary_key_col = self._resolve_primary_key_column(main_sheet)
+
+        if not main_primary_key_col:
+            raise UserError(_("Main sheet '%s' must have a primary key column specified") % main_sheet.sheet_name)
+        main_sheet.primary_key_column_name = main_primary_key_col
+
+        # Build primary key lookup for main sheet
+        main_pk_map = {}  # Maps primary_key_value -> full_row_data
+        main_pk_list = []  # Ordered list of primary keys from main sheet
+
+        for row in main_data.get('data_rows', []):
+            pk_value = row.get(main_primary_key_col)
+            if pk_value:
+                # Convert to string for consistent matching
+                pk_key = str(pk_value).strip()
+                if pk_key:
+                    main_pk_map[pk_key] = row.copy()
+                    main_pk_list.append(pk_key)
+
+        _logger.info(f"Main sheet '{main_sheet.sheet_name}' has {len(main_pk_list)} employees with primary key '{main_primary_key_col}'")
+
+        # Process auxiliary sheets and merge data by primary key
+        warnings = []
+        missing_employees = {}
+        extra_employees = {}
+
+        for aux_sheet in auxiliary_sheets:
+            sheet_name = aux_sheet.sheet_name
+            aux_pk_col = self._resolve_primary_key_column(aux_sheet)
+
+            if not aux_pk_col:
+                raise UserError(_("Sheet '%s' must have a primary key column specified") % sheet_name)
+            aux_sheet.primary_key_column_name = aux_pk_col
+
+            # Load auxiliary sheet data
+            aux_data = connector.load_sheet_with_detection(sheet_name)
+
+            # Build primary key lookup for this auxiliary sheet
+            aux_pk_map = {}  # Maps primary_key_value -> row_data
+            for row in aux_data.get('data_rows', []):
+                pk_value = row.get(aux_pk_col)
+                if pk_value:
+                    pk_key = str(pk_value).strip()
+                    if pk_key:
+                        aux_pk_map[pk_key] = row
+
+            _logger.info(f"Auxiliary sheet '{sheet_name}' has {len(aux_pk_map)} employees with primary key '{aux_pk_col}'")
+
+            # Find missing employees (in main but not in auxiliary)
+            missing_in_aux = set(main_pk_list) - set(aux_pk_map.keys())
+            if missing_in_aux:
+                missing_employees[sheet_name] = list(missing_in_aux)
+                _logger.warning(f"Sheet '{sheet_name}': {len(missing_in_aux)} employees from main sheet not found")
+                warnings.append(
+                    _("Sheet '%s': %d employees from main sheet not found. These will have blank values for columns from this sheet.")
+                    % (sheet_name, len(missing_in_aux))
+                )
+
+            # Find extra employees (in auxiliary but not in main)
+            extra_in_aux = set(aux_pk_map.keys()) - set(main_pk_list)
+            if extra_in_aux:
+                extra_employees[sheet_name] = list(extra_in_aux)
+                _logger.warning(f"Sheet '{sheet_name}': {len(extra_in_aux)} employees not in main sheet will be skipped")
+                warnings.append(
+                    _("Sheet '%s': %d employees not found in main sheet will be skipped: %s")
+                    % (sheet_name, len(extra_in_aux), ', '.join(list(extra_in_aux)[:5]) + ('...' if len(extra_in_aux) > 5 else ''))
+                )
+
+            # Merge auxiliary sheet data into main sheet data by primary key
+            for pk_key, main_row in main_pk_map.items():
+                aux_row = aux_pk_map.get(pk_key)
+                if aux_row:
+                    # Merge auxiliary columns into main row
+                    # Prefix auxiliary column names with sheet name to avoid conflicts
+                    for col_name, col_value in aux_row.items():
+                        if col_name != aux_pk_col:  # Don't duplicate primary key column
+                            prefixed_col_name = f"{sheet_name}|{col_name}"
+                            main_row[prefixed_col_name] = col_value
+                else:
+                    # Employee not in auxiliary sheet - fill with blanks
+                    for header in aux_data.get('headers', []):
+                        col_name = header.get('value')
+                        if col_name and col_name != aux_pk_col:
+                            prefixed_col_name = f"{sheet_name}|{col_name}"
+                            main_row[prefixed_col_name] = None  # Blank value
+
+        return {
+            'primary_keys': main_pk_list,
+            'merged_rows': main_pk_map,
+            'warnings': warnings,
+            'missing_employees': missing_employees,
+            'extra_employees': extra_employees,
+            'main_sheet_name': main_sheet.sheet_name,
+            'main_primary_key_column': main_primary_key_col,
+        }
+
     def _return_wizard_action(self):
         """Return action to continue showing the wizard."""
         return {
@@ -2075,6 +2339,46 @@ class MultiSheetSheetLine(models.TransientModel):
         string='Detection Confidence',
         readonly=True
     )
+
+    # ==========================================
+    # PRIMARY KEY MATCHING
+    # ==========================================
+    available_column_names = fields.Text(
+        string='Available Columns',
+        help="JSON list of available column names in this sheet (used for primary key dropdown)"
+    )
+
+    available_columns_display = fields.Char(
+        string='Available Columns',
+        compute='_compute_available_columns_display',
+        store=False,
+        help="Display of available column names for easy selection"
+    )
+
+    primary_key_column_name = fields.Char(
+        string='Primary Key Column',
+        help="Column name to use as primary key for matching rows across worksheets. Type or copy from Available Columns."
+    )
+
+    @api.depends('available_column_names')
+    def _compute_available_columns_display(self):
+        """Convert JSON column list to readable comma-separated display."""
+        for record in self:
+            if not record.available_column_names:
+                record.available_columns_display = ''
+                continue
+
+            try:
+                import json
+                columns = json.loads(record.available_column_names)
+                # Show first 3 columns, then indicate there are more
+                if len(columns) <= 3:
+                    record.available_columns_display = ', '.join(columns)
+                else:
+                    record.available_columns_display = ', '.join(columns[:3]) + f', ... ({len(columns)} total)'
+            except Exception as e:
+                _logger.warning(f"Could not parse available_column_names: {e}")
+                record.available_columns_display = ''
 
     @api.depends('sheet_name')
     def _compute_sheet_name_html(self):

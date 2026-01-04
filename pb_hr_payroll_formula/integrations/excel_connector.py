@@ -203,10 +203,43 @@ class ExcelConnector(BaseHRConnector):
             header_row = self._header_row or (getattr(self.connector, 'file_header_row', None) if self.connector else None) or 1
             data_start_row = self._data_start_row or (getattr(self.connector, 'file_data_start_row', None) if self.connector else None) or 2
 
-            # Extract headers
+            # Use the same header detection logic as formula import when defaults are used
+            from ..formula_engine.header_detector import HeaderDetector
+            detector = HeaderDetector(sheet)
+            if header_row == 1 and data_start_row == 2:
+                detected_header_row, detected_data_start_row, _details = detector.detect_header_row()
+                if detected_header_row and detected_header_row != header_row:
+                    _logger.info(
+                        "Auto-detected header row %s (was %s) for sheet '%s'",
+                        detected_header_row,
+                        header_row,
+                        sheet_name,
+                    )
+                    header_row = detected_header_row
+                if detected_data_start_row:
+                    data_start_row = detected_data_start_row
+
+            if data_start_row <= header_row:
+                data_start_row = header_row + 1
+
+            # Extract headers with merge-aware logic
+            raw_headers = detector.get_headers(header_row)
+            headers_by_index = {}
+            for header in raw_headers:
+                value = header.get('value')
+                if value is not None and str(value).strip():
+                    headers_by_index[header['column_index']] = str(value).strip()
+
             self.headers = []
-            for cell in sheet[header_row]:
-                self.headers.append(str(cell.value) if cell.value else f"Column_{cell.column}")
+            for idx, cell in enumerate(sheet[header_row]):
+                header_value = headers_by_index.get(idx)
+                if not header_value:
+                    cell_val = cell.value
+                    if cell_val is not None and str(cell_val).strip():
+                        header_value = str(cell_val).strip()
+                if not header_value:
+                    header_value = f"Column_{cell.column}"
+                self.headers.append(header_value)
 
             # Extract data rows
             self.data_rows = []

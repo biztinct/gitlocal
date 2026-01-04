@@ -99,11 +99,15 @@
                                 <ul>
                                     <li><strong>Include:</strong> Select worksheets to process</li>
                                     <li><strong>Main Sheet:</strong> Designate ONE sheet as the primary payroll structure</li>
+                                    <li><strong>Available Columns:</strong> Click "▶" to see the column names detected in each sheet (optional column, can be toggled on/off)</li>
+                                    <li><strong>Primary Key Column:</strong> Type the column name used as the employee identifier. This value is applied to ALL selected worksheets (case-insensitive match).</li>
                                     <li><strong>Header Row:</strong> Adjust if auto-detection was incorrect</li>
-                                    <li><strong>Primary Key:</strong> Column used to match data across worksheets</li>
                                     <li><strong>Refs Others:</strong> Indicates this sheet has formulas that reference other sheets</li>
                                     <li><strong>Depends On:</strong> Shows which worksheets this sheet references in its formulas</li>
                                 </ul>
+                                <div class="alert alert-warning mt-2">
+                                    <strong>Important:</strong> The Primary Key Column must exist in every selected worksheet. Employees missing from auxiliary worksheets will have blank values for those columns.
+                                </div>
                             </div>
                         </group>
                     </group>
