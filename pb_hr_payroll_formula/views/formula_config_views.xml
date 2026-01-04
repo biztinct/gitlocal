@@ -161,7 +161,7 @@
                                     <field name="column_type" string="Type"/>
                                     <field name="data_source" string="Source"/>
                                     <field name="category_id"/>
-                                    <field name="excel_formula" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
+                                    <field name="excel_formula_display" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
                                     <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
                                     <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
                                     <field name="number_format" optional="hide"/>
@@ -363,7 +363,7 @@
                             <field name="code"/>
                             <field name="column_type" string="Type"/>
                             <field name="data_source" string="Source"/>
-                            <field name="excel_formula"
+                            <field name="excel_formula_display"
                                    attrs="{'invisible': [('column_type', '!=', 'formula')], 'required': [('column_type', '=', 'formula')]}"/>
                             <field name="data_source_field"
                                    attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
