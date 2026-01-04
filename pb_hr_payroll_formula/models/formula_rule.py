@@ -452,6 +452,15 @@ class HrFormulaRule(models.Model):
 
         _logger.debug(f"Converting formula: {formula}")
 
+        # Protect quoted strings from cell/code replacements (e.g., "B3", "Luong thang").
+        string_literals = []
+
+        def _mask_string(match):
+            string_literals.append(match.group(0))
+            return f"__str{len(string_literals) - 1}__"
+
+        result = re.sub(r'"([^"]|"")*"', _mask_string, result)
+
         # Normalize same-row references by stripping row numbers (e.g., J5 -> J)
         # This keeps formulas row-agnostic for single-row evaluation.
         result = re.sub(r'(?<![A-Za-z0-9_])\$?([A-Z]{1,3})\$?\d+', r'\1', result)
@@ -624,6 +633,10 @@ class HrFormulaRule(models.Model):
         # Fix closing brackets for array functions (SUM, MIN, MAX, etc.)
         result = self._fix_array_brackets(result)
 
+        # Restore string literals.
+        for idx, literal in enumerate(string_literals):
+            result = result.replace(f"__str{idx}__", literal)
+
         _logger.debug(f"Converted to Python: {result}")
 
         return result
@@ -640,17 +653,17 @@ class HrFormulaRule(models.Model):
         patterns = ['sum([', 'min([', 'max([', 'self._avg([', 'all([', 'any([']
 
         for pattern in patterns:
-            # Process all occurrences of this pattern
+            # Find all occurrences and fix from right-to-left to handle nested calls.
+            starts = []
             search_start = 0
             while True:
                 start = formula.find(pattern, search_start)
                 if start == -1:
                     break
+                starts.append(start)
+                search_start = start + len(pattern)
 
-                # Find the bracket position (right after the pattern's opening paren)
-                bracket_pos = start + len(pattern) - 1  # Position of '['
-
-                # Count parentheses to find matching close
+            for start in reversed(starts):
                 open_count = 0
                 found_close = False
                 for i, char in enumerate(formula[start:]):
@@ -659,17 +672,14 @@ class HrFormulaRule(models.Model):
                     elif char == ')':
                         open_count -= 1
                         if open_count == 0:
-                            # Insert ] before the closing )
                             pos = start + i
-                            formula = formula[:pos] + ']' + formula[pos:]
+                            if pos > 0 and formula[pos - 1] != ']':
+                                formula = formula[:pos] + ']' + formula[pos:]
                             found_close = True
-                            # Move search_start past this occurrence (accounting for inserted ])
-                            search_start = pos + 2
                             break
 
                 if not found_close:
-                    # No matching paren found, move past this pattern
-                    search_start = start + len(pattern)
+                    continue
 
         return formula
 
@@ -983,7 +993,14 @@ class HrFormulaRule(models.Model):
                         'last_evaluation_date': fields.Datetime.now()
                     })
 
-                return float(result) if result is not None else 0.0
+                if result is None:
+                    return 0.0
+                if isinstance(result, str):
+                    return result
+                try:
+                    return float(result)
+                except (TypeError, ValueError):
+                    return result
             except Exception as e:
                 # Build detailed error message
                 error_details = []
@@ -1033,7 +1050,7 @@ class HrFormulaRule(models.Model):
                 except Exception as e:
                     _logger.error(f"Failed to regenerate formula for {rule.code}: {e}")
 
-    def _if(self, condition, true_val, false_val):
+    def _if(self, condition, true_val, false_val=0):
         """Excel IF function implementation"""
         return true_val if condition else false_val
 

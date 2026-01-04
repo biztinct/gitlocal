@@ -982,8 +982,11 @@ class MultiSheetImportWizard(models.TransientModel):
                 lambda c: c.is_selected and c.column_type == 'constant' and c.constant_cell_ref
             )
             for const in constant_selections:
-                if const.constant_cell_ref not in constant_cell_mapping:
-                    constant_cell_mapping[const.constant_cell_ref] = const.column_letter
+                cell_ref = const.constant_cell_ref
+                if cell_ref not in constant_cell_mapping:
+                    constant_cell_mapping[cell_ref] = (
+                        const.column_letter or self._extract_column_letter_from_cell_ref(cell_ref)
+                    )
 
             # Get sheets in append order
             ordered_sheets = self.append_order_ids.sorted('append_sequence')
@@ -1075,7 +1078,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     # This is CRITICAL: constants need to be in column_mapping so that
                     # formulas referencing them can be resolved properly
                     sheet_key = self._normalize_sheet_key(sheet_line.sheet_name)
-                    column_mapping[(sheet_key, col_sel.column_letter)] = new_col_letter
+                    constant_key = col_sel.column_letter
+                    column_mapping[(sheet_key, constant_key)] = new_col_letter
                     column_mapping[(sheet_key, col_sel.column_index)] = new_col_letter
 
                     code = self._generate_code(col_sel.original_header, seen_codes)
@@ -1313,6 +1317,26 @@ class MultiSheetImportWizard(models.TransientModel):
                 return match.group(0)
 
         result = same_sheet_pattern.sub(replace_column, result)
+
+        # Also handle references without row numbers (e.g., L, CJ).
+        # These can appear after earlier normalization or manual edits.
+        no_row_pattern = re.compile(
+            r'(?<![A-Za-z_"\'])(\$?)([A-Z]{1,3})(?![A-Za-z0-9_\(\["\'])'
+        )
+
+        def replace_column_no_row(match):
+            prefix = match.group(1)
+            old_col = match.group(2).upper()
+            new_col = column_mapping.get((sheet_key, old_col))
+            if not new_col:
+                try:
+                    idx = self._column_letter_to_index(old_col)
+                    new_col = column_mapping.get((sheet_key, idx))
+                except Exception:
+                    new_col = None
+            return f"{prefix}{new_col}" if new_col else match.group(0)
+
+        result = no_row_pattern.sub(replace_column_no_row, result)
 
         # Restore the masked cross-sheet references
         for placeholder, original in placeholders.items():
@@ -1954,6 +1978,13 @@ class MultiSheetImportWizard(models.TransientModel):
             col //= 26
 
         return result
+
+    def _extract_column_letter_from_cell_ref(self, cell_ref):
+        """Extract the column letters from an Excel cell reference like "AB12"."""
+        if not cell_ref:
+            return ''
+        match = re.match(r'^\$?([A-Za-z]+)', str(cell_ref).strip())
+        return match.group(1).upper() if match else ''
 
     def _update_formula_references(self, formula, cell_mapping):
         """
