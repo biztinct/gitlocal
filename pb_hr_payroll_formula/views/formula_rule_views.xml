@@ -10,8 +10,9 @@
         <field name="model">hr.formula.rule</field>
         <field name="arch" type="xml">
             <tree string="Formula Rules" editable="bottom" default_order="sequence"
-                  decoration-success="column_type == 'formula'"
-                  decoration-info="column_type == 'input'">
+                  decoration-success="column_type == 'formula' and has_evaluation_error == False"
+                  decoration-info="column_type == 'input'"
+                  decoration-danger="has_evaluation_error == True">
                 <field name="sequence" widget="handle"/>
                 <field name="column_letter" readonly="1" string="Col"/>
                 <field name="name" string="Component"/>
@@ -26,6 +27,7 @@
                 <field name="number_format" optional="hide"/>
                 <field name="source_sheet_name" optional="hide"/>
                 <field name="is_valid" widget="boolean" readonly="1"/>
+                <field name="has_evaluation_error" widget="boolean" readonly="1" string="Eval Error" optional="show"/>
                 <field name="appears_on_payslip" optional="show"/>
             </tree>
         </field>
@@ -76,12 +78,31 @@
                         <!-- Formula Settings -->
                         <page string="Formula" name="formula"
                               attrs="{'invisible': [('column_type', '!=', 'formula')]}">
+
+                            <!-- Evaluation Error Alert (shown prominently if there's an error) -->
+                            <div class="alert alert-danger" role="alert" style="margin-bottom: 20px;"
+                                 attrs="{'invisible': [('has_evaluation_error', '=', False)]}">
+                                <h4 class="alert-heading">
+                                    <i class="fa fa-exclamation-triangle"/> Formula Evaluation Error
+                                </h4>
+                                <field name="has_evaluation_error" invisible="1"/>
+                                <field name="last_evaluation_date" readonly="1" string="Error occurred at"/>
+                                <hr/>
+                                <strong>Error Details:</strong>
+                                <field name="last_evaluation_error" readonly="1" widget="text"
+                                       style="font-family: 'Courier New', monospace; font-size: 12px;
+                                              background: #fff; padding: 10px; border-radius: 4px;
+                                              margin-top: 10px; display: block;"/>
+                            </div>
+
                             <group>
                                 <group string="Excel Formula">
                                     <field name="excel_formula_display" placeholder="e.g., =A1+B1*0.08"
                                            widget="char" class="o_text_mono"/>
                                 </group>
-                                <group string="Converted Python">
+                                <group string="Converted Python (for debugging)">
+                                    <field name="excel_formula_converted" readonly="1"
+                                           widget="text" class="o_text_mono"/>
                                     <field name="python_formula" readonly="1"
                                            widget="text" class="o_text_mono"/>
                                 </group>

@@ -259,6 +259,30 @@ class HrFormulaRule(models.Model):
         help="Error message if formula is invalid"
     )
 
+    # ==========================================
+    # RUNTIME EVALUATION ERRORS
+    # ==========================================
+    has_evaluation_error = fields.Boolean(
+        string='Has Evaluation Error',
+        default=False,
+        help="True if this formula failed during last evaluation"
+    )
+
+    last_evaluation_error = fields.Text(
+        string='Last Evaluation Error',
+        help="Detailed error message from last formula evaluation attempt"
+    )
+
+    excel_formula_converted = fields.Text(
+        string='Python Code (for debugging)',
+        help="The Python code generated from the Excel formula (for debugging purposes)"
+    )
+
+    last_evaluation_date = fields.Datetime(
+        string='Last Evaluated',
+        help="When this formula was last evaluated"
+    )
+
     has_circular_ref = fields.Boolean(
         string='Circular Reference',
         default=False,
@@ -643,13 +667,14 @@ class HrFormulaRule(models.Model):
 
     @api.depends('excel_formula')
     def _compute_dependencies(self):
-        """Extract column dependencies from formula"""
+        """Extract column dependencies from formula - both column letters and codes"""
         for record in self:
             if not record.excel_formula:
                 record.formula_dependencies = ''
                 continue
 
             # Extract column references - both with row numbers (A1, B2) and without (A, B, C)
+            # Also extract CODE references (BASIC, GROSS, etc.)
             formula = record.excel_formula.upper()
 
             # Find references with row numbers (A1, AA1, etc.)
@@ -658,13 +683,17 @@ class HrFormulaRule(models.Model):
             # Find standalone column letters (A, B, C) - not part of function names
             # Remove function names first to avoid matching them
             formula_cleaned = re.sub(
-                r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(',
+                r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR|ISBLANK)\s*\(',
                 '',
                 formula
             )
             refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
 
-            all_refs = refs_with_row + refs_no_row
+            # Also find multi-letter CODE references (e.g., BASIC, GROSS, NETPAY)
+            # These are uppercase identifiers that might be codes
+            code_refs = re.findall(r'\b([A-Z][A-Z0-9_]{2,})\b', formula_cleaned)
+
+            all_refs = refs_with_row + refs_no_row + code_refs
             unique_refs = sorted(set(all_refs))
             record.formula_dependencies = ','.join(unique_refs)
 
@@ -684,7 +713,7 @@ class HrFormulaRule(models.Model):
         if not self.excel_formula.startswith('='):
             errors.append(_("Formula must start with '='"))
 
-        # Check for valid column references - both formats
+        # Check for valid column references - both column letters and codes
         formula = self.excel_formula.upper()
 
         # Find references with row numbers (A1, AA1, etc.)
@@ -692,17 +721,22 @@ class HrFormulaRule(models.Model):
 
         # Find standalone column letters - remove function names first
         formula_cleaned = re.sub(
-            r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(',
+            r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR|ISBLANK)\s*\(',
             '',
             formula
         )
         refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
 
-        refs = list(set(refs_with_row + refs_no_row))
+        # Also find code references
+        code_refs = re.findall(r'\b([A-Z][A-Z0-9_]{2,})\b', formula_cleaned)
+
+        refs = list(set(refs_with_row + refs_no_row + code_refs))
         valid_letters = set(self.config_id.rule_ids.mapped('column_letter'))
+        valid_codes = set(self.config_id.rule_ids.mapped('code'))
 
         for ref in refs:
-            if ref not in valid_letters:
+            # Check if reference is valid (either a column letter or a code)
+            if ref not in valid_letters and ref not in valid_codes:
                 errors.append(_("Invalid column reference: %s") % ref)
 
         # Check for self-reference
@@ -841,8 +875,25 @@ class HrFormulaRule(models.Model):
                     if rule.column_letter and rule.code:
                         column_map[rule.column_letter] = rule.code
                 python_code = self._convert_excel_to_python(self.excel_formula, column_map)
+
+                # Store the converted Python code for debugging
+                self.excel_formula_converted = python_code
+
+                # Enhanced logging for debugging IFERROR and other formula issues
+                _logger.debug(f"=== Formula Evaluation for {self.code} ===")
+                _logger.debug(f"  Excel formula: {self.excel_formula}")
+                _logger.debug(f"  Python code: {python_code}")
+                _logger.debug(f"  Column map: {column_map}")
             except Exception as e:
+                error_msg = f"Error converting formula: {str(e)}\nExcel formula: {self.excel_formula}"
                 _logger.error(f"Error converting formula for {self.code}: {e}")
+
+                # Store the error information
+                self.write({
+                    'has_evaluation_error': True,
+                    'last_evaluation_error': error_msg,
+                    'last_evaluation_date': fields.Datetime.now()
+                })
                 return 0.0
 
             if not python_code:
@@ -904,14 +955,54 @@ class HrFormulaRule(models.Model):
                     'all': all,
                     'any': any,
                 }
+
+                # Log available values for debugging
+                _logger.debug(f"  Available values: {list(safe_context['values'].keys())}")
+
+                # Log specific values referenced in this formula
+                for ref_code in values.keys():
+                    if ref_code in python_code or f"'{ref_code}'" in python_code:
+                        _logger.debug(f"  {ref_code} = {safe_context['values'].get(ref_code, 'NOT FOUND')}")
+
                 result = eval(python_code, {"__builtins__": {}}, safe_context)
+                _logger.debug(f"  Result: {result}")
+
+                # Clear any previous errors on successful evaluation
+                if self.has_evaluation_error:
+                    self.write({
+                        'has_evaluation_error': False,
+                        'last_evaluation_error': False,
+                        'last_evaluation_date': fields.Datetime.now()
+                    })
+
                 return float(result) if result is not None else 0.0
             except Exception as e:
+                # Build detailed error message
+                error_details = []
+                error_details.append(f"Error evaluating formula for {self.code}")
+                error_details.append(f"\nExcel formula: {self.excel_formula}")
+                error_details.append(f"\nPython code: {python_code}")
+                error_details.append(f"\nError type: {type(e).__name__}")
+                error_details.append(f"\nError message: {str(e)}")
+                error_details.append(f"\nAvailable values: {', '.join(list(values.keys())[:10])}")
+                if len(values.keys()) > 10:
+                    error_details.append(f"... and {len(values.keys()) - 10} more")
+
+                error_msg = '\n'.join(error_details)
+
                 _logger.error(f"Formula evaluation error for {self.code}")
                 _logger.error(f"  Excel formula: {self.excel_formula}")
                 _logger.error(f"  Python code: {python_code}")
                 _logger.error(f"  Error: {e}")
                 _logger.error(f"  Available values: {list(values.keys())}")
+
+                # Store the error information
+                self.write({
+                    'has_evaluation_error': True,
+                    'last_evaluation_error': error_msg,
+                    'last_evaluation_date': fields.Datetime.now()
+                })
+
                 return 0.0
 
         return 0.0
@@ -944,11 +1035,25 @@ class HrFormulaRule(models.Model):
         return sum(valid_values) / len(valid_values) if valid_values else 0
 
     def _iferror(self, value, error_value):
-        """Excel IFERROR function implementation"""
-        try:
-            return value
-        except Exception:
+        """Excel IFERROR function implementation
+
+        Note: In Python, arguments are evaluated before the function is called,
+        so we can't catch evaluation errors here. Instead, we check for error
+        indicators like None, empty string, or the special ERROR_VALUE sentinel.
+        """
+        # Check if value is an error indicator
+        if value is None or value == '' or (hasattr(value, '__name__') and value.__name__ == 'ERROR_VALUE'):
             return error_value
+
+        # Check if value is NaN or Inf (common error values)
+        try:
+            import math
+            if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+                return error_value
+        except:
+            pass
+
+        return value
 
     def _isblank(self, value):
         """Excel ISBLANK function implementation"""

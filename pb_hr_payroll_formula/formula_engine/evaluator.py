@@ -207,14 +207,28 @@ class FormulaEvaluator:
                 # Get dependencies from formula_dependencies or parse formula
                 deps = getattr(rule, 'formula_dependencies', '')
                 if deps:
-                    for dep_letter in deps.split(','):
-                        dep_letter = dep_letter.strip()
-                        # Find rule with this column letter
+                    for dep_ref in deps.split(','):
+                        dep_ref = dep_ref.strip()
+                        if not dep_ref:
+                            continue
+
+                        # Find rule with this column letter OR code
+                        # Try matching by column_letter first, then by code
+                        found = False
                         for r in rules:
-                            if getattr(r, 'column_letter', '') == dep_letter:
+                            if getattr(r, 'column_letter', '') == dep_ref:
                                 dependencies[rule.code].add(r.code)
                                 dependents[r.code].add(rule.code)
+                                found = True
                                 break
+
+                        # If not found by column_letter, try matching by code
+                        if not found:
+                            for r in rules:
+                                if getattr(r, 'code', '') == dep_ref:
+                                    dependencies[rule.code].add(r.code)
+                                    dependents[r.code].add(rule.code)
+                                    break
 
         # Kahn's algorithm for topological sort
         # Start with rules that have no dependencies
@@ -259,13 +273,25 @@ class FormulaEvaluator:
 
     @staticmethod
     def _excel_iferror(expression, error_value):
-        """Excel IFERROR function"""
-        try:
-            if expression is None:
-                return error_value
-            return expression
-        except:
+        """Excel IFERROR function
+
+        Note: In Python, arguments are evaluated before the function is called,
+        so we can't catch evaluation errors here. Instead, we check for error
+        indicators like None, empty string, NaN, or Inf.
+        """
+        # Check if expression is an error indicator
+        if expression is None or expression == '':
             return error_value
+
+        # Check if expression is NaN or Inf (common error values)
+        try:
+            import math
+            if isinstance(expression, float) and (math.isnan(expression) or math.isinf(expression)):
+                return error_value
+        except:
+            pass
+
+        return expression
 
     @staticmethod
     def _excel_isblank(value):
