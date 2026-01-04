@@ -686,7 +686,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
             # Find VLOOKUP references (both quoted and unquoted)
             for match in vlookup_quoted_pattern.finditer(formula):
-                sheet_name = match.group(1).strip()
+                sheet_name = self._normalize_sheet_key(match.group(1))
                 start_col = match.group(2).upper()
                 col_index = int(match.group(4))
                 start_idx = self._column_letter_to_index(start_col)
@@ -703,7 +703,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 })
 
             for match in vlookup_unquoted_pattern.finditer(formula):
-                sheet_name = match.group(1).strip()
+                sheet_name = self._normalize_sheet_key(match.group(1))
                 start_col = match.group(2).upper()
                 col_index = int(match.group(4))
                 start_idx = self._column_letter_to_index(start_col)
@@ -721,7 +721,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
             # Find SUMIF references (both quoted and unquoted)
             for match in sumif_quoted_pattern.finditer(formula):
-                sheet_name = match.group(1).strip()
+                sheet_name = self._normalize_sheet_key(match.group(1))
                 col_letter_ref = match.group(2).upper()
                 col_idx = self._column_letter_to_index(col_letter_ref)
 
@@ -735,7 +735,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 })
 
             for match in sumif_unquoted_pattern.finditer(formula):
-                sheet_name = match.group(1).strip()
+                sheet_name = self._normalize_sheet_key(match.group(1))
                 col_letter_ref = match.group(2).upper()
                 col_idx = self._column_letter_to_index(col_letter_ref)
 
@@ -750,7 +750,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
             # Find direct references (both quoted and unquoted)
             for match in direct_quoted_pattern.finditer(formula):
-                sheet_name = match.group(1).strip()
+                sheet_name = self._normalize_sheet_key(match.group(1))
                 col_letter_ref = match.group(2).upper()
                 col_idx = self._column_letter_to_index(col_letter_ref)
 
@@ -764,7 +764,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 })
 
             for match in direct_unquoted_pattern.finditer(formula):
-                sheet_name = match.group(1).strip()
+                sheet_name = self._normalize_sheet_key(match.group(1))
                 col_letter_ref = match.group(2).upper()
                 col_idx = self._column_letter_to_index(col_letter_ref)
 
@@ -781,13 +781,20 @@ class MultiSheetImportWizard(models.TransientModel):
 
     def _is_column_referenced(self, sheet_name, col_letter, col_index, cross_refs):
         """Check if a column is referenced by main sheet formulas."""
-        sheet_name_lower = sheet_name.strip().lower()
+        sheet_name_lower = self._normalize_sheet_key(sheet_name)
         for ref_sheet, refs in cross_refs.items():
-            if ref_sheet.strip().lower() == sheet_name_lower:
+            if self._normalize_sheet_key(ref_sheet) == sheet_name_lower:
                 for ref in refs:
                     if ref['col_letter'] == col_letter or ref['col_index'] == col_index - 1:
                         return True
         return False
+
+    def _normalize_sheet_key(self, name):
+        if not name:
+            return ''
+        text = str(name).replace('\u00A0', ' ')
+        text = re.sub(r'\s+', ' ', text)
+        return text.strip().lower()
 
     def _column_letter_to_index(self, col_letter):
         """Convert column letter to 0-based index (A=0, B=1, ...)."""
@@ -903,7 +910,7 @@ class MultiSheetImportWizard(models.TransientModel):
             for sheet_name, refs in cross_refs.items():
                 # Find the sheet line
                 sheet_line = self.available_sheet_ids.filtered(
-                    lambda s: s.sheet_name.strip().lower() == sheet_name.strip().lower()
+                    lambda s: self._normalize_sheet_key(s.sheet_name) == self._normalize_sheet_key(sheet_name)
                 )
                 if not sheet_line:
                     continue  # Sheet not even selected
@@ -1020,7 +1027,7 @@ class MultiSheetImportWizard(models.TransientModel):
                     new_col_letter = self._index_to_column_letter(current_col_index)
 
                     # Store mapping for cross-sheet resolution
-                    sheet_key = sheet_line.sheet_name.strip().lower()
+                    sheet_key = self._normalize_sheet_key(sheet_line.sheet_name)
                     column_mapping[(sheet_key, col_sel.column_letter)] = new_col_letter
                     column_mapping[(sheet_key, col_sel.column_index)] = new_col_letter
 
@@ -1082,21 +1089,35 @@ class MultiSheetImportWizard(models.TransientModel):
                     }
                     all_components.append(component)
 
+            # Debug: Log column_mapping for troubleshooting
+            _logger.info("=== COLUMN MAPPING DEBUG ===")
+            for (sheet_key, col_ref), new_col in sorted(column_mapping.items(), key=lambda x: (str(x[0][0]), str(x[0][1]))):
+                _logger.info(f"  column_mapping[({sheet_key!r}, {col_ref!r})] = {new_col!r}")
+            _logger.info("=== END COLUMN MAPPING ===")
+
             # Now resolve formulas (both same-sheet and cross-sheet references)
             for component in all_components:
                 if component['excel_formula']:
+                    _logger.info(
+                        f"=== RESOLVING FORMULA for component [{component['generated_code']}] "
+                        f"from sheet [{component['source_sheet']}] ==="
+                    )
+                    _logger.info(f"  Original formula: {component['excel_formula']}")
+
                     # First resolve same-sheet column references (e.g., I3 -> FS3)
                     formula_with_same_sheet = self._resolve_same_sheet_formula(
                         component['excel_formula'],
                         component['source_sheet'],
                         column_mapping
                     )
+                    _logger.info(f"  After same-sheet resolution: {formula_with_same_sheet}")
 
                     # Then resolve cross-sheet references (e.g., 'OtherSheet'!A1 -> XX1)
                     resolved = self._resolve_cross_sheet_formula(
                         formula_with_same_sheet,
                         column_mapping
                     )
+                    _logger.info(f"  After cross-sheet resolution: {resolved}")
 
                     component['resolved_formula'] = resolved
                     # Use the fully resolved formula
@@ -1134,7 +1155,8 @@ class MultiSheetImportWizard(models.TransientModel):
         )
 
         def resolve_vlookup(match):
-            sheet_name = match.group(1).strip().lower()
+            raw_sheet_name = match.group(1)
+            sheet_name = self._normalize_sheet_key(raw_sheet_name)
             start_col = match.group(2).upper()
             col_index = int(match.group(3))
 
@@ -1143,14 +1165,30 @@ class MultiSheetImportWizard(models.TransientModel):
             target_idx = start_idx + col_index - 1
             target_col = self._index_to_column_letter(target_idx)
 
+            _logger.info(
+                f"VLOOKUP DEBUG: raw_sheet='{raw_sheet_name}', normalized='{sheet_name}', "
+                f"start_col='{start_col}', col_index={col_index}, target_col='{target_col}', target_idx={target_idx}"
+            )
+
             # Look up new column
             new_col = column_mapping.get((sheet_name, target_col))
+            _logger.info(f"  Lookup by letter: ({sheet_name!r}, {target_col!r}) -> {new_col!r}")
             if not new_col:
                 new_col = column_mapping.get((sheet_name, target_idx))
+                _logger.info(f"  Lookup by index: ({sheet_name!r}, {target_idx}) -> {new_col!r}")
 
             if new_col:
-                return f"{new_col}2"  # Simple reference to row 2 (data row placeholder)
+                # Return just the code - the formula converter handles codes in column_map.values()
+                # Don't add row number suffix as it prevents proper code recognition
+                _logger.info(f"  VLOOKUP RESOLVED -> {new_col}")
+                return new_col
             else:
+                # List available keys for this sheet for debugging
+                available_keys = [k for k in column_mapping.keys() if k[0] == sheet_name]
+                _logger.warning(
+                    f"VLOOKUP unresolved: sheet='{sheet_name}', target_col='{target_col}', "
+                    f"col_index={col_index}. Available keys for sheet: {available_keys[:10]}... Returning 0."
+                )
                 return "0"  # Unresolved - return 0
 
         result = vlookup_pattern.sub(resolve_vlookup, result)
@@ -1162,10 +1200,10 @@ class MultiSheetImportWizard(models.TransientModel):
         )
 
         def resolve_sumif(match):
-            criteria_sheet = match.group(1).strip().lower()
+            criteria_sheet = self._normalize_sheet_key(match.group(1))
             criteria_col = match.group(2).upper()
             criteria = match.group(4)
-            sum_sheet = match.group(5).strip().lower()
+            sum_sheet = self._normalize_sheet_key(match.group(5))
             sum_col = match.group(6).upper()
 
             new_criteria_col = column_mapping.get((criteria_sheet, criteria_col))
@@ -1192,7 +1230,7 @@ class MultiSheetImportWizard(models.TransientModel):
         )
 
         def resolve_direct(match):
-            sheet_name = match.group(1).strip().lower()
+            sheet_name = self._normalize_sheet_key(match.group(1))
             col = match.group(2).upper()
             row = match.group(3)
 
@@ -1202,8 +1240,13 @@ class MultiSheetImportWizard(models.TransientModel):
                 new_col = column_mapping.get((sheet_name, idx))
 
             if new_col:
-                return f"{new_col}{row}"
+                # Return just the code - the formula converter handles codes in column_map.values()
+                # Don't add row number suffix as it prevents proper code recognition
+                return new_col
             else:
+                _logger.warning(
+                    f"Direct reference unresolved: sheet='{sheet_name}', col='{col}'. Returning 0."
+                )
                 return "0"
 
         result = direct_pattern.sub(resolve_direct, result)
@@ -1233,11 +1276,33 @@ class MultiSheetImportWizard(models.TransientModel):
             return formula
 
         result = formula
-        sheet_key = sheet_name.strip().lower()
+        sheet_key = self._normalize_sheet_key(sheet_name)
+
+        # First, temporarily mask cross-sheet references to protect them
+        # This prevents us from modifying column refs inside cross-sheet ranges like 'Sheet'!C4:Q11
+        cross_sheet_pattern = re.compile(
+            r"'[^']+'![^,\s\)]+|[A-Za-z0-9_]+![^,\s\)]+"
+        )
+        placeholders = {}
+        placeholder_idx = [0]  # Use list for closure modification
+
+        def mask_cross_sheet(match):
+            placeholder = f"__CROSSSHEET_{placeholder_idx[0]}__"
+            placeholders[placeholder] = match.group(0)
+            placeholder_idx[0] += 1
+            return placeholder
+
+        result = cross_sheet_pattern.sub(mask_cross_sheet, result)
+
+        if placeholders:
+            _logger.info(f"  Same-sheet resolution: masked {len(placeholders)} cross-sheet refs")
+            for ph, orig in placeholders.items():
+                _logger.info(f"    {ph} = {orig}")
+            _logger.info(f"  Formula after masking: {result}")
 
         # Pattern to match column references in formulas
         # Matches: A1, $A$1, $A1, A$1, AA123, etc.
-        # But NOT: Sheet!A1 (cross-sheet refs are handled elsewhere)
+        # Cross-sheet refs are already masked, so we just need to avoid word boundaries
         same_sheet_pattern = re.compile(
             r'(?<![!\w])\$?([A-Z]+)\$?(\d+)(?!\w)',
             re.IGNORECASE
@@ -1267,6 +1332,10 @@ class MultiSheetImportWizard(models.TransientModel):
                 return match.group(0)
 
         result = same_sheet_pattern.sub(replace_column, result)
+
+        # Restore the masked cross-sheet references
+        for placeholder, original in placeholders.items():
+            result = result.replace(placeholder, original)
 
         return result
 

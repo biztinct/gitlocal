@@ -593,6 +593,22 @@ class HrFormulaSampleData(models.Model):
                 except Exception as e:
                     _logger.warning("Formula evaluation error for %s: %s", rule.code, e)
                     results[rule.code] = 0.0
+        # Second pass to resolve forward references not captured in dependency parsing.
+        for _pass in range(2):
+            changed = False
+            for rule in sorted_rules:
+                if rule.column_type != 'formula':
+                    continue
+                try:
+                    value = rule.evaluate(results)
+                except Exception as e:
+                    _logger.warning("Formula re-evaluation error for %s: %s", rule.code, e)
+                    value = 0.0
+                if results.get(rule.code) != value:
+                    results[rule.code] = value
+                    changed = True
+            if not changed:
+                break
 
         return results
 

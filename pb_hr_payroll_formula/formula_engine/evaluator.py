@@ -151,8 +151,9 @@ class FormulaEvaluator:
 
         try:
             # Sanitize None -> 0 for arithmetic
+            # Note: context parameter contains the values dict, we need to sanitize it
             safe_context["values"] = {
-                k: (0 if v is None else v) for k, v in values.items()
+                k: (0 if v is None else v) for k, v in context.items()
             }
 
             result = eval(python_formula, {"__builtins__": {}}, safe_context)
