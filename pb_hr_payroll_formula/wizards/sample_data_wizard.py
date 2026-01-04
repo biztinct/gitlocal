@@ -3,6 +3,7 @@
 Sample Data Wizard - Generate sample data for formula testing.
 """
 
+import csv
 import json
 import random
 import string
@@ -208,42 +209,276 @@ class SampleDataWizard(models.TransientModel):
             raise UserError(_("Please upload a file"))
 
         try:
-            import openpyxl
-        except ImportError:
-            raise UserError(_("openpyxl library required. Install with: pip install openpyxl"))
-
-        try:
             content = base64.b64decode(self.import_file)
-            workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
-            sheet = workbook.active
         except Exception as e:
             raise UserError(_("Failed to read Excel file: %s") % e)
 
         rules = self.config_id.rule_ids
-        header_to_code, header_row = self._match_headers_to_rules(sheet, rules)
-        if not header_to_code:
-            raise UserError(_("No headers matched any rule codes or names."))
+        filename = (self.import_filename or '').lower()
+        if filename.endswith('.csv'):
+            text = content.decode('utf-8', errors='ignore')
+            reader = csv.reader(io.StringIO(text))
+            rows = list(reader)
+            if not rows:
+                raise UserError(_("No data found in CSV file."))
+            header_row = 0
+            headers = rows[header_row]
+            header_to_code = {}
+            for idx, header in enumerate(headers):
+                code = self._match_header_to_rule(header, rules)
+                if code:
+                    header_to_code[idx] = code
+            if not header_to_code:
+                raise UserError(_("No headers matched any rule codes or names."))
 
-        samples = []
-        for row_idx in range(header_row + 1, sheet.max_row + 1):
-            row = [cell.value for cell in sheet[row_idx]]
-            if not any(row):
+            samples = []
+            for row_idx, row in enumerate(rows[header_row + 1:], start=1):
+                if not any(row):
+                    continue
+                input_values = {}
+                for idx, code in header_to_code.items():
+                    if idx < len(row):
+                        input_values[code] = self._serialize_value(row[idx])
+                samples.append({
+                    'config_id': self.config_id.id,
+                    'name': _("File Sample %s") % row_idx,
+                    'source_type': 'import',
+                    'is_anonymized': self.anonymize,
+                    'input_values_json': json.dumps(input_values),
+                })
+            return samples
+
+        try:
+            import openpyxl
+        except ImportError:
+            raise UserError(_("openpyxl library required. Install with: pip install openpyxl"))
+
+        return self._generate_from_excel_multisheet(content, rules)
+
+    def _match_header_to_rule(self, header_value, rules):
+        if not header_value:
+            return None
+        header_text = str(header_value).strip()
+        if not header_text:
+            return None
+        strict_key = self._normalize_header(header_text)
+        for rule in rules:
+            if rule.code and self._normalize_header(rule.code) == strict_key:
+                return rule.code
+            if rule.name and self._normalize_header(rule.name) == strict_key:
+                return rule.code
+        loose_key = self._normalize_header(header_text, loose=True)
+        for rule in rules:
+            if rule.code and self._normalize_header(rule.code, loose=True) == loose_key:
+                return rule.code
+            if rule.name and self._normalize_header(rule.name, loose=True) == loose_key:
+                return rule.code
+        return None
+
+    def _generate_from_excel_multisheet(self, content, rules):
+        """Generate samples from an Excel workbook, merging sheets by primary key."""
+        from ..integrations.excel_connector import ExcelConnector
+
+        connector = ExcelConnector(None)
+        workbook_data = connector.load_workbook_multisheet(content, include_formulas=False)
+
+        sheet_summaries = []
+        for sheet_name in workbook_data['sheet_names']:
+            sheet_data = connector.load_sheet_with_detection(sheet_name)
+            headers = [h.get('value') for h in sheet_data.get('headers', []) if h.get('value')]
+            primary_key = self._find_primary_key_header(headers)
+            match_count = self._count_header_matches(headers, rules)
+            sheet_summaries.append({
+                'sheet_name': sheet_name,
+                'headers': headers,
+                'data_rows': sheet_data.get('data_rows', []),
+                'primary_key': primary_key,
+                'match_count': match_count,
+                'row_count': sheet_data.get('total_rows', 0),
+                'col_count': sheet_data.get('total_columns', 0),
+            })
+
+        candidates = [s for s in sheet_summaries if s['primary_key']]
+        if not candidates:
+            import openpyxl
+            workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
+            sheet = workbook.active
+            header_to_code, header_row = self._match_headers_to_rules(sheet, rules)
+            if not header_to_code:
+                raise UserError(_("No headers matched any rule codes or names."))
+
+            samples = []
+            for row_idx in range(header_row + 1, sheet.max_row + 1):
+                row = [cell.value for cell in sheet[row_idx]]
+                if not any(row):
+                    continue
+
+                input_values = {}
+                for idx, code in header_to_code.items():
+                    if idx < len(row):
+                        input_values[code] = self._serialize_value(row[idx])
+
+                samples.append({
+                    'config_id': self.config_id.id,
+                    'name': _("File Sample %s") % (row_idx - 1),
+                    'source_type': 'import',
+                    'is_anonymized': self.anonymize,
+                    'input_values_json': json.dumps(input_values),
+                })
+
+            return samples
+
+        candidates.sort(key=lambda s: (s['match_count'], s['col_count'], s['row_count']), reverse=True)
+        main_sheet = candidates[0]
+        main_pk = main_sheet['primary_key']
+
+        merged_rows = {}
+        for row in main_sheet['data_rows']:
+            pk_value = self._extract_row_value(row, main_pk)
+            pk_key = self._normalize_code(pk_value)
+            if not pk_key:
+                continue
+            base_row = row.copy()
+            for header, value in row.items():
+                base_row[f"{main_sheet['sheet_name']}|{header}"] = value
+            merged_rows[pk_key] = base_row
+
+        for sheet in sheet_summaries:
+            if sheet['sheet_name'] == main_sheet['sheet_name']:
                 continue
 
-            input_values = {}
-            for idx, code in header_to_code.items():
-                if idx < len(row):
-                    input_values[code] = self._serialize_value(row[idx])
+            pk_header = sheet['primary_key'] or main_pk
+            if not pk_header:
+                continue
 
+            aux_map = {}
+            for row in sheet['data_rows']:
+                pk_value = self._extract_row_value(row, pk_header)
+                pk_key = self._normalize_code(pk_value)
+                if not pk_key:
+                    continue
+                aux_map[pk_key] = row
+
+            for pk_key, base_row in merged_rows.items():
+                aux_row = aux_map.get(pk_key)
+                if aux_row:
+                    for header, value in aux_row.items():
+                        if self._normalize_header_key(header) == self._normalize_header_key(pk_header):
+                            continue
+                        base_row[f"{sheet['sheet_name']}|{header}"] = value
+                        if header not in base_row:
+                            base_row[header] = value
+                else:
+                    for header in sheet['headers']:
+                        if self._normalize_header_key(header) == self._normalize_header_key(pk_header):
+                            continue
+                        base_row.setdefault(f"{sheet['sheet_name']}|{header}", None)
+                        base_row.setdefault(header, None)
+
+        samples = []
+        for idx, raw_row in enumerate(merged_rows.values(), start=1):
+            input_values = self._map_row_to_inputs(raw_row, rules)
             samples.append({
                 'config_id': self.config_id.id,
-                'name': _("File Sample %s") % (row_idx - 1),
+                'name': _("File Sample %s") % idx,
                 'source_type': 'import',
                 'is_anonymized': self.anonymize,
                 'input_values_json': json.dumps(input_values),
             })
 
         return samples
+
+    def _map_row_to_inputs(self, raw_data, rules):
+        input_values = {}
+
+        def lookup_raw_value(candidates):
+            for key in candidates:
+                if key in raw_data:
+                    return raw_data.get(key)
+            normalized_map = {self._normalize_header_key(k): k for k in raw_data.keys()}
+            for key in candidates:
+                normalized_key = self._normalize_header_key(key)
+                if normalized_key in normalized_map:
+                    return raw_data.get(normalized_map[normalized_key])
+            return None
+
+        for rule in rules.filtered(lambda r: r.column_type == 'input'):
+            candidates = []
+            if rule.data_source_field:
+                candidates.append(rule.data_source_field)
+            if rule.source_sheet_name:
+                if rule.name:
+                    candidates.append(f"{rule.source_sheet_name}|{rule.name}")
+                if rule.code:
+                    candidates.append(f"{rule.source_sheet_name}|{rule.code}")
+            if rule.code:
+                candidates.append(rule.code)
+            if rule.column_letter:
+                candidates.append(rule.column_letter)
+            if rule.name:
+                candidates.append(rule.name)
+
+            value = lookup_raw_value(candidates)
+            if value is None:
+                input_values[rule.code] = rule.default_value or 0.0
+            else:
+                input_values[rule.code] = self._serialize_value(value)
+
+        return input_values
+
+    def _normalize_header_key(self, value):
+        if value is None:
+            return ''
+        return ''.join(ch for ch in str(value).lower() if ch.isalnum())
+
+    def _find_primary_key_header(self, headers):
+        candidates = [
+            'employee_code', 'emp_code', 'emp code', 'emp. code',
+            'employee id', 'employee_id', 'emp id', 'empid',
+            'id no', 'id_no', 'id',
+        ]
+        for candidate in candidates:
+            target = self._normalize_header_key(candidate)
+            for header in headers:
+                if self._normalize_header_key(header) == target:
+                    return header
+        return None
+
+    def _count_header_matches(self, headers, rules):
+        lookup = set()
+        for rule in rules:
+            if rule.code:
+                lookup.add(self._normalize_header_key(rule.code))
+            if rule.name:
+                lookup.add(self._normalize_header_key(rule.name))
+            if rule.source_sheet_name:
+                lookup.add(self._normalize_header_key(rule.source_sheet_name))
+        count = 0
+        for header in headers:
+            if self._normalize_header_key(header) in lookup:
+                count += 1
+        return count
+
+    def _normalize_code(self, value):
+        if value is None:
+            return False
+        try:
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                if float(value).is_integer():
+                    return str(int(value))
+                return str(value).strip()
+            return str(value).strip()
+        except Exception:
+            return str(value)
+
+    def _extract_row_value(self, row, header):
+        if header in row:
+            return row.get(header)
+        normalized_map = {self._normalize_header_key(k): k for k in row.keys()}
+        normalized_header = self._normalize_header_key(header)
+        if normalized_header in normalized_map:
+            return row.get(normalized_map[normalized_header])
+        return None
 
     def _normalize_header(self, value, loose=False):
         """Normalize header strings for matching."""

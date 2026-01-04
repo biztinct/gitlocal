@@ -155,6 +155,12 @@ class HrFormulaRule(models.Model):
         string='Excel Formula',
         help="Excel-style formula (e.g., =A1+B1*0.08, =SUM(A1:C1), =IF(A1>1000,B1*0.1,0))"
     )
+    excel_formula_display = fields.Char(
+        string='Excel Formula',
+        compute='_compute_excel_formula_display',
+        inverse='_inverse_excel_formula_display',
+        help="Display-friendly formula with row numbers stripped."
+    )
 
     python_formula = fields.Text(
         string='Python Code',
@@ -169,6 +175,24 @@ class HrFormulaRule(models.Model):
         store=True,
         help="List of columns this formula depends on"
     )
+
+    @staticmethod
+    def _normalize_excel_formula(formula):
+        if not formula:
+            return formula
+        formula = str(formula).strip()
+        return re.sub(r'(?<![A-Za-z0-9_])\$?([A-Z]{1,3})\$?\d+', r'\1', formula)
+
+    @api.depends('excel_formula')
+    def _compute_excel_formula_display(self):
+        for record in self:
+            record.excel_formula_display = self._normalize_excel_formula(record.excel_formula or '')
+
+    def _inverse_excel_formula_display(self):
+        for record in self:
+            record.excel_formula = self._normalize_excel_formula(
+                record.excel_formula_display or ''
+            )
 
     # ==========================================
     # INPUT COLUMN SETTINGS
@@ -543,6 +567,7 @@ class HrFormulaRule(models.Model):
             r'\bABS\(': 'abs(',
             r'\bROUND\(': 'round(',
             r'\bIF\(': 'self._if(',
+            r'\bIFERROR\(': 'self._iferror(',
             r'\bISBLANK\(': 'self._isblank(',
             r'\bAND\(': 'all([',
             r'\bOR\(': 'any([',
@@ -632,7 +657,11 @@ class HrFormulaRule(models.Model):
 
             # Find standalone column letters (A, B, C) - not part of function names
             # Remove function names first to avoid matching them
-            formula_cleaned = re.sub(r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(', '', formula)
+            formula_cleaned = re.sub(
+                r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(',
+                '',
+                formula
+            )
             refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
 
             all_refs = refs_with_row + refs_no_row
@@ -662,7 +691,11 @@ class HrFormulaRule(models.Model):
         refs_with_row = re.findall(r'\$?([A-Z]+)\$?\d+', formula)
 
         # Find standalone column letters - remove function names first
-        formula_cleaned = re.sub(r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(', '', formula)
+        formula_cleaned = re.sub(
+            r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR)\s*\(',
+            '',
+            formula
+        )
         refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
 
         refs = list(set(refs_with_row + refs_no_row))
@@ -909,6 +942,13 @@ class HrFormulaRule(models.Model):
         """Excel AVERAGE function implementation"""
         valid_values = [v for v in values_list if v is not None]
         return sum(valid_values) / len(valid_values) if valid_values else 0
+
+    def _iferror(self, value, error_value):
+        """Excel IFERROR function implementation"""
+        try:
+            return value
+        except Exception:
+            return error_value
 
     def _isblank(self, value):
         """Excel ISBLANK function implementation"""

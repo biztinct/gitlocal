@@ -19,7 +19,7 @@
                 <field name="code"/>
                 <field name="column_type" string="Type"/>
                 <field name="data_source" string="Source"/>
-                <field name="excel_formula" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
+                <field name="excel_formula_display" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
                 <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
                 <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
                 <field name="default_value" optional="show"/>
@@ -78,7 +78,7 @@
                               attrs="{'invisible': [('column_type', '!=', 'formula')]}">
                             <group>
                                 <group string="Excel Formula">
-                                    <field name="excel_formula" placeholder="e.g., =A1+B1*0.08"
+                                    <field name="excel_formula_display" placeholder="e.g., =A1+B1*0.08"
                                            widget="char" class="o_text_mono"/>
                                 </group>
                                 <group string="Converted Python">
@@ -165,7 +165,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="column_type"/>
-                <field name="excel_formula"/>
+                <field name="excel_formula_display"/>
                 <field name="is_valid"/>
                 <field name="sequence"/>
                 <templates>
@@ -186,7 +186,7 @@
                                 </div>
                             </div>
                             <div class="o_kanban_record_body" t-if="record.column_type.raw_value == 'formula'">
-                                <code><field name="excel_formula"/></code>
+                                <code><field name="excel_formula_display"/></code>
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
