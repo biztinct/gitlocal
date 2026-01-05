@@ -784,11 +784,11 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                         <button name="%(action_hr_payslip_by_employees)d" type="action" states="draft"
                                 string="Generate Payslips" class="oe_highlight"/>
                         <!--<button string="Set to Draft" name="draft_payslip_run" type="object" states="done"/>-->
-                        <button string="Submit for Approval" name="done_payslip_run" type="object" states="draft"
+                        <button string="Submit for HR Manager" name="done_payslip_run" type="object" states="draft"
                                 class="oe_highlight"/>
-                        <button name="action_payslip_run_level1_done" type="object" string="Level 1 Approve" states="level1"
+                        <button name="action_payslip_run_level1_done" type="object" string="HR Manager Approve" states="level1"
                             class="oe_highlight"/>
-                        <button name="action_payslip_run_level2_done" type="object" string="Level 2 Approve" states="level2"
+                        <button name="action_payslip_run_level2_done" type="object" string="General Manager Approve" states="level2"
                             class="oe_highlight"/>
                         <button name="action_payslip_run_cancel" type="object" string="Reject" states="draft,level1,level2"/> 
                         <!--<button name="close_payslip_run" type="object" string="Close" states="draft,done"/>-->
