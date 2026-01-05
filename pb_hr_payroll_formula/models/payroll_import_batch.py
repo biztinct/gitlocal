@@ -907,29 +907,11 @@ class HrPayrollImportBatch(models.Model):
         config = self.formula_config_id
         rules = config.rule_ids.sorted(key=lambda r: r.sequence)
 
-        # Build column map for formula evaluation
-        column_map = {}
-        for rule in rules:
-            column_map[rule.column_letter] = rule.code
-            column_map[rule.code] = rule.column_letter
-
-        # Evaluate all formulas
-        computed_values = {}
-        computation_log = []
-
-        for rule in rules:
-            try:
-                value = rule.evaluate(input_values)
-                computed_values[rule.code] = value
-                # Also store by column letter for dependent formulas
-                input_values[rule.code] = value
-                input_values[rule.column_letter] = value
-
-                computation_log.append("%s (%s) = %s" % (rule.code, rule.column_letter, value))
-            except Exception as e:
-                computed_values[rule.code] = 0
-                computation_log.append("%s (%s) = ERROR: %s" % (rule.code, rule.column_letter, str(e)))
-                _logger.warning("Error computing %s: %s", rule.code, str(e))
+        # Evaluate all formulas using dependency order (handles forward references)
+        computed_values, computation_log = payslip._evaluate_rules_with_dependencies(
+            rules,
+            input_values
+        )
 
         # Store computed values in payslip
         payslip.formula_computed_values = json.dumps(computed_values)

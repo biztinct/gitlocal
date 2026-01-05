@@ -93,47 +93,16 @@ class HrPayslipFormula(models.Model):
             input_values = payslip._get_formula_input_values(config)
             payslip.formula_input_values = json.dumps(input_values, indent=2)
 
-            # Get rules in order
+            # Get rules in order (display) but compute using dependency sorting
             rules = config.rule_ids.sorted(key=lambda r: r.sequence)
 
-            # Compute all formulas
-            computed_values = input_values.copy()
-            computation_log = []
-            errors = []
-
-            for rule in rules:
-                try:
-                    if rule.column_type == 'input':
-                        value = computed_values.get(rule.code, rule.default_value)
-                        computed_values[rule.code] = value
-                        computation_log.append(
-                            f"[{rule.column_letter}] {rule.code} (input) = {value}"
-                        )
-
-                    elif rule.column_type == 'constant':
-                        computed_values[rule.code] = rule.constant_value
-                        computation_log.append(
-                            f"[{rule.column_letter}] {rule.code} (constant) = {rule.constant_value}"
-                        )
-
-                    elif rule.column_type == 'formula':
-                        value = rule.evaluate(computed_values)
-                        computed_values[rule.code] = value
-                        computation_log.append(
-                            f"[{rule.column_letter}] {rule.code} = {rule.excel_formula} -> {value}"
-                        )
-
-                except Exception as e:
-                    error_msg = f"Error in {rule.code}: {str(e)}"
-                    errors.append(error_msg)
-                    computation_log.append(f"[ERROR] {error_msg}")
-                    computed_values[rule.code] = 0.0
+            computed_values, computation_log = payslip._evaluate_rules_with_dependencies(
+                rules,
+                input_values
+            )
 
             payslip.formula_computed_values = json.dumps(computed_values, indent=2)
             payslip.formula_computation_log = '\n'.join(computation_log)
-
-            if errors:
-                payslip.formula_computation_log += '\n\nERRORS:\n' + '\n'.join(errors)
 
             # Create/update payslip lines
             payslip._create_payslip_lines_from_formulas(rules, computed_values)
@@ -142,6 +111,73 @@ class HrPayslipFormula(models.Model):
             payslip.calculation_method = 'formula'
 
         return True
+
+    def _evaluate_rules_with_dependencies(self, rules, input_values):
+        """Evaluate rules using dependency order to handle forward references."""
+        self.ensure_one()
+        if not rules:
+            return input_values.copy(), []
+
+        rules._compute_dependencies()
+        try:
+            from ..formula_engine import FormulaEvaluator
+            evaluator = FormulaEvaluator()
+            sorted_rules = evaluator._topological_sort(rules)
+        except Exception:
+            sorted_rules = rules.sorted(key=lambda r: r.sequence)
+
+        results = input_values.copy()
+        computation_log = []
+
+        for rule in sorted_rules:
+            try:
+                if rule.column_type == 'input':
+                    if rule.code not in results:
+                        results[rule.code] = rule.default_value or 0.0
+                    value = results.get(rule.code, 0.0)
+                    computation_log.append(
+                        f"[{rule.column_letter}] {rule.code} (input) = {value}"
+                    )
+                elif rule.column_type == 'constant':
+                    value = rule.constant_value or 0.0
+                    results[rule.code] = value
+                    computation_log.append(
+                        f"[{rule.column_letter}] {rule.code} (constant) = {value}"
+                    )
+                elif rule.column_type == 'formula':
+                    value = rule.evaluate(results)
+                    results[rule.code] = value
+                    computation_log.append(
+                        f"[{rule.column_letter}] {rule.code} = {rule.excel_formula} -> {value}"
+                    )
+            except Exception as e:
+                error_msg = f"Error in {rule.code}: {str(e)}"
+                computation_log.append(f"[ERROR] {error_msg}")
+                results[rule.code] = 0.0
+
+            if rule.column_letter:
+                results[rule.column_letter] = results.get(rule.code, 0.0)
+
+        # Second pass to resolve forward references not captured in dependency parsing.
+        for _pass in range(2):
+            changed = False
+            for rule in sorted_rules:
+                if rule.column_type != 'formula':
+                    continue
+                try:
+                    value = rule.evaluate(results)
+                except Exception as e:
+                    computation_log.append(f"[ERROR] Error in {rule.code}: {str(e)}")
+                    value = 0.0
+                if results.get(rule.code) != value:
+                    results[rule.code] = value
+                    if rule.column_letter:
+                        results[rule.column_letter] = value
+                    changed = True
+            if not changed:
+                break
+
+        return results, computation_log
 
     def _find_formula_config(self):
         """Find appropriate formula configuration for this payslip"""
