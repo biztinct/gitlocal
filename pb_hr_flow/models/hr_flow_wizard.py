@@ -212,6 +212,7 @@ class HRFlowWizard(models.TransientModel):
             'payroll-batch-workflow': ('om_hr_payroll.action_hr_payslip_run_tree', False),
             'payroll-payslip': ('om_hr_payroll.action_view_hr_payslip_form', False),
             'payroll-full-and-final': ('pb_hr_fullandfinal.action_full_and_final_employees', False),
+            'payroll-salary-analytics': ('pb_hr_flow.action_hr_payslip_line_analytics', False),
             # Approval - Updated to use Approval Queue action
             'approval-pending': ('payroll_analytics_approval.action_payroll_approval_queue', False),
             'approval-history': ('payroll_analytics_approval.action_payroll_approval_queue', False),

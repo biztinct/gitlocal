@@ -569,11 +569,16 @@ class HrPayrollImportBatch(models.Model):
                         line.error_message = "No employee found and auto-create is disabled"
                         continue
 
+                    raw_data = line.get_raw_data()
+                    self._update_employee_from_raw_data(employee, raw_data, line=line)
+
                     # Step 2: Ensure contract exists
                     contract = employee.contract_id or employee.contract_ids[:1]
                     if not contract and self.auto_create_contracts:
                         contract = self._create_contract(employee, line)
                         created_contracts |= contract
+                    else:
+                        self._update_contract_from_raw_data(contract, raw_data)
 
                     # Step 3: Create payslip with formula-based lines
                     if self.create_payslips:
@@ -633,31 +638,17 @@ class HrPayrollImportBatch(models.Model):
 
         vals = {
             'name': name,
-            'identification_id': line.employee_code,
             'work_email': line.employee_email,
             'company_id': self.company_id.id,
         }
 
-        # Extract additional fields if available
-        department_name = self._extract_field(raw_data, ['department', 'dept', 'department_name'])
-        if department_name:
-            department = self.env['hr.department'].search([
-                ('name', '=ilike', department_name),
-                ('company_id', '=', self.company_id.id)
-            ], limit=1)
-            if department:
-                vals['department_id'] = department.id
-
-        job_title = self._extract_field(raw_data, ['job_title', 'job', 'position', 'designation'])
-        if job_title:
-            job = self.env['hr.job'].search([
-                ('name', '=ilike', job_title),
-                ('company_id', '=', self.company_id.id)
-            ], limit=1)
-            if job:
-                vals['job_id'] = job.id
+        if line.employee_code:
+            vals['identification_id'] = line.employee_code
+            if 'employee_id' in self.env['hr.employee']._fields:
+                vals['employee_id'] = line.employee_code
 
         employee = self.env['hr.employee'].create(vals)
+        self._update_employee_from_raw_data(employee, raw_data, line=line)
         self._log("Created employee: %s [%s]" % (employee.name, employee.identification_id))
 
         return employee
@@ -668,6 +659,10 @@ class HrPayrollImportBatch(models.Model):
 
         # Get basic salary from raw data
         basic_salary = self._extract_number(raw_data, ['basic', 'basic_salary', 'wage', 'salary', 'base_salary'])
+        joining_date = self._parse_date_value(self._extract_field(
+            raw_data,
+            ['joining_date', 'joining date', 'date_of_joining', 'join_date', 'join date']
+        ))
 
         # Find structure from formula config
         structure = self.formula_config_id.structure_id
@@ -678,16 +673,129 @@ class HrPayrollImportBatch(models.Model):
             'company_id': self.company_id.id,
             'wage': basic_salary or 0,
             'state': 'open',
-            'date_start': self.date_from or date.today().replace(day=1),
+            'date_start': joining_date or self.date_from or date.today().replace(day=1),
         }
 
         if structure:
             vals['struct_id'] = structure.id
 
         contract = self.env['hr.contract'].create(vals)
+        self._update_contract_from_raw_data(contract, raw_data)
         self._log("Created contract for %s: wage=%s" % (employee.name, basic_salary))
 
         return contract
+
+    def _parse_date_value(self, value):
+        """Parse a date from Excel or string values."""
+        if not value:
+            return None
+        if isinstance(value, datetime):
+            return value.date()
+        if isinstance(value, date):
+            return value
+        if isinstance(value, str):
+            text = value.strip()
+            if not text:
+                return None
+            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y", "%d-%m-%Y", "%m-%d-%Y"):
+                try:
+                    return datetime.strptime(text, fmt).date()
+                except ValueError:
+                    continue
+            for parser in (getattr(fields.Date, 'to_date', None), getattr(fields.Date, 'from_string', None)):
+                if parser:
+                    try:
+                        return parser(text)
+                    except Exception:
+                        continue
+        return None
+
+    def _update_employee_from_raw_data(self, employee, raw_data, line=None):
+        """Update employee fields from raw import data."""
+        updates = {}
+
+        emp_code = self._extract_field(raw_data, [
+            'employee_code', 'emp_code', 'emp code', 'emp. code', 'employee_id', 'emp_id'
+        ])
+        if not emp_code and line and line.employee_code:
+            emp_code = line.employee_code
+        emp_code = self._normalize_code(emp_code) if emp_code is not None else emp_code
+
+        id_no = self._extract_field(raw_data, [
+            'id_no', 'id no', 'idno', 'id_number', 'id number', 'identification_id', 'identity'
+        ])
+
+        if emp_code and 'employee_id' in employee._fields:
+            updates['employee_id'] = emp_code
+        if id_no:
+            updates['identification_id'] = id_no
+        elif emp_code and not employee.identification_id:
+            updates['identification_id'] = emp_code
+
+        full_name = self._extract_field(raw_data, ['full_name', 'full name', 'employee_name', 'name'])
+        if full_name:
+            updates['name'] = full_name
+
+        email = self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
+        if email:
+            updates['work_email'] = email
+
+        division = self._extract_field(raw_data, ['division'])
+        if division and 'division' in employee._fields:
+            updates['division'] = division
+
+        position = self._extract_field(raw_data, ['position'])
+        if position and 'position_name' in employee._fields:
+            updates['position_name'] = position
+
+        job_title = self._extract_field(raw_data, ['job_title', 'job title', 'jobtitle', 'designation'])
+        if job_title:
+            if 'job_title' in employee._fields:
+                updates['job_title'] = job_title
+            elif 'job_title_text' in employee._fields:
+                updates['job_title_text'] = job_title
+
+        joining_date = self._parse_date_value(self._extract_field(
+            raw_data,
+            ['joining_date', 'joining date', 'date_of_joining', 'join_date', 'join date']
+        ))
+        if joining_date and 'date_of_joining' in employee._fields:
+            updates['date_of_joining'] = joining_date
+
+        department_name = self._extract_field(raw_data, ['department', 'dept', 'department_name'])
+        if department_name:
+            department = self.env['hr.department'].search([
+                ('name', '=ilike', department_name),
+                ('company_id', '=', self.company_id.id)
+            ], limit=1)
+            if department:
+                updates['department_id'] = department.id
+
+        job_name = position or job_title
+        if job_name:
+            job = self.env['hr.job'].search([
+                ('name', '=ilike', job_name),
+                ('company_id', '=', self.company_id.id)
+            ], limit=1)
+            if job:
+                updates['job_id'] = job.id
+
+        if updates:
+            employee.write(updates)
+
+    def _update_contract_from_raw_data(self, contract, raw_data):
+        """Update contract fields from raw import data."""
+        if not contract:
+            return
+        updates = {}
+        joining_date = self._parse_date_value(self._extract_field(
+            raw_data,
+            ['joining_date', 'joining date', 'date_of_joining', 'join_date', 'join date']
+        ))
+        if joining_date and contract.date_start != joining_date:
+            updates['date_start'] = joining_date
+        if updates:
+            contract.write(updates)
 
     def _create_payslip(self, employee, contract, line):
         """

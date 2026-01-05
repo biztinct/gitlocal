@@ -40,6 +40,7 @@ Technical Features:
     'data': [
         'security/ir.model.access.csv',
         'views/hr_flow_views.xml',
+        'views/hr_payslip_line_analytics_views.xml',
         'views/menu_views.xml',
     ],
     'assets': {

@@ -99,6 +99,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         { label: 'Batch Workflow', icon: 'fa-filter', desc: 'Payslip batches & runs', disabled: false, route: 'payroll-batch-workflow' },
                         { label: 'Payslip List', icon: 'fa-list', desc: 'All payslips', disabled: false, route: 'payroll-payslip' },
                         { label: 'Full and Final', icon: 'fa-file-pdf-o', desc: 'Final settlement report', disabled: false, route: 'payroll-full-and-final' },
+                        { label: 'Salary Analytics', icon: 'fa-bar-chart', desc: 'Component analysis & insights', disabled: false, route: 'payroll-salary-analytics' },
                     ],
                 },
                 approval: {
