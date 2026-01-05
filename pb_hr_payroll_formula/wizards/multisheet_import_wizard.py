@@ -984,9 +984,8 @@ class MultiSheetImportWizard(models.TransientModel):
             for const in constant_selections:
                 cell_ref = const.constant_cell_ref
                 if cell_ref not in constant_cell_mapping:
-                    constant_cell_mapping[cell_ref] = (
-                        const.column_letter or self._extract_column_letter_from_cell_ref(cell_ref)
-                    )
+                    original_col = self._extract_column_letter_from_cell_ref(cell_ref)
+                    constant_cell_mapping[cell_ref] = original_col or const.column_letter or ''
 
             # Get sheets in append order
             ordered_sheets = self.append_order_ids.sorted('append_sequence')
@@ -1078,7 +1077,10 @@ class MultiSheetImportWizard(models.TransientModel):
                     # This is CRITICAL: constants need to be in column_mapping so that
                     # formulas referencing them can be resolved properly
                     sheet_key = self._normalize_sheet_key(sheet_line.sheet_name)
-                    constant_key = col_sel.column_letter
+                    constant_key = (
+                        self._extract_column_letter_from_cell_ref(col_sel.constant_cell_ref)
+                        or col_sel.column_letter
+                    )
                     column_mapping[(sheet_key, constant_key)] = new_col_letter
                     column_mapping[(sheet_key, col_sel.column_index)] = new_col_letter
 
