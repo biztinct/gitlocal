@@ -14,7 +14,7 @@
             <pivot string="Salary Components Analytics"
                    default_order="date_to desc"
                    disable_linking="False"
-                   display_quantity="True"
+                   display_quantity="False"
                    sample="1">
                 <!-- Default Rows: Period and Category -->
                 <field name="date_to" interval="month" type="row"/>
@@ -25,7 +25,7 @@
 
                 <!-- Measures -->
                 <field name="total" type="measure"/>
-                <field name="amount" type="measure"/>
+
                 <field name="quantity" type="measure" invisible="1"/>
                 <field name="rate" type="measure" invisible="1"/>
             </pivot>
