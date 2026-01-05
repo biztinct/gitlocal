@@ -482,6 +482,7 @@ class SampleDataWizard(models.TransientModel):
             'employee_code', 'emp_code', 'emp code', 'emp. code',
             'employee id', 'employee_id', 'emp id', 'empid',
             'id no', 'id_no', 'id',
+            'msnv', 'ma so nhan vien',
         ]
         for candidate in candidates:
             target = self._normalize_header_key(candidate)

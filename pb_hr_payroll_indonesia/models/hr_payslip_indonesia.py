@@ -46,52 +46,87 @@ class HrPayslipIndonesia(models.Model):
                 return 0.0
         return 0.0
 
+    @staticmethod
+    def _report_normalize_key(value):
+        return ''.join(ch for ch in (value or '').upper() if ch.isalnum())
+
     def _report_get_cache(self):
         """Build cached totals for report rendering."""
         self.ensure_one()
         code_totals = defaultdict(float)
         name_totals = defaultdict(float)
+        code_norm = defaultdict(float)
+        name_norm = defaultdict(float)
         for line in self.line_ids:
             if line.code:
-                code_totals[line.code.strip().upper()] += line.total or 0.0
+                code_key = line.code.strip().upper()
+                code_totals[code_key] += line.total or 0.0
+                normalized = self._report_normalize_key(code_key)
+                if normalized:
+                    code_norm[normalized] += line.total or 0.0
             if line.name:
-                name_totals[line.name.strip().upper()] += line.total or 0.0
+                name_key = line.name.strip().upper()
+                name_totals[name_key] += line.total or 0.0
+                normalized = self._report_normalize_key(name_key)
+                if normalized:
+                    name_norm[normalized] += line.total or 0.0
 
         computed_totals = defaultdict(float)
+        computed_norm = defaultdict(float)
         raw_computed = self.formula_computed_values or ''
         if raw_computed:
             try:
                 computed_values = json.loads(raw_computed)
                 if isinstance(computed_values, dict):
                     for key, value in computed_values.items():
-                        computed_totals[str(key).strip().upper()] += self._report_to_number(value)
+                        key_name = str(key).strip().upper()
+                        amount = self._report_to_number(value)
+                        computed_totals[key_name] += amount
+                        normalized = self._report_normalize_key(key_name)
+                        if normalized:
+                            computed_norm[normalized] += amount
             except Exception:
                 pass
 
         input_totals = defaultdict(float)
+        input_norm = defaultdict(float)
         raw_inputs = self.formula_input_values or ''
         if raw_inputs:
             try:
                 input_values = json.loads(raw_inputs)
                 if isinstance(input_values, dict):
                     for key, value in input_values.items():
-                        input_totals[str(key).strip().upper()] += self._report_to_number(value)
+                        key_name = str(key).strip().upper()
+                        amount = self._report_to_number(value)
+                        input_totals[key_name] += amount
+                        normalized = self._report_normalize_key(key_name)
+                        if normalized:
+                            input_norm[normalized] += amount
             except Exception:
                 pass
 
         work_totals = defaultdict(float)
+        work_norm = defaultdict(float)
         for wd in self.worked_days_line_ids:
             key = (wd.code or '').strip().upper()
             if not key:
                 continue
             work_totals[key] += wd.number_of_days if wd.number_of_days else (wd.number_of_hours or 0.0)
+            normalized = self._report_normalize_key(key)
+            if normalized:
+                work_norm[normalized] += wd.number_of_days if wd.number_of_days else (wd.number_of_hours or 0.0)
 
         return {
             'code': code_totals,
             'name': name_totals,
+            'code_norm': code_norm,
+            'name_norm': name_norm,
             'computed': computed_totals,
+            'computed_norm': computed_norm,
             'input': input_totals,
+            'input_norm': input_norm,
             'work': work_totals,
+            'work_norm': work_norm,
         }
 
     def _report_get_value_for_key(self, key):
@@ -109,6 +144,16 @@ class HrPayslipIndonesia(models.Model):
             return cache['computed'][k]
         if k in cache['input']:
             return cache['input'][k]
+        normalized = self._report_normalize_key(k)
+        if normalized:
+            if normalized in cache['code_norm']:
+                return cache['code_norm'][normalized]
+            if normalized in cache['name_norm']:
+                return cache['name_norm'][normalized]
+            if normalized in cache['computed_norm']:
+                return cache['computed_norm'][normalized]
+            if normalized in cache['input_norm']:
+                return cache['input_norm'][normalized]
         return 0.0
 
     def _report_get_line_total_by_keys(self, *keys):
@@ -138,6 +183,9 @@ class HrPayslipIndonesia(models.Model):
                 continue
             if k in cache['work']:
                 return cache['work'][k]
+            normalized = self._report_normalize_key(k)
+            if normalized and normalized in cache['work_norm']:
+                return cache['work_norm'][normalized]
         return 0.0
 
     def _report_fmt_amount(self, value):
