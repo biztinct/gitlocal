@@ -13,9 +13,9 @@
 
                         <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                             <colgroup>
-                                <col style="width: 45%;"/>
-                                <col style="width: 35%;"/>
+                                <col style="width: 55%;"/>
                                 <col style="width: 20%;"/>
+                                <col style="width: 25%;"/>
                             </colgroup>
                             <tr>
                                 <th colspan="3" style="border: 1px solid #000; background: #1f6f7a; color: #fff; padding: 6px; text-align: center;">
@@ -24,222 +24,199 @@
                                 </th>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">MÃ SỐ NHÂN VIÊN</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Employee ID</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">MÃ SỐ NHÂN VIÊN</td>
                                 <t t-set="employee_code" t-value="o._report_get_raw_value('MSNV', 'EMPLOYEE ID', 'EMPLOYEEID')"/>
                                 <td style="border: 1px solid #000; padding: 4px;">
                                     <t t-esc="employee_code or o.employee_id.employee_id or o.employee_id.identification_id or ''"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">HỌ TÊN</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Full name</td>
-                                <t t-set="full_name" t-value="o._report_get_raw_value('FULL NAME', 'FULLNAME')"/>
-                                <td style="border: 1px solid #000; padding: 4px;"><t t-esc="full_name or o.employee_id.name or ''"/></td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">HỌ TÊN</td>
+                                <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o.employee_id.name or ''"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">Ngày công tiêu chuẩn trong tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Standard working days in month</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">Ngày công tiêu chuẩn trong tháng</td>
                                 <td style="border: 1px solid #000; padding: 4px;">
                                     <t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('STANDARDWORKINGDAY', 'STANDARD WORKING DAY', 'STANDARD WORKING DAYS', 'WORKING DAY CURRENT MONTH', 'WORKINGDAYCURRENTMONTH', 'WORKING DAY', 'WORKINGDAY', 'WORK100', 'STANDARD', 'STDWORK', 'NGAYCONG', 'SALARY CALCULATION DAYS', 'TOTAL DAYS/MONTH', 'TOTAL DAYS MONTH', 'WORKDAYS IN THE MONTH', 'CONG GOES TO WORK ON WEEKDAYS'))"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">I. LƯƠNG &amp; PHỤ CẤP</td>
-                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">I. SALARY &amp; ALLOWANCES</td>
+                                <td colspan="2" style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">I. LƯƠNG &amp; PHỤ CẤP</td>
                                 <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px;"></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">Ngạch lương</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Salary grade</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">Ngạch lương</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('PAYGRADE', 'GRADE', 'NGACHLUONG', 'NGACH_LUONG', 'NGẠCH LƯƠNG', 'NGACH LUONG', 'INCOMESALARY', 'INCOME SALARY', 'TOTALGROSSSALARY', 'TOTAL GROSS SALARY', 'SALARY QUOTA', 'RECEIVING SALARY', 'TOTAL SALARY AND OTHER PC PAYMENTS', 'TOTAL INCOME'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">Lương cơ bản</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Basic salary</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">Lương cơ bản</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('BASICSALARY', 'BASIC', 'BASESALARY', 'BASIC_SALARY', 'WAGE', 'ACTBASIC', 'ACTBASE', 'LƯƠNG CƠ BẢN', 'LUONG CO BAN', 'ACTUALBASICSALARYCURRENTMONTH', 'ACTUAL BASIC SALARY CURRENT MONTH', 'TOTALACTUALBASICSALARY', 'TOTAL ACTUAL BASIC SALARY', 'ACTUALBASICSALARY', 'ACTUAL BASIC SALARY', 'LABOR CONTRACT SALARY'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">PC Thâm niên</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Seniority allowance</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">PC Thâm niên</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('SENIORITY', 'SENIORITYALLOW', 'PC_THAMNIEN', 'THAMNIEN', 'PHỤ CẤP THÂM NIÊN', 'PHU CAP THAM NIEN', 'SENIORITY ALLOW', 'PC SENIORITY'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">PC Chức danh</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Title allowance</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">PC Chức danh</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('TITLEALLOW', 'POSITIONALLOW', 'PC_CHUCDANH', 'CHUCDANH', 'PHỤ CẤP CHỨC DANH', 'PHU CAP CHUC DANH', 'RESPONSIBILITYALLOWS', 'RESPONSIBILITY ALLOWS', 'ACTINGALLOWANCE', 'ACTING ALLOWANCE', 'POSITION ALLOWANCE', 'PC TITLE'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">PC Kiêm nhiệm</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Concurrent position allowance</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">PC Kiêm nhiệm</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('KIEMNHIEM', 'CONCURRENT', 'PC_KIEMNHIEM', 'ADDITIONALROLE', 'PHỤ CẤP KIÊM NHIỆM', 'PHU CAP KIEM NHIEM', 'MOBALLOWS', 'MOB ALLOWS', 'TRANSPORTATIONALLOWS', 'TRANSPORTATION ALLOWS', 'PC CONCURRENTLY', 'PC SECONDED', 'WORKING ALLOWANCES', 'ALLOWANCES (FIRE PROTECTION, SAFETY)', 'FIRE PROTECTION ALLOWANCE (DT, DP), SAFETY AND SANITATION ALLOWANCE'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">Thưởng hiệu quả công việc</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Performance bonus</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">Thưởng hiệu quả công việc</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('EFFICIENCYSALARY', 'EFFICIENCY', 'PERFORMANCEBONUS', 'HQCV', 'BONUS_EFF', 'THƯỞNG HIỆU QUẢ CÔNG VIỆC', 'THUONG HIEU QUA CONG VIEC', 'EFFICIENCY SALARY', 'INCENTIVES', 'INCENTIVE', 'BONUS', 'MONTHLY BONUS', 'MONTHLYBONUS', 'HQCV BONUS NORMS', 'ANNUAL BONUS'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">II. TỔNG THU NHẬP TRONG THÁNG</td>
-                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">II. TOTAL INCOME IN MONTH</td>
+                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px;"></td>
                                 <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px;"></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Tỷ lệ % HQCV tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Performance rate (%)</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;">
                                     <t t-esc="o._report_fmt_percent(o._report_get_line_total_by_keys('HQCVRATE', 'PERFORMANCE_RATE', 'TYLEHQCV', 'HQCV_PERCENT', 'TỶ LỆ HQCV', 'TY LE HQCV', 'TAXRATE', 'TAX RATE', 'PERCENTAGE OF HQCV BONUS ADVANCE'))"/>
                                 </td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">1. Lương theo ngày công</td>
-                                <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">1. Daily wages</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương ngày thường</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Regular day salary</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('NORMALDAY', 'WORKDAY', 'LUONGNGAYTHUONG', 'REGULARPAY', 'LƯƠNG NGÀY THƯỜNG', 'LUONG NGAY THUONG', 'TOTALACTUALBASICSALARY', 'TOTAL ACTUAL BASIC SALARY', 'ACTUALBASICSALARYCURRENTMONTH', 'ACTUAL BASIC SALARY CURRENT MONTH', 'ACTUALBASICSALARY', 'ACTUAL BASIC SALARY', 'LUONG NGAY THUONG'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương ngày nghỉ chế độ</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Paid leave salary</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('PAIDLEAVE', 'NGHIPHEP', 'NGHICHE', 'PAID_LEAVE', 'LƯƠNG NGÀY NGHỈ CHẾ ĐỘ', 'LUONG NGAY NGHI CHE DO', 'ACTUALBASICSALARYLASTMONTH', 'ACTUAL BASIC SALARY LAST MONTH', 'ACTUAL BASIC SALARY LAST MONTH (21-25)', 'SALARY FOR VACATION DAYS', 'SALARY FOR DAYS OFF', 'SALARY FEMALE LEAVE HK'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương nghỉ Lễ Tết</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Holiday salary</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('HOLIDAYPAY', 'LETPAY', 'NGHILE', 'HOLIDAY', 'LƯƠNG NGHỈ LỄ TẾT', 'LUONG NGHI LE TET', 'OTPAY_300', 'OTPAY300', 'OTPAY_410', 'OTPAY410', 'OT HOLIDAY', 'OT HOLIDAY PAY', 'HOLIDAY PAY'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương nghỉ phép năm</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Annual leave salary</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('ANNUALLEAVE', 'LEAVEPAY', 'PHEPNAM', 'LƯƠNG NGHỈ PHÉP NĂM', 'LUONG NGHI PHEP NAM', 'ALREMAIN', 'AL REMAIN', 'RESTOFANNUALLEAVE', 'REST OF ANNUAL LEAVE', 'ANNUAL LEAVE FROM WORK'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương nghỉ bất khả kháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Force majeure leave salary</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('FORCELEAVE', 'BATKHAKHANG', 'LƯƠNG NGHỈ BẤT KHẢ KHÁNG', 'LUONG NGHI BAT KHA KHANG', 'SALARY FOR DAYS OF TEMPORARY SUSPENSION'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương ngày Tạm ngừng việc</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Work suspension day salary</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('SUSPENDPAY', 'TAMNGUNG', 'LƯƠNG NGÀY TẠM NGỪNG VIỆC', 'LUONG NGAY TAM NGUNG VIEC', 'SALARY FOR DAYS OF TEMPORARY SUSPENSION', 'DATE OF WORK STOPPAGE IN THE MONTH'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương tăng ca ngày thường</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Weekday overtime pay</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('OT_NORMAL', 'OTDAY', 'OT15', 'OTNORMAL', 'LƯƠNG TĂNG CA NGÀY THƯỜNG', 'LUONG TANG CA NGAY THUONG', 'OVERTIME', 'OT', 'TOTAL PAYMENT', 'TOTAL PAYMENT (VND)', 'OTPAY_150', 'OTPAY150', 'SALARY OVERTIME ON WEEKDAYS'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương tăng ca ngày nghỉ</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Weekend overtime pay</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('OT_WEEKEND', 'OT2', 'OT200', 'OTDAYOFF', 'LƯƠNG TĂNG CA NGÀY NGHỈ', 'LUONG TANG CA NGAY NGHI', 'OTPAY_200', 'OTPAY200', 'OTPAY_215', 'OTPAY215', 'OTPAY_280', 'OTPAY280', 'OVERTIME PAY ON HOLIDAYS', 'OVERTIME ON SUNDAY'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương tăng ca lễ</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Holiday overtime pay</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('OT_HOLIDAY', 'OT3', 'OT300', 'LƯƠNG TĂNG CA LỄ', 'LUONG TANG CA LE', 'OTPAY_300', 'OTPAY300', 'OTPAY_410', 'OTPAY410', 'NIGHTSHIFT', 'NIGHT SHIFT', 'NIGHTSHIFTUNTAXABLE', 'NIGHT SHIFT UNTAXABLE', 'OVERTIME PAY ON HOLIDAYS/NEW YEAR', 'OVERTIME FOR TET HOLIDAY'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương làm việc ngày Bảy được nghỉ</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Saturday work (compensatory leave) pay</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('SATURDAYPAY', 'SATURDAYOFF', 'L7NGHI', 'LƯƠNG LÀM VIỆC NGÀY BẢY ĐƯỢC NGHỈ', 'LUONG LAM VIEC NGAY BAY DUOC NGHI', 'OVERTIMETAXABLE', 'OVERTIME TAXABLE', 'OTPAY_280', 'OTPAY280', 'SALARY FOR WORK ON SATURDAYS IS OFF'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Tạm ứng Thưởng HQCV tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Performance bonus advance</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('ADV_HQCV', 'HQCV_ADV', 'TAMUNGHQCV', 'TẠM ỨNG THƯỞNG HQCV', 'TAM UNG THUONG HQCV', 'TOTALEFFICIENCYSALARYADVANCE', 'TOTAL EFFICIENCY SALARY ADVANCE', 'EFFICIENCYSALARYADVANCECURRENTMONTH', 'EFFICIENCY SALARY ADVANCE CURRENT MONTH', 'EFFICIENCYSALARYADVANCE', 'EFFICIENCY SALARY ADVANCE', 'ADVANCE PAYMENT OF HQCV BONUS'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">2. Các khoản thu nhập khác</td>
-                                <td style="border: 1px solid #000; padding: 4px; font-weight: bold;">2. Other income</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Lương quyết toán phép năm NV nghỉ việc</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Annual leave settlement (resigned)</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('LEAVESETTLEMENT', 'PHEPQT', 'QUYETTOANPHEP', 'LƯƠNG QUYẾT TOÁN PHÉP NĂM', 'LUONG QUYET TOAN PHEP NAM', 'SEVERANCEPAY', 'SEVERANCE PAY', 'SEVERANCEPAYUNTAXABLE', 'SEVERANCE PAY UNTAXABLE', 'PAYMENT OF UNUSED ANNUAL LEAVE'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Tiền cơm tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Meal allowance</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('MEAL', 'MEALALLOW', 'MEALALLOWANCE', 'TIENCOM', 'TIỀN CƠM', 'TIEN COM', 'MEALALLOWS', 'MEAL ALLOWS', 'TOTAL AMOUNT', 'TOTALAMOUNT', 'RICE SUPPORT'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Truy lãnh (+)/ Truy thu lương (-)</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Back pay (+) / salary recovery (-)</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('RETRO', 'TRUYLANH', 'TRUYTHU', 'TRUY LÃNH', 'TRUY LANH', 'OTHERALLOWANCE', 'OTHER ALLOWANCE', 'GOVERNMENTFUNDS', 'GOVERNMENT FUNDS', 'SALARY COLLECTION', 'COLLECT ADVANCE PAYMENT', 'OTHER FEES/COLLECTIONS', 'TRUY THU THEO QTT', 'REFUND ACCORDING TO QTT'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Hỗ trợ nhà ở</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Housing support</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('HOUSING', 'HOUSE', 'NHARO', 'HỖ TRỢ NHÀ Ở', 'HO TRO NHA O', 'HOUSING SUPPORT'))"/></td>
                             </tr>
                             <tr>
                                 <td style="border: 1px solid #000; padding: 4px;">Bồi dưỡng PHSK</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Health recovery allowance (PHSK)</td>
+                                <td style="border: 1px solid #000; padding: 4px;"></td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('PHSK', 'HEALTHALLOW', 'BOIDUONG', 'BỒI DƯỠNG PHSK', 'BOI DUONG PHSK', 'BENEFITTAX', 'BENEFIT TAX', 'TOTAL TAXABLE BENEFITS', 'BIRTHDAY (COMPANY)', 'BIRTHDAY', 'GIFT (10%)', 'GIFT 10%', 'PHSK WORK DAY', 'LEVEL OF HEALTH COMPENSATION', 'NURSING CARE TRAINING'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">III. CÁC KHOẢN TRỪ</td>
-                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">III. DEDUCTIONS</td>
+                                <td colspan="2" style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">III. CÁC KHOẢN TRỪ</td>
                                 <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px;"></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">1. BHXH-BHYT-BHTN tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Social/Health/Unemployment insurance</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">1. BHXH-BHYT-BHTN tháng</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_sum('BHXH', 'BHYT', 'BHTN', 'SI', 'HI', 'UI', 'INSURANCE', 'SOCIALINS', 'SOCIAL INS', 'SOCIAL INS. 8%', 'HEALTH INS. 1.5%', 'JOBLESS INS. 1%', 'TOTAL INS. EMPLOYEES PAID 10.5%', 'TOTALINSEMPLOYEESPAID105', 'TOTAL SOCIAL INSURANCE'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">2. Phí công đoàn</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Union fee</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">2. Phí công đoàn</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('UNION', 'CONGDOAN', 'TU', 'PHÍ CÔNG ĐOÀN', 'PHI CONG DOAN', 'TRADE UNION (EMPLOYEE)', 'TRADEUNIONEMPLOYEE', 'UNIONFEE', 'TRADE UNION EMPLOYEE', 'PHÍ CÔNG ĐOÀN'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">3. Điện thoại vượt mức tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Excess phone charge</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">3. Điện thoại vượt mức tháng</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('PHONEEXCESS', 'DIENTHOAI', 'DIEN THOAI', 'ĐIỆN THOẠI VƯỢT MỨC', 'DIEN THOAI VUOT MUC', 'SELFDEDUCTION', 'SELF-DEDUCTION', 'EXCESSIVE PHONE BILL COLLECTION'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">4. Thu phí KBT</td>
-                                <td style="border: 1px solid #000; padding: 4px;">KBT fee</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">4. Thu phí KBT</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('KBT', 'THU PHI KBT', 'SUPPORTFUNERALFUND', 'SUPPORT FUNERAL FUND', 'FUNERAL MONEY'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">5. Cấn trừ mua xe ô tô</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Car purchase deduction</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">5. Cấn trừ mua xe ô tô</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('CARDEDUCT', 'MUAXE', 'CANTRUXE', 'CẤN TRỪ MUA XE Ô TÔ', 'CAN TRU MUA XE O TO', 'TOTALOBLIGATIONOFEMPLOYEE', 'TOTAL OBLIGATION OF EMPLOYEE', 'TOTALREDUCTION', 'TOTAL REDUCTION', 'COLLECT MONEY FOR THE INVESTMENT COMPANY ON BEHALF OF THE RESERVE'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">6. Phụng điều (0 tin buôn)</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Phung Dieu (0 rumors)</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">6. Phụng điều (0 tin buôn)</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('PHUNGDIEU', 'PHUNG_DIEU', 'PHỤNG ĐIỀU', 'PHUNG DIEU', 'PHỤ CẤP ĐIỀU PHỐI', 'PHU CAP DIEU PHOI', 'DIEU PHOI'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">7. Thuế TNCN trong tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Personal income tax</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">7. Thuế TNCN trong tháng</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('PIT', 'TNCN', 'TAX', 'THUẾ TNCN', 'THUE TNCN', 'MONTHLYPIT', 'MONTHLY PIT', '개인소득세', 'PERSONAL INCOME TAX'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">- Số người phụ thuộc</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Number of dependents</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">- Số người phụ thuộc</td>
                                 <t t-set="dependents_value" t-value="o._report_get_line_total_by_keys('QTY', 'QTY.', 'DEPENDENTS', 'DEPENDENT', 'NUMBER OF DEPENDENTS', 'SO NGUOI PHU THUOC', 'SỐ NGƯỜI PHỤ THUỘC', 'NPT')"/>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="int(dependents_value or o.contract_id.dependents or 0)"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">V. TỔNG THỰC NHẬN TRONG THÁNG</td>
-                                <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">V. TOTAL TAKE-HOME IN MONTH</td>
+                                <td colspan="2" style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">V. TỔNG THỰC NHẬN TRONG THÁNG</td>
                                 <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px;"></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">Thực nhận kỳ 1</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Net pay period 1</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">Thực nhận kỳ 1</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('NET1', 'NETPERIOD1', 'TAKEHOME1', 'THỰC NHẬN KỲ 1', 'THUC NHAN KY 1', 'NETSALARY', 'NET SALARY', 'NET', 'NETPAY', 'NET PAY PERIOD 1'))"/></td>
                             </tr>
                             <tr>
-                                <td style="border: 1px solid #000; padding: 4px;">Thực nhận kỳ 2</td>
-                                <td style="border: 1px solid #000; padding: 4px;">Net pay period 2</td>
+                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">Thực nhận kỳ 2</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('NET2', 'NETPERIOD2', 'TAKEHOME2', 'THỰC NHẬN KỲ 2', 'THUC NHAN KY 2', 'NETSALARY', 'NET SALARY', 'NET', 'NETPAY', 'NET PAY PERIOD 2'))"/></td>
                             </tr>
                         </table>
