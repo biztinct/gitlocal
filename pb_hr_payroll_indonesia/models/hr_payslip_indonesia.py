@@ -90,6 +90,8 @@ class HrPayslipIndonesia(models.Model):
 
         input_totals = defaultdict(float)
         input_norm = defaultdict(float)
+        input_raw = {}
+        input_raw_norm = {}
         raw_inputs = self.formula_input_values or ''
         if raw_inputs:
             try:
@@ -102,6 +104,18 @@ class HrPayslipIndonesia(models.Model):
                         normalized = self._report_normalize_key(key_name)
                         if normalized:
                             input_norm[normalized] += amount
+                        if value is None:
+                            continue
+                        if isinstance(value, float) and value.is_integer():
+                            raw_value = str(int(value))
+                        elif isinstance(value, (int, bool)):
+                            raw_value = str(int(value)) if isinstance(value, bool) else str(value)
+                        else:
+                            raw_value = str(value).strip()
+                        if raw_value:
+                            input_raw[key_name] = raw_value
+                            if normalized and normalized not in input_raw_norm:
+                                input_raw_norm[normalized] = raw_value
             except Exception:
                 pass
 
@@ -125,6 +139,8 @@ class HrPayslipIndonesia(models.Model):
             'computed_norm': computed_norm,
             'input': input_totals,
             'input_norm': input_norm,
+            'input_raw': input_raw,
+            'input_raw_norm': input_raw_norm,
             'work': work_totals,
             'work_norm': work_norm,
         }
@@ -155,6 +171,21 @@ class HrPayslipIndonesia(models.Model):
             if normalized in cache['input_norm']:
                 return cache['input_norm'][normalized]
         return 0.0
+
+    def _report_get_raw_value(self, *keys):
+        """Return raw (string) input value for the first matching key."""
+        self.ensure_one()
+        cache = self._report_get_cache()
+        for key in keys or []:
+            if not key:
+                continue
+            key_name = str(key).strip().upper()
+            if key_name in cache['input_raw']:
+                return cache['input_raw'][key_name]
+            normalized = self._report_normalize_key(key_name)
+            if normalized and normalized in cache['input_raw_norm']:
+                return cache['input_raw_norm'][normalized]
+        return ''
 
     def _report_get_line_total_by_keys(self, *keys):
         """Return first matching total by code or name."""
