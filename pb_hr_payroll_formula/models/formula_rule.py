@@ -183,6 +183,13 @@ class HrFormulaRule(models.Model):
         formula = str(formula).strip()
         return re.sub(r'(?<![A-Za-z0-9_])\$?([A-Z]{1,3})\$?\d+', r'\1', formula)
 
+    @staticmethod
+    def _strip_string_literals(formula):
+        """Remove Excel string literals to avoid false reference matches."""
+        if not formula:
+            return formula
+        return re.sub(r'"([^"]|"")*"', ' ', formula)
+
     @api.depends('excel_formula')
     def _compute_excel_formula_display(self):
         for record in self:
@@ -771,16 +778,17 @@ class HrFormulaRule(models.Model):
             # Extract column references - both with row numbers (A1, B2) and without (A, B, C)
             # Also extract CODE references (BASIC, GROSS, etc.)
             formula = record.excel_formula.upper()
+            formula_no_strings = record._strip_string_literals(formula)
 
             # Find references with row numbers (A1, AA1, etc.)
-            refs_with_row = re.findall(r'([A-Z]+)\d+', formula)
+            refs_with_row = re.findall(r'([A-Z]+)\d+', formula_no_strings)
 
             # Find standalone column letters (A, B, C) - not part of function names
             # Remove function names first to avoid matching them
             formula_cleaned = re.sub(
                 r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR|ISBLANK)\s*\(',
                 '',
-                formula
+                formula_no_strings
             )
             refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
 
@@ -810,15 +818,16 @@ class HrFormulaRule(models.Model):
 
         # Check for valid column references - both column letters and codes
         formula = self.excel_formula.upper()
+        formula_no_strings = self._strip_string_literals(formula)
 
         # Find references with row numbers (A1, AA1, etc.)
-        refs_with_row = re.findall(r'\$?([A-Z]+)\$?\d+', formula)
+        refs_with_row = re.findall(r'\$?([A-Z]+)\$?\d+', formula_no_strings)
 
         # Find standalone column letters - remove function names first
         formula_cleaned = re.sub(
             r'(SUM|AVERAGE|MIN|MAX|ABS|ROUND|IF|IFERROR|AND|OR|NOT|POWER|SQRT|CEILING|FLOOR|ISBLANK)\s*\(',
             '',
-            formula
+            formula_no_strings
         )
         refs_no_row = re.findall(r'(?<![A-Z])([A-Z]+)(?![A-Z0-9])', formula_cleaned)
 
