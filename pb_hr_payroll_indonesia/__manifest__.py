@@ -51,6 +51,7 @@
         'wizards/thr_payment_wizard_views.xml',
         'views/contract_updater_views.xml',
         'views/report_payslip_indonesia_template.xml',
+        'views/report_payslip_vietnam_template.xml',
         'views/hr_payroll_report_indonesia.xml', 
         'views/payslip_print_wizard_views.xml',
         'views/payroll_analytics_integration.xml',    # Analytics integration (when payroll_analytics_approval is installed)

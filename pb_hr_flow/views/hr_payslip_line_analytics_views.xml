@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==========================================
+         ENHANCED SALARY COMPONENTS ANALYTICS
+         Comprehensive pivot view for managers to analyze salary components
+         ========================================== -->
+
+    <!-- Enhanced Pivot View with Multiple Measures -->
+    <record id="view_hr_payslip_line_pivot_enhanced" model="ir.ui.view">
+        <field name="name">hr.payslip.line.pivot.enhanced</field>
+        <field name="model">hr.payslip.line</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <pivot string="Salary Components Analytics"
+                   default_order="date_to desc"
+                   disable_linking="False"
+                   display_quantity="True"
+                   sample="1">
+                <!-- Default Rows: Period and Category -->
+                <field name="date_to" interval="month" type="row"/>
+                <field name="category_id" type="row"/>
+
+                <!-- Default Columns: Employee Department -->
+                <field name="employee_id" type="col"/>
+
+                <!-- Measures -->
+                <field name="total" type="measure"/>
+                <field name="amount" type="measure"/>
+                <field name="quantity" type="measure" invisible="1"/>
+                <field name="rate" type="measure" invisible="1"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Enhanced Graph View for Visual Analytics -->
+    <record id="view_hr_payslip_line_graph_enhanced" model="ir.ui.view">
+        <field name="name">hr.payslip.line.graph.enhanced</field>
+        <field name="model">hr.payslip.line</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <graph string="Salary Components Analytics"
+                   type="bar"
+                   stacked="True"
+                   sample="1">
+                <field name="date_to" interval="month"/>
+                <field name="category_id"/>
+                <field name="total" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Comprehensive Search View with Multiple Filter Options -->
+    <record id="view_hr_payslip_line_search_enhanced" model="ir.ui.view">
+        <field name="name">hr.payslip.line.search.enhanced</field>
+        <field name="model">hr.payslip.line</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <search string="Salary Components Analytics">
+                <!-- Search Fields -->
+                <field name="name" string="Component Name"
+                       filter_domain="['|',('name','ilike',self),('code','ilike',self)]"/>
+                <field name="employee_id"/>
+                <field name="category_id"/>
+                <field name="slip_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="code"/>
+
+                <!-- Filters for Quick Access -->
+                <separator/>
+                <filter string="Current Month" name="current_month"
+                        domain="[('date_to','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                 ('date_to','&lt;', (context_today() + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Previous Month" name="previous_month"
+                        domain="[('date_to','&gt;=', (context_today() + relativedelta(day=1, months=-1)).strftime('%Y-%m-%d')),
+                                 ('date_to','&lt;', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Current Quarter" name="current_quarter"
+                        domain="[('date_to','&gt;=', (context_today() + relativedelta(day=1, month=((context_today().month-1)//3)*3+1, day=1)).strftime('%Y-%m-%d')),
+                                 ('date_to','&lt;', (context_today() + relativedelta(day=1, month=((context_today().month-1)//3)*3+4, day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Current Year" name="current_year"
+                        domain="[('date_to','&gt;=', context_today().strftime('%Y-01-01')),
+                                 ('date_to','&lt;=', context_today().strftime('%Y-12-31'))]"/>
+                <filter string="Last 3 Months" name="last_3_months"
+                        domain="[('date_to','&gt;=', (context_today() + relativedelta(months=-3)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Last 6 Months" name="last_6_months"
+                        domain="[('date_to','&gt;=', (context_today() + relativedelta(months=-6)).strftime('%Y-%m-%d'))]"/>
+                <filter string="Last 12 Months" name="last_12_months"
+                        domain="[('date_to','&gt;=', (context_today() + relativedelta(months=-12)).strftime('%Y-%m-%d'))]"/>
+
+                <separator/>
+                <!-- Component Type Filters -->
+                <filter string="Basic Salary" name="basic"
+                        domain="[('category_id.code','=','BASIC')]"/>
+                <filter string="Allowances" name="allowances"
+                        domain="[('category_id.code','=','ALW')]"/>
+                <filter string="Gross Salary" name="gross"
+                        domain="[('category_id.code','=','GROSS')]"/>
+                <filter string="Deductions" name="deductions"
+                        domain="[('category_id.code','=','DED')]"/>
+                <filter string="Net Salary" name="net"
+                        domain="[('category_id.code','=','NET')]"/>
+                <filter string="Other Components" name="other"
+                        domain="[('category_id.code','=','OTHER')]"/>
+
+                <separator/>
+                <!-- Group By Options -->
+                <group expand="1" string="Group By">
+                    <!-- Time Grouping -->
+                    <filter string="Payment Date: Year" name="group_year"
+                            context="{'group_by':'date_to:year'}"/>
+                    <filter string="Payment Date: Quarter" name="group_quarter"
+                            context="{'group_by':'date_to:quarter'}"/>
+                    <filter string="Payment Date: Month" name="group_month"
+                            context="{'group_by':'date_to:month'}"/>
+                    <filter string="Payment Date: Week" name="group_week"
+                            context="{'group_by':'date_to:week'}"/>
+
+                    <separator/>
+                    <!-- Employee/Organization Grouping -->
+                    <filter string="Employee" name="group_employee"
+                            context="{'group_by':'employee_id'}"/>
+                    <filter string="Company" name="group_company"
+                            context="{'group_by':'company_id'}"/>
+                    <filter string="Cost Center" name="group_costcenter"
+                            context="{'group_by':'costcenter'}"/>
+
+                    <separator/>
+                    <!-- Component Grouping -->
+                    <filter string="Salary Rule Category" name="group_category"
+                            context="{'group_by':'category_id'}"/>
+                    <filter string="Salary Code" name="group_code"
+                            context="{'group_by':'code'}"/>
+                    <filter string="Contribution Register" name="group_register"
+                            context="{'group_by':'register_id'}"/>
+                    <filter string="Amount Type" name="group_amount_type"
+                            context="{'group_by':'amount_select'}"/>
+
+                    <separator/>
+                    <!-- Payslip Grouping -->
+                    <filter string="Payslip" name="group_payslip"
+                            context="{'group_by':'slip_id'}"/>
+                </group>
+
+                <!-- Favorite Searches -->
+                <searchpanel>
+                    <field name="category_id" icon="fa-tags" groupby="code"
+                           enable_counters="1" expand="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <!-- Enhanced Tree View for List Analysis -->
+    <record id="view_hr_payslip_line_tree_analytics" model="ir.ui.view">
+        <field name="name">hr.payslip.line.tree.analytics</field>
+        <field name="model">hr.payslip.line</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <tree string="Salary Components"
+                  decoration-info="total == 0"
+                  decoration-success="total &gt; 0"
+                  decoration-danger="total &lt; 0"
+                  create="false"
+                  edit="false"
+                  sample="1">
+                <field name="date_to" widget="date"/>
+                <field name="employee_id"/>
+                <field name="category_id"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="quantity" optional="hide"/>
+                <field name="rate" optional="hide"/>
+                <field name="amount" optional="hide" sum="Total Amount"/>
+                <field name="total" sum="Total" widget="monetary"/>
+                <field name="slip_id" optional="hide"/>
+                <field name="costcenter" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action to Open Salary Components Analytics -->
+    <record id="action_hr_payslip_line_analytics" model="ir.actions.act_window">
+        <field name="name">Salary Components Analytics</field>
+        <field name="res_model">hr.payslip.line</field>
+        <field name="view_mode">pivot,graph,tree</field>
+        <field name="search_view_id" ref="view_hr_payslip_line_search_enhanced"/>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_hr_payslip_line_pivot_enhanced')}),
+                      (0, 0, {'view_mode': 'graph', 'view_id': ref('view_hr_payslip_line_graph_enhanced')}),
+                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_hr_payslip_line_tree_analytics')})]"/>
+        <field name="context">{
+            'search_default_last_6_months': 1,
+            'search_default_group_month': 1,
+            'search_default_group_category': 1,
+            'pivot_measures': ['total'],
+            'pivot_row_groupby': ['date_to:month', 'category_id'],
+            'pivot_column_groupby': [],
+        }</field>
+        <field name="domain">[]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Salary Components Analytics
+            </p>
+            <p>
+                Analyze salary components across employees, periods, and categories.<br/>
+                Use filters and group by options to slice and dice the data.<br/>
+                Export to Excel for further analysis.
+            </p>
+        </field>
+    </record>
+
+</odoo>
