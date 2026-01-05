@@ -1287,6 +1287,35 @@ class MultiSheetImportWizard(models.TransientModel):
 
         result = cross_sheet_pattern.sub(mask_cross_sheet, result)
 
+        # Resolve same-sheet VLOOKUP to direct column references.
+        vlookup_pattern = re.compile(
+            r"VLOOKUP\s*\(\s*[^,]+,\s*\$?([A-Z]+)\$?\d*:\$?([A-Z]+)\$?\d*,\s*(\d+)\s*,\s*[^)]+\)",
+            re.IGNORECASE
+        )
+
+        def resolve_same_sheet_vlookup(match):
+            start_col = match.group(1).upper()
+            end_col = match.group(2).upper()
+            col_index = int(match.group(3))
+
+            try:
+                start_idx = self._column_letter_to_index(start_col)
+                end_idx = self._column_letter_to_index(end_col)
+            except Exception:
+                return "0"
+
+            base_idx = min(start_idx, end_idx)
+            target_idx = base_idx + col_index - 1
+            target_col = self._index_to_column_letter(target_idx)
+
+            new_col = column_mapping.get((sheet_key, target_col))
+            if not new_col:
+                new_col = column_mapping.get((sheet_key, target_idx))
+
+            return new_col or "0"
+
+        result = vlookup_pattern.sub(resolve_same_sheet_vlookup, result)
+
         # Pattern to match column references in formulas
         # Matches: A1, $A$1, $A1, A$1, AA123, etc.
         # Cross-sheet refs are already masked, so we just need to avoid word boundaries

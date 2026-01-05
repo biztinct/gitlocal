@@ -461,6 +461,29 @@ class HrFormulaRule(models.Model):
 
         result = re.sub(r'"([^"]|"")*"', _mask_string, result)
 
+        # Resolve same-sheet VLOOKUP into direct column references when possible.
+        # Example: VLOOKUP(B5,CM2:$F$5,6,0) -> target column letter.
+        vlookup_pattern = re.compile(
+            r"VLOOKUP\s*\(\s*[^,]+,\s*\$?([A-Z]+)\$?\d*\s*:\s*\$?([A-Z]+)\$?\d*,\s*(\d+)\s*,\s*[^)]+\)",
+            re.IGNORECASE
+        )
+
+        def _resolve_vlookup(match):
+            start_col = match.group(1).upper()
+            end_col = match.group(2).upper()
+            col_index = int(match.group(3))
+            try:
+                from ..formula_engine.column_manager import ColumnManager
+                start_idx = ColumnManager.letter_to_index(start_col)
+                end_idx = ColumnManager.letter_to_index(end_col)
+                base_idx = min(start_idx, end_idx)
+                target_idx = base_idx + col_index - 1
+                return ColumnManager.index_to_letter(target_idx)
+            except Exception:
+                return "0"
+
+        result = vlookup_pattern.sub(_resolve_vlookup, result)
+
         # Build reverse map: code -> column_letter for range expansion
         code_to_letter = {v: k for k, v in column_map.items()}
 
@@ -496,6 +519,8 @@ class HrFormulaRule(models.Model):
                     return f"values.get('{start_code}', 0), values.get('{end_code}', 0)"
 
                 # Get all codes in range
+                if start_idx > end_idx:
+                    start_idx, end_idx = end_idx, start_idx
                 parts = []
                 for code in all_codes_ordered[start_idx:end_idx + 1]:
                     parts.append(f"values.get('{code}', 0)")
@@ -505,6 +530,8 @@ class HrFormulaRule(models.Model):
             from ..formula_engine.column_manager import ColumnManager
             start_idx = ColumnManager.letter_to_index(start_letter)
             end_idx = ColumnManager.letter_to_index(end_letter)
+            if start_idx > end_idx:
+                start_idx, end_idx = end_idx, start_idx
             parts = []
             for i in range(start_idx, end_idx + 1):
                 letter = ColumnManager.index_to_letter(i)
@@ -630,6 +657,19 @@ class HrFormulaRule(models.Model):
         # Restore string literals.
         for idx, literal in enumerate(string_literals):
             result = result.replace(f"__str{idx}__", literal)
+
+        # Normalize values.get('A', 0) for any column letters that exist in column_map.
+        # This fixes cases where range expansion fell back to raw letters.
+        for col_letter, code in column_map.items():
+            if not col_letter or not code:
+                continue
+            if col_letter == code:
+                continue
+            result = re.sub(
+                rf"values\.get\('{re.escape(col_letter)}',\s*0\)",
+                f"values.get('{code}', 0)",
+                result
+            )
 
         # Treat empty-string comparisons as blank checks using raw values.
         result = re.sub(
@@ -1084,6 +1124,12 @@ class HrFormulaRule(models.Model):
             return 1.0 if value else 0.0
         if isinstance(value, (int, float)):
             return float(value)
+        try:
+            import numbers
+            if isinstance(value, numbers.Number):
+                return float(value)
+        except Exception:
+            pass
         if isinstance(value, str):
             cleaned = value.strip().replace(' ', '')
             if not cleaned:
