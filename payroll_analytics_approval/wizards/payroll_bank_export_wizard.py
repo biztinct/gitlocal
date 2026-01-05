@@ -328,12 +328,45 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         return output.getvalue().encode('utf-8'), filename
     
     def _create_excel_file(self, data):
-        """Create Excel file (simplified implementation)"""
-        # For now, return CSV with .xlsx extension
-        # In production, implement proper Excel generation with xlsxwriter
-        content, _ = self._create_csv_file(data)
+        """Create Excel file using xlsxwriter"""
+        output = io.BytesIO()
+        try:
+            import xlsxwriter
+        except ImportError:
+            raise UserError(_("The 'xlsxwriter' module is not installed. Please install it to export to Excel."))
+
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet('Bank Export')
+        
+        # Formats
+        header_format = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1})
+        date_format = workbook.add_format({'num_format': 'yyyy-mm-dd', 'border': 1})
+        money_format = workbook.add_format({'num_format': '#,##0.00', 'border': 1})
+        text_format = workbook.add_format({'border': 1})
+        
+        if data:
+            # Write headers
+            headers = list(data[0].keys())
+            for col_num, header in enumerate(headers):
+                worksheet.write(0, col_num, header, header_format)
+                # Set column width
+                worksheet.set_column(col_num, col_num, 15)
+            
+            # Write data
+            for row_num, row_data in enumerate(data, 1):
+                for col_num, (key, value) in enumerate(row_data.items()):
+                    if key == 'Date':
+                         worksheet.write(row_num, col_num, value, date_format)
+                    elif key == 'Amount':
+                        worksheet.write(row_num, col_num, value, money_format)
+                    else:
+                        worksheet.write(row_num, col_num, value, text_format)
+        
+        workbook.close()
+        output.seek(0)
+        
         filename = f"bank_export_{self.country}_{self.date_from.strftime('%Y%m%d')}.xlsx"
-        return content, filename
+        return output.getvalue(), filename
     
     def _create_txt_file(self, data):
         """Create text file"""

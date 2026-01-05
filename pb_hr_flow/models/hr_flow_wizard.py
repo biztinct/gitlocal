@@ -254,7 +254,8 @@ class HRFlowWizard(models.TransientModel):
             return {'type': 'ir.actions.act_window_close', 'context': {}}
 
         # open full-screen so breadcrumbs and full controls show
-        action['target'] = 'current'
+        if action.get('target') != 'new':
+            action['target'] = 'current'
         action.setdefault('context', {})
 
         # No special context handling needed for current routes

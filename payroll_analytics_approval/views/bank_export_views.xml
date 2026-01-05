@@ -50,7 +50,7 @@
                 
                 <footer>
                     <button string="Preview Export" name="action_preview_export" type="object" class="btn-info" attrs="{'invisible': [('preview_data', '!=', False)]}"/>
-                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': ['|', ('preview_data', '=', False), ('export_file', '!=', False)]}"/>
+                    <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': [('export_file', '!=', False)]}"/>
                     <button string="Download File" name="action_download_export" type="object" class="btn-success" attrs="{'invisible': [('export_file', '=', False)]}"/>
                     <button string="Reset" name="action_reset_wizard" type="object" class="btn-secondary" attrs="{'invisible': [('export_file', '=', False)]}"/>
                     <button string="Cancel" class="btn-default" special="cancel"/>
