@@ -870,7 +870,7 @@ class HrPayslipLine(models.Model):
     rate = fields.Float(string='Rate (%)', default=100.0)
     amount = fields.Float()
     quantity = fields.Float(default=1.0)
-    total = fields.Float(compute='_compute_total', string='Total')
+    total = fields.Float(compute='_compute_total', string='Total', store=True)
     date_from = fields.Date(related='slip_id.date_from', string='Date From', store=True)
     date_to = fields.Date(related='slip_id.date_to', string='Date To', store=True)
     costcenter = fields.Char(related='slip_id.contract_id.costcenter', string='Cost center', store=True)
