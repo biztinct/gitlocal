@@ -637,6 +637,28 @@ class HrFormulaRule(models.Model):
         for idx, literal in enumerate(string_literals):
             result = result.replace(f"__str{idx}__", literal)
 
+        # Treat empty-string comparisons as blank checks using raw values.
+        result = re.sub(
+            r"values\.get\('([^']+)', 0\)\s*==\s*\"\"",
+            r"self._isblank_value(raw_values.get('\1'))",
+            result
+        )
+        result = re.sub(
+            r"values\.get\('([^']+)', 0\)\s*==\s*''",
+            r"self._isblank_value(raw_values.get('\1'))",
+            result
+        )
+        result = re.sub(
+            r"values\.get\('([^']+)', 0\)\s*!=\s*\"\"",
+            r"not self._isblank_value(raw_values.get('\1'))",
+            result
+        )
+        result = re.sub(
+            r"values\.get\('([^']+)', 0\)\s*!=\s*''",
+            r"not self._isblank_value(raw_values.get('\1'))",
+            result
+        )
+
         _logger.debug(f"Converted to Python: {result}")
 
         return result
@@ -960,8 +982,10 @@ class HrFormulaRule(models.Model):
                     return v
 
                 # Build safe evaluation context with values properly converted
+                raw_values = values.copy()
                 safe_context = {
                     'values': {k: safe_value(v) for k, v in values.items()},
+                    'raw_values': raw_values,
                     'self': self,
                     'math': __import__('math'),
                     'sum': self._sumlist,
@@ -1053,6 +1077,10 @@ class HrFormulaRule(models.Model):
     def _if(self, condition, true_val, false_val=0):
         """Excel IF function implementation"""
         return true_val if condition else false_val
+
+    def _isblank_value(self, value):
+        """Return True when a raw value should be treated as blank."""
+        return value is None or value == ''
 
     def _coerce_number(self, value):
         """Convert a value to float for numeric functions, ignoring non-numeric text."""
