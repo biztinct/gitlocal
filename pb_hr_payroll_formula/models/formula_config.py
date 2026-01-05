@@ -411,7 +411,13 @@ class HrFormulaConfig(models.Model):
 
     def action_start_testing(self):
         self.write({'state': 'testing'})
-        return self.action_validate_formulas()
+        action = self.action_validate_formulas()
+        if isinstance(action, dict):
+            if action.get('type') == 'ir.actions.client' and action.get('tag') == 'display_notification':
+                params = action.setdefault('params', {})
+                if not params.get('next'):
+                    params['next'] = {'type': 'ir.actions.client', 'tag': 'reload'}
+        return action
 
     def action_validate(self):
         """Validate all formulas and mark as validated"""
