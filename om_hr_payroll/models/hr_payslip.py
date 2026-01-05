@@ -1036,38 +1036,84 @@ class HrPayslipRun(models.Model):
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
 
         header_fmt = workbook.add_format({'bold': True, 'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#D9D9D9'})
-        label_fmt = workbook.add_format({'bold': True, 'border': 1, 'bg_color': '#F2F2F2'})
         text_fmt = workbook.add_format({'border': 1})
         num_fmt = workbook.add_format({'border': 1, 'num_format': '#,##0.00'})
 
-        used_sheet_names = set()
+        worksheet = workbook.add_worksheet('Payslips')
+        worksheet.set_column(0, 0, 18)
+        worksheet.set_column(1, 1, 28)
+        worksheet.set_column(2, 2, 20)
+        worksheet.set_column(3, 3, 26)
+        worksheet.set_column(4, 4, 40)
 
-        def _make_sheet_name(name):
-            safe_name = ''.join(' ' if c in '[]:*?/\\' else c for c in (name or 'Payslip')).strip() or 'Payslip'
-            safe_name = safe_name[:31]
-            if safe_name not in used_sheet_names:
-                used_sheet_names.add(safe_name)
-                return safe_name
-            idx = 2
-            while True:
-                suffix = f" ({idx})"
-                base = safe_name[:31 - len(suffix)].rstrip()
-                candidate = f"{base}{suffix}"
-                if candidate not in used_sheet_names:
-                    used_sheet_names.add(candidate)
-                    return candidate
-                idx += 1
+        def _line_key(line):
+            if line.code:
+                return ('code', line.code.upper().strip())
+            return ('name', (line.name or '').strip().upper())
 
+        def _normalize_msnv(value):
+            if value is None:
+                return ''
+            if isinstance(value, bool):
+                return str(value)
+            if isinstance(value, (int, float)):
+                if abs(value - int(value)) < 1e-6:
+                    return str(int(value))
+                return ('%f' % value).rstrip('0').rstrip('.')
+            text = str(value).replace(',', '').strip()
+            if not text:
+                return ''
+            try:
+                num = float(text)
+            except ValueError:
+                return text
+            if abs(num - int(num)) < 1e-6:
+                return str(int(num))
+            return ('%f' % num).rstrip('0').rstrip('.')
+
+        all_lines = self.env['hr.payslip.line'].search([('slip_id', 'in', self.slip_ids.ids)], order='sequence,id')
+        component_columns = []
+        seen_keys = set()
+        for line in all_lines:
+            key = _line_key(line)
+            if not key[1] or key in seen_keys:
+                continue
+            if key[1] == 'MSNV':
+                continue
+            seen_keys.add(key)
+            header = line.name or line.code or key[1]
+            component_columns.append((key, header))
+
+        headers = [
+            'MSNV',
+            'Full name',
+            'Unit',
+            'Type of labor contract',
+            'Subjects are counted as working overtime',
+        ] + [header for _, header in component_columns]
+
+        for col_idx, header in enumerate(headers):
+            worksheet.write(0, col_idx, header, header_fmt)
+            if col_idx >= 5:
+                worksheet.set_column(col_idx, col_idx, 16)
+
+        row_idx = 1
         sorted_slips = self.slip_ids.sorted(key=lambda s: s.employee_id.name or s.name or '')
         for slip in sorted_slips:
             employee = slip.employee_id
             contract = slip.contract_id
-            sheet_name = _make_sheet_name(slip.name or employee.name or 'Payslip')
-            worksheet = workbook.add_worksheet(sheet_name)
-            worksheet.set_column(0, 0, 45)
-            worksheet.set_column(1, 1, 25)
 
-            msnv = employee.employee_id or employee.barcode or employee.identification_id or ''
+            values_by_key = {}
+            for line in slip.line_ids:
+                key = _line_key(line)
+                if not key[1]:
+                    continue
+                values_by_key[key] = values_by_key.get(key, 0.0) + (line.total or 0.0)
+
+            msnv = employee.employee_id or employee.barcode or employee.identification_id
+            if not msnv:
+                msnv = values_by_key.get(('code', 'MSNV')) or values_by_key.get(('name', 'MSNV'))
+            msnv = _normalize_msnv(msnv)
             full_name = employee.full_name_vn or employee.name or ''
             unit = getattr(employee, 'division', False) or employee.department_id.name or employee.location or ''
 
@@ -1088,33 +1134,20 @@ class HrPayslipRun(models.Model):
                             subjects_overtime = getattr(contract, fname) or ''
                             break
 
-            header_rows = [
-                ('MSNV', msnv),
-                ('Full name', full_name),
-                ('Unit', unit),
-                ('Type of labor contract', labor_type),
-                ('Subjects are counted as working overtime', subjects_overtime),
-            ]
+            row_values = [msnv, full_name, unit, labor_type, subjects_overtime]
 
-            row_idx = 0
-            for label, value in header_rows:
-                worksheet.write(row_idx, 0, label, label_fmt)
-                if label == 'MSNV':
-                    worksheet.write_string(row_idx, 1, str(value) if value else '', text_fmt)
+            for key, _header in component_columns:
+                row_values.append(values_by_key.get(key, 0.0))
+
+            for col_idx, value in enumerate(row_values):
+                if col_idx == 0:
+                    worksheet.write_string(row_idx, col_idx, value or '', text_fmt)
+                elif col_idx < 5:
+                    worksheet.write_string(row_idx, col_idx, str(value) if value else '', text_fmt)
                 else:
-                    worksheet.write_string(row_idx, 1, str(value) if value else '', text_fmt)
-                row_idx += 1
+                    worksheet.write_number(row_idx, col_idx, value or 0.0, num_fmt)
 
             row_idx += 1
-            worksheet.write(row_idx, 0, 'Component', header_fmt)
-            worksheet.write(row_idx, 1, 'Value', header_fmt)
-            row_idx += 1
-
-            lines = slip.line_ids.sorted(key=lambda l: (getattr(l, 'sequence', 0), l.id))
-            for line in lines:
-                worksheet.write(row_idx, 0, line.name or line.code or '', text_fmt)
-                worksheet.write_number(row_idx, 1, line.total or 0.0, num_fmt)
-                row_idx += 1
 
         workbook.close()
         output.seek(0)
