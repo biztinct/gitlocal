@@ -501,14 +501,19 @@ class HrFormulaRule(models.Model):
         # Helper function to expand a range of codes/letters into a list
         def expand_range(start_ref, end_ref):
             """Expand a range like A:C or BASIC:GROSS into list of values.get() calls"""
+            _logger.debug(f"expand_range called: start_ref={start_ref}, end_ref={end_ref}")
+
             # Determine if refs are column letters or codes
             start_letter = start_ref if start_ref in column_map else code_to_letter.get(start_ref)
             end_letter = end_ref if end_ref in column_map else code_to_letter.get(end_ref)
+
+            _logger.debug(f"  start_letter={start_letter}, end_letter={end_letter}")
 
             if not start_letter or not end_letter:
                 # Try to find by code directly
                 start_code = column_map.get(start_ref, start_ref)
                 end_code = column_map.get(end_ref, end_ref)
+                _logger.debug(f"  Fallback mode: start_code={start_code}, end_code={end_code}")
 
                 # Find indices in ordered codes
                 try:
@@ -516,7 +521,9 @@ class HrFormulaRule(models.Model):
                     end_idx = all_codes_ordered.index(end_code)
                 except ValueError:
                     # Fallback: just return the two endpoints
-                    return f"values.get('{start_code}', 0), values.get('{end_code}', 0)"
+                    result = f"values.get('{start_code}', 0), values.get('{end_code}', 0)"
+                    _logger.debug(f"  Range fallback result (2 values): {result}")
+                    return result
 
                 # Get all codes in range
                 if start_idx > end_idx:
@@ -524,12 +531,15 @@ class HrFormulaRule(models.Model):
                 parts = []
                 for code in all_codes_ordered[start_idx:end_idx + 1]:
                     parts.append(f"values.get('{code}', 0)")
-                return ', '.join(parts)
+                result = ', '.join(parts)
+                _logger.debug(f"  Range expansion result ({len(parts)} values): {result[:100]}...")
+                return result
 
             # Use column manager for letter-based ranges
             from ..formula_engine.column_manager import ColumnManager
             start_idx = ColumnManager.letter_to_index(start_letter)
             end_idx = ColumnManager.letter_to_index(end_letter)
+            _logger.debug(f"  Letter range: start_idx={start_idx}, end_idx={end_idx}")
             if start_idx > end_idx:
                 start_idx, end_idx = end_idx, start_idx
             parts = []
@@ -537,7 +547,9 @@ class HrFormulaRule(models.Model):
                 letter = ColumnManager.index_to_letter(i)
                 code = column_map.get(letter, letter)
                 parts.append(f"values.get('{code}', 0)")
-            return ', '.join(parts)
+            result = ', '.join(parts)
+            _logger.debug(f"  Range expansion result ({len(parts)} values): {result[:100]}...")
+            return result
 
         # Convert ranges with row numbers (e.g., A1:C1, $A$1:$C$1)
         # NOTE: Don't add brackets here - let function replacement handle it
@@ -545,7 +557,9 @@ class HrFormulaRule(models.Model):
         def replace_range_with_row(m):
             start_col = m.group(1)
             end_col = m.group(2)
+            _logger.debug(f"Range with row matched: {m.group(0)} -> expanding {start_col}:{end_col}")
             expanded = expand_range(start_col, end_col)
+            _logger.debug(f"  Expanded to: {expanded[:100]}..." if len(expanded) > 100 else f"  Expanded to: {expanded}")
             return expanded  # No brackets - SUM([...]) will be handled by function replacement
 
         result = re.sub(r'\$?([A-Z]+)\$?\d+\s*:\s*\$?([A-Z]+)\$?\d+', replace_range_with_row, result)
@@ -554,7 +568,9 @@ class HrFormulaRule(models.Model):
         def replace_range_no_row(m):
             start_col = m.group(1)
             end_col = m.group(2)
+            _logger.debug(f"Range without row matched: {m.group(0)} -> expanding {start_col}:{end_col}")
             expanded = expand_range(start_col, end_col)
+            _logger.debug(f"  Expanded to: {expanded[:100]}..." if len(expanded) > 100 else f"  Expanded to: {expanded}")
             return expanded  # No brackets
 
         # Match ranges like A:C, AA:AC - must come before cell ref replacement
@@ -706,6 +722,7 @@ class HrFormulaRule(models.Model):
 
         Must handle multiple occurrences of the same function.
         """
+        original = formula
         patterns = ['sum([', 'min([', 'max([', 'self._avg([', 'all([', 'any([']
 
         for pattern in patterns:
@@ -737,6 +754,10 @@ class HrFormulaRule(models.Model):
                 if not found_close:
                     continue
 
+        if formula != original:
+            _logger.debug(f"_fix_array_brackets: Modified formula")
+            _logger.debug(f"  Before: {original[:100]}..." if len(original) > 100 else f"  Before: {original}")
+            _logger.debug(f"  After: {formula[:100]}..." if len(formula) > 100 else f"  After: {formula}")
         return formula
 
     @api.depends('excel_formula')
@@ -1011,9 +1032,10 @@ class HrFormulaRule(models.Model):
                                     cleaned = ''.join(parts)
                             return float(cleaned)
                         except (ValueError, TypeError):
-                            # Keep non-numeric strings as-is for comparisons like ="YES"
-                            return v
-                    return v
+                            # Return 0 for non-numeric strings in arithmetic contexts
+                            # String comparisons use raw_values via _isblank_value helper
+                            return 0
+                    return 0
 
                 # Build safe evaluation context with values properly converted
                 raw_values = values.copy()
@@ -1159,11 +1181,20 @@ class HrFormulaRule(models.Model):
         """Excel SUM that ignores non-numeric values."""
         if values_list is None:
             return 0.0
+
+        # Handle case where a single value is passed instead of a list
+        if not isinstance(values_list, (list, tuple)):
+            number = self._coerce_number(values_list)
+            return number if number is not None else 0.0
+
+        _logger.debug(f"_sumlist called with {len(values_list)} values: {values_list[:5]}..." if len(values_list) > 5 else f"_sumlist called with {len(values_list)} values: {values_list}")
+
         total = 0.0
         for value in values_list:
             number = self._coerce_number(value)
             if number is not None:
                 total += number
+        _logger.debug(f"_sumlist result: {total}")
         return total
 
     def _maxlist(self, values_list):
