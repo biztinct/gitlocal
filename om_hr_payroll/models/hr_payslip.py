@@ -1019,6 +1019,184 @@ class HrPayslipRun(models.Model):
                 raise ValidationError(_('You Cannot Delete Done Payslips Batches'))
         return super(HrPayslipRun, self).unlink()
 #Biztinct
+    def action_download_payslip_xlsx(self):
+        """Generate and download Excel report based on the salary structure formula config."""
+        self.ensure_one()
+        import io
+        import base64
+        try:
+            import xlsxwriter
+        except ImportError:
+            raise UserError(_("The 'xlsxwriter' module is not installed. Please install it."))
+
+        if not self.slip_ids:
+            raise UserError(_("No payslips found in this batch."))
+ 
+        # Identify structure and config
+        structure = self.slip_ids[0].struct_id
+        
+        # Try to find the formula config for this structure
+        # This depends on pb_hr_payroll_formula module
+        config = self.env['hr.formula.config'].search([('structure_id', '=', structure.id)], limit=1)
+        
+        if not config:
+             raise UserError(_("No Salary Formula Configuration found for structure: %s") % structure.name)
+
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        
+        # Styles
+        header_fmt = workbook.add_format({'bold': True, 'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#D9D9D9'})
+        category_fmt = workbook.add_format({'bold': True, 'align': 'center', 'valign': 'vcenter', 'border': 1, 'bg_color': '#BFBFBF'})
+        text_fmt = workbook.add_format({'border': 1})
+        num_fmt = workbook.add_format({'border': 1, 'num_format': '#,##0.00'})
+        
+        # Organize rules by Section (Sheet)
+        rules_by_section = {}
+        for rule in config.rule_ids:
+            section = rule.source_sheet_name or 'Undefined Section'
+            if section not in rules_by_section:
+                rules_by_section[section] = []
+            rules_by_section[section].append(rule)
+            
+        # Collect payslip data efficiently
+        data_map = {}
+        employees = self.slip_ids.mapped('employee_id')
+        
+        all_lines = self.env['hr.payslip.line'].search([('slip_id', 'in', self.slip_ids.ids)])
+        
+        for line in all_lines:
+            emp_id = line.slip_id.employee_id.id
+            if emp_id not in data_map:
+                data_map[emp_id] = {}
+            # Normalize to UPPER for case-insensitive matching
+            if line.code:
+                data_map[emp_id][line.code.upper().strip()] = line.total
+
+        # Generate Sheets
+        for section, rules in rules_by_section.items():
+            # Sanitize sheet name
+            safe_name = "".join([c for c in section if c.isalnum() or c in (' ', '_', '-')])
+            sheet_name = (safe_name[:28] + '...') if len(safe_name) > 31 else safe_name
+            worksheet = workbook.add_worksheet(sheet_name)
+            
+            # Headers
+            worksheet.merge_range(0, 0, 1, 0, "Employee Name", header_fmt)
+            worksheet.set_column(0, 0, 25)
+            
+            col_idx = 1
+            last_category = None
+            merge_start = 1
+            
+            # Pass 1: Setup columns and merged headers
+            for i, rule in enumerate(rules):
+                category = rule.component_type or ""
+                worksheet.write(1, col_idx, rule.name, header_fmt)
+                worksheet.set_column(col_idx, col_idx, 15)
+                
+                # Logic for merging top row
+                if category != last_category:
+                    if last_category and merge_start < col_idx:
+                        if col_idx - 1 > merge_start:
+                            worksheet.merge_range(0, merge_start, 0, col_idx - 1, last_category, category_fmt)
+                        else:
+                            worksheet.write(0, merge_start, last_category, category_fmt)
+                    elif last_category:
+                         worksheet.write(0, merge_start, last_category, category_fmt)
+                    
+                    last_category = category
+                    merge_start = col_idx
+                
+                # Handle last column merge
+                if i == len(rules) - 1:
+                     if last_category:
+                         if col_idx > merge_start:
+                             worksheet.merge_range(0, merge_start, 0, col_idx, last_category, category_fmt)
+                         else:
+                             worksheet.write(0, merge_start, last_category, category_fmt)
+
+                col_idx += 1
+
+            # Write Rows
+            row_idx = 2
+            # Sort slips by employee name for consistent order
+            sorted_slips = self.slip_ids.sorted(key=lambda s: s.employee_id.name or '')
+            
+            for slip in sorted_slips:
+                employee = slip.employee_id
+                contract = slip.contract_id
+                worksheet.write(row_idx, 0, employee.name, text_fmt)
+                
+                col_idx = 1
+                emp_data = data_map.get(employee.id, {})
+                
+                for rule in rules:
+                    # Special handling for metadata columns
+                    val = None
+                    code_upper = rule.code.upper().strip() if rule.code else ''
+                    
+                    if code_upper == 'MSNV':
+                        # Use barcode or ID, fallback to payslip value as string
+                        val = employee.barcode or employee.identification_id
+                        if not val:
+                            val = emp_data.get(code_upper, '')
+                    
+                    elif code_upper in ['FULLNAME', 'FULL_NAME']:
+                        val = employee.name
+                    
+                    elif code_upper == 'UNIT':
+                        # Try Vietnam 'division' or standard department
+                        val = getattr(employee, 'division', False) or employee.department_id.name
+
+                    elif code_upper.startswith('TYPEOFLABOR') or code_upper == 'HDLD':
+                        # Try Vietnam contract type first
+                        if hasattr(contract, 'vietnam_contract_type') and contract.vietnam_contract_type:
+                             val = dict(contract._fields['vietnam_contract_type'].selection).get(contract.vietnam_contract_type)
+                        else:
+                             val = contract.type_id.name if contract.type_id else ''
+
+                    elif code_upper.startswith('SUBJECTSARE'):
+                        # Try finding a matching custom field
+                        val = getattr(contract, 'subjects_are_counted_as_working_overtime', '')
+                        if not val:
+                             # Fallback to see if there's a custom field starting with x_subject
+                             for fname in contract._fields:
+                                 if 'subject' in fname and 'overtime' in fname:
+                                     val = getattr(contract, fname)
+                                     break
+
+                    # Fallback to calculated payslip value if not a special overridden field or if override was empty
+                    if val is None:
+                        val = emp_data.get(code_upper, 0.0)
+
+                    # Writing logic
+                    if code_upper == 'MSNV':
+                        # Force string for MSNV to prevent scientific notation or numeric conversion
+                        worksheet.write_string(row_idx, col_idx, str(val) if val else '', text_fmt)
+                    elif isinstance(val, (int, float)):
+                        worksheet.write_number(row_idx, col_idx, val, num_fmt)
+                    else:
+                        worksheet.write_string(row_idx, col_idx, str(val) if val else '', text_fmt)
+                        
+                    col_idx += 1
+                row_idx += 1
+
+        workbook.close()
+        output.seek(0)
+        
+        filename = 'Payslip_Batch_%s.xlsx' % (self.name or 'Report')
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'datas': base64.b64encode(output.getvalue()),
+            'type': 'binary',
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+        
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true' % attachment.id,
+            'target': 'self',
+        }
 
     def export_payslip_lines_xlsx(self):
         self.ensure_one()

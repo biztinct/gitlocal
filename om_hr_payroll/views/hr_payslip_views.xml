@@ -780,6 +780,7 @@ if not isinstance(action, bool):  # Check if action is not a boolean
             <field name="arch" type="xml">
                 <form string="Payslips Batches">
                     <header>
+                        <button string="Download Excel" name="action_download_payslip_xlsx" type="object" class="oe_highlight" icon="fa-download"/>
                         <button name="%(action_hr_payslip_by_employees)d" type="action" states="draft"
                                 string="Generate Payslips" class="oe_highlight"/>
                         <!--<button string="Set to Draft" name="draft_payslip_run" type="object" states="done"/>-->
