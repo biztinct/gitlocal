@@ -43,8 +43,8 @@ class HrPayslip(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('verify', 'Waiting'),
-        ('level1', 'Level 1'), 
-        ('level2', 'Level 2'),                 
+        ('level1', 'HR Manager pending'),
+        ('level2', 'General Manager pending'),
         ('done', 'Done'),
         ('cancel', 'Rejected'),
     ], string='Status', index=True, readonly=True, copy=False, default='draft',
@@ -931,8 +931,8 @@ class HrPayslipRun(models.Model):
                                states={'draft': [('readonly', False)]})
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('level1', 'Level 1'),
-        ('level2', 'Level 2'),
+        ('level1', 'HR Manager pending'),
+        ('level2', 'General Manager pending'),
         ('done', 'Done'),
         ('cancel', 'Rejected'),
     ], string='Status', index=True, readonly=True, copy=False, default='draft')
