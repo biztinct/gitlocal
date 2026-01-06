@@ -28,12 +28,14 @@
                 <sheet>
                     <!-- Modern Dashboard Header matching country dashboard style -->
                     <div class="dashboard-header-modern">
-                        <h1 class="dashboard-title-modern">
-                            <field name="period_name" readonly="1"/>
-                        </h1>
-                        <p class="dashboard-subtitle-modern">
-                            Analytics Dashboard • Final Approval Review
-                        </p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h1 class="dashboard-title-modern" style="margin: 0;">
+                                <field name="period_name" readonly="1"/>
+                            </h1>
+                            <h2 class="dashboard-structure-name" style="margin: 0; font-size: 20px; color: #6c757d; font-weight: 500;">
+                                <field name="salary_structure_name" readonly="1"/>
+                            </h2>
+                        </div>
                     </div>
                     
                     <div class="analytics-dashboard">

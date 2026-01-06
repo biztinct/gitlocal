@@ -227,6 +227,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
                         // Add animations
                         self._addAnimations();
+                        self._bindMetricCardClicks(recordId);
                     };
 
                     self._hydrateComponentNames(parsedComponents, recordId).then(function (updatedComponents) {
@@ -406,6 +407,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
             var labels = [];
             var data = [];
+            var codes = [];
             var colors = [
                 'rgba(255, 99, 132, 0.8)',
                 'rgba(54, 162, 235, 0.8)',
@@ -426,6 +428,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 if (component && component.total && component.total > 0) {
                     labels.push(component.name || code);
                     data.push(component.total);
+                    codes.push(code);
                 }
             });
 
@@ -452,7 +455,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         if (elements && elements.length) {
                             var index = elements[0].index;
                             var label = labels[index];
-                            self._openPivotForComponent(label);
+                            var code = codes[index];
+                            self._openPivotForComponent(code, label);
                         }
                     },
                     plugins: {
@@ -494,12 +498,14 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var labels = [];
             var currentData = [];
             var previousData = [];
+            var codes = [];
 
             Object.keys(components).forEach(function (code) {
                 var component = components[code];
                 if (component && component.total && component.total > 0) {
                     labels.push(component.name || code);
                     currentData.push(component.total);
+                    codes.push(code);
                     
                     if (comparison && comparison.previous_month && comparison.previous_month[code]) {
                         previousData.push(comparison.previous_month[code].total || 0);
@@ -539,7 +545,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         if (elements && elements.length) {
                             var index = elements[0].index;
                             var label = labels[index];
-                            self._openPivotForComponent(label);
+                            var code = codes[index];
+                            self._openPivotForComponent(code, label);
                         }
                     },
                     scales: {
@@ -591,6 +598,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var labels = [];
             var varianceData = [];
             var colors = [];
+            var codes = [];
 
             var hasNonZeroVariance = false;
             
@@ -598,6 +606,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 var component = components[code];
                 if (component && component.total && component.total > 0) {
                     labels.push(component.name || code);
+                    codes.push(code);
                     
                     var variance = 0;
                     if (comparison && comparison.variance && comparison.variance[code] !== undefined) {
@@ -665,7 +674,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         if (elements && elements.length) {
                             var index = elements[0].index;
                             var label = labels[index];
-                            self._openPivotForComponent(label);
+                            var code = codes[index];
+                            self._openPivotForComponent(code, label);
                         }
                     },
                     scales: {
@@ -704,64 +714,32 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             });
         },
 
-        _openPivotForComponent: function (componentLabel) {
-            if (!componentLabel) {
-                console.warn('Drill-down skipped: empty component label');
+        _openPivotForComponent: function (componentCode, componentLabel) {
+            if (!componentCode && !componentLabel) {
+                console.warn('Drill-down skipped: empty component');
                 return;
             }
-            // Map some friendly labels back to payroll codes
-            var code = componentLabel;
-            var labelToCode = {
-                'Total Cost to Employer': 'TOTCOST',
-                'Total Cost': 'TOTCOST',
-                'Total Payroll': 'TOTCOST',
-                'Total Deductions': 'TOTDEDU',
-                'ATI': 'ATI',
-                'ACTBASE': 'ACTBASE',
-                'UI': 'UI',
-                'SI': 'SI',
-                'TAXIN': 'TAXIN'
-            };
-            if (labelToCode[componentLabel]) {
-                code = labelToCode[componentLabel];
-            }
+            var code = componentCode || componentLabel;
             code = code.toString();
-
-            var dateFrom = this._getFieldValue('date_from');
-            var dateTo = this._getFieldValue('date_to');
-            var domain = [['code', '=', code]];
-            if (dateFrom) {
-                domain.push(['slip_id.date_from', '>=', dateFrom.toString()]);
+            var recordId = this.renderer && this.renderer.state && this.renderer.state.res_id;
+            if (!recordId) {
+                return;
             }
-            if (dateTo) {
-                domain.push(['slip_id.date_to', '<=', dateTo.toString()]);
-            }
-            domain = domain.filter(function (d) {
-                return d && d.length >= 3 && d[2] !== undefined && d[2] !== null;
-            });
-
             var self = this;
-            var action = {
-                type: 'ir.actions.act_window',
-                name: (core._t("Drill-down: ") + componentLabel),
-                res_model: 'hr.payslip.line',
-                view_mode: 'pivot,tree',
-                views: [
-                    [false, 'pivot'],
-                    [false, 'list'],
-                ],
-                domain: domain,
-                context: {
-                    search_default_group_by_employee: 1,
-                    search_default_group_by_slip: 1,
+            rpc.query({
+                model: 'payroll.analytics',
+                method: 'action_open_component_pivot',
+                args: [[recordId], code],
+            }).then(function (action) {
+                if (action && action.type) {
+                    core.bus.trigger('do-action', { action: action, options: {} });
+                    setTimeout(function () {
+                        self._destroyAllCharts();
+                    }, 80);
                 }
-            };
-
-            // Align with analytics module: navigate first, then destroy charts shortly after
-            this.do_action(action);
-            setTimeout(function () {
-                self._destroyAllCharts();
-            }, 80);
+            }).catch(function (error) {
+                console.error('Failed to open component pivot:', error);
+            });
         },
 
         _displayAnomalyAlerts: function (alerts) {
@@ -976,6 +954,37 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     }, 50);
                 }, index * 100);
             });
+        },
+
+        _bindMetricCardClicks: function (recordId) {
+            if (!recordId) {
+                return;
+            }
+            var self = this;
+            var bind = function (selector, method) {
+                var el = document.querySelector(selector);
+                if (!el) {
+                    return;
+                }
+                el.style.cursor = 'pointer';
+                el.onclick = function () {
+                    rpc.query({
+                        model: 'payroll.analytics',
+                        method: method,
+                        args: [[recordId]],
+                    }).then(function (action) {
+                        if (action && action.type) {
+                            core.bus.trigger('do-action', { action: action, options: {} });
+                        }
+                    }).catch(function (error) {
+                        console.error('Failed to open pivot:', error);
+                    });
+                };
+            };
+            bind('.metric-card.metric-employees', 'action_open_employee_component_pivot');
+            bind('.metric-card.metric-payroll', 'action_open_employee_component_pivot');
+            bind('.metric-card.metric-average', 'action_open_employee_component_pivot');
+            bind('.metric-card.metric-variance', 'action_open_variance_pivot');
         },
 
         _showNoDataMessage: function () {

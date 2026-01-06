@@ -989,9 +989,41 @@ class HrPayslipRun(models.Model):
             ('date_from', '=', self.date_start),
             ('date_to', '=', self.date_end)
         ], limit=1)
+        
+        # Get salary structure name
+        # Priority 1: From Import Batch (Most accurate for imported batches)
+        salary_structure_name = ''
+        if 'hr.payroll.import.batch' in self.env:
+            import_batch = self.env['hr.payroll.import.batch'].search([
+                ('payslip_run_id', '=', self.id)
+            ], limit=1)
+            if import_batch and import_batch.formula_config_id:
+                salary_structure_name = import_batch.formula_config_id.name
+
+        # Priority 2: From Formula Config matching key structure (Fallback)
+        if not salary_structure_name and 'hr.formula.config' in self.env and structure:
+            formula_config = self.env['hr.formula.config'].search([
+                ('structure_id', '=', structure.id)
+            ], limit=1)
+            if formula_config and formula_config.name:
+                salary_structure_name = formula_config.name
+
+        # Priority 3: From Structure Name directly
+        if not salary_structure_name and structure:
+            salary_structure_name = structure.name
+        
         if not analytics:
             analytics = analytics_model.generate_analytics(country, self.date_start, self.date_end)
-            analytics.write({'state': 'ready'})
+            analytics.write({
+                'state': 'ready', 
+                'payslip_run_id': self.id,
+                'salary_structure_name': salary_structure_name
+            })
+        else:
+            analytics.write({
+                'payslip_run_id': self.id,
+                'salary_structure_name': salary_structure_name
+            })
 
         analytics_data = analytics._generate_analytics_data(self.slip_ids, country, self.date_start, self.date_end)
         analytics.write(analytics_data)
@@ -1081,9 +1113,45 @@ class HrPayslipRun(models.Model):
                 ('date_to', '=', last_day)
             ], limit=1)
             
+            # Get salary structure name
+            salary_structure_name = ''
+            
+            # Priority 1: From Import Batch (Most accurate for imported batches)
+            if 'hr.payroll.import.batch' in self.env:
+                import_batch = self.env['hr.payroll.import.batch'].search([
+                    ('payslip_run_id', '=', self.id)
+                ], limit=1)
+                if import_batch and import_batch.formula_config_id:
+                    salary_structure_name = import_batch.formula_config_id.name
+            
+            # Priority 2: From Formula Config matching key structure (Fallback)
+            if not salary_structure_name and self.slip_ids:
+                structure = self.slip_ids[0].struct_id
+                if 'hr.formula.config' in self.env and structure:
+                    formula_config = self.env['hr.formula.config'].search([
+                        ('structure_id', '=', structure.id)
+                    ], limit=1)
+                    if formula_config and formula_config.name:
+                        salary_structure_name = formula_config.name
+
+            # Priority 3: From Structure Name directly
+            if not salary_structure_name and self.slip_ids:
+                structure = self.slip_ids[0].struct_id
+                if structure:
+                    salary_structure_name = structure.name
+            
             if not existing_analytics:
                 analytics = analytics_model.generate_analytics(country, first_day, last_day)
-                analytics.write({'state': 'ready'})
+                analytics.write({
+                    'state': 'ready', 
+                    'payslip_run_id': self.id,
+                    'salary_structure_name': salary_structure_name
+                })
+            else:
+                existing_analytics.write({
+                    'payslip_run_id': self.id,
+                    'salary_structure_name': salary_structure_name
+                })
                 
         except Exception as e:
             # Don't fail batch approval if analytics generation fails
