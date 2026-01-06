@@ -801,6 +801,39 @@ class HrFormulaRule(models.Model):
             record.formula_dependencies = ','.join(unique_refs)
 
     # ==========================================
+    # CRUD OVERRIDES
+    # ==========================================
+    @api.model
+    def create(self, vals):
+        """Auto-assign sequence to avoid duplicate column letters when adding new rows manually.
+        
+        This does NOT interfere with Excel import because:
+        - Excel import explicitly sets sequence based on column order (line 2143 in multisheet_import_wizard.py)
+        - We only auto-assign when sequence is missing or equals the default (10)
+        - Excel import assigns unique sequences like 0, 10, 20, 30, etc.
+        """
+        # Only auto-assign if:
+        # 1. config_id is provided (creating a rule for a config)
+        # 2. sequence is not explicitly set OR is the default value (10)
+        # This prevents duplicate column letters when clicking "Add a line" in the UI
+        if 'config_id' in vals and vals.get('sequence', 10) == 10:
+            # IMPORTANT: Use explicit search instead of config.rule_ids to avoid pagination issues
+            # When viewing a paginated One2many list, config.rule_ids only contains visible records
+            existing_rules = self.env['hr.formula.rule'].search([
+                ('config_id', '=', vals['config_id']),
+                ('forced_column_letter', '=', False)
+            ])
+            
+            if existing_rules:
+                # Find the maximum sequence among ALL existing rules (not just current page)
+                max_sequence = max(existing_rules.mapped('sequence'))
+                # Assign next sequence (increment by 10 as per Odoo convention)
+                vals['sequence'] = max_sequence + 10
+            # If no existing rules, leave sequence as default (10)
+        
+        return super(HrFormulaRule, self).create(vals)
+
+    # ==========================================
     # VALIDATION
     # ==========================================
     def validate_formula(self):

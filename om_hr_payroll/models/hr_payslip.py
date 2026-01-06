@@ -967,8 +967,97 @@ class HrPayslipRun(models.Model):
         # Auto-generate analytics for the entire batch when it reaches Level 2
         if self.env['ir.config_parameter'].sudo().get_param('payroll_analytics_approval.auto_generate', 'True') == 'True':
             self._auto_generate_batch_analytics_on_level2()
-        
-        return result
+
+        notify_action = self._notify_general_manager_for_batch_approval()
+        return notify_action or result
+
+    def _notify_general_manager_for_batch_approval(self):
+        """Send approval email to General Manager and return a notification action."""
+        self.ensure_one()
+        try:
+            analytics_model = self.env['payroll.analytics']
+        except KeyError:
+            raise UserError(_('Payroll analytics module is not available to build approval link.'))
+
+        structure = self.slip_ids[:1].struct_id
+        country = 'VN'
+        if structure and hasattr(structure, 'country_id') and structure.country_id and structure.country_id.code:
+            country = structure.country_id.code
+
+        analytics = analytics_model.search([
+            ('country', '=', country),
+            ('date_from', '=', self.date_start),
+            ('date_to', '=', self.date_end)
+        ], limit=1)
+        if not analytics:
+            analytics = analytics_model.generate_analytics(country, self.date_start, self.date_end)
+            analytics.write({'state': 'ready'})
+
+        analytics_data = analytics._generate_analytics_data(self.slip_ids, country, self.date_start, self.date_end)
+        analytics.write(analytics_data)
+        analytics.invalidate_cache()
+        analytics._compute_analytics()
+
+        view = self.env.ref('payroll_analytics_approval.view_payroll_analytics_dashboard', raise_if_not_found=False)
+        action = self.env.ref('payroll_analytics_approval.action_payroll_approval_queue', raise_if_not_found=False)
+        if not view:
+            raise UserError(_('Payroll analytics dashboard view is missing.'))
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        approval_url = (
+            f"{base_url}/web#id={analytics.id}"
+            f"&model=payroll.analytics"
+            f"&view_type=form"
+            f"&view_id={view.id}"
+        )
+        if action:
+            approval_url += f"&action={action.id}"
+
+        group = self.env.ref('pb_hr_payroll_base.group_payroll_final_approver', raise_if_not_found=False)
+        gm_users = group.users if group else self.env['res.users']
+        emails = [u.partner_id.email for u in gm_users if u.partner_id.email]
+        if not emails:
+            raise UserError(_('No General Manager email found. Please set an email on the Final Approver users.'))
+
+        total_employees = analytics.total_employees or len(self.slip_ids.mapped('employee_id'))
+        total_payroll = analytics.total_payroll or 0.0
+        currency = self.env.company.currency_id
+        total_payroll_display = f"{total_payroll:,.2f} {currency.name}" if currency else f"{total_payroll:,.2f}"
+
+        subject = f"Yêu cầu phê duyệt bảng lương: {self.name}"
+        body_html = (
+            "<p>Kính gửi Anh/Chị Tổng Giám đốc,</p>"
+            "<p>Bộ phận HR kính đề nghị Anh/Chị phê duyệt đợt bảng lương sau:</p>"
+            "<ul>"
+            f"<li>Đợt bảng lương: <strong>{self.name or ''}</strong></li>"
+            f"<li>Kỳ lương: <strong>{self.date_start} - {self.date_end}</strong></li>"
+            f"<li>Số phiếu lương: <strong>{len(self.slip_ids)}</strong></li>"
+            f"<li>Tổng nhân viên: <strong>{total_employees}</strong></li>"
+            f"<li>Tổng quỹ lương: <strong>{total_payroll_display}</strong></li>"
+            "</ul>"
+            "<p>Vui lòng truy cập dashboard để xem chi tiết và phê duyệt:</p>"
+            f"<p><a href=\"{approval_url}\">{approval_url}</a></p>"
+            f"<p>Trân trọng,<br/>{self.env.user.name}</p>"
+        )
+
+        mail = self.env['mail.mail'].sudo().create({
+            'subject': subject,
+            'body_html': body_html,
+            'email_to': ','.join(emails),
+            'email_from': self.env.user.email_formatted or self.env.company.email or '',
+        })
+        mail.send()
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Email sent'),
+                'message': _('Đã gửi email cho Tổng Giám đốc để phê duyệt. Link phê duyệt: %s') % approval_url,
+                'type': 'success',
+                'sticky': False,
+            }
+        }
     
     def _auto_generate_batch_analytics_on_level2(self):
         """Auto-generate analytics when payslip batch reaches Level 2 state"""
