@@ -792,18 +792,6 @@ class HrFormulaConfig(models.Model):
         - Cross-sheet formula resolution (VLOOKUP, SUMIF, etc.)
         """
         self.ensure_one()
-        if self.use_color_coded_excel_import:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': _('Import from Excel'),
-                'res_model': 'hr.formula.import.wizard',
-                'view_mode': 'form',
-                'target': 'new',
-                'context': {
-                    'default_config_id': self.id,
-                    'default_import_source': 'excel',
-                }
-            }
         return {
             'type': 'ir.actions.act_window',
             'name': _('Import from Excel (Multi-Sheet)'),
