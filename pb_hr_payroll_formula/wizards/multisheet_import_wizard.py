@@ -326,6 +326,9 @@ class MultiSheetImportWizard(models.TransientModel):
             import openpyxl
             import json
             wb = openpyxl.load_workbook(io.BytesIO(file_content), data_only=True)
+            formula_wb = None
+            if self.config_id.use_color_coded_excel_import:
+                formula_wb = openpyxl.load_workbook(io.BytesIO(file_content), data_only=False)
 
             for idx, sheet_name in enumerate(workbook_data['sheet_names']):
                 sheet_info = workbook_data['sheets'][sheet_name]
@@ -344,12 +347,20 @@ class MultiSheetImportWizard(models.TransientModel):
                 available_columns = []
                 try:
                     ws = wb[sheet_name]
+                    all_columns = []
                     header_row_num = sheet_info.get('detected_header_row', 1)
-                    if header_row_num and header_row_num > 0:
+                    if self.config_id.use_color_coded_excel_import and formula_wb:
+                        formula_ws = formula_wb[sheet_name]
+                        color_info = self._get_color_coded_sheet_data(formula_ws, formula_ws)
+                        header_row_num = color_info['header_block_end']
+                        for col_idx, header_info in enumerate(color_info['sheet_data']['headers'], start=1):
+                            col_name = header_info.get('value')
+                            if col_name and str(col_name).strip():
+                                all_columns.append((col_idx, str(col_name).strip()))
+                    elif header_row_num and header_row_num > 0:
                         header_row = list(ws.iter_rows(min_row=header_row_num, max_row=header_row_num, values_only=True))[0]
 
                         # Extract all non-empty column names
-                        all_columns = []
                         for col_idx, col_value in enumerate(header_row, start=1):
                             if col_value and str(col_value).strip():
                                 col_name = str(col_value).strip()
@@ -384,6 +395,17 @@ class MultiSheetImportWizard(models.TransientModel):
                 except Exception as e:
                     _logger.warning(f"Could not extract column names from sheet '{sheet_name}': {e}")
 
+                detected_header_row = sheet_info.get('detected_header_row', 1)
+                row_count = sheet_info.get('max_row', 0) - sheet_info.get('detected_data_start_row', 2) + 1
+                if self.config_id.use_color_coded_excel_import and formula_wb:
+                    try:
+                        formula_ws = formula_wb[sheet_name]
+                        color_info = self._get_color_coded_sheet_data(formula_ws, formula_ws)
+                        detected_header_row = color_info['header_block_end']
+                        row_count = (formula_ws.max_row or 0) - color_info['formula_row'] + 1
+                    except Exception as e:
+                        _logger.warning(f"Color-coded detection failed for sheet '{sheet_name}': {e}")
+
                 # Auto-set primary key column if wizard's primary_key_column matches one of the columns
                 primary_key_col = None
                 if self.primary_key_column and available_columns:
@@ -403,9 +425,9 @@ class MultiSheetImportWizard(models.TransientModel):
                     'sheet_name': sheet_name,
                     'is_selected': True,
                     'is_main_sheet': sheet_name == workbook_data['active_sheet'],
-                    'detected_header_row': sheet_info.get('detected_header_row', 1),
+                    'detected_header_row': detected_header_row,
                     'column_count': sheet_info.get('max_column', 0),
-                    'row_count': sheet_info.get('max_row', 0) - sheet_info.get('detected_data_start_row', 2) + 1,
+                    'row_count': row_count,
                     'has_formulas': sheet_info.get('has_formulas', False),
                     'references_other_sheets': sheet_info.get('references_other_sheets', False),
                     'referenced_sheet_names': referenced_sheet_names,
@@ -493,9 +515,26 @@ class MultiSheetImportWizard(models.TransientModel):
 
             sheet_context = {}
             for sheet_line in selected_sheets:
-                sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
                 data_sheet = connector.workbook[sheet_line.sheet_name]
+                if self.config_id.use_color_coded_excel_import:
+                    color_info = self._get_color_coded_sheet_data(formula_sheet, formula_sheet)
+                    sheet_context[sheet_line.id] = {
+                        'sheet_data': color_info['sheet_data'],
+                        'formula_sheet': formula_sheet,
+                        'data_sheet': data_sheet,
+                        'formula_columns': color_info['formula_columns'],
+                        'red_header_columns': set(),
+                        'red_data_columns': set(),
+                        'header_map': color_info['header_map'],
+                        'identifier_map': color_info['identifier_map'],
+                        'report_visible_map': color_info['report_visible_map'],
+                        'header_block_start': color_info['header_block_start'],
+                        'formula_row': color_info['formula_row'],
+                    }
+                    continue
+
+                sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
                 red_header_cols = self._get_red_header_columns(
                     formula_sheet, sheet_data['header_row'], sheet_data['headers']
                 )
@@ -525,9 +564,18 @@ class MultiSheetImportWizard(models.TransientModel):
             constant_index = 0
             for sheet_line in selected_sheets:
                 ctx = sheet_context[sheet_line.id]
-                sheet_constants = self._collect_constants_for_sheet(
-                    ctx['formula_sheet'], ctx['sheet_data'], ctx['formula_columns']
-                )
+                if self.config_id.use_color_coded_excel_import:
+                    constant_scan_start = max(1, (ctx.get('header_block_start') or 1) - 1)
+                    sheet_constants = self._detect_blue_constant_cells_color_coded(
+                        ctx['formula_sheet'],
+                        constant_scan_start,
+                        ctx.get('formula_row') or ctx['sheet_data'].get('data_start_row', 1),
+                        ctx.get('header_map') or {},
+                    )
+                else:
+                    sheet_constants = self._collect_constants_for_sheet(
+                        ctx['formula_sheet'], ctx['sheet_data'], ctx['formula_columns']
+                    )
                 for const in sheet_constants:
                     cell_ref = const.get('original_cell')
                     if not cell_ref or cell_ref in constant_cell_mapping:
@@ -552,6 +600,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'cross_sheet_formula': '',
                         'is_referenced_by_main': False,
                         'constant_cell_ref': cell_ref,
+                        'report_visible': False,
+                        'payslip_identifier_code': False,
                     })
 
             if constant_cell_mapping:
@@ -580,6 +630,8 @@ class MultiSheetImportWizard(models.TransientModel):
                 formula_columns = ctx['formula_columns']
                 red_header_cols = ctx.get('red_header_columns', set())
                 red_data_cols = ctx.get('red_data_columns', set())
+                identifier_map = ctx.get('identifier_map', {})
+                report_visible_map = ctx.get('report_visible_map', {})
 
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
@@ -623,6 +675,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'column_index': idx,
                         'original_header': header_info['value'],
                         'component_type': header_info.get('component_type') or '',
+                        'payslip_identifier_code': identifier_map.get(col_letter),
+                        'report_visible': bool(report_visible_map.get(col_letter)),
                         'is_selected': True,  # All columns selected by default
                         'column_type': 'input' if is_red_data_column else
                                        ('formula' if col_letter in formula_columns else 'input'),
@@ -890,20 +944,24 @@ class MultiSheetImportWizard(models.TransientModel):
             )
 
             main_formula_sheet = formula_workbook[main_sheet.sheet_name]
-            main_data = connector.load_sheet_with_detection(main_sheet.sheet_name)
-            red_header_cols = self._get_red_header_columns(
-                main_formula_sheet, main_data['header_row'], main_data['headers']
-            )
-            red_data_cols = self._get_red_data_columns(
-                main_formula_sheet, main_data['data_start_row'], main_data['headers']
-            )
-            skip_cols = red_header_cols | red_data_cols
-            main_formula_columns = self._detect_formula_columns(
-                main_formula_sheet,
-                main_data['data_start_row'],
-                main_data['headers'],
-                skip_columns=skip_cols
-            )
+            if self.config_id.use_color_coded_excel_import:
+                color_info = self._get_color_coded_sheet_data(main_formula_sheet, main_formula_sheet)
+                main_formula_columns = color_info['formula_columns']
+            else:
+                main_data = connector.load_sheet_with_detection(main_sheet.sheet_name)
+                red_header_cols = self._get_red_header_columns(
+                    main_formula_sheet, main_data['header_row'], main_data['headers']
+                )
+                red_data_cols = self._get_red_data_columns(
+                    main_formula_sheet, main_data['data_start_row'], main_data['headers']
+                )
+                skip_cols = red_header_cols | red_data_cols
+                main_formula_columns = self._detect_formula_columns(
+                    main_formula_sheet,
+                    main_data['data_start_row'],
+                    main_data['headers'],
+                    skip_columns=skip_cols
+                )
             cross_refs = self._extract_cross_sheet_references(main_formula_columns)
 
             # Check each reference against selected columns
@@ -1000,23 +1058,27 @@ class MultiSheetImportWizard(models.TransientModel):
                 normal_cols = selected_cols.filtered(lambda c: c.column_type != 'constant')
                 constant_cols = selected_cols.filtered(lambda c: c.column_type == 'constant')
 
-                sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
                 formula_sheet = formula_workbook[sheet_line.sheet_name]
 
                 # Detect formula columns for this sheet
-                red_header_cols = self._get_red_header_columns(
-                    formula_sheet, sheet_data['header_row'], sheet_data['headers']
-                )
-                red_data_cols = self._get_red_data_columns(
-                    formula_sheet, sheet_data['data_start_row'], sheet_data['headers']
-                )
-                skip_cols = red_header_cols | red_data_cols
-                formula_columns = self._detect_formula_columns(
-                    formula_sheet,
-                    sheet_data['data_start_row'],
-                    sheet_data['headers'],
-                    skip_columns=skip_cols
-                )
+                if self.config_id.use_color_coded_excel_import:
+                    color_info = self._get_color_coded_sheet_data(formula_sheet, formula_sheet)
+                    formula_columns = color_info['formula_columns']
+                else:
+                    sheet_data = connector.load_sheet_with_detection(sheet_line.sheet_name)
+                    red_header_cols = self._get_red_header_columns(
+                        formula_sheet, sheet_data['header_row'], sheet_data['headers']
+                    )
+                    red_data_cols = self._get_red_data_columns(
+                        formula_sheet, sheet_data['data_start_row'], sheet_data['headers']
+                    )
+                    skip_cols = red_header_cols | red_data_cols
+                    formula_columns = self._detect_formula_columns(
+                        formula_sheet,
+                        sheet_data['data_start_row'],
+                        sheet_data['headers'],
+                        skip_columns=skip_cols
+                    )
                 if constant_cell_mapping:
                     for col_letter, info in formula_columns.items():
                         formula = info.get('formula', '')
@@ -1056,6 +1118,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'generated_code': code,
                         'generated_name': col_sel.original_header,
                         'component_type': col_sel.component_type or '',
+                        'payslip_identifier_code': col_sel.payslip_identifier_code or False,
+                        'report_visible': bool(col_sel.report_visible),
                         'column_type': col_sel.column_type,
                         'excel_formula': excel_formula,
                         'resolved_formula': '',  # Will be filled during resolution
@@ -1094,6 +1158,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'generated_code': code,
                         'generated_name': col_sel.original_header,
                         'component_type': col_sel.component_type or 'Constant',
+                        'payslip_identifier_code': False,
+                        'report_visible': False,
                         'column_type': 'constant',
                         'excel_formula': '',
                         'resolved_formula': '',
@@ -1619,6 +1685,339 @@ class MultiSheetImportWizard(models.TransientModel):
         except ValueError:
             return 0.0, False
 
+    def _get_fill_rgb(self, cell):
+        fill = cell.fill
+        if not fill or not fill.patternType or fill.patternType == 'none':
+            return None
+
+        color = fill.fgColor or fill.start_color
+        if not color:
+            return None
+
+        if color.type == 'rgb' and color.rgb:
+            rgb = str(color.rgb).upper()
+            if len(rgb) == 8:
+                rgb = rgb[2:]
+            if len(rgb) == 6:
+                return int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+
+        if color.type == 'indexed':
+            try:
+                from openpyxl.styles.colors import COLOR_INDEX
+                idx = color.indexed
+                if idx is not None and idx < len(COLOR_INDEX):
+                    rgb = str(COLOR_INDEX[idx]).upper()
+                    if len(rgb) == 8:
+                        rgb = rgb[2:]
+                    if len(rgb) == 6:
+                        return int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+            except Exception:
+                return None
+
+        return None
+
+    def _is_yellow_fill(self, cell):
+        rgb = self._get_fill_rgb(cell)
+        if not rgb:
+            return False
+        r, g, b = rgb
+        return r > 200 and g > 200 and b < 150
+
+    def _is_amber_fill(self, cell):
+        rgb = self._get_fill_rgb(cell)
+        if not rgb:
+            return False
+        r, g, b = rgb
+        return r > 200 and 120 < g < 210 and b < 120
+
+    def _is_green_fill(self, cell):
+        rgb = self._get_fill_rgb(cell)
+        if not rgb:
+            return False
+        r, g, b = rgb
+        return g > 150 and g > r and g > b and r < 200 and b < 200
+
+    def _is_blue_font(self, cell):
+        try:
+            font = cell.font
+            if not font or not font.color:
+                return False
+
+            color = font.color
+
+            if color.type == 'rgb' and color.rgb:
+                rgb = str(color.rgb).upper()
+                if len(rgb) >= 6:
+                    if len(rgb) == 8:
+                        r = int(rgb[2:4], 16)
+                        g = int(rgb[4:6], 16)
+                        b = int(rgb[6:8], 16)
+                    else:
+                        r = int(rgb[0:2], 16)
+                        g = int(rgb[2:4], 16)
+                        b = int(rgb[4:6], 16)
+                    if b > r and b > g and b > 80:
+                        return True
+                    if rgb not in ('000000', 'FF000000', '00000000'):
+                        return True
+
+            if color.type == 'indexed' and color.indexed in [
+                4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56
+            ]:
+                return True
+
+            if color.type == 'theme' and color.theme is not None:
+                return True
+
+        except Exception:
+            return False
+
+        return False
+
+    def _get_color_coded_sheet_data(self, sheet, formula_sheet):
+        from openpyxl.utils import get_column_letter
+        from ..formula_engine.merged_cell_parser import MergedCellParser
+
+        max_row = formula_sheet.max_row or 1
+        max_col = formula_sheet.max_column or 1
+        max_scan_row = min(max_row, 200)
+
+        yellow_rows = {}
+        amber_rows = {}
+        green_rows = {}
+        filled_rows = {}
+
+        for row_num in range(1, max_scan_row + 1):
+            for col_idx in range(1, max_col + 1):
+                cell = formula_sheet.cell(row=row_num, column=col_idx)
+                if cell.fill and cell.fill.patternType not in (None, 'none'):
+                    filled_rows[row_num] = filled_rows.get(row_num, 0) + 1
+                if self._is_yellow_fill(cell):
+                    yellow_rows[row_num] = yellow_rows.get(row_num, 0) + 1
+                if self._is_amber_fill(cell):
+                    amber_rows[row_num] = amber_rows.get(row_num, 0) + 1
+                if self._is_green_fill(cell):
+                    green_rows[row_num] = green_rows.get(row_num, 0) + 1
+
+        colored_rows = set(yellow_rows.keys()) | set(amber_rows.keys())
+        if not colored_rows:
+            raise UserError(_("Could not detect header rows from color-coded Excel file."))
+
+        header_block_start = min(colored_rows)
+        header_block_end = max(colored_rows)
+        identifier_row = header_block_start - 1
+
+        formula_row = None
+        green_candidates = {r: count for r, count in green_rows.items() if r > header_block_end}
+        if green_candidates:
+            max_count = max(green_candidates.values())
+            formula_row = min(r for r, count in green_candidates.items() if count == max_count)
+        else:
+            filled_candidates = {
+                r: count for r, count in filled_rows.items() if r > header_block_end
+            }
+            if filled_candidates:
+                max_count = max(filled_candidates.values())
+                formula_row = min(r for r, count in filled_candidates.items() if count == max_count)
+            else:
+                scan_limit = min(max_row, header_block_end + 50)
+                for row_num in range(header_block_end + 1, scan_limit + 1):
+                    for col_idx in range(1, max_col + 1):
+                        if self._is_green_fill(formula_sheet.cell(row=row_num, column=col_idx)):
+                            formula_row = row_num
+                            break
+                    if formula_row:
+                        break
+
+        if not formula_row:
+            formula_row = header_block_end + 1
+
+        merge_parser = MergedCellParser(formula_sheet)
+
+        def get_merge_origin_cell(row_num, col_idx):
+            merge_info = merge_parser.get_merge_at(row_num, col_idx)
+            if merge_info:
+                return formula_sheet.cell(
+                    row=merge_info['min_row'],
+                    column=merge_info['min_col'],
+                )
+            return formula_sheet.cell(row=row_num, column=col_idx)
+
+        def get_cell_value(row_num, col_idx):
+            cell = get_merge_origin_cell(row_num, col_idx)
+            if cell.value is not None:
+                return cell.value
+            return None
+
+        def is_bold_in_merge(row_num, col_idx):
+            merge_info = merge_parser.get_merge_at(row_num, col_idx)
+            if merge_info:
+                for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                    for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                        cell = formula_sheet.cell(row=m_row, column=m_col)
+                        if cell.font and cell.font.bold:
+                            return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return bool(cell.font and cell.font.bold)
+
+        headers = []
+        header_map = {}
+        header_rows = {}
+        report_visible_map = {}
+
+        for col_idx in range(1, max_col + 1):
+            col_letter = get_column_letter(col_idx)
+            header_value = None
+            header_row = None
+
+            for row_num in range(header_block_end, header_block_start - 1, -1):
+                cell = get_merge_origin_cell(row_num, col_idx)
+                if cell.value is None:
+                    continue
+                if self._is_yellow_fill(cell):
+                    header_value = cell.value
+                    header_row = row_num
+                    break
+
+            if header_value is None:
+                for row_num in range(header_block_start, header_block_end + 1):
+                    cell = get_merge_origin_cell(row_num, col_idx)
+                    if cell.value is None:
+                        continue
+                    header_value = cell.value
+                    header_row = row_num
+                    break
+
+            if header_value is None:
+                continue
+
+            value_str = str(header_value).strip()
+            if not value_str:
+                continue
+
+            headers.append({
+                'column_letter': col_letter,
+                'column_index': col_idx - 1,
+                'value': value_str,
+                'header_row': header_row,
+            })
+            header_map[col_letter] = value_str
+            header_rows[col_letter] = header_row
+            report_visible_map[col_letter] = is_bold_in_merge(header_row, col_idx)
+
+        if not headers:
+            raise UserError(_("No component names found in color-coded header block."))
+
+        component_types = {}
+        for header in headers:
+            col_letter = header['column_letter']
+            col_idx = header['column_index'] + 1
+            header_row = header_rows.get(col_letter, header_block_end)
+            comp_value = None
+            for row_num in range(header_row - 1, header_block_start - 1, -1):
+                comp_cell = get_merge_origin_cell(row_num, col_idx)
+                if not self._is_amber_fill(comp_cell):
+                    continue
+                comp_value = get_cell_value(row_num, col_idx)
+                if comp_value:
+                    break
+            if comp_value:
+                component_types[col_letter] = str(comp_value).strip()
+
+        identifier_map = {}
+        if identifier_row >= 1:
+            for header in headers:
+                col_letter = header['column_letter']
+                col_idx = header['column_index'] + 1
+                identifier_value = get_cell_value(identifier_row, col_idx)
+                if identifier_value:
+                    identifier_map[col_letter] = str(identifier_value).strip()
+
+        formula_columns = {}
+        for header in headers:
+            col_letter = header['column_letter']
+            col_idx = header['column_index'] + 1
+            cell = formula_sheet.cell(row=formula_row, column=col_idx)
+            if isinstance(cell.value, str) and cell.value.startswith('='):
+                formula_columns[col_letter] = {
+                    'formula': cell.value,
+                    'detected_at_row': formula_row,
+                }
+
+        sheet_data = {
+            'headers': [
+                {
+                    'column_letter': h['column_letter'],
+                    'column_index': h['column_index'],
+                    'value': h['value'],
+                    'component_type': component_types.get(h['column_letter']),
+                    'report_visible': report_visible_map.get(h['column_letter'], False),
+                    'payslip_identifier': identifier_map.get(h['column_letter']),
+                }
+                for h in headers
+            ],
+            'header_row': header_block_end,
+            'data_start_row': formula_row,
+            'data_rows': [],
+        }
+
+        return {
+            'sheet_data': sheet_data,
+            'formula_columns': formula_columns,
+            'header_map': header_map,
+            'header_rows': header_rows,
+            'identifier_map': identifier_map,
+            'report_visible_map': report_visible_map,
+            'header_block_start': header_block_start,
+            'header_block_end': header_block_end,
+            'formula_row': formula_row,
+        }
+
+    def _detect_blue_constant_cells_color_coded(self, sheet, header_row, formula_row, header_map):
+        """
+        Detect blue font constants below header block up to formula row.
+
+        Names are generated as "Constant <Header Name>" using the header row.
+        """
+        from openpyxl.utils import get_column_letter
+
+        blue_constants = []
+        seen_cells = set()
+        start_row = header_row + 1
+        end_row = max(start_row, formula_row)
+
+        for row_num in range(start_row, end_row + 1):
+            for col_idx in range(1, (sheet.max_column or 1) + 1):
+                cell = sheet.cell(row=row_num, column=col_idx)
+                if cell.value is None:
+                    continue
+
+                if not self._is_blue_font(cell):
+                    continue
+
+                col_letter = get_column_letter(col_idx)
+                cell_ref = f"{col_letter}{row_num}"
+                if cell_ref in seen_cells:
+                    continue
+                seen_cells.add(cell_ref)
+
+                decimal_value, was_percentage = self._parse_percentage_value(cell.value)
+                header_label = header_map.get(col_letter)
+                name = f"Constant {header_label}" if header_label else f"Constant {col_letter}"
+
+                blue_constants.append({
+                    'name': name,
+                    'value': decimal_value,
+                    'original_value': cell.value,
+                    'original_cell': cell_ref,
+                    'original_col_letter': col_letter,
+                    'original_col_idx': col_idx,
+                    'row': row_num,
+                    'was_percentage': was_percentage,
+                })
+
+        return blue_constants
+
     def _collect_constants_for_sheet(self, formula_sheet, sheet_data, formula_columns):
         """Collect constant definitions from a sheet using color and formula scans."""
         header_row = sheet_data.get('header_row', 1)
@@ -2117,6 +2516,22 @@ class MultiSheetImportWizard(models.TransientModel):
 
             created_rules = []
             updated_rules = []
+            identifier_cache = {}
+            payslip_config_model = self.env['hr.payslip.config']
+
+            def get_payslip_identifier(identifier_value):
+                if not identifier_value:
+                    return False
+                if identifier_value in identifier_cache:
+                    return identifier_cache[identifier_value]
+                record = payslip_config_model.search([('identifier', '=', identifier_value)], limit=1)
+                if not record:
+                    record = payslip_config_model.create({
+                        'identifier': identifier_value,
+                        'label': '',
+                    })
+                identifier_cache[identifier_value] = record
+                return record
 
             # Process each component
             for comp in components_to_import:
@@ -2138,9 +2553,14 @@ class MultiSheetImportWizard(models.TransientModel):
                     'original_column_letter': comp.column_letter,
                     'forced_column_letter': comp.column_letter,  # Preserve actual Excel column position for ALL rules
                     'data_source': comp.data_source,
+                    'report_visible': bool(comp.report_visible),
                 }
                 if sequence is not None:
                     rule_vals['sequence'] = sequence
+
+                if comp.payslip_identifier_code:
+                    payslip_identifier = get_payslip_identifier(comp.payslip_identifier_code)
+                    rule_vals['payslip_identifier'] = payslip_identifier.id if payslip_identifier else False
 
                 if comp.column_type == 'formula' and comp.excel_formula:
                     rule_vals['excel_formula'] = comp.excel_formula
@@ -2659,6 +3079,15 @@ class MultiSheetComponentPreview(models.TransientModel):
         help="Category from merged cell above header"
     )
 
+    payslip_identifier_code = fields.Char(
+        string='Payslip Identifier',
+        help="Identifier code mapped from color-coded row"
+    )
+
+    report_visible = fields.Boolean(
+        string='Visible in Reports'
+    )
+
     column_type = fields.Selection([
         ('input', 'Input'),
         ('formula', 'Formula'),
@@ -2823,6 +3252,16 @@ class MultiSheetColumnSelection(models.TransientModel):
         string='Category',
         readonly=True,
         help="Component type extracted from merged cell above the header"
+    )
+
+    payslip_identifier_code = fields.Char(
+        string='Payslip Identifier',
+        readonly=True
+    )
+
+    report_visible = fields.Boolean(
+        string='Visible in Reports',
+        readonly=True
     )
 
     # Selection controls
