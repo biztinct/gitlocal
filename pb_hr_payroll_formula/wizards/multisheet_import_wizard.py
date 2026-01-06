@@ -1035,15 +1035,15 @@ class MultiSheetImportWizard(models.TransientModel):
             current_col_index = 0
             all_components = []
             seen_codes = set()
-            constant_cell_mapping = {}
+            constant_placeholder_mapping = {}
+            placeholder_to_final = {}
             constant_selections = self.column_selection_ids.filtered(
                 lambda c: c.is_selected and c.column_type == 'constant' and c.constant_cell_ref
             )
-            for const in constant_selections:
+            for idx, const in enumerate(constant_selections):
                 cell_ref = const.constant_cell_ref
-                if cell_ref not in constant_cell_mapping:
-                    original_col = self._extract_column_letter_from_cell_ref(cell_ref)
-                    constant_cell_mapping[cell_ref] = original_col or const.column_letter or ''
+                if cell_ref and cell_ref not in constant_placeholder_mapping:
+                    constant_placeholder_mapping[cell_ref] = f"__CONST_{idx}__"
 
             # Get sheets in append order
             ordered_sheets = self.append_order_ids.sorted('append_sequence')
@@ -1079,10 +1079,10 @@ class MultiSheetImportWizard(models.TransientModel):
                         sheet_data['headers'],
                         skip_columns=skip_cols
                     )
-                if constant_cell_mapping:
+                if constant_placeholder_mapping:
                     for col_letter, info in formula_columns.items():
                         formula = info.get('formula', '')
-                        updated = self._update_formula_references(formula, constant_cell_mapping)
+                        updated = self._update_formula_references(formula, constant_placeholder_mapping)
                         if updated != formula:
                             info['formula'] = updated
 
@@ -1145,8 +1145,13 @@ class MultiSheetImportWizard(models.TransientModel):
                         self._extract_column_letter_from_cell_ref(col_sel.constant_cell_ref)
                         or col_sel.column_letter
                     )
-                    column_mapping[(sheet_key, constant_key)] = new_col_letter
+                    if constant_key and (sheet_key, constant_key) not in column_mapping:
+                        column_mapping[(sheet_key, constant_key)] = new_col_letter
                     column_mapping[(sheet_key, col_sel.column_index)] = new_col_letter
+                    if col_sel.constant_cell_ref:
+                        placeholder_token = constant_placeholder_mapping.get(col_sel.constant_cell_ref)
+                        if placeholder_token:
+                            placeholder_to_final[f"{placeholder_token}2"] = f"{new_col_letter}2"
 
                     code = self._generate_code(col_sel.original_header, seen_codes)
                     seen_codes.add(code)
@@ -1174,6 +1179,13 @@ class MultiSheetImportWizard(models.TransientModel):
                     current_col_index += 1  # Increment for next column
 
             # Now resolve formulas (both same-sheet and cross-sheet references)
+            def replace_constant_placeholders(formula):
+                if not formula or not placeholder_to_final:
+                    return formula
+                for token, final in placeholder_to_final.items():
+                    formula = formula.replace(token, final)
+                return formula
+
             for component in all_components:
                 if component['excel_formula']:
                     # First resolve same-sheet column references (e.g., I3 -> FS3)
@@ -1189,6 +1201,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         column_mapping
                     )
 
+                    resolved = replace_constant_placeholders(resolved)
                     component['resolved_formula'] = resolved
                     # Use the fully resolved formula
                     component['excel_formula'] = resolved
@@ -1758,16 +1771,26 @@ class MultiSheetImportWizard(models.TransientModel):
                         b = int(rgb[4:6], 16)
                     if b > r and b > g and b > 80:
                         return True
-                    if rgb not in ('000000', 'FF000000', '00000000'):
-                        return True
 
-            if color.type == 'indexed' and color.indexed in [
-                4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56
-            ]:
-                return True
+            if color.type == 'indexed':
+                if color.indexed in [
+                    4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56
+                ]:
+                    return True
+                value = cell.value
+                if color.indexed not in (0, 1) and isinstance(value, (int, float)):
+                    return True
+                if color.indexed not in (0, 1) and isinstance(value, str) and value.strip().endswith('%'):
+                    return True
 
-            if color.type == 'theme' and color.theme is not None:
-                return True
+            if color.type == 'theme':
+                if color.theme in [4, 5, 8]:
+                    return True
+                value = cell.value
+                if isinstance(value, (int, float)):
+                    return True
+                if isinstance(value, str) and value.strip().endswith('%'):
+                    return True
 
         except Exception:
             return False
@@ -1983,8 +2006,8 @@ class MultiSheetImportWizard(models.TransientModel):
 
         blue_constants = []
         seen_cells = set()
-        start_row = header_row + 1
-        end_row = max(start_row, formula_row)
+        start_row = 1
+        end_row = max(start_row, (formula_row - 1) if formula_row else start_row)
 
         for row_num in range(start_row, end_row + 1):
             for col_idx in range(1, (sheet.max_column or 1) + 1):
@@ -2016,6 +2039,11 @@ class MultiSheetImportWizard(models.TransientModel):
                     'was_percentage': was_percentage,
                 })
 
+        _logger.info(
+            "Multi-sheet color import: blue constants detected=%s sample=%s",
+            len(blue_constants),
+            [(c['original_cell'], c['name']) for c in blue_constants[:10]],
+        )
         return blue_constants
 
     def _collect_constants_for_sheet(self, formula_sheet, sheet_data, formula_columns):

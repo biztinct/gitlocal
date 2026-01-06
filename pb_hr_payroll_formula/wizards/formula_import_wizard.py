@@ -1033,16 +1033,26 @@ class FormulaImportWizard(models.TransientModel):
                         b = int(rgb[4:6], 16)
                     if b > r and b > g and b > 80:
                         return True
-                    if rgb not in ('000000', 'FF000000', '00000000'):
-                        return True
 
-            if color.type == 'indexed' and color.indexed in [
-                4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56
-            ]:
-                return True
+            if color.type == 'indexed':
+                if color.indexed in [
+                    4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56
+                ]:
+                    return True
+                value = cell.value
+                if color.indexed not in (0, 1) and isinstance(value, (int, float)):
+                    return True
+                if color.indexed not in (0, 1) and isinstance(value, str) and value.strip().endswith('%'):
+                    return True
 
-            if color.type == 'theme' and color.theme is not None:
-                return True
+            if color.type == 'theme':
+                if color.theme in [4, 5, 8]:
+                    return True
+                value = cell.value
+                if isinstance(value, (int, float)):
+                    return True
+                if isinstance(value, str) and value.strip().endswith('%'):
+                    return True
 
         except Exception:
             return False
@@ -1099,8 +1109,8 @@ class FormulaImportWizard(models.TransientModel):
 
         blue_constants = []
         seen_cells = set()
-        start_row = header_row + 1
-        end_row = max(start_row, formula_row)
+        start_row = 1
+        end_row = max(start_row, (formula_row - 1) if formula_row else start_row)
         color_debug_logged = 0
         style_debug_logged = 0
 
