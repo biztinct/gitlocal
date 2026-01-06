@@ -538,32 +538,44 @@ class FormulaImportWizard(models.TransientModel):
         if not colored_rows:
             raise UserError(_("Could not detect header row from color-coded Excel file."))
 
-        colored_header_row = min(colored_rows)
-        component_name_row = min(yellow_rows.keys()) if yellow_rows else colored_header_row
-        component_type_row = None
-        if amber_rows:
-            amber_candidates = [r for r in amber_rows if r <= component_name_row]
-            component_type_row = max(amber_candidates) if amber_candidates else min(amber_rows.keys())
+        def _log_row_counts(label, rows):
+            if not rows:
+                _logger.info("Excel color import: %s rows: none", label)
+                return
+            items = sorted(rows.items(), key=lambda x: x[0])
+            preview = items[:30]
+            rows_str = ", ".join(["%s:%s" % (row, count) for row, count in preview])
+            if len(items) > len(preview):
+                rows_str += ", ..."
+            _logger.info("Excel color import: %s rows counts: %s", label, rows_str)
 
-        identifier_row = colored_header_row - 1
+        _log_row_counts("yellow", yellow_rows)
+        _log_row_counts("amber", amber_rows)
+        _log_row_counts("green", green_rows)
+        _log_row_counts("filled", filled_rows)
+
+        header_block_start = min(colored_rows)
+        header_block_end = max(colored_rows)
+
+        identifier_row = header_block_start - 1
         if identifier_row < 1:
             raise UserError(_("Could not detect identifier row above the header row."))
 
         formula_row = None
-        green_candidates = {r: count for r, count in green_rows.items() if r > component_name_row}
+        green_candidates = {r: count for r, count in green_rows.items() if r > header_block_end}
         if green_candidates:
             max_count = max(green_candidates.values())
             formula_row = min(r for r, count in green_candidates.items() if count == max_count)
         else:
             filled_candidates = {
-                r: count for r, count in filled_rows.items() if r > component_name_row
+                r: count for r, count in filled_rows.items() if r > header_block_end
             }
             if filled_candidates:
                 max_count = max(filled_candidates.values())
                 formula_row = min(r for r, count in filled_candidates.items() if count == max_count)
             else:
-                scan_limit = min(max_row, component_name_row + 50)
-                for row_num in range(component_name_row + 1, scan_limit + 1):
+                scan_limit = min(max_row, header_block_end + 50)
+                for row_num in range(header_block_end + 1, scan_limit + 1):
                     for col_idx in range(1, max_col + 1):
                         if self._is_green_fill(formula_sheet.cell(row=row_num, column=col_idx)):
                             formula_row = row_num
@@ -572,11 +584,11 @@ class FormulaImportWizard(models.TransientModel):
                         break
 
         if not formula_row:
-            formula_row = component_name_row + 1
+            formula_row = header_block_end + 1
 
         _logger.info(
-            "Excel color import: header_row=%s, component_type_row=%s, identifier_row=%s, formula_row=%s",
-            component_name_row, component_type_row, identifier_row, formula_row
+            "Excel color import: header_row=%s-%s, identifier_row=%s, formula_row=%s",
+            header_block_start, header_block_end, identifier_row, formula_row
         )
 
         try:
@@ -613,38 +625,83 @@ class FormulaImportWizard(models.TransientModel):
             cell = formula_sheet.cell(row=row_num, column=col_idx)
             return bool(cell.font and cell.font.bold)
 
+        def get_fill_debug(cell):
+            if not cell.fill:
+                return "none"
+            color = cell.fill.fgColor or cell.fill.start_color
+            if not color:
+                return "none"
+            return "pattern=%s type=%s rgb=%s indexed=%s theme=%s tint=%s" % (
+                cell.fill.patternType,
+                getattr(color, 'type', None),
+                getattr(color, 'rgb', None),
+                getattr(color, 'indexed', None),
+                getattr(color, 'theme', None),
+                getattr(color, 'tint', None),
+            )
+
         raw_headers = []
         header_map = {}
+        header_cells = {}
+        header_rows = {}
 
         for col_idx in range(1, max_col + 1):
-            value = get_cell_value(component_name_row, col_idx)
-            if value is None:
+            col_letter = get_column_letter(col_idx)
+            header_value = None
+            header_row = None
+            # Prefer the lowest yellow cell in the header block
+            for row_num in range(header_block_end, header_block_start - 1, -1):
+                cell = get_merge_origin_cell(row_num, col_idx)
+                if cell.value is None:
+                    continue
+                if self._is_yellow_fill(cell):
+                    header_value = cell.value
+                    header_row = row_num
+                    break
+            # Fallback to any non-empty value in the header block
+            if header_value is None:
+                for row_num in range(header_block_start, header_block_end + 1):
+                    cell = get_merge_origin_cell(row_num, col_idx)
+                    if cell.value is None:
+                        continue
+                    header_value = cell.value
+                    header_row = row_num
+                    break
+
+            if header_value is None:
                 continue
-            value_str = str(value).strip()
+
+            value_str = str(header_value).strip()
             if not value_str:
                 continue
-            col_letter = get_column_letter(col_idx)
+
             raw_headers.append({
                 'column_letter': col_letter,
                 'column_index': col_idx - 1,
                 'value': value_str,
             })
             header_map[col_letter] = value_str
+            header_cells[col_letter] = get_merge_origin_cell(header_row, col_idx)
+            header_rows[col_letter] = header_row
 
         if not raw_headers:
             raise UserError(_("No component names found on the header row."))
 
         component_types = {}
-        if component_type_row:
-            for header in raw_headers:
-                col_letter = header['column_letter']
-                col_idx = header['column_index'] + 1
-                comp_cell = get_merge_origin_cell(component_type_row, col_idx)
+        for header in raw_headers:
+            col_letter = header['column_letter']
+            col_idx = header['column_index'] + 1
+            header_row = header_rows.get(col_letter, header_block_end)
+            comp_value = None
+            for row_num in range(header_row - 1, header_block_start - 1, -1):
+                comp_cell = get_merge_origin_cell(row_num, col_idx)
                 if not self._is_amber_fill(comp_cell):
                     continue
-                comp_value = get_cell_value(component_type_row, col_idx)
+                comp_value = get_cell_value(row_num, col_idx)
                 if comp_value:
-                    component_types[col_letter] = str(comp_value).strip()
+                    break
+            if comp_value:
+                component_types[col_letter] = str(comp_value).strip()
 
         identifier_map = {}
         for header in raw_headers:
@@ -653,6 +710,8 @@ class FormulaImportWizard(models.TransientModel):
             identifier_value = get_cell_value(identifier_row, col_idx)
             if identifier_value:
                 identifier_map[col_letter] = str(identifier_value).strip()
+
+        _logger.info("Excel color import: identifier_map sample: %s", list(identifier_map.items())[:20])
 
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
@@ -669,8 +728,11 @@ class FormulaImportWizard(models.TransientModel):
             if isinstance(cell.value, str) and cell.value.startswith('='):
                 formula_columns[col_letter] = cell.value
 
+        _logger.info("Excel color import: formula columns detected: %s", list(formula_columns.keys())[:30])
+
+        constant_scan_start = max(1, header_block_start - 1)
         constant_pairs = self._detect_blue_constant_cells_color_coded(
-            formula_sheet, component_name_row, formula_row, header_map
+            formula_sheet, constant_scan_start, formula_row, header_map
         )
         constant_pairs = sorted(
             constant_pairs,
@@ -690,6 +752,33 @@ class FormulaImportWizard(models.TransientModel):
                     formula, cell_to_column_mapping
                 )
             formula_columns = updated_formula_columns
+
+        for header in raw_headers[:30]:
+            col_letter = header['column_letter']
+            col_idx = header['column_index'] + 1
+            header_row = header_rows.get(col_letter, header_block_end)
+            header_cell = get_merge_origin_cell(header_row, col_idx)
+            identifier_cell = get_merge_origin_cell(identifier_row, col_idx)
+            comp_cell = get_merge_origin_cell(header_row - 1, col_idx) if header_row else None
+            formula_cell = formula_sheet.cell(row=formula_row, column=col_idx)
+            _logger.info(
+                "Excel color import: col=%s header='%s' header_fill=%s header_is_yellow=%s "
+                "header_bold=%s id_value='%s' id_fill=%s comp_value='%s' comp_fill=%s comp_is_amber=%s "
+                "formula_cell_value='%s' formula_is_green=%s formula_fill=%s",
+                col_letter,
+                header.get('value'),
+                get_fill_debug(header_cell),
+                self._is_yellow_fill(header_cell),
+                is_bold_in_merge(header_row, col_idx),
+                get_cell_value(identifier_row, col_idx),
+                get_fill_debug(identifier_cell),
+                get_cell_value(header_row - 1, col_idx) if header_row else '',
+                get_fill_debug(comp_cell) if comp_cell else 'none',
+                self._is_amber_fill(comp_cell) if comp_cell else False,
+                formula_cell.value,
+                self._is_green_fill(formula_cell),
+                get_fill_debug(formula_cell),
+            )
 
         identifier_cache = {}
         payslip_config_model = self.env['hr.payslip.config']
@@ -729,7 +818,8 @@ class FormulaImportWizard(models.TransientModel):
             identifier_value = identifier_map.get(col_letter)
             payslip_identifier = get_payslip_identifier(identifier_value)
 
-            report_visible = is_bold_in_merge(component_name_row, col_idx)
+            header_row = header_rows.get(col_letter, header_block_end)
+            report_visible = is_bold_in_merge(header_row, col_idx)
 
             max_sequence += 10
             values = {
@@ -804,7 +894,7 @@ class FormulaImportWizard(models.TransientModel):
 
         msg_parts = [
             _('%d rules imported from color-coded Excel (header row %d)') % (
-                component_rules_created, component_name_row
+                component_rules_created, header_block_end
             )
         ]
         if constant_rules_created:
@@ -941,14 +1031,17 @@ class FormulaImportWizard(models.TransientModel):
                         r = int(rgb[0:2], 16)
                         g = int(rgb[2:4], 16)
                         b = int(rgb[4:6], 16)
-                    return b > r and b > g and b > 100
+                    if b > r and b > g and b > 80:
+                        return True
+                    if rgb not in ('000000', 'FF000000', '00000000'):
+                        return True
 
             if color.type == 'indexed' and color.indexed in [
                 4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56
             ]:
                 return True
 
-            if color.type == 'theme' and color.theme in [4, 5, 8]:
+            if color.type == 'theme' and color.theme is not None:
                 return True
 
         except Exception:
@@ -1008,6 +1101,26 @@ class FormulaImportWizard(models.TransientModel):
         seen_cells = set()
         start_row = header_row + 1
         end_row = max(start_row, formula_row)
+        color_debug_logged = 0
+        style_debug_logged = 0
+
+        _logger.info(
+            "Excel color import: constant scan rows=%s-%s, max_col=%s",
+            start_row, end_row, sheet.max_column or 1
+        )
+
+        def get_font_debug(cell):
+            font = cell.font
+            if not font or not font.color:
+                return "none"
+            color = font.color
+            return "type=%s rgb=%s indexed=%s theme=%s tint=%s" % (
+                getattr(color, 'type', None),
+                getattr(color, 'rgb', None),
+                getattr(color, 'indexed', None),
+                getattr(color, 'theme', None),
+                getattr(color, 'tint', None),
+            )
 
         for row_num in range(start_row, end_row + 1):
             for col_idx in range(1, (sheet.max_column or 1) + 1):
@@ -1015,7 +1128,35 @@ class FormulaImportWizard(models.TransientModel):
                 if cell.value is None:
                     continue
 
+                if style_debug_logged < 40 and (cell.has_style or cell.font):
+                    col_letter = get_column_letter(col_idx)
+                    cell_ref = f"{col_letter}{row_num}"
+                    font = cell.font
+                    _logger.info(
+                        "Excel color import: font debug cell=%s value='%s' has_style=%s "
+                        "font_color=%s bold=%s underline=%s name=%s size=%s scheme=%s hyperlink=%s",
+                        cell_ref,
+                        cell.value,
+                        cell.has_style,
+                        get_font_debug(cell),
+                        getattr(font, 'bold', None),
+                        getattr(font, 'underline', None),
+                        getattr(font, 'name', None),
+                        getattr(font, 'size', None),
+                        getattr(font, 'scheme', None),
+                        bool(cell.hyperlink),
+                    )
+                    style_debug_logged += 1
+
                 if not self._is_blue_font(cell):
+                    if color_debug_logged < 30 and cell.font and cell.font.color:
+                        col_letter = get_column_letter(col_idx)
+                        cell_ref = f"{col_letter}{row_num}"
+                        _logger.info(
+                            "Excel color import: non-blue font cell=%s value='%s' font=%s",
+                            cell_ref, cell.value, get_font_debug(cell)
+                        )
+                        color_debug_logged += 1
                     continue
 
                 col_letter = get_column_letter(col_idx)
@@ -1038,6 +1179,11 @@ class FormulaImportWizard(models.TransientModel):
                     'row': row_num,
                     'was_percentage': was_percentage,
                 })
+
+                _logger.info(
+                    "Excel color import: BLUE CONSTANT cell=%s value='%s' name='%s' font=%s",
+                    cell_ref, cell.value, name, get_font_debug(cell)
+                )
 
         return blue_constants
 
