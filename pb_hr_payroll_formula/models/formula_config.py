@@ -164,6 +164,12 @@ class HrFormulaConfig(models.Model):
         help="HR system connector for importing payroll input data"
     )
 
+    use_color_coded_excel_import = fields.Boolean(
+        string='Use Color-Coded Excel Import',
+        default=False,
+        help="When enabled, Excel import uses color-coded headers and rows."
+    )
+
     # ==========================================
     # STATE & VALIDATION
     # ==========================================

@@ -11,6 +11,8 @@ access_connector_user,hr.integration.connector.user,model_hr_integration_connect
 access_connector_admin,hr.integration.connector.admin,model_hr_integration_connector,pb_hr_payroll_formula.group_formula_admin,1,1,1,1
 access_mapping_user,hr.integration.field.mapping.user,model_hr_integration_field_mapping,pb_hr_payroll_formula.group_formula_user,1,0,0,0
 access_mapping_admin,hr.integration.field.mapping.admin,model_hr_integration_field_mapping,pb_hr_payroll_formula.group_formula_admin,1,1,1,1
+access_payslip_config_user,hr.payslip.config.user,model_hr_payslip_config,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_payslip_config_manager,hr.payslip.config.manager,model_hr_payslip_config,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_sample_wizard,hr.formula.sample.data.wizard,model_hr_formula_sample_data_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
 access_import_wizard,hr.formula.import.wizard,model_hr_formula_import_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,0
 access_sync_wizard,hr.integration.sync.wizard,model_hr_integration_sync_wizard,pb_hr_payroll_formula.group_formula_admin,1,1,1,0

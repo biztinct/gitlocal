@@ -232,6 +232,9 @@ class FormulaImportWizard(models.TransientModel):
         if not self.import_file:
             raise UserError(_("Please upload an Excel file"))
 
+        if self.config_id.use_color_coded_excel_import:
+            return self._import_from_excel_color_coded()
+
         try:
             import openpyxl
             import io
@@ -239,9 +242,7 @@ class FormulaImportWizard(models.TransientModel):
             content = base64.b64decode(self.import_file)
 
             # Load workbook twice: once for values, once for formulas
-            workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
             formula_workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=False)
-            sheet = workbook.active
             formula_sheet = formula_workbook.active
 
         except ImportError:
@@ -475,6 +476,350 @@ class FormulaImportWizard(models.TransientModel):
             }
         }
 
+    def _import_from_excel_color_coded(self):
+        """
+        Import configuration from a color-coded Excel file.
+
+        Color rules:
+        - Yellow fill: Component name row (header)
+        - Amber fill: Component type row (optional)
+        - Green fill: Formula/data row (first row below header)
+        - Blue font: Constants (below header, up to green row)
+        """
+        if not self.import_file:
+            raise UserError(_("Please upload an Excel file"))
+
+        try:
+            import openpyxl
+            import io
+
+            content = base64.b64decode(self.import_file)
+            workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
+            formula_workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=False)
+            sheet = workbook.active
+            formula_sheet = formula_workbook.active
+
+        except ImportError:
+            raise UserError(_("openpyxl library required. Install with: pip install openpyxl"))
+        except Exception as e:
+            raise UserError(_("Failed to read Excel file: %s") % str(e))
+
+        from openpyxl.utils import get_column_letter
+
+        max_row = formula_sheet.max_row or 1
+        max_col = formula_sheet.max_column or 1
+        max_scan_row = min(max_row, 200)
+
+        yellow_rows = {}
+        amber_rows = {}
+        green_rows = {}
+        filled_rows = {}
+
+        for row_num in range(1, max_scan_row + 1):
+            for col_idx in range(1, max_col + 1):
+                cell = formula_sheet.cell(row=row_num, column=col_idx)
+                if cell.fill and cell.fill.patternType not in (None, 'none'):
+                    filled_rows[row_num] = filled_rows.get(row_num, 0) + 1
+                if self._is_yellow_fill(cell):
+                    yellow_rows[row_num] = yellow_rows.get(row_num, 0) + 1
+                if self._is_amber_fill(cell):
+                    amber_rows[row_num] = amber_rows.get(row_num, 0) + 1
+                if self._is_green_fill(cell):
+                    green_rows[row_num] = green_rows.get(row_num, 0) + 1
+
+        def _pick_row(rows):
+            if not rows:
+                return None
+            max_count = max(rows.values())
+            candidates = [r for r, count in rows.items() if count == max_count]
+            return min(candidates)
+
+        colored_rows = set(yellow_rows.keys()) | set(amber_rows.keys())
+        if not colored_rows:
+            raise UserError(_("Could not detect header row from color-coded Excel file."))
+
+        colored_header_row = min(colored_rows)
+        component_name_row = min(yellow_rows.keys()) if yellow_rows else colored_header_row
+        component_type_row = None
+        if amber_rows:
+            amber_candidates = [r for r in amber_rows if r <= component_name_row]
+            component_type_row = max(amber_candidates) if amber_candidates else min(amber_rows.keys())
+
+        identifier_row = colored_header_row - 1
+        if identifier_row < 1:
+            raise UserError(_("Could not detect identifier row above the header row."))
+
+        formula_row = None
+        green_candidates = {r: count for r, count in green_rows.items() if r > component_name_row}
+        if green_candidates:
+            max_count = max(green_candidates.values())
+            formula_row = min(r for r, count in green_candidates.items() if count == max_count)
+        else:
+            filled_candidates = {
+                r: count for r, count in filled_rows.items() if r > component_name_row
+            }
+            if filled_candidates:
+                max_count = max(filled_candidates.values())
+                formula_row = min(r for r, count in filled_candidates.items() if count == max_count)
+            else:
+                scan_limit = min(max_row, component_name_row + 50)
+                for row_num in range(component_name_row + 1, scan_limit + 1):
+                    for col_idx in range(1, max_col + 1):
+                        if self._is_green_fill(formula_sheet.cell(row=row_num, column=col_idx)):
+                            formula_row = row_num
+                            break
+                    if formula_row:
+                        break
+
+        if not formula_row:
+            formula_row = component_name_row + 1
+
+        _logger.info(
+            "Excel color import: header_row=%s, component_type_row=%s, identifier_row=%s, formula_row=%s",
+            component_name_row, component_type_row, identifier_row, formula_row
+        )
+
+        try:
+            from ..formula_engine.merged_cell_parser import MergedCellParser
+            merge_parser = MergedCellParser(formula_sheet)
+        except Exception:
+            merge_parser = None
+
+        def get_merge_origin_cell(row_num, col_idx):
+            if merge_parser:
+                merge_info = merge_parser.get_merge_at(row_num, col_idx)
+                if merge_info:
+                    return formula_sheet.cell(
+                        row=merge_info['min_row'],
+                        column=merge_info['min_col'],
+                    )
+            return formula_sheet.cell(row=row_num, column=col_idx)
+
+        def get_cell_value(row_num, col_idx):
+            cell = get_merge_origin_cell(row_num, col_idx)
+            if cell.value is not None:
+                return cell.value
+            return None
+
+        def is_bold_in_merge(row_num, col_idx):
+            if merge_parser:
+                merge_info = merge_parser.get_merge_at(row_num, col_idx)
+                if merge_info:
+                    for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                        for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                            cell = formula_sheet.cell(row=m_row, column=m_col)
+                            if cell.font and cell.font.bold:
+                                return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return bool(cell.font and cell.font.bold)
+
+        raw_headers = []
+        header_map = {}
+
+        for col_idx in range(1, max_col + 1):
+            value = get_cell_value(component_name_row, col_idx)
+            if value is None:
+                continue
+            value_str = str(value).strip()
+            if not value_str:
+                continue
+            col_letter = get_column_letter(col_idx)
+            raw_headers.append({
+                'column_letter': col_letter,
+                'column_index': col_idx - 1,
+                'value': value_str,
+            })
+            header_map[col_letter] = value_str
+
+        if not raw_headers:
+            raise UserError(_("No component names found on the header row."))
+
+        component_types = {}
+        if component_type_row:
+            for header in raw_headers:
+                col_letter = header['column_letter']
+                col_idx = header['column_index'] + 1
+                comp_cell = get_merge_origin_cell(component_type_row, col_idx)
+                if not self._is_amber_fill(comp_cell):
+                    continue
+                comp_value = get_cell_value(component_type_row, col_idx)
+                if comp_value:
+                    component_types[col_letter] = str(comp_value).strip()
+
+        identifier_map = {}
+        for header in raw_headers:
+            col_letter = header['column_letter']
+            col_idx = header['column_index'] + 1
+            identifier_value = get_cell_value(identifier_row, col_idx)
+            if identifier_value:
+                identifier_map[col_letter] = str(identifier_value).strip()
+
+        if not self.preserve_existing:
+            self.config_id.rule_ids.unlink()
+
+        existing_codes = set(self.config_id.rule_ids.mapped('code'))
+        max_sequence = max(self.config_id.rule_ids.mapped('sequence') or [0])
+        created_rules = self.env['hr.formula.rule']
+
+        formula_columns = {}
+        for header in raw_headers:
+            col_letter = header['column_letter']
+            col_idx = header['column_index'] + 1
+            cell = formula_sheet.cell(row=formula_row, column=col_idx)
+            if isinstance(cell.value, str) and cell.value.startswith('='):
+                formula_columns[col_letter] = cell.value
+
+        constant_pairs = self._detect_blue_constant_cells_color_coded(
+            formula_sheet, component_name_row, formula_row, header_map
+        )
+        constant_pairs = sorted(
+            constant_pairs,
+            key=lambda item: (item.get('row', 0), item.get('original_col_idx', 0))
+        )
+
+        cell_to_column_mapping = {}
+        for idx, pair in enumerate(constant_pairs):
+            new_col_letter = self._generate_extended_column_letter(idx)
+            cell_to_column_mapping[pair['original_cell']] = new_col_letter
+            pair['new_column_letter'] = new_col_letter
+
+        if cell_to_column_mapping:
+            updated_formula_columns = {}
+            for col_letter, formula in formula_columns.items():
+                updated_formula_columns[col_letter] = self._update_formula_references(
+                    formula, cell_to_column_mapping
+                )
+            formula_columns = updated_formula_columns
+
+        identifier_cache = {}
+        payslip_config_model = self.env['hr.payslip.config']
+
+        def get_payslip_identifier(identifier_value):
+            if not identifier_value:
+                return False
+            if identifier_value in identifier_cache:
+                return identifier_cache[identifier_value]
+            record = payslip_config_model.search([('identifier', '=', identifier_value)], limit=1)
+            if not record:
+                record = payslip_config_model.create({
+                    'identifier': identifier_value,
+                    'label': '',
+                })
+            identifier_cache[identifier_value] = record
+            return record
+
+        component_rules_created = 0
+        for header in raw_headers:
+            header_value = header.get('value')
+            if not header_value:
+                continue
+
+            col_letter = header.get('column_letter')
+            col_idx = header.get('column_index') + 1
+            is_formula = col_letter in formula_columns
+            column_type = 'formula' if is_formula else 'input'
+            excel_formula = formula_columns.get(col_letter, '')
+
+            comp_type = component_types.get(col_letter, '')
+
+            name = str(header_value).strip()
+            code = self._generate_code_from_label(name, existing_codes)
+            existing_codes.add(code)
+
+            identifier_value = identifier_map.get(col_letter)
+            payslip_identifier = get_payslip_identifier(identifier_value)
+
+            report_visible = is_bold_in_merge(component_name_row, col_idx)
+
+            max_sequence += 10
+            values = {
+                'config_id': self.config_id.id,
+                'name': name,
+                'code': code,
+                'sequence': max_sequence,
+                'column_type': column_type,
+                'forced_column_letter': col_letter,
+                'original_column_letter': col_letter,
+                'component_type': comp_type,
+                'data_source': 'formula' if is_formula else 'excel',
+                'data_source_field': name,
+                'number_format': False,
+                'payslip_identifier': payslip_identifier.id if payslip_identifier else False,
+                'report_visible': report_visible,
+            }
+            if excel_formula:
+                values['excel_formula'] = excel_formula
+
+            try:
+                created = self.env['hr.formula.rule'].create(values)
+                created_rules |= created
+                component_rules_created += 1
+            except Exception as e:
+                _logger.error("Excel color import: failed to create rule '%s' (%s): %s", name, code, e)
+
+        constant_rules_created = 0
+        for pair in constant_pairs:
+            name = pair['name']
+            code = self._generate_code_from_label(name, existing_codes)
+            existing_codes.add(code)
+            max_sequence += 10
+
+            try:
+                constant_value = float(pair['value'])
+            except (ValueError, TypeError):
+                constant_value = 0.0
+                _logger.warning(
+                    "Could not convert constant value '%s' to float for '%s'",
+                    pair['value'], name
+                )
+
+            data_source_info = "From cell %s" % pair['original_cell']
+            if pair.get('was_percentage'):
+                original_val = pair.get('original_value', pair['value'])
+                data_source_info = "From cell %s (%s -> %s)" % (
+                    pair['original_cell'], original_val, constant_value
+                )
+
+            values = {
+                'config_id': self.config_id.id,
+                'name': name,
+                'code': code,
+                'sequence': max_sequence,
+                'column_type': 'constant',
+                'forced_column_letter': pair['new_column_letter'],
+                'original_column_letter': pair['original_cell'],
+                'component_type': 'Constant',
+                'constant_value': constant_value,
+                'data_source': 'manual',
+                'data_source_field': data_source_info,
+                'number_format': False,
+            }
+
+            try:
+                created = self.env['hr.formula.rule'].create(values)
+                created_rules |= created
+                constant_rules_created += 1
+            except Exception as e:
+                _logger.error("Excel color import: failed to create constant rule '%s': %s", name, e)
+
+        msg_parts = [
+            _('%d rules imported from color-coded Excel (header row %d)') % (
+                component_rules_created, component_name_row
+            )
+        ]
+        if constant_rules_created:
+            msg_parts.append(_('%d constant rules added') % constant_rules_created)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': ' | '.join(msg_parts),
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
     def action_download_template(self):
         """Download Excel template for import."""
         try:
@@ -525,6 +870,92 @@ class FormulaImportWizard(models.TransientModel):
     # --------------------------------------------------
     # Helpers
     # --------------------------------------------------
+    def _get_fill_rgb(self, cell):
+        fill = cell.fill
+        if not fill or not fill.patternType or fill.patternType == 'none':
+            return None
+
+        color = fill.fgColor or fill.start_color
+        if not color:
+            return None
+
+        if color.type == 'rgb' and color.rgb:
+            rgb = str(color.rgb).upper()
+            if len(rgb) == 8:
+                rgb = rgb[2:]
+            if len(rgb) == 6:
+                return int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+
+        if color.type == 'indexed':
+            try:
+                from openpyxl.styles.colors import COLOR_INDEX
+                idx = color.indexed
+                if idx is not None and idx < len(COLOR_INDEX):
+                    rgb = str(COLOR_INDEX[idx]).upper()
+                    if len(rgb) == 8:
+                        rgb = rgb[2:]
+                    if len(rgb) == 6:
+                        return int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+            except Exception:
+                return None
+
+        return None
+
+    def _is_yellow_fill(self, cell):
+        rgb = self._get_fill_rgb(cell)
+        if not rgb:
+            return False
+        r, g, b = rgb
+        return r > 200 and g > 200 and b < 150
+
+    def _is_amber_fill(self, cell):
+        rgb = self._get_fill_rgb(cell)
+        if not rgb:
+            return False
+        r, g, b = rgb
+        return r > 200 and 120 < g < 210 and b < 120
+
+    def _is_green_fill(self, cell):
+        rgb = self._get_fill_rgb(cell)
+        if not rgb:
+            return False
+        r, g, b = rgb
+        return g > 150 and g > r and g > b and r < 200 and b < 200
+
+    def _is_blue_font(self, cell):
+        try:
+            font = cell.font
+            if not font or not font.color:
+                return False
+
+            color = font.color
+
+            if color.type == 'rgb' and color.rgb:
+                rgb = str(color.rgb).upper()
+                if len(rgb) >= 6:
+                    if len(rgb) == 8:
+                        r = int(rgb[2:4], 16)
+                        g = int(rgb[4:6], 16)
+                        b = int(rgb[6:8], 16)
+                    else:
+                        r = int(rgb[0:2], 16)
+                        g = int(rgb[2:4], 16)
+                        b = int(rgb[4:6], 16)
+                    return b > r and b > g and b > 100
+
+            if color.type == 'indexed' and color.indexed in [
+                4, 5, 12, 23, 30, 32, 39, 40, 41, 42, 48, 49, 54, 55, 56
+            ]:
+                return True
+
+            if color.type == 'theme' and color.theme in [4, 5, 8]:
+                return True
+
+        except Exception:
+            return False
+
+        return False
+
     def _parse_percentage_value(self, value):
         """
         Parse a percentage value and convert to decimal.
@@ -564,6 +995,51 @@ class FormulaImportWizard(models.TransientModel):
             return float(str_value), False
         except ValueError:
             return 0.0, False
+
+    def _detect_blue_constant_cells_color_coded(self, sheet, header_row, formula_row, header_map):
+        """
+        Detect blue font constants below header row up to the formula row.
+
+        Names are generated as "Constant <Header Name>" using the header row.
+        """
+        from openpyxl.utils import get_column_letter
+
+        blue_constants = []
+        seen_cells = set()
+        start_row = header_row + 1
+        end_row = max(start_row, formula_row)
+
+        for row_num in range(start_row, end_row + 1):
+            for col_idx in range(1, (sheet.max_column or 1) + 1):
+                cell = sheet.cell(row=row_num, column=col_idx)
+                if cell.value is None:
+                    continue
+
+                if not self._is_blue_font(cell):
+                    continue
+
+                col_letter = get_column_letter(col_idx)
+                cell_ref = f"{col_letter}{row_num}"
+                if cell_ref in seen_cells:
+                    continue
+                seen_cells.add(cell_ref)
+
+                decimal_value, was_percentage = self._parse_percentage_value(cell.value)
+                header_label = header_map.get(col_letter)
+                name = f"Constant {header_label}" if header_label else f"Constant {col_letter}"
+
+                blue_constants.append({
+                    'name': name,
+                    'value': decimal_value,
+                    'original_value': cell.value,
+                    'original_cell': cell_ref,
+                    'original_col_letter': col_letter,
+                    'original_col_idx': col_idx,
+                    'row': row_num,
+                    'was_percentage': was_percentage,
+                })
+
+        return blue_constants
 
     def _detect_blue_constant_cells(self, sheet, scan_up_to_row):
         """
