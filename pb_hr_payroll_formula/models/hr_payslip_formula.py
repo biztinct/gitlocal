@@ -47,6 +47,12 @@ class HrPayslipFormula(models.Model):
         help="Computed values from formula engine"
     )
 
+    payslip_identifier_payload = fields.Text(
+        string='Payslip Identifier Payload (JSON)',
+        readonly=True,
+        help="Grouped component values for payslip printing."
+    )
+
     has_formula_errors = fields.Boolean(
         string='Has Formula Errors',
         compute='_compute_has_formula_errors'
