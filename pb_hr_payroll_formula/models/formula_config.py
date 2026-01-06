@@ -620,6 +620,13 @@ class HrFormulaConfig(models.Model):
         self.test_result_ids.unlink()
 
         results = []
+
+        def _coerce_number(value):
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return None
+
         for sample in self.sample_data_ids:
             # Get input values
             input_values = json.loads(sample.input_values_json or '{}')
@@ -633,7 +640,15 @@ class HrFormulaConfig(models.Model):
                 # Compare results
                 for code, expected in expected_values.items():
                     actual = computed.get(code, 0)
-                    discrepancy = abs(expected - actual) / max(abs(expected), 1) * 100
+                    expected_num = _coerce_number(expected)
+                    actual_num = _coerce_number(actual)
+                    if expected_num is None or actual_num is None:
+                        match = str(expected) == str(actual)
+                        discrepancy = 0 if match else 100
+                        status = 'passed' if match else 'failed'
+                    else:
+                        discrepancy = abs(expected_num - actual_num) / max(abs(expected_num), 1) * 100
+                        status = 'passed' if discrepancy < 0.01 else 'failed'
 
                     results.append({
                         'config_id': self.id,
@@ -642,7 +657,7 @@ class HrFormulaConfig(models.Model):
                         'expected_value': expected,
                         'computed_value': actual,
                         'discrepancy_percent': discrepancy,
-                        'status': 'passed' if discrepancy < 0.01 else 'failed',
+                        'status': status,
                     })
             except Exception as e:
                 results.append({
