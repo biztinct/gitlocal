@@ -40,6 +40,28 @@
                                     <t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('STANDARDWORKINGDAY', 'STANDARD WORKING DAY', 'STANDARD WORKING DAYS', 'WORKING DAY CURRENT MONTH', 'WORKINGDAYCURRENTMONTH', 'WORKING DAY', 'WORKINGDAY', 'WORK100', 'STANDARD', 'STDWORK', 'NGAYCONG', 'SALARY CALCULATION DAYS', 'TOTAL DAYS/MONTH', 'TOTAL DAYS MONTH', 'WORKDAYS IN THE MONTH', 'CONG GOES TO WORK ON WEEKDAYS'))"/>
                                 </td>
                             </tr>
+                            <t t-set="identifier_sections" t-value="o._report_get_identifier_sections()"/>
+                            <t t-if="identifier_sections is not None">
+                                <t t-foreach="identifier_sections" t-as="section">
+                                    <tr>
+                                        <td colspan="2" style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">
+                                            <t t-esc="section['title']"/>
+                                        </td>
+                                        <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px;"></td>
+                                    </tr>
+                                    <t t-foreach="section['lines']" t-as="line">
+                                        <tr>
+                                            <td colspan="2" style="border: 1px solid #000; padding: 4px;">
+                                                <t t-esc="line['name']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 4px; text-align: right;">
+                                                <t t-esc="line['value']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-else="">
                             <tr>
                                 <td colspan="2" style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">I. LƯƠNG &amp; PHỤ CẤP</td>
                                 <td style="border: 1px solid #000; background: #e4f0f2; padding: 6px;"></td>
@@ -219,6 +241,7 @@
                                 <td colspan="2" style="border: 1px solid #000; padding: 4px;">Thực nhận kỳ 2</td>
                                 <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('NET2', 'NETPERIOD2', 'TAKEHOME2', 'THỰC NHẬN KỲ 2', 'THUC NHAN KY 2', 'NETSALARY', 'NET SALARY', 'NET', 'NETPAY', 'NET PAY PERIOD 2'))"/></td>
                             </tr>
+                            </t>
                         </table>
                     </div>
                 </t>

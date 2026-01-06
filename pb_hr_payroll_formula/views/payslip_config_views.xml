@@ -6,6 +6,7 @@
         <field name="model">hr.payslip.config</field>
         <field name="arch" type="xml">
             <tree string="Payslip Configuration" editable="bottom">
+                <field name="sequence" widget="handle"/>
                 <field name="identifier"/>
                 <field name="label"/>
             </tree>

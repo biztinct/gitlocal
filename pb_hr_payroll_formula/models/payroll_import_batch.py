@@ -5,6 +5,7 @@ import json
 from datetime import date, datetime
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+from ..formula_engine.column_manager import ColumnManager
 
 _logger = logging.getLogger(__name__)
 
@@ -326,12 +327,15 @@ class HrPayrollImportBatch(models.Model):
         for idx, row in enumerate(rows, start=1):
             # Build raw data JSON
             if isinstance(row, dict):
-                raw_data = row
+                raw_data = dict(row)
             else:
                 raw_data = {}
                 for col_idx, header in enumerate(headers):
                     if col_idx < len(row):
                         raw_data[header] = row[col_idx]
+                        col_letter = ColumnManager.index_to_letter(col_idx)
+                        if col_letter not in raw_data:
+                            raw_data[col_letter] = row[col_idx]
 
             # Extract key fields for matching
             employee_code = self._normalize_code(self._extract_field(raw_data, ['employee_code', 'emp_code', 'code', 'employee_id', 'emp_id', 'id']))
@@ -911,6 +915,64 @@ class HrPayrollImportBatch(models.Model):
         config = self.formula_config_id
         rules = config.rule_ids.sorted(key=lambda r: r.sequence)
 
+        employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
+
+        def is_employee_code_rule(rule):
+            tokens = [
+                (rule.code or '').upper(),
+                (rule.name or '').upper(),
+                (rule.data_source_field or '').upper(),
+            ]
+            for token in tokens:
+                if not token:
+                    continue
+                for marker in employee_code_markers:
+                    if marker in token:
+                        return True
+            return False
+
+        def coerce_numeric_string(value):
+            cleaned = value.strip().replace(' ', '')
+            if not cleaned:
+                return None
+            try:
+                if ',' in cleaned and '.' in cleaned:
+                    if cleaned.rfind(',') > cleaned.rfind('.'):
+                        cleaned = cleaned.replace('.', '').replace(',', '.')
+                    else:
+                        cleaned = cleaned.replace(',', '')
+                elif ',' in cleaned:
+                    parts = cleaned.split(',')
+                    if all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                    else:
+                        cleaned = cleaned.replace(',', '.')
+                elif '.' in cleaned:
+                    parts = cleaned.split('.')
+                    if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                return float(cleaned)
+            except (ValueError, TypeError):
+                return None
+
+        def normalize_payslip_amount(rule, value):
+            if value is None:
+                return 0.0
+            if isinstance(value, bool):
+                return float(value)
+            if isinstance(value, (int, float)):
+                return float(value)
+            if isinstance(value, str):
+                stripped = value.strip()
+                if stripped == '':
+                    return 0.0
+                if is_employee_code_rule(rule):
+                    return 0.0
+                numeric_value = coerce_numeric_string(stripped)
+                if numeric_value is not None:
+                    return numeric_value
+            return 0.0
+
         # Evaluate all formulas using dependency order (handles forward references)
         computed_values, computation_log = payslip._evaluate_rules_with_dependencies(
             rules,
@@ -920,6 +982,9 @@ class HrPayrollImportBatch(models.Model):
         # Store computed values in payslip
         payslip.formula_computed_values = json.dumps(computed_values)
         payslip.formula_computation_log = "\n".join(computation_log)
+        if 'payslip_identifier_payload' in payslip._fields:
+            payload = self._build_payslip_identifier_payload(rules, computed_values)
+            payslip.payslip_identifier_payload = json.dumps(payload)
 
         # Create payslip lines directly
         line_vals_list = []
@@ -929,7 +994,7 @@ class HrPayrollImportBatch(models.Model):
             if not rule.appears_on_payslip:
                 continue
 
-            amount = computed_values.get(rule.code, 0)
+            amount = normalize_payslip_amount(rule, computed_values.get(rule.code, 0))
 
             # Get or create salary rule category
             category = rule.category_id
@@ -959,6 +1024,33 @@ class HrPayrollImportBatch(models.Model):
         # Bulk create payslip lines
         if line_vals_list:
             self.env['hr.payslip.line'].create(line_vals_list)
+
+    def _build_payslip_identifier_payload(self, rules, computed_values):
+        """Build payload for dynamic payslip sections."""
+        payload = []
+        for rule in rules:
+            if not rule.payslip_identifier:
+                continue
+            identifier = rule.payslip_identifier.identifier
+            if not identifier:
+                continue
+            value = computed_values.get(rule.code)
+            if value is None and rule.column_letter:
+                value = computed_values.get(rule.column_letter)
+            payload.append({
+                'identifier': identifier,
+                'name': rule.name or '',
+                'code': rule.code or '',
+                'sequence': rule.sequence,
+                'value': self._normalize_payload_value(value),
+            })
+        return payload
+
+    @staticmethod
+    def _normalize_payload_value(value):
+        if value is None or isinstance(value, (int, float, str, bool)):
+            return value
+        return str(value)
 
     def _get_default_category(self, code):
         """Get default salary rule category based on code pattern"""
@@ -1058,6 +1150,7 @@ class HrPayrollImportBatch(models.Model):
         """Transform raw Excel data to formula input values using field mappings"""
         input_values = {}
         config = self.formula_config_id
+        employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
 
         def lookup_raw_value(candidates):
             for key in candidates:
@@ -1070,6 +1163,63 @@ class HrPayrollImportBatch(models.Model):
                     return raw_data.get(normalized_map[normalized_key])
             return None
 
+        def is_employee_code_rule(rule):
+            tokens = [
+                (rule.code or '').upper(),
+                (rule.name or '').upper(),
+                (rule.data_source_field or '').upper(),
+            ]
+            for token in tokens:
+                if not token:
+                    continue
+                for marker in employee_code_markers:
+                    if marker in token:
+                        return True
+            return False
+
+        def coerce_numeric_string(value):
+            cleaned = value.strip().replace(' ', '')
+            if not cleaned:
+                return None
+            try:
+                if ',' in cleaned and '.' in cleaned:
+                    if cleaned.rfind(',') > cleaned.rfind('.'):
+                        cleaned = cleaned.replace('.', '').replace(',', '.')
+                    else:
+                        cleaned = cleaned.replace(',', '')
+                elif ',' in cleaned:
+                    parts = cleaned.split(',')
+                    if all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                    else:
+                        cleaned = cleaned.replace(',', '.')
+                elif '.' in cleaned:
+                    parts = cleaned.split('.')
+                    if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                return float(cleaned)
+            except (ValueError, TypeError):
+                return None
+
+        def normalize_input_value(rule, value):
+            if value is None:
+                return rule.default_value
+            if isinstance(value, bool):
+                return float(value)
+            if isinstance(value, (int, float)):
+                return float(value)
+            if isinstance(value, str):
+                stripped = value.strip()
+                if stripped == '':
+                    return rule.default_value
+                if is_employee_code_rule(rule):
+                    return stripped
+                numeric_value = coerce_numeric_string(stripped)
+                if numeric_value is not None:
+                    return numeric_value
+                return stripped
+            return value
+
         # First, try using connector field mappings if available
         if config.connector_id:
             for mapping in config.connector_id.field_mapping_ids:
@@ -1078,7 +1228,9 @@ class HrPayrollImportBatch(models.Model):
                     if source_value is not None:
                         # Apply transformation
                         transformed = mapping.transform_value(source_value, raw_data)
-                        input_values[mapping.target_rule_id.code] = transformed
+                        input_values[mapping.target_rule_id.code] = normalize_input_value(
+                            mapping.target_rule_id, transformed
+                        )
 
         # Then, do direct mapping for input rules based on data_source_field
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'input'):
@@ -1114,10 +1266,7 @@ class HrPayrollImportBatch(models.Model):
                     value = lookup_raw_value(candidates)
 
                 if value is not None:
-                    try:
-                        input_values[rule.code] = float(value) if value != '' else rule.default_value
-                    except (ValueError, TypeError):
-                        input_values[rule.code] = rule.default_value
+                    input_values[rule.code] = normalize_input_value(rule, value)
                 else:
                     input_values[rule.code] = rule.default_value
 

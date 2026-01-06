@@ -6,9 +6,14 @@ from odoo import fields, models
 class HrPayslipConfig(models.Model):
     _name = 'hr.payslip.config'
     _description = 'Payslip Configuration'
-    _order = 'identifier'
+    _order = 'sequence, identifier'
     _rec_name = 'identifier'
 
+    sequence = fields.Integer(
+        string='Sequence',
+        default=10,
+        help="Order used to display sections in the payslip."
+    )
     identifier = fields.Char(
         string='Identifier',
         required=True,

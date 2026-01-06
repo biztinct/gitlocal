@@ -2,8 +2,10 @@
 
 from collections import defaultdict
 import json
+import re
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import formatLang
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -235,6 +237,132 @@ class HrPayslipIndonesia(models.Model):
             return "{:,.0f}%".format(val)
         except Exception:
             return "0%"
+
+    @staticmethod
+    def _report_is_numeric_string(value):
+        if not isinstance(value, str):
+            return False
+        cleaned = value.strip()
+        if not cleaned:
+            return False
+        return bool(re.fullmatch(r'[-+]?[\d\s,\.]+%?', cleaned))
+
+    @staticmethod
+    def _report_is_percentage_name(name):
+        if not name:
+            return False
+        cleaned = name.strip().lower()
+        if '%' in cleaned:
+            return True
+        if 'percent' in cleaned:
+            return True
+        return cleaned.startswith('percentage') or cleaned.endswith('percentage')
+
+    def _report_should_hide_identifier_value(self, value):
+        if value in (None, '', False):
+            return True
+        if isinstance(value, (int, float)):
+            return abs(value) < 1e-9
+        if isinstance(value, bool):
+            return not value
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                return True
+            if self._report_is_numeric_string(stripped):
+                return abs(self._report_to_number(stripped.replace('%', ''))) < 1e-9
+        return False
+
+    def _report_format_identifier_value(self, value, name=None):
+        if value is None:
+            return ''
+        if isinstance(value, bool):
+            value = float(value)
+        if isinstance(value, (int, float)):
+            if self._report_is_percentage_name(name):
+                return self._report_fmt_percent(value)
+            return formatLang(self.env, value or 0.0, currency_obj=self.currency_id)
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                return ''
+            if '%' in stripped:
+                return stripped
+            if self._report_is_numeric_string(stripped):
+                num = self._report_to_number(stripped)
+                if self._report_is_percentage_name(name):
+                    return self._report_fmt_percent(num)
+                return formatLang(self.env, num or 0.0, currency_obj=self.currency_id)
+            return stripped
+        return str(value)
+
+    def _report_get_identifier_sections(self):
+        """Build dynamic payslip sections from identifier payload."""
+        self.ensure_one()
+        if 'payslip_identifier_payload' not in self._fields:
+            return None
+        if 'hr.payslip.config' not in self.env:
+            return None
+        raw_payload = self.payslip_identifier_payload or ''
+        if not raw_payload:
+            return None
+        try:
+            payload = json.loads(raw_payload)
+        except Exception:
+            return None
+        if not isinstance(payload, list):
+            return None
+
+        grouped = {}
+        identifiers = set()
+        for item in payload:
+            identifier = (item or {}).get('identifier')
+            if not identifier:
+                continue
+            identifiers.add(identifier)
+            grouped.setdefault(identifier, []).append(item)
+
+        if not grouped:
+            return None
+
+        configs = self.env['hr.payslip.config'].search(
+            [('identifier', 'in', list(identifiers))],
+            order='sequence, identifier'
+        )
+        config_map = {config.identifier: config for config in configs}
+
+        def _identifier_sort_key(identifier):
+            config = config_map.get(identifier)
+            if config:
+                return (config.sequence or 0, identifier)
+            return (9999, identifier)
+
+        sections = []
+        for identifier in sorted(grouped.keys(), key=_identifier_sort_key):
+            items = grouped.get(identifier, [])
+            lines = []
+            for item in sorted(items, key=lambda x: (x.get('sequence') or 0, x.get('name') or '')):
+                value = item.get('value')
+                if self._report_should_hide_identifier_value(value):
+                    continue
+                display_value = self._report_format_identifier_value(value, item.get('name'))
+                if display_value == '':
+                    continue
+                lines.append({
+                    'name': (item.get('name') or '').strip(),
+                    'value': display_value,
+                })
+            if not lines:
+                continue
+            config = config_map.get(identifier)
+            title = (config.label or config.identifier) if config else identifier
+            sections.append({
+                'identifier': identifier,
+                'title': title,
+                'lines': lines,
+            })
+
+        return sections
 
     def _get_report_name(self):
         """Determine which report template to use based on payroll structure"""
