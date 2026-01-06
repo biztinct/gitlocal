@@ -116,6 +116,7 @@
                 <field name="state"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
+                <field name="salary_structure_name"/>
                 
                 <templates>
                     <t t-name="kanban-box">
@@ -167,11 +168,11 @@
                                     <div t-if="record.variance_percentage.raw_value != 0" class="mt-2">
                                         <div class="progress" style="height: 6px;">
                                             <div class="progress-bar" 
-                                                 t-attf-class="progress-bar #{record.variance_percentage.raw_value > 0 ? 'bg-success' : 'bg-danger'}"
+                                                 t-attf-class="progress-bar #{record.variance_percentage.raw_value &gt; 0 ? 'bg-success' : 'bg-danger'}"
                                                  t-attf-style="width: #{Math.min(Math.abs(record.variance_percentage.raw_value), 100)}%"/>
                                         </div>
-                                        <small t-attf-class="#{record.variance_percentage.raw_value > 0 ? 'text-success' : 'text-danger'}">
-                                            <t t-if="record.variance_percentage.raw_value > 0">+</t>
+                                        <small t-attf-class="#{record.variance_percentage.raw_value &gt; 0 ? 'text-success' : 'text-danger'}">
+                                            <t t-if="record.variance_percentage.raw_value &gt; 0">+</t>
                                             <field name="variance_percentage" widget="percentage"/> vs last month
                                         </small>
                                     </div>
@@ -179,7 +180,9 @@
                                 
                                 <div class="o_kanban_record_bottom mt-2">
                                     <div class="oe_kanban_bottom_left">
-                                        <field name="state" widget="priority"/>
+                                        <small class="text-muted">
+                                            <i class="fa fa-file-text-o"/> <field name="salary_structure_name"/>
+                                        </small>
                                     </div>
                                     <div class="oe_kanban_bottom_right">
                                         <button t-if="record.state.raw_value == 'ready' or record.state.raw_value == 'approved'"

@@ -73,6 +73,7 @@ class PayrollDashboardAnalytics(models.Model):
                         # Don't delete approved records - just refresh data without changing state
                         payslips = existing_analytics._get_payslips_for_period(country, batch_first_day, batch_last_day)
                         existing_analytics._generate_analytics_data(payslips, country, batch_first_day, batch_last_day)
+                        existing_analytics.write({'payslip_run_id': batch.id})
                         generated_analytics.append(existing_analytics)
                     else:
                         _logger.info(f"Found existing analytics for batch {batch.name} in {existing_analytics.state} state, regenerating...")
@@ -83,7 +84,7 @@ class PayrollDashboardAnalytics(models.Model):
                 if not existing_analytics:
                     try:
                         new_analytics = self.env['payroll.analytics'].generate_analytics(country, batch_first_day, batch_last_day)
-                        new_analytics.write({'state': 'ready'})
+                        new_analytics.write({'state': 'ready', 'payslip_run_id': batch.id})
                         
                         # Force computation of stored fields to ensure fresh data
                         new_analytics.invalidate_cache()

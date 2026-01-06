@@ -23,6 +23,9 @@ class PayrollAnalytics(models.Model):
     period_name = fields.Char(string='Period', required=True)
     date_from = fields.Date(string='Date From', required=True)
     date_to = fields.Date(string='Date To', required=True)
+    payslip_run_id = fields.Many2one('hr.payslip.run', string='Payslip Batch', readonly=True)
+    salary_structure_name = fields.Char(string='Salary Structure', readonly=True, 
+                                         help='Name of the salary structure from hr.formula.config')
     country = fields.Selection([
         ('VN', 'Vietnam'),
         ('ID', 'Indonesia'),
@@ -216,6 +219,31 @@ class PayrollAnalytics(models.Model):
             _logger.info(f"Created new analytics record {new_record.id} for {country}")
             return new_record
     
+    def _get_payslips_for_employees_period(self, employee_ids, date_from, date_to):
+        if not employee_ids:
+            return self.env['hr.payslip']
+        return self.env['hr.payslip'].search([
+            ('employee_id', 'in', employee_ids),
+            ('date_from', '>=', date_from),
+            ('date_to', '<=', date_to),
+            ('state', 'in', ['level2', 'done'])
+        ])
+
+    def _get_batch_employee_ids(self):
+        if not self or len(self) != 1 or not self.payslip_run_id:
+            return []
+        return self.payslip_run_id.slip_ids.mapped('employee_id').ids
+
+    def _get_batch_line_domain(self):
+        if not self or len(self) != 1:
+            return []
+        if self.payslip_run_id:
+            return [('slip_id.payslip_run_id', '=', self.payslip_run_id.id)]
+        return [
+            ('date_from', '>=', self.date_from),
+            ('date_to', '<=', self.date_to),
+        ]
+
     def _get_payslips_for_period(self, country, date_from, date_to):
         """Get payslips for the specific country and period"""
         # Map countries to salary structures (try multiple structure names)
@@ -473,11 +501,59 @@ class PayrollAnalytics(models.Model):
         """Get historical data for comparison with improved variance calculation"""
         # Get previous month data more precisely
         prev_month_start = current_date - relativedelta(months=1)
-        
+        prev_month_start = prev_month_start.replace(day=1)
+        prev_month_end = prev_month_start + relativedelta(months=1, days=-1)
+
+        batch_employee_ids = self._get_batch_employee_ids()
+        if batch_employee_ids:
+            previous_payslips = self._get_payslips_for_employees_period(
+                batch_employee_ids, prev_month_start, prev_month_end
+            )
+            prev_components = {}
+            for line in previous_payslips.mapped('line_ids'):
+                if not line.code:
+                    continue
+                prev_components.setdefault(line.code, {'total': 0.0})
+                prev_components[line.code]['total'] += line.total
+
+            comparison = {
+                'previous_month': {},
+                'variance': {},
+                'trend': 'stable',
+                'previous_month_total': 0
+            }
+
+            current_total_payroll = sum(comp['total'] for comp in current_components.values())
+            prev_total_payroll = sum(comp['total'] for comp in prev_components.values()) if prev_components else 0
+            comparison['previous_month_total'] = prev_total_payroll
+
+            for code, current in current_components.items():
+                current_total = current['total']
+                if code in prev_components:
+                    prev_total_comp = prev_components[code]['total']
+                    if prev_total_comp > 0:
+                        variance = ((current_total - prev_total_comp) / prev_total_comp) * 100
+                    elif current_total > 0:
+                        variance = 100.0
+                    else:
+                        variance = 0.0
+                    comparison['previous_month'][code] = prev_components[code]
+                    comparison['variance'][code] = round(variance, 2)
+                else:
+                    comparison['variance'][code] = 100.0 if current_total > 0 else 0.0
+
+            if prev_total_payroll > 0:
+                overall_variance = ((current_total_payroll - prev_total_payroll) / prev_total_payroll) * 100
+                if overall_variance > 5:
+                    comparison['trend'] = 'increasing'
+                elif overall_variance < -5:
+                    comparison['trend'] = 'decreasing'
+            return comparison
+
         # Find the previous month analytics with more specific search
         prev_analytics = self.search([
             ('country', '=', country),
-            ('date_from', '>=', prev_month_start.replace(day=1)),
+            ('date_from', '>=', prev_month_start),
             ('date_from', '<', current_date.replace(day=1))
         ], order='date_from desc', limit=1)
         
@@ -609,10 +685,19 @@ class PayrollAnalytics(models.Model):
             ('component_code', '=', component_code),
         ]).unlink()
 
-        current_payslips = self._get_payslips_for_period(self.country, self.date_from, self.date_to)
-        prev_month_start = (self.date_from - relativedelta(months=1)).replace(day=1)
-        prev_month_end = prev_month_start + relativedelta(months=1, days=-1)
-        previous_payslips = self._get_payslips_for_period(self.country, prev_month_start, prev_month_end)
+        if self.payslip_run_id:
+            employee_ids = self._get_batch_employee_ids()
+            current_payslips = self.payslip_run_id.slip_ids
+            prev_month_start = (self.date_from - relativedelta(months=1)).replace(day=1)
+            prev_month_end = prev_month_start + relativedelta(months=1, days=-1)
+            previous_payslips = self._get_payslips_for_employees_period(
+                employee_ids, prev_month_start, prev_month_end
+            )
+        else:
+            current_payslips = self._get_payslips_for_period(self.country, self.date_from, self.date_to)
+            prev_month_start = (self.date_from - relativedelta(months=1)).replace(day=1)
+            prev_month_end = prev_month_start + relativedelta(months=1, days=-1)
+            previous_payslips = self._get_payslips_for_period(self.country, prev_month_start, prev_month_end)
 
         current_totals = self._component_employee_totals(current_payslips, component_code)
         previous_totals = self._component_employee_totals(previous_payslips, component_code)
@@ -658,6 +743,73 @@ class PayrollAnalytics(models.Model):
         for code in codes or []:
             name_map[code] = self._get_component_name(code, self.country)
         return name_map
+
+    def _build_payslip_line_pivot_action(self, name, domain, row_groupby, column_groupby):
+        view = self.env.ref('pb_hr_flow.view_hr_payslip_line_pivot_enhanced', raise_if_not_found=False)
+        views = [(view.id, 'pivot'), (False, 'tree')] if view else [(False, 'pivot'), (False, 'tree')]
+        return {
+            'type': 'ir.actions.act_window',
+            'name': name,
+            'res_model': 'hr.payslip.line',
+            'view_mode': 'pivot,tree',
+            'views': views,
+            'domain': domain,
+            'context': {
+                'pivot_measures': ['total'],
+                'pivot_row_groupby': row_groupby or [],
+                'pivot_column_groupby': column_groupby or [],
+            },
+        }
+
+    def action_open_employee_component_pivot(self):
+        self.ensure_one()
+        domain = self._get_batch_line_domain()
+        return self._build_payslip_line_pivot_action(
+            _('Batch Payslip Components by Employee'),
+            domain,
+            ['employee_id'],
+            ['name'],
+        )
+
+    def action_open_variance_pivot(self):
+        self.ensure_one()
+        domain = []
+        employee_ids = self._get_batch_employee_ids()
+        if employee_ids:
+            domain.append(('employee_id', 'in', employee_ids))
+        if self.date_from and self.date_to:
+            start_date = (self.date_from - relativedelta(months=1)).replace(day=1)
+            domain.extend([
+                ('date_from', '>=', start_date),
+                ('date_to', '<=', self.date_to),
+            ])
+        return self._build_payslip_line_pivot_action(
+            _('Variance vs Last Month'),
+            domain,
+            ['name'],
+            ['date_to:month'],
+        )
+
+    def action_open_component_pivot(self, component_code):
+        self.ensure_one()
+        if not component_code:
+            return False
+        domain = [('code', '=', component_code)]
+        employee_ids = self._get_batch_employee_ids()
+        if employee_ids:
+            domain.append(('employee_id', 'in', employee_ids))
+        if self.date_from and self.date_to:
+            start_date = (self.date_from - relativedelta(months=5)).replace(day=1)
+            domain.extend([
+                ('date_from', '>=', start_date),
+                ('date_to', '<=', self.date_to),
+            ])
+        return self._build_payslip_line_pivot_action(
+            _('Component Trend: %s') % self._get_component_name(component_code, self.country),
+            domain,
+            ['employee_id'],
+            ['date_to:month'],
+        )
     
     def action_approve_payroll(self):
         """Final approval action"""
