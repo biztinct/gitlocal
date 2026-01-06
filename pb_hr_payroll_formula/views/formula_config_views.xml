@@ -121,6 +121,7 @@
                             <field name="country_code"/>
                             <field name="structure_id"/>
                             <field name="connector_id"/>
+                            <field name="use_color_coded_excel_import"/>
                             <field name="payroll_journal_id"
                                    options="{'no_create': False}"
                                    groups="base.group_multi_company"/>
@@ -157,10 +158,12 @@
                                     <field name="source_sheet_name" string="Section"/>
                                     <field name="name" string="Component"/>
                                     <field name="component_type" string="Category"/>
+                                    <field name="payslip_identifier"/>
                                     <field name="code"/>
                                     <field name="column_type" string="Type"/>
                                     <field name="data_source" string="Source"/>
                                     <field name="category_id"/>
+                                    <field name="report_visible"/>
                                     <field name="excel_formula_display" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
                                     <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
                                     <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
@@ -360,9 +363,11 @@
                             <field name="source_sheet_name" string="Section"/>
                             <field name="name" string="Component"/>
                             <field name="component_type" string="Category"/>
+                            <field name="payslip_identifier"/>
                             <field name="code"/>
                             <field name="column_type" string="Type"/>
                             <field name="data_source" string="Source"/>
+                            <field name="report_visible"/>
                             <field name="excel_formula_display"
                                    attrs="{'invisible': [('column_type', '!=', 'formula')], 'required': [('column_type', '=', 'formula')]}"/>
                             <field name="data_source_field"

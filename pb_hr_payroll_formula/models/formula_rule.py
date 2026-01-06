@@ -83,6 +83,12 @@ class HrFormulaRule(models.Model):
         help="Salary rule category for grouping"
     )
 
+    payslip_identifier = fields.Many2one(
+        'hr.payslip.config',
+        string='Payslip Identifier',
+        help="Grouping identifier for payslip and reporting."
+    )
+
     # ==========================================
     # COLUMN TYPE
     # ==========================================
@@ -303,6 +309,12 @@ class HrFormulaRule(models.Model):
         string='Appears on Payslip',
         default=True,
         help="Show this component on payslip document"
+    )
+
+    report_visible = fields.Boolean(
+        string='Visible in Reports',
+        default=False,
+        help="Include this component in reports and pivots."
     )
 
     is_visible_in_grid = fields.Boolean(

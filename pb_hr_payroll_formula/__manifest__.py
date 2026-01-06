@@ -61,6 +61,7 @@ License: LGPL-3
         'views/formula_rule_views.xml',
         'views/integration_views.xml',
         'views/payroll_import_views.xml',
+        'views/payslip_config_views.xml',
         # Wizards (actions used by views below)
         'wizards/wizard_views.xml',
         'wizards/multisheet_wizard_views.xml',
