@@ -197,6 +197,11 @@ class HrFormulaSampleData(models.Model):
 
                 discrepancies = 0
                 max_disc = 0
+                def _coerce_number(value):
+                    try:
+                        return float(value)
+                    except (TypeError, ValueError):
+                        return None
 
                 for code, exp_value in expected.items():
                     if exp_value is None:
@@ -207,8 +212,13 @@ class HrFormulaSampleData(models.Model):
                         continue
 
                     # Calculate discrepancy percentage
-                    base = abs(exp_value) if exp_value != 0 else 1
-                    disc = abs(exp_value - comp_value) / base * 100
+                    exp_num = _coerce_number(exp_value)
+                    comp_num = _coerce_number(comp_value)
+                    if exp_num is None or comp_num is None:
+                        disc = 0 if str(exp_value) == str(comp_value) else 100
+                    else:
+                        base = abs(exp_num) if exp_num != 0 else 1
+                        disc = abs(exp_num - comp_num) / base * 100
 
                     if disc > 0.01:  # More than 0.01% difference
                         discrepancies += 1

@@ -728,6 +728,71 @@ class HrFormulaRule(models.Model):
             result
         )
 
+        # Treat string literal comparisons as raw string checks (preserve text inputs).
+        def _quote_literal(value):
+            return repr(value)
+
+        def _replace_raw_eq(match):
+            key = match.group(1)
+            literal = match.group(2)
+            return f"raw_values.get('{key}') == {_quote_literal(literal)}"
+
+        def _replace_raw_ne(match):
+            key = match.group(1)
+            literal = match.group(2)
+            return f"raw_values.get('{key}') != {_quote_literal(literal)}"
+
+        def _replace_raw_eq_reverse(match):
+            literal = match.group(1)
+            key = match.group(2)
+            return f"{_quote_literal(literal)} == raw_values.get('{key}')"
+
+        def _replace_raw_ne_reverse(match):
+            literal = match.group(1)
+            key = match.group(2)
+            return f"{_quote_literal(literal)} != raw_values.get('{key}')"
+
+        result = re.sub(
+            r"values\.get\('([^']+)',\s*0(?:\.0)?\)\s*==\s*\"([^\"]*)\"",
+            _replace_raw_eq,
+            result
+        )
+        result = re.sub(
+            r"values\.get\('([^']+)',\s*0(?:\.0)?\)\s*==\s*'([^']*)'",
+            _replace_raw_eq,
+            result
+        )
+        result = re.sub(
+            r"values\.get\('([^']+)',\s*0(?:\.0)?\)\s*!=\s*\"([^\"]*)\"",
+            _replace_raw_ne,
+            result
+        )
+        result = re.sub(
+            r"values\.get\('([^']+)',\s*0(?:\.0)?\)\s*!=\s*'([^']*)'",
+            _replace_raw_ne,
+            result
+        )
+        result = re.sub(
+            r"\"([^\"]*)\"\s*==\s*values\.get\('([^']+)',\s*0(?:\.0)?\)",
+            _replace_raw_eq_reverse,
+            result
+        )
+        result = re.sub(
+            r"'([^']*)'\s*==\s*values\.get\('([^']+)',\s*0(?:\.0)?\)",
+            _replace_raw_eq_reverse,
+            result
+        )
+        result = re.sub(
+            r"\"([^\"]*)\"\s*!=\s*values\.get\('([^']+)',\s*0(?:\.0)?\)",
+            _replace_raw_ne_reverse,
+            result
+        )
+        result = re.sub(
+            r"'([^']*)'\s*!=\s*values\.get\('([^']+)',\s*0(?:\.0)?\)",
+            _replace_raw_ne_reverse,
+            result
+        )
+
         _logger.debug(f"Converted to Python: {result}")
 
         return result
@@ -1115,6 +1180,27 @@ class HrFormulaRule(models.Model):
                 for ref_code in values.keys():
                     if ref_code in python_code or f"'{ref_code}'" in python_code:
                         _logger.debug(f"  {ref_code} = {safe_context['values'].get(ref_code, 'NOT FOUND')}")
+
+                if '"' in (self.excel_formula or '') or "raw_values" in python_code:
+                    try:
+                        ref_codes = re.findall(r"(?:values|raw_values)\.get\('([^']+)'", python_code)
+                        ref_values = {
+                            code: {
+                                'raw': raw_values.get(code),
+                                'safe': safe_context['values'].get(code),
+                            }
+                            for code in ref_codes
+                        }
+                    except Exception:
+                        ref_codes = []
+                        ref_values = {}
+                    _logger.info(
+                        "Formula eval debug: code=%s excel=%s python=%s refs=%s",
+                        self.code,
+                        self.excel_formula,
+                        python_code,
+                        ref_values,
+                    )
 
                 result = eval(python_code, {"__builtins__": {}}, safe_context)
                 _logger.debug(f"  Result: {result}")

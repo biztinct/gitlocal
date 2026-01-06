@@ -160,18 +160,45 @@ class FormulaEvaluator:
         try:
             # Sanitize None -> 0 for arithmetic
             # Note: context parameter contains the values dict, we need to sanitize it
+            safe_context["raw_values"] = context
             safe_context["values"] = {
                 k: (0 if v is None else v) for k, v in context.items()
             }
 
             result = eval(python_formula, {"__builtins__": {}}, safe_context)
-            return float(result) if result is not None else 0.0
+            if result is None:
+                return 0.0
+            if isinstance(result, str):
+                return result
+            if isinstance(result, bool):
+                return float(result)
+            if isinstance(result, (int, float)):
+                return float(result)
+            try:
+                return float(result)
+            except (TypeError, ValueError):
+                return result
 
         except ZeroDivisionError:
             _logger.warning(f"Division by zero in formula: {python_formula}")
             return 0.0
 
         except Exception as e:
+            if '"' in python_formula or "raw_values" in python_formula:
+                try:
+                    import re
+                    keys = re.findall(r"(?:values|raw_values)\.get\('([^']+)'", python_formula)
+                    key_values = {k: context.get(k) for k in keys}
+                except Exception:
+                    keys = []
+                    key_values = {}
+                _logger.info(
+                    "Formula eval error: formula=%s keys=%s context=%s error=%s",
+                    python_formula,
+                    keys,
+                    key_values,
+                    e,
+                )
             raise FormulaEvaluationError(
                 f"Error evaluating '{python_formula}': {str(e)}"
             )
@@ -183,6 +210,7 @@ class FormulaEvaluator:
         context = {
             # Values dictionary for cell references
             'values': values,
+            'raw_values': values,
 
             # Math module
             'math': math,
