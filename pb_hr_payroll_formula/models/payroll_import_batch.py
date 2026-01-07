@@ -375,6 +375,7 @@ class HrPayrollImportBatch(models.Model):
             sheet_summaries.append({
                 'sheet_name': sheet_name,
                 'headers': headers,
+                'headers_meta': sheet_data.get('headers', []),
                 'data_rows': sheet_data.get('data_rows', []),
                 'primary_key': primary_key,
                 'match_count': match_count,
@@ -404,6 +405,14 @@ class HrPayrollImportBatch(models.Model):
             base_row = row.copy()
             for header, value in row.items():
                 base_row[f"{main_sheet['sheet_name']}|{header}"] = value
+            for header_info in main_sheet.get('headers_meta', []):
+                col_letter = header_info.get('column_letter')
+                header_value = header_info.get('value')
+                if not col_letter or not header_value:
+                    continue
+                value = row.get(header_value)
+                base_row[f"{main_sheet['sheet_name']}|{col_letter}"] = value
+                base_row[col_letter] = value
             merged_rows[pk_key] = base_row
 
         for sheet in sheet_summaries:
@@ -425,18 +434,32 @@ class HrPayrollImportBatch(models.Model):
             for pk_key, base_row in merged_rows.items():
                 aux_row = aux_map.get(pk_key)
                 if aux_row:
-                    for header, value in aux_row.items():
+                    for header in sheet['headers']:
                         if header == pk_header:
                             continue
+                        value = aux_row.get(header)
                         base_row[f"{sheet['sheet_name']}|{header}"] = value
                         if header not in base_row:
                             base_row[header] = value
+                    for header_info in sheet.get('headers_meta', []):
+                        col_letter = header_info.get('column_letter')
+                        header_value = header_info.get('value')
+                        if not col_letter or not header_value or header_value == pk_header:
+                            continue
+                        value = aux_row.get(header_value)
+                        base_row[f"{sheet['sheet_name']}|{col_letter}"] = value
                 else:
                     for header in sheet['headers']:
                         if header == pk_header:
                             continue
                         base_row.setdefault(f"{sheet['sheet_name']}|{header}", None)
                         base_row.setdefault(header, None)
+                    for header_info in sheet.get('headers_meta', []):
+                        col_letter = header_info.get('column_letter')
+                        header_value = header_info.get('value')
+                        if not col_letter or not header_value or header_value == pk_header:
+                            continue
+                        base_row.setdefault(f"{sheet['sheet_name']}|{col_letter}", None)
 
         header_set = set()
         for row in merged_rows.values():
@@ -1251,6 +1274,8 @@ class HrPayrollImportBatch(models.Model):
                         candidates.append(f"{rule.source_sheet_name}|{rule.name}")
                     if rule.code:
                         candidates.append(f"{rule.source_sheet_name}|{rule.code}")
+                    if rule.column_letter:
+                        candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
 
                 # Then try by rule code
                 if rule.code:
