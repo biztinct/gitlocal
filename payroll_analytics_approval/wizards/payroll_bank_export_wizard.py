@@ -325,7 +325,7 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
                 writer.writerow(row)
         
         filename = f"bank_export_{self.country}_{self.date_from.strftime('%Y%m%d')}.csv"
-        return output.getvalue().encode('utf-8'), filename
+        return output.getvalue().encode('utf-8-sig'), filename
     
     def _create_excel_file(self, data):
         """Create Excel file using xlsxwriter"""
