@@ -65,9 +65,12 @@
                 <field name="date_from"/>
                 <field name="date_to"/>
                 <field name="code"/>
+                <field name="component_type"/>
 
                 <!-- Filters for Quick Access -->
                 <separator/>
+                <filter string="Report Visible" name="report_visible"
+                        domain="[('report_visible','=',True)]"/>
                 <filter string="Current Month" name="current_month"
                         domain="[('date_to','&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
                                  ('date_to','&lt;', (context_today() + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]"/>
@@ -130,6 +133,8 @@
                             context="{'group_by':'category_id'}"/>
                     <filter string="Salary Code" name="group_code"
                             context="{'group_by':'code'}"/>
+                    <filter string="Component Type" name="group_component_type"
+                            context="{'group_by':'component_type'}"/>
                     <filter string="Contribution Register" name="group_register"
                             context="{'group_by':'register_id'}"/>
                     <filter string="Amount Type" name="group_amount_type"
