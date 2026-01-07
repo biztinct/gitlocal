@@ -154,7 +154,7 @@
                                       decoration-warning="has_circular_ref"
                                       decoration-success="column_type == 'formula'">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="column_letter" readonly="1" string="Col"/>
+                                    <field name="column_letter" string="Col"/>
                                     <field name="source_sheet_name" string="Section"/>
                                     <field name="name" string="Component"/>
                                     <field name="component_type" string="Category"/>
@@ -359,7 +359,7 @@
                               decoration-success="column_type == 'formula'"
                               decoration-info="column_type == 'input'">
                             <field name="sequence" widget="handle"/>
-                            <field name="column_letter" readonly="1" string="Col"/>
+                            <field name="column_letter" string="Col"/>
                             <field name="source_sheet_name" string="Section"/>
                             <field name="name" string="Component"/>
                             <field name="component_type" string="Category"/>

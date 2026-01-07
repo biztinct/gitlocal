@@ -51,9 +51,9 @@ class HrFormulaRule(models.Model):
     column_letter = fields.Char(
         string='Column Letter',
         compute='_compute_column_letter',
+        inverse='_inverse_column_letter',
         store=True,
-        readonly=True,
-        help="Auto-assigned Excel-style column letter (A, B, C...Z, AA, AB, etc.)"
+        help="Excel-style column letter (A, B, C...Z, AA, AB, etc.)"
     )
 
     sequence = fields.Integer(
@@ -408,6 +408,11 @@ class HrFormulaRule(models.Model):
                 else:
                     # Empty/new row - blank
                     record.column_letter = ''
+
+    def _inverse_column_letter(self):
+        for record in self:
+            value = (record.column_letter or '').strip().upper()
+            record.forced_column_letter = value or False
 
     @staticmethod
     def _index_to_letter(index):
@@ -1058,6 +1063,24 @@ class HrFormulaRule(models.Model):
             if record.column_type == 'input' and not record.data_source_field:
                 # Allow empty mapping during creation
                 pass
+
+    @api.constrains('column_letter', 'config_id')
+    def _check_unique_column_letter(self):
+        for config in self.mapped('config_id'):
+            seen = {}
+            for rule in config.rule_ids.filtered(lambda r: r.column_letter):
+                letter = (rule.column_letter or '').strip().upper()
+                if not letter:
+                    continue
+                existing = seen.get(letter)
+                if existing and existing.id != rule.id:
+                    current_name = rule.name or rule.code or _("(unnamed)")
+                    existing_name = existing.name or existing.code or _("(unnamed)")
+                    raise ValidationError(
+                        _("Column letter '%s' is already used by '%s' (conflicts with '%s').")
+                        % (letter, existing_name, current_name)
+                    )
+                seen[letter] = rule
 
     # ==========================================
     # EVALUATION
