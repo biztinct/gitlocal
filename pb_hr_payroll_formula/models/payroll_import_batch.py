@@ -1016,6 +1016,8 @@ class HrPayrollImportBatch(models.Model):
                 'amount': amount,
                 'total': amount,
                 'salary_rule_id': salary_rule.id if salary_rule else False,
+                'report_visible': rule.report_visible or False,
+                'component_type': rule.component_type or False,
             }
 
             line_vals_list.append(line_vals)

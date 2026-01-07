@@ -1228,7 +1228,10 @@ class HrPayslipRun(models.Model):
                 return str(int(num))
             return ('%f' % num).rstrip('0').rstrip('.')
 
-        all_lines = self.env['hr.payslip.line'].search([('slip_id', 'in', self.slip_ids.ids)], order='sequence,id')
+        line_domain = [('slip_id', 'in', self.slip_ids.ids)]
+        if 'report_visible' in self.env['hr.payslip.line']._fields:
+            line_domain.append(('report_visible', '=', True))
+        all_lines = self.env['hr.payslip.line'].search(line_domain, order='sequence,id')
         component_columns = []
         seen_keys = set()
         for line in all_lines:
@@ -1262,6 +1265,8 @@ class HrPayslipRun(models.Model):
 
             values_by_key = {}
             for line in slip.line_ids:
+                if 'report_visible' in line._fields and not line.report_visible:
+                    continue
                 key = _line_key(line)
                 if not key[1]:
                     continue

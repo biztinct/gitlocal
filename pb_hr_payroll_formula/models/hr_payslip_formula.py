@@ -305,6 +305,8 @@ class HrPayslipFormula(models.Model):
                 'salary_rule_id': salary_rule.id if salary_rule else False,
                 'contract_id': self.contract_id.id,
                 'employee_id': self.employee_id.id,
+                'report_visible': rule.report_visible or False,
+                'component_type': rule.component_type or False,
             }
             lines_to_create.append(line_data)
 

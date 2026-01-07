@@ -29,6 +29,7 @@ Technical Features:
     'website': 'https://www.yourcompany.com',
     'depends': [
         'om_hr_payroll',
+        'pb_hr_payroll_formula',
         'pb_hr_payroll_base',
         'pb_hr_fullandfinal',
         'pb_hr_govt',
