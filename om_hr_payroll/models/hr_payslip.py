@@ -1228,6 +1228,19 @@ class HrPayslipRun(models.Model):
                 return str(int(num))
             return ('%f' % num).rstrip('0').rstrip('.')
 
+        base_component_keys = {
+            ('code', 'MSNV'),
+            ('code', 'FULLNAME'),
+            ('code', 'UNIT'),
+            ('code', 'TYPEOFLABORCONTRACT'),
+            ('code', 'SUBJECTSARECOUNTEDASWORKINGOVERTIME'),
+            ('name', 'MSNV'),
+            ('name', 'FULL NAME'),
+            ('name', 'UNIT'),
+            ('name', 'TYPE OF LABOR CONTRACT'),
+            ('name', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'),
+        }
+
         line_domain = [('slip_id', 'in', self.slip_ids.ids)]
         if 'report_visible' in self.env['hr.payslip.line']._fields:
             line_domain.append(('report_visible', '=', True))
@@ -1238,7 +1251,7 @@ class HrPayslipRun(models.Model):
             key = _line_key(line)
             if not key[1] or key in seen_keys:
                 continue
-            if key[1] == 'MSNV':
+            if key in base_component_keys or key[1] == 'MSNV':
                 continue
             seen_keys.add(key)
             header = line.name or line.code or key[1]
@@ -1262,6 +1275,27 @@ class HrPayslipRun(models.Model):
         for slip in sorted_slips:
             employee = slip.employee_id
             contract = slip.contract_id
+
+            input_values = {}
+            if hasattr(slip, 'formula_input_values') and slip.formula_input_values:
+                try:
+                    input_values = json.loads(slip.formula_input_values or '{}')
+                except Exception:
+                    input_values = {}
+
+            def _normalize_key(value):
+                return ''.join(ch for ch in str(value).upper() if ch.isalnum())
+
+            def _lookup_input_value(keys):
+                for key in keys:
+                    if key in input_values:
+                        return input_values.get(key)
+                normalized_map = {_normalize_key(k): k for k in input_values.keys()}
+                for key in keys:
+                    normalized_key = _normalize_key(key)
+                    if normalized_key in normalized_map:
+                        return input_values.get(normalized_map[normalized_key])
+                return None
 
             values_by_key = {}
             for line in slip.line_ids:
@@ -1289,21 +1323,27 @@ class HrPayslipRun(models.Model):
                     if name:
                         string_values_by_key[('name', name)] = value
 
-            msnv = employee.employee_id or employee.barcode or employee.identification_id
+            msnv = _lookup_input_value(['MSNV'])
+            if not msnv:
+                msnv = employee.employee_id or employee.barcode or employee.identification_id
             if not msnv:
                 msnv = values_by_key.get(('code', 'MSNV')) or values_by_key.get(('name', 'MSNV'))
             msnv = _normalize_msnv(msnv)
-            full_name = employee.full_name_vn or employee.name or ''
-            unit = getattr(employee, 'division', False) or employee.department_id.name or employee.location or ''
+            full_name = _lookup_input_value(['FULLNAME', 'FULL NAME'])
+            if not full_name:
+                full_name = employee.full_name_vn or employee.name or ''
+            unit = _lookup_input_value(['UNIT'])
+            if not unit:
+                unit = getattr(employee, 'division', False) or employee.department_id.name or employee.location or ''
 
-            labor_type = ''
+            labor_type = _lookup_input_value(['TYPEOFLABORCONTRACT', 'TYPE OF LABOR CONTRACT']) or ''
             if contract:
                 if hasattr(contract, 'vietnam_contract_type') and contract.vietnam_contract_type:
                     labor_type = dict(contract._fields['vietnam_contract_type'].selection).get(contract.vietnam_contract_type, '')
                 elif contract.type_id:
                     labor_type = contract.type_id.name or ''
 
-            subjects_overtime = ''
+            subjects_overtime = _lookup_input_value(['SUBJECTSARECOUNTEDASWORKINGOVERTIME', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME']) or ''
             if contract:
                 if hasattr(contract, 'subjects_are_counted_as_working_overtime'):
                     subjects_overtime = contract.subjects_are_counted_as_working_overtime or ''
