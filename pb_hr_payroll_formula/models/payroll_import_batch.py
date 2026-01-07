@@ -1005,6 +1005,9 @@ class HrPayrollImportBatch(models.Model):
         # Store computed values in payslip
         payslip.formula_computed_values = json.dumps(computed_values)
         payslip.formula_computation_log = "\n".join(computation_log)
+        if 'report_visible_string_payload' in payslip._fields:
+            payload = payslip._build_report_visible_string_payload(rules, computed_values)
+            payslip.report_visible_string_payload = json.dumps(payload)
         if 'payslip_identifier_payload' in payslip._fields:
             payload = self._build_payslip_identifier_payload(rules, computed_values)
             payslip.payslip_identifier_payload = json.dumps(payload)
