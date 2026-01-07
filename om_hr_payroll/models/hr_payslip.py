@@ -1272,6 +1272,23 @@ class HrPayslipRun(models.Model):
                     continue
                 values_by_key[key] = values_by_key.get(key, 0.0) + (line.total or 0.0)
 
+            string_values_by_key = {}
+            if hasattr(slip, 'report_visible_string_payload') and slip.report_visible_string_payload:
+                try:
+                    payload_items = json.loads(slip.report_visible_string_payload or '[]')
+                except Exception:
+                    payload_items = []
+                for item in payload_items:
+                    value = item.get('value') if isinstance(item, dict) else None
+                    if value in (None, ''):
+                        continue
+                    code = (item.get('code') or '').strip().upper() if isinstance(item, dict) else ''
+                    name = (item.get('name') or '').strip().upper() if isinstance(item, dict) else ''
+                    if code:
+                        string_values_by_key[('code', code)] = value
+                    if name:
+                        string_values_by_key[('name', name)] = value
+
             msnv = employee.employee_id or employee.barcode or employee.identification_id
             if not msnv:
                 msnv = values_by_key.get(('code', 'MSNV')) or values_by_key.get(('name', 'MSNV'))
@@ -1299,7 +1316,12 @@ class HrPayslipRun(models.Model):
             row_values = [msnv, full_name, unit, labor_type, subjects_overtime]
 
             for key, _header in component_columns:
-                row_values.append(values_by_key.get(key, 0.0))
+                numeric_value = values_by_key.get(key, 0.0)
+                string_value = string_values_by_key.get(key)
+                if (numeric_value is None or abs(numeric_value) < 1e-9) and string_value not in (None, ''):
+                    row_values.append(string_value)
+                else:
+                    row_values.append(numeric_value)
 
             for col_idx, value in enumerate(row_values):
                 if col_idx == 0:
@@ -1307,7 +1329,10 @@ class HrPayslipRun(models.Model):
                 elif col_idx < 5:
                     worksheet.write_string(row_idx, col_idx, str(value) if value else '', text_fmt)
                 else:
-                    worksheet.write_number(row_idx, col_idx, value or 0.0, num_fmt)
+                    if isinstance(value, str):
+                        worksheet.write_string(row_idx, col_idx, value, text_fmt)
+                    else:
+                        worksheet.write_number(row_idx, col_idx, value or 0.0, num_fmt)
 
             row_idx += 1
 

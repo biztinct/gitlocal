@@ -52,6 +52,11 @@ class HrPayslipFormula(models.Model):
         readonly=True,
         help="Grouped component values for payslip printing."
     )
+    report_visible_string_payload = fields.Text(
+        string='Report Visible String Payload (JSON)',
+        readonly=True,
+        help="String values for report_visible components (used for exports)."
+    )
 
     has_formula_errors = fields.Boolean(
         string='Has Formula Errors',
@@ -109,6 +114,9 @@ class HrPayslipFormula(models.Model):
 
             payslip.formula_computed_values = json.dumps(computed_values, indent=2)
             payslip.formula_computation_log = '\n'.join(computation_log)
+            if 'report_visible_string_payload' in payslip._fields:
+                payload = payslip._build_report_visible_string_payload(rules, computed_values)
+                payslip.report_visible_string_payload = json.dumps(payload)
 
             # Create/update payslip lines
             payslip._create_payslip_lines_from_formulas(rules, computed_values)
@@ -184,6 +192,55 @@ class HrPayslipFormula(models.Model):
                 break
 
         return results, computation_log
+
+    def _build_report_visible_string_payload(self, rules, computed_values):
+        """Capture string values for report_visible components."""
+        self.ensure_one()
+
+        def coerce_numeric_string(value):
+            cleaned = value.strip().replace(' ', '')
+            if not cleaned:
+                return None
+            try:
+                if ',' in cleaned and '.' in cleaned:
+                    if cleaned.rfind(',') > cleaned.rfind('.'):
+                        cleaned = cleaned.replace('.', '').replace(',', '.')
+                    else:
+                        cleaned = cleaned.replace(',', '')
+                elif ',' in cleaned:
+                    parts = cleaned.split(',')
+                    if all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                    else:
+                        cleaned = cleaned.replace(',', '.')
+                elif '.' in cleaned:
+                    parts = cleaned.split('.')
+                    if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
+                        cleaned = ''.join(parts)
+                return float(cleaned)
+            except (ValueError, TypeError):
+                return None
+
+        payload = []
+        for rule in rules:
+            if not rule.report_visible:
+                continue
+            value = computed_values.get(rule.code)
+            if value is None and rule.column_letter:
+                value = computed_values.get(rule.column_letter)
+            if not isinstance(value, str):
+                continue
+            stripped = value.strip()
+            if not stripped:
+                continue
+            if coerce_numeric_string(stripped) is not None:
+                continue
+            payload.append({
+                'code': rule.code or '',
+                'name': rule.name or '',
+                'value': stripped,
+            })
+        return payload
 
     def _find_formula_config(self):
         """Find appropriate formula configuration for this payslip"""
