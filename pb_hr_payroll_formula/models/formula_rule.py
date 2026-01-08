@@ -653,30 +653,20 @@ class HrFormulaRule(models.Model):
         # Match CODE:CODE patterns (uppercase letters, 2+ chars each)
         result = re.sub(r'\b([A-Z]{2,}[A-Z0-9]*)\s*:\s*([A-Z]{2,}[A-Z0-9]*)\b', replace_code_range, result)
 
+        def _is_inside_quotes(text, position):
+            single_quotes = text[:position].count("'")
+            double_quotes = text[:position].count('"')
+            return (single_quotes % 2) == 1 or (double_quotes % 2) == 1
+
         # Replace cell references WITH row numbers (e.g., A1, AA1, B2), allow $ for absolute refs
-        # CRITICAL: Do NOT match if we're inside values.get('...', 0) patterns that were already created by range expansion
+        # CRITICAL: Do NOT match if we're inside quoted strings that were already created by range expansion
         _logger.info(f"  BEFORE cell ref replacement: {result[:200]}...")
         def replace_ref_with_row(match):
             matched_text = match.group(0)
-            # Check if this match is inside a values.get('...', 0) call
-            # Look backwards to find the nearest values.get(' before our match
             start_pos = match.start()
-            before_text = result[:start_pos]
-
-            if "values.get('" in before_text:
-                # Find the position of the last values.get(' before our match
-                last_get_open = before_text.rfind("values.get('")
-                # Now search FORWARD from that position to find the corresponding closing ')
-                text_from_get = result[last_get_open:]
-                close_offset = text_from_get.find("')")
-
-                if close_offset != -1:
-                    # Calculate the absolute position of the closing ')
-                    close_pos = last_get_open + close_offset + 2  # +2 to get past the ')
-                    # If our match is between the opening and closing, we're inside a get() call
-                    if start_pos < close_pos:
-                        _logger.info(f"  Skipping cell ref '{matched_text}' - inside values.get() call")
-                        return match.group(0)  # Return unchanged
+            if _is_inside_quotes(result, start_pos):
+                _logger.info(f"  Skipping cell ref '{matched_text}' - inside quoted string")
+                return match.group(0)  # Return unchanged
 
             col_letter = match.group(1)
             code = column_map.get(col_letter)
@@ -693,15 +683,9 @@ class HrFormulaRule(models.Model):
         # Replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
         # But NOT if they're part of a string like "YES" OR inside already-converted values.get()
         def replace_ref_no_row(match):
-            # Check if this match is inside a values.get('...', 0) call
             start_pos = match.start()
-            before_text = result[:start_pos]
-            if "values.get('" in before_text:
-                last_get_open = before_text.rfind("values.get('")
-                last_quote_close = before_text.rfind("')")
-                # If we found a get(' after the last '), we're inside a get call
-                if last_get_open > last_quote_close:
-                    return match.group(0)  # Return unchanged
+            if _is_inside_quotes(result, start_pos):
+                return match.group(0)  # Return unchanged
 
             col_letter = match.group(1)
             code = column_map.get(col_letter)
@@ -721,15 +705,9 @@ class HrFormulaRule(models.Model):
         # This handles formulas that use codes directly instead of column letters
         # IMPORTANT: Only replace codes that are NOT already inside values.get('...', 0) calls
         def replace_code_ref(match):
-            # Check if this match is inside a values.get('...', 0) call
             start_pos = match.start()
-            before_text = result[:start_pos]
-            if "values.get('" in before_text:
-                last_get_open = before_text.rfind("values.get('")
-                last_quote_close = before_text.rfind("')")
-                # If we found a get(' after the last '), we're inside a get call
-                if last_get_open > last_quote_close:
-                    return match.group(0)  # Return unchanged
+            if _is_inside_quotes(result, start_pos):
+                return match.group(0)  # Return unchanged
 
             code = match.group(1)
             if code in column_map.values():
