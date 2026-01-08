@@ -443,9 +443,10 @@ class HrFormulaRule(models.Model):
                 # Get column mapping from config
                 column_map = {}
                 for rule in record.config_id.rule_ids:
-                    if rule.column_letter:
+                    if rule.column_letter and rule.code:
                         column_map[rule.column_letter] = rule.code
 
+                _logger.debug(f"Column map has {len(column_map)} entries for {record.code}")
                 # Convert formula
                 python_code = record._convert_excel_to_python(
                     record.excel_formula,
@@ -543,10 +544,47 @@ class HrFormulaRule(models.Model):
                 try:
                     start_idx = all_codes_ordered.index(start_code)
                     end_idx = all_codes_ordered.index(end_code)
-                except ValueError:
-                    # Fallback: just return the two endpoints
-                    result = f"values.get('{start_code}', 0), values.get('{end_code}', 0)"
-                    _logger.debug(f"  Range fallback result (2 values): {result}")
+                except ValueError as e:
+                    # CRITICAL FIX: When columns aren't in the map, we must still generate valid Python code
+                    # Check if start_ref and end_ref look like column letters
+                    parts = []
+                    if start_ref not in column_map.values() and start_ref not in column_map:
+                        _logger.warning(f"  Column reference '{start_ref}' not found in column_map - will expand as letter range if possible")
+                    if end_ref not in column_map.values() and end_ref not in column_map:
+                        _logger.warning(f"  Column reference '{end_ref}' not found in column_map - will expand as letter range if possible")
+
+                    # Try to expand as letter range even if not in column_map
+                    # This handles constants and forced columns that might not be in the main map
+                    try:
+                        from ..formula_engine.column_manager import ColumnManager
+                        # Check if both refs look like column letters (1-3 uppercase letters)
+                        if re.match(r'^[A-Z]{1,3}$', start_ref) and re.match(r'^[A-Z]{1,3}$', end_ref):
+                            start_idx = ColumnManager.letter_to_index(start_ref)
+                            end_idx = ColumnManager.letter_to_index(end_ref)
+                            if start_idx > end_idx:
+                                start_idx, end_idx = end_idx, start_idx
+                            for i in range(start_idx, end_idx + 1):
+                                letter = ColumnManager.index_to_letter(i)
+                                code = column_map.get(letter, letter)  # Use letter as code if not mapped
+                                parts.append(f"values.get('{code}', 0)")
+                            result = ', '.join(parts)
+                            _logger.debug(f"  Range expansion via letter fallback ({len(parts)} values): {result[:100]}...")
+                            return result
+                    except Exception as letter_err:
+                        _logger.error(f"  Letter-based fallback failed: {letter_err}")
+
+                    # Last resort: return just the start and end that we know about
+                    if start_code in all_codes_ordered:
+                        parts.append(f"values.get('{start_code}', 0)")
+                    if end_code in all_codes_ordered and end_code != start_code:
+                        parts.append(f"values.get('{end_code}', 0)")
+
+                    if not parts:
+                        # Absolute last resort: create placeholder for unknowns
+                        result = f"values.get('{start_ref}', 0), values.get('{end_ref}', 0)"
+                    else:
+                        result = ', '.join(parts)
+                    _logger.warning(f"  Range fallback result with missing columns ({len(parts)} values): {result}")
                     return result
 
                 # Get all codes in range
@@ -571,8 +609,9 @@ class HrFormulaRule(models.Model):
                 letter = ColumnManager.index_to_letter(i)
                 code = column_map.get(letter, letter)
                 parts.append(f"values.get('{code}', 0)")
+                _logger.debug(f"    Expanded {letter} -> code={code}")
             result = ', '.join(parts)
-            _logger.debug(f"  Range expansion result ({len(parts)} values): {result[:100]}...")
+            _logger.info(f"  NORMAL PATH: Range {start_ref}:{end_ref} expanded to {len(parts)} values: {result[:200]}...")
             return result
 
         # Convert ranges with row numbers (e.g., A1:C1, $A$1:$C$1)
@@ -615,23 +654,63 @@ class HrFormulaRule(models.Model):
         result = re.sub(r'\b([A-Z]{2,}[A-Z0-9]*)\s*:\s*([A-Z]{2,}[A-Z0-9]*)\b', replace_code_range, result)
 
         # Replace cell references WITH row numbers (e.g., A1, AA1, B2), allow $ for absolute refs
+        # CRITICAL: Do NOT match if we're inside values.get('...', 0) patterns that were already created by range expansion
+        _logger.info(f"  BEFORE cell ref replacement: {result[:200]}...")
         def replace_ref_with_row(match):
+            matched_text = match.group(0)
+            # Check if this match is inside a values.get('...', 0) call
+            # Look backwards to find the nearest values.get(' before our match
+            start_pos = match.start()
+            before_text = result[:start_pos]
+
+            if "values.get('" in before_text:
+                # Find the position of the last values.get(' before our match
+                last_get_open = before_text.rfind("values.get('")
+                # Now search FORWARD from that position to find the corresponding closing ')
+                text_from_get = result[last_get_open:]
+                close_offset = text_from_get.find("')")
+
+                if close_offset != -1:
+                    # Calculate the absolute position of the closing ')
+                    close_pos = last_get_open + close_offset + 2  # +2 to get past the ')
+                    # If our match is between the opening and closing, we're inside a get() call
+                    if start_pos < close_pos:
+                        _logger.info(f"  Skipping cell ref '{matched_text}' - inside values.get() call")
+                        return match.group(0)  # Return unchanged
+
             col_letter = match.group(1)
             code = column_map.get(col_letter)
             if code:
+                _logger.info(f"  Converting cell ref '{matched_text}' -> values.get('{code}', 0)")
                 return f"values.get('{code}', 0)"
-            return "0"
+            # If not in column_map, try using letter as code (for constants with forced_column_letter)
+            _logger.warning(f"  Column letter '{col_letter}' from cell ref '{matched_text}' not in column_map, using letter as code")
+            return f"values.get('{col_letter}', 0)"
 
         result = re.sub(r'\$?([A-Z]+)\$?(\d+)', replace_ref_with_row, result)
+        _logger.info(f"  AFTER cell ref replacement: {result[:200]}...")
 
         # Replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
-        # But NOT if they're part of a string like "YES"
+        # But NOT if they're part of a string like "YES" OR inside already-converted values.get()
         def replace_ref_no_row(match):
+            # Check if this match is inside a values.get('...', 0) call
+            start_pos = match.start()
+            before_text = result[:start_pos]
+            if "values.get('" in before_text:
+                last_get_open = before_text.rfind("values.get('")
+                last_quote_close = before_text.rfind("')")
+                # If we found a get(' after the last '), we're inside a get call
+                if last_get_open > last_quote_close:
+                    return match.group(0)  # Return unchanged
+
             col_letter = match.group(1)
             code = column_map.get(col_letter)
             if code:
                 return f"values.get('{code}', 0)"
-            return "0"
+            # If column letter not in map, try using the letter itself as code
+            # This handles constants and forced columns (ZA, ZB, etc.) that might not be in column_map
+            _logger.warning(f"Standalone column letter '{col_letter}' not found in column_map - using letter as code")
+            return f"values.get('{col_letter}', 0)"
 
         # Match column letters that are standalone (not part of function names, strings, or already converted)
         # Negative lookbehind: not preceded by letter, underscore, or quote
@@ -642,6 +721,16 @@ class HrFormulaRule(models.Model):
         # This handles formulas that use codes directly instead of column letters
         # IMPORTANT: Only replace codes that are NOT already inside values.get('...', 0) calls
         def replace_code_ref(match):
+            # Check if this match is inside a values.get('...', 0) call
+            start_pos = match.start()
+            before_text = result[:start_pos]
+            if "values.get('" in before_text:
+                last_get_open = before_text.rfind("values.get('")
+                last_quote_close = before_text.rfind("')")
+                # If we found a get(' after the last '), we're inside a get call
+                if last_get_open > last_quote_close:
+                    return match.group(0)  # Return unchanged
+
             code = match.group(1)
             if code in column_map.values():
                 return f"values.get('{code}', 0)"
