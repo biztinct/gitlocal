@@ -343,7 +343,11 @@ class HrPayrollImportBatch(models.Model):
                             raw_data[col_letter] = row[col_idx]
 
             # Extract key fields for matching
-            employee_code = self._normalize_code(self._extract_field(raw_data, ['employee_code', 'emp_code', 'code', 'employee_id', 'emp_id', 'id']))
+            employee_code = self._normalize_code(self._extract_field(raw_data, [
+                'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
+                'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
+                'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
+            ]))
             employee_name = self._extract_field(raw_data, ['employee_name', 'name', 'full_name', 'emp_name'])
             employee_email = self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
 
@@ -520,34 +524,82 @@ class HrPayrollImportBatch(models.Model):
         Returns employee record or False.
         """
         Employee = self.env['hr.employee']
+        raw_data = line.get_raw_data() if line else {}
+        employee_name = line.employee_name or self._extract_field(raw_data, ['employee_name', 'name', 'full_name', 'emp_name'])
+        employee_email = line.employee_email or self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
+        employee_code = line.employee_code or self._extract_field(raw_data, [
+            'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
+            'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
+            'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
+        ])
+        employee_code = self._normalize_code(employee_code) if employee_code else False
+        id_no = self._extract_field(raw_data, [
+            'id_no', 'id no', 'idno', 'id_number', 'id number', 'identification_id', 'identity'
+        ])
+        id_no = self._normalize_code(id_no) if id_no else False
+        phone = self._extract_field(raw_data, [
+            'work_phone', 'work phone', 'phone', 'phone_number', 'phone number',
+            'mobile', 'mobile_phone', 'mobile phone', 'cell', 'cellphone', 'contact', 'contact_number'
+        ])
+        phone = self._normalize_phone(phone)
+
+        base_domain = []
+        if self.company_id:
+            base_domain.append(('company_id', '=', self.company_id.id))
 
         # Try matching by employee code first
-        if self.match_by_code and line.employee_code:
-            code = self._normalize_code(line.employee_code)
-            employee = Employee.search([
+        if self.match_by_code and employee_code:
+            code_domain = [
                 '|',
                 '|',
-                ('identification_id', '=', code),
-                ('barcode', '=', code),
-                ('employee_id', '=', code),
-            ], limit=1)
+                ('identification_id', '=', employee_code),
+                ('barcode', '=', employee_code),
+                ('employee_id', '=', employee_code),
+            ]
+            employee = Employee.search(code_domain + base_domain, limit=1)
+            if employee:
+                return employee
+
+        if id_no:
+            employee = Employee.search([('identification_id', '=', id_no)] + base_domain, limit=1)
             if employee:
                 return employee
 
         # Try matching by email
-        if self.match_by_email and line.employee_email:
+        if self.match_by_email and employee_email:
             employee = Employee.search([
-                ('work_email', '=ilike', line.employee_email)
-            ], limit=1)
+                ('work_email', '=ilike', employee_email)
+            ] + base_domain, limit=1)
             if employee:
                 return employee
 
             # Also check private email
             employee = Employee.search([
-                ('private_email', '=ilike', line.employee_email)
-            ], limit=1)
+                ('private_email', '=ilike', employee_email)
+            ] + base_domain, limit=1)
             if employee:
                 return employee
+
+        if phone:
+            phone_domain = []
+            if 'work_phone' in Employee._fields:
+                phone_domain.append(('work_phone', 'ilike', phone))
+            if 'mobile_phone' in Employee._fields:
+                phone_domain.append(('mobile_phone', 'ilike', phone))
+            if 'phone' in Employee._fields:
+                phone_domain.append(('phone', 'ilike', phone))
+            if phone_domain:
+                domain = phone_domain[0]
+                for clause in phone_domain[1:]:
+                    domain = ['|', domain, clause]
+                employee = Employee.search(domain + base_domain, limit=1)
+                if employee:
+                    return employee
+
+        if employee_name:
+            candidates = Employee.search([('name', '=ilike', employee_name)] + base_domain, limit=2)
+            if len(candidates) == 1:
+                return candidates[0]
 
         return False
 
@@ -596,9 +648,14 @@ class HrPayrollImportBatch(models.Model):
                     # Step 1: Ensure employee exists
                     employee = line.employee_id
                     if not employee and line.is_new_employee and self.auto_create_employees:
-                        employee = self._create_employee(line)
-                        created_employees |= employee
-                        line.employee_id = employee.id
+                        employee = self._find_employee(line)
+                        if employee:
+                            line.employee_id = employee.id
+                            line.is_new_employee = False
+                        else:
+                            employee = self._create_employee(line)
+                            created_employees |= employee
+                            line.employee_id = employee.id
 
                     if not employee:
                         line.state = 'error'
@@ -751,7 +808,9 @@ class HrPayrollImportBatch(models.Model):
         updates = {}
 
         emp_code = self._extract_field(raw_data, [
-            'employee_code', 'emp_code', 'emp code', 'emp. code', 'employee_id', 'emp_id'
+            'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
+            'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
+            'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
         ])
         if not emp_code and line and line.employee_code:
             emp_code = line.employee_code
@@ -775,6 +834,16 @@ class HrPayrollImportBatch(models.Model):
         email = self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
         if email:
             updates['work_email'] = email
+
+        phone = self._extract_field(raw_data, [
+            'work_phone', 'work phone', 'phone', 'phone_number', 'phone number',
+            'mobile', 'mobile_phone', 'mobile phone', 'cell', 'cellphone', 'contact', 'contact_number'
+        ])
+        if phone:
+            if 'work_phone' in employee._fields and not employee.work_phone:
+                updates['work_phone'] = phone
+            if 'mobile_phone' in employee._fields and not employee.mobile_phone:
+                updates['mobile_phone'] = phone
 
         division = self._extract_field(raw_data, ['division'])
         if division and 'division' in employee._fields:
@@ -1339,10 +1408,11 @@ class HrPayrollImportBatch(models.Model):
 
     def _find_primary_key_header(self, headers):
         candidates = [
-            'employee_code', 'emp_code', 'emp code', 'emp. code',
-            'employee id', 'employee_id', 'emp id', 'empid',
+            'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
+            'employee id', 'employee_id', 'emp id', 'empid', 'employee no', 'employee number',
+            'staff id', 'staff code',
             'id no', 'id_no', 'id',
-            'msnv', 'ma so nhan vien',
+            'msnv', 'ma nv', 'manv', 'ma so nhan vien',
         ]
         for candidate in candidates:
             target = self._normalize_header_key(candidate)
@@ -1394,6 +1464,13 @@ class HrPayrollImportBatch(models.Model):
             return str(value).strip()
         except Exception:
             return str(value)
+
+    def _normalize_phone(self, value):
+        """Normalize phone number for matching"""
+        if not value:
+            return False
+        digits = ''.join(ch for ch in str(value) if ch.isdigit())
+        return digits or False
 
     def _log(self, message):
         """Add message to processing log"""
