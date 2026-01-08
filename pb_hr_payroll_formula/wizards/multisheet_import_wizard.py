@@ -578,13 +578,17 @@ class MultiSheetImportWizard(models.TransientModel):
                     )
                 for const in sheet_constants:
                     cell_ref = const.get('original_cell')
-                    if not cell_ref or cell_ref in constant_cell_mapping:
+                    if not cell_ref:
+                        continue
+                    sheet_key = self._normalize_sheet_key(sheet_line.sheet_name)
+                    mapping_key = (sheet_key, cell_ref)
+                    if mapping_key in constant_cell_mapping:
                         continue
                     new_col_letter = self._generate_extended_column_letter(constant_index)
                     constant_index += 1
                     value = const.get('value')
                     parsed_value, _was_pct = self._parse_percentage_value(value)
-                    constant_cell_mapping[cell_ref] = new_col_letter
+                    constant_cell_mapping[mapping_key] = new_col_letter
                     constant_lines.append({
                         'wizard_id': self.id,
                         'sheet_line_id': sheet_line.id,
@@ -605,10 +609,15 @@ class MultiSheetImportWizard(models.TransientModel):
                     })
 
             if constant_cell_mapping:
-                for ctx in sheet_context.values():
+                for sheet_line in selected_sheets:
+                    ctx = sheet_context[sheet_line.id]
                     for col_letter, info in ctx['formula_columns'].items():
                         formula = info.get('formula', '')
-                        updated = self._update_formula_references(formula, constant_cell_mapping)
+                        updated = self._update_formula_references(
+                            formula,
+                            constant_cell_mapping,
+                            sheet_name=sheet_line.sheet_name,
+                        )
                         if updated != formula:
                             info['formula'] = updated
 
@@ -1042,8 +1051,12 @@ class MultiSheetImportWizard(models.TransientModel):
             )
             for idx, const in enumerate(constant_selections):
                 cell_ref = const.constant_cell_ref
-                if cell_ref and cell_ref not in constant_placeholder_mapping:
-                    constant_placeholder_mapping[cell_ref] = f"__CONST_{idx}__"
+                if not cell_ref:
+                    continue
+                sheet_key = self._normalize_sheet_key(const.sheet_line_id.sheet_name)
+                mapping_key = (sheet_key, cell_ref)
+                if mapping_key not in constant_placeholder_mapping:
+                    constant_placeholder_mapping[mapping_key] = f"__CONST_{idx}__"
 
             # Get sheets in append order
             ordered_sheets = self.append_order_ids.sorted('append_sequence')
@@ -1082,7 +1095,11 @@ class MultiSheetImportWizard(models.TransientModel):
                 if constant_placeholder_mapping:
                     for col_letter, info in formula_columns.items():
                         formula = info.get('formula', '')
-                        updated = self._update_formula_references(formula, constant_placeholder_mapping)
+                        updated = self._update_formula_references(
+                            formula,
+                            constant_placeholder_mapping,
+                            sheet_name=sheet_line.sheet_name,
+                        )
                         if updated != formula:
                             info['formula'] = updated
 
@@ -1149,7 +1166,9 @@ class MultiSheetImportWizard(models.TransientModel):
                         column_mapping[(sheet_key, constant_key)] = new_col_letter
                     column_mapping[(sheet_key, col_sel.column_index)] = new_col_letter
                     if col_sel.constant_cell_ref:
-                        placeholder_token = constant_placeholder_mapping.get(col_sel.constant_cell_ref)
+                        placeholder_token = constant_placeholder_mapping.get(
+                            (sheet_key, col_sel.constant_cell_ref)
+                        )
                         if placeholder_token:
                             placeholder_to_final[f"{placeholder_token}2"] = f"{new_col_letter}2"
 
@@ -2444,37 +2463,63 @@ class MultiSheetImportWizard(models.TransientModel):
         match = re.match(r'^\$?([A-Za-z]+)', str(cell_ref).strip())
         return match.group(1).upper() if match else ''
 
-    def _update_formula_references(self, formula, cell_mapping):
+    def _update_formula_references(self, formula, cell_mapping, sheet_name=None):
         """
         Update formula to replace original cell references with new column letters.
-        e.g., {'CE3': 'ZA'} -> replaces $CE$3 or CE3 with ZA2
+
+        Accepts either:
+        - {'CE3': 'ZA'} -> replaces $CE$3 or CE3 with ZA2
+        - {('sheet_key', 'CE3'): 'ZA'} -> replace only within that sheet context
         """
         import re
 
         if not formula or not cell_mapping:
             return formula
 
-        updated_formula = formula
-        sorted_refs = sorted(cell_mapping.keys(), key=len, reverse=True)
+        sheet_key = self._normalize_sheet_key(sheet_name) if sheet_name else None
+        mapping_by_sheet = {}
+        global_mapping = {}
 
-        for original_ref in sorted_refs:
-            new_col = cell_mapping[original_ref]
-            cell_match = re.match(r'^([A-Za-z]+)(\d+)$', original_ref)
-            if not cell_match:
-                continue
+        for key, new_col in cell_mapping.items():
+            if isinstance(key, tuple) and len(key) == 2:
+                map_sheet, cell_ref = key
+                map_sheet = self._normalize_sheet_key(map_sheet)
+                mapping_by_sheet.setdefault(map_sheet, {})[str(cell_ref).upper()] = new_col
+            else:
+                global_mapping[str(key).upper()] = new_col
 
-            col_letters = cell_match.group(1)
-            row_num = cell_match.group(2)
-            pattern = (
-                r"(?<![A-Za-z0-9_])"
-                r"(?:'[^']+'!|[A-Za-z0-9_]+!)?"
-                r"\$?" + col_letters + r"\$?" + row_num +
-                r"(?![0-9A-Za-z_])"
-            )
-            replacement = f"{new_col}2"
-            updated_formula = re.sub(pattern, replacement, updated_formula, flags=re.IGNORECASE)
+        pattern = re.compile(
+            r"(?<![A-Za-z0-9_])"
+            r"(?:(?P<sheet>'[^']+'|[A-Za-z0-9_\-]+)!)?"
+            r"\$?(?P<col>[A-Za-z]+)\$?(?P<row>\d+)"
+            r"(?![0-9A-Za-z_])"
+        )
 
-        return updated_formula
+        def replace_match(match):
+            sheet_token = match.group('sheet')
+            col_letters = match.group('col').upper()
+            row_num = match.group('row')
+            cell_ref = f"{col_letters}{row_num}"
+
+            target_map = None
+            if sheet_token:
+                sheet_label = sheet_token
+                if sheet_label.startswith("'") and sheet_label.endswith("'"):
+                    sheet_label = sheet_label[1:-1]
+                sheet_label = self._normalize_sheet_key(sheet_label)
+                target_map = mapping_by_sheet.get(sheet_label)
+            elif sheet_key:
+                target_map = mapping_by_sheet.get(sheet_key)
+
+            new_col = None
+            if target_map:
+                new_col = target_map.get(cell_ref)
+            if not new_col:
+                new_col = global_mapping.get(cell_ref)
+
+            return f"{new_col}2" if new_col else match.group(0)
+
+        return pattern.sub(replace_match, formula)
 
     # ==========================================
     # STEP 3: REVIEW COMPONENTS
