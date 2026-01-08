@@ -117,6 +117,7 @@
                 <field name="date_from"/>
                 <field name="date_to"/>
                 <field name="salary_structure_name"/>
+                <field name="approval_title"/>
                 
                 <templates>
                     <t t-name="kanban-box">
@@ -125,7 +126,7 @@
                                 <div class="o_kanban_record_top">
                                     <div class="o_kanban_record_headings">
                                         <strong class="o_kanban_record_title">
-                                            <field name="period_name"/>
+                                            <field name="approval_title"/>
                                         </strong>
                                         <div class="o_kanban_record_subtitle">
                                             <field name="country"/> • <field name="date_from"/> to <field name="date_to"/>
