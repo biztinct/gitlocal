@@ -571,10 +571,14 @@ class MultiSheetImportWizard(models.TransientModel):
                         constant_scan_start,
                         ctx.get('formula_row') or ctx['sheet_data'].get('data_start_row', 1),
                         ctx.get('header_map') or {},
+                        ctx.get('data_sheet'),
                     )
                 else:
                     sheet_constants = self._collect_constants_for_sheet(
-                        ctx['formula_sheet'], ctx['sheet_data'], ctx['formula_columns']
+                        ctx['formula_sheet'],
+                        ctx['sheet_data'],
+                        ctx['formula_columns'],
+                        ctx.get('data_sheet'),
                     )
                 for const in sheet_constants:
                     cell_ref = const.get('original_cell')
@@ -1717,6 +1721,38 @@ class MultiSheetImportWizard(models.TransientModel):
         except ValueError:
             return 0.0, False
 
+    def _evaluate_constant_formula(self, formula):
+        if not formula or not isinstance(formula, str):
+            return None
+        expr = formula.strip()
+        if not expr.startswith('='):
+            return None
+        expr = expr[1:]
+        import re
+        if re.search(r'[A-Za-z_]', expr):
+            return None
+        expr = re.sub(r'(\d+(?:\.\d+)?)\s*%', r'(\1/100)', expr)
+        if re.search(r'[^0-9\.\+\-\*\/\^\(\)\s]', expr):
+            return None
+        expr = expr.replace('^', '**')
+        try:
+            return eval(expr, {"__builtins__": {}}, {})
+        except Exception:
+            return None
+
+    def _get_constant_cell_value(self, formula_sheet, data_sheet, row_num, col_idx):
+        cell = formula_sheet.cell(row=row_num, column=col_idx)
+        value = cell.value
+        if isinstance(value, str) and value.startswith('='):
+            if data_sheet:
+                data_value = data_sheet.cell(row=row_num, column=col_idx).value
+                if data_value is not None:
+                    return data_value
+            evaluated = self._evaluate_constant_formula(value)
+            if evaluated is not None:
+                return evaluated
+        return value
+
     def _get_fill_rgb(self, cell):
         fill = cell.fill
         if not fill or not fill.patternType or fill.patternType == 'none':
@@ -2015,7 +2051,7 @@ class MultiSheetImportWizard(models.TransientModel):
             'formula_row': formula_row,
         }
 
-    def _detect_blue_constant_cells_color_coded(self, sheet, header_row, formula_row, header_map):
+    def _detect_blue_constant_cells_color_coded(self, sheet, header_row, formula_row, header_map, data_sheet=None):
         """
         Detect blue font constants below header block up to formula row.
 
@@ -2043,7 +2079,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     continue
                 seen_cells.add(cell_ref)
 
-                decimal_value, was_percentage = self._parse_percentage_value(cell.value)
+                value = self._get_constant_cell_value(sheet, data_sheet, row_num, col_idx)
+                decimal_value, was_percentage = self._parse_percentage_value(value)
                 header_label = header_map.get(col_letter)
                 name = f"Constant {header_label}" if header_label else f"Constant {col_letter}"
 
@@ -2065,16 +2102,16 @@ class MultiSheetImportWizard(models.TransientModel):
         )
         return blue_constants
 
-    def _collect_constants_for_sheet(self, formula_sheet, sheet_data, formula_columns):
+    def _collect_constants_for_sheet(self, formula_sheet, sheet_data, formula_columns, data_sheet=None):
         """Collect constant definitions from a sheet using color and formula scans."""
         header_row = sheet_data.get('header_row', 1)
         data_start_row = sheet_data.get('data_start_row', header_row + 1)
 
-        constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row)
+        constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row, data_sheet)
         scan_up_to_row = data_start_row + 2
-        blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row)
+        blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row, data_sheet)
         formula_referenced = self._detect_formula_referenced_constants(
-            formula_columns, formula_sheet, header_row
+            formula_columns, formula_sheet, header_row, data_sheet
         )
 
         constants = []
@@ -2088,7 +2125,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
         return constants
 
-    def _detect_blue_constant_cells(self, sheet, scan_up_to_row):
+    def _detect_blue_constant_cells(self, sheet, scan_up_to_row, data_sheet=None):
         """
         Detect cells with blue font color that contain constant values.
 
@@ -2226,7 +2263,8 @@ class MultiSheetImportWizard(models.TransientModel):
                 # Check if cell has blue font
                 if is_blue:
                     # Parse the value (handles percentages)
-                    decimal_value, was_percentage = self._parse_percentage_value(cell.value)
+                    value = self._get_constant_cell_value(sheet, data_sheet, row_num, col_idx)
+                    decimal_value, was_percentage = self._parse_percentage_value(value)
 
                     # Generate base name (ConstantA, ConstantB, etc.)
                     base_name = generate_constant_name(constant_index)
@@ -2260,7 +2298,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
         return blue_constants
 
-    def _detect_colored_constant_pairs(self, sheet, header_row):
+    def _detect_colored_constant_pairs(self, sheet, header_row, data_sheet=None):
         """
         Detect red/green colored cell pairs that represent constants.
 
@@ -2367,7 +2405,12 @@ class MultiSheetImportWizard(models.TransientModel):
 
                 if is_red_color(cell_left) and is_green_color(cell_right):
                     name = cell_left.value
-                    value = cell_right.value
+                    value = self._get_constant_cell_value(
+                        sheet,
+                        data_sheet,
+                        row_num,
+                        col_idx + 1,
+                    )
 
                     if name is not None and value is not None:
                         value_col_letter = get_column_letter(col_idx + 1)
@@ -2384,7 +2427,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
         return constant_pairs
 
-    def _detect_formula_referenced_constants(self, formula_columns, sheet, header_row):
+    def _detect_formula_referenced_constants(self, formula_columns, sheet, header_row, data_sheet=None):
         """
         Scan formulas to find cell references above header row that might be constants.
         This catches constants like $CF$3 that may not have been detected by color.
@@ -2414,8 +2457,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
                 try:
                     col_idx = column_index_from_string(col_match)
-                    cell = sheet.cell(row=row_num, column=col_idx)
-                    value = cell.value
+                    value = self._get_constant_cell_value(sheet, data_sheet, row_num, col_idx)
 
                     if value is None:
                         continue
