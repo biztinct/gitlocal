@@ -242,8 +242,11 @@ class FormulaImportWizard(models.TransientModel):
             content = base64.b64decode(self.import_file)
 
             # Load workbook twice: once for values, once for formulas
+            data_workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=True)
+            data_sheet = data_workbook.active
             formula_workbook = openpyxl.load_workbook(io.BytesIO(content), data_only=False)
             formula_sheet = formula_workbook.active
+            sheet = data_sheet
 
         except ImportError:
             raise UserError(_("openpyxl library required. Install with: pip install openpyxl"))
@@ -326,16 +329,16 @@ class FormulaImportWizard(models.TransientModel):
         # Detect colored constant pairs (red label + green value)
         # IMPORTANT: Use formula_sheet (data_only=False) to preserve color information
         # The 'sheet' variable is from data_only=True which strips formatting
-        constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row)
+        constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row, data_sheet)
 
         # Detect blue font color constants (percentages and other values)
         # Scan up to data_start_row + 2 to catch constants in sub-header rows
         scan_up_to_row = data_start_row + 2  # Include potential sub-header rows
-        blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row)
+        blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row, data_sheet)
 
         # Also scan formulas to find referenced cells above header row that weren't detected by color
         formula_referenced_constants = self._detect_formula_referenced_constants(
-            formula_columns, formula_sheet, header_row
+            formula_columns, formula_sheet, header_row, data_sheet
         )
 
         # Add any formula-referenced constants not already detected by color
@@ -732,7 +735,7 @@ class FormulaImportWizard(models.TransientModel):
 
         constant_scan_start = max(1, header_block_start - 1)
         constant_pairs = self._detect_blue_constant_cells_color_coded(
-            formula_sheet, constant_scan_start, formula_row, header_map
+            formula_sheet, constant_scan_start, formula_row, header_map, sheet
         )
         constant_pairs = sorted(
             constant_pairs,
@@ -1099,7 +1102,39 @@ class FormulaImportWizard(models.TransientModel):
         except ValueError:
             return 0.0, False
 
-    def _detect_blue_constant_cells_color_coded(self, sheet, header_row, formula_row, header_map):
+    def _evaluate_constant_formula(self, formula):
+        if not formula or not isinstance(formula, str):
+            return None
+        expr = formula.strip()
+        if not expr.startswith('='):
+            return None
+        expr = expr[1:]
+        import re
+        if re.search(r'[A-Za-z_]', expr):
+            return None
+        expr = re.sub(r'(\d+(?:\.\d+)?)\s*%', r'(\1/100)', expr)
+        if re.search(r'[^0-9\.\+\-\*\/\^\(\)\s]', expr):
+            return None
+        expr = expr.replace('^', '**')
+        try:
+            return eval(expr, {"__builtins__": {}}, {})
+        except Exception:
+            return None
+
+    def _get_constant_cell_value(self, formula_sheet, data_sheet, row_num, col_idx):
+        cell = formula_sheet.cell(row=row_num, column=col_idx)
+        value = cell.value
+        if isinstance(value, str) and value.startswith('='):
+            if data_sheet:
+                data_value = data_sheet.cell(row=row_num, column=col_idx).value
+                if data_value is not None:
+                    return data_value
+            evaluated = self._evaluate_constant_formula(value)
+            if evaluated is not None:
+                return evaluated
+        return value
+
+    def _detect_blue_constant_cells_color_coded(self, sheet, header_row, formula_row, header_map, data_sheet=None):
         """
         Detect blue font constants below header row up to the formula row.
 
@@ -1175,7 +1210,8 @@ class FormulaImportWizard(models.TransientModel):
                     continue
                 seen_cells.add(cell_ref)
 
-                decimal_value, was_percentage = self._parse_percentage_value(cell.value)
+                value = self._get_constant_cell_value(sheet, data_sheet, row_num, col_idx)
+                decimal_value, was_percentage = self._parse_percentage_value(value)
                 header_label = header_map.get(col_letter)
                 name = f"Constant {header_label}" if header_label else f"Constant {col_letter}"
 
@@ -1197,7 +1233,7 @@ class FormulaImportWizard(models.TransientModel):
 
         return blue_constants
 
-    def _detect_blue_constant_cells(self, sheet, scan_up_to_row):
+    def _detect_blue_constant_cells(self, sheet, scan_up_to_row, data_sheet=None):
         """
         Detect cells with blue font color that contain constant values.
 
@@ -1326,7 +1362,8 @@ class FormulaImportWizard(models.TransientModel):
                 # Check if cell has blue font
                 if is_blue:
                     # Parse the value (handles percentages)
-                    decimal_value, was_percentage = self._parse_percentage_value(cell.value)
+                    value = self._get_constant_cell_value(sheet, data_sheet, row_num, col_idx)
+                    decimal_value, was_percentage = self._parse_percentage_value(value)
 
                     # Generate base name (ConstantA, ConstantB, etc.)
                     base_name = generate_constant_name(constant_index)
@@ -1360,7 +1397,7 @@ class FormulaImportWizard(models.TransientModel):
 
         return blue_constants
 
-    def _detect_colored_constant_pairs(self, sheet, header_row):
+    def _detect_colored_constant_pairs(self, sheet, header_row, data_sheet=None):
         """
         Detect red/green colored cell pairs that represent constants.
 
@@ -1436,7 +1473,12 @@ class FormulaImportWizard(models.TransientModel):
 
                 if is_red_color(cell_left) and is_green_color(cell_right):
                     name = cell_left.value
-                    value = cell_right.value
+                    value = self._get_constant_cell_value(
+                        sheet,
+                        data_sheet,
+                        row_num,
+                        col_idx + 1,
+                    )
 
                     if name is not None and value is not None:
                         value_col_letter = get_column_letter(col_idx + 1)
@@ -1453,7 +1495,7 @@ class FormulaImportWizard(models.TransientModel):
 
         return constant_pairs
 
-    def _detect_formula_referenced_constants(self, formula_columns, sheet, header_row):
+    def _detect_formula_referenced_constants(self, formula_columns, sheet, header_row, data_sheet=None):
         """
         Scan formulas to find cell references above header row that might be constants.
         This catches constants like $CF$3 that may not have been detected by color.
@@ -1482,8 +1524,7 @@ class FormulaImportWizard(models.TransientModel):
 
                 try:
                     col_idx = column_index_from_string(col_match)
-                    cell = sheet.cell(row=row_num, column=col_idx)
-                    value = cell.value
+                    value = self._get_constant_cell_value(sheet, data_sheet, row_num, col_idx)
 
                     if value is None:
                         continue
