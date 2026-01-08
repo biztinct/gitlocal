@@ -29,9 +29,14 @@
                     <!-- Modern Dashboard Header matching country dashboard style -->
                     <div class="dashboard-header-modern">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h1 class="dashboard-title-modern" style="margin: 0;">
-                                <field name="period_name" readonly="1"/>
-                            </h1>
+                            <div>
+                                <h1 class="dashboard-title-modern" style="margin: 0;">
+                                    <field name="approval_title" readonly="1"/>
+                                </h1>
+                                <div style="font-size: 14px; color: #6c757d; font-weight: 500;">
+                                    <field name="date_from" readonly="1"/> to <field name="date_to" readonly="1"/>
+                                </div>
+                            </div>
                             <h2 class="dashboard-structure-name" style="margin: 0; font-size: 20px; color: #6c757d; font-weight: 500;">
                                 <field name="salary_structure_name" readonly="1"/>
                             </h2>
