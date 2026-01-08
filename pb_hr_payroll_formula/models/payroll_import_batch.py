@@ -79,6 +79,7 @@ class HrPayrollImportBatch(models.Model):
         ('current', 'Current Month'),
         ('previous', 'Previous Month'),
         ('mid_cycle', 'Mid Cycle'),
+        ('end_cycle', 'End Cycle'),
         ('custom', 'Custom Period'),
     ], string='Payroll Period', default='current', required=True)
 
@@ -261,6 +262,10 @@ class HrPayrollImportBatch(models.Model):
         elif self.payroll_period == 'mid_cycle':
             self.date_from = today.replace(day=1)
             self.date_to = today.replace(day=11)
+        elif self.payroll_period == 'end_cycle':
+            self.date_from = today.replace(day=12)
+            last_day = calendar.monthrange(today.year, today.month)[1]
+            self.date_to = today.replace(day=last_day)
 
     @api.model
     def create(self, vals):
