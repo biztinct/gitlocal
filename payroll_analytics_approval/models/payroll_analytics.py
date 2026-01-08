@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessError
 import json
 import logging
 from datetime import datetime, timedelta
@@ -24,6 +24,7 @@ class PayrollAnalytics(models.Model):
     date_from = fields.Date(string='Date From', required=True)
     date_to = fields.Date(string='Date To', required=True)
     payslip_run_id = fields.Many2one('hr.payslip.run', string='Payslip Batch', readonly=True)
+    approval_title = fields.Char(string='Approval Title', compute='_compute_approval_title')
     salary_structure_name = fields.Char(string='Salary Structure', readonly=True, 
                                          help='Name of the salary structure from hr.formula.config')
     country = fields.Selection([
@@ -118,6 +119,32 @@ class PayrollAnalytics(models.Model):
                 record.average_salary = 0.0
                 record.variance_percentage = 0.0
     
+    @api.depends('payslip_run_id', 'payslip_run_id.name')
+    def _compute_approval_title(self):
+        batch_name_by_run = {}
+        run_ids = [record.payslip_run_id.id for record in self if record.payslip_run_id]
+        if run_ids:
+            batch_model = None
+            try:
+                batch_model = self.env['hr.payroll.import.batch']
+            except (KeyError, ValueError):
+                batch_model = None
+            if batch_model is not None:
+                try:
+                    batches = batch_model.search([('payslip_run_id', 'in', run_ids)], order='id desc')
+                except AccessError:
+                    batches = []
+                for batch in batches:
+                    run_id = batch.payslip_run_id.id
+                    if run_id and run_id not in batch_name_by_run:
+                        batch_name_by_run[run_id] = batch.name
+
+        for record in self:
+            title = False
+            if record.payslip_run_id:
+                title = batch_name_by_run.get(record.payslip_run_id.id) or record.payslip_run_id.name
+            record.approval_title = title or record.period_name
+
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
         """Override search_read to handle transaction errors gracefully"""
