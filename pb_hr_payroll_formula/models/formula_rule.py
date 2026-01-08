@@ -862,6 +862,40 @@ class HrFormulaRule(models.Model):
             formula = record.excel_formula.upper()
             formula_no_strings = record._strip_string_literals(formula)
 
+            range_refs = []
+            try:
+                from ..formula_engine.column_manager import ColumnManager
+
+                for start_col, end_col in re.findall(
+                    r'\$?([A-Z]+)\$?\d+\s*:\s*\$?([A-Z]+)\$?\d+',
+                    formula_no_strings
+                ):
+                    try:
+                        start_idx = ColumnManager.letter_to_index(start_col)
+                        end_idx = ColumnManager.letter_to_index(end_col)
+                    except Exception:
+                        continue
+                    if start_idx > end_idx:
+                        start_idx, end_idx = end_idx, start_idx
+                    for idx in range(start_idx, end_idx + 1):
+                        range_refs.append(ColumnManager.index_to_letter(idx))
+
+                for start_col, end_col in re.findall(
+                    r'\b([A-Z]{1,3})\s*:\s*([A-Z]{1,3})\b',
+                    formula_no_strings
+                ):
+                    try:
+                        start_idx = ColumnManager.letter_to_index(start_col)
+                        end_idx = ColumnManager.letter_to_index(end_col)
+                    except Exception:
+                        continue
+                    if start_idx > end_idx:
+                        start_idx, end_idx = end_idx, start_idx
+                    for idx in range(start_idx, end_idx + 1):
+                        range_refs.append(ColumnManager.index_to_letter(idx))
+            except Exception:
+                range_refs = []
+
             # Find references with row numbers (A1, AA1, etc.)
             refs_with_row = re.findall(r'([A-Z]+)\d+', formula_no_strings)
 
@@ -878,7 +912,7 @@ class HrFormulaRule(models.Model):
             # These are uppercase identifiers that might be codes
             code_refs = re.findall(r'\b([A-Z][A-Z0-9_]{2,})\b', formula_cleaned)
 
-            all_refs = refs_with_row + refs_no_row + code_refs
+            all_refs = range_refs + refs_with_row + refs_no_row + code_refs
             unique_refs = sorted(set(all_refs))
             record.formula_dependencies = ','.join(unique_refs)
 
