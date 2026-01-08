@@ -611,7 +611,7 @@ class HrFormulaRule(models.Model):
                 parts.append(f"values.get('{code}', 0)")
                 _logger.debug(f"    Expanded {letter} -> code={code}")
             result = ', '.join(parts)
-            _logger.info(f"  NORMAL PATH: Range {start_ref}:{end_ref} expanded to {len(parts)} values: {result[:200]}...")
+            _logger.debug(f"  NORMAL PATH: Range {start_ref}:{end_ref} expanded to {len(parts)} values: {result[:200]}...")
             return result
 
         # Convert ranges with row numbers (e.g., A1:C1, $A$1:$C$1)
@@ -660,25 +660,25 @@ class HrFormulaRule(models.Model):
 
         # Replace cell references WITH row numbers (e.g., A1, AA1, B2), allow $ for absolute refs
         # CRITICAL: Do NOT match if we're inside quoted strings that were already created by range expansion
-        _logger.info(f"  BEFORE cell ref replacement: {result[:200]}...")
+        _logger.debug(f"  BEFORE cell ref replacement: {result[:200]}...")
         def replace_ref_with_row(match):
             matched_text = match.group(0)
             start_pos = match.start()
             if _is_inside_quotes(result, start_pos):
-                _logger.info(f"  Skipping cell ref '{matched_text}' - inside quoted string")
+                _logger.debug(f"  Skipping cell ref '{matched_text}' - inside quoted string")
                 return match.group(0)  # Return unchanged
 
             col_letter = match.group(1)
             code = column_map.get(col_letter)
             if code:
-                _logger.info(f"  Converting cell ref '{matched_text}' -> values.get('{code}', 0)")
+                _logger.debug(f"  Converting cell ref '{matched_text}' -> values.get('{code}', 0)")
                 return f"values.get('{code}', 0)"
             # If not in column_map, try using letter as code (for constants with forced_column_letter)
             _logger.warning(f"  Column letter '{col_letter}' from cell ref '{matched_text}' not in column_map, using letter as code")
             return f"values.get('{col_letter}', 0)"
 
         result = re.sub(r'\$?([A-Z]+)\$?(\d+)', replace_ref_with_row, result)
-        _logger.info(f"  AFTER cell ref replacement: {result[:200]}...")
+        _logger.debug(f"  AFTER cell ref replacement: {result[:200]}...")
 
         # Replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
         # But NOT if they're part of a string like "YES" OR inside already-converted values.get()
@@ -1318,7 +1318,7 @@ class HrFormulaRule(models.Model):
                     except Exception:
                         ref_codes = []
                         ref_values = {}
-                    _logger.info(
+                    _logger.debug(
                         "Formula eval debug: code=%s excel=%s python=%s refs=%s",
                         self.code,
                         self.excel_formula,
@@ -1390,7 +1390,7 @@ class HrFormulaRule(models.Model):
                             column_map[r.column_letter] = r.code
                     python_code = rule._convert_excel_to_python(rule.excel_formula, column_map)
                     rule.write({'python_formula': python_code})
-                    _logger.info(f"Regenerated Python formula for {rule.code}: {python_code}")
+                    _logger.debug(f"Regenerated Python formula for {rule.code}: {python_code}")
                 except Exception as e:
                     _logger.error(f"Failed to regenerate formula for {rule.code}: {e}")
 
