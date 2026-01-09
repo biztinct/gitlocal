@@ -1400,7 +1400,13 @@ class HrFormulaRule(models.Model):
 
     def _isblank_value(self, value):
         """Return True when a raw value should be treated as blank."""
-        return value is None or value == ''
+        if value is None or value == '':
+            return True
+        if isinstance(value, str) and value.strip() in ('0', '0.0', '0.00'):
+            return True
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and value == 0:
+            return True
+        return False
 
     def _coerce_number(self, value):
         """Convert a value to float for numeric functions, ignoring non-numeric text."""
