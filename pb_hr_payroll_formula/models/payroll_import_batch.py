@@ -880,11 +880,15 @@ class HrPayrollImportBatch(models.Model):
         if value in (None, ''):
             return None
 
-        if field.ttype == 'many2one':
+        field_type = getattr(field, 'ttype', None) or getattr(field, 'type', None)
+        if field_type == 'many2one':
             name_value = str(value).strip()
             if not name_value:
                 return None
-            target = self.env[field.relation]
+            relation = getattr(field, 'relation', None) or getattr(field, 'comodel_name', None)
+            if not relation:
+                return None
+            target = self.env[relation]
             existing = target.search([('name', '=ilike', name_value)], limit=1)
             if not existing:
                 vals = {'name': name_value}
@@ -893,29 +897,29 @@ class HrPayrollImportBatch(models.Model):
                 existing = target.create(vals)
             return existing.id
 
-        if field.ttype == 'boolean':
+        if field_type == 'boolean':
             if isinstance(value, bool):
                 return value
             text = str(value).strip().lower()
             return text in ('1', 'true', 'yes', 'y', 't')
 
-        if field.ttype in ('integer', 'float', 'monetary'):
+        if field_type in ('integer', 'float', 'monetary'):
             try:
                 number = float(value)
-                return int(number) if field.ttype == 'integer' else number
+                return int(number) if field_type == 'integer' else number
             except (TypeError, ValueError):
                 return None
 
-        if field.ttype == 'date':
+        if field_type == 'date':
             return self._parse_date_value(value)
 
-        if field.ttype == 'datetime':
+        if field_type == 'datetime':
             parsed = self._parse_date_value(value)
             if isinstance(parsed, date) and not isinstance(parsed, datetime):
                 return datetime.combine(parsed, datetime.min.time())
             return parsed if isinstance(parsed, datetime) else None
 
-        if field.ttype == 'selection':
+        if field_type == 'selection':
             selection = field.selection(record.env) if callable(field.selection) else field.selection
             allowed = [key for key, _label in (selection or [])]
             return str(value) if str(value) in allowed else None
@@ -927,6 +931,58 @@ class HrPayrollImportBatch(models.Model):
             ('salary_structure_id', '=', self.formula_config_id.id),
             ('target_model_id.model', '=', model_name),
         ])
+
+    def _get_mappings_by_field(self, model_name, mappings=None):
+        mappings = mappings or self._get_model_mappings(model_name)
+        return {mapping.target_field_id.name: mapping for mapping in mappings}
+
+    def _get_mirrored_employee_contract_fields(self):
+        return {'job_id', 'department_id', 'resource_calendar_id', 'company_id'}
+
+    def _sync_employee_contract_mirror_fields(self, employee, contract, raw_data,
+                                              employee_mappings=None, contract_mappings=None):
+        if not employee and not contract:
+            return set()
+
+        if not employee and contract:
+            employee = contract.employee_id
+
+        if not contract and employee:
+            contract = employee.contract_id or False
+
+        employee_mappings = employee_mappings or self._get_model_mappings('hr.employee')
+        contract_mappings = contract_mappings or self._get_model_mappings('hr.contract')
+        employee_map = self._get_mappings_by_field('hr.employee', mappings=employee_mappings)
+        contract_map = self._get_mappings_by_field('hr.contract', mappings=contract_mappings)
+
+        handled_fields = set()
+        employee_updates = {}
+        contract_updates = {}
+        for field_name in self._get_mirrored_employee_contract_fields():
+            mapping = employee_map.get(field_name) or contract_map.get(field_name)
+            if not mapping:
+                continue
+            value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
+            if not has_value:
+                continue
+            handled_fields.add(field_name)
+            if employee and field_name in employee._fields:
+                employee_field = employee._fields[field_name]
+                coerced = self._coerce_mapped_value(employee, employee_field, value)
+                if coerced is not None:
+                    employee_updates[field_name] = coerced
+            if contract and field_name in contract._fields:
+                contract_field = contract._fields[field_name]
+                coerced = self._coerce_mapped_value(contract, contract_field, value)
+                if coerced is not None:
+                    contract_updates[field_name] = coerced
+
+        if employee_updates and employee:
+            employee.write(employee_updates)
+        if contract_updates and contract:
+            contract.write(contract_updates)
+
+        return handled_fields
 
     def _get_mapping_updates(self, record, raw_data, mappings=None):
         mappings = mappings or self._get_model_mappings(record._name)
@@ -957,6 +1013,9 @@ class HrPayrollImportBatch(models.Model):
         """Update employee fields from raw import data."""
         mappings = self._get_model_mappings(employee._name)
         mapped_fields = set(mappings.mapped('target_field_id.name'))
+        contract_mappings = self._get_model_mappings('hr.contract')
+        mirror_fields = self._get_mirrored_employee_contract_fields()
+        mapped_fields |= mirror_fields.intersection(set(contract_mappings.mapped('target_field_id.name')))
         updates = self._get_mapping_updates(employee, raw_data, mappings=mappings)
 
         emp_code = self._extract_field(raw_data, [
@@ -1047,6 +1106,16 @@ class HrPayrollImportBatch(models.Model):
         mappings = self._get_model_mappings(contract._name)
         mapped_fields = set(mappings.mapped('target_field_id.name'))
         updates = self._get_mapping_updates(contract, raw_data, mappings=mappings)
+        employee_mappings = self._get_model_mappings('hr.employee')
+        handled_mirrors = self._sync_employee_contract_mirror_fields(
+            contract.employee_id,
+            contract,
+            raw_data,
+            employee_mappings=employee_mappings,
+            contract_mappings=mappings,
+        )
+        for field_name in handled_mirrors:
+            updates.pop(field_name, None)
         joining_date = self._parse_date_value(self._extract_field(
             raw_data,
             ['joining_date', 'joining date', 'date_of_joining', 'join_date', 'join date']
