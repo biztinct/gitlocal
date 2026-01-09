@@ -284,7 +284,16 @@ class HrFormulaConfig(models.Model):
     def _compute_display_name(self):
         for record in self:
             country = dict(self._fields['country_code'].selection).get(record.country_code, '')
-            record.display_name = f"[{record.code}] {record.name} ({country})"
+            record.display_name = f"{record.name} ({country})" if country else record.name
+
+    def name_get(self):
+        result = []
+        country_map = dict(self._fields['country_code'].selection)
+        for record in self:
+            country = country_map.get(record.country_code, '')
+            label = f"{record.name} ({country})" if country else record.name
+            result.append((record.id, label))
+        return result
 
     @api.depends('country_code')
     def _compute_country_id(self):

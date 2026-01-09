@@ -19,6 +19,13 @@
               action="action_formula_config"
               sequence="10"/>
 
+    <menuitem id="menu_payslip_import_mapping"
+              name="Employee/Contract Field Mapping"
+              parent="menu_formula_root"
+              action="action_payslip_import_mapping_wizard"
+              sequence="12"
+              groups="om_hr_payroll.group_hr_payroll_manager"/>
+
     <!-- Payroll Import Submenu -->
     <menuitem id="menu_formula_import"
               name="Payroll Import"

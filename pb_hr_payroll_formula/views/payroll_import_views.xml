@@ -130,7 +130,7 @@
                     <notebook>
                         <!-- File Upload Tab -->
                         <page string="File Import" name="file_import"
-                              attrs="{'invisible': [('source_type', '!=', 'excel')]}">
+                              attrs="{'invisible': ['|', ('source_type', '!=', 'excel'), ('state', '!=', 'draft')]}">
                             <group>
                                 <group>
                                     <field name="import_file" filename="import_filename"
