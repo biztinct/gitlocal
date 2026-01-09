@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!--
-        PAYSLIP FORMULA INTEGRATION VIEWS
+    <record id="view_hr_payslip_form_json_tabs" model="ir.ui.view">
+        <field name="name">hr.payslip.form.json.tabs</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/notebook" position="inside">
+                <page string="Formula Input JSON" name="formula_input_json">
 
-        Note: These views extend the base hr.payslip model.
-        The hr_payslip_formula.py model must add the required fields
-        before these views will work properly.
+                        <field name="formula_input_values" colspan="4" nolabel="1" widget="text"
+                               class="o_payslip_json_field"/>
 
-        For now, this file is empty to allow module installation.
-        Views will be added once the model extensions are complete.
-    -->
+                </page>
+                <page string="Formula Computed JSON" name="formula_computed_json">
+
+                        <field name="formula_computed_values" colspan="4" nolabel="1" widget="text" readonly="1"
+                               class="o_payslip_json_field"/>
+
+                </page>
+                <page string="Payslip Identifier JSON" name="payslip_identifier_json">
+
+                        <field name="payslip_identifier_payload" colspan="4" nolabel="1" widget="text" readonly="1"
+                               class="o_payslip_json_field"/>
+
+                </page>
+                <page string="Report Visible JSON" name="report_visible_json">
+
+                        <field name="report_visible_string_payload" colspan="4" nolabel="1" widget="text" readonly="1"
+                               class="o_payslip_json_field"/>
+
+                </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>

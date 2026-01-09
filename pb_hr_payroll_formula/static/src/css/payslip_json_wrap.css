@@ -1,0 +1,7 @@
+.o_payslip_json_field textarea,
+.o_payslip_json_field .o_field_text,
+.o_payslip_json_field .o_field_widget {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}

@@ -529,6 +529,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'header_map': color_info['header_map'],
                         'identifier_map': color_info['identifier_map'],
                         'report_visible_map': color_info['report_visible_map'],
+                        'contract_component_map': color_info.get('contract_component_map', {}),
+                        'requires_new_contract_map': color_info.get('requires_new_contract_map', {}),
                         'header_block_start': color_info['header_block_start'],
                         'formula_row': color_info['formula_row'],
                     }
@@ -645,6 +647,8 @@ class MultiSheetImportWizard(models.TransientModel):
                 red_data_cols = ctx.get('red_data_columns', set())
                 identifier_map = ctx.get('identifier_map', {})
                 report_visible_map = ctx.get('report_visible_map', {})
+                contract_component_map = ctx.get('contract_component_map', {})
+                requires_new_contract_map = ctx.get('requires_new_contract_map', {})
 
                 for idx, header_info in enumerate(sheet_data['headers']):
                     col_letter = header_info['column_letter']
@@ -690,6 +694,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'component_type': header_info.get('component_type') or '',
                         'payslip_identifier_code': identifier_map.get(col_letter),
                         'report_visible': bool(report_visible_map.get(col_letter)),
+                        'is_contract_component': bool(contract_component_map.get(col_letter)),
+                        'requires_new_contract': bool(requires_new_contract_map.get(col_letter)),
                         'is_selected': True,  # All columns selected by default
                         'column_type': 'input' if is_red_data_column else
                                        ('formula' if col_letter in formula_columns else 'input'),
@@ -1141,6 +1147,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'component_type': col_sel.component_type or '',
                         'payslip_identifier_code': col_sel.payslip_identifier_code or False,
                         'report_visible': bool(col_sel.report_visible),
+                        'is_contract_component': bool(col_sel.is_contract_component),
+                        'requires_new_contract': bool(col_sel.requires_new_contract),
                         'column_type': col_sel.column_type,
                         'excel_formula': excel_formula,
                         'resolved_formula': '',  # Will be filled during resolution
@@ -1188,6 +1196,8 @@ class MultiSheetImportWizard(models.TransientModel):
                         'component_type': col_sel.component_type or 'Constant',
                         'payslip_identifier_code': False,
                         'report_visible': False,
+                        'is_contract_component': False,
+                        'requires_new_contract': False,
                         'column_type': 'constant',
                         'excel_formula': '',
                         'resolved_formula': '',
@@ -1938,10 +1948,56 @@ class MultiSheetImportWizard(models.TransientModel):
             cell = formula_sheet.cell(row=row_num, column=col_idx)
             return bool(cell.font and cell.font.bold)
 
+        def is_red_font(cell):
+            try:
+                font = cell.font
+                if font and font.color:
+                    color = font.color
+                    if color.type == 'rgb' and color.rgb:
+                        rgb = str(color.rgb).upper()
+                        if len(rgb) >= 6:
+                            if len(rgb) == 8:
+                                r, g, b = int(rgb[2:4], 16), int(rgb[4:6], 16), int(rgb[6:8], 16)
+                            else:
+                                r, g, b = int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+                            if r > 150 and g < 150 and b < 150:
+                                return True
+                            if r > 200 and g < 180 and b < 180 and r > g and r > b:
+                                return True
+                    elif color.type == 'indexed' and color.indexed in [2, 10]:
+                        return True
+            except Exception:
+                pass
+            return False
+
+        def is_red_in_merge(row_num, col_idx):
+            merge_info = merge_parser.get_merge_at(row_num, col_idx)
+            if merge_info:
+                for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                    for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                        cell = formula_sheet.cell(row=m_row, column=m_col)
+                        if is_red_font(cell):
+                            return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return is_red_font(cell)
+
+        def is_underline_in_merge(row_num, col_idx):
+            merge_info = merge_parser.get_merge_at(row_num, col_idx)
+            if merge_info:
+                for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                    for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                        cell = formula_sheet.cell(row=m_row, column=m_col)
+                        if cell.font and cell.font.underline:
+                            return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return bool(cell.font and cell.font.underline)
+
         headers = []
         header_map = {}
         header_rows = {}
         report_visible_map = {}
+        contract_component_map = {}
+        requires_new_contract_map = {}
 
         for col_idx in range(1, max_col + 1):
             col_letter = get_column_letter(col_idx)
@@ -1982,6 +2038,10 @@ class MultiSheetImportWizard(models.TransientModel):
             header_map[col_letter] = value_str
             header_rows[col_letter] = header_row
             report_visible_map[col_letter] = is_bold_in_merge(header_row, col_idx)
+            contract_component_map[col_letter] = is_red_in_merge(header_row, col_idx)
+            requires_new_contract_map[col_letter] = (
+                contract_component_map[col_letter] and is_underline_in_merge(header_row, col_idx)
+            )
 
         if not headers:
             raise UserError(_("No component names found in color-coded header block."))
@@ -2030,6 +2090,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     'value': h['value'],
                     'component_type': component_types.get(h['column_letter']),
                     'report_visible': report_visible_map.get(h['column_letter'], False),
+                    'is_contract_component': contract_component_map.get(h['column_letter'], False),
+                    'requires_new_contract': requires_new_contract_map.get(h['column_letter'], False),
                     'payslip_identifier': identifier_map.get(h['column_letter']),
                 }
                 for h in headers
@@ -2046,6 +2108,8 @@ class MultiSheetImportWizard(models.TransientModel):
             'header_rows': header_rows,
             'identifier_map': identifier_map,
             'report_visible_map': report_visible_map,
+            'contract_component_map': contract_component_map,
+            'requires_new_contract_map': requires_new_contract_map,
             'header_block_start': header_block_start,
             'header_block_end': header_block_end,
             'formula_row': formula_row,
@@ -2669,6 +2733,8 @@ class MultiSheetImportWizard(models.TransientModel):
                     'forced_column_letter': comp.column_letter,  # Preserve actual Excel column position for ALL rules
                     'data_source': comp.data_source,
                     'report_visible': bool(comp.report_visible),
+                    'is_contract_component': bool(comp.is_contract_component),
+                    'requires_new_contract': bool(comp.requires_new_contract),
                 }
                 if sequence is not None:
                     rule_vals['sequence'] = sequence
@@ -3203,6 +3269,14 @@ class MultiSheetComponentPreview(models.TransientModel):
         string='Visible in Reports'
     )
 
+    is_contract_component = fields.Boolean(
+        string='Contract Component'
+    )
+
+    requires_new_contract = fields.Boolean(
+        string='Requires New Contract'
+    )
+
     column_type = fields.Selection([
         ('input', 'Input'),
         ('formula', 'Formula'),
@@ -3376,6 +3450,16 @@ class MultiSheetColumnSelection(models.TransientModel):
 
     report_visible = fields.Boolean(
         string='Visible in Reports',
+        readonly=True
+    )
+
+    is_contract_component = fields.Boolean(
+        string='Contract Component',
+        readonly=True
+    )
+
+    requires_new_contract = fields.Boolean(
+        string='Requires New Contract',
         readonly=True
     )
 

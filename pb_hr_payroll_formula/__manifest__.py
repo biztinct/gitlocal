@@ -61,6 +61,7 @@ License: LGPL-3
         'views/formula_rule_views.xml',
         'views/integration_views.xml',
         'views/payroll_import_views.xml',
+        'views/contract_component_change_views.xml',
         'views/payslip_config_views.xml',
         # Wizards (actions used by views below)
         'wizards/wizard_views.xml',
@@ -80,6 +81,7 @@ License: LGPL-3
 
             # Multi-sheet wizard custom styling and functionality
             'pb_hr_payroll_formula/static/src/css/multisheet_wizard.css',
+            'pb_hr_payroll_formula/static/src/css/payslip_json_wrap.css',
             'pb_hr_payroll_formula/static/src/js/multisheet_enhancements.js',
 
             # NOTE: Custom Excel grid widget JS disabled until proper implementation

@@ -2,7 +2,7 @@
 
 import logging
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from ..formula_engine.column_manager import ColumnManager
@@ -673,7 +673,10 @@ class HrPayrollImportBatch(models.Model):
                     else:
                         self._update_contract_from_raw_data(contract, raw_data)
 
-                    # Step 3: Create payslip with formula-based lines
+                    # Step 3: Sync contract components from import data
+                    contract = self._sync_contract_components(line, contract)
+
+                    # Step 4: Create payslip with formula-based lines
                     if self.create_payslips:
                         payslip = self._create_payslip(employee, contract, line)
                         if payslip:
@@ -910,7 +913,7 @@ class HrPayrollImportBatch(models.Model):
         raw_data = line.get_raw_data()
 
         # Transform raw data using field mappings
-        input_values = self._transform_data_to_formula_inputs(raw_data)
+        input_values = self._transform_data_to_formula_inputs(raw_data, contract=contract)
 
         # Create payslip
         payslip_vals = {
@@ -1032,6 +1035,10 @@ class HrPayrollImportBatch(models.Model):
             cleaned = value.strip().replace(' ', '')
             if not cleaned:
                 return None
+            is_percent = False
+            if cleaned.endswith('%'):
+                cleaned = cleaned[:-1]
+                is_percent = True
             try:
                 if ',' in cleaned and '.' in cleaned:
                     if cleaned.rfind(',') > cleaned.rfind('.'):
@@ -1048,7 +1055,10 @@ class HrPayrollImportBatch(models.Model):
                     parts = cleaned.split('.')
                     if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
                         cleaned = ''.join(parts)
-                return float(cleaned)
+                number = float(cleaned)
+                if is_percent:
+                    number = number / 100
+                return number
             except (ValueError, TypeError):
                 return None
 
@@ -1248,11 +1258,19 @@ class HrPayrollImportBatch(models.Model):
             self.formula_config_id.structure_id.rule_ids = [(4, new_rule.id)]
         return new_rule
 
-    def _transform_data_to_formula_inputs(self, raw_data):
+    def _transform_data_to_formula_inputs(self, raw_data, contract=None):
         """Transform raw Excel data to formula input values using field mappings"""
         input_values = {}
         config = self.formula_config_id
         employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
+        contract_component_amounts = {}
+        if contract:
+            for advantage in contract.advantages_ids:
+                code = advantage.advantage_template_code or (
+                    advantage.advantage_template_id.code if advantage.advantage_template_id else False
+                )
+                if code:
+                    contract_component_amounts[code] = advantage.amount
 
         def lookup_raw_value(candidates):
             for key in candidates:
@@ -1351,8 +1369,14 @@ class HrPayrollImportBatch(models.Model):
                         candidates.append(f"{rule.source_sheet_name}|{rule.name}")
                     if rule.code:
                         candidates.append(f"{rule.source_sheet_name}|{rule.code}")
+                    if rule.original_column_letter:
+                        candidates.append(f"{rule.source_sheet_name}|{rule.original_column_letter}")
                     if rule.column_letter:
                         candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
+
+                # Then try by rule name
+                if rule.name:
+                    candidates.append(rule.name)
 
                 # Then try by rule code
                 if rule.code:
@@ -1362,17 +1386,19 @@ class HrPayrollImportBatch(models.Model):
                 if rule.column_letter:
                     candidates.append(rule.column_letter)
 
-                # Then try by rule name
-                if rule.name:
-                    candidates.append(rule.name)
-
                 if candidates:
                     value = lookup_raw_value(candidates)
+
+                if isinstance(value, str) and value.strip() == '':
+                    value = None
 
                 if value is not None:
                     input_values[rule.code] = normalize_input_value(rule, value)
                 else:
-                    input_values[rule.code] = rule.default_value
+                    if rule.is_contract_component:
+                        input_values[rule.code] = contract_component_amounts.get(rule.code, 0.0)
+                    else:
+                        input_values[rule.code] = rule.default_value
 
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):
@@ -1471,6 +1497,248 @@ class HrPayrollImportBatch(models.Model):
             return False
         digits = ''.join(ch for ch in str(value) if ch.isdigit())
         return digits or False
+
+    def _lookup_raw_value(self, raw_data, candidates):
+        for key in candidates:
+            if key in raw_data:
+                return raw_data.get(key)
+        normalized_map = {self._normalize_header_key(k): k for k in raw_data.keys()}
+        for key in candidates:
+            normalized_key = self._normalize_header_key(key)
+            if normalized_key in normalized_map:
+                return raw_data.get(normalized_map[normalized_key])
+        return None
+
+    def _get_rule_raw_value(self, raw_data, rule):
+        candidates = []
+
+        if rule.data_source_field:
+            candidates.append(rule.data_source_field)
+
+        if rule.source_sheet_name:
+            if rule.name:
+                candidates.append(f"{rule.source_sheet_name}|{rule.name}")
+            if rule.code:
+                candidates.append(f"{rule.source_sheet_name}|{rule.code}")
+            if rule.original_column_letter:
+                candidates.append(f"{rule.source_sheet_name}|{rule.original_column_letter}")
+            if rule.column_letter:
+                candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
+
+        if rule.name:
+            candidates.append(rule.name)
+        if rule.code:
+            candidates.append(rule.code)
+        if rule.column_letter:
+            candidates.append(rule.column_letter)
+
+        value = self._lookup_raw_value(raw_data, candidates) if candidates else None
+        if isinstance(value, str) and value.strip() == '':
+            return None, False
+        if value is None:
+            return None, False
+        return value, True
+
+    def _is_employee_code_rule(self, rule):
+        employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
+        tokens = [
+            (rule.code or '').upper(),
+            (rule.name or '').upper(),
+            (rule.data_source_field or '').upper(),
+        ]
+        for token in tokens:
+            if not token:
+                continue
+            for marker in employee_code_markers:
+                if marker in token:
+                    return True
+        return False
+
+    def _coerce_numeric_string(self, value):
+        cleaned = value.strip().replace(' ', '')
+        if not cleaned:
+            return None
+        is_percent = False
+        if cleaned.endswith('%'):
+            cleaned = cleaned[:-1]
+            is_percent = True
+        try:
+            if ',' in cleaned and '.' in cleaned:
+                if cleaned.rfind(',') > cleaned.rfind('.'):
+                    cleaned = cleaned.replace('.', '').replace(',', '.')
+                else:
+                    cleaned = cleaned.replace(',', '')
+            elif ',' in cleaned:
+                parts = cleaned.split(',')
+                if all(len(p) == 3 for p in parts[1:]):
+                    cleaned = ''.join(parts)
+                else:
+                    cleaned = cleaned.replace(',', '.')
+            elif '.' in cleaned:
+                parts = cleaned.split('.')
+                if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
+                    cleaned = ''.join(parts)
+            number = float(cleaned)
+            if is_percent:
+                number = number / 100
+            return number
+        except (ValueError, TypeError):
+            return None
+
+    def _normalize_rule_input_value(self, rule, value):
+        if value is None:
+            return rule.default_value
+        if isinstance(value, bool):
+            return float(value)
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            stripped = value.strip()
+            if stripped == '':
+                return rule.default_value
+            if self._is_employee_code_rule(rule):
+                return stripped
+            numeric_value = self._coerce_numeric_string(stripped)
+            if numeric_value is not None:
+                return numeric_value
+            return stripped
+        return value
+
+    def _float_equal(self, left, right, tolerance=0.0001):
+        try:
+            return abs(float(left or 0.0) - float(right or 0.0)) <= tolerance
+        except (TypeError, ValueError):
+            return False
+
+    def _get_contract_component_rules(self):
+        if not self.formula_config_id:
+            return self.env['hr.formula.rule']
+        return self.formula_config_id.rule_ids.filtered(lambda r: r.is_contract_component)
+
+    def _get_or_create_advantage_template(self, rule, cache):
+        if rule.code in cache:
+            return cache[rule.code]
+        template = self.env['hr.contract.advantage.template'].search([
+            ('code', '=', rule.code)
+        ], limit=1)
+        if not template:
+            template = self.env['hr.contract.advantage.template'].create({
+                'name': rule.name or rule.code,
+                'code': rule.code,
+                'lower_bound': 0.0,
+                'upper_bound': 0.0,
+                'default_value': 0.0,
+            })
+        cache[rule.code] = template
+        return template
+
+    def _get_contract_advantage_map(self, contract):
+        lines = contract.advantages_ids if contract else self.env['hr.contract.advantage']
+        advantage_map = {}
+        for line in lines:
+            code = line.advantage_template_code or (
+                line.advantage_template_id.code if line.advantage_template_id else False
+            )
+            if code:
+                advantage_map[code] = line
+        return advantage_map
+
+    def _log_contract_component_change(self, contract, template, old_amount, new_amount, source, notes=None):
+        self.env['hr.contract.advantage.change'].create({
+            'contract_id': contract.id,
+            'advantage_template_id': template.id,
+            'old_amount': old_amount,
+            'new_amount': new_amount,
+            'effective_date': self.date_from or fields.Date.context_today(self),
+            'change_source': source,
+            'import_batch_id': self.id,
+            'notes': notes or False,
+        })
+
+    def _create_new_contract_for_components(self, contract):
+        if not contract:
+            return contract
+        effective_date = self.date_from or fields.Date.context_today(self)
+        updates = {}
+        if 'date_end' in contract._fields and (not contract.date_end or contract.date_end >= effective_date):
+            updates['date_end'] = effective_date - timedelta(days=1)
+        if updates:
+            contract.write(updates)
+        new_contract = contract.copy({
+            'date_start': effective_date,
+            'date_end': False,
+        })
+        return new_contract
+
+    def _sync_contract_components(self, line, contract):
+        rules = self._get_contract_component_rules()
+        if not contract or not rules:
+            return contract
+
+        raw_data = line.get_raw_data() if line else {}
+        template_cache = {}
+        desired_values = {}
+        new_contract_needed = False
+
+        line_map = self._get_contract_advantage_map(contract)
+
+        for rule in rules:
+            template = self._get_or_create_advantage_template(rule, template_cache)
+            value, found = self._get_rule_raw_value(raw_data, rule)
+            if found:
+                new_value = self._normalize_rule_input_value(rule, value)
+            else:
+                existing_line = line_map.get(template.code)
+                if existing_line:
+                    new_value = existing_line.amount
+                else:
+                    new_value = 0.0
+
+            desired_values[template.code] = {
+                'template': template,
+                'value': new_value,
+                'found': found,
+                'rule': rule,
+            }
+
+            if found and rule.requires_new_contract:
+                existing_line = line_map.get(template.code)
+                old_value = existing_line.amount if existing_line else 0.0
+                if not self._float_equal(old_value, new_value):
+                    new_contract_needed = True
+
+        if new_contract_needed:
+            contract = self._create_new_contract_for_components(contract)
+            line_map = self._get_contract_advantage_map(contract)
+
+        for code, data in desired_values.items():
+            template = data['template']
+            new_value = data['value']
+            found = data['found']
+            rule = data['rule']
+            line_obj = line_map.get(code)
+            source = 'import' if found else 'import_default'
+
+            if line_obj:
+                old_value = line_obj.amount
+                if not self._float_equal(old_value, new_value):
+                    line_obj.write({'amount': new_value})
+                    self._log_contract_component_change(
+                        contract, template, old_value, new_value, source
+                    )
+            else:
+                line_obj = self.env['hr.contract.advantage'].create({
+                    'contract_id': contract.id,
+                    'advantage_template_id': template.id,
+                    'amount': new_value,
+                })
+                line_map[code] = line_obj
+                self._log_contract_component_change(
+                    contract, template, 0.0, new_value, source,
+                    notes='Created contract component'
+                )
+
+        return contract
 
     def _log(self, message):
         """Add message to processing log"""

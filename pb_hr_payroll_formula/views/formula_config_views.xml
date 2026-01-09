@@ -164,6 +164,10 @@
                                     <field name="data_source" string="Source"/>
                                     <field name="category_id"/>
                                     <field name="report_visible"/>
+                                    <field name="is_contract_component" optional="hide"/>
+                                    <field name="requires_new_contract"
+                                           attrs="{'invisible': [('is_contract_component', '=', False)]}"
+                                           optional="hide"/>
                                     <field name="excel_formula_display" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
                                     <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
                                     <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
