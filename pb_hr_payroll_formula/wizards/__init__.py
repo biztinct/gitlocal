@@ -5,3 +5,4 @@ from . import formula_import_wizard
 from . import integration_sync_wizard
 from . import compute_sample_wizard
 from . import multisheet_import_wizard
+from . import payslip_import_mapping_wizard

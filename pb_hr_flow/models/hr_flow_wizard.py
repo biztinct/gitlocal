@@ -208,6 +208,7 @@ class HRFlowWizard(models.TransientModel):
             'payroll-connector': ('pb_hr_payroll_formula.action_integration_connector_kanban', False),
             'payroll-config': ('pb_hr_payroll_formula.action_formula_config_kanban', False),
             'payroll-payslip-config': ('pb_hr_payroll_formula.action_payslip_config', False),
+            'payroll-employee-contract-mapping': ('pb_hr_payroll_formula.action_payslip_import_mapping_wizard', False),
             'payroll-test': ('pb_hr_payroll_formula.action_sample_data', False),
             'payroll-batch': ('pb_hr_payroll_formula.action_payroll_import_batch', False),
             'payroll-batch-workflow': ('om_hr_payroll.action_hr_payslip_run_tree', False),

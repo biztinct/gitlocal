@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_payslip_import_mapping_tree" model="ir.ui.view">
+        <field name="name">hr.payslip.import.mapping.tree</field>
+        <field name="model">hr.payslip.import.mapping</field>
+        <field name="arch" type="xml">
+            <tree string="Employee/Contract Field Mapping" editable="bottom">
+                <field name="target_model_id"/>
+                <field name="target_field_id" string="Field"/>
+                <field name="salary_structure_id" context="{'no_code_display': True}"/>
+                <field name="component_id" string="Component"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_payslip_import_mapping_search" model="ir.ui.view">
+        <field name="name">hr.payslip.import.mapping.search</field>
+        <field name="model">hr.payslip.import.mapping</field>
+        <field name="arch" type="xml">
+            <search string="Employee/Contract Field Mapping">
+                <field name="salary_structure_id" context="{'no_code_display': True}"/>
+                <field name="target_model_id"/>
+                <field name="target_field_id"/>
+                <field name="component_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_payslip_import_mapping" model="ir.actions.act_window">
+        <field name="name">Employee/Contract Field Mapping</field>
+        <field name="res_model">hr.payslip.import.mapping</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_payslip_import_mapping_tree"/>
+        <field name="search_view_id" ref="view_payslip_import_mapping_search"/>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

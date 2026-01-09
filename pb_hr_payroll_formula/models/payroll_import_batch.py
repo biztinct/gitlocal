@@ -348,8 +348,22 @@ class HrPayrollImportBatch(models.Model):
                 'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
                 'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
             ]))
+            mapped_employee_code = self._get_employee_identifier_value(raw_data)
+            if mapped_employee_code not in (None, ''):
+                employee_code = self._normalize_code(mapped_employee_code)
+
             employee_name = self._extract_field(raw_data, ['employee_name', 'name', 'full_name', 'emp_name'])
+            mapped_employee_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
+            if mapped_employee_name not in (None, ''):
+                employee_name = mapped_employee_name
+
             employee_email = self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
+            mapped_employee_email = (
+                self._get_mapped_value_for_field(raw_data, 'hr.employee', 'work_email')
+                or self._get_mapped_value_for_field(raw_data, 'hr.employee', 'private_email')
+            )
+            if mapped_employee_email not in (None, ''):
+                employee_email = mapped_employee_email
 
             line_vals_list.append({
                 'batch_id': self.id,
@@ -526,12 +540,26 @@ class HrPayrollImportBatch(models.Model):
         Employee = self.env['hr.employee']
         raw_data = line.get_raw_data() if line else {}
         employee_name = line.employee_name or self._extract_field(raw_data, ['employee_name', 'name', 'full_name', 'emp_name'])
+        mapped_employee_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
+        if mapped_employee_name not in (None, ''):
+            employee_name = mapped_employee_name
+
         employee_email = line.employee_email or self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
+        mapped_employee_email = (
+            self._get_mapped_value_for_field(raw_data, 'hr.employee', 'work_email')
+            or self._get_mapped_value_for_field(raw_data, 'hr.employee', 'private_email')
+        )
+        if mapped_employee_email not in (None, ''):
+            employee_email = mapped_employee_email
+
         employee_code = line.employee_code or self._extract_field(raw_data, [
             'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
             'employee_id', 'employee id', 'emp_id', 'emp id', 'empid', 'employee no', 'employee number',
             'staff id', 'staff code', 'code', 'id', 'msnv', 'ma nv', 'manv', 'ma so nhan vien'
         ])
+        mapped_employee_code = self._get_employee_identifier_value(raw_data)
+        if mapped_employee_code not in (None, ''):
+            employee_code = mapped_employee_code
         employee_code = self._normalize_code(employee_code) if employee_code else False
         id_no = self._extract_field(raw_data, [
             'id_no', 'id no', 'idno', 'id_number', 'id number', 'identification_id', 'identity'
@@ -666,7 +694,7 @@ class HrPayrollImportBatch(models.Model):
                     self._update_employee_from_raw_data(employee, raw_data, line=line)
 
                     # Step 2: Ensure contract exists
-                    contract = employee.contract_id or employee.contract_ids[:1]
+                    contract = self._get_latest_contract(employee)
                     if not contract and self.auto_create_contracts:
                         contract = self._create_contract(employee, line)
                         created_contracts |= contract
@@ -727,21 +755,45 @@ class HrPayrollImportBatch(models.Model):
         raw_data = line.get_raw_data()
 
         # Extract employee info from raw data
-        name = line.employee_name or self._extract_field(raw_data, ['name', 'full_name', 'employee_name'])
+        mapped_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
+        if 'name' in mapped_fields:
+            name = mapped_name
+        else:
+            name = mapped_name or line.employee_name or self._extract_field(
+                raw_data,
+                ['name', 'full_name', 'employee_name']
+            )
 
         if not name:
             raise ValidationError(_("Cannot create employee: Name is required"))
 
+        mappings = self._get_model_mappings('hr.employee')
+        mapped_fields = set(mappings.mapped('target_field_id.name'))
+        mapped_email = (
+            self._get_mapped_value_for_field(raw_data, 'hr.employee', 'work_email')
+            or self._get_mapped_value_for_field(raw_data, 'hr.employee', 'private_email')
+        )
+        work_email = mapped_email if 'work_email' in mapped_fields else mapped_email or line.employee_email
         vals = {
             'name': name,
-            'work_email': line.employee_email,
+            'work_email': work_email,
             'company_id': self.company_id.id,
         }
 
-        if line.employee_code:
-            vals['identification_id'] = line.employee_code
+        identifier_fields = {'employee_id', 'identification_id', 'barcode'}
+        mapped_identifier = self._get_employee_identifier_value(raw_data)
+        if mapped_fields & identifier_fields:
+            employee_code = mapped_identifier
+        else:
+            employee_code = mapped_identifier or line.employee_code
+        if employee_code:
+            employee_code = self._normalize_code(employee_code)
+            vals['identification_id'] = employee_code
             if 'employee_id' in self.env['hr.employee']._fields:
-                vals['employee_id'] = line.employee_code
+                vals['employee_id'] = employee_code
+
+        if 'private_email' in mapped_fields and mapped_email:
+            vals['private_email'] = mapped_email
 
         employee = self.env['hr.employee'].create(vals)
         self._update_employee_from_raw_data(employee, raw_data, line=line)
@@ -806,9 +858,106 @@ class HrPayrollImportBatch(models.Model):
                         continue
         return None
 
+    def _get_mapped_value_for_field(self, raw_data, model_name, field_name):
+        mapping = self.env['hr.payslip.import.mapping'].search([
+            ('salary_structure_id', '=', self.formula_config_id.id),
+            ('target_model_id.model', '=', model_name),
+            ('target_field_id.name', '=', field_name),
+        ], limit=1)
+        if not mapping:
+            return None
+        value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
+        return value if has_value else None
+
+    def _get_employee_identifier_value(self, raw_data):
+        for field_name in ('employee_id', 'identification_id', 'barcode'):
+            value = self._get_mapped_value_for_field(raw_data, 'hr.employee', field_name)
+            if value not in (None, ''):
+                return value
+        return None
+
+    def _coerce_mapped_value(self, record, field, value):
+        if value in (None, ''):
+            return None
+
+        if field.ttype == 'many2one':
+            name_value = str(value).strip()
+            if not name_value:
+                return None
+            target = self.env[field.relation]
+            existing = target.search([('name', '=ilike', name_value)], limit=1)
+            if not existing:
+                vals = {'name': name_value}
+                if 'company_id' in target._fields and self.company_id:
+                    vals['company_id'] = self.company_id.id
+                existing = target.create(vals)
+            return existing.id
+
+        if field.ttype == 'boolean':
+            if isinstance(value, bool):
+                return value
+            text = str(value).strip().lower()
+            return text in ('1', 'true', 'yes', 'y', 't')
+
+        if field.ttype in ('integer', 'float', 'monetary'):
+            try:
+                number = float(value)
+                return int(number) if field.ttype == 'integer' else number
+            except (TypeError, ValueError):
+                return None
+
+        if field.ttype == 'date':
+            return self._parse_date_value(value)
+
+        if field.ttype == 'datetime':
+            parsed = self._parse_date_value(value)
+            if isinstance(parsed, date) and not isinstance(parsed, datetime):
+                return datetime.combine(parsed, datetime.min.time())
+            return parsed if isinstance(parsed, datetime) else None
+
+        if field.ttype == 'selection':
+            selection = field.selection(record.env) if callable(field.selection) else field.selection
+            allowed = [key for key, _label in (selection or [])]
+            return str(value) if str(value) in allowed else None
+
+        return str(value)
+
+    def _get_model_mappings(self, model_name):
+        return self.env['hr.payslip.import.mapping'].search([
+            ('salary_structure_id', '=', self.formula_config_id.id),
+            ('target_model_id.model', '=', model_name),
+        ])
+
+    def _get_mapping_updates(self, record, raw_data, mappings=None):
+        mappings = mappings or self._get_model_mappings(record._name)
+        updates = {}
+        for mapping in mappings:
+            field = mapping.target_field_id
+            if field.name not in record._fields:
+                continue
+            value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
+            if not has_value:
+                continue
+            coerced = self._coerce_mapped_value(record, field, value)
+            if coerced is None:
+                continue
+            updates[field.name] = coerced
+        return updates
+
+    def _get_latest_contract(self, employee):
+        if not employee:
+            return False
+        contracts = employee.contract_ids.sorted(
+            key=lambda c: c.date_start or date.min,
+            reverse=True
+        )
+        return contracts[:1] if contracts else False
+
     def _update_employee_from_raw_data(self, employee, raw_data, line=None):
         """Update employee fields from raw import data."""
-        updates = {}
+        mappings = self._get_model_mappings(employee._name)
+        mapped_fields = set(mappings.mapped('target_field_id.name'))
+        updates = self._get_mapping_updates(employee, raw_data, mappings=mappings)
 
         emp_code = self._extract_field(raw_data, [
             'employee_code', 'employee code', 'emp_code', 'emp code', 'emp. code', 'empcode',
@@ -823,19 +972,19 @@ class HrPayrollImportBatch(models.Model):
             'id_no', 'id no', 'idno', 'id_number', 'id number', 'identification_id', 'identity'
         ])
 
-        if emp_code and 'employee_id' in employee._fields:
+        if emp_code and 'employee_id' in employee._fields and 'employee_id' not in mapped_fields:
             updates['employee_id'] = emp_code
-        if id_no:
+        if id_no and 'identification_id' not in mapped_fields:
             updates['identification_id'] = id_no
-        elif emp_code and not employee.identification_id:
+        elif emp_code and not employee.identification_id and 'identification_id' not in mapped_fields:
             updates['identification_id'] = emp_code
 
         full_name = self._extract_field(raw_data, ['full_name', 'full name', 'employee_name', 'name'])
-        if full_name:
+        if full_name and 'name' not in mapped_fields:
             updates['name'] = full_name
 
         email = self._extract_field(raw_data, ['email', 'work_email', 'emp_email', 'employee_email'])
-        if email:
+        if email and 'work_email' not in mapped_fields:
             updates['work_email'] = email
 
         phone = self._extract_field(raw_data, [
@@ -843,35 +992,35 @@ class HrPayrollImportBatch(models.Model):
             'mobile', 'mobile_phone', 'mobile phone', 'cell', 'cellphone', 'contact', 'contact_number'
         ])
         if phone:
-            if 'work_phone' in employee._fields and not employee.work_phone:
+            if 'work_phone' in employee._fields and not employee.work_phone and 'work_phone' not in mapped_fields:
                 updates['work_phone'] = phone
-            if 'mobile_phone' in employee._fields and not employee.mobile_phone:
+            if 'mobile_phone' in employee._fields and not employee.mobile_phone and 'mobile_phone' not in mapped_fields:
                 updates['mobile_phone'] = phone
 
         division = self._extract_field(raw_data, ['division'])
-        if division and 'division' in employee._fields:
+        if division and 'division' in employee._fields and 'division' not in mapped_fields:
             updates['division'] = division
 
         position = self._extract_field(raw_data, ['position'])
-        if position and 'position_name' in employee._fields:
+        if position and 'position_name' in employee._fields and 'position_name' not in mapped_fields:
             updates['position_name'] = position
 
         job_title = self._extract_field(raw_data, ['job_title', 'job title', 'jobtitle', 'designation'])
         if job_title:
-            if 'job_title' in employee._fields:
+            if 'job_title' in employee._fields and 'job_title' not in mapped_fields:
                 updates['job_title'] = job_title
-            elif 'job_title_text' in employee._fields:
+            elif 'job_title_text' in employee._fields and 'job_title_text' not in mapped_fields:
                 updates['job_title_text'] = job_title
 
         joining_date = self._parse_date_value(self._extract_field(
             raw_data,
             ['joining_date', 'joining date', 'date_of_joining', 'join_date', 'join date']
         ))
-        if joining_date and 'date_of_joining' in employee._fields:
+        if joining_date and 'date_of_joining' in employee._fields and 'date_of_joining' not in mapped_fields:
             updates['date_of_joining'] = joining_date
 
         department_name = self._extract_field(raw_data, ['department', 'dept', 'department_name'])
-        if department_name:
+        if department_name and 'department_id' not in mapped_fields:
             department = self.env['hr.department'].search([
                 ('name', '=ilike', department_name),
                 ('company_id', '=', self.company_id.id)
@@ -880,7 +1029,7 @@ class HrPayrollImportBatch(models.Model):
                 updates['department_id'] = department.id
 
         job_name = position or job_title
-        if job_name:
+        if job_name and 'job_id' not in mapped_fields:
             job = self.env['hr.job'].search([
                 ('name', '=ilike', job_name),
                 ('company_id', '=', self.company_id.id)
@@ -895,12 +1044,14 @@ class HrPayrollImportBatch(models.Model):
         """Update contract fields from raw import data."""
         if not contract:
             return
-        updates = {}
+        mappings = self._get_model_mappings(contract._name)
+        mapped_fields = set(mappings.mapped('target_field_id.name'))
+        updates = self._get_mapping_updates(contract, raw_data, mappings=mappings)
         joining_date = self._parse_date_value(self._extract_field(
             raw_data,
             ['joining_date', 'joining date', 'date_of_joining', 'join_date', 'join date']
         ))
-        if joining_date and contract.date_start != joining_date:
+        if joining_date and contract.date_start != joining_date and 'date_start' not in mapped_fields:
             updates['date_start'] = joining_date
         if updates:
             contract.write(updates)
