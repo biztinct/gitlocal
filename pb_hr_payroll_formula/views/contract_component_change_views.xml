@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_contract_component_change_tree" model="ir.ui.view">
+        <field name="name">hr.contract.advantage.change.tree</field>
+        <field name="model">hr.contract.advantage.change</field>
+        <field name="arch" type="xml">
+            <tree string="Contract Component Changes" default_order="effective_date desc, id desc">
+                <field name="contract_id"/>
+                <field name="employee_id"/>
+                <field name="advantage_template_id"/>
+                <field name="advantage_template_code"/>
+                <field name="old_amount"/>
+                <field name="new_amount"/>
+                <field name="effective_date"/>
+                <field name="change_source"/>
+                <field name="import_batch_id"/>
+                <field name="changed_by"/>
+                <field name="changed_at"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_contract_component_change_form" model="ir.ui.view">
+        <field name="name">hr.contract.advantage.change.form</field>
+        <field name="model">hr.contract.advantage.change</field>
+        <field name="arch" type="xml">
+            <form string="Contract Component Change" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="contract_id"/>
+                            <field name="employee_id"/>
+                            <field name="company_id"/>
+                            <field name="advantage_template_id"/>
+                            <field name="advantage_template_code"/>
+                        </group>
+                        <group>
+                            <field name="old_amount"/>
+                            <field name="new_amount"/>
+                            <field name="effective_date"/>
+                            <field name="change_source"/>
+                            <field name="import_batch_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="changed_by"/>
+                        <field name="changed_at"/>
+                    </group>
+                    <group>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_contract_component_changes" model="ir.actions.act_window">
+        <field name="name">Contract Component Changes</field>
+        <field name="res_model">hr.contract.advantage.change</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_contract_component_change_button" model="ir.ui.view">
+        <field name="name">hr.contract.form.component.change.button</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_advantage_changes"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-history">
+                    <field name="advantage_change_count" widget="statinfo" string="Component Changes"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

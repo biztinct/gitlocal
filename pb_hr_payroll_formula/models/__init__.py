@@ -11,5 +11,7 @@ from . import hr_employee
 from . import hr_payslip_line
 from . import hr_payslip_formula
 from . import hr_payroll_structure_formula
+from . import hr_contract
+from . import contract_component_change
 from . import payroll_import_batch
 from . import payroll_import_line

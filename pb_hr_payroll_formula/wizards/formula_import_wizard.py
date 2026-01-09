@@ -628,6 +628,52 @@ class FormulaImportWizard(models.TransientModel):
             cell = formula_sheet.cell(row=row_num, column=col_idx)
             return bool(cell.font and cell.font.bold)
 
+        def is_red_font(cell):
+            try:
+                font = cell.font
+                if font and font.color:
+                    color = font.color
+                    if color.type == 'rgb' and color.rgb:
+                        rgb = str(color.rgb).upper()
+                        if len(rgb) >= 6:
+                            if len(rgb) == 8:
+                                r, g, b = int(rgb[2:4], 16), int(rgb[4:6], 16), int(rgb[6:8], 16)
+                            else:
+                                r, g, b = int(rgb[0:2], 16), int(rgb[2:4], 16), int(rgb[4:6], 16)
+                            if r > 150 and g < 150 and b < 150:
+                                return True
+                            if r > 200 and g < 180 and b < 180 and r > g and r > b:
+                                return True
+                    elif color.type == 'indexed' and color.indexed in [2, 10]:
+                        return True
+            except Exception:
+                pass
+            return False
+
+        def is_red_in_merge(row_num, col_idx):
+            if merge_parser:
+                merge_info = merge_parser.get_merge_at(row_num, col_idx)
+                if merge_info:
+                    for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                        for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                            cell = formula_sheet.cell(row=m_row, column=m_col)
+                            if is_red_font(cell):
+                                return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return is_red_font(cell)
+
+        def is_underline_in_merge(row_num, col_idx):
+            if merge_parser:
+                merge_info = merge_parser.get_merge_at(row_num, col_idx)
+                if merge_info:
+                    for m_row in range(merge_info['min_row'], merge_info['max_row'] + 1):
+                        for m_col in range(merge_info['min_col'], merge_info['max_col'] + 1):
+                            cell = formula_sheet.cell(row=m_row, column=m_col)
+                            if cell.font and cell.font.underline:
+                                return True
+            cell = formula_sheet.cell(row=row_num, column=col_idx)
+            return bool(cell.font and cell.font.underline)
+
         def get_fill_debug(cell):
             if not cell.fill:
                 return "none"
@@ -823,6 +869,8 @@ class FormulaImportWizard(models.TransientModel):
 
             header_row = header_rows.get(col_letter, header_block_end)
             report_visible = is_bold_in_merge(header_row, col_idx)
+            is_contract_component = is_red_in_merge(header_row, col_idx)
+            requires_new_contract = is_contract_component and is_underline_in_merge(header_row, col_idx)
 
             max_sequence += 10
             values = {
@@ -839,6 +887,8 @@ class FormulaImportWizard(models.TransientModel):
                 'number_format': False,
                 'payslip_identifier': payslip_identifier.id if payslip_identifier else False,
                 'report_visible': report_visible,
+                'is_contract_component': is_contract_component,
+                'requires_new_contract': requires_new_contract,
             }
             if excel_formula:
                 values['excel_formula'] = excel_formula

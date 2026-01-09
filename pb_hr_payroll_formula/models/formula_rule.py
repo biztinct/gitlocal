@@ -317,6 +317,18 @@ class HrFormulaRule(models.Model):
         help="Include this component in reports and pivots."
     )
 
+    is_contract_component = fields.Boolean(
+        string='Contract Component',
+        default=False,
+        help="Marks this component as a contract component sourced from contract advantages."
+    )
+
+    requires_new_contract = fields.Boolean(
+        string='Requires New Contract',
+        default=False,
+        help="If enabled, changes to this component will trigger a new contract effective date."
+    )
+
     is_visible_in_grid = fields.Boolean(
         string='Visible in Grid',
         default=True,
@@ -485,6 +497,9 @@ class HrFormulaRule(models.Model):
             return f"__str{len(string_literals) - 1}__"
 
         result = re.sub(r'"([^"]|"")*"', _mask_string, result)
+
+        # Normalize redundant parentheses around cell references like "(B15)".
+        result = re.sub(r'\(\s*(\$?[A-Z]+\$?\d+)\s*\)', r'\1', result, flags=re.IGNORECASE)
 
         # Resolve same-sheet VLOOKUP into direct column references when possible.
         # Example: VLOOKUP(B5,CM2:$F$5,6,0) -> target column letter.
@@ -733,6 +748,7 @@ class HrFormulaRule(models.Model):
             r'\bAND\(': 'all([',
             r'\bOR\(': 'any([',
             r'\bNOT\(': 'not(',
+            r'\bCOUNTA\(': 'self._counta([',
             r'\bPOWER\(': 'pow(',
             r'\bSQRT\(': 'math.sqrt(',
             r'\bCEILING\(': 'math.ceil(',
@@ -880,6 +896,7 @@ class HrFormulaRule(models.Model):
         """
         original = formula
         patterns = ['sum([', 'min([', 'max([', 'self._avg([', 'all([', 'any([']
+        patterns.append('self._counta([')
 
         for pattern in patterns:
             # Find all occurrences and fix from right-to-left to handle nested calls.
@@ -1490,6 +1507,18 @@ class HrFormulaRule(models.Model):
         numbers = [self._coerce_number(v) for v in values_list]
         numbers = [v for v in numbers if v is not None]
         return sum(numbers) / len(numbers) if numbers else 0
+
+    def _counta(self, values_list):
+        """Excel COUNTA function implementation (counts non-empty values)."""
+        if values_list is None:
+            return 0
+        if not isinstance(values_list, (list, tuple)):
+            return 0 if values_list in (None, '') else 1
+        count = 0
+        for value in values_list:
+            if value not in (None, ''):
+                count += 1
+        return count
 
     def _iferror(self, value, error_value):
         """Excel IFERROR function implementation
