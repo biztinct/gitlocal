@@ -32,7 +32,6 @@
         'data/hr_salary_rule_category_data.xml',
         'data/hr_salary_rule_data.xml',
         'data/enhanced_salary_rules_data.xml',           # NEW: Enhanced salary rules
-        'data/enhanced_advantage_templates_data.xml',    # NEW: Enhanced advantage templates
         'data/spreadsheet_data.xml',                     # NEW: Indonesia spreadsheet template
         # Load server actions FIRST (no dependencies)
         'data/server_actions_data.xml',
