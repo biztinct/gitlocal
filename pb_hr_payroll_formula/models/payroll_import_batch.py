@@ -289,6 +289,9 @@ class HrPayrollImportBatch(models.Model):
         if not self.formula_config_id:
             raise UserError(_("Please select a Formula Configuration first."))
 
+        if self.formula_config_id.cycle_type == 'mid_cycle':
+            self._check_mid_cycle_overlap()
+
         # Get connector instance for file parsing
         connector = self._get_excel_connector()
 
@@ -638,6 +641,9 @@ class HrPayrollImportBatch(models.Model):
         if self.state not in ['matched', 'validated']:
             raise UserError(_("Please match employees first."))
 
+        if self.formula_config_id.cycle_type == 'mid_cycle':
+            self._check_mid_cycle_overlap()
+
         errors = []
 
         for line in self.import_line_ids:
@@ -663,6 +669,9 @@ class HrPayrollImportBatch(models.Model):
 
         if self.state not in ['validated', 'matched']:
             raise UserError(_("Please validate data first."))
+
+        if self.formula_config_id.cycle_type == 'mid_cycle':
+            self._check_mid_cycle_overlap()
 
         self.state = 'processing'
 
@@ -737,6 +746,9 @@ class HrPayrollImportBatch(models.Model):
                     run = self.payslip_run_id
                 # Link slips to run
                 created_payslips.write({'payslip_run_id': run.id})
+
+                if self.formula_config_id.cycle_type == 'mid_cycle':
+                    self._create_mid_cycle_carryovers(created_payslips, payslip_run=run)
 
             self.state = 'done'
             self._log("Processing complete. Created: %d employees, %d contracts, %d payslips" % (
@@ -939,6 +951,85 @@ class HrPayrollImportBatch(models.Model):
     def _get_mirrored_employee_contract_fields(self):
         return {'job_id', 'department_id', 'resource_calendar_id', 'company_id'}
 
+    def _check_mid_cycle_overlap(self):
+        if not self.date_from or not self.date_to:
+            return
+        overlapping = self.search([
+            ('id', '!=', self.id),
+            ('state', '!=', 'cancelled'),
+            ('formula_config_id.cycle_type', '=', 'mid_cycle'),
+            ('company_id', '=', self.company_id.id),
+            ('date_from', '<=', self.date_to),
+            ('date_to', '>=', self.date_from),
+        ])
+        if overlapping:
+            names = ', '.join(overlapping.mapped('name'))
+            raise UserError(_(
+                "A mid-cycle payroll run already exists for the selected dates: %s. "
+                "Please change the date range."
+            ) % names)
+
+    def _get_cycle_component_mappings_for_mid(self):
+        return self.env['hr.payroll.cycle.component.mapping'].search([
+            ('mid_cycle_config_id', '=', self.formula_config_id.id),
+            ('active', '=', True),
+        ])
+
+    def _get_cycle_component_mappings_for_end(self):
+        return self.env['hr.payroll.cycle.component.mapping'].search([
+            ('end_cycle_config_id', '=', self.formula_config_id.id),
+            ('active', '=', True),
+        ])
+
+    def _coerce_numeric_string(self, value):
+        cleaned = value.strip().replace(' ', '')
+        if not cleaned:
+            return None
+        is_percent = False
+        if cleaned.endswith('%'):
+            cleaned = cleaned[:-1]
+            is_percent = True
+        try:
+            if ',' in cleaned and '.' in cleaned:
+                if cleaned.rfind(',') > cleaned.rfind('.'):
+                    cleaned = cleaned.replace('.', '').replace(',', '.')
+                else:
+                    cleaned = cleaned.replace(',', '')
+            elif ',' in cleaned:
+                parts = cleaned.split(',')
+                if all(len(p) == 3 for p in parts[1:]):
+                    cleaned = ''.join(parts)
+                else:
+                    cleaned = cleaned.replace(',', '.')
+            elif '.' in cleaned:
+                parts = cleaned.split('.')
+                if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
+                    cleaned = ''.join(parts)
+            number = float(cleaned)
+            if is_percent:
+                number = number / 100
+            return number
+        except (ValueError, TypeError):
+            return None
+
+    def _normalize_computed_value(self, rule, value):
+        if value is None:
+            return 0.0
+        if isinstance(value, bool):
+            return float(value)
+        if isinstance(value, (int, float)):
+            return float(value)
+        if isinstance(value, str):
+            stripped = value.strip()
+            if stripped == '':
+                return 0.0
+            if self._is_employee_code_rule(rule):
+                return 0.0
+            numeric_value = self._coerce_numeric_string(stripped)
+            if numeric_value is not None:
+                return numeric_value
+        return 0.0
+
     def _sync_employee_contract_mirror_fields(self, employee, contract, raw_data,
                                               employee_mappings=None, contract_mappings=None):
         if not employee and not contract:
@@ -983,6 +1074,81 @@ class HrPayrollImportBatch(models.Model):
             contract.write(contract_updates)
 
         return handled_fields
+
+    def _create_mid_cycle_carryovers(self, payslips, payslip_run=None):
+        mappings = self._get_cycle_component_mappings_for_mid()
+        if not mappings:
+            return
+        carryover_model = self.env['hr.payroll.cycle.carryover']
+        carryover_model.search([('import_batch_id', '=', self.id)]).unlink()
+
+        vals_list = []
+        for payslip in payslips:
+            employee = payslip.employee_id
+            if not employee:
+                continue
+            try:
+                computed_values = json.loads(payslip.formula_computed_values or '{}')
+            except json.JSONDecodeError:
+                computed_values = {}
+
+            for mapping in mappings:
+                rule = mapping.mid_component_id
+                value = computed_values.get(rule.code)
+                if value is None and rule.column_letter:
+                    value = computed_values.get(rule.column_letter)
+                amount = self._normalize_computed_value(rule, value)
+                if not amount:
+                    continue
+                vals_list.append({
+                    'employee_id': employee.id,
+                    'formula_config_id': self.formula_config_id.id,
+                    'source_component_id': rule.id,
+                    'amount': amount,
+                    'date_from': self.date_from,
+                    'date_to': self.date_to,
+                    'payslip_run_id': payslip_run.id if payslip_run else False,
+                    'import_batch_id': self.id,
+                    'state': 'posted',
+                })
+
+        if vals_list:
+            carryover_model.create(vals_list)
+
+    def _apply_mid_cycle_carryover(self, input_values, employee):
+        if not employee:
+            return
+        if not self.date_from or not self.date_to:
+            return
+        mappings = self._get_cycle_component_mappings_for_end()
+        if not mappings:
+            return
+
+        carryover_model = self.env['hr.payroll.cycle.carryover']
+        for mapping in mappings:
+            target_rule = mapping.end_component_id
+            target_code = target_rule.code or target_rule.column_letter
+            if not target_code:
+                continue
+
+            carryovers = carryover_model.search([
+                ('employee_id', '=', employee.id),
+                ('formula_config_id', '=', mapping.mid_cycle_config_id.id),
+                ('source_component_id', '=', mapping.mid_component_id.id),
+                ('state', '=', 'posted'),
+                ('date_from', '<=', self.date_to),
+                ('date_to', '>=', self.date_from),
+            ])
+            if not carryovers:
+                continue
+            total_amount = sum(carryovers.mapped('amount'))
+            if total_amount == 0:
+                continue
+            existing = input_values.get(target_code, 0.0)
+            try:
+                input_values[target_code] = float(existing) + total_amount
+            except (TypeError, ValueError):
+                input_values[target_code] = total_amount
 
     def _get_mapping_updates(self, record, raw_data, mappings=None):
         mappings = mappings or self._get_model_mappings(record._name)
@@ -1623,6 +1789,10 @@ class HrPayrollImportBatch(models.Model):
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):
             input_values[rule.code] = rule.constant_value
+
+        if config.cycle_type == 'end_cycle':
+            employee = contract.employee_id if contract else None
+            self._apply_mid_cycle_carryover(input_values, employee)
 
         return input_values
 

@@ -96,6 +96,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         { label: 'Configure Salary', icon: 'fa-sliders', desc: 'Formulas & structures', disabled: false, route: 'payroll-config' },
                         { label: 'Payslip Configuration', icon: 'fa-cogs', desc: 'Identifiers & labels', disabled: false, route: 'payroll-payslip-config' },
                         { label: 'Employee/Contract Mapping', icon: 'fa-exchange', desc: 'Map fields to components', disabled: false, route: 'payroll-employee-contract-mapping' },
+                        { label: 'Mid-Cycle Mapping', icon: 'fa-random', desc: 'Map mid-cycle to end-cycle', disabled: false, route: 'payroll-cycle-mapping' },
                         { label: 'Test Calculation', icon: 'fa-flask', desc: 'Sample data & validation', disabled: false, route: 'payroll-test' },
                         { label: 'Batch Compute', icon: 'fa-play-circle', desc: 'Import & compute batches', disabled: false, route: 'payroll-batch' },
                         { label: 'Batch Workflow', icon: 'fa-filter', desc: 'Payslip batches & runs', disabled: false, route: 'payroll-batch-workflow' },
