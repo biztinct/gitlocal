@@ -16,3 +16,4 @@ from . import hr_contract
 from . import contract_component_change
 from . import payroll_import_batch
 from . import payroll_import_line
+from . import payroll_cycle_carryover

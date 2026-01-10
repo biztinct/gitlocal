@@ -48,6 +48,12 @@ class HrFormulaConfig(models.Model):
         default=True,
         tracking=True
     )
+    cycle_type = fields.Selection([
+        ('regular', 'Regular'),
+        ('mid_cycle', 'Mid-Cycle'),
+        ('end_cycle', 'End-Cycle'),
+        ('full_final', 'Full & Final'),
+    ], string='Cycle Type', default='regular', tracking=True)
 
     # ==========================================
     # COUNTRY & STRUCTURE LINKING
@@ -102,6 +108,18 @@ class HrFormulaConfig(models.Model):
         tracking=True,
         help="Link to the payroll structure this config applies to"
     )
+    mid_cycle_source_component_id = fields.Many2one(
+        'hr.formula.rule',
+        string='Mid-Cycle Source Component',
+        domain="[('config_id', '=', id)]",
+        help="Component whose value will be carried forward from mid-cycle runs."
+    )
+    mid_cycle_target_component_id = fields.Many2one(
+        'hr.formula.rule',
+        string='End-Cycle Target Component',
+        domain="[('config_id', '=', id)]",
+        help="Component that receives the carried mid-cycle amount in end-cycle runs."
+    )
 
     company_id = fields.Many2one(
         'res.company',
@@ -153,6 +171,11 @@ class HrFormulaConfig(models.Model):
     sample_count = fields.Integer(
         string='Sample Count',
         compute='_compute_sample_count'
+    )
+
+    carryover_count = fields.Integer(
+        string='Carryover Count',
+        compute='_compute_carryover_count'
     )
 
     # ==========================================
@@ -341,6 +364,20 @@ class HrFormulaConfig(models.Model):
         for record in self:
             record.sample_count = len(record.sample_data_ids)
 
+    def _compute_carryover_count(self):
+        for record in self:
+            record.carryover_count = self.env['hr.payroll.cycle.carryover'].search_count([
+                ('formula_config_id', '=', record.id)
+            ])
+
+    def action_view_cycle_carryovers(self):
+        self.ensure_one()
+        action = self.env.ref('pb_hr_payroll_formula.action_payroll_cycle_carryover').read()[0]
+        action['domain'] = [('formula_config_id', '=', self.id)]
+        action['context'] = {
+            'default_formula_config_id': self.id,
+        }
+        return action
     @api.depends('test_result_ids', 'test_result_ids.status')
     def _compute_validation_status(self):
         for record in self:
