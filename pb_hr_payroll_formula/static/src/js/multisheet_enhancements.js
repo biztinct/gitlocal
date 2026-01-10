@@ -47,9 +47,9 @@ function addDualScrollbar() {
         '.o_field_widget[name="column_selection_ids"] .o_list_renderer',
         '.o_field_widget[name="component_preview_ids"] .o_list_renderer',
         '.o_field_widget[name="append_order_ids"] .o_list_renderer',
-        '.o_form_view .o_field_one2many .o_list_renderer',
-        '.o_field_one2many .o_list_renderer',
-        '.o_list_renderer'
+        '.o_field_widget[name="missing_field_ids"] .o_list_renderer',
+        '.o_field_widget[name="sheet_line_ids"] .o_list_renderer',
+        '.o_field_widget[name="component_line_ids"] .o_list_renderer'
     ];
 
     let listRenderers = [];
@@ -64,27 +64,8 @@ function addDualScrollbar() {
     }
 
     if (listRenderers.length === 0) {
-        console.log('No list renderers found with selectors. Trying fallback...');
-        // Fallback: find all wide tables
-        const allTables = document.querySelectorAll('table.o_list_table');
-        console.log(`Found ${allTables.length} total list tables in DOM`);
-
-        allTables.forEach((table, index) => {
-            const scrollWidth = table.scrollWidth;
-            const clientWidth = table.clientWidth;
-            console.log(`Table ${index}: scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
-
-            if (scrollWidth > clientWidth + 10) { // 10px threshold
-                // Find the renderer/container
-                let container = table.closest('.o_list_renderer') ||
-                               table.closest('.o_list_view') ||
-                               table.parentElement;
-                if (container && container !== document.body) {
-                    console.log(`Adding wide table ${index} to process list`);
-                    listRenderers.push(container);
-                }
-            }
-        });
+        console.log('No list renderers found for multisheet wizard selectors.');
+        return;
     }
 
     console.log(`Processing ${listRenderers.length} list renderer containers\n`);

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_payroll_cycle_carryover_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.cycle.carryover.tree</field>
+        <field name="model">hr.payroll.cycle.carryover</field>
+        <field name="arch" type="xml">
+            <tree string="Mid-Cycle Carryover" default_order="date_from desc">
+                <field name="employee_id"/>
+                <field name="source_component_id"/>
+                <field name="amount"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="import_batch_id"/>
+                <field name="payslip_run_id"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_payroll_cycle_carryover_form" model="ir.ui.view">
+        <field name="name">hr.payroll.cycle.carryover.form</field>
+        <field name="model">hr.payroll.cycle.carryover</field>
+        <field name="arch" type="xml">
+            <form string="Mid-Cycle Carryover">
+                <sheet>
+                    <group>
+                        <group string="Carryover">
+                            <field name="employee_id"/>
+                            <field name="formula_config_id"/>
+                            <field name="source_component_id"/>
+                            <field name="amount"/>
+                            <field name="state"/>
+                        </group>
+                        <group string="Audit">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="import_batch_id"/>
+                            <field name="payslip_run_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_payroll_cycle_carryover_search" model="ir.ui.view">
+        <field name="name">hr.payroll.cycle.carryover.search</field>
+        <field name="model">hr.payroll.cycle.carryover</field>
+        <field name="arch" type="xml">
+            <search string="Mid-Cycle Carryover">
+                <field name="employee_id"/>
+                <field name="formula_config_id"/>
+                <field name="source_component_id"/>
+                <filter name="state_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="state_posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_config" string="Formula Config" context="{'group_by': 'formula_config_id'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_payroll_cycle_carryover" model="ir.actions.act_window">
+        <field name="name">Mid-Cycle Carryover</field>
+        <field name="res_model">hr.payroll.cycle.carryover</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_payroll_cycle_carryover_search"/>
+    </record>
+
+</odoo>

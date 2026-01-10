@@ -26,6 +26,13 @@
               sequence="12"
               groups="om_hr_payroll.group_hr_payroll_manager"/>
 
+    <menuitem id="menu_mid_cycle_carryover"
+              name="Mid-Cycle Carryover"
+              parent="menu_formula_root"
+              action="action_payroll_cycle_carryover"
+              sequence="13"
+              groups="pb_hr_payroll_formula.group_formula_manager"/>
+
     <!-- Payroll Import Submenu -->
     <menuitem id="menu_formula_import"
               name="Payroll Import"
