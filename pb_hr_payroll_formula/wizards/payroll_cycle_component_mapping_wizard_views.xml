@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_payroll_cycle_component_mapping_wizard_form" model="ir.ui.view">
+        <field name="name">hr.payroll.cycle.component.mapping.wizard.form</field>
+        <field name="model">hr.payroll.cycle.component.mapping.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Mid/End Cycle">
+                <group>
+                    <field name="mid_cycle_config_id"/>
+                    <field name="end_cycle_config_id"/>
+                </group>
+                <footer>
+                    <button name="action_open_mappings" type="object" string="Open Mappings"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payroll_cycle_component_mapping_wizard" model="ir.actions.act_window">
+        <field name="name">Mid-Cycle to End-Cycle Mapping</field>
+        <field name="res_model">hr.payroll.cycle.component.mapping.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_payroll_cycle_component_mapping_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

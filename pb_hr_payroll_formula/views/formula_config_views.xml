@@ -126,10 +126,6 @@
                             <field name="country_code"/>
                             <field name="structure_id"/>
                             <field name="cycle_type"/>
-                            <field name="mid_cycle_source_component_id"
-                                   attrs="{'invisible': [('cycle_type', '!=', 'mid_cycle')], 'required': [('cycle_type', '=', 'mid_cycle')]}"/>
-                            <field name="mid_cycle_target_component_id"
-                                   attrs="{'invisible': [('cycle_type', '!=', 'end_cycle')], 'required': [('cycle_type', '=', 'end_cycle')]}"/>
                             <field name="connector_id"/>
                             <field name="use_color_coded_excel_import"/>
                             <field name="payroll_journal_id"
