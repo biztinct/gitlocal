@@ -64,6 +64,7 @@ License: LGPL-3
         'views/contract_component_change_views.xml',
         'views/payslip_config_views.xml',
         'views/payslip_import_mapping_views.xml',
+        'views/hr_employee_views.xml',
         # Wizards (actions used by views below)
         'wizards/wizard_views.xml',
         'wizards/multisheet_wizard_views.xml',
