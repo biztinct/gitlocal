@@ -378,6 +378,44 @@ class HrFormulaConfig(models.Model):
             'default_formula_config_id': self.id,
         }
         return action
+
+    def action_rebuild_cycle_carryover(self):
+        self.ensure_one()
+        if self.cycle_type != 'mid_cycle':
+            raise UserError(_("Carryover can only be rebuilt for mid-cycle configurations."))
+        batch_model = self.env['hr.payroll.import.batch']
+        batches = batch_model.search([
+            ('formula_config_id', '=', self.id),
+            ('state', '=', 'done'),
+        ])
+        if not batches:
+            raise UserError(_("No completed batches found for this configuration."))
+        rebuilt = 0
+        skipped = 0
+        for batch in batches:
+            payslips = batch.created_payslip_ids
+            payslip_run = batch.payslip_run_id
+            if not payslips and payslip_run:
+                payslips = payslip_run.slip_ids
+            if not payslips:
+                skipped += 1
+                continue
+            batch._create_mid_cycle_carryovers(payslips, payslip_run=payslip_run)
+            rebuilt += 1
+        if not rebuilt:
+            raise UserError(_("No payslips found for completed batches."))
+        message = _('Carryover rebuilt for %s batch(es).') % rebuilt
+        if skipped:
+            message += _(' %s batch(es) skipped without payslips.') % skipped
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': message,
+                'type': 'success',
+                'sticky': False,
+            }
+        }
     @api.depends('test_result_ids', 'test_result_ids.status')
     def _compute_validation_status(self):
         for record in self:

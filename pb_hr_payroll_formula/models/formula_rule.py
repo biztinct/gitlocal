@@ -1273,6 +1273,10 @@ class HrFormulaRule(models.Model):
                         cleaned = v.strip().replace(' ', '')
                         if not cleaned:
                             return 0
+                        is_percent = False
+                        if cleaned.endswith('%'):
+                            cleaned = cleaned[:-1]
+                            is_percent = True
                         try:
                             # Handle thousands separators and decimal marks.
                             if ',' in cleaned and '.' in cleaned:
@@ -1290,7 +1294,10 @@ class HrFormulaRule(models.Model):
                                 parts = cleaned.split('.')
                                 if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
                                     cleaned = ''.join(parts)
-                            return float(cleaned)
+                            number = float(cleaned)
+                            if is_percent:
+                                number = number / 100
+                            return number
                         except (ValueError, TypeError):
                             # Return 0 for non-numeric strings in arithmetic contexts
                             # String comparisons use raw_values via _isblank_value helper
@@ -1443,6 +1450,10 @@ class HrFormulaRule(models.Model):
             cleaned = value.strip().replace(' ', '')
             if not cleaned:
                 return None
+            is_percent = False
+            if cleaned.endswith('%'):
+                cleaned = cleaned[:-1]
+                is_percent = True
             try:
                 if ',' in cleaned and '.' in cleaned:
                     if cleaned.rfind(',') > cleaned.rfind('.'):
@@ -1459,7 +1470,10 @@ class HrFormulaRule(models.Model):
                     parts = cleaned.split('.')
                     if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
                         cleaned = ''.join(parts)
-                return float(cleaned)
+                number = float(cleaned)
+                if is_percent:
+                    number = number / 100
+                return number
             except (ValueError, TypeError):
                 return None
         return None

@@ -87,6 +87,11 @@
                                 attrs="{'invisible': [('cycle_type', '!=', 'mid_cycle')]}">
                             <field name="carryover_count" widget="statinfo" string="Carryover"/>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_rebuild_cycle_carryover"
+                                icon="fa-refresh"
+                                attrs="{'invisible': [('cycle_type', '!=', 'mid_cycle')]}">
+                            <span class="o_stat_text">Rebuild Carryover</span>
+                        </button>
                         <button class="oe_stat_button" type="object" name="action_open_excel_grid"
                                 icon="fa-table" attrs="{'invisible': [('rule_count', '=', 0)]}">
                             <span class="o_stat_text">Open Grid</span>
