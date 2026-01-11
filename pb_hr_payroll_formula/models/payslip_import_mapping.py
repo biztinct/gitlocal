@@ -36,6 +36,5 @@ class HrPayslipImportMapping(models.Model):
     component_id = fields.Many2one(
         'hr.formula.rule',
         string='Component',
-        required=True,
         domain="[('config_id', '=', salary_structure_id)]"
     )
