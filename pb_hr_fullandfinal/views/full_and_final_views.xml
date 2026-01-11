@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_full_and_final_employee_tree" model="ir.ui.view">
-        <field name="name">hr.employee.full.and.final.tree</field>
-        <field name="model">hr.employee</field>
+    <record id="action_full_and_final_generate_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Full and Final</field>
+        <field name="res_model">hr.full.final.generate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_full_and_final_tree" model="ir.ui.view">
+        <field name="name">hr.full.final.settlement.tree</field>
+        <field name="model">hr.full.final.settlement</field>
         <field name="arch" type="xml">
             <tree string="Full and Final" create="0" edit="0">
-                <field name="name" string="Employee Name"/>
-                <field name="departure_date" string="Last Date in Company"/>
+                <header>
+                    <button name="%(action_full_and_final_generate_wizard)d"
+                            type="action"
+                            string="Generate Full and Final"
+                            class="oe_highlight"
+                            icon="fa-plus"/>
+                </header>
+                <field name="employee_id"/>
+                <field name="employee_code"/>
+                <field name="department_id"/>
+                <field name="settlement_date"/>
+                <field name="formula_config_id"/>
+                <field name="net_payable"/>
+                <field name="source"/>
                 <button name="action_download_full_and_final"
                         type="object"
                         string="Download Full and Final"
@@ -16,12 +35,78 @@
         </field>
     </record>
 
+    <record id="view_full_and_final_form" model="ir.ui.view">
+        <field name="name">hr.full.final.settlement.form</field>
+        <field name="model">hr.full.final.settlement</field>
+        <field name="arch" type="xml">
+            <form string="Full and Final">
+                <header>
+                    <button name="action_download_full_and_final"
+                            type="object"
+                            string="Download Full and Final"
+                            class="oe_highlight"
+                            icon="fa-download"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="employee_code"/>
+                        <field name="department_id"/>
+                        <field name="job_id"/>
+                        <field name="contract_id"/>
+                    </group>
+                    <group>
+                        <field name="settlement_date"/>
+                        <field name="settlement_month"/>
+                        <field name="formula_config_id"/>
+                        <field name="import_batch_id"/>
+                        <field name="source"/>
+                    </group>
+                    <group>
+                        <field name="total_earnings"/>
+                        <field name="total_deductions"/>
+                        <field name="net_payable"/>
+                    </group>
+                    <notebook>
+                        <page string="Input Values">
+                            <field name="input_values_json" widget="text"/>
+                        </page>
+                        <page string="Computed Values">
+                            <field name="computed_values_json" widget="text"/>
+                        </page>
+                        <page string="Source Data">
+                            <field name="raw_data_json" widget="text"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_full_and_final_search" model="ir.ui.view">
+        <field name="name">hr.full.final.settlement.search</field>
+        <field name="model">hr.full.final.settlement</field>
+        <field name="arch" type="xml">
+            <search string="Full and Final">
+                <field name="employee_id"/>
+                <field name="formula_config_id"/>
+                <filter name="this_month"
+                        string="This Month"
+                        domain="[('settlement_date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('settlement_date', '&lt;', (context_today() + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="source_auto" string="Auto" domain="[('source', '=', 'auto')]"/>
+                <filter name="source_manual" string="Manual" domain="[('source', '=', 'manual')]"/>
+            </search>
+        </field>
+    </record>
+
     <record id="action_full_and_final_employees" model="ir.actions.act_window">
         <field name="name">Full and Final</field>
-        <field name="res_model">hr.employee</field>
+        <field name="res_model">hr.full.final.settlement</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_full_and_final_employee_tree"/>
-        <field name="domain">[('departure_date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('departure_date', '&lt;', (context_today() + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]</field>
+        <field name="view_id" ref="view_full_and_final_tree"/>
+        <field name="search_view_id" ref="view_full_and_final_search"/>
+        <field name="domain">[]</field>
         <field name="context">{'create': False}</field>
     </record>
+
 </odoo>

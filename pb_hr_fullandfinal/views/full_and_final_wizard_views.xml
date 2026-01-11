@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_full_and_final_generate_wizard_form" model="ir.ui.view">
+        <field name="name">hr.full.final.generate.wizard.form</field>
+        <field name="model">hr.full.final.generate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Full and Final">
+                <sheet>
+                    <group>
+                        <field name="formula_config_id" options="{'no_create': True}"/>
+                        <field name="employee_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    </group>
+                    <group string="Excel Overrides">
+                        <field name="import_file" filename="import_filename"/>
+                        <field name="file_sheet_name"
+                               attrs="{'invisible': [('import_file', '=', False)]}"/>
+                        <field name="file_header_row"
+                               attrs="{'invisible': [('import_file', '=', False)]}"/>
+                        <field name="file_data_start_row"
+                               attrs="{'invisible': [('import_file', '=', False)]}"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generate"
+                            type="object"
+                            string="Generate"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
