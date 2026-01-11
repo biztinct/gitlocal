@@ -8,6 +8,9 @@
             <form string="Select Salary Structure">
                 <group>
                     <field name="salary_structure_id" widget="radio" context="{'no_code_display': True}"/>
+                    <field name="copy_from_structure_id" widget="radio"
+                           context="{'no_code_display': True}"
+                           domain="[('id', '!=', salary_structure_id)]"/>
                 </group>
                 <footer>
                     <button name="action_open_mappings" type="object" string="Open Mappings"

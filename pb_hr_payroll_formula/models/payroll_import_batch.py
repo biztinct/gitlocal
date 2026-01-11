@@ -937,7 +937,7 @@ class HrPayrollImportBatch(models.Model):
             ('target_model_id.model', '=', model_name),
             ('target_field_id.name', '=', field_name),
         ], limit=1)
-        if not mapping:
+        if not mapping or not mapping.component_id:
             return None
         value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
         return value if has_value else None
@@ -1112,7 +1112,7 @@ class HrPayrollImportBatch(models.Model):
         contract_updates = {}
         for field_name in self._get_mirrored_employee_contract_fields():
             mapping = employee_map.get(field_name) or contract_map.get(field_name)
-            if not mapping:
+            if not mapping or not mapping.component_id:
                 continue
             value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
             if not has_value:
@@ -1517,6 +1517,8 @@ class HrPayrollImportBatch(models.Model):
         updates = {}
         for mapping in mappings:
             field = mapping.target_field_id
+            if not mapping.component_id:
+                continue
             if field.name not in record._fields:
                 continue
             value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
@@ -2298,6 +2300,8 @@ class HrPayrollImportBatch(models.Model):
         return None
 
     def _get_rule_raw_value(self, raw_data, rule):
+        if not rule:
+            return None, False
         candidates = []
 
         if rule.data_source_field:
