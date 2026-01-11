@@ -57,6 +57,9 @@
                             class="btn-success" icon="fa-play"
                             attrs="{'invisible': [('state', 'not in', ['validated', 'matched'])]}"
                             confirm="This will create employees, contracts and payslips. Continue?"/>
+                    <button name="action_rebuild_cycle_carryover" string="Rebuild Carryover" type="object"
+                            class="btn-secondary" icon="fa-refresh"
+                            attrs="{'invisible': ['|', ('state', '!=', 'done'), ('cycle_type', '!=', 'mid_cycle')]}"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object"
                             class="btn-secondary"
                             attrs="{'invisible': [('state', 'in', ['draft', 'done', 'processing'])]}"/>
@@ -72,6 +75,7 @@
                     <field name="matched_employees" invisible="1"/>
                     <field name="new_employees" invisible="1"/>
                     <field name="error_lines" invisible="1"/>
+                    <field name="cycle_type" invisible="1"/>
 
                     <!-- Smart Buttons -->
                     <div class="oe_button_box" name="button_box">

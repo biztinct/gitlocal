@@ -92,6 +92,11 @@ class HrPayrollImportBatch(models.Model):
         string='Country',
         store=True
     )
+    cycle_type = fields.Selection(
+        related='formula_config_id.cycle_type',
+        string='Cycle Type',
+        readonly=True
+    )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
@@ -1078,12 +1083,25 @@ class HrPayrollImportBatch(models.Model):
     def _create_mid_cycle_carryovers(self, payslips, payslip_run=None):
         mappings = self._get_cycle_component_mappings_for_mid()
         if not mappings:
+            _logger.info(
+                "Carryover: no mappings found for batch %s (config %s).",
+                self.id, self.formula_config_id.display_name
+            )
             return
         carryover_model = self.env['hr.payroll.cycle.carryover']
         carryover_model.search([('import_batch_id', '=', self.id)]).unlink()
 
         vals_list = []
-        for payslip in payslips:
+        _logger.info(
+            "Carryover: start batch %s config %s mappings=%s payslips=%s period=%s..%s",
+            self.id,
+            self.formula_config_id.display_name,
+            len(mappings),
+            len(payslips),
+            self.date_from,
+            self.date_to,
+        )
+        for idx, payslip in enumerate(payslips):
             employee = payslip.employee_id
             if not employee:
                 continue
@@ -1091,14 +1109,36 @@ class HrPayrollImportBatch(models.Model):
                 computed_values = json.loads(payslip.formula_computed_values or '{}')
             except json.JSONDecodeError:
                 computed_values = {}
+            if idx < 5:
+                _logger.info(
+                    "Carryover: payslip %s employee %s computed_keys=%s",
+                    payslip.id,
+                    employee.id,
+                    list(computed_values.keys())[:10],
+                )
 
             for mapping in mappings:
                 rule = mapping.mid_component_id
                 value = computed_values.get(rule.code)
                 if value is None and rule.column_letter:
                     value = computed_values.get(rule.column_letter)
+                if idx < 5:
+                    _logger.info(
+                        "Carryover: mapping %s rule %s/%s value=%s",
+                        mapping.id,
+                        rule.code,
+                        rule.column_letter,
+                        value,
+                    )
                 amount = self._normalize_computed_value(rule, value)
                 if not amount:
+                    if idx < 5:
+                        _logger.info(
+                            "Carryover: skip rule %s for employee %s amount=%s",
+                            rule.code,
+                            employee.id,
+                            amount,
+                        )
                     continue
                 vals_list.append({
                     'employee_id': employee.id,
@@ -1114,6 +1154,32 @@ class HrPayrollImportBatch(models.Model):
 
         if vals_list:
             carryover_model.create(vals_list)
+        _logger.info(
+            "Carryover: created %s rows for batch %s.",
+            len(vals_list),
+            self.id,
+        )
+
+    def action_rebuild_cycle_carryover(self):
+        self.ensure_one()
+        if self.formula_config_id.cycle_type != 'mid_cycle':
+            raise UserError(_("Carryover can only be rebuilt for mid-cycle batches."))
+        payslips = self.created_payslip_ids
+        payslip_run = self.payslip_run_id
+        if not payslips and payslip_run:
+            payslips = payslip_run.slip_ids
+        if not payslips:
+            raise UserError(_("No payslips found for this batch."))
+        self._create_mid_cycle_carryovers(payslips, payslip_run=payslip_run)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'message': _('Carryover rebuilt for %s') % self.name,
+                'type': 'success',
+                'sticky': False,
+            }
+        }
 
     def _apply_mid_cycle_carryover(self, input_values, employee):
         if not employee:
@@ -1667,6 +1733,25 @@ class HrPayrollImportBatch(models.Model):
                 normalized_key = self._normalize_header_key(key)
                 if normalized_key in normalized_map:
                     return raw_data.get(normalized_map[normalized_key])
+            normalized_candidates = [
+                self._normalize_header_key(key) for key in candidates if key
+            ]
+            normalized_candidates = [key for key in normalized_candidates if len(key) >= 6]
+            if not normalized_candidates:
+                return None
+            matches = []
+            for header_key, original_key in normalized_map.items():
+                for candidate in normalized_candidates:
+                    if candidate and candidate in header_key:
+                        matches.append(original_key)
+            if len(set(matches)) == 1:
+                return raw_data.get(matches[0])
+            if matches:
+                _logger.info(
+                    "Input match ambiguous for candidates %s: %s",
+                    candidates,
+                    sorted(set(matches)),
+                )
             return None
 
         def is_employee_code_rule(rule):
@@ -1687,6 +1772,10 @@ class HrPayrollImportBatch(models.Model):
             cleaned = value.strip().replace(' ', '')
             if not cleaned:
                 return None
+            is_percent = False
+            if cleaned.endswith('%'):
+                cleaned = cleaned[:-1]
+                is_percent = True
             try:
                 if ',' in cleaned and '.' in cleaned:
                     if cleaned.rfind(',') > cleaned.rfind('.'):
@@ -1703,7 +1792,10 @@ class HrPayrollImportBatch(models.Model):
                     parts = cleaned.split('.')
                     if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
                         cleaned = ''.join(parts)
-                return float(cleaned)
+                number = float(cleaned)
+                if is_percent:
+                    number = number / 100
+                return number
             except (ValueError, TypeError):
                 return None
 
