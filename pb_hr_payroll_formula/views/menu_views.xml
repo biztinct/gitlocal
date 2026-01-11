@@ -40,11 +40,25 @@
               sequence="14"
               groups="pb_hr_payroll_formula.group_formula_manager"/>
 
+    <menuitem id="menu_proration_lines"
+              name="Proration Audit"
+              parent="menu_formula_root"
+              action="action_payroll_proration_line"
+              sequence="15"
+              groups="pb_hr_payroll_formula.group_formula_manager"/>
+
+    <menuitem id="menu_retro_adjustments"
+              name="Retro Adjustments"
+              parent="menu_formula_root"
+              action="action_payroll_retro_adjustment"
+              sequence="16"
+              groups="pb_hr_payroll_formula.group_formula_manager"/>
+
     <!-- Payroll Import Submenu -->
     <menuitem id="menu_formula_import"
               name="Payroll Import"
               parent="menu_formula_root"
-              sequence="15"
+              sequence="20"
               groups="pb_hr_payroll_formula.group_formula_manager"/>
 
     <menuitem id="menu_import_batches"

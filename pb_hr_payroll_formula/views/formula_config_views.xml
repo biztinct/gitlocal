@@ -87,6 +87,16 @@
                                 attrs="{'invisible': [('cycle_type', '!=', 'mid_cycle')]}">
                             <field name="carryover_count" widget="statinfo" string="Carryover"/>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_view_proration_lines"
+                                icon="fa-pie-chart"
+                                attrs="{'invisible': [('use_proration', '=', False)]}">
+                            <field name="proration_count" widget="statinfo" string="Proration"/>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_retro_adjustments"
+                                icon="fa-history"
+                                attrs="{'invisible': [('use_auto_retro', '=', False)]}">
+                            <field name="retro_count" widget="statinfo" string="Retro"/>
+                        </button>
                         <button class="oe_stat_button" type="object" name="action_rebuild_cycle_carryover"
                                 icon="fa-refresh"
                                 attrs="{'invisible': [('cycle_type', '!=', 'mid_cycle')]}">
@@ -149,6 +159,22 @@
                             <field name="last_validated"/>
                             <field name="last_validated_by"/>
                             <field name="currency_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Proration">
+                            <field name="use_proration"/>
+                            <field name="proration_basis"
+                                   attrs="{'invisible': [('use_proration', '=', False)]}"/>
+                            <field name="proration_component_ids" widget="many2many_tags"
+                                   attrs="{'invisible': [('use_proration', '=', False)]}"/>
+                            <field name="proration_rounding"
+                                   attrs="{'invisible': [('use_proration', '=', False)]}"/>
+                        </group>
+                        <group string="Auto Retro">
+                            <field name="use_auto_retro"/>
+                            <field name="retro_component_id"
+                                   attrs="{'invisible': [('use_auto_retro', '=', False)]}"/>
                         </group>
                     </group>
 

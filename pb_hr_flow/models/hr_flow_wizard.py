@@ -210,6 +210,8 @@ class HRFlowWizard(models.TransientModel):
             'payroll-payslip-config': ('pb_hr_payroll_formula.action_payslip_config', False),
             'payroll-employee-contract-mapping': ('pb_hr_payroll_formula.action_payslip_import_mapping_wizard', False),
             'payroll-cycle-mapping': ('pb_hr_payroll_formula.action_payroll_cycle_component_mapping_wizard', False),
+            'payroll-proration': ('pb_hr_payroll_formula.action_payroll_proration_line', False),
+            'payroll-retro': ('pb_hr_payroll_formula.action_payroll_retro_adjustment', False),
             'payroll-test': ('pb_hr_payroll_formula.action_sample_data', False),
             'payroll-batch': ('pb_hr_payroll_formula.action_payroll_import_batch', False),
             'payroll-batch-workflow': ('om_hr_payroll.action_hr_payslip_run_tree', False),

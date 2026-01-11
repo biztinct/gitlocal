@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_payroll_proration_line_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.proration.line.tree</field>
+        <field name="model">hr.payroll.proration.line</field>
+        <field name="arch" type="xml">
+            <tree string="Proration Lines" default_order="date_from desc">
+                <field name="employee_id"/>
+                <field name="component_id"/>
+                <field name="prorated_amount"/>
+                <field name="old_amount"/>
+                <field name="new_amount"/>
+                <field name="effective_date"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="import_batch_id"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_payroll_proration_line_form" model="ir.ui.view">
+        <field name="name">hr.payroll.proration.line.form</field>
+        <field name="model">hr.payroll.proration.line</field>
+        <field name="arch" type="xml">
+            <form string="Proration Line">
+                <sheet>
+                    <group>
+                        <group string="Proration">
+                            <field name="employee_id"/>
+                            <field name="component_id"/>
+                            <field name="prorated_amount"/>
+                            <field name="old_amount"/>
+                            <field name="new_amount"/>
+                            <field name="effective_date"/>
+                            <field name="proration_basis"/>
+                            <field name="period_days"/>
+                            <field name="old_days"/>
+                            <field name="new_days"/>
+                            <field name="segment_summary" nolabel="1" colspan="2"/>
+                        </group>
+                        <group string="Audit">
+                            <field name="formula_config_id"/>
+                            <field name="import_batch_id"/>
+                            <field name="contract_id"/>
+                            <field name="advantage_change_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="state"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_payroll_proration_line_search" model="ir.ui.view">
+        <field name="name">hr.payroll.proration.line.search</field>
+        <field name="model">hr.payroll.proration.line</field>
+        <field name="arch" type="xml">
+            <search string="Proration Lines">
+                <field name="employee_id"/>
+                <field name="component_id"/>
+                <field name="formula_config_id"/>
+                <field name="import_batch_id"/>
+                <filter name="state_posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_config" string="Formula Config" context="{'group_by': 'formula_config_id'}"/>
+                    <filter name="group_batch" string="Import Batch" context="{'group_by': 'import_batch_id'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_component" string="Component" context="{'group_by': 'component_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_payroll_proration_line" model="ir.actions.act_window">
+        <field name="name">Proration Lines</field>
+        <field name="res_model">hr.payroll.proration.line</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_payroll_proration_line_search"/>
+    </record>
+
+</odoo>

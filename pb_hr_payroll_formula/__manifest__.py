@@ -67,6 +67,8 @@ License: LGPL-3
         'views/hr_employee_views.xml',
         'views/payroll_cycle_carryover_views.xml',
         'views/payroll_cycle_component_mapping_views.xml',
+        'views/payroll_proration_views.xml',
+        'views/payroll_retro_views.xml',
         # Wizards (actions used by views below)
         'wizards/wizard_views.xml',
         'wizards/multisheet_wizard_views.xml',

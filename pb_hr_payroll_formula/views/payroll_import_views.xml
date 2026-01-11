@@ -76,6 +76,10 @@
                     <field name="new_employees" invisible="1"/>
                     <field name="error_lines" invisible="1"/>
                     <field name="cycle_type" invisible="1"/>
+                    <field name="use_proration" invisible="1"/>
+                    <field name="use_auto_retro" invisible="1"/>
+                    <field name="proration_line_count" invisible="1"/>
+                    <field name="retro_adjustment_count" invisible="1"/>
 
                     <!-- Smart Buttons -->
                     <div class="oe_button_box" name="button_box">
@@ -96,6 +100,18 @@
                                 icon="fa-file-text-o"
                                 attrs="{'invisible': [('state', '!=', 'done')]}">
                             <field name="processed_lines" widget="statinfo" string="Payslips"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_proration_lines"
+                                icon="fa-pie-chart"
+                                attrs="{'invisible': [('use_proration', '=', False)]}">
+                            <field name="proration_line_count" widget="statinfo" string="Proration"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_retro_adjustments"
+                                icon="fa-history"
+                                attrs="{'invisible': [('use_auto_retro', '=', False)]}">
+                            <field name="retro_adjustment_count" widget="statinfo" string="Retro"/>
                         </button>
                     </div>
 

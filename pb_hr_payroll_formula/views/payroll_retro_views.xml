@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_payroll_retro_adjustment_tree" model="ir.ui.view">
+        <field name="name">hr.payroll.retro.adjustment.tree</field>
+        <field name="model">hr.payroll.retro.adjustment</field>
+        <field name="arch" type="xml">
+            <tree string="Retro Adjustments" default_order="period_from desc">
+                <field name="employee_id"/>
+                <field name="component_id"/>
+                <field name="delta_amount"/>
+                <field name="period_from"/>
+                <field name="period_to"/>
+                <field name="original_payslip_id"/>
+                <field name="applied_in_batch_id"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_payroll_retro_adjustment_form" model="ir.ui.view">
+        <field name="name">hr.payroll.retro.adjustment.form</field>
+        <field name="model">hr.payroll.retro.adjustment</field>
+        <field name="arch" type="xml">
+            <form string="Retro Adjustment">
+                <sheet>
+                    <group>
+                        <group string="Adjustment">
+                            <field name="employee_id"/>
+                            <field name="component_id"/>
+                            <field name="delta_amount"/>
+                            <field name="old_amount"/>
+                            <field name="new_amount"/>
+                            <field name="change_effective_date"/>
+                            <field name="period_from"/>
+                            <field name="period_to"/>
+                        </group>
+                        <group string="Audit">
+                            <field name="formula_config_id"/>
+                            <field name="applied_in_batch_id"/>
+                            <field name="applied_in_payslip_id"/>
+                            <field name="original_payslip_id"/>
+                            <field name="contract_id"/>
+                            <field name="advantage_change_id"/>
+                            <field name="state"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_payroll_retro_adjustment_search" model="ir.ui.view">
+        <field name="name">hr.payroll.retro.adjustment.search</field>
+        <field name="model">hr.payroll.retro.adjustment</field>
+        <field name="arch" type="xml">
+            <search string="Retro Adjustments">
+                <field name="employee_id"/>
+                <field name="component_id"/>
+                <field name="formula_config_id"/>
+                <field name="applied_in_batch_id"/>
+                <filter name="state_posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_config" string="Formula Config" context="{'group_by': 'formula_config_id'}"/>
+                    <filter name="group_batch" string="Applied Batch" context="{'group_by': 'applied_in_batch_id'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_component" string="Component" context="{'group_by': 'component_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_payroll_retro_adjustment" model="ir.actions.act_window">
+        <field name="name">Retro Adjustments</field>
+        <field name="res_model">hr.payroll.retro.adjustment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_payroll_retro_adjustment_search"/>
+    </record>
+
+</odoo>

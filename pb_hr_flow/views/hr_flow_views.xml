@@ -52,6 +52,8 @@
                             width: 700px;
                             height: 700px;
                             margin: 0 auto;
+                            --primary-shift-x: -75px;
+                            --primary-shift-y: -75px;
                         }
 
                         @media (max-width: 768px) {
@@ -127,7 +129,7 @@
                         }
 
                         /* ==========================================
-                           PRIMARY BADGES (6 badges in circle)
+                           PRIMARY BADGES (7 badges in circle)
                            ========================================== */
                         .primary-badge {
                             position: absolute;
@@ -144,6 +146,7 @@
                             transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
                             z-index: 50;
                             border: 4px solid #f7fafc;
+                            transform: translate(-50%, -50%);
                         }
 
                         .primary-badge:hover {
@@ -214,6 +217,7 @@
 
                         /* Badge Colors */
                         .badge-attendance .primary-badge-icon { color: #4299e1; }
+                        .badge-payroll-config .primary-badge-icon { color: #0bc5ea; }
                         .badge-payroll .primary-badge-icon { color: #48bb78; }
                         .badge-approval .primary-badge-icon { color: #ed8936; }
                         .badge-pay-salary .primary-badge-icon { color: #9f7aea; }
@@ -222,62 +226,89 @@
 
                         /* Badge Colored Borders (matching icon colors) */
                         .badge-attendance { border-color: #4299e1 !important; }
+                        .badge-payroll-config { border-color: #0bc5ea !important; }
                         .badge-payroll { border-color: #48bb78 !important; }
                         .badge-approval { border-color: #ed8936 !important; }
                         .badge-pay-salary { border-color: #9f7aea !important; }
                         .badge-government { border-color: #f56565 !important; }
                         .badge-analytics { border-color: #38b2ac !important; }
 
-                        /* Badge Positioning (perfect circular symmetry - 60° apart) */
+                        /* Badge Positioning (perfect circular symmetry - 7 nodes) */
                         /* Attendance - Top (12 o'clock position) */
                         .badge-attendance {
-                            top: 0;
-                            left: 50%;
-                            margin-left: -70px; /* Half of badge width for perfect centering */
+                            top: calc(70px + var(--primary-shift-y));
+                            left: calc(350px + var(--primary-shift-x));
                             animation: fadeIn 0.6s ease-out 0.2s both;
                             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
                         }
 
-                        /* Payroll - Top Right (2 o'clock position) */
+                        /* Payroll Configuration - Top Right */
+                        .badge-payroll-config {
+                            top: calc(175.4px + var(--primary-shift-y));
+                            left: calc(568.9px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.35s both;
+                        }
+
+                        /* Payroll - Right */
                         .badge-payroll {
-                            top: 21.4%;
-                            right: 7.9%;
-                            animation: fadeIn 0.6s ease-out 0.4s both;
+                            top: calc(412.3px + var(--primary-shift-y));
+                            left: calc(623px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.5s both;
                         }
 
-                        /* Approval - Bottom Right (4 o'clock position) */
+                        /* Approval - Bottom Right */
                         .badge-approval {
-                            bottom: 21.4%;
-                            right: 7.9%;
-                            animation: fadeIn 0.6s ease-out 0.6s both;
+                            top: calc(602.3px + var(--primary-shift-y));
+                            left: calc(471.5px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.65s both;
                         }
 
-                        /* Pay Salary - Bottom (6 o'clock position) */
+                        /* Pay Salary - Bottom Left */
                         .badge-pay-salary {
-                            bottom: 0;
-                            left: 50%;
-                            margin-left: -70px; /* Half of badge width for perfect centering */
+                            top: calc(602.3px + var(--primary-shift-y));
+                            left: calc(228.5px + var(--primary-shift-x));
                             animation: fadeIn 0.6s ease-out 0.8s both;
                         }
 
-                        /* Government Reports - Bottom Left (8 o'clock position) */
+                        /* Government Reports - Left */
                         .badge-government {
-                            bottom: 21.4%;
-                            left: 7.9%;
-                            animation: fadeIn 0.6s ease-out 1s both;
+                            top: calc(412.3px + var(--primary-shift-y));
+                            left: calc(77px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 0.95s both;
                         }
 
-                        /* Analytics - Top Left (10 o'clock position) */
+                        /* Analytics - Top Left */
                         .badge-analytics {
-                            top: 21.4%;
-                            left: 7.9%;
-                            animation: fadeIn 0.6s ease-out 1.2s both;
+                            top: calc(175.4px + var(--primary-shift-y));
+                            left: calc(131.1px + var(--primary-shift-x));
+                            animation: fadeIn 0.6s ease-out 1.1s both;
+                        }
+
+                        @media (max-width: 768px) {
+                            .badge-attendance { top: calc(50px + var(--primary-shift-y)); left: calc(250px + var(--primary-shift-x)); }
+                            .badge-payroll-config { top: calc(125.3px + var(--primary-shift-y)); left: calc(406.4px + var(--primary-shift-x)); }
+                            .badge-payroll { top: calc(294.5px + var(--primary-shift-y)); left: calc(445px + var(--primary-shift-x)); }
+                            .badge-approval { top: calc(430.2px + var(--primary-shift-y)); left: calc(336.8px + var(--primary-shift-x)); }
+                            .badge-pay-salary { top: calc(430.2px + var(--primary-shift-y)); left: calc(163.2px + var(--primary-shift-x)); }
+                            .badge-government { top: calc(294.5px + var(--primary-shift-y)); left: calc(55px + var(--primary-shift-x)); }
+                            .badge-analytics { top: calc(125.3px + var(--primary-shift-y)); left: calc(93.6px + var(--primary-shift-x)); }
+                        }
+
+                        @media (max-width: 480px) {
+                            .badge-attendance { top: calc(35px + var(--primary-shift-y)); left: calc(175px + var(--primary-shift-x)); }
+                            .badge-payroll-config { top: calc(87.7px + var(--primary-shift-y)); left: calc(284.5px + var(--primary-shift-x)); }
+                            .badge-payroll { top: calc(206.2px + var(--primary-shift-y)); left: calc(311.5px + var(--primary-shift-x)); }
+                            .badge-approval { top: calc(301.1px + var(--primary-shift-y)); left: calc(235.7px + var(--primary-shift-x)); }
+                            .badge-pay-salary { top: calc(301.1px + var(--primary-shift-y)); left: calc(114.3px + var(--primary-shift-x)); }
+                            .badge-government { top: calc(206.2px + var(--primary-shift-y)); left: calc(38.5px + var(--primary-shift-x)); }
+                            .badge-analytics { top: calc(87.7px + var(--primary-shift-y)); left: calc(65.5px + var(--primary-shift-x)); }
                         }
 
                         /* ==========================================
                            SECONDARY BADGES (submenu items)
                            ========================================== */
                         .secondary-badges-attendance,
+                        .secondary-badges-payroll-config,
                         .secondary-badges-payroll,
                         .secondary-badges-approval,
                         .secondary-badges-pay-salary,
@@ -324,6 +355,7 @@
 
                         /* JS-applied state to hide secondary badges immediately */
                         .secondary-badges-attendance.hide-secondary .secondary-badge,
+                        .secondary-badges-payroll-config.hide-secondary .secondary-badge,
                         .secondary-badges-payroll.hide-secondary .secondary-badge,
                         .secondary-badges-approval.hide-secondary .secondary-badge,
                         .secondary-badges-pay-salary.hide-secondary .secondary-badge,
@@ -335,6 +367,7 @@
 
                         /* Containers never capture clicks; only badges do */
                         .secondary-badges-attendance.hide-secondary,
+                        .secondary-badges-payroll-config.hide-secondary,
                         .secondary-badges-payroll.hide-secondary,
                         .secondary-badges-approval.hide-secondary,
                         .secondary-badges-pay-salary.hide-secondary,
@@ -343,6 +376,7 @@
                         }
 
                         .secondary-badges-attendance:not(.hide-secondary),
+                        .secondary-badges-payroll-config:not(.hide-secondary),
                         .secondary-badges-payroll:not(.hide-secondary),
                         .secondary-badges-approval:not(.hide-secondary),
                         .secondary-badges-pay-salary:not(.hide-secondary),
@@ -351,6 +385,7 @@
                         }
 
                         .secondary-badges-attendance.hide-secondary .secondary-shift,
+                        .secondary-badges-payroll-config.hide-secondary .secondary-shift,
                         .secondary-badges-payroll.hide-secondary .secondary-shift,
                         .secondary-badges-approval.hide-secondary .secondary-shift,
                         .secondary-badges-pay-salary.hide-secondary .secondary-shift,
@@ -407,99 +442,115 @@
                             right: 26%;
                         }
 
-                        /* Secondary badge positioning for Payroll submenu (clustered near payroll node) */
-                        .secondary-badges-payroll .secondary-payroll-connector {
+                        /* Secondary badge positioning for Payroll Configuration submenu */
+                        .secondary-badges-payroll-config .secondary-payroll-connector {
                             top: 6%;
-                            right: 22%;
+                            right: 18%;
                         }
 
-                        .secondary-badges-payroll .secondary-payroll-config {
+                        .secondary-badges-payroll-config .secondary-payroll-config {
                             top: 0%;
-                            right: 10%;
+                            right: 8%;
                         }
 
-                        .secondary-badges-payroll .secondary-payroll-test {
+                        .secondary-badges-payroll-config .secondary-payroll-payslip-config {
                             top: 12%;
+                            right: 2%;
+                        }
+
+                        .secondary-badges-payroll-config .secondary-payroll-employee-mapping {
+                            top: 22%;
+                            right: 6%;
+                        }
+
+                        .secondary-badges-payroll-config .secondary-payroll-cycle-mapping {
+                            top: 26%;
+                            right: 18%;
+                        }
+
+                        /* Secondary badge positioning for Payroll submenu (clustered near payroll node) */
+                        .secondary-badges-payroll .secondary-payroll-test {
+                            top: 48%;
                             right: 4%;
                         }
 
                         .secondary-badges-payroll .secondary-payroll-batch {
-                            top: 24%;
-                            right: 10%;
+                            top: 58%;
+                            right: 2%;
                         }
 
                         .secondary-badges-payroll .secondary-payroll-payslip {
-                            top: 22%;
-                            right: 24%;
-                        }
-
-                        .secondary-badges-payroll .secondary-payroll-draft {
-                            top: 34%;
+                            top: 60%;
                             right: 16%;
                         }
 
+                        .secondary-badges-payroll .secondary-payroll-draft {
+                            top: 70%;
+                            right: 10%;
+                        }
+
                         .secondary-badges-payroll .secondary-payroll-full-final {
-                            top: 38%;
-                            right: 6%;
+                            top: 74%;
+                            right: 0%;
                         }
 
                         /* Secondary badge positioning for Approval submenu */
                         .secondary-badges-approval .secondary-approval-pending {
-                            top: 42%;
-                            right: 22%;
+                            top: 66%;
+                            right: 34%;
                         }
 
                         .secondary-badges-approval .secondary-approval-history {
-                            top: 48%;
-                            right: 10%;
+                            top: 72%;
+                            right: 22%;
                         }
 
                         .secondary-badges-approval .secondary-approval-rules {
-                            top: 60%;
-                            right: 18%;
+                            top: 78%;
+                            right: 30%;
                         }
 
                         /* Secondary badge positioning for Pay Salary submenu */
                         .secondary-badges-pay-salary .secondary-pay-salary-bank {
-                            bottom: 6%;
-                            left: 46%;
+                            bottom: 10%;
+                            left: 30%;
                         }
 
                         .secondary-badges-pay-salary .secondary-pay-salary-payments {
-                            bottom: 0%;
-                            left: 50%;
+                            bottom: 6%;
+                            left: 34%;
                             transform: translateX(-50%) scale(1);
                         }
 
                         .secondary-badges-pay-salary .secondary-pay-salary-journals {
-                            bottom: 6%;
-                            right: 46%;
+                            bottom: 10%;
+                            left: 18%;
                         }
 
                         /* Secondary badge positioning for Government submenu */
                         .secondary-badges-govt .secondary-govt-bhxh630 {
-                            bottom: 28%;
-                            left: 16%;
+                            top: 52%;
+                            left: 10%;
                         }
 
                         .secondary-badges-govt .secondary-govt-bhxhdstk01 {
-                            bottom: 22%;
-                            left: 8%;
+                            top: 58%;
+                            left: 4%;
                         }
 
                         .secondary-badges-govt .secondary-govt-d01 {
-                            bottom: 32%;
-                            left: 6%;
+                            top: 46%;
+                            left: 2%;
                         }
 
                         .secondary-badges-govt .secondary-govt-giam {
-                            bottom: 38%;
-                            left: 14%;
+                            top: 64%;
+                            left: 8%;
                         }
 
                         .secondary-badges-govt .secondary-govt-tang {
-                            bottom: 34%;
-                            left: 24%;
+                            top: 60%;
+                            left: 16%;
                         }
 
                         /* ==========================================
@@ -785,34 +836,39 @@
                                         </marker>
                                     </defs>
 
-                                    <!-- Attendance (350,70) to Payroll (570,220) - Half length, centered -->
+                                    <!-- Attendance to Payroll Configuration -->
                                     <path class="flow-arrow"
-                                          d="M 410,120 Q 490,145 510,175"
+                                          d="M 413.1,100.3 Q 459.5,122.5 505.9,144.7"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Payroll (570,220) to Approval (570,480) - Half length, centered -->
+                                    <!-- Payroll Configuration to Payroll -->
                                     <path class="flow-arrow"
-                                          d="M 570,285 Q 590,350 570,415"
+                                          d="M 584.6,243.3 Q 596.0,293.5 607.4,343.7"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Approval (570,480) to Pay Salary (350,630) - Half length, centered -->
+                                    <!-- Payroll to Approval -->
                                     <path class="flow-arrow"
-                                          d="M 510,525 Q 490,555 410,580"
+                                          d="M 579.4,466.8 Q 547.5,507.0 515.6,547.2"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Pay Salary (350,630) to Government (130,480) - Half length, centered -->
+                                    <!-- Approval to Pay Salary -->
                                     <path class="flow-arrow"
-                                          d="M 290,580 Q 210,555 190,525"
+                                          d="M 402.0,602.0 Q 350.0,602.0 298.0,602.0"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Government (130,480) to Analytics (130,220) - Half length, centered -->
+                                    <!-- Pay Salary to Government -->
                                     <path class="flow-arrow"
-                                          d="M 130,415 Q 110,350 130,285"
+                                          d="M 184.4,547.2 Q 152.5,507.0 120.6,466.8"
                                           marker-end="url(#arrowhead)"/>
 
-                                    <!-- Analytics (130,220) to Attendance (350,70) - Half length, centered -->
+                                    <!-- Government to Analytics -->
                                     <path class="flow-arrow"
-                                          d="M 190,175 Q 210,145 290,120"
+                                          d="M 92.6,343.7 Q 104.0,293.5 115.4,243.3"
+                                          marker-end="url(#arrowhead)"/>
+
+                                    <!-- Analytics to Attendance -->
+                                    <path class="flow-arrow"
+                                          d="M 194.1,144.7 Q 240.5,122.5 286.9,100.3"
                                           marker-end="url(#arrowhead)"/>
                                 </svg>
                             </div>
@@ -825,7 +881,7 @@
                                 <span class="center-badge-text">Employee</span>
                             </button>
 
-                            <!-- PRIMARY LEVEL: 6 Badges in Circle -->
+                            <!-- PRIMARY LEVEL: 7 Badges in Circle -->
 
                             <!-- 1. Attendance (Top) -->
                             <div role="button"
@@ -835,7 +891,15 @@
                                 <span class="primary-badge-text">Attendance</span>
                             </div>
 
-                            <!-- 2. Payroll (Right Top) -->
+                            <!-- 2. Payroll Configuration (Top Right) -->
+                            <div role="button"
+                                 tabindex="0"
+                                 class="primary-badge badge-payroll-config">
+                                <i class="fa fa-cogs primary-badge-icon"></i>
+                                <span class="primary-badge-text">Payroll<br/>Configuration</span>
+                            </div>
+
+                            <!-- 3. Payroll (Right) -->
                             <div role="button"
                                  tabindex="0"
                                  class="primary-badge badge-payroll">
@@ -843,7 +907,7 @@
                                 <span class="primary-badge-text">Payroll</span>
                             </div>
 
-                            <!-- 3. Approval (Right Bottom) -->
+                            <!-- 4. Approval (Bottom Right) -->
                             <div role="button"
                                  tabindex="0"
                                  class="primary-badge badge-approval">
@@ -851,7 +915,7 @@
                                 <span class="primary-badge-text">Approval</span>
                             </div>
 
-                            <!-- 4. Pay Salary (Bottom) -->
+                            <!-- 5. Pay Salary (Bottom Left) -->
                             <div role="button"
                                  tabindex="0"
                                  class="primary-badge badge-pay-salary">
@@ -859,7 +923,7 @@
                                 <span class="primary-badge-text">Pay Salary</span>
                             </div>
 
-                            <!-- 5. Government Reports (Left Bottom) -->
+                            <!-- 6. Government Reports (Left) -->
                             <div role="button"
                                  tabindex="0"
                                  data-tertiary="govt"
@@ -868,7 +932,7 @@
                                 <span class="primary-badge-text">Government<br/>Reports</span>
                             </div>
 
-                            <!-- 6. Analytics (Left Top) -->
+                            <!-- 7. Analytics (Top Left) -->
                             <div role="button"
                                  tabindex="0"
                                  class="primary-badge badge-analytics">
@@ -913,22 +977,47 @@
                                 </div>
                             </div>
 
-                            <!-- SECONDARY LEVEL: Payroll Submenu (appears on hover) -->
-                            <div class="secondary-badges-payroll hide-secondary">
+                            <!-- SECONDARY LEVEL: Payroll Configuration Submenu -->
+                            <div class="secondary-badges-payroll-config hide-secondary">
                                 <div role="button"
                                      tabindex="0"
-                                     data-tertiary="payroll-connector"
+                                     data-tertiary="payroll_config"
                                      class="secondary-badge secondary-payroll-connector">
                                     <i class="fa fa-plug secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Connector</span>
                                 </div>
                                 <div role="button"
                                      tabindex="0"
-                                     data-tertiary="payroll-config"
+                                     data-tertiary="payroll_config"
                                      class="secondary-badge secondary-payroll-config">
                                     <i class="fa fa-sliders secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Configure Salary</span>
                                 </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll_config"
+                                     class="secondary-badge secondary-payroll-payslip-config">
+                                    <i class="fa fa-cogs secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Payslip Configuration</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll_config"
+                                     class="secondary-badge secondary-payroll-employee-mapping">
+                                    <i class="fa fa-exchange secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Employee/Contract Mapping</span>
+                                </div>
+                                <div role="button"
+                                     tabindex="0"
+                                     data-tertiary="payroll_config"
+                                     class="secondary-badge secondary-payroll-cycle-mapping">
+                                    <i class="fa fa-random secondary-badge-icon"></i>
+                                    <span class="secondary-badge-text">Mid-Cycle Mapping</span>
+                                </div>
+                            </div>
+
+                            <!-- SECONDARY LEVEL: Payroll Submenu (appears on hover) -->
+                            <div class="secondary-badges-payroll hide-secondary">
                                 <div role="button"
                                      tabindex="0"
                                      data-tertiary="payroll-test"
