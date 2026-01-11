@@ -732,7 +732,7 @@ class HrPayrollImportBatch(models.Model):
             self.env['hr.payroll.retro.adjustment'].search([
                 ('applied_in_batch_id', '=', self.id)
             ]).unlink()
-        self._retro_adjustment_cache = {}
+        self = self.with_context(retro_adjustment_cache={})
 
         created_employees = self.env['hr.employee']
         created_contracts = self.env['hr.contract']
@@ -1398,10 +1398,9 @@ class HrPayrollImportBatch(models.Model):
             return
         if not self.date_from:
             return
-        cache = getattr(self, '_retro_adjustment_cache', None)
+        cache = self._context.get('retro_adjustment_cache')
         if cache is None:
             cache = {}
-            self._retro_adjustment_cache = cache
         if employee.id in cache:
             total_delta = cache[employee.id]
         else:

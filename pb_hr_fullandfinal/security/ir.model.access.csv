@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_full_final_manager,full.final.manager,model_hr_full_final_settlement,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_full_final_user,full.final.user,model_hr_full_final_settlement,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_full_final_wizard_manager,full.final.wizard.manager,model_hr_full_final_generate_wizard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1

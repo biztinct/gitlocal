@@ -16,9 +16,12 @@ allows downloading a full and final settlement PDF.
     'depends': [
         'hr',
         'om_hr_payroll',
+        'pb_hr_payroll_formula',
     ],
     'data': [
+        'security/ir.model.access.csv',
         'views/full_and_final_views.xml',
+        'views/full_and_final_wizard_views.xml',
         'report/full_and_final_report.xml',
     ],
     'installable': True,

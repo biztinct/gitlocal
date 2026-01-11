@@ -2,12 +2,12 @@
 <odoo>
     <report
         id="action_report_full_and_final"
-        model="hr.employee"
+        model="hr.full.final.settlement"
         string="Full and Final"
         report_type="qweb-pdf"
         name="pb_hr_fullandfinal.report_full_and_final_document"
         file="pb_hr_fullandfinal.report_full_and_final_document"
-        print_report_name="'Full and Final - %s' % (object.name)"
+        print_report_name="'Full and Final - %s' % (object.employee_id.name)"
     />
 
     <template id="report_full_and_final_document">
@@ -30,7 +30,7 @@
                             </tbody>
                         </table>
 
-                        <t t-set="data" t-value="payslip_data.get(o.id) or {}"/>
+                        <t t-set="data" t-value="settlement_data.get(o.id) or {}"/>
                         <t t-set="components" t-value="data.get('components') or {}"/>
                         <t t-set="currency" t-value="data.get('currency') or o.company_id.currency_id"/>
 
@@ -38,29 +38,29 @@
                             <tbody>
                                 <tr>
                                     <td style="width: 25%;"><strong>Employee ID / Mã NV</strong></td>
-                                    <td style="width: 25%;"><span t-esc="o.employee_id or ''"/></td>
+                                    <td style="width: 25%;"><span t-esc="o.employee_id.employee_id or o.employee_id.identification_id or ''"/></td>
                                     <td style="width: 25%;"><strong>Department / Phòng ban</strong></td>
-                                    <td style="width: 25%;"><span t-field="o.department_id"/></td>
+                                    <td style="width: 25%;"><span t-field="o.employee_id.department_id"/></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Employee Name / Tên nhân viên</strong></td>
-                                    <td><span t-esc="o.name or ''"/></td>
+                                    <td><span t-esc="o.employee_id.name or ''"/></td>
                                     <td><strong>Settlement Month / Tháng quyết toán</strong></td>
                                     <td><span t-esc="data.get('settlement_month') or ''"/></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Position / Chức danh</strong></td>
-                                    <td><span t-field="o.job_id"/></td>
+                                    <td><span t-field="o.employee_id.job_id"/></td>
                                     <td><strong>Date of Joining / Ngày vào làm</strong></td>
                                     <td><span t-field="o.contract_id.date_start"/></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Exit Reason / Lý do nghỉ việc</strong></td>
-                                    <td colspan="3"><span t-field="o.departure_reason_id"/></td>
+                                    <td colspan="3"><span t-field="o.employee_id.departure_reason_id"/></td>
                                 </tr>
                                 <tr>
                                     <td><strong>Last Date in Company</strong></td>
-                                    <td><span t-field="o.departure_date"/></td>
+                                    <td><span t-field="o.settlement_date"/></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
