@@ -47,13 +47,22 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Workflow found and bound');
 
             const secondaryAttendance = workflow.querySelector('.secondary-badges-attendance');
+            const secondaryPayrollConfig = workflow.querySelector('.secondary-badges-payroll-config');
             const secondaryPayroll = workflow.querySelector('.secondary-badges-payroll');
             const secondaryApproval = workflow.querySelector('.secondary-badges-approval');
             const secondaryPaySalary = workflow.querySelector('.secondary-badges-pay-salary');
             const secondaryGovt = workflow.querySelector('.secondary-badges-govt');
-            const secondaryAll = [secondaryAttendance, secondaryPayroll, secondaryApproval, secondaryPaySalary, secondaryGovt].filter(Boolean);
+            const secondaryAll = [
+                secondaryAttendance,
+                secondaryPayrollConfig,
+                secondaryPayroll,
+                secondaryApproval,
+                secondaryPaySalary,
+                secondaryGovt,
+            ].filter(Boolean);
             const nonAttendance = workflow.querySelectorAll('.primary-badge:not(.badge-attendance), .center-badge');
             const attendance = workflow.querySelector('.badge-attendance');
+            const payrollConfig = workflow.querySelector('.badge-payroll-config');
             const payroll = workflow.querySelector('.badge-payroll');
             const approval = workflow.querySelector('.badge-approval');
             const paySalary = workflow.querySelector('.badge-pay-salary');
@@ -68,6 +77,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Workflow found, binding handlers');
             console.log('[HR Flow] Primaries found', {
                 attendance: !!attendance,
+                payrollConfig: !!payrollConfig,
                 payroll: !!payroll,
                 approval: !!approval,
                 paySalary: !!paySalary,
@@ -75,6 +85,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             });
             console.log('[HR Flow] Secondary containers', {
                 attendance: !!secondaryAttendance,
+                payrollConfig: !!secondaryPayrollConfig,
                 payroll: !!secondaryPayroll,
                 approval: !!secondaryApproval,
                 paySalary: !!secondaryPaySalary,
@@ -89,14 +100,21 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             });
 
             const tertiaryData = {
-                payroll: {
-                    title: 'Payroll',
+                payroll_config: {
+                    title: 'Payroll Configuration',
                     items: [
                         { label: 'Connector', icon: 'fa-plug', desc: 'HRIS/Excel connectors', disabled: false, route: 'payroll-connector' },
                         { label: 'Configure Salary', icon: 'fa-sliders', desc: 'Formulas & structures', disabled: false, route: 'payroll-config' },
                         { label: 'Payslip Configuration', icon: 'fa-cogs', desc: 'Identifiers & labels', disabled: false, route: 'payroll-payslip-config' },
                         { label: 'Employee/Contract Mapping', icon: 'fa-exchange', desc: 'Map fields to components', disabled: false, route: 'payroll-employee-contract-mapping' },
                         { label: 'Mid-Cycle Mapping', icon: 'fa-random', desc: 'Map mid-cycle to end-cycle', disabled: false, route: 'payroll-cycle-mapping' },
+                    ],
+                },
+                payroll: {
+                    title: 'Payroll',
+                    items: [
+                        { label: 'Proration Audit', icon: 'fa-pie-chart', desc: 'Review prorated components', disabled: false, route: 'payroll-proration' },
+                        { label: 'Retro Adjustments', icon: 'fa-history', desc: 'Track auto retro deltas', disabled: false, route: 'payroll-retro' },
                         { label: 'Test Calculation', icon: 'fa-flask', desc: 'Sample data & validation', disabled: false, route: 'payroll-test' },
                         { label: 'Batch Compute', icon: 'fa-play-circle', desc: 'Import & compute batches', disabled: false, route: 'payroll-batch' },
                         { label: 'Batch Workflow', icon: 'fa-filter', desc: 'Payslip batches & runs', disabled: false, route: 'payroll-batch-workflow' },
@@ -371,7 +389,22 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Attendance handler bound');
         }
 
-        // 2. Payroll: Click to open tertiary panel directly
+        // 2. Payroll Configuration: Click to open tertiary panel directly
+        if (payrollConfig) {
+            payrollConfig.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) {
+                    e.stopImmediatePropagation();
+                }
+                console.log('[HR Flow] Payroll Configuration clicked - opening tertiary panel');
+                hideAllSecondary(true);
+                openPanel('payroll_config', { primary: 'payroll_config' });
+            });
+            console.log('[HR Flow] Payroll Configuration handler bound');
+        }
+
+        // 3. Payroll: Click to open tertiary panel directly
         if (payroll) {
             payroll.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -386,7 +419,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Payroll handler bound');
         }
 
-        // 3. Approval: Click to open approval dashboard (direct action, not tertiary panel)
+        // 4. Approval: Click to open approval dashboard (direct action, not tertiary panel)
         if (approval) {
             approval.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -418,7 +451,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Approval handler bound');
         }
 
-        // 4. Pay Salary: Click to open tertiary panel directly
+        // 5. Pay Salary: Click to open tertiary panel directly
         if (paySalary) {
             paySalary.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -433,7 +466,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Pay Salary handler bound');
         }
 
-        // 5. Government: Click to open tertiary panel directly
+        // 6. Government: Click to open tertiary panel directly
         if (government) {
             government.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -448,7 +481,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             console.log('[HR Flow] Government handler bound');
         }
 
-        // 6. Analytics: Click to open HR Analytics Dashboard directly
+        // 7. Analytics: Click to open HR Analytics Dashboard directly
         const analytics = workflow.querySelector('.badge-analytics');
         if (analytics) {
             analytics.addEventListener('click', (e) => {

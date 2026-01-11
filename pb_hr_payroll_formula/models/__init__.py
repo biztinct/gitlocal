@@ -18,3 +18,5 @@ from . import payroll_import_batch
 from . import payroll_import_line
 from . import payroll_cycle_carryover
 from . import payroll_cycle_component_mapping
+from . import payroll_proration_line
+from . import payroll_retro_adjustment

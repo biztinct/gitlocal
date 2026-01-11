@@ -54,6 +54,38 @@ class HrFormulaConfig(models.Model):
         ('end_cycle', 'End-Cycle'),
         ('full_final', 'Full & Final'),
     ], string='Cycle Type', default='regular', tracking=True)
+    use_proration = fields.Boolean(
+        string='Enable Proration',
+        help="Automatically prorate selected components when contract values change mid-period."
+    )
+    proration_basis = fields.Selection([
+        ('calendar', 'Calendar Days'),
+        ('workdays', 'Work Days'),
+    ], string='Proration Basis', default='calendar')
+    proration_component_ids = fields.Many2many(
+        'hr.formula.rule',
+        'formula_config_proration_rule_rel',
+        'config_id',
+        'rule_id',
+        string='Prorated Components',
+        domain="[('config_id', '=', id), ('column_type', 'in', ['input', 'constant'])]",
+        help="Components to prorate based on contract change effective dates."
+    )
+    proration_rounding = fields.Integer(
+        string='Proration Rounding',
+        default=2,
+        help="Number of decimal places to round prorated amounts."
+    )
+    use_auto_retro = fields.Boolean(
+        string='Enable Auto Retro',
+        help="Automatically calculate retro adjustments for backdated contract changes."
+    )
+    retro_component_id = fields.Many2one(
+        'hr.formula.rule',
+        string='Retro Target Component',
+        domain="[('config_id', '=', id), ('column_type', '=', 'input')]",
+        help="Component that will receive retro adjustment amounts."
+    )
 
     # ==========================================
     # COUNTRY & STRUCTURE LINKING
@@ -176,6 +208,14 @@ class HrFormulaConfig(models.Model):
     carryover_count = fields.Integer(
         string='Carryover Count',
         compute='_compute_carryover_count'
+    )
+    proration_count = fields.Integer(
+        string='Proration Count',
+        compute='_compute_proration_count'
+    )
+    retro_count = fields.Integer(
+        string='Retro Count',
+        compute='_compute_retro_count'
     )
 
     # ==========================================
@@ -370,9 +410,39 @@ class HrFormulaConfig(models.Model):
                 ('formula_config_id', '=', record.id)
             ])
 
+    def _compute_proration_count(self):
+        for record in self:
+            record.proration_count = self.env['hr.payroll.proration.line'].search_count([
+                ('formula_config_id', '=', record.id)
+            ])
+
+    def _compute_retro_count(self):
+        for record in self:
+            record.retro_count = self.env['hr.payroll.retro.adjustment'].search_count([
+                ('formula_config_id', '=', record.id)
+            ])
+
     def action_view_cycle_carryovers(self):
         self.ensure_one()
         action = self.env.ref('pb_hr_payroll_formula.action_payroll_cycle_carryover').read()[0]
+        action['domain'] = [('formula_config_id', '=', self.id)]
+        action['context'] = {
+            'default_formula_config_id': self.id,
+        }
+        return action
+
+    def action_view_proration_lines(self):
+        self.ensure_one()
+        action = self.env.ref('pb_hr_payroll_formula.action_payroll_proration_line').read()[0]
+        action['domain'] = [('formula_config_id', '=', self.id)]
+        action['context'] = {
+            'default_formula_config_id': self.id,
+        }
+        return action
+
+    def action_view_retro_adjustments(self):
+        self.ensure_one()
+        action = self.env.ref('pb_hr_payroll_formula.action_payroll_retro_adjustment').read()[0]
         action['domain'] = [('formula_config_id', '=', self.id)]
         action['context'] = {
             'default_formula_config_id': self.id,
@@ -491,6 +561,22 @@ class HrFormulaConfig(models.Model):
             if len(codes) != len(set(codes)):
                 raise ValidationError(_(
                     "Duplicate rule codes found! Each rule must have a unique code."
+                ))
+
+    @api.constrains('use_proration', 'proration_component_ids')
+    def _check_proration_components(self):
+        for record in self:
+            if record.use_proration and not record.proration_component_ids:
+                raise ValidationError(_(
+                    "Select at least one prorated component when proration is enabled."
+                ))
+
+    @api.constrains('use_auto_retro', 'retro_component_id')
+    def _check_retro_component(self):
+        for record in self:
+            if record.use_auto_retro and not record.retro_component_id:
+                raise ValidationError(_(
+                    "Select a retro target component when auto retro is enabled."
                 ))
 
     # ==========================================

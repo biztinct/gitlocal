@@ -2,7 +2,7 @@
 
 import logging
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from ..formula_engine.column_manager import ColumnManager
@@ -97,6 +97,16 @@ class HrPayrollImportBatch(models.Model):
         string='Cycle Type',
         readonly=True
     )
+    use_proration = fields.Boolean(
+        related='formula_config_id.use_proration',
+        string='Use Proration',
+        readonly=True
+    )
+    use_auto_retro = fields.Boolean(
+        related='formula_config_id.use_auto_retro',
+        string='Use Auto Retro',
+        readonly=True
+    )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
@@ -136,6 +146,14 @@ class HrPayrollImportBatch(models.Model):
         string='Processed Lines',
         compute='_compute_statistics',
         store=True
+    )
+    proration_line_count = fields.Integer(
+        string='Proration Lines',
+        compute='_compute_proration_line_count'
+    )
+    retro_adjustment_count = fields.Integer(
+        string='Retro Adjustments',
+        compute='_compute_retro_adjustment_count'
     )
 
     # State
@@ -247,6 +265,18 @@ class HrPayrollImportBatch(models.Model):
             batch.new_employees = len(lines.filtered(lambda l: l.is_new_employee))
             batch.error_lines = len(lines.filtered(lambda l: l.state == 'error'))
             batch.processed_lines = len(lines.filtered(lambda l: l.state == 'processed'))
+
+    def _compute_proration_line_count(self):
+        for batch in self:
+            batch.proration_line_count = self.env['hr.payroll.proration.line'].search_count([
+                ('import_batch_id', '=', batch.id)
+            ])
+
+    def _compute_retro_adjustment_count(self):
+        for batch in self:
+            batch.retro_adjustment_count = self.env['hr.payroll.retro.adjustment'].search_count([
+                ('applied_in_batch_id', '=', batch.id)
+            ])
 
     @api.onchange('payroll_period')
     def _onchange_payroll_period(self):
@@ -540,6 +570,20 @@ class HrPayrollImportBatch(models.Model):
             'context': {'default_batch_id': self.id},
         }
 
+    def action_view_proration_lines(self):
+        self.ensure_one()
+        action = self.env.ref('pb_hr_payroll_formula.action_payroll_proration_line').read()[0]
+        action['domain'] = [('import_batch_id', '=', self.id)]
+        action['context'] = {'default_import_batch_id': self.id}
+        return action
+
+    def action_view_retro_adjustments(self):
+        self.ensure_one()
+        action = self.env.ref('pb_hr_payroll_formula.action_payroll_retro_adjustment').read()[0]
+        action['domain'] = [('applied_in_batch_id', '=', self.id)]
+        action['context'] = {'default_applied_in_batch_id': self.id}
+        return action
+
     def _find_employee(self, line):
         """
         Find employee by code first, then by email.
@@ -680,6 +724,16 @@ class HrPayrollImportBatch(models.Model):
 
         self.state = 'processing'
 
+        if self.formula_config_id.use_proration:
+            self.env['hr.payroll.proration.line'].search([
+                ('import_batch_id', '=', self.id)
+            ]).unlink()
+        if self.formula_config_id.use_auto_retro:
+            self.env['hr.payroll.retro.adjustment'].search([
+                ('applied_in_batch_id', '=', self.id)
+            ]).unlink()
+        self._retro_adjustment_cache = {}
+
         created_employees = self.env['hr.employee']
         created_contracts = self.env['hr.contract']
         created_payslips = self.env['hr.payslip']
@@ -724,6 +778,8 @@ class HrPayrollImportBatch(models.Model):
                         if payslip:
                             created_payslips |= payslip
                             line.payslip_id = payslip.id
+                            if self.formula_config_id.use_auto_retro:
+                                self._link_retro_adjustments(payslip)
 
                     line.state = 'processed'
 
@@ -1216,6 +1272,246 @@ class HrPayrollImportBatch(models.Model):
             except (TypeError, ValueError):
                 input_values[target_code] = total_amount
 
+    def _get_proration_days(self, employee, start_date, end_date, basis):
+        if not start_date or not end_date or start_date > end_date:
+            return 0.0
+        if basis == 'workdays' and employee:
+            try:
+                from_dt = datetime.combine(start_date, time.min)
+                to_dt = datetime.combine(end_date + timedelta(days=1), time.min)
+                data = employee._get_work_days_data(from_dt, to_dt, compute_leaves=True)
+                return float(data.get('days') or 0.0)
+            except Exception as exc:
+                _logger.info("Proration fallback to calendar days: %s", exc)
+        return float((end_date - start_date).days + 1)
+
+    def _apply_proration(self, input_values, employee, contract):
+        config = self.formula_config_id
+        if not config.use_proration:
+            return
+        if not self.date_from or not self.date_to:
+            return
+        rules = config.proration_component_ids
+        if not rules:
+            return
+        code_map = {rule.code: rule for rule in rules if rule.code}
+        if not code_map:
+            return
+
+        change_model = self.env['hr.contract.advantage.change']
+        changes = change_model.search([
+            ('employee_id', '=', employee.id),
+            ('effective_date', '>=', self.date_from),
+            ('effective_date', '<=', self.date_to),
+            ('advantage_template_code', 'in', list(code_map.keys())),
+        ])
+        if not changes:
+            return
+
+        basis = config.proration_basis or 'calendar'
+        period_days = self._get_proration_days(employee, self.date_from, self.date_to, basis)
+        if not period_days:
+            return
+
+        changes_by_code = {}
+        for change in changes:
+            changes_by_code.setdefault(change.advantage_template_code, []).append(change)
+
+        vals_list = []
+        for code, change_list in changes_by_code.items():
+            rule = code_map.get(code)
+            if not rule:
+                continue
+            sorted_changes = sorted(
+                change_list,
+                key=lambda c: c.effective_date or self.date_from
+            )
+            current_start = self.date_from
+            current_amount = sorted_changes[0].old_amount or 0.0
+            total_weighted = 0.0
+            segments = []
+            for change in sorted_changes:
+                effective_date = change.effective_date or self.date_from
+                if effective_date < self.date_from:
+                    current_amount = change.new_amount or 0.0
+                    current_start = self.date_from
+                    continue
+                if effective_date > self.date_to:
+                    break
+                segment_end = effective_date - timedelta(days=1)
+                if current_start <= segment_end:
+                    days = self._get_proration_days(employee, current_start, segment_end, basis)
+                    total_weighted += current_amount * days
+                    segments.append("%s..%s: %s" % (current_start, segment_end, current_amount))
+                current_amount = change.new_amount or 0.0
+                current_start = effective_date
+            if current_start <= self.date_to:
+                days = self._get_proration_days(employee, current_start, self.date_to, basis)
+                total_weighted += current_amount * days
+                segments.append("%s..%s: %s" % (current_start, self.date_to, current_amount))
+
+            prorated = total_weighted / period_days if period_days else 0.0
+            if config.proration_rounding is not None:
+                prorated = round(prorated, int(config.proration_rounding))
+
+            input_values[rule.code] = prorated
+
+            old_days = 0.0
+            new_days = 0.0
+            if len(sorted_changes) == 1:
+                effective_date = sorted_changes[0].effective_date or self.date_from
+                if effective_date > self.date_from:
+                    old_days = self._get_proration_days(
+                        employee, self.date_from, effective_date - timedelta(days=1), basis
+                    )
+                new_days = period_days - old_days
+
+            vals_list.append({
+                'formula_config_id': config.id,
+                'import_batch_id': self.id,
+                'employee_id': employee.id,
+                'contract_id': contract.id if contract else False,
+                'component_id': rule.id,
+                'advantage_change_id': sorted_changes[-1].id,
+                'effective_date': sorted_changes[0].effective_date or self.date_from,
+                'date_from': self.date_from,
+                'date_to': self.date_to,
+                'proration_basis': basis,
+                'period_days': period_days,
+                'old_days': old_days,
+                'new_days': new_days,
+                'old_amount': sorted_changes[0].old_amount or 0.0,
+                'new_amount': sorted_changes[-1].new_amount or 0.0,
+                'prorated_amount': prorated,
+                'segment_summary': "\n".join(segments),
+                'state': 'posted',
+            })
+
+        if vals_list:
+            self.env['hr.payroll.proration.line'].create(vals_list)
+
+    def _apply_retro_adjustments(self, input_values, employee, contract):
+        config = self.formula_config_id
+        if not config.use_auto_retro:
+            return
+        if not config.retro_component_id or not config.retro_component_id.code:
+            return
+        if not self.date_from:
+            return
+        cache = getattr(self, '_retro_adjustment_cache', None)
+        if cache is None:
+            cache = {}
+            self._retro_adjustment_cache = cache
+        if employee.id in cache:
+            total_delta = cache[employee.id]
+        else:
+            total_delta = self._prepare_retro_adjustments(employee, contract)
+            cache[employee.id] = total_delta
+        if not total_delta:
+            return
+        target_code = config.retro_component_id.code
+        input_values[target_code] = input_values.get(target_code, 0.0) + total_delta
+
+    def _prepare_retro_adjustments(self, employee, contract):
+        config = self.formula_config_id
+        change_model = self.env['hr.contract.advantage.change']
+        retro_model = self.env['hr.payroll.retro.adjustment']
+        rule_map = {
+            rule.code: rule
+            for rule in config.rule_ids
+            if rule.code
+        }
+        changes = change_model.search([
+            ('employee_id', '=', employee.id),
+            ('effective_date', '<', self.date_from),
+            ('advantage_template_code', 'in', list(rule_map.keys())),
+        ])
+        if not changes:
+            return 0.0
+
+        payslips = self.env['hr.payslip'].search([
+            ('employee_id', '=', employee.id),
+            ('state', 'in', ['done', 'paid']),
+            ('date_to', '<', self.date_from),
+        ], order='date_from')
+        if not payslips:
+            return 0.0
+
+        basis = config.proration_basis or 'calendar'
+        total_delta = 0.0
+
+        for change in changes:
+            rule = rule_map.get(change.advantage_template_code)
+            if not rule:
+                continue
+            old_amount = change.old_amount or 0.0
+            new_amount = change.new_amount or 0.0
+            delta_base = new_amount - old_amount
+            if not delta_base:
+                continue
+
+            for payslip in payslips:
+                if not payslip.date_from or not payslip.date_to:
+                    continue
+                if payslip.date_to < change.effective_date:
+                    continue
+                segment_start = max(change.effective_date, payslip.date_from)
+                segment_end = payslip.date_to
+                if segment_start > segment_end:
+                    continue
+                period_days = self._get_proration_days(
+                    employee, payslip.date_from, payslip.date_to, basis
+                )
+                segment_days = self._get_proration_days(
+                    employee, segment_start, segment_end, basis
+                )
+                if not period_days or not segment_days:
+                    continue
+                delta_amount = delta_base * (segment_days / period_days)
+                if config.proration_rounding is not None:
+                    delta_amount = round(delta_amount, int(config.proration_rounding))
+                if not delta_amount:
+                    continue
+
+                existing = retro_model.search([
+                    ('employee_id', '=', employee.id),
+                    ('component_id', '=', rule.id),
+                    ('original_payslip_id', '=', payslip.id),
+                    ('advantage_change_id', '=', change.id),
+                    ('state', '!=', 'cancelled'),
+                ], limit=1)
+                if existing:
+                    continue
+
+                retro_model.create({
+                    'formula_config_id': config.id,
+                    'applied_in_batch_id': self.id,
+                    'employee_id': employee.id,
+                    'contract_id': contract.id if contract else False,
+                    'component_id': rule.id,
+                    'advantage_change_id': change.id,
+                    'change_effective_date': change.effective_date,
+                    'period_from': payslip.date_from,
+                    'period_to': payslip.date_to,
+                    'old_amount': old_amount,
+                    'new_amount': new_amount,
+                    'delta_amount': delta_amount,
+                    'original_payslip_id': payslip.id,
+                    'state': 'posted',
+                })
+                total_delta += delta_amount
+
+        return total_delta
+
+    def _link_retro_adjustments(self, payslip):
+        retro_lines = self.env['hr.payroll.retro.adjustment'].search([
+            ('applied_in_batch_id', '=', self.id),
+            ('employee_id', '=', payslip.employee_id.id),
+            ('applied_in_payslip_id', '=', False),
+        ])
+        if retro_lines:
+            retro_lines.write({'applied_in_payslip_id': payslip.id})
+
     def _get_mapping_updates(self, record, raw_data, mappings=None):
         mappings = mappings or self._get_model_mappings(record._name)
         updates = {}
@@ -1365,7 +1661,11 @@ class HrPayrollImportBatch(models.Model):
         raw_data = line.get_raw_data()
 
         # Transform raw data using field mappings
-        input_values = self._transform_data_to_formula_inputs(raw_data, contract=contract)
+        input_values = self._transform_data_to_formula_inputs(
+            raw_data,
+            contract=contract,
+            employee=employee,
+        )
 
         # Create payslip
         payslip_vals = {
@@ -1710,10 +2010,11 @@ class HrPayrollImportBatch(models.Model):
             self.formula_config_id.structure_id.rule_ids = [(4, new_rule.id)]
         return new_rule
 
-    def _transform_data_to_formula_inputs(self, raw_data, contract=None):
+    def _transform_data_to_formula_inputs(self, raw_data, contract=None, employee=None):
         """Transform raw Excel data to formula input values using field mappings"""
         input_values = {}
         config = self.formula_config_id
+        employee = employee or (contract.employee_id if contract else None)
         employee_code_markers = ('MSNV', 'EMP CODE', 'EMPLOYEE CODE', 'EMPLOYEE ID', 'EMPLOYEEID')
         contract_component_amounts = {}
         if contract:
@@ -1882,8 +2183,13 @@ class HrPayrollImportBatch(models.Model):
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):
             input_values[rule.code] = rule.constant_value
 
+        if config.use_proration and employee:
+            self._apply_proration(input_values, employee, contract)
+
+        if config.use_auto_retro and employee:
+            self._apply_retro_adjustments(input_values, employee, contract)
+
         if config.cycle_type == 'end_cycle':
-            employee = contract.employee_id if contract else None
             self._apply_mid_cycle_carryover(input_values, employee)
 
         return input_values
