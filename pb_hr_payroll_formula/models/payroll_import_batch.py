@@ -2036,7 +2036,9 @@ class HrPayrollImportBatch(models.Model):
                     advantage.advantage_template_id.code if advantage.advantage_template_id else False
                 )
                 if code:
-                    contract_component_amounts[code] = advantage.amount
+                    normalized_code = self._normalize_header_key(code)
+                    if normalized_code:
+                        contract_component_amounts[normalized_code] = advantage.amount
 
         def lookup_raw_value(candidates):
             for key in candidates:
@@ -2233,10 +2235,14 @@ class HrPayrollImportBatch(models.Model):
                     mapped_value = get_mapped_input_value(rule) if has_mapping else None
                     if mapped_value not in (None, ''):
                         input_values[rule.code] = normalize_input_value(rule, mapped_value)
-                    elif rule.is_contract_component:
-                        input_values[rule.code] = contract_component_amounts.get(rule.code, 0.0)
                     else:
-                        input_values[rule.code] = rule.default_value
+                        rule_code = self._normalize_header_key(rule.code) if rule.code else ''
+                        if rule_code and rule_code in contract_component_amounts:
+                            input_values[rule.code] = contract_component_amounts[rule_code]
+                        elif rule.is_contract_component:
+                            input_values[rule.code] = contract_component_amounts.get(rule_code, 0.0)
+                        else:
+                            input_values[rule.code] = rule.default_value
 
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):

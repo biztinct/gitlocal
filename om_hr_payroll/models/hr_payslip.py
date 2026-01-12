@@ -1231,6 +1231,21 @@ class HrPayslipRun(models.Model):
         def _normalize_key(value):
             return ''.join(ch for ch in str(value).upper() if ch.isalnum())
 
+        def _get_contract_component_amounts(contract):
+            amounts = {}
+            if not contract:
+                return amounts
+            for advantage in contract.advantages_ids:
+                code = advantage.advantage_template_code or (
+                    advantage.advantage_template_id.code if advantage.advantage_template_id else False
+                )
+                if not code:
+                    continue
+                normalized = _normalize_key(code)
+                if normalized:
+                    amounts[normalized] = advantage.amount
+            return amounts
+
         def _make_sheet_name(name, used_names):
             safe = (name or 'Payslips').strip() or 'Payslips'
             safe = safe.replace('/', '-').replace('\\', '-')
@@ -1393,6 +1408,7 @@ class HrPayslipRun(models.Model):
             for slip in sorted_slips:
                 employee = slip.employee_id
                 contract = slip.contract_id
+                contract_component_amounts = _get_contract_component_amounts(contract)
 
                 input_values = {}
                 if hasattr(slip, 'formula_input_values') and slip.formula_input_values:
@@ -1468,8 +1484,19 @@ class HrPayslipRun(models.Model):
                     string_value = string_values_by_key.get(key)
                     rule = rule_by_key.get(key)
                     has_mapping, mapped_value = _get_mapped_field_value(rule, employee, contract)
+                    contract_component_value = None
+                    if rule and contract_component_amounts:
+                        rule_code = _normalize_key(rule.code or '')
+                        if rule_code and rule_code in contract_component_amounts:
+                            contract_component_value = contract_component_amounts[rule_code]
                     if has_mapping:
                         row_values.append(mapped_value or '')
+                    elif (
+                        contract_component_value is not None
+                        and (numeric_value is None or abs(numeric_value) < 1e-9)
+                        and string_value in (None, '')
+                    ):
+                        row_values.append(contract_component_value)
                     elif (numeric_value is None or abs(numeric_value) < 1e-9) and string_value not in (None, ''):
                         row_values.append(string_value)
                     else:
