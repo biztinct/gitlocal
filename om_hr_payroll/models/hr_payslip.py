@@ -1196,17 +1196,17 @@ class HrPayslipRun(models.Model):
         text_fmt = workbook.add_format({'border': 1})
         num_fmt = workbook.add_format({'border': 1, 'num_format': '#,##0.00'})
 
-        worksheet = workbook.add_worksheet('Payslips')
-        worksheet.set_column(0, 0, 18)
-        worksheet.set_column(1, 1, 28)
-        worksheet.set_column(2, 2, 20)
-        worksheet.set_column(3, 3, 26)
-        worksheet.set_column(4, 4, 40)
-
         def _line_key(line):
             if line.code:
                 return ('code', line.code.upper().strip())
             return ('name', (line.name or '').strip().upper())
+
+        def _rule_key(rule):
+            if rule.code:
+                return ('code', rule.code.upper().strip())
+            if rule.name:
+                return ('name', rule.name.strip().upper())
+            return None
 
         def _normalize_msnv(value):
             if value is None:
@@ -1228,65 +1228,132 @@ class HrPayslipRun(models.Model):
                 return str(int(num))
             return ('%f' % num).rstrip('0').rstrip('.')
 
-        base_component_keys = {
-            ('code', 'MSNV'),
-            ('code', 'FULLNAME'),
-            ('code', 'UNIT'),
-            ('code', 'TYPEOFLABORCONTRACT'),
-            ('code', 'SUBJECTSARECOUNTEDASWORKINGOVERTIME'),
-            ('name', 'MSNV'),
-            ('name', 'FULL NAME'),
-            ('name', 'UNIT'),
-            ('name', 'TYPE OF LABOR CONTRACT'),
-            ('name', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'),
-        }
+        def _normalize_key(value):
+            return ''.join(ch for ch in str(value).upper() if ch.isalnum())
 
-        line_domain = [('slip_id', 'in', self.slip_ids.ids)]
-        if 'report_visible' in self.env['hr.payslip.line']._fields:
-            line_domain.append(('report_visible', '=', True))
-        all_lines = self.env['hr.payslip.line'].search(line_domain, order='sequence,id')
-        component_columns = []
-        seen_keys = set()
-        for line in all_lines:
-            key = _line_key(line)
-            if not key[1] or key in seen_keys:
-                continue
-            if key in base_component_keys or key[1] == 'MSNV':
-                continue
-            seen_keys.add(key)
-            header = line.name or line.code or key[1]
-            component_columns.append((key, header))
+        def _make_sheet_name(name, used_names):
+            safe = (name or 'Payslips').strip() or 'Payslips'
+            safe = safe.replace('/', '-').replace('\\', '-')
+            safe = safe[:31]
+            if safe not in used_names:
+                used_names.add(safe)
+                return safe
+            idx = 2
+            while True:
+                suffix = f" {idx}"
+                candidate = (safe[:31 - len(suffix)] + suffix).strip()
+                if candidate not in used_names:
+                    used_names.add(candidate)
+                    return candidate
+                idx += 1
 
-        headers = [
-            'MSNV',
-            'Full name',
-            'Unit',
-            'Type of labor contract',
-            'Subjects are counted as working overtime',
-        ] + [header for _, header in component_columns]
+        base_columns = [
+            {
+                'header': 'MSNV',
+                'keys': [('code', 'MSNV'), ('name', 'MSNV')],
+                'lookup': ['MSNV'],
+            },
+            {
+                'header': 'Full name',
+                'keys': [('code', 'FULLNAME'), ('name', 'FULL NAME'), ('name', 'FULLNAME')],
+                'lookup': ['FULLNAME', 'FULL NAME'],
+            },
+            {
+                'header': 'Unit',
+                'keys': [('code', 'UNIT'), ('name', 'UNIT')],
+                'lookup': ['UNIT'],
+            },
+            {
+                'header': 'Type of labor contract',
+                'keys': [('code', 'TYPEOFLABORCONTRACT'), ('name', 'TYPE OF LABOR CONTRACT')],
+                'lookup': ['TYPEOFLABORCONTRACT', 'TYPE OF LABOR CONTRACT'],
+            },
+            {
+                'header': 'Subjects are counted as working overtime',
+                'keys': [
+                    ('code', 'SUBJECTSARECOUNTEDASWORKINGOVERTIME'),
+                    ('name', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'),
+                ],
+                'lookup': ['SUBJECTSARECOUNTEDASWORKINGOVERTIME', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME'],
+            },
+        ]
 
-        for col_idx, header in enumerate(headers):
-            worksheet.write(0, col_idx, header, header_fmt)
-            if col_idx >= 5:
-                worksheet.set_column(col_idx, col_idx, 16)
+        slips_by_config = {}
+        for slip in self.slip_ids:
+            config = slip.formula_config_id if hasattr(slip, 'formula_config_id') else False
+            key = config.id if config else 0
+            entry = slips_by_config.setdefault(key, {
+                'config': config,
+                'slips': self.env['hr.payslip'],
+            })
+            entry['slips'] |= slip
 
-        row_idx = 1
-        sorted_slips = self.slip_ids.sorted(key=lambda s: s.employee_id.name or s.name or '')
-        for slip in sorted_slips:
-            employee = slip.employee_id
-            contract = slip.contract_id
+        used_sheet_names = set()
 
-            input_values = {}
-            if hasattr(slip, 'formula_input_values') and slip.formula_input_values:
-                try:
-                    input_values = json.loads(slip.formula_input_values or '{}')
-                except Exception:
-                    input_values = {}
+        for entry in slips_by_config.values():
+            config = entry['config']
+            slips = entry['slips']
+            sheet_name = config.display_name if config else 'Payslips'
+            worksheet = workbook.add_worksheet(_make_sheet_name(sheet_name, used_sheet_names))
+            worksheet.set_column(0, 0, 18)
+            worksheet.set_column(1, 1, 28)
+            worksheet.set_column(2, 2, 20)
+            worksheet.set_column(3, 3, 26)
+            worksheet.set_column(4, 4, 40)
 
-            def _normalize_key(value):
-                return ''.join(ch for ch in str(value).upper() if ch.isalnum())
+            rule_keys = set()
+            rule_by_key = {}
+            if config:
+                for rule in config.rule_ids:
+                    key = _rule_key(rule)
+                    if key:
+                        rule_keys.add(key)
+                        rule_by_key[key] = rule
 
-            def _lookup_input_value(keys):
+            mapping_cache = {}
+            if config:
+                mappings = self.env['hr.payslip.import.mapping'].search([
+                    ('salary_structure_id', '=', config.id),
+                    ('component_id', '!=', False),
+                ])
+                mapping_cache = {m.component_id.id: m for m in mappings}
+
+            active_base_columns = []
+            for base in base_columns:
+                if not rule_keys:
+                    active_base_columns.append(base)
+                    continue
+                if any(key in rule_keys for key in base['keys']):
+                    active_base_columns.append(base)
+
+            base_key_set = set()
+            for base in active_base_columns:
+                base_key_set.update(base['keys'])
+
+            line_domain = [('slip_id', 'in', slips.ids)]
+            if 'report_visible' in self.env['hr.payslip.line']._fields:
+                line_domain.append(('report_visible', '=', True))
+            all_lines = self.env['hr.payslip.line'].search(line_domain, order='sequence,id')
+            component_columns = []
+            seen_keys = set()
+            for line in all_lines:
+                key = _line_key(line)
+                if not key[1] or key in seen_keys:
+                    continue
+                if key in base_key_set or key[1] == 'MSNV':
+                    continue
+                seen_keys.add(key)
+                header = line.name or line.code or key[1]
+                component_columns.append((key, header))
+
+            headers = [base['header'] for base in active_base_columns] + [header for _, header in component_columns]
+
+            for col_idx, header in enumerate(headers):
+                worksheet.write(0, col_idx, header, header_fmt)
+                if col_idx >= len(active_base_columns):
+                    worksheet.set_column(col_idx, col_idx, 16)
+
+            def _lookup_input_value(input_values, keys):
                 for key in keys:
                     if key in input_values:
                         return input_values.get(key)
@@ -1297,84 +1364,124 @@ class HrPayslipRun(models.Model):
                         return input_values.get(normalized_map[normalized_key])
                 return None
 
-            values_by_key = {}
-            for line in slip.line_ids:
-                if 'report_visible' in line._fields and not line.report_visible:
-                    continue
-                key = _line_key(line)
-                if not key[1]:
-                    continue
-                values_by_key[key] = values_by_key.get(key, 0.0) + (line.total or 0.0)
+            def _find_rule_for_keys(keys):
+                for key in keys:
+                    rule = rule_by_key.get(key)
+                    if rule:
+                        return rule
+                return None
 
-            string_values_by_key = {}
-            if hasattr(slip, 'report_visible_string_payload') and slip.report_visible_string_payload:
-                try:
-                    payload_items = json.loads(slip.report_visible_string_payload or '[]')
-                except Exception:
-                    payload_items = []
-                for item in payload_items:
-                    value = item.get('value') if isinstance(item, dict) else None
-                    if value in (None, ''):
+            def _get_mapped_field_value(rule, employee, contract):
+                if not rule:
+                    return None
+                mapping = mapping_cache.get(rule.id)
+                if not mapping:
+                    return None
+                model_name = mapping.target_model_id.model
+                record = employee if model_name == 'hr.employee' else contract if model_name == 'hr.contract' else None
+                if not record:
+                    return None
+                value = getattr(record, mapping.target_field_id.name, None)
+                if isinstance(value, models.BaseModel):
+                    return value.display_name
+                return value
+
+            row_idx = 1
+            sorted_slips = slips.sorted(key=lambda s: s.employee_id.name or s.name or '')
+            for slip in sorted_slips:
+                employee = slip.employee_id
+                contract = slip.contract_id
+
+                input_values = {}
+                if hasattr(slip, 'formula_input_values') and slip.formula_input_values:
+                    try:
+                        input_values = json.loads(slip.formula_input_values or '{}')
+                    except Exception:
+                        input_values = {}
+
+                values_by_key = {}
+                for line in slip.line_ids:
+                    if 'report_visible' in line._fields and not line.report_visible:
                         continue
-                    code = (item.get('code') or '').strip().upper() if isinstance(item, dict) else ''
-                    name = (item.get('name') or '').strip().upper() if isinstance(item, dict) else ''
-                    if code:
-                        string_values_by_key[('code', code)] = value
-                    if name:
-                        string_values_by_key[('name', name)] = value
+                    key = _line_key(line)
+                    if not key[1]:
+                        continue
+                    values_by_key[key] = values_by_key.get(key, 0.0) + (line.total or 0.0)
 
-            msnv = _lookup_input_value(['MSNV'])
-            if not msnv:
-                msnv = employee.employee_id or employee.barcode or employee.identification_id
-            if not msnv:
-                msnv = values_by_key.get(('code', 'MSNV')) or values_by_key.get(('name', 'MSNV'))
-            msnv = _normalize_msnv(msnv)
-            full_name = _lookup_input_value(['FULLNAME', 'FULL NAME'])
-            if not full_name:
-                full_name = employee.full_name_vn or employee.name or ''
-            unit = _lookup_input_value(['UNIT'])
-            if not unit:
-                unit = getattr(employee, 'division', False) or employee.department_id.name or employee.location or ''
+                string_values_by_key = {}
+                if hasattr(slip, 'report_visible_string_payload') and slip.report_visible_string_payload:
+                    try:
+                        payload_items = json.loads(slip.report_visible_string_payload or '[]')
+                    except Exception:
+                        payload_items = []
+                    for item in payload_items:
+                        value = item.get('value') if isinstance(item, dict) else None
+                        if value in (None, ''):
+                            continue
+                        code = (item.get('code') or '').strip().upper() if isinstance(item, dict) else ''
+                        name = (item.get('name') or '').strip().upper() if isinstance(item, dict) else ''
+                        if code:
+                            string_values_by_key[('code', code)] = value
+                        if name:
+                            string_values_by_key[('name', name)] = value
 
-            labor_type = _lookup_input_value(['TYPEOFLABORCONTRACT', 'TYPE OF LABOR CONTRACT']) or ''
-            if contract:
-                if hasattr(contract, 'vietnam_contract_type') and contract.vietnam_contract_type:
-                    labor_type = dict(contract._fields['vietnam_contract_type'].selection).get(contract.vietnam_contract_type, '')
-                elif contract.type_id:
-                    labor_type = contract.type_id.name or ''
+                row_values = []
+                for base in active_base_columns:
+                    rule = _find_rule_for_keys(base['keys'])
+                    value = _lookup_input_value(input_values, base['lookup'])
+                    if value in (None, ''):
+                        mapped_value = _get_mapped_field_value(rule, employee, contract)
+                        if mapped_value not in (None, ''):
+                            value = mapped_value
 
-            subjects_overtime = _lookup_input_value(['SUBJECTSARECOUNTEDASWORKINGOVERTIME', 'SUBJECTS ARE COUNTED AS WORKING OVERTIME']) or ''
-            if contract:
-                if hasattr(contract, 'subjects_are_counted_as_working_overtime'):
-                    subjects_overtime = contract.subjects_are_counted_as_working_overtime or ''
-                if not subjects_overtime:
-                    for fname in contract._fields:
-                        if 'subject' in fname and 'overtime' in fname:
-                            subjects_overtime = getattr(contract, fname) or ''
-                            break
+                    if base['header'] == 'MSNV':
+                        if not value:
+                            value = employee.employee_id or employee.barcode or employee.identification_id
+                        if not value:
+                            value = values_by_key.get(('code', 'MSNV')) or values_by_key.get(('name', 'MSNV'))
+                        value = _normalize_msnv(value)
+                    elif base['header'] == 'Full name':
+                        if not value:
+                            value = employee.full_name_vn or employee.name or ''
+                    elif base['header'] == 'Unit':
+                        if not value:
+                            value = getattr(employee, 'division', False) or employee.department_id.name or employee.location or ''
+                    elif base['header'] == 'Type of labor contract':
+                        if not value and not rule:
+                            if contract:
+                                if hasattr(contract, 'vietnam_contract_type') and contract.vietnam_contract_type:
+                                    value = dict(contract._fields['vietnam_contract_type'].selection).get(contract.vietnam_contract_type, '')
+                                elif contract.type_id:
+                                    value = contract.type_id.name or ''
+                    elif base['header'] == 'Subjects are counted as working overtime':
+                        if not value:
+                            value = getattr(employee, 'overtime_status', '') or ''
+                        if not value and contract:
+                            if hasattr(contract, 'subjects_are_counted_as_working_overtime'):
+                                value = contract.subjects_are_counted_as_working_overtime or ''
 
-            row_values = [msnv, full_name, unit, labor_type, subjects_overtime]
+                    row_values.append(value)
 
-            for key, _header in component_columns:
-                numeric_value = values_by_key.get(key, 0.0)
-                string_value = string_values_by_key.get(key)
-                if (numeric_value is None or abs(numeric_value) < 1e-9) and string_value not in (None, ''):
-                    row_values.append(string_value)
-                else:
-                    row_values.append(numeric_value)
-
-            for col_idx, value in enumerate(row_values):
-                if col_idx == 0:
-                    worksheet.write_string(row_idx, col_idx, value or '', text_fmt)
-                elif col_idx < 5:
-                    worksheet.write_string(row_idx, col_idx, str(value) if value else '', text_fmt)
-                else:
-                    if isinstance(value, str):
-                        worksheet.write_string(row_idx, col_idx, value, text_fmt)
+                for key, _header in component_columns:
+                    numeric_value = values_by_key.get(key, 0.0)
+                    string_value = string_values_by_key.get(key)
+                    if (numeric_value is None or abs(numeric_value) < 1e-9) and string_value not in (None, ''):
+                        row_values.append(string_value)
                     else:
-                        worksheet.write_number(row_idx, col_idx, value or 0.0, num_fmt)
+                        row_values.append(numeric_value)
 
-            row_idx += 1
+                for col_idx, value in enumerate(row_values):
+                    if col_idx == 0:
+                        worksheet.write_string(row_idx, col_idx, value or '', text_fmt)
+                    elif col_idx < len(active_base_columns):
+                        worksheet.write_string(row_idx, col_idx, str(value) if value else '', text_fmt)
+                    else:
+                        if isinstance(value, str):
+                            worksheet.write_string(row_idx, col_idx, value, text_fmt)
+                        else:
+                            worksheet.write_number(row_idx, col_idx, value or 0.0, num_fmt)
+
+                row_idx += 1
 
         workbook.close()
         output.seek(0)
