@@ -939,7 +939,11 @@ class HrPayrollImportBatch(models.Model):
         ], limit=1)
         if not mapping or not mapping.component_id:
             return None
-        value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
+        value, has_value = self._get_rule_raw_value(
+            raw_data,
+            mapping.component_id,
+            allow_column_letter=False,
+        )
         return value if has_value else None
 
     def _get_employee_identifier_value(self, raw_data):
@@ -1114,7 +1118,11 @@ class HrPayrollImportBatch(models.Model):
             mapping = employee_map.get(field_name) or contract_map.get(field_name)
             if not mapping or not mapping.component_id:
                 continue
-            value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
+            value, has_value = self._get_rule_raw_value(
+                raw_data,
+                mapping.component_id,
+                allow_column_letter=False,
+            )
             if not has_value:
                 continue
             handled_fields.add(field_name)
@@ -1520,7 +1528,11 @@ class HrPayrollImportBatch(models.Model):
                 continue
             if field.name not in record._fields:
                 continue
-            value, has_value = self._get_rule_raw_value(raw_data, mapping.component_id)
+            value, has_value = self._get_rule_raw_value(
+                raw_data,
+                mapping.component_id,
+                allow_column_letter=False,
+            )
             if not has_value:
                 continue
             coerced = self._coerce_mapped_value(record, field, value)
@@ -2298,7 +2310,7 @@ class HrPayrollImportBatch(models.Model):
                 return raw_data.get(normalized_map[normalized_key])
         return None
 
-    def _get_rule_raw_value(self, raw_data, rule):
+    def _get_rule_raw_value(self, raw_data, rule, allow_column_letter=True):
         if not rule:
             return None, False
         candidates = []
@@ -2311,16 +2323,17 @@ class HrPayrollImportBatch(models.Model):
                 candidates.append(f"{rule.source_sheet_name}|{rule.name}")
             if rule.code:
                 candidates.append(f"{rule.source_sheet_name}|{rule.code}")
-            if rule.original_column_letter:
-                candidates.append(f"{rule.source_sheet_name}|{rule.original_column_letter}")
-            if rule.column_letter:
-                candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
+            if allow_column_letter:
+                if rule.original_column_letter:
+                    candidates.append(f"{rule.source_sheet_name}|{rule.original_column_letter}")
+                if rule.column_letter:
+                    candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
 
         if rule.name:
             candidates.append(rule.name)
         if rule.code:
             candidates.append(rule.code)
-        if rule.column_letter:
+        if allow_column_letter and rule.column_letter:
             candidates.append(rule.column_letter)
 
         value = self._lookup_raw_value(raw_data, candidates) if candidates else None
@@ -2475,7 +2488,11 @@ class HrPayrollImportBatch(models.Model):
 
         for rule in rules:
             template = self._get_or_create_advantage_template(rule, template_cache)
-            value, found = self._get_rule_raw_value(raw_data, rule)
+            value, found = self._get_rule_raw_value(
+                raw_data,
+                rule,
+                allow_column_letter=False,
+            )
             if found:
                 new_value = self._normalize_rule_input_value(rule, value)
             else:
