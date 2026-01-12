@@ -1340,6 +1340,8 @@ class HrPayslipRun(models.Model):
                 key = _line_key(line)
                 if not key[1] or key in seen_keys:
                     continue
+                if rule_keys and key not in rule_keys:
+                    continue
                 if key in base_key_set or key[1] == 'MSNV':
                     continue
                 seen_keys.add(key)
@@ -1373,18 +1375,18 @@ class HrPayslipRun(models.Model):
 
             def _get_mapped_field_value(rule, employee, contract):
                 if not rule:
-                    return None
+                    return False, None
                 mapping = mapping_cache.get(rule.id)
                 if not mapping:
-                    return None
+                    return False, None
                 model_name = mapping.target_model_id.model
                 record = employee if model_name == 'hr.employee' else contract if model_name == 'hr.contract' else None
                 if not record:
-                    return None
+                    return True, None
                 value = getattr(record, mapping.target_field_id.name, None)
                 if isinstance(value, models.BaseModel):
-                    return value.display_name
-                return value
+                    return True, value.display_name
+                return True, value
 
             row_idx = 1
             sorted_slips = slips.sorted(key=lambda s: s.employee_id.name or s.name or '')
@@ -1428,11 +1430,10 @@ class HrPayslipRun(models.Model):
                 row_values = []
                 for base in active_base_columns:
                     rule = _find_rule_for_keys(base['keys'])
-                    value = _lookup_input_value(input_values, base['lookup'])
-                    if value in (None, ''):
-                        mapped_value = _get_mapped_field_value(rule, employee, contract)
-                        if mapped_value not in (None, ''):
-                            value = mapped_value
+                    has_mapping, mapped_value = _get_mapped_field_value(rule, employee, contract)
+                    value = mapped_value
+                    if not has_mapping:
+                        value = _lookup_input_value(input_values, base['lookup'])
 
                     if base['header'] == 'MSNV':
                         if not value:
@@ -1465,7 +1466,11 @@ class HrPayslipRun(models.Model):
                 for key, _header in component_columns:
                     numeric_value = values_by_key.get(key, 0.0)
                     string_value = string_values_by_key.get(key)
-                    if (numeric_value is None or abs(numeric_value) < 1e-9) and string_value not in (None, ''):
+                    rule = rule_by_key.get(key)
+                    has_mapping, mapped_value = _get_mapped_field_value(rule, employee, contract)
+                    if has_mapping:
+                        row_values.append(mapped_value or '')
+                    elif (numeric_value is None or abs(numeric_value) < 1e-9) and string_value not in (None, ''):
                         row_values.append(string_value)
                     else:
                         row_values.append(numeric_value)
