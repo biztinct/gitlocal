@@ -8,6 +8,9 @@
         <field name="arch" type="xml">
             <xpath expr="//group[.//field[@name='work_email']]/field[@name='company_id']" position="after">
                 <field name="date_of_joining"/>
+                <field name="overtime_status"/>
+                <field name="fire_prevention_officer"/>
+                <field name="tham_gia_bhxh"/>
             </xpath>
         </field>
     </record>
