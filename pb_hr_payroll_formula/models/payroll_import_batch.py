@@ -2132,6 +2132,47 @@ class HrPayrollImportBatch(models.Model):
                 return stripped
             return value
 
+        mapping_by_rule = {}
+        if config:
+            rule_ids = config.rule_ids.ids
+            if rule_ids:
+                mappings = self.env['hr.payslip.import.mapping'].search([
+                    ('salary_structure_id', '=', config.id),
+                    ('component_id', 'in', rule_ids),
+                ])
+                mapping_by_rule = {m.component_id.id: m for m in mappings if m.component_id}
+
+        def get_mapped_input_value(rule):
+            mapping = mapping_by_rule.get(rule.id)
+            if not mapping:
+                return None
+            model_name = mapping.target_model_id.model
+            record = employee if model_name == 'hr.employee' else contract if model_name == 'hr.contract' else None
+            if not record:
+                return None
+            field = mapping.target_field_id
+            if field.name not in record._fields:
+                return None
+            value = getattr(record, field.name, None)
+            if value in (None, ''):
+                return None
+            field_type = getattr(field, 'ttype', None) or getattr(field, 'type', None)
+            if field_type == 'many2one':
+                return value.display_name
+            if field_type == 'selection':
+                selection = field.selection(record.env) if callable(field.selection) else field.selection
+                lookup = dict(selection or [])
+                return lookup.get(value, value)
+            if field_type == 'boolean':
+                return bool(value)
+            if field_type in ('integer', 'float', 'monetary'):
+                return float(value)
+            if field_type == 'date':
+                return fields.Date.to_string(value)
+            if field_type == 'datetime':
+                return fields.Datetime.to_string(value)
+            return value
+
         # First, try using connector field mappings if available
         if config.connector_id:
             for mapping in config.connector_id.field_mapping_ids:
@@ -2150,6 +2191,7 @@ class HrPayrollImportBatch(models.Model):
                 # Try to find value from raw data
                 value = None
                 candidates = []
+                has_mapping = rule.id in mapping_by_rule
 
                 # First try data_source_field
                 if rule.data_source_field:
@@ -2161,10 +2203,11 @@ class HrPayrollImportBatch(models.Model):
                         candidates.append(f"{rule.source_sheet_name}|{rule.name}")
                     if rule.code:
                         candidates.append(f"{rule.source_sheet_name}|{rule.code}")
-                    if rule.original_column_letter:
-                        candidates.append(f"{rule.source_sheet_name}|{rule.original_column_letter}")
-                    if rule.column_letter:
-                        candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
+                    if not has_mapping:
+                        if rule.original_column_letter:
+                            candidates.append(f"{rule.source_sheet_name}|{rule.original_column_letter}")
+                        if rule.column_letter:
+                            candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
 
                 # Then try by rule name
                 if rule.name:
@@ -2175,7 +2218,7 @@ class HrPayrollImportBatch(models.Model):
                     candidates.append(rule.code)
 
                 # Then try by column letter
-                if rule.column_letter:
+                if rule.column_letter and not has_mapping:
                     candidates.append(rule.column_letter)
 
                 if candidates:
@@ -2187,7 +2230,10 @@ class HrPayrollImportBatch(models.Model):
                 if value is not None:
                     input_values[rule.code] = normalize_input_value(rule, value)
                 else:
-                    if rule.is_contract_component:
+                    mapped_value = get_mapped_input_value(rule) if has_mapping else None
+                    if mapped_value not in (None, ''):
+                        input_values[rule.code] = normalize_input_value(rule, mapped_value)
+                    elif rule.is_contract_component:
                         input_values[rule.code] = contract_component_amounts.get(rule.code, 0.0)
                     else:
                         input_values[rule.code] = rule.default_value
