@@ -393,6 +393,65 @@ class HrPayslipFormula(models.Model):
     # ==========================================
     # ACTIONS
     # ==========================================
+    def action_recompute_formula_lines(self):
+        for payslip in self:
+            config = payslip.formula_config_id or payslip._find_formula_config()
+            if not config:
+                raise UserError(_(
+                    "No formula configuration found for this payslip."
+                ))
+            if payslip.formula_config_id != config:
+                payslip.formula_config_id = config.id
+            if payslip.calculation_method != 'formula':
+                payslip.calculation_method = 'formula'
+
+            import_line = self.env['hr.payroll.import.line'].search(
+                [('payslip_id', '=', payslip.id)],
+                limit=1
+            )
+            input_values = None
+            if import_line and import_line.batch_id:
+                batch = import_line.batch_id
+                input_values = batch._transform_data_to_formula_inputs(
+                    import_line.get_raw_data(),
+                    contract=payslip.contract_id,
+                    employee=payslip.employee_id,
+                )
+                payslip.formula_input_values = json.dumps(input_values)
+                payslip.line_ids.unlink()
+                batch._compute_and_create_payslip_lines(payslip, input_values)
+            else:
+                if payslip.formula_input_values:
+                    try:
+                        input_values = json.loads(payslip.formula_input_values or '{}')
+                    except Exception:
+                        input_values = {}
+                else:
+                    input_values = payslip._get_formula_input_values(config)
+                    payslip.formula_input_values = json.dumps(input_values, indent=2)
+
+                rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+                computed_values, computation_log = payslip._evaluate_rules_with_dependencies(
+                    rules,
+                    input_values
+                )
+                payslip.formula_computed_values = json.dumps(computed_values, indent=2)
+                payslip.formula_computation_log = '\n'.join(computation_log)
+                if 'report_visible_string_payload' in payslip._fields:
+                    payload = payslip._build_report_visible_string_payload(rules, computed_values)
+                    payslip.report_visible_string_payload = json.dumps(payload)
+                payslip._create_payslip_lines_from_formulas(rules, computed_values)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Recomputed'),
+                'message': _("Payslip formulas recalculated with current settings."),
+                'type': 'success',
+            }
+        }
+
     def action_switch_to_formula(self):
         """Switch this payslip to formula-based computation"""
         self.ensure_one()

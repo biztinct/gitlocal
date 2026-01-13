@@ -5,6 +5,14 @@
         <field name="model">hr.payslip</field>
         <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//form/header" position="inside">
+                <field name="calculation_method" invisible="1"/>
+                <button name="action_recompute_formula_lines"
+                        type="object"
+                        string="Recompute Formulas"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('calculation_method', '!=', 'formula')]}"/>
+            </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page string="Formula Input JSON" name="formula_input_json">
 

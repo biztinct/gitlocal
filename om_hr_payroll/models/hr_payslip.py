@@ -1492,6 +1492,13 @@ class HrPayslipRun(models.Model):
                     if has_mapping:
                         row_values.append(mapped_value or '')
                     elif (
+                        rule
+                        and contract_component_value is not None
+                        and config
+                        and not config.use_proration
+                    ):
+                        row_values.append(contract_component_value)
+                    elif (
                         contract_component_value is not None
                         and (numeric_value is None or abs(numeric_value) < 1e-9)
                         and string_value in (None, '')

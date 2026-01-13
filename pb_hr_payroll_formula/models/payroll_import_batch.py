@@ -1155,6 +1155,14 @@ class HrPayrollImportBatch(models.Model):
         carryover_model = self.env['hr.payroll.cycle.carryover']
         carryover_model.search([('import_batch_id', '=', self.id)]).unlink()
 
+        payslips = payslips.filtered(lambda p: p.state in ('done', 'paid'))
+        if not payslips:
+            _logger.info(
+                "Carryover: no completed payslips for batch %s (config %s).",
+                self.id, self.formula_config_id.display_name
+            )
+            return
+
         vals_list = []
         _logger.info(
             "Carryover: start batch %s config %s mappings=%s payslips=%s period=%s..%s",
@@ -1266,6 +1274,8 @@ class HrPayrollImportBatch(models.Model):
                 ('formula_config_id', '=', mapping.mid_cycle_config_id.id),
                 ('source_component_id', '=', mapping.mid_component_id.id),
                 ('state', '=', 'posted'),
+                ('import_batch_id', '!=', False),
+                ('import_batch_id.state', '=', 'done'),
                 ('date_from', '<=', self.date_to),
                 ('date_to', '>=', self.date_from),
             ])
@@ -1293,7 +1303,7 @@ class HrPayrollImportBatch(models.Model):
                 _logger.info("Proration fallback to calendar days: %s", exc)
         return float((end_date - start_date).days + 1)
 
-    def _apply_proration(self, input_values, employee, contract):
+    def _apply_proration(self, input_values, employee, contract, raw_input_codes=None):
         config = self.formula_config_id
         if not config.use_proration:
             return
@@ -1305,6 +1315,7 @@ class HrPayrollImportBatch(models.Model):
         code_map = {rule.code: rule for rule in rules if rule.code}
         if not code_map:
             return
+        raw_input_codes = raw_input_codes or set()
 
         change_model = self.env['hr.contract.advantage.change']
         changes = change_model.search([
@@ -1330,6 +1341,23 @@ class HrPayrollImportBatch(models.Model):
             rule = code_map.get(code)
             if not rule:
                 continue
+            if rule.code in raw_input_codes:
+                if self._normalize_header_key(rule.code) == 'laborcontractsalary':
+                    _logger.info(
+                        "Proration skip: batch=%s emp=%s rule=%s source=raw_input",
+                        self.name,
+                        employee.id,
+                        rule.code,
+                    )
+                continue
+            if self._normalize_header_key(code) == 'laborcontractsalary':
+                _logger.info(
+                    "Proration input: batch=%s emp=%s code=%s changes=%s",
+                    self.name,
+                    employee.id,
+                    code,
+                    [(c.id, c.effective_date, c.old_amount, c.new_amount) for c in change_list],
+                )
             sorted_changes = sorted(
                 change_list,
                 key=lambda c: c.effective_date or self.date_from
@@ -1362,6 +1390,15 @@ class HrPayrollImportBatch(models.Model):
             if config.proration_rounding is not None:
                 prorated = round(prorated, int(config.proration_rounding))
 
+            if self._normalize_header_key(rule.code) == 'laborcontractsalary':
+                _logger.info(
+                    "Proration apply: batch=%s emp=%s rule=%s before=%s after=%s",
+                    self.name,
+                    employee.id,
+                    rule.code,
+                    input_values.get(rule.code),
+                    prorated,
+                )
             input_values[rule.code] = prorated
 
             old_days = 0.0
@@ -1544,10 +1581,23 @@ class HrPayrollImportBatch(models.Model):
     def _get_latest_contract(self, employee):
         if not employee:
             return False
-        contracts = employee.contract_ids.sorted(
-            key=lambda c: c.date_start or date.min,
-            reverse=True
-        )
+        contracts = employee.contract_ids
+        if self.date_from or self.date_to:
+            date_from = self.date_from or date.min
+            date_to = self.date_to or date.max
+            contracts = contracts.filtered(
+                lambda c: (not c.date_start or c.date_start <= date_to)
+                and (not c.date_end or c.date_end >= date_from)
+            )
+        contracts = contracts.sorted(key=lambda c: c.date_start or date.min, reverse=True)
+        if _logger.isEnabledFor(logging.INFO):
+            _logger.info(
+                "Contract select: batch=%s emp=%s candidates=%s chosen=%s",
+                self.name,
+                employee.id,
+                [(c.id, c.date_start, c.date_end) for c in contracts],
+                contracts[:1].id if contracts else False,
+            )
         return contracts[:1] if contracts else False
 
     def _update_employee_from_raw_data(self, employee, raw_data, line=None):
@@ -1871,6 +1921,18 @@ class HrPayrollImportBatch(models.Model):
 
             amount = normalize_payslip_amount(rule, computed_values.get(rule.code, 0))
 
+            if self._normalize_header_key(rule.code) == 'laborcontractsalary':
+                _logger.info(
+                    "Payslip line: batch=%s slip=%s emp=%s rule=%s input=%s computed=%s amount=%s",
+                    self.name,
+                    payslip.id,
+                    payslip.employee_id.id if payslip.employee_id else False,
+                    rule.code,
+                    input_values.get(rule.code),
+                    computed_values.get(rule.code),
+                    amount,
+                )
+
             # Get or create salary rule category
             category = rule.category_id
             if not category:
@@ -2188,12 +2250,15 @@ class HrPayrollImportBatch(models.Model):
                         )
 
         # Then, do direct mapping for input rules based on data_source_field
+        raw_input_codes = set()
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'input'):
             if rule.code not in input_values:
                 # Try to find value from raw data
                 value = None
                 candidates = []
                 has_mapping = rule.id in mapping_by_rule
+                mapped_value = None
+                resolved_source = None
 
                 # First try data_source_field
                 if rule.data_source_field:
@@ -2230,26 +2295,51 @@ class HrPayrollImportBatch(models.Model):
                     value = None
 
                 if value is not None:
+                    resolved_source = 'raw'
                     input_values[rule.code] = normalize_input_value(rule, value)
+                    raw_input_codes.add(rule.code)
                 else:
                     mapped_value = get_mapped_input_value(rule) if has_mapping else None
                     if mapped_value not in (None, ''):
+                        resolved_source = 'mapped'
                         input_values[rule.code] = normalize_input_value(rule, mapped_value)
                     else:
                         rule_code = self._normalize_header_key(rule.code) if rule.code else ''
                         if rule_code and rule_code in contract_component_amounts:
+                            resolved_source = 'contract_component'
                             input_values[rule.code] = contract_component_amounts[rule_code]
                         elif rule.is_contract_component:
+                            resolved_source = 'contract_component_default'
                             input_values[rule.code] = contract_component_amounts.get(rule_code, 0.0)
                         else:
+                            resolved_source = 'default'
                             input_values[rule.code] = rule.default_value
+
+                if self._normalize_header_key(rule.code) == 'laborcontractsalary':
+                    _logger.info(
+                        "Input resolve: batch=%s emp=%s contract=%s rule=%s source=%s raw=%s mapped=%s contract_component=%s final=%s",
+                        self.name,
+                        employee.id if employee else False,
+                        contract.id if contract else False,
+                        rule.code,
+                        resolved_source,
+                        value,
+                        mapped_value,
+                        contract_component_amounts.get(self._normalize_header_key(rule.code or ''), None),
+                        input_values.get(rule.code),
+                    )
 
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):
             input_values[rule.code] = rule.constant_value
 
         if config.use_proration and employee:
-            self._apply_proration(input_values, employee, contract)
+            self._apply_proration(
+                input_values,
+                employee,
+                contract,
+                raw_input_codes=raw_input_codes,
+            )
 
         if config.use_auto_retro and employee:
             self._apply_retro_adjustments(input_values, employee, contract)
@@ -2540,6 +2630,7 @@ class HrPayrollImportBatch(models.Model):
 
         for rule in rules:
             template = self._get_or_create_advantage_template(rule, template_cache)
+            existing_line = line_map.get(template.code)
             value, found = self._get_rule_raw_value(
                 raw_data,
                 rule,
@@ -2548,11 +2639,20 @@ class HrPayrollImportBatch(models.Model):
             if found:
                 new_value = self._normalize_rule_input_value(rule, value)
             else:
-                existing_line = line_map.get(template.code)
-                if existing_line:
-                    new_value = existing_line.amount
-                else:
-                    new_value = 0.0
+                new_value = existing_line.amount if existing_line else 0.0
+
+            if self._normalize_header_key(rule.code) == 'laborcontractsalary':
+                _logger.info(
+                    "Contract component sync: batch=%s emp=%s contract=%s rule=%s found=%s raw=%s existing=%s new=%s",
+                    self.name,
+                    contract.employee_id.id if contract.employee_id else False,
+                    contract.id,
+                    rule.code,
+                    found,
+                    value,
+                    existing_line.amount if existing_line else None,
+                    new_value,
+                )
 
             desired_values[template.code] = {
                 'template': template,
@@ -2597,6 +2697,12 @@ class HrPayrollImportBatch(models.Model):
                     contract, template, 0.0, new_value, source,
                     notes='Created contract component'
                 )
+
+        # Ensure latest contract component values are visible for downstream computations.
+        if hasattr(contract, 'invalidate_recordset'):
+            contract.invalidate_recordset()
+        else:
+            contract.invalidate_cache(['advantages_ids'])
 
         return contract
 
