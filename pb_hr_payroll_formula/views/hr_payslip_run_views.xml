@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_payslip_run_form_formula_recompute" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.formula.recompute</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/button[@name='action_download_payslip_xlsx']" position="after">
+                <button name="action_recompute_formula_lines_batch"
+                        type="object"
+                        string="Recompute Formulas"
+                        class="oe_highlight"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

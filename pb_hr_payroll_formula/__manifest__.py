@@ -77,6 +77,7 @@ License: LGPL-3
         'views/sample_data_views.xml',
         'views/menu_views.xml',
         'views/hr_payslip_formula_views.xml',
+        'views/hr_payslip_run_views.xml',
     ],
     'demo': [
         'data/demo_formula_config.xml',
