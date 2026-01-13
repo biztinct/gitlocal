@@ -2256,6 +2256,7 @@ class HrPayrollImportBatch(models.Model):
                 # Try to find value from raw data
                 value = None
                 candidates = []
+                column_candidates = []
                 has_mapping = rule.id in mapping_by_rule
                 mapped_value = None
                 resolved_source = None
@@ -2272,9 +2273,13 @@ class HrPayrollImportBatch(models.Model):
                         candidates.append(f"{rule.source_sheet_name}|{rule.code}")
                     if not has_mapping:
                         if rule.original_column_letter:
-                            candidates.append(f"{rule.source_sheet_name}|{rule.original_column_letter}")
+                            column_candidates.append(
+                                f"{rule.source_sheet_name}|{rule.original_column_letter}"
+                            )
                         if rule.column_letter:
-                            candidates.append(f"{rule.source_sheet_name}|{rule.column_letter}")
+                            column_candidates.append(
+                                f"{rule.source_sheet_name}|{rule.column_letter}"
+                            )
 
                 # Then try by rule name
                 if rule.name:
@@ -2286,10 +2291,20 @@ class HrPayrollImportBatch(models.Model):
 
                 # Then try by column letter
                 if rule.column_letter and not has_mapping:
-                    candidates.append(rule.column_letter)
+                    column_candidates.append(rule.column_letter)
 
                 if candidates:
                     value = lookup_raw_value(candidates)
+                if value is None and column_candidates:
+                    rule_code_key = self._normalize_header_key(rule.code) if rule.code else ''
+                    component_amount = contract_component_amounts.get(rule_code_key)
+                    skip_column_fallback = (
+                        rule.is_contract_component
+                        and component_amount is not None
+                        and not self._float_equal(component_amount, 0.0)
+                    )
+                    if not skip_column_fallback:
+                        value = lookup_raw_value(column_candidates)
 
                 if isinstance(value, str) and value.strip() == '':
                     value = None

@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import babel
+import logging
 from datetime import date, datetime, time
 from dateutil.relativedelta import relativedelta
 from pytz import timezone
@@ -15,6 +16,8 @@ from bokeh.palettes import Category20c
 import json
 from pudb import set_trace
 #from odoo.addons.report_xlsx.report.report_xlsx import ReportXlsx
+
+_logger = logging.getLogger(__name__)
 
 class HrPayslip(models.Model):
     _name = 'hr.payslip'
@@ -1231,6 +1234,26 @@ class HrPayslipRun(models.Model):
         def _normalize_key(value):
             return ''.join(ch for ch in str(value).upper() if ch.isalnum())
 
+        def _coerce_numeric(value):
+            if value is None:
+                return None
+            if isinstance(value, (int, float)):
+                return float(value)
+            if isinstance(value, str):
+                stripped = value.strip()
+                if not stripped:
+                    return None
+                is_percent = stripped.endswith('%')
+                if is_percent:
+                    stripped = stripped[:-1]
+                cleaned = stripped.replace(',', '')
+                try:
+                    number = float(cleaned)
+                except ValueError:
+                    return None
+                return number / 100 if is_percent else number
+            return None
+
         def _get_contract_component_amounts(contract):
             amounts = {}
             if not contract:
@@ -1409,6 +1432,12 @@ class HrPayslipRun(models.Model):
                 employee = slip.employee_id
                 contract = slip.contract_id
                 contract_component_amounts = _get_contract_component_amounts(contract)
+                computed_values = {}
+                if hasattr(slip, 'formula_computed_values') and slip.formula_computed_values:
+                    try:
+                        computed_values = json.loads(slip.formula_computed_values or '{}')
+                    except Exception:
+                        computed_values = {}
 
                 input_values = {}
                 if hasattr(slip, 'formula_input_values') and slip.formula_input_values:
@@ -1489,25 +1518,62 @@ class HrPayslipRun(models.Model):
                         rule_code = _normalize_key(rule.code or '')
                         if rule_code and rule_code in contract_component_amounts:
                             contract_component_value = contract_component_amounts[rule_code]
+                    computed_value = None
+                    if rule and computed_values:
+                        computed_value = computed_values.get(rule.code)
+                        if computed_value is None and rule.column_letter:
+                            computed_value = computed_values.get(rule.column_letter)
+                        computed_value = _coerce_numeric(computed_value)
+                    output_value = None
+                    output_source = None
                     if has_mapping:
-                        row_values.append(mapped_value or '')
+                        output_value = mapped_value or ''
+                        output_source = 'mapped'
                     elif (
                         rule
-                        and contract_component_value is not None
+                        and contract_component_value not in (None, 0.0)
                         and config
                         and not config.use_proration
                     ):
-                        row_values.append(contract_component_value)
+                        output_value = contract_component_value
+                        output_source = 'contract_component_no_proration'
                     elif (
                         contract_component_value is not None
                         and (numeric_value is None or abs(numeric_value) < 1e-9)
                         and string_value in (None, '')
                     ):
-                        row_values.append(contract_component_value)
+                        output_value = contract_component_value
+                        output_source = 'contract_component'
+                    elif (
+                        computed_value is not None
+                        and (numeric_value is None or abs(numeric_value) < 1e-9)
+                        and string_value in (None, '')
+                    ):
+                        output_value = computed_value
+                        output_source = 'computed'
                     elif (numeric_value is None or abs(numeric_value) < 1e-9) and string_value not in (None, ''):
-                        row_values.append(string_value)
+                        output_value = string_value
+                        output_source = 'string'
                     else:
-                        row_values.append(numeric_value)
+                        output_value = numeric_value
+                        output_source = 'line_total'
+
+                    if rule and _normalize_key(rule.code or rule.name or '') == 'PCSENIORITY':
+                        _logger.info(
+                            "Export PCSENIORITY: slip=%s emp=%s rule=%s line=%s string=%s mapped=%s contract_component=%s computed=%s chosen=%s source=%s",
+                            slip.id,
+                            employee.id if employee else False,
+                            rule.code,
+                            numeric_value,
+                            string_value,
+                            mapped_value if has_mapping else None,
+                            contract_component_value,
+                            computed_value,
+                            output_value,
+                            output_source,
+                        )
+
+                    row_values.append(output_value)
 
                 for col_idx, value in enumerate(row_values):
                     if col_idx == 0:
