@@ -888,17 +888,26 @@ class HrPayrollImportBatch(models.Model):
         # Find structure from formula config
         structure = self.formula_config_id.structure_id
 
+        date_start = self.date_from or joining_date or date.today().replace(day=1)
+        name_suffix = fields.Date.to_string(date_start) if date_start else _("Contract")
         vals = {
-            'name': _("%s - Contract") % employee.name,
+            'name': _("%s - %s") % (employee.name, name_suffix),
             'employee_id': employee.id,
             'company_id': self.company_id.id,
             'wage': basic_salary or 0,
             'state': 'open',
-            'date_start': joining_date or self.date_from or date.today().replace(day=1),
+            'date_start': date_start,
         }
 
         if structure:
             vals['struct_id'] = structure.id
+
+        if date_start:
+            future_contracts = employee.contract_ids.filtered(
+                lambda c: c.date_start and c.date_start > date_start
+            ).sorted(key=lambda c: c.date_start)
+            if future_contracts:
+                vals['date_end'] = future_contracts[0].date_start - timedelta(days=1)
 
         contract = self.env['hr.contract'].create(vals)
         self._update_contract_from_raw_data(contract, raw_data)
