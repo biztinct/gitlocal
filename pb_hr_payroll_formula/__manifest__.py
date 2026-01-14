@@ -72,6 +72,7 @@ License: LGPL-3
         # Wizards (actions used by views below)
         'wizards/wizard_views.xml',
         'wizards/multisheet_wizard_views.xml',
+        'wizards/payslip_config_wizard_views.xml',
         'wizards/payslip_import_mapping_wizard_views.xml',
         'wizards/payroll_cycle_component_mapping_wizard_views.xml',
         'views/sample_data_views.xml',

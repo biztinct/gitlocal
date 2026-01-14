@@ -13,3 +13,7 @@ class HrEmployee(models.Model):
     overtime_status = fields.Char(string='Overtime Status', default='')
     fire_prevention_officer = fields.Char(string='Fire Prevention Officer', default='')
     tham_gia_bhxh = fields.Char(string='Tham gia BHXH', default='')
+    level_of_health_compensation = fields.Char(string='Level of Health Compensation', default='')
+    subject_to_pit = fields.Char(string='Subject to PIT', default='')
+    trade_union_participation = fields.Char(string='Trade Union Participation', default='')
+    funeral_fund_participation = fields.Char(string='Funeral Fund Participation', default='')

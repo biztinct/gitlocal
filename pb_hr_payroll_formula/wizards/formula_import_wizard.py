@@ -837,9 +837,13 @@ class FormulaImportWizard(models.TransientModel):
                 return False
             if identifier_value in identifier_cache:
                 return identifier_cache[identifier_value]
-            record = payslip_config_model.search([('identifier', '=', identifier_value)], limit=1)
+            record = payslip_config_model.search([
+                ('identifier', '=', identifier_value),
+                ('salary_structure_id', '=', self.config_id.id),
+            ], limit=1)
             if not record:
                 record = payslip_config_model.create({
+                    'salary_structure_id': self.config_id.id,
                     'identifier': identifier_value,
                     'label': '',
                 })
