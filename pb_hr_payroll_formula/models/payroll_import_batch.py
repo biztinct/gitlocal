@@ -1007,7 +1007,20 @@ class HrPayrollImportBatch(models.Model):
 
         if field_type == 'selection':
             selection = field.selection(record.env) if callable(field.selection) else field.selection
-            allowed = [key for key, _label in (selection or [])]
+            allowed = []
+            for entry in (selection or []):
+                if isinstance(entry, (list, tuple)):
+                    if entry:
+                        allowed.append(entry[0])
+                else:
+                    allowed.append(entry)
+            if not allowed and selection:
+                _logger.warning(
+                    "Selection for %s.%s has unexpected format: %s",
+                    record._name,
+                    field.name,
+                    selection,
+                )
             return str(value) if str(value) in allowed else None
 
         return str(value)
