@@ -1572,6 +1572,20 @@ class HrPayslipRun(models.Model):
                             output_value,
                             output_source,
                         )
+                    if rule and _normalize_key(rule.code or rule.name or '') == 'COLLABORATE':
+                        _logger.info(
+                            "Export COLLABORATE: slip=%s emp=%s rule=%s line=%s string=%s mapped=%s contract_component=%s computed=%s chosen=%s source=%s",
+                            slip.id,
+                            employee.id if employee else False,
+                            rule.code,
+                            numeric_value,
+                            string_value,
+                            mapped_value if has_mapping else None,
+                            contract_component_value,
+                            computed_value,
+                            output_value,
+                            output_source,
+                        )
 
                     row_values.append(output_value)
 

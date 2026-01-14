@@ -2132,6 +2132,38 @@ class HrPayrollImportBatch(models.Model):
                 )
             return None
 
+        def lookup_raw_value_with_key(candidates):
+            for key in candidates:
+                if key in raw_data:
+                    return raw_data.get(key), key
+            normalized_map = {self._normalize_header_key(k): k for k in raw_data.keys()}
+            for key in candidates:
+                normalized_key = self._normalize_header_key(key)
+                if normalized_key in normalized_map:
+                    matched = normalized_map[normalized_key]
+                    return raw_data.get(matched), matched
+            normalized_candidates = [
+                self._normalize_header_key(key) for key in candidates if key
+            ]
+            normalized_candidates = [key for key in normalized_candidates if len(key) >= 6]
+            if not normalized_candidates:
+                return None, None
+            matches = []
+            for header_key, original_key in normalized_map.items():
+                for candidate in normalized_candidates:
+                    if candidate and candidate in header_key:
+                        matches.append(original_key)
+            if len(set(matches)) == 1:
+                matched = matches[0]
+                return raw_data.get(matched), matched
+            if matches:
+                _logger.info(
+                    "Input match ambiguous for candidates %s: %s",
+                    candidates,
+                    sorted(set(matches)),
+                )
+            return None, None
+
         def is_employee_code_rule(rule):
             tokens = [
                 (rule.code or '').upper(),
@@ -2260,6 +2292,10 @@ class HrPayrollImportBatch(models.Model):
                 has_mapping = rule.id in mapping_by_rule
                 mapped_value = None
                 resolved_source = None
+                matched_key = None
+                matched_group = None
+                is_collaborate = self._normalize_header_key(rule.code or rule.name or '') == 'collaborate'
+                explicit_header_found = False
 
                 # First try data_source_field
                 if rule.data_source_field:
@@ -2294,8 +2330,13 @@ class HrPayrollImportBatch(models.Model):
                     column_candidates.append(rule.column_letter)
 
                 if candidates:
-                    value = lookup_raw_value(candidates)
-                if value is None and column_candidates:
+                    value, candidate_key = lookup_raw_value_with_key(candidates)
+                    if candidate_key is not None:
+                        explicit_header_found = True
+                        if is_collaborate:
+                            matched_key = candidate_key
+                            matched_group = 'candidates'
+                if value is None and column_candidates and not explicit_header_found:
                     rule_code_key = self._normalize_header_key(rule.code) if rule.code else ''
                     component_amount = contract_component_amounts.get(rule_code_key)
                     skip_column_fallback = (
@@ -2304,7 +2345,10 @@ class HrPayrollImportBatch(models.Model):
                         and not self._float_equal(component_amount, 0.0)
                     )
                     if not skip_column_fallback:
-                        value = lookup_raw_value(column_candidates)
+                        value, column_key = lookup_raw_value_with_key(column_candidates)
+                        if is_collaborate and column_key is not None:
+                            matched_key = column_key
+                            matched_group = 'column_candidates'
 
                 if isinstance(value, str) and value.strip() == '':
                     value = None
@@ -2338,6 +2382,20 @@ class HrPayrollImportBatch(models.Model):
                         contract.id if contract else False,
                         rule.code,
                         resolved_source,
+                        value,
+                        mapped_value,
+                        contract_component_amounts.get(self._normalize_header_key(rule.code or ''), None),
+                        input_values.get(rule.code),
+                    )
+                if is_collaborate:
+                    _logger.info(
+                        "Input resolve COLLABORATE: batch=%s emp=%s contract=%s source=%s matched_group=%s matched_key=%s raw=%s mapped=%s contract_component=%s final=%s",
+                        self.name,
+                        employee.id if employee else False,
+                        contract.id if contract else False,
+                        resolved_source,
+                        matched_group,
+                        matched_key,
                         value,
                         mapped_value,
                         contract_component_amounts.get(self._normalize_header_key(rule.code or ''), None),
