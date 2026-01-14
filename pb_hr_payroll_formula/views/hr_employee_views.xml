@@ -12,6 +12,12 @@
                 <field name="fire_prevention_officer"/>
                 <field name="tham_gia_bhxh"/>
             </xpath>
+            <xpath expr="//field[@name='coach_id']" position="after">
+                <field name="level_of_health_compensation"/>
+                <field name="subject_to_pit"/>
+                <field name="trade_union_participation"/>
+                <field name="funeral_fund_participation"/>
+            </xpath>
         </field>
     </record>
 

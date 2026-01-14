@@ -195,7 +195,9 @@
                                     <field name="source_sheet_name" string="Section"/>
                                     <field name="name" string="Component"/>
                                     <field name="component_type" string="Category"/>
-                                    <field name="payslip_identifier"/>
+                                    <field name="config_id" invisible="1"/>
+                                    <field name="payslip_identifier"
+                                           domain="[('salary_structure_id', '=', config_id)]"/>
                                     <field name="code"/>
                                     <field name="column_type" string="Type"/>
                                     <field name="data_source" string="Source"/>
@@ -404,7 +406,9 @@
                             <field name="source_sheet_name" string="Section"/>
                             <field name="name" string="Component"/>
                             <field name="component_type" string="Category"/>
-                            <field name="payslip_identifier"/>
+                            <field name="config_id" invisible="1"/>
+                            <field name="payslip_identifier"
+                                   domain="[('salary_structure_id', '=', config_id)]"/>
                             <field name="code"/>
                             <field name="column_type" string="Type"/>
                             <field name="data_source" string="Source"/>

@@ -14,6 +14,12 @@ class HrPayslipConfig(models.Model):
         default=10,
         help="Order used to display sections in the payslip."
     )
+    salary_structure_id = fields.Many2one(
+        'hr.formula.config',
+        string='Salary Structure',
+        ondelete='cascade',
+        help="Salary structure that this payslip identifier set applies to."
+    )
     identifier = fields.Char(
         string='Identifier',
         required=True,
@@ -35,5 +41,7 @@ class HrPayslipConfig(models.Model):
         return result
 
     _sql_constraints = [
-        ('identifier_uniq', 'unique(identifier)', 'Identifier must be unique.'),
+        ('identifier_config_uniq',
+         'unique(identifier, salary_structure_id)',
+         'Identifier must be unique per salary structure.'),
     ]

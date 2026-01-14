@@ -207,7 +207,7 @@ class HRFlowWizard(models.TransientModel):
             # Payroll - Updated with correct kanban actions
             'payroll-connector': ('pb_hr_payroll_formula.action_integration_connector_kanban', False),
             'payroll-config': ('pb_hr_payroll_formula.action_formula_config_kanban', False),
-            'payroll-payslip-config': ('pb_hr_payroll_formula.action_payslip_config', False),
+            'payroll-payslip-config': ('pb_hr_payroll_formula.action_payslip_config_wizard', False),
             'payroll-employee-contract-mapping': ('pb_hr_payroll_formula.action_payslip_import_mapping_wizard', False),
             'payroll-cycle-mapping': ('pb_hr_payroll_formula.action_payroll_cycle_component_mapping_wizard', False),
             'payroll-proration': ('pb_hr_payroll_formula.action_payroll_proration_line', False),
