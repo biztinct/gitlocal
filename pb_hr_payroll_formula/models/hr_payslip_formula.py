@@ -477,6 +477,42 @@ class HrPayslipFormula(models.Model):
             }
         }
 
+    def action_payslip_level2_done(self):
+        result = super().action_payslip_level2_done()
+        self._trigger_mid_cycle_carryover()
+        return result
+
+    def _trigger_mid_cycle_carryover(self):
+        if 'hr.payroll.import.batch' not in self.env:
+            return
+        batch_model = self.env['hr.payroll.import.batch']
+        batches = batch_model
+        for slip in self:
+            batch = False
+            if slip.payslip_run_id:
+                batch = batch_model.search(
+                    [('payslip_run_id', '=', slip.payslip_run_id.id)],
+                    limit=1
+                )
+            if not batch:
+                batch = batch_model.search(
+                    [('created_payslip_ids', 'in', slip.id)],
+                    limit=1
+                )
+            if not batch:
+                continue
+            config = batch.formula_config_id or slip.formula_config_id
+            if not config or config.cycle_type != 'mid_cycle':
+                continue
+            batches |= batch
+        for batch in batches:
+            payslips = batch.created_payslip_ids
+            run = batch.payslip_run_id
+            if not payslips and run:
+                payslips = run.slip_ids
+            if payslips:
+                batch._create_mid_cycle_carryovers(payslips, payslip_run=run)
+
     def action_switch_to_standard(self):
         """Switch back to standard salary rule computation"""
         self.write({
