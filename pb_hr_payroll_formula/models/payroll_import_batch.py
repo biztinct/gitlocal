@@ -2720,8 +2720,6 @@ class HrPayrollImportBatch(models.Model):
         template_cache = {}
         desired_values = {}
         new_contract_needed = False
-        debug_codes = {'PCTITLE', 'PCCONCURRENTLY', 'PCSECONDED'}
-
         line_map = self._get_contract_advantage_map(contract)
 
         for rule in rules:
@@ -2748,48 +2746,6 @@ class HrPayrollImportBatch(models.Model):
                     value,
                     existing_line.amount if existing_line else None,
                     new_value,
-                )
-
-            if rule.code in debug_codes:
-                candidates = []
-                if rule.data_source_field:
-                    candidates.append(rule.data_source_field)
-                if rule.source_sheet_name:
-                    if rule.name:
-                        candidates.append(f"{rule.source_sheet_name}|{rule.name}")
-                    if rule.code:
-                        candidates.append(f"{rule.source_sheet_name}|{rule.code}")
-                if rule.name:
-                    candidates.append(rule.name)
-                if rule.code:
-                    candidates.append(rule.code)
-                direct_match = next((key for key in candidates if key in raw_data), None)
-                normalized_map = {
-                    self._normalize_header_key(k): k for k in raw_data.keys()
-                }
-                normalized_match = None
-                for key in candidates:
-                    normalized_key = self._normalize_header_key(key)
-                    if normalized_key in normalized_map:
-                        normalized_match = normalized_map[normalized_key]
-                        break
-                sample_keys = [
-                    k for k in raw_data.keys()
-                    if 'PC' in k.upper() or 'BENEFIT' in k.upper()
-                ][:20]
-                _logger.info(
-                    "Contract component lookup debug: batch=%s emp=%s contract=%s rule=%s sheet=%s "
-                    "candidates=%s direct_match=%s normalized_match=%s raw=%s sample_keys=%s",
-                    self.name,
-                    contract.employee_id.id if contract.employee_id else False,
-                    contract.id,
-                    rule.code,
-                    rule.source_sheet_name,
-                    candidates,
-                    direct_match,
-                    normalized_match,
-                    value,
-                    sample_keys,
                 )
 
             desired_values[template.code] = {

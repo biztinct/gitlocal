@@ -2,6 +2,7 @@
 
 import babel
 import logging
+import math
 from datetime import date, datetime, time
 from dateutil.relativedelta import relativedelta
 from pytz import timezone
@@ -1199,6 +1200,20 @@ class HrPayslipRun(models.Model):
         text_fmt = workbook.add_format({'border': 1})
         num_fmt = workbook.add_format({'border': 1, 'num_format': '#,##0.00'})
 
+        def _sanitize_xlsx_number(value):
+            if value is None:
+                return 0.0
+            if isinstance(value, bool):
+                return float(value)
+            if isinstance(value, (int, float)):
+                number = float(value)
+                return number if math.isfinite(number) else 0.0
+            try:
+                number = float(value)
+            except (TypeError, ValueError):
+                return 0.0
+            return number if math.isfinite(number) else 0.0
+
         def _line_key(line):
             if line.code:
                 return ('code', line.code.upper().strip())
@@ -1598,7 +1613,7 @@ class HrPayslipRun(models.Model):
                         if isinstance(value, str):
                             worksheet.write_string(row_idx, col_idx, value, text_fmt)
                         else:
-                            worksheet.write_number(row_idx, col_idx, value or 0.0, num_fmt)
+                            worksheet.write_number(row_idx, col_idx, _sanitize_xlsx_number(value), num_fmt)
 
                 row_idx += 1
 
