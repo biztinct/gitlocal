@@ -826,6 +826,8 @@ class HrPayrollImportBatch(models.Model):
     def _create_employee(self, line):
         """Create a new employee from import line data"""
         raw_data = line.get_raw_data()
+        mappings = self._get_model_mappings('hr.employee')
+        mapped_fields = set(mappings.mapped('target_field_id.name'))
 
         # Extract employee info from raw data
         mapped_name = self._get_mapped_value_for_field(raw_data, 'hr.employee', 'name')
@@ -840,8 +842,6 @@ class HrPayrollImportBatch(models.Model):
         if not name:
             raise ValidationError(_("Cannot create employee: Name is required"))
 
-        mappings = self._get_model_mappings('hr.employee')
-        mapped_fields = set(mappings.mapped('target_field_id.name'))
         mapped_email = (
             self._get_mapped_value_for_field(raw_data, 'hr.employee', 'work_email')
             or self._get_mapped_value_for_field(raw_data, 'hr.employee', 'private_email')
