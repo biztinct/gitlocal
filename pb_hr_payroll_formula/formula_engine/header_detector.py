@@ -623,21 +623,29 @@ class HeaderDetector:
 
         headers = []
 
-        # Build map of horizontal merges on header row
+        # Build map of horizontal merges that cover the header row
         # Key: column number, Value: merge info including all columns in the merge
-        # This includes merges that START on the header row but may span multiple rows
+        # This includes merges that START on or above the header row and span multiple rows.
         horizontal_merges = {}
         for merged_range in self.merged_ranges:
-            # Check if this merge STARTS on the header row and spans multiple columns
-            if merged_range.min_row == header_row and merged_range.max_col > merged_range.min_col:
-                # This is a horizontal merge that starts on the header row
-                # It may also span multiple rows (e.g., "Date of work stoppage" spanning rows 2-3)
+            # Check if this merge spans multiple columns and covers the header row
+            if (
+                merged_range.max_col > merged_range.min_col
+                and merged_range.min_row <= header_row <= merged_range.max_row
+            ):
+                # This is a horizontal merge that covers the header row
+                # It may start above the header row (e.g., category row merges).
+                value_row = merged_range.min_row
+                merge_value = self.sheet.cell(
+                    row=value_row,
+                    column=merged_range.min_col
+                ).value
                 for col in range(merged_range.min_col, merged_range.max_col + 1):
                     horizontal_merges[col] = {
                         'start_col': merged_range.min_col,
                         'end_col': merged_range.max_col,
                         'span': merged_range.max_col - merged_range.min_col + 1,
-                        'value': self.sheet.cell(row=header_row, column=merged_range.min_col).value,
+                        'value': merge_value,
                         'end_row': merged_range.max_row,  # Track where the merge ends vertically
                     }
 
