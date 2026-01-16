@@ -126,14 +126,14 @@ msgstr " %s Đợt(es) skipped without payslips."
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 #, python-format
 msgid "%d Python formulas successfully regenerated."
-msgstr ""
+msgstr "%d Công thức Python đã được tạo lại thành công."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
 #, python-format
 msgid "%d blue constants (converted from %%)"
-msgstr ""
+msgstr "%d hằng số màu xanh (chuyển đổi từ %%)"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -154,7 +154,7 @@ msgstr "%d Hằng số rules added (ZA onwards)"
 #: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
 #, python-format
 msgid "%d fields discovered"
-msgstr ""
+msgstr "%d trường được phát hiện"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -203,7 +203,7 @@ msgstr "%d Giá trị đầu vào synced and %d formula results computed. Check 
 #: code:addons/pb_hr_payroll_formula/wizards/integration_sync_wizard.py:0
 #, python-format
 msgid "%d records synced successfully"
-msgstr ""
+msgstr "%d bản ghi đã đồng bộ thành công"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -217,7 +217,7 @@ msgstr "%d rules imported from Excel (Dòng tiêu đề %d)"
 #: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
 #, python-format
 msgid "%d rules imported from JSON"
-msgstr ""
+msgstr "%d quy tắc nhập từ JSON"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -231,7 +231,7 @@ msgstr "%d rules imported from color-coded Excel (Dòng tiêu đề %d)"
 #: code:addons/pb_hr_payroll_formula/wizards/formula_import_wizard.py:0
 #, python-format
 msgid "%d rules imported successfully"
-msgstr ""
+msgstr "%d quy tắc nhập thành công"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -253,7 +253,7 @@ msgstr "%d tests executed. Check results for Chi tiết."
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
 #, python-format
 msgid "%s - %s"
-msgstr ""
+msgstr "%s - %s"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -274,7 +274,7 @@ msgstr "%s Cấu hình công thức"
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "%s formula(s) have errors"
-msgstr ""
+msgstr "%s công thức bị lỗi"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -282,7 +282,7 @@ msgstr ""
 #: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
 #, python-format
 msgid "(unnamed)"
-msgstr ""
+msgstr "(không tên)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
@@ -322,7 +322,7 @@ msgstr ""
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
 msgid "<i class=\"fa fa-building text-info\"/> SAP SuccessFactors"
-msgstr ""
+msgstr "<i class=\"fa fa-building text-info\"/> SAP SuccessFactors"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
@@ -362,7 +362,7 @@ msgstr ""
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
 msgid "<i class=\"fa fa-cloud text-primary\"/> Zoho People"
-msgstr ""
+msgstr "<i class=\"fa fa-cloud text-primary\"/> Zoho People"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
@@ -374,7 +374,7 @@ msgstr ""
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
 msgid "<i class=\"fa fa-database text-danger\"/> Oracle HCM"
-msgstr ""
+msgstr "<i class=\"fa fa-database text-danger\"/> Oracle HCM"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
@@ -551,7 +551,7 @@ msgstr "<strong>Nguồn dữ liệu Options:</strong>"
 msgid ""
 "<strong>Depends On:</strong> Shows which worksheets this sheet references in"
 " its formulas"
-msgstr ""
+msgstr "<strong>Phụ thuộc vào:</strong> Hiển thị các bảng tính mà bảng này tham chiếu trong công thức"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
@@ -568,7 +568,7 @@ msgstr "<strong>Formula components</strong> will be auto-Được tính toán"
 msgid ""
 "<strong>From Integration:</strong> Fetch from external system (Zoho, SAP, "
 "etc.)"
-msgstr ""
+msgstr "<strong>Từ tích hợp:</strong> Lấy từ hệ thống bên ngoài (Zoho, SAP, v.v.)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -578,7 +578,7 @@ msgstr "<strong>Dòng tiêu đề:</strong> Adjust if auto-detection was incorre
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 msgid "<strong>How to use:</strong>"
-msgstr ""
+msgstr "<strong>Cách sử dụng:</strong>"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -603,7 +603,7 @@ msgstr "<strong>Đầu vào components</strong> will use data from Excel/Integra
 msgid ""
 "<strong>Main Sheet:</strong> Designate ONE sheet as the primary payroll "
 "structure"
-msgstr ""
+msgstr "<strong>Bảng chính:</strong> Chỉ định MỘT bảng làm cấu trúc lương chính"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -653,7 +653,7 @@ msgstr "<strong>Refs Others:</strong> Indicates this sheet has formulas that Tha
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "<strong>Review Detected Components</strong>"
-msgstr ""
+msgstr "<strong>Xem lại các thành phần được phát hiện</strong>"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -726,7 +726,7 @@ msgstr "API Cài đặt"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__api_version
 msgid "API Version"
-msgstr ""
+msgstr "Phiên bản API"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__abs
@@ -753,7 +753,7 @@ msgstr "Cần hành động"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 msgid "Activate"
-msgstr ""
+msgstr "Kích hoạt"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__active
@@ -807,7 +807,7 @@ msgstr "Activity Loại Icon"
 #: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
 #, python-format
 msgid "Add Column"
-msgstr ""
+msgstr "Thêm cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__add
@@ -822,7 +822,7 @@ msgstr "Additional notes about this Dữ liệu mẫu set"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_retro_adjustment_form
 msgid "Adjustment"
-msgstr ""
+msgstr "Điều chỉnh"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change__advantage_template_id
@@ -917,13 +917,13 @@ msgstr "Số tiền"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Analyze File"
-msgstr ""
+msgstr "Phân tích tệp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__anonymize
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__anonymize
 msgid "Anonymize Data"
-msgstr ""
+msgstr "Ẩn danh dữ liệu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_sync_wizard__anonymize
@@ -934,7 +934,7 @@ msgstr "Anonymize Nhân viên names in Dữ liệu mẫu"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__is_anonymized
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
 msgid "Anonymized"
-msgstr ""
+msgstr "Đã ẩn danh"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__appears_on_payslip
@@ -982,7 +982,7 @@ msgstr "Lưu trữ"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__state__archived
 msgid "Archived"
-msgstr ""
+msgstr "Đã lưu trữ"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
@@ -1010,7 +1010,7 @@ msgstr "Tệp đính kèm Count"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_proration_line_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_retro_adjustment_form
 msgid "Audit"
-msgstr ""
+msgstr "Kiểm tra"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
@@ -1025,17 +1025,17 @@ msgstr "Xác thực Loại"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__oauth_authorize_url
 msgid "Authorization URL"
-msgstr ""
+msgstr "URL xác thực"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__theme__auto
 msgid "Auto (System)"
-msgstr ""
+msgstr "Tự động (Hệ thống)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 msgid "Auto Retro"
-msgstr ""
+msgstr "Truy thu tự động"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__auto_create_contracts
@@ -1055,12 +1055,12 @@ msgstr "Auto-Tạo Mappings"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
 msgid "Auto-Map"
-msgstr ""
+msgstr "Tự động ánh xạ"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Auto-detect header rows based on content patterns"
-msgstr ""
+msgstr "Tự động phát hiện dòng tiêu đề dựa trên mẫu nội dung"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__python_formula
@@ -1106,18 +1106,18 @@ msgstr "Automatically suggest Trường mappings"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__available_column_names
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__available_columns_display
 msgid "Available Columns"
-msgstr ""
+msgstr "Cột có sẵn"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__available_sheet_ids
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Available Worksheets"
-msgstr ""
+msgstr "Bảng tính có sẵn"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__bd_phsk
 msgid "BD PHSK"
-msgstr ""
+msgstr "BD PHSK"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -1132,7 +1132,7 @@ msgstr "Ngân hàng"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__api_endpoint
 msgid "Base URL for API calls"
-msgstr ""
+msgstr "URL cơ sở cho các cuộc gọi API"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__auth_type__basic
@@ -1172,7 +1172,7 @@ msgstr "Được tính toán (formula)"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__calculation_method
 msgid "Calculation Method"
-msgstr ""
+msgstr "Phương pháp tính"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__proration_basis__calendar
@@ -1189,7 +1189,7 @@ msgstr "Campuchia"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Can Be Resolved"
-msgstr ""
+msgstr "Có thể giải quyết"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_compute_sample_wizard_form
@@ -1216,12 +1216,12 @@ msgstr "Hủy bỏ (Esc)"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__cancelled
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_retro_adjustment__state__cancelled
 msgid "Cancelled"
-msgstr ""
+msgstr "Đã hủy"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Cannot Resolve"
-msgstr ""
+msgstr "Không thể giải quyết"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -1324,7 +1324,7 @@ msgstr "Danh mục from merged cell above header"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__text_align__center
 msgid "Center"
-msgstr ""
+msgstr "Giữa"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_retro_adjustment__change_effective_date
@@ -1340,22 +1340,22 @@ msgstr "Change Tham chiếu"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change__changed_at
 msgid "Changed At"
-msgstr ""
+msgstr "Thay đổi lúc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change__changed_by
 msgid "Changed By"
-msgstr ""
+msgstr "Thay đổi bởi"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_compute_sample_wizard_form
 msgid "Check Calculations"
-msgstr ""
+msgstr "Kiểm tra tính toán"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 msgid "Check the <b>Computed Results</b> tab to see results"
-msgstr ""
+msgstr "Kiểm tra tab <b>Kết quả tính toán</b> để xem kết quả"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__has_circular_ref
@@ -1372,7 +1372,7 @@ msgstr "Tham chiếu vòng Chi tiết"
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "Clear Formula"
-msgstr ""
+msgstr "Xóa công thức"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
@@ -1387,12 +1387,12 @@ msgstr "Click <b>Đồng bộ &amp; Tính toán</b> to automatically Lưu and ru
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__client_id
 msgid "Client ID"
-msgstr ""
+msgstr "Client ID"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__client_secret
 msgid "Client Secret"
-msgstr ""
+msgstr "Client Secret"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
@@ -1425,17 +1425,17 @@ msgstr "Mã from Excel"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Col"
-msgstr ""
+msgstr "Cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__color
 msgid "Color Index"
-msgstr ""
+msgstr "Chỉ mục màu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Cols"
-msgstr ""
+msgstr "Cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__column_letter
@@ -1443,17 +1443,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_letter
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
 msgid "Column"
-msgstr ""
+msgstr "Cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__column_letter
 msgid "Column Letter"
-msgstr ""
+msgstr "Ký tự cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__column_selection_ids
 msgid "Column Selections"
-msgstr ""
+msgstr "Lựa chọn cột"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -1474,14 +1474,14 @@ msgstr "Column Loại"
 #: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
 #, python-format
 msgid "Column added"
-msgstr ""
+msgstr "Cột đã thêm"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "Column added successfully"
-msgstr ""
+msgstr "Thêm cột thành công"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -1489,14 +1489,14 @@ msgstr ""
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "Column deleted"
-msgstr ""
+msgstr "Cột đã xóa"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "Column duplicated"
-msgstr ""
+msgstr "Cột đã nhân bản"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__primary_key_column
@@ -1509,7 +1509,7 @@ msgstr "Column header used to match rows across worksheets (e.g., 'Nhân viên I
 #: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
 #, python-format
 msgid "Column letter '%s' is already used by '%s' (conflicts with '%s')."
-msgstr ""
+msgstr "Ký tự cột '%s' đã được sử dụng bởi '%s' (xung đột với '%s')."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__primary_key_column_name
@@ -1521,13 +1521,13 @@ msgstr "Column Tên to use as Khóa chính for matching rows across worksheets. 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__column_width
 msgid "Column width in pixels"
-msgstr ""
+msgstr "Độ rộng cột tính bằng pixel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__column_count
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Columns"
-msgstr ""
+msgstr "Cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__column_selection_ids
@@ -1544,7 +1544,7 @@ msgstr "Columns by Bảng tính"
 #: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
 #, python-format
 msgid "Columns reordered"
-msgstr ""
+msgstr "Đã sắp xếp lại cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change__company_id
@@ -1563,7 +1563,7 @@ msgstr "Công ty"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__done
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
 msgid "Completed"
-msgstr ""
+msgstr "Hoàn thành"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_proration_line__component_id
@@ -1636,7 +1636,7 @@ msgstr "Thành phần whose value will be carried forward from Giữa kỳ runs.
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 #, python-format
 msgid "Components Deleted"
-msgstr ""
+msgstr "Thành phần đã xóa"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -1662,12 +1662,12 @@ msgstr "Computation Nhật ký"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__computed_value
 msgid "Computed"
-msgstr ""
+msgstr "Đã tính toán"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 msgid "Computed Results"
-msgstr ""
+msgstr "Kết quả tính toán"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
@@ -1737,7 +1737,7 @@ msgstr "Cấu hình"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Configure Missing Fields"
-msgstr ""
+msgstr "Cấu hình trường còn thiếu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_import_wizard__state__configure_order
@@ -1769,29 +1769,29 @@ msgstr "Xác nhận Import"
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_integration_connector
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_integration_connector_kanban
 msgid "Connect to external HR systems"
-msgstr ""
+msgstr "Kết nối với hệ thống nhân sự bên ngoài"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connection_status__connected
 msgid "Connected"
-msgstr ""
+msgstr "Đã kết nối"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
 #, python-format
 msgid "Connected to %s"
-msgstr ""
+msgstr "Đã kết nối với %s"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connection_status__connecting
 msgid "Connecting..."
-msgstr ""
+msgstr "Đang kết nối..."
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
 msgid "Connection"
-msgstr ""
+msgstr "Kết nối"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -1805,7 +1805,7 @@ msgstr "Connection Thất bại"
 #: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
 #, python-format
 msgid "Connection Successful"
-msgstr ""
+msgstr "Kết nối thành công"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
@@ -1850,7 +1850,7 @@ msgstr "Trình kết nối Types:"
 #. module: pb_hr_payroll_formula
 #: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_integration_connectors
 msgid "Connectors"
-msgstr ""
+msgstr "Bộ kết nối"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_column_selection__column_type__constant
@@ -1875,7 +1875,7 @@ msgstr "Hằng số Value"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_compute_sample_wizard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Continue"
-msgstr ""
+msgstr "Tiếp tục"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -1917,14 +1917,14 @@ msgstr "Conversion Thất bại"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Converted Python (for debugging)"
-msgstr ""
+msgstr "Python đã chuyển đổi (để gỡ lỗi)"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
 #, python-format
 msgid "Copied"
-msgstr ""
+msgstr "Đã sao chép"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -1960,7 +1960,7 @@ msgstr "Could not detect Dòng tiêu đề from color-coded Excel file."
 #: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:0
 #, python-format
 msgid "Could not detect header rows from color-coded Excel file."
-msgstr ""
+msgstr "Không thể phát hiện dòng tiêu đề từ tệp Excel mã hóa màu."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -2045,7 +2045,7 @@ msgstr "Tạo your first Đợt nhập liệu lương"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 msgid "Created"
-msgstr ""
+msgstr "Đã tạo"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__created_contract_ids
@@ -2149,12 +2149,12 @@ msgstr "Created Phiếu lương"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
 msgid "Credentials"
-msgstr ""
+msgstr "Thông tin xác thực"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
 msgid "Cross-Ref"
-msgstr ""
+msgstr "Tham chiếu chéo"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -2165,18 +2165,18 @@ msgstr "Cross-Sheet Formula THỐNG KÊ"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__cross_sheet_formula_count
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Cross-Sheet Formulas"
-msgstr ""
+msgstr "Công thức chéo bảng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__has_cross_sheet_ref
 msgid "Cross-Sheet Ref"
-msgstr ""
+msgstr "Tham chiếu chéo bảng"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid ""
 "Cross-sheet formula references will be resolved to new column positions"
-msgstr ""
+msgstr "Tham chiếu công thức chéo bảng sẽ được giải quyết sang vị trí cột mới"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__currency_id
@@ -2190,7 +2190,7 @@ msgstr "Tiền tệ"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payroll_period__current
 msgid "Current Month"
-msgstr ""
+msgstr "Tháng này"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payroll_period__custom
@@ -2206,17 +2206,17 @@ msgstr "Chu kỳ Loại"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__theme__dark
 msgid "Dark Theme"
-msgstr ""
+msgstr "Giao diện tối"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__loaded
 msgid "Data Loaded"
-msgstr ""
+msgstr "Dữ liệu đã tải"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__row_count
 msgid "Data Rows"
-msgstr ""
+msgstr "Dòng dữ liệu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__data_source
@@ -2242,17 +2242,17 @@ msgstr "Nguồn dữ liệu Trình kết nối"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__file_data_start_row
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_data_start_row
 msgid "Data Start Row"
-msgstr ""
+msgstr "Dòng bắt đầu dữ liệu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_match_wizard_form
 msgid "Data from Excel"
-msgstr ""
+msgstr "Dữ liệu từ Excel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__is_anonymized
 msgid "Data has been anonymized (names/IDs removed)"
-msgstr ""
+msgstr "Dữ liệu đã được ẩn danh (loại bỏ tên/ID)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__date
@@ -2301,13 +2301,13 @@ msgstr "Ngày/Time"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__float
 msgid "Decimal"
-msgstr ""
+msgstr "Thập phân"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__decimal_places
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_decimals
 msgid "Decimal Places"
-msgstr ""
+msgstr "Số chữ số thập phân"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__deduction_of_funeral_money
@@ -2384,14 +2384,14 @@ msgstr "Xóa Salary Components"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__formula_dependencies
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Dependencies"
-msgstr ""
+msgstr "Phụ thuộc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__referenced_sheet_names
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__referenced_sheet_names_html
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Depends On"
-msgstr ""
+msgstr "Phụ thuộc vào"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__description
@@ -2441,12 +2441,12 @@ msgstr "Detect Tất cả worksheets in the workbook"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__component_preview_ids
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Detected Components"
-msgstr ""
+msgstr "Thành phần được phát hiện"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__header_confidence
 msgid "Detection Confidence"
-msgstr ""
+msgstr "Độ tin cậy phát hiện"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__sequence
@@ -2461,12 +2461,12 @@ msgstr "Determines display Đơn hàng"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__difference
 msgid "Difference"
-msgstr ""
+msgstr "Chênh lệch"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__different_subjects
 msgid "Different Subjects"
-msgstr ""
+msgstr "Chủ thể khác nhau"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__direct
@@ -2476,12 +2476,12 @@ msgstr "Direct Sao chép"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connection_status__disconnected
 msgid "Disconnected"
-msgstr ""
+msgstr "Đã ngắt kết nối"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_sync_wizard_form
 msgid "Discover Fields"
-msgstr ""
+msgstr "Khám phá trường"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__discrepancy_count
@@ -2491,13 +2491,13 @@ msgstr "Sai lệch"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__discrepancy_percent
 msgid "Discrepancy %"
-msgstr ""
+msgstr "% Chênh lệch"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Display"
-msgstr ""
+msgstr "Hiển thị"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change__display_name
@@ -2556,24 +2556,24 @@ msgstr "Display of available column names for easy Lựa chọn"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__excel_formula_display
 msgid "Display-friendly formula with row numbers stripped."
-msgstr ""
+msgstr "Công thức hiển thị thân thiện với số dòng bị loại bỏ."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__divide
 msgid "Divide by Factor"
-msgstr ""
+msgstr "Chia cho hệ số"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__division
 msgid "Division"
-msgstr ""
+msgstr "Phép chia"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/integration_field_mapping.py:0
 #, python-format
 msgid "Division by zero in transformation"
-msgstr ""
+msgstr "Chia cho 0 trong chuyển đổi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__state__done
@@ -2603,7 +2603,7 @@ msgstr "Nháp"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Drag auxiliary worksheets to reorder them"
-msgstr ""
+msgstr "Kéo các bảng tính phụ để sắp xếp lại"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -2630,13 +2630,13 @@ msgstr "Sao chép rule codes found! Each rule must have a unique Mã."
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Duplicates"
-msgstr ""
+msgstr "Trùng lặp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__duplicate_count
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Duplicates Found"
-msgstr ""
+msgstr "Tìm thấy trùng lặp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.constraint,message:pb_hr_payroll_formula.constraint_hr_payroll_cycle_component_mapping_cycle_component_unique_end
@@ -2672,7 +2672,7 @@ msgstr "Sửa Value"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_editable
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__is_editable
 msgid "Editable"
-msgstr ""
+msgstr "Có thể chỉnh sửa"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change__effective_date
@@ -2683,7 +2683,7 @@ msgstr "Effective Ngày"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line_match_wizard__employee_email
 msgid "Email from Excel"
-msgstr ""
+msgstr "Email từ Excel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model,name:pb_hr_payroll_formula.model_hr_employee
@@ -2756,17 +2756,17 @@ msgstr "Nhân viên/Hợp đồng Trường Ánh xạ"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__employee_ids
 msgid "Employees"
-msgstr ""
+msgstr "Nhân viên"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__matched
 msgid "Employees Matched"
-msgstr ""
+msgstr "Nhân viên đã khớp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__use_auto_retro
 msgid "Enable Auto Retro"
-msgstr ""
+msgstr "Bật truy thu tự động"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__use_proration
@@ -2776,13 +2776,13 @@ msgstr "Enable Phân bổ theo tỷ lệ"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "End"
-msgstr ""
+msgstr "Kết thúc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_append_order__end_column_letter
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_append_order_tree
 msgid "End Col"
-msgstr ""
+msgstr "Cột kết thúc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payroll_period__end_cycle
@@ -2833,7 +2833,7 @@ msgstr "Điểm cuối"
 #: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
 #, python-format
 msgid "Enter formula (e.g., =A1+B1*0.08)"
-msgstr ""
+msgstr "Nhập công thức (vd: =A1+B1*0.08)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
@@ -2888,7 +2888,7 @@ msgstr "Lỗi occurred at"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
 msgid "Errors"
-msgstr ""
+msgstr "Lỗi"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_tree
@@ -2905,13 +2905,13 @@ msgstr "Example Giá trị from Nguồn system"
 #: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
 #, python-format
 msgid "Examples"
-msgstr ""
+msgstr "Ví dụ"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Excel File"
-msgstr ""
+msgstr "Tệp Excel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__excel
@@ -2924,7 +2924,7 @@ msgstr "Excel File Nhập"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__excel_formula_display
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Excel Formula"
-msgstr ""
+msgstr "Công thức Excel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model,name:pb_hr_payroll_formula.model_hr_formula_config
@@ -2956,7 +2956,7 @@ msgstr "Excel column letter for the Khóa chính"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__import_file
 msgid "Excel file (.xlsx) containing payroll structure"
-msgstr ""
+msgstr "Tệp Excel (.xlsx) chứa cấu trúc lương"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -2968,25 +2968,25 @@ msgstr "Nhập từ Excel is only available for Excel Trình kết nối"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__column_letter
 msgid "Excel-style column letter (A, B, C...)"
-msgstr ""
+msgstr "Ký tự cột kiểu Excel (A, B, C...)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__column_letter
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_column_letter
 msgid "Excel-style column letter (A, B, C...Z, AA, AB, etc.)"
-msgstr ""
+msgstr "Ký tự cột kiểu Excel (A, B, C...Z, AA, AB, v.v.)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__excel_formula
 msgid ""
 "Excel-style formula (e.g., =A1+B1*0.08, =SUM(A1:C1), =IF(A1>1000,B1*0.1,0))"
-msgstr ""
+msgstr "Công thức kiểu Excel (vd: ...)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__import_file
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__source_type__excel
 msgid "Excel/CSV File"
-msgstr ""
+msgstr "Tệp Excel/CSV"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -3006,7 +3006,7 @@ msgstr "Existing Quy tắc công thức not found in the uploaded Excel file"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__expected_value
 msgid "Expected"
-msgstr ""
+msgstr "Dự kiến"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
@@ -3016,12 +3016,12 @@ msgstr "Kết quả mong đợi"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 msgid "Expected Values"
-msgstr ""
+msgstr "Giá trị dự kiến"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__expected_values_json
 msgid "Expected Values (JSON)"
-msgstr ""
+msgstr "Giá trị dự kiến (JSON)"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -3156,17 +3156,17 @@ msgstr "Thất bại to Lưu formula"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 msgid "Features"
-msgstr ""
+msgstr "Tính năng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__female_excluding_pregnant
 msgid "Female Excluding Pregnant"
-msgstr ""
+msgstr "Nữ (trừ thai sản)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
 msgid "Fetch Fields"
-msgstr ""
+msgstr "Lấy trường"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_import_mapping__target_field_id
@@ -3213,14 +3213,14 @@ msgstr "Trường path in source data (e.g., 'base_salary', 'hours_worked')"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__field_count
 msgid "Fields Discovered"
-msgstr ""
+msgstr "Trường đã khám phá"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/integration_connector.py:0
 #, python-format
 msgid "Fields Fetched"
-msgstr ""
+msgstr "Trường đã lấy"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
@@ -3234,7 +3234,7 @@ msgstr "File Nhập"
 #: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
 #, python-format
 msgid "File Sample %s"
-msgstr ""
+msgstr "Mẫu tệp %s"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
@@ -3253,27 +3253,27 @@ msgstr "File Tải lên"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__import_filename
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__import_filename
 msgid "Filename"
-msgstr ""
+msgstr "Tên tệp"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Final Review"
-msgstr ""
+msgstr "Đánh giá cuối cùng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__fire_prevention_officer
 msgid "Fire Prevention Officer"
-msgstr ""
+msgstr "Cán bộ PCCC"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__file_data_start_row
 msgid "First row containing data"
-msgstr ""
+msgstr "Dòng đầu tiên chứa dữ liệu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
 msgid "First row headers; subsequent rows are samples."
-msgstr ""
+msgstr "Dòng đầu tiên là tiêu đề; các dòng sau là mẫu."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__match_by_code
@@ -3290,21 +3290,21 @@ msgstr "Fixed value for Hằng số columns"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_follower_ids
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Người theo dõi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_partner_ids
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_partner_ids
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Người theo dõi (Đối tác)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__activity_type_icon
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__activity_type_icon
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "Biểu tượng Font awesome vd. fa-tasks"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -3314,17 +3314,17 @@ msgstr "For each missing Trường, specify how it should be populated:"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_decimals
 msgid "For rounding transformation"
-msgstr ""
+msgstr "Cho chuyển đổi làm tròn"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__forced_column_letter
 msgid "Forced Column Letter"
-msgstr ""
+msgstr "Ký tự cột bắt buộc"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Formatting"
-msgstr ""
+msgstr "Định dạng"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -3337,7 +3337,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 #, python-format
 msgid "Formula"
-msgstr ""
+msgstr "Công thức"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_component_preview__data_source__formula
@@ -3347,12 +3347,12 @@ msgstr "Formula (Được tính toán)"
 #. module: pb_hr_payroll_formula
 #: model:res.groups,name:pb_hr_payroll_formula.group_formula_admin
 msgid "Formula Administrator"
-msgstr ""
+msgstr "Quản trị viên công thức"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
 msgid "Formula Columns"
-msgstr ""
+msgstr "Cột công thức"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -3364,7 +3364,7 @@ msgstr "Formula Computation Nhật ký"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_hr_payslip_form_json_tabs
 msgid "Formula Computed JSON"
-msgstr ""
+msgstr "JSON công thức đã tính"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_cycle_carryover_search
@@ -3376,7 +3376,7 @@ msgstr "Cấu hình công thức"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_structure__formula_config_count
 msgid "Formula Configs"
-msgstr ""
+msgstr "Cấu hình công thức"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__config_id
@@ -3452,7 +3452,7 @@ msgstr "Formula Quản lý"
 #. module: pb_hr_payroll_formula
 #: model:ir.module.category,name:pb_hr_payroll_formula.module_category_formula_payroll
 msgid "Formula Payroll"
-msgstr ""
+msgstr "Lương công thức"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_input_line__rule_id
@@ -3500,7 +3500,7 @@ msgstr "Formula cannot Tham chiếu its own column"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__computed_values_json
 msgid "Formula computation results as JSON"
-msgstr ""
+msgstr "Kết quả tính toán công thức dưới dạng JSON"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -3539,7 +3539,7 @@ msgstr ""
 #: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
 #, python-format
 msgid "Formula must start with '='"
-msgstr ""
+msgstr "Công thức phải bắt đầu bằng '='"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_rule_id
@@ -3551,7 +3551,7 @@ msgstr "Quy tắc công thức to receive this value"
 #: code:addons/pb_hr_payroll_formula/static/src/js/excel_grid_widget.js:0
 #, python-format
 msgid "Formula saved"
-msgstr ""
+msgstr "Công thức đã lưu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_valid
@@ -3561,38 +3561,38 @@ msgstr "Formula Xác thực Trạng thái"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__resolved_formula
 msgid "Formula with cross-sheet references resolved"
-msgstr ""
+msgstr "Công thức với tham chiếu chéo bảng đã giải quyết"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.module.category,description:pb_hr_payroll_formula.module_category_formula_payroll
 msgid "Formula-based payroll calculation module"
-msgstr ""
+msgstr "Module tính lương dựa trên công thức"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Formulas"
-msgstr ""
+msgstr "Công thức"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__formula_count
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Formulas Detected"
-msgstr ""
+msgstr "Phát hiện công thức"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 #, python-format
 msgid "Formulas Regenerated"
-msgstr ""
+msgstr "Công thức đã tạo lại"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "Formulas converted to Python"
-msgstr ""
+msgstr "Công thức đã chuyển sang Python"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__source_type__employee
@@ -3603,22 +3603,22 @@ msgstr "From Nhân viên"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__employees
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
 msgid "From Employees"
-msgstr ""
+msgstr "Từ nhân viên"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
 msgid "From Excel"
-msgstr ""
+msgstr "Từ Excel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__excel
 msgid "From Excel File"
-msgstr ""
+msgstr "Từ tệp Excel"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__payslips
 msgid "From Existing Payslips"
-msgstr ""
+msgstr "Từ phiếu lương hiện có"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__salary_rules
@@ -3629,17 +3629,17 @@ msgstr "From Existing Lương Rules"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_missing_field__data_source__integration
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
 msgid "From Integration"
-msgstr ""
+msgstr "Từ tích hợp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__json
 msgid "From JSON File"
-msgstr ""
+msgstr "Từ tệp JSON"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_import_wizard__import_source__structure
 msgid "From Payroll Structure"
-msgstr ""
+msgstr "Từ cấu trúc lương"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__source_type__payslip
@@ -3649,17 +3649,17 @@ msgstr "From Phiếu lương"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
 msgid "From Payslips"
-msgstr ""
+msgstr "Từ phiếu lương"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__frozen_columns
 msgid "Frozen Columns"
-msgstr ""
+msgstr "Cột cố định"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__cycle_type__full_final
 msgid "Full & Final"
-msgstr ""
+msgstr "Quyết toán thôi việc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__sync_mode__full
@@ -3674,7 +3674,7 @@ msgstr "Tham gia Tang chế"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__random
 msgid "Generate Random Data"
-msgstr ""
+msgstr "Tạo dữ liệu ngẫu nhiên"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -3688,7 +3688,7 @@ msgstr "Generate Dữ liệu mẫu"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_wizard_form
 msgid "Generate Samples"
-msgstr ""
+msgstr "Tạo mẫu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
@@ -3700,7 +3700,7 @@ msgstr "Generate Kiểm tra Data"
 #: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
 #, python-format
 msgid "Generated Samples"
-msgstr ""
+msgstr "Mẫu đã tạo"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
@@ -3744,7 +3744,7 @@ msgstr "HR System Trình kết nối"
 #: model:ir.actions.act_window,name:pb_hr_payroll_formula.action_integration_connector_kanban
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_tree
 msgid "HR System Connectors"
-msgstr ""
+msgstr "Kết nối hệ thống nhân sự"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model,name:pb_hr_payroll_formula.model_hr_integration_connector
@@ -3770,7 +3770,7 @@ msgstr "Has Tham chiếu vòng"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__has_errors
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
 msgid "Has Errors"
-msgstr ""
+msgstr "Có lỗi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__has_evaluation_error
@@ -3785,7 +3785,7 @@ msgstr "Has Lỗi công thức"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__has_formulas
 msgid "Has Formulas"
-msgstr ""
+msgstr "Có công thức"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__has_message
@@ -3797,12 +3797,12 @@ msgstr "Has Tin nhắn"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__has_missing_fields
 msgid "Has Missing Fields"
-msgstr ""
+msgstr "Có trường thiếu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Has Ref"
-msgstr ""
+msgstr "Có tham chiếu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__original_header
@@ -3810,7 +3810,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Header"
-msgstr ""
+msgstr "Tiêu đề"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__detected_header_row
@@ -3864,7 +3864,7 @@ msgstr "ID"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__activity_exception_icon
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Biểu tượng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__activity_exception_icon
@@ -3876,7 +3876,7 @@ msgstr "Icon to indicate an exception Hoạt động."
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Identification"
-msgstr ""
+msgstr "Nhận dạng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_config__identifier
@@ -3934,7 +3934,7 @@ msgstr "If enabled, changes to this Thành phần will trigger a new Hợp đồ
 msgid ""
 "If set, this column letter is used instead of auto-computed. Used for "
 "constants at ZA, ZB, etc."
-msgstr ""
+msgstr "Nếu thiết lập, ký tự cột này sẽ được dùng thay vì tự tính. Dùng cho hằng số tại ZA, ZB, v.v."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_contract_advantage_change__change_source__import
@@ -4101,17 +4101,17 @@ msgstr "Nhập Lương components from multi-sheet Excel file with cross-sheet f
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__source_type__import
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data_wizard__source__file
 msgid "Imported from File"
-msgstr ""
+msgstr "Nhập từ tệp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__is_in_excel
 msgid "In Excel"
-msgstr ""
+msgstr "Trong Excel"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_search
 msgid "In Progress"
-msgstr ""
+msgstr "Đang thực hiện"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__is_selected
@@ -4119,12 +4119,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__is_selected
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Include"
-msgstr ""
+msgstr "Bao gồm"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__include_expected
 msgid "Include Expected Values"
-msgstr ""
+msgstr "Bao gồm giá trị dự kiến"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__report_visible
@@ -4134,7 +4134,7 @@ msgstr "Include this Thành phần in reports and pivots."
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__column_index
 msgid "Index"
-msgstr ""
+msgstr "Chỉ mục"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__in
@@ -4153,7 +4153,7 @@ msgstr "Indonesia"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Information"
-msgstr ""
+msgstr "Thông tin"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -4227,19 +4227,19 @@ msgstr "Đầu vào: %s -> Đầu ra: %s"
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "Insert Column Left"
-msgstr ""
+msgstr "Chèn cột bên trái"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/js/grid_actions.js:0
 #, python-format
 msgid "Insert Column Right"
-msgstr ""
+msgstr "Chèn cột bên phải"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Instructions"
-msgstr ""
+msgstr "Hướng dẫn"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__insurance_code
@@ -4250,13 +4250,13 @@ msgstr "Mã BH"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__number_format__integer
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__integer
 msgid "Integer"
-msgstr ""
+msgstr "Số nguyên"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__integration_connector_id
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_component_preview__data_source__integration
 msgid "Integration"
-msgstr ""
+msgstr "Tích hợp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_missing_field__integration_connector_id
@@ -4286,7 +4286,7 @@ msgstr "Ánh xạ trường tích hợp"
 #. module: pb_hr_payroll_formula
 #: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_integrations
 msgid "Integrations"
-msgstr ""
+msgstr "Tích hợp"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
@@ -4320,12 +4320,12 @@ msgstr "Không hợp lệ import source"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_is_follower
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Là người theo dõi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__is_mapped
 msgid "Is Mapped"
-msgstr ""
+msgstr "Đã ánh xạ"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
@@ -4372,7 +4372,7 @@ msgstr "Sổ nhật ký to use when creating payslips. If empty, falls Quay lạ
 msgid ""
 "Keep existing rules and add new ones. If unchecked, existing rules will be "
 "replaced."
-msgstr ""
+msgstr "Giữ quy tắc hiện có và thêm mới. Nếu không chọn, quy tắc hiện có sẽ bị thay thế."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_import_wizard__preserve_existing
@@ -4385,7 +4385,7 @@ msgstr "Keep existing rules in the Cấu hình"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_config__label
 #, python-format
 msgid "Label"
-msgstr ""
+msgstr "Nhãn"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__name
@@ -4395,7 +4395,7 @@ msgstr "Label/Tên"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__last_computed
 msgid "Last Computed"
-msgstr ""
+msgstr "Tính lần cuối"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_error
@@ -4405,7 +4405,7 @@ msgstr "Last Lỗi"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__last_evaluation_date
 msgid "Last Evaluated"
-msgstr ""
+msgstr "Đánh giá lần cuối"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__last_evaluation_error
@@ -4415,7 +4415,7 @@ msgstr "Last Đánh giá Lỗi"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_import_filename
 msgid "Last Filename"
-msgstr ""
+msgstr "Tên tệp gần nhất"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
@@ -4425,7 +4425,7 @@ msgstr "Last Nhập"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_import_file
 msgid "Last Imported File"
-msgstr ""
+msgstr "Tệp nhập gần nhất"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change____last_update
@@ -4459,7 +4459,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_import_mapping____last_update
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_import_mapping_wizard____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Chỉnh sửa lần cuối vào"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__last_sync
@@ -4567,7 +4567,7 @@ msgstr "Nghỉ phép empty to use recent payslips"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__text_align__left
 msgid "Left"
-msgstr ""
+msgstr "Trái"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__legal_entity_pays_salary
@@ -4577,12 +4577,12 @@ msgstr "Legal Entity Pays Lương"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__level_of_health_compensation
 msgid "Level of Health Compensation"
-msgstr ""
+msgstr "Mức bồi dưỡng sức khỏe"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__theme__light
 msgid "Light Theme"
-msgstr ""
+msgstr "Giao diện sáng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__rule_id
@@ -4612,7 +4612,7 @@ msgstr "Danh sách of worksheets that this sheet references in formulas"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 msgid "Load File"
-msgstr ""
+msgstr "Tải tệp"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
@@ -4631,7 +4631,7 @@ msgstr "Loading Lưới..."
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_append_order_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Main"
-msgstr ""
+msgstr "Chính"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_main_attachment_id
@@ -4643,7 +4643,7 @@ msgstr "Main Tệp đính kèm"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_sheet_line__is_main_sheet
 msgid "Main Sheet"
-msgstr ""
+msgstr "Bảng chính"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__main_sheet_name
@@ -4666,7 +4666,7 @@ msgstr "Malaysia"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_contract_advantage_change__change_source__manual
 msgid "Manual"
-msgstr ""
+msgstr "Thủ công"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_component_preview__data_source__manual
@@ -4683,12 +4683,12 @@ msgstr "Manual Bút toán"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
 msgid "Manual Match"
-msgstr ""
+msgstr "Khớp thủ công"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__map_categories
 msgid "Map Categories"
-msgstr ""
+msgstr "Ánh xạ danh mục"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_import_wizard__state__map_missing
@@ -4718,7 +4718,7 @@ msgstr "Ánh xạ Kiểm tra"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__mapping_count
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
 msgid "Mappings"
-msgstr ""
+msgstr "Ánh xạ"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_required
@@ -4748,17 +4748,17 @@ msgstr "Match Nhân viên Thuật sĩ"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 msgid "Match Employees"
-msgstr ""
+msgstr "Khớp nhân viên"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_match_wizard_form
 msgid "Match To"
-msgstr ""
+msgstr "Khớp với"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__match_by_email
 msgid "Match by Email"
-msgstr ""
+msgstr "Khớp theo Email"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__match_by_code
@@ -4778,7 +4778,7 @@ msgstr "Nhân viên đã khớp"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
 msgid "Matched Records"
-msgstr ""
+msgstr "Bản ghi đã khớp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__employee_id
@@ -4788,7 +4788,7 @@ msgstr "Matched or created Nhân viên"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__max_discrepancy
 msgid "Max Discrepancy %"
-msgstr ""
+msgstr "% Chênh lệch tối đa"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__max_value
@@ -4798,7 +4798,7 @@ msgstr "Max Giá trị"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__max_records
 msgid "Maximum Records"
-msgstr ""
+msgstr "Số bản ghi tối đa"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__max_salary
@@ -4934,7 +4934,7 @@ msgstr "Minimum allowed Giá trị (Nghỉ phép empty for no limit)"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__missing_field_ids
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Missing Fields"
-msgstr ""
+msgstr "Trường thiếu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_import_mapping__target_model_id
@@ -4985,7 +4985,7 @@ msgstr "Multiplication factor, divisor, or Giá trị to add/subtract"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__multiply
 msgid "Multiply by Factor"
-msgstr ""
+msgstr "Nhân với hệ số"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__my_activity_date_deadline
@@ -5035,7 +5035,7 @@ msgstr "New Số tiền"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_proration_line__new_days
 msgid "New Days"
-msgstr ""
+msgstr "Ngày mới"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__is_new_employee
@@ -5104,7 +5104,7 @@ msgstr "Next Activity Loại"
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 #, python-format
 msgid "No Components"
-msgstr ""
+msgstr "Không có thành phần"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
@@ -5168,14 +5168,14 @@ msgstr "No components selected for Nhập."
 #: code:addons/pb_hr_payroll_formula/wizards/sample_data_wizard.py:0
 #, python-format
 msgid "No data found in CSV file."
-msgstr ""
+msgstr "Không tìm thấy dữ liệu trong tệp CSV."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
 #, python-format
 msgid "No data found in file."
-msgstr ""
+msgstr "Không tìm thấy dữ liệu trong tệp."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -5205,7 +5205,7 @@ msgstr "No Cấu hình công thức found for this Phiếu lương. Please confi
 #: code:addons/pb_hr_payroll_formula/models/hr_payslip_run.py:0
 #, python-format
 msgid "No formula-based payslips found to recompute."
-msgstr ""
+msgstr "Không tìm thấy phiếu lương dựa trên công thức để tính lại."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -5236,7 +5236,7 @@ msgstr "No main sheet designated for Khóa chính matching"
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 #, python-format
 msgid "No payslips found for completed batches."
-msgstr ""
+msgstr "Không tìm thấy phiếu lương cho các đợt đã hoàn thành."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -5271,7 +5271,7 @@ msgstr "No Dữ liệu mẫu yet. Add Dữ liệu mẫu to Kiểm tra your formu
 #: code:addons/pb_hr_payroll_formula/wizards/compute_sample_wizard.py:0
 #, python-format
 msgid "No sample selected."
-msgstr ""
+msgstr "Chưa chọn mẫu."
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_test_results
@@ -5283,12 +5283,12 @@ msgstr "No Kiểm tra results yet"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_missing_field__data_source__none
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__data_source__none
 msgid "Not Populated"
-msgstr ""
+msgstr "Chưa điền"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_kanban
 msgid "Not tested yet"
-msgstr ""
+msgstr "Chưa kiểm thử"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_compute_wizard__note
@@ -5305,30 +5305,30 @@ msgstr "Ghi chú"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__number_format__number
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__number
 msgid "Number"
-msgstr ""
+msgstr "Số"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__number_format
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
 msgid "Number Format"
-msgstr ""
+msgstr "Định dạng số"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_needaction_counter
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_needaction_counter
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Số hành động"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__sample_count
 msgid "Number of Samples"
-msgstr ""
+msgstr "Số mẫu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__frozen_columns
 msgid "Number of columns to freeze on the left"
-msgstr ""
+msgstr "Số cột cần cố định bên trái"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data__discrepancy_count
@@ -5338,14 +5338,14 @@ msgstr "Number of columns with Giá trị mismatch"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__proration_rounding
 msgid "Number of decimal places to round prorated amounts."
-msgstr ""
+msgstr "Số chữ số thập phân để làm tròn số tiền phân bổ."
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_has_error_counter
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__message_has_error_counter
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Số lỗi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__message_needaction_counter
@@ -5364,12 +5364,12 @@ msgstr "Number of messages with delivery Lỗi"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__sample_count
 msgid "Number of random samples to generate"
-msgstr ""
+msgstr "Số mẫu ngẫu nhiên cần tạo"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__auth_type__oauth2
 msgid "OAuth 2.0"
-msgstr ""
+msgstr "OAuth 2.0"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
@@ -5379,7 +5379,7 @@ msgstr "OAuth 2.0 Cài đặt"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__oauth_scope
 msgid "OAuth Scope"
-msgstr ""
+msgstr "Phạm vi OAuth"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__osh_worker_code
@@ -5396,7 +5396,7 @@ msgstr "Old Số tiền"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_proration_line__old_days
 msgid "Old Days"
-msgstr ""
+msgstr "Ngày cũ"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_search
@@ -5444,7 +5444,7 @@ msgstr "Tùy chọn"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__oracle
 msgid "Oracle HCM"
-msgstr ""
+msgstr "Oracle HCM"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_append_order__append_sequence
@@ -5464,12 +5464,12 @@ msgstr "Order used to display sections in the Phiếu lương."
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__constant_cell_ref
 msgid "Original Cell"
-msgstr ""
+msgstr "Ô gốc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__original_column_letter
 msgid "Original Column"
-msgstr ""
+msgstr "Cột gốc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__constant_cell_ref
@@ -5499,12 +5499,12 @@ msgstr "Original Phiếu lương used for expected values"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__raw_data_json
 msgid "Original row data from Excel as JSON"
-msgstr ""
+msgstr "Dữ liệu dòng gốc từ Excel dưới dạng JSON"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.formula_hr_employee_view_form
 msgid "Others"
-msgstr ""
+msgstr "Khác"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__overtime_status
@@ -5521,12 +5521,12 @@ msgstr "Partial Thành công"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_test_result__status__passed
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
 msgid "Passed"
-msgstr ""
+msgstr "Đạt"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__password
 msgid "Password"
-msgstr ""
+msgstr "Mật khẩu"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -5687,7 +5687,7 @@ msgstr "Phiếu lương"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__validation_status__pending
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_search
 msgid "Pending"
-msgstr ""
+msgstr "Đang chờ"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__validation_status__pending
@@ -5759,14 +5759,14 @@ msgstr "Please designate one Bảng tính as the main sheet."
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
 #, python-format
 msgid "Please load data first."
-msgstr ""
+msgstr "Vui lòng tải dữ liệu trước."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
 #, python-format
 msgid "Please match employees first."
-msgstr ""
+msgstr "Vui lòng khớp nhân viên trước."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -5913,13 +5913,13 @@ msgstr "Vị trí"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_proration_line_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_retro_adjustment_search
 msgid "Posted"
-msgstr ""
+msgstr "Đã vào sổ"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__preserve_existing
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__preserve_existing
 msgid "Preserve Existing Rules"
-msgstr ""
+msgstr "Bảo tồn quy tắc hiện có"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_import_wizard__map_categories
@@ -5972,7 +5972,7 @@ msgstr "Primary Bảng tính containing the main payroll structure"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Process & Resolve"
-msgstr ""
+msgstr "Xử lý & Giải quyết"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
@@ -5982,7 +5982,7 @@ msgstr "Process Tất cả"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__processed
 msgid "Processed"
-msgstr ""
+msgstr "Đã xử lý"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__processed_lines
@@ -5992,7 +5992,7 @@ msgstr "Dòng đã xử lý"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__processing
 msgid "Processing"
-msgstr ""
+msgstr "Đang xử lý"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__processing_log
@@ -6015,7 +6015,7 @@ msgstr "Prorated Số tiền"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__proration_component_ids
 msgid "Prorated Components"
-msgstr ""
+msgstr "Thành phần phân bổ"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
@@ -6087,19 +6087,19 @@ msgstr "Random Generation Cài đặt"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
 msgid "Raw Data"
-msgstr ""
+msgstr "Dữ liệu thô"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__raw_data_json
 msgid "Raw Data (JSON)"
-msgstr ""
+msgstr "Dữ liệu thô (JSON)"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/payroll_import_line.py:0
 #, python-format
 msgid "Raw Data - Row %d"
-msgstr ""
+msgstr "Dữ liệu thô - Dòng %d"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
@@ -6110,7 +6110,7 @@ msgstr "Rebuild Bảo lưu"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 msgid "Recompute"
-msgstr ""
+msgstr "Tính lại"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_hr_payslip_form_json_tabs
@@ -6125,7 +6125,7 @@ msgstr "Tính lại công thức"
 #: code:addons/pb_hr_payroll_formula/models/hr_payslip_run.py:0
 #, python-format
 msgid "Recomputed"
-msgstr ""
+msgstr "Đã tính lại"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -6137,7 +6137,7 @@ msgstr "Recomputed %s Phiếu lương(s)."
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_sync_wizard__record_count
 msgid "Records Found"
-msgstr ""
+msgstr "Bản ghi tìm thấy"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
@@ -6148,12 +6148,12 @@ msgstr "Ref By Khác"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Ref By Sheets"
-msgstr ""
+msgstr "Tham chiếu bởi bảng"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Ref'd By"
-msgstr ""
+msgstr "Được tham chiếu bởi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__code
@@ -6163,12 +6163,12 @@ msgstr "Tham chiếu Mã"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__referenced_by_sheet_names
 msgid "Referenced By Sheets"
-msgstr ""
+msgstr "Được tham chiếu bởi bảng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__is_referenced_by_main
 msgid "Referenced by Main"
-msgstr ""
+msgstr "Được tham chiếu bởi Chính"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__is_referenced_by_other_sheet
@@ -6184,12 +6184,12 @@ msgstr "References Khác Sheets"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Refers To"
-msgstr ""
+msgstr "Tham chiếu đến"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__refers_to_sheet_names
 msgid "Refers To Sheets"
-msgstr ""
+msgstr "Tham chiếu đến bảng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__refresh_token
@@ -6204,24 +6204,24 @@ msgstr "Làm mới Tất cả Python formulas using latest conversion engine"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Refs Others"
-msgstr ""
+msgstr "Tham chiếu khác"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 msgid "Regenerate Formulas"
-msgstr ""
+msgstr "Tạo lại công thức"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 #, python-format
 msgid "Regeneration Complete with Errors"
-msgstr ""
+msgstr "Tạo lại hoàn tất với lỗi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__cycle_type__regular
 msgid "Regular"
-msgstr ""
+msgstr "Thông thường"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_data_wizard__anonymize
@@ -6231,17 +6231,17 @@ msgstr "Replace Nhân viên names with generic identifiers"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip_line__report_visible
 msgid "Report Visible"
-msgstr ""
+msgstr "Hành động báo cáo"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_hr_payslip_form_json_tabs
 msgid "Report Visible JSON"
-msgstr ""
+msgstr "JSON hiển thị báo cáo"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__report_visible_string_payload
 msgid "Report Visible String Payload (JSON)"
-msgstr ""
+msgstr "Payload chuỗi hiển thị báo cáo (JSON)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_required
@@ -6278,12 +6278,12 @@ msgstr "Resolve cross-Bảng tính formula references"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_component_preview__resolved_formula
 msgid "Resolved Formula"
-msgstr ""
+msgstr "Công thức đã giải quyết"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__resolved_formula_count
 msgid "Resolved Formulas"
-msgstr ""
+msgstr "Công thức đã giải quyết"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__activity_user_id
@@ -6295,13 +6295,13 @@ msgstr "Responsible Người dùng"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 msgid "Results"
-msgstr ""
+msgstr "Kết quả"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 msgid "Retro"
-msgstr ""
+msgstr "Truy thu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_retro_adjustment_form
@@ -6315,17 +6315,17 @@ msgstr "Điều chỉnh hồi tố"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_retro_adjustment_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_retro_adjustment_tree
 msgid "Retro Adjustments"
-msgstr ""
+msgstr "Điều chỉnh truy thu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__retro_count
 msgid "Retro Count"
-msgstr ""
+msgstr "Số lượng truy thu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_retro_adjustment__delta_amount
 msgid "Retro Delta"
-msgstr ""
+msgstr "Chênh lệch truy thu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__retro_component_id
@@ -6336,7 +6336,7 @@ msgstr "Retro Target Thành phần"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
 msgid "Retry"
-msgstr ""
+msgstr "Thử lại"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_import_wizard__state__review_components
@@ -6353,17 +6353,17 @@ msgstr "Review the summary above, then click \"Execute Import\" to Tạo Quy t�
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_rule__text_align__right
 msgid "Right"
-msgstr ""
+msgstr "Phải"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__transformation_type__round
 msgid "Round to Decimals"
-msgstr ""
+msgstr "Làm tròn số thập phân"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_line__sequence
 msgid "Row #"
-msgstr ""
+msgstr "Dòng #"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -6382,27 +6382,27 @@ msgstr "Row %d: Missing Bắt buộc Trường '%s' (%s)"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__grid_row_height
 msgid "Row Height (px)"
-msgstr ""
+msgstr "Chiều cao dòng (px)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_integration_connector__file_header_row
 msgid "Row number containing column headers"
-msgstr ""
+msgstr "Số dòng chứa tiêu đề cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_header_row
 msgid "Row number containing column headers (1-based)"
-msgstr ""
+msgstr "Số dòng chứa tiêu đề cột (bắt đầu từ 1)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_batch__file_data_start_row
 msgid "Row number where data starts (1-based)"
-msgstr ""
+msgstr "Số dòng bắt đầu dữ liệu (bắt đầu từ 1)"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Rows"
-msgstr ""
+msgstr "Dòng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_test_result__rule_code
@@ -6422,7 +6422,7 @@ msgstr "Rule Mã must be unique within the configuration!"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__rule_count
 msgid "Rules Count"
-msgstr ""
+msgstr "Số lượng quy tắc"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
@@ -6442,7 +6442,7 @@ msgstr "Run Đồng bộ & Tính toán"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
 #, python-format
 msgid "Run Tests"
-msgstr ""
+msgstr "Chạy kiểm thử"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_formula.action_test_results
@@ -6452,7 +6452,7 @@ msgstr "Run tests on Dữ liệu mẫu to see results here."
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__sap
 msgid "SAP SuccessFactors"
-msgstr ""
+msgstr "SAP SuccessFactors"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__message_has_sms_error
@@ -6502,12 +6502,12 @@ msgstr "Cấu trúc lương that this Phiếu lương Định danh set applies t
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Sample"
-msgstr ""
+msgstr "Mẫu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__sample_count
 msgid "Sample Count"
-msgstr ""
+msgstr "Số lượng mẫu"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -6537,7 +6537,7 @@ msgstr "Dữ liệu mẫu Generation Thuật sĩ"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 msgid "Sample Info"
-msgstr ""
+msgstr "Thông tin mẫu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_sample_data__name
@@ -6580,12 +6580,12 @@ msgstr "Tìm kiếm Dữ liệu mẫu"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_excel_grid
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 msgid "Section"
-msgstr ""
+msgstr "Phần"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_proration_line__segment_summary
 msgid "Segment Summary"
-msgstr ""
+msgstr "Tóm tắt phân khúc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_multisheet_import_wizard__state__select_columns
@@ -6630,12 +6630,12 @@ msgstr "Chọn existing Nhân viên to match"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_append_order_tree
 msgid "Selected Cols"
-msgstr ""
+msgstr "Cột đã chọn"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_append_order__selected_column_count
 msgid "Selected Columns"
-msgstr ""
+msgstr "Cột đã chọn"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -6672,7 +6672,7 @@ msgstr "Cài đặt"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_sync_wizard__state__setup
 msgid "Setup"
-msgstr ""
+msgstr "Thiết lập"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_append_order__sheet_line_id
@@ -6680,7 +6680,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_column_selection_tree
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Sheet"
-msgstr ""
+msgstr "Bảng tính"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -6696,14 +6696,14 @@ msgstr "Sheet '%s' must have a Khóa chính column specified"
 msgid ""
 "Sheet '%s': %d employees from main sheet not found. These will have blank "
 "values for columns from this sheet."
-msgstr ""
+msgstr "Bảng '%s': %d nhân viên từ bảng chính không tìm thấy. Các cột từ bảng này sẽ để trống."
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/wizards/multisheet_import_wizard.py:0
 #, python-format
 msgid "Sheet '%s': %d employees not found in main sheet will be skipped: %s"
-msgstr ""
+msgstr "Bảng '%s': %d nhân viên không tìm thấy trong bảng chính sẽ bị bỏ qua: %s"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -6729,17 +6729,17 @@ msgstr "Short Định danh used to group components in Phiếu lương and repor
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__show_column_letters
 msgid "Show Column Letters"
-msgstr ""
+msgstr "Hiển thị ký tự cột"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__show_formula_bar
 msgid "Show Formula Bar"
-msgstr ""
+msgstr "Hiển thị thanh công thức"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__show_gridlines
 msgid "Show Gridlines"
-msgstr ""
+msgstr "Hiển thị đường lưới"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__is_visible_in_grid
@@ -6762,7 +6762,7 @@ msgstr "Singapore"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_line_form
 msgid "Skip"
-msgstr ""
+msgstr "Bỏ qua"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_contract_advantage_change__change_source
@@ -6848,18 +6848,18 @@ msgstr "Standard (Lương Rules)"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Start"
-msgstr ""
+msgstr "Bắt đầu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_append_order__start_column_letter
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_append_order_tree
 msgid "Start Col"
-msgstr ""
+msgstr "Cột bắt đầu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 msgid "Start Testing"
-msgstr ""
+msgstr "Bắt đầu kiểm thử"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__state
@@ -6913,12 +6913,12 @@ msgstr ""
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__report_visible_string_payload
 msgid "String values for report_visible components (used for exports)."
-msgstr ""
+msgstr "Giá trị chuỗi cho thành phần hiển thị báo cáo (dùng cho xuất khẩu)."
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_search
 msgid "Structure"
-msgstr ""
+msgstr "Cấu trúc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__subject_to_pit
@@ -6938,14 +6938,14 @@ msgstr "Thành công"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
 msgid "Supported formats: .xlsx, .xls"
-msgstr ""
+msgstr "Định dạng hỗ trợ: .xlsx, .xls"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/hr_payslip_formula.py:0
 #, python-format
 msgid "Switched to Formula Mode"
-msgstr ""
+msgstr "Chuyển sang chế độ Công thức"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -7012,12 +7012,12 @@ msgstr "Đồng bộ Thất bại: %s"
 #: code:addons/pb_hr_payroll_formula/models/formula_sample_data.py:0
 #, python-format
 msgid "Synced & Computed"
-msgstr ""
+msgstr "Đã đồng bộ & Tính toán"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
 msgid "Target"
-msgstr ""
+msgstr "Mục tiêu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_rule_code
@@ -7027,7 +7027,7 @@ msgstr "Target Mã"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__target_column_letter
 msgid "Target Column"
-msgstr ""
+msgstr "Cột mục tiêu"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_import_wizard__config_id
@@ -7094,19 +7094,19 @@ msgstr "Kiểm tra execution Thất bại"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__state__testing
 #: model:ir.ui.menu,name:pb_hr_payroll_formula.menu_formula_testing
 msgid "Testing"
-msgstr ""
+msgstr "Kiểm thử"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
 msgid "Tests"
-msgstr ""
+msgstr "Kiểm thử"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
 #: code:addons/pb_hr_payroll_formula/models/formula_config.py:0
 #, python-format
 msgid "Tests Complete"
-msgstr ""
+msgstr "Kiểm thử hoàn tất"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__validation_status__failed
@@ -7116,12 +7116,12 @@ msgstr "Tests Thất bại"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__string
 msgid "Text"
-msgstr ""
+msgstr "Văn bản"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__text_align
 msgid "Text Alignment"
-msgstr ""
+msgstr "Căn chỉnh văn bản"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__th
@@ -7132,7 +7132,7 @@ msgstr "Thái Lan"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_employee__tham_gia_bhxh
 msgid "Tham gia BHXH"
-msgstr ""
+msgstr "Tham gia BHXH"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -7153,7 +7153,7 @@ msgstr "The currently Đang hoạt động Cấu hình công thức for this str
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__cross_sheet_formula
 msgid "The formula containing cross-sheet references"
-msgstr ""
+msgstr "Công thức chứa tham chiếu chéo bảng"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_sample_input_line__value
@@ -7218,7 +7218,7 @@ msgstr "This Bảng tính contains formulas that Tham chiếu cells in Khác wor
 #: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
 #, python-format
 msgid "Toggle Theme"
-msgstr ""
+msgstr "Chuyển đổi chủ đề"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__token_expiry
@@ -7247,7 +7247,7 @@ msgstr "Token Làm mới is only available for OAuth 2.0"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_form
 msgid "Tokens"
-msgstr ""
+msgstr "Token"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_append_order_tree
@@ -7288,7 +7288,7 @@ msgstr "Tham gia Công đoàn"
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_field_mapping__transformation_type
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_field_mapping_form
 msgid "Transformation"
-msgstr ""
+msgstr "Chuyển đổi"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payroll_import_line__is_new_employee
@@ -7338,7 +7338,7 @@ msgstr "Loại of the exception activity on record."
 #: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
 #, python-format
 msgid "Unbalanced parentheses"
-msgstr ""
+msgstr "Dấu ngoặc không cân đối"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
@@ -7382,17 +7382,17 @@ msgstr "Unknown Lỗi"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__unmatched
 msgid "Unmatched"
-msgstr ""
+msgstr "Không khớp"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__unresolved_formula_count
 msgid "Unresolved Formulas"
-msgstr ""
+msgstr "Công thức chưa giải quyết"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__update_existing
 msgid "Update Existing Rules"
-msgstr ""
+msgstr "Cập nhật quy tắc hiện có"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_import_wizard__update_existing
@@ -7407,7 +7407,7 @@ msgstr "Tải lên File"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__use_auto_retro
 msgid "Use Auto Retro"
-msgstr ""
+msgstr "Sử dụng truy thu tự động"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__use_color_coded_excel_import
@@ -7422,7 +7422,7 @@ msgstr "Use Mặc định if Empty"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_structure__use_formula_computation
 msgid "Use Formula Computation"
-msgstr ""
+msgstr "Sử dụng tính toán công thức"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payroll_import_batch__use_proration
@@ -7442,7 +7442,7 @@ msgstr "Người dùng-friendly Giá trị đầu vào for testing"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_integration_connector__username
 msgid "Username"
-msgstr ""
+msgstr "Tên đăng nhập"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -7487,7 +7487,7 @@ msgstr "Xác thực Formulas"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__state__validated
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_line__state__validated
 msgid "Validated"
-msgstr ""
+msgstr "Đã xác thực"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__last_validated_by
@@ -7559,7 +7559,7 @@ msgstr "Value to use when source Trường is empty"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_test_result_form
 msgid "Values"
-msgstr ""
+msgstr "Giá trị"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__country_code__vn
@@ -7578,7 +7578,7 @@ msgstr "Xem Dependencies"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "Visibility"
-msgstr ""
+msgstr "Hiển thị"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__is_visible_in_grid
@@ -7595,7 +7595,7 @@ msgstr "Visible in Báo cáo"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_import_batch__payslip_state__verify
 msgid "Waiting"
-msgstr ""
+msgstr "Đang chờ"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_sample_data__validation_status__warning
@@ -7606,7 +7606,7 @@ msgstr "Cảnh báo"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__validation_status__warning
 msgid "Warnings"
-msgstr ""
+msgstr "Cảnh báo"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__website_message_ids
@@ -7630,7 +7630,7 @@ msgstr "When enabled, Nhập từ Excel uses color-coded headers and rows."
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__last_evaluation_date
 msgid "When this formula was last evaluated"
-msgstr ""
+msgstr "Khi công thức này được đánh giá lần cuối"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__data_source
@@ -7657,7 +7657,7 @@ msgstr "Whether this value can be edited (only Đầu vào columns are editable)
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__column_width
 msgid "Width (px)"
-msgstr ""
+msgstr "Độ rộng (px)"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_append_order__wizard_id
@@ -7672,12 +7672,12 @@ msgstr "Thuật sĩ"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_formula_config__proration_basis__workdays
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_payroll_proration_line__proration_basis__workdays
 msgid "Work Days"
-msgstr ""
+msgstr "Ngày công"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__workday
 msgid "Workday"
-msgstr ""
+msgstr "Ngày làm việc"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_multisheet_append_order__sheet_name
@@ -7694,7 +7694,7 @@ msgstr "Bảng tính Append Order"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__refers_to_sheet_names
 msgid "Worksheets referenced by this column's formula"
-msgstr ""
+msgstr "Các bảng tính được tham chiếu bởi công thức của cột này"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_multisheet_column_selection__referenced_by_sheet_names
@@ -7704,33 +7704,33 @@ msgstr "Worksheets that Tham chiếu this column"
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_field_mapping__source_data_type__boolean
 msgid "Yes/No"
-msgstr ""
+msgstr "Có/Không"
 
 #. module: pb_hr_payroll_formula
 #: model:ir.model.fields.selection,name:pb_hr_payroll_formula.selection__hr_integration_connector__connector_type__zoho
 msgid "Zoho People"
-msgstr ""
+msgstr "Zoho People"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
 #, python-format
 msgid "Zoom In"
-msgstr ""
+msgstr "Phóng to"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
 #, python-format
 msgid "Zoom Out"
-msgstr ""
+msgstr "Thu nhỏ"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
 #, python-format
 msgid "columns"
-msgstr ""
+msgstr "cột"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_kanban
@@ -7740,7 +7740,7 @@ msgstr "Sai lệch"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "e.g., =A1+B1*0.08"
-msgstr ""
+msgstr "vd: =A1+B1*0.08"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
@@ -7760,7 +7760,7 @@ msgstr "e.g., Nhân viên ID"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
 msgid "e.g., High Earner Sample"
-msgstr ""
+msgstr "vd: Mẫu thu nhập cao"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_form
@@ -7775,14 +7775,14 @@ msgstr "e.g., Zoho People - Việt Nam"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_rule_form
 msgid "e.g., basic_salary"
-msgstr ""
+msgstr "vd: luong_co_ban"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
 #, python-format
 msgid "errors"
-msgstr ""
+msgstr "lỗi"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
@@ -7790,17 +7790,17 @@ msgstr ""
 #: code:addons/pb_hr_payroll_formula/static/src/xml/formula_components.xml:0
 #, python-format
 msgid "fx"
-msgstr ""
+msgstr "fx"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
 msgid "lines have errors. Please review and fix before processing."
-msgstr ""
+msgstr "dòng bị lỗi. Vui lòng kiểm tra và sửa trước khi xử lý."
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_integration_connector_kanban
 msgid "mappings"
-msgstr ""
+msgstr "ánh xạ"
 
 #. module: pb_hr_payroll_formula
 #. odoo-python
@@ -7821,14 +7821,14 @@ msgstr "openpyxl library Bắt buộc. Install with: pip install openpyxl"
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_config_kanban
 msgid "rules"
-msgstr ""
+msgstr "quy tắc"
 
 #. module: pb_hr_payroll_formula
 #. odoo-javascript
 #: code:addons/pb_hr_payroll_formula/static/src/xml/excel_grid_templates.xml:0
 #, python-format
 msgid "samples"
-msgstr ""
+msgstr "mẫu"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_formula_sample_data_form
@@ -7850,33 +7850,33 @@ msgstr "✓ Tất cả formulas are Hợp lệ and evaluate correctly!"
 #. module: pb_hr_payroll_formula
 #, python-format
 msgid "%d rules imported from Excel"
-msgstr ""
+msgstr "%d quy tắc được nhập từ Excel"
 
 #. module: pb_hr_payroll_formula
 #, python-format
 msgid "%s - Contract"
-msgstr ""
+msgstr "%s - Hợp đồng"
 
 #. module: pb_hr_payroll_formula
 msgid "<i class=\"fa fa-ban\"/> Circular references detected! Please fix formula dependencies."
-msgstr ""
+msgstr "<i class=\"fa fa-ban\"/> Phát hiện tham chiếu vòng! Vui lòng sửa các phụ thuộc công thức."
 
 #. module: pb_hr_payroll_formula
 msgid "<i class=\"fa fa-exclamation-triangle\"/> Some formulas have errors. Please fix them before activating."
-msgstr ""
+msgstr "<i class=\"fa fa-exclamation-triangle\"/> Một số công thức bị lỗi. Vui lòng sửa trước khi kích hoạt."
 
 #. module: pb_hr_payroll_formula
 #, python-format
 msgid "All formulas are valid."
-msgstr ""
+msgstr "Tất cả công thức đều hợp lệ."
 
 #. module: pb_hr_payroll_formula
 msgid "Auto-assigned Excel-style column letter (A, B, C...Z, AA, AB, etc.)"
-msgstr ""
+msgstr "Tự động gán ký tự cột kiểu Excel (A, B, C...Z, AA, AB, v.v.)"
 
 #. module: pb_hr_payroll_formula
 msgid "Converted Python"
-msgstr ""
+msgstr "Python đã chuyển đổi"
 
 #. module: pb_hr_payroll_formula
 #, python-format

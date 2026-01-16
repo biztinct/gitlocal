@@ -277,40 +277,40 @@ msgstr "Tất cả phiếu lương"
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Allowances"
-msgstr ""
+msgstr "Phụ cấp"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Amount Type"
-msgstr ""
+msgstr "Loại số tiền"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Analytics"
-msgstr ""
+msgstr "Phân tích"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Analytics Dashboard"
-msgstr ""
+msgstr "Bảng phân tích"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Analytics action will be configured here"
-msgstr ""
+msgstr "Hành động phân tích sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Analytics module not installed or configured"
-msgstr ""
+msgstr "Module phân tích chưa được cài đặt hoặc cấu hình"
 
 #. module: pb_hr_flow
 #: model_terms:ir.actions.act_window,help:pb_hr_flow.action_hr_payslip_line_analytics
@@ -325,14 +325,14 @@ msgstr ""
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Approval Dashboard"
-msgstr ""
+msgstr "Bảng phê duyệt"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Approval module not installed or configured"
-msgstr ""
+msgstr "Module phê duyệt chưa được cài đặt hoặc cấu hình"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -360,28 +360,28 @@ msgstr "Phê duyệt kỳ hiện tại"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Attendance"
-msgstr ""
+msgstr "Chấm công"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Attendance action will be configured here"
-msgstr ""
+msgstr "Hành động chấm công sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "BHXH630"
-msgstr ""
+msgstr "BHXH 630"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "BHXHDSTK01-DV_595"
-msgstr ""
+msgstr "BHXHDSTK01-DV_595"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -397,12 +397,12 @@ msgstr "Xuất ngân hàng"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Bank export module not installed or configured"
-msgstr ""
+msgstr "Module xuất ngân hàng chưa được cài đặt hoặc cấu hình"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Basic Salary"
-msgstr ""
+msgstr "Lương cơ bản"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -423,28 +423,28 @@ msgstr "Quy trình hàng loạt"
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Báo cáo thuế tháng"
-msgstr ""
+msgstr "Báo cáo thuế tháng"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Báo giảm lao động"
-msgstr ""
+msgstr "Báo giảm lao động"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Báo tăng lao động"
-msgstr ""
+msgstr "Báo tăng lao động"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Bảng kê D01-TS"
-msgstr ""
+msgstr "Bảng kê D01-TS"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -456,22 +456,22 @@ msgstr "ĐÓNG"
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
 msgid "Close"
-msgstr ""
+msgstr "Đóng"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Company"
-msgstr ""
+msgstr "Công ty"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Component Name"
-msgstr ""
+msgstr "Tên thành phần"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Component Type"
-msgstr ""
+msgstr "Loại thành phần"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -504,54 +504,54 @@ msgstr "Trình kết nối"
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Contribution Register"
-msgstr ""
+msgstr "Sổ đóng góp"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Cost Center"
-msgstr ""
+msgstr "Trung tâm chi phí"
 
 #. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Tạo bởi"
 
 #. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Tạo vào"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Current Month"
-msgstr ""
+msgstr "Tháng này"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Current Quarter"
-msgstr ""
+msgstr "Quý này"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Current Year"
-msgstr ""
+msgstr "Năm nay"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "D01-TS"
-msgstr ""
+msgstr "D01-TS"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Deductions"
-msgstr ""
+msgstr "Khấu trừ"
 
 #. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Tên hiển thị"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -591,7 +591,7 @@ msgstr "Tải xuống Bảng kê D01-TS"
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Employee"
-msgstr ""
+msgstr "Nhân viên"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -605,7 +605,7 @@ msgstr "Ánh xạ Nhân viên/Hợp đồng"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Employees"
-msgstr ""
+msgstr "Nhân viên"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -628,7 +628,7 @@ msgstr "Báo cáo quyết toán cuối cùng"
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
 #, python-format
 msgid "Flow Dashboard"
-msgstr ""
+msgstr "Bảng quy trình"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -663,7 +663,7 @@ msgstr "Geofence/lý do & mặc định"
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Giảm LĐ"
-msgstr ""
+msgstr "Giảm LĐ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -679,28 +679,28 @@ msgstr "Báo cáo chính phủ"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Government reports action will be configured here"
-msgstr ""
+msgstr "Hành động báo cáo chính phủ sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Gross Salary"
-msgstr ""
+msgstr "Lương gộp"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Group By"
-msgstr ""
+msgstr "Nhóm theo"
 
 #. module: pb_hr_flow
 #: model:ir.actions.act_window,name:pb_hr_flow.action_hr_flow_wizard
 #: model:ir.ui.menu,name:pb_hr_flow.menu_hr_workflow_flow
 msgid "HR Workflow Flow"
-msgstr ""
+msgstr "Luồng quy trình nhân sự"
 
 #. module: pb_hr_flow
 #: model:ir.model,name:pb_hr_flow.model_hr_flow_wizard
 msgid "HR Workflow Flow Dashboard"
-msgstr ""
+msgstr "Bảng thông tin luồng quy trình nhân sự"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -733,7 +733,7 @@ msgstr "Tổng quan giờ & chi phí"
 #. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -759,32 +759,32 @@ msgstr "Sổ nhật ký"
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Last 12 Months"
-msgstr ""
+msgstr "12 tháng qua"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Last 3 Months"
-msgstr ""
+msgstr "3 tháng qua"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Last 6 Months"
-msgstr ""
+msgstr "6 tháng qua"
 
 #. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Chỉnh sửa lần cuối vào"
 
 #. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Cập nhật lần cuối bởi"
 
 #. module: pb_hr_flow
 #: model:ir.model.fields,field_description:pb_hr_flow.field_hr_flow_wizard__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Cập nhật lần cuối vào"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -883,17 +883,17 @@ msgstr "Lịch ca của tôi"
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Mẫu 595"
-msgstr ""
+msgstr "Mẫu 595"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Net Salary"
-msgstr ""
+msgstr "Lương thực nhận"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Other Components"
-msgstr ""
+msgstr "Các thành phần khác"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -916,7 +916,7 @@ msgstr "Phân tích tăng ca"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Overtime Approval Queue"
-msgstr ""
+msgstr "Hàng đợi phê duyệt làm thêm giờ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -937,7 +937,7 @@ msgstr "Cài đặt tăng ca"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Overtime action will be configured here"
-msgstr ""
+msgstr "Hành động làm thêm giờ sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -960,27 +960,27 @@ msgstr "Thanh toán lương"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Pay salary action will be configured here"
-msgstr ""
+msgstr "Hành động thanh toán lương sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Payment Date: Month"
-msgstr ""
+msgstr "Ngày thanh toán: Tháng"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Payment Date: Quarter"
-msgstr ""
+msgstr "Ngày thanh toán: Quý"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Payment Date: Week"
-msgstr ""
+msgstr "Ngày thanh toán: Tuần"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Payment Date: Year"
-msgstr ""
+msgstr "Ngày thanh toán: Năm"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1017,12 +1017,12 @@ msgstr "Cấu hình lương"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Payroll action will be configured here"
-msgstr ""
+msgstr "Hành động lương sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Payslip"
-msgstr ""
+msgstr "Phiếu lương"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1076,7 +1076,7 @@ msgstr "Lập kế hoạch & quản lý ca"
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Previous Month"
-msgstr ""
+msgstr "Tháng trước"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1095,12 +1095,12 @@ msgstr "Ngày lễ"
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
 msgid "Quick Actions"
-msgstr ""
+msgstr "Hành động nhanh"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Report Visible"
-msgstr ""
+msgstr "Hành động báo cáo"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1156,17 +1156,17 @@ msgstr "Phân tích lương"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Salary Approval"
-msgstr ""
+msgstr "Phê duyệt lương"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Salary Code"
-msgstr ""
+msgstr "Mã lương"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_tree_analytics
 msgid "Salary Components"
-msgstr ""
+msgstr "Thành phần lương"
 
 #. module: pb_hr_flow
 #: model:ir.actions.act_window,name:pb_hr_flow.action_hr_payslip_line_analytics
@@ -1175,19 +1175,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_pivot_enhanced
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Salary Components Analytics"
-msgstr ""
+msgstr "Phân tích thành phần lương"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_search_enhanced
 msgid "Salary Rule Category"
-msgstr ""
+msgstr "Danh mục quy tắc lương"
 
 #. module: pb_hr_flow
 #. odoo-python
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Salary approval action will be configured here"
-msgstr ""
+msgstr "Hành động phê duyệt lương sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1238,7 +1238,7 @@ msgstr "Mẫu ca"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Shift action will be configured here"
-msgstr ""
+msgstr "Hành động ca làm việc sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1289,17 +1289,17 @@ msgstr "Cài đặt bảng chấm công"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Timesheet action will be configured here"
-msgstr ""
+msgstr "Hành động chấm công sẽ được cấu hình tại đây"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_tree_analytics
 msgid "Total"
-msgstr ""
+msgstr "Tổng cộng"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_payslip_line_tree_analytics
 msgid "Total Amount"
-msgstr ""
+msgstr "Tổng số tiền"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1313,7 +1313,7 @@ msgstr "Theo dõi chênh lệch hồi tố tự động"
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Tăng LĐ"
-msgstr ""
+msgstr "Tăng LĐ"
 
 #. module: pb_hr_flow
 #. odoo-javascript
@@ -1327,11 +1327,11 @@ msgstr "Xác thực & ngưỡng"
 #: code:addons/pb_hr_flow/models/hr_flow_wizard.py:0
 #, python-format
 msgid "Vietnam Government XLS Reports"
-msgstr ""
+msgstr "Báo cáo XLS chính phủ Việt Nam"
 
 #. module: pb_hr_flow
 #. odoo-javascript
 #: code:addons/pb_hr_flow/static/src/js/hr_flow_hover.js:0
 #, python-format
 msgid "Ốm đau/Thai sản"
-msgstr ""
+msgstr "Ốm đau/Thai sản"
