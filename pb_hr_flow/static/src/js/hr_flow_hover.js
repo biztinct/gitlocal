@@ -10,6 +10,7 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
     domReady(function () {
         console.log('[HR Flow] JS loaded');
         const STORAGE_KEY = 'hr_flow_state';
+        const _t = core._t;
 
         const loadState = () => {
             try {
@@ -101,164 +102,164 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
 
             const tertiaryData = {
                 payroll_config: {
-                    title: 'Payroll Configuration',
+                    title: _t('Payroll Configuration'),
                     items: [
-                        { label: 'Connector', icon: 'fa-plug', desc: 'HRIS/Excel connectors', disabled: false, route: 'payroll-connector' },
-                        { label: 'Configure Salary', icon: 'fa-sliders', desc: 'Formulas & structures', disabled: false, route: 'payroll-config' },
-                        { label: 'Payslip Configuration', icon: 'fa-cogs', desc: 'Identifiers & labels', disabled: false, route: 'payroll-payslip-config' },
-                        { label: 'Employee/Contract Mapping', icon: 'fa-exchange', desc: 'Map fields to components', disabled: false, route: 'payroll-employee-contract-mapping' },
-                        { label: 'Mid-Cycle Mapping', icon: 'fa-random', desc: 'Map mid-cycle to end-cycle', disabled: false, route: 'payroll-cycle-mapping' },
+                        { label: _t('Connector'), icon: 'fa-plug', desc: _t('HRIS/Excel connectors'), disabled: false, route: 'payroll-connector' },
+                        { label: _t('Configure Salary'), icon: 'fa-sliders', desc: _t('Formulas & structures'), disabled: false, route: 'payroll-config' },
+                        { label: _t('Payslip Configuration'), icon: 'fa-cogs', desc: _t('Identifiers & labels'), disabled: false, route: 'payroll-payslip-config' },
+                        { label: _t('Employee/Contract Mapping'), icon: 'fa-exchange', desc: _t('Map fields to components'), disabled: false, route: 'payroll-employee-contract-mapping' },
+                        { label: _t('Mid-Cycle Mapping'), icon: 'fa-random', desc: _t('Map mid-cycle to end-cycle'), disabled: false, route: 'payroll-cycle-mapping' },
                     ],
                 },
                 payroll: {
-                    title: 'Payroll',
+                    title: _t('Payroll'),
                     items: [
-                        { label: 'Proration Audit', icon: 'fa-pie-chart', desc: 'Review prorated components', disabled: false, route: 'payroll-proration' },
-                        { label: 'Retro Adjustments', icon: 'fa-history', desc: 'Track auto retro deltas', disabled: false, route: 'payroll-retro' },
-                        { label: 'Test Calculation', icon: 'fa-flask', desc: 'Sample data & validation', disabled: false, route: 'payroll-test' },
-                        { label: 'Batch Compute', icon: 'fa-play-circle', desc: 'Import & compute batches', disabled: false, route: 'payroll-batch' },
-                        { label: 'Batch Workflow', icon: 'fa-filter', desc: 'Payslip batches & runs', disabled: false, route: 'payroll-batch-workflow' },
-                        { label: 'Payslip List', icon: 'fa-list', desc: 'All payslips', disabled: false, route: 'payroll-payslip' },
-                        { label: 'Full and Final', icon: 'fa-file-pdf-o', desc: 'Final settlement report', disabled: false, route: 'payroll-full-and-final' },
-                        { label: 'Salary Analytics', icon: 'fa-bar-chart', desc: 'Component analysis & insights', disabled: false, route: 'payroll-salary-analytics' },
+                        { label: _t('Proration Audit'), icon: 'fa-pie-chart', desc: _t('Review prorated components'), disabled: false, route: 'payroll-proration' },
+                        { label: _t('Retro Adjustments'), icon: 'fa-history', desc: _t('Track auto retro deltas'), disabled: false, route: 'payroll-retro' },
+                        { label: _t('Test Calculation'), icon: 'fa-flask', desc: _t('Sample data & validation'), disabled: false, route: 'payroll-test' },
+                        { label: _t('Batch Compute'), icon: 'fa-play-circle', desc: _t('Import & compute batches'), disabled: false, route: 'payroll-batch' },
+                        { label: _t('Batch Workflow'), icon: 'fa-filter', desc: _t('Payslip batches & runs'), disabled: false, route: 'payroll-batch-workflow' },
+                        { label: _t('Payslip List'), icon: 'fa-list', desc: _t('All payslips'), disabled: false, route: 'payroll-payslip' },
+                        { label: _t('Full and Final'), icon: 'fa-file-pdf-o', desc: _t('Final settlement report'), disabled: false, route: 'payroll-full-and-final' },
+                        { label: _t('Salary Analytics'), icon: 'fa-bar-chart', desc: _t('Component analysis & insights'), disabled: false, route: 'payroll-salary-analytics' },
                     ],
                 },
                 approval: {
-                    title: 'Payroll Approval',
+                    title: _t('Payroll Approval'),
                     items: [
-                        { label: 'Pending Queue', icon: 'fa-clock-o', desc: 'Approve current period', disabled: false, route: 'approval-pending' },
-                        { label: 'History', icon: 'fa-history', desc: 'Past approvals & audits', disabled: false, route: 'approval-history' },
-                        { label: 'Rules', icon: 'fa-gavel', desc: 'Validation & thresholds', disabled: false, route: 'approval-rules' },
+                        { label: _t('Pending Queue'), icon: 'fa-clock-o', desc: _t('Approve current period'), disabled: false, route: 'approval-pending' },
+                        { label: _t('History'), icon: 'fa-history', desc: _t('Past approvals & audits'), disabled: false, route: 'approval-history' },
+                        { label: _t('Rules'), icon: 'fa-gavel', desc: _t('Validation & thresholds'), disabled: false, route: 'approval-rules' },
                     ],
                 },
                 pay_salary: {
-                    title: 'Pay Salary',
+                    title: _t('Pay Salary'),
                     items: [
-                        { label: 'Bank Export', icon: 'fa-bank', desc: 'Generate payment files', disabled: false, route: 'pay-salary-bank' },
-                        { label: 'Payments', icon: 'fa-money', desc: 'Review payments', disabled: false, route: 'pay-salary-payments' },
-                        { label: 'Journals', icon: 'fa-book', desc: 'Accounting entries', disabled: false, route: 'pay-salary-journals' },
+                        { label: _t('Bank Export'), icon: 'fa-bank', desc: _t('Generate payment files'), disabled: false, route: 'pay-salary-bank' },
+                        { label: _t('Payments'), icon: 'fa-money', desc: _t('Review payments'), disabled: false, route: 'pay-salary-payments' },
+                        { label: _t('Journals'), icon: 'fa-book', desc: _t('Accounting entries'), disabled: false, route: 'pay-salary-journals' },
                     ],
                 },
                 overtime: {
-                    title: 'Overtime',
+                    title: _t('Overtime'),
                     items: [
-                        { label: 'Request Overtime', icon: 'fa-send', desc: 'Submit overtime request', disabled: false, route: 'overtime-request' },
-                        { label: 'Approve Overtime', icon: 'fa-check-square', desc: 'Manager approval queue', disabled: false, route: 'overtime-approve' },
-                        { label: 'Overtime Policy/Rules', icon: 'fa-balance-scale', desc: 'Configure rates and caps', disabled: false, route: 'overtime-rules' },
-                        { label: 'Overtime Analytics', icon: 'fa-bar-chart', desc: 'Hours and costs overview', disabled: false, route: 'overtime-analytics' },
-                        { label: 'Overtime Settings', icon: 'fa-cog', desc: 'Geofence/reasons & defaults', disabled: false, route: 'overtime-settings' },
+                        { label: _t('Request Overtime'), icon: 'fa-send', desc: _t('Submit overtime request'), disabled: false, route: 'overtime-request' },
+                        { label: _t('Approve Overtime'), icon: 'fa-check-square', desc: _t('Manager approval queue'), disabled: false, route: 'overtime-approve' },
+                        { label: _t('Overtime Policy/Rules'), icon: 'fa-balance-scale', desc: _t('Configure rates and caps'), disabled: false, route: 'overtime-rules' },
+                        { label: _t('Overtime Analytics'), icon: 'fa-bar-chart', desc: _t('Hours and costs overview'), disabled: false, route: 'overtime-analytics' },
+                        { label: _t('Overtime Settings'), icon: 'fa-cog', desc: _t('Geofence/reasons & defaults'), disabled: false, route: 'overtime-settings' },
                     ],
                 },
                 shift: {
-                    title: 'Shift',
+                    title: _t('Shift'),
                     items: [
-                        { label: 'Shift Planning', icon: 'fa-calendar', desc: 'Plan and manage shifts', disabled: false, route: 'shift-calendar' },
-                        { label: 'Shift Templates', icon: 'fa-clone', desc: 'Reusable shift patterns', disabled: false, route: 'shift-templates' },
-                        { label: 'Shift Calendar', icon: 'fa-calendar-check-o', desc: 'My shift calendar', disabled: false, route: 'shift-my-calendar' },
-                        { label: 'Shift Settings', icon: 'fa-sliders', desc: 'Locations, geofence, reasons', disabled: false, route: 'shift-settings' },
+                        { label: _t('Shift Planning'), icon: 'fa-calendar', desc: _t('Plan and manage shifts'), disabled: false, route: 'shift-calendar' },
+                        { label: _t('Shift Templates'), icon: 'fa-clone', desc: _t('Reusable shift patterns'), disabled: false, route: 'shift-templates' },
+                        { label: _t('Shift Calendar'), icon: 'fa-calendar-check-o', desc: _t('My shift calendar'), disabled: false, route: 'shift-my-calendar' },
+                        { label: _t('Shift Settings'), icon: 'fa-sliders', desc: _t('Locations, geofence, reasons'), disabled: false, route: 'shift-settings' },
                     ],
                 },
                 timesheet: {
-                    title: 'Timesheet',
+                    title: _t('Timesheet'),
                     items: [
-                        { label: 'My Timesheets', icon: 'fa-table', desc: 'Enter and submit hours', disabled: false, route: 'timesheet-mine' },
-                        { label: 'Timesheet Approvals', icon: 'fa-check', desc: 'Manager validation queue', disabled: false, route: 'timesheet-approvals' },
-                        { label: 'Timesheet Reports', icon: 'fa-area-chart', desc: 'Pivot/list by employee', disabled: false, route: 'timesheet-reports' },
-                        { label: 'Timesheet Settings', icon: 'fa-cog', desc: 'Period locks and rules', disabled: false, route: 'timesheet-settings' },
+                        { label: _t('My Timesheets'), icon: 'fa-table', desc: _t('Enter and submit hours'), disabled: false, route: 'timesheet-mine' },
+                        { label: _t('Timesheet Approvals'), icon: 'fa-check', desc: _t('Manager validation queue'), disabled: false, route: 'timesheet-approvals' },
+                        { label: _t('Timesheet Reports'), icon: 'fa-area-chart', desc: _t('Pivot/list by employee'), disabled: false, route: 'timesheet-reports' },
+                        { label: _t('Timesheet Settings'), icon: 'fa-cog', desc: _t('Period locks and rules'), disabled: false, route: 'timesheet-settings' },
                     ],
                 },
                 leaves: {
-                    title: 'Leaves',
+                    title: _t('Leaves'),
                     items: [
-                        { label: 'Leave Dashboard', icon: 'fa-dashboard', desc: 'Leave overview', disabled: false, route: 'leaves-dashboard' },
-                        { label: 'Accrual Plan', icon: 'fa-list-alt', desc: 'Accrual policies', disabled: false, route: 'leaves-accrual' },
-                        { label: 'Public Holidays', icon: 'fa-calendar', desc: 'Holiday calendar', disabled: false, route: 'leaves-public-holidays' },
-                        { label: 'Approvals', icon: 'fa-check-square-o', desc: 'Leave requests', disabled: false, route: 'leaves-approvals' },
+                        { label: _t('Leave Dashboard'), icon: 'fa-dashboard', desc: _t('Leave overview'), disabled: false, route: 'leaves-dashboard' },
+                        { label: _t('Accrual Plan'), icon: 'fa-list-alt', desc: _t('Accrual policies'), disabled: false, route: 'leaves-accrual' },
+                        { label: _t('Public Holidays'), icon: 'fa-calendar', desc: _t('Holiday calendar'), disabled: false, route: 'leaves-public-holidays' },
+                        { label: _t('Approvals'), icon: 'fa-check-square-o', desc: _t('Leave requests'), disabled: false, route: 'leaves-approvals' },
                     ],
                 },
                 govt: {
-                    title: 'Government Reports',
+                    title: _t('Government Reports'),
                     items: [
-                        { label: 'Monthly Generated Tax Reports', icon: 'fa-calendar', desc: 'Báo cáo thuế tháng', disabled: false, route: 'govt-monthly-generated', className: 'tertiary-card-wide' },
-                        { label: 'BHXH630', icon: 'fa-file-excel-o', desc: 'Ốm đau/Thai sản', disabled: false, route: 'govt-bhxh630' },
-                        { label: 'BHXHDSTK01-DV_595', icon: 'fa-file-excel-o', desc: 'Mẫu 595', disabled: false, route: 'govt-bhxhdstk01' },
-                        { label: 'Bảng kê D01-TS', icon: 'fa-file-excel-o', desc: 'D01-TS', disabled: false, route: 'govt-d01' },
-                        { label: 'Báo giảm lao động', icon: 'fa-file-excel-o', desc: 'Giảm LĐ', disabled: false, route: 'govt-giam' },
-                        { label: 'Báo tăng lao động', icon: 'fa-file-excel-o', desc: 'Tăng LĐ', disabled: false, route: 'govt-tang' },
+                        { label: _t('Monthly Generated Tax Reports'), icon: 'fa-calendar', desc: _t('Báo cáo thuế tháng'), disabled: false, route: 'govt-monthly-generated', className: 'tertiary-card-wide' },
+                        { label: _t('BHXH630'), icon: 'fa-file-excel-o', desc: _t('Ốm đau/Thai sản'), disabled: false, route: 'govt-bhxh630' },
+                        { label: _t('BHXHDSTK01-DV_595'), icon: 'fa-file-excel-o', desc: _t('Mẫu 595'), disabled: false, route: 'govt-bhxhdstk01' },
+                        { label: _t('Bảng kê D01-TS'), icon: 'fa-file-excel-o', desc: _t('D01-TS'), disabled: false, route: 'govt-d01' },
+                        { label: _t('Báo giảm lao động'), icon: 'fa-file-excel-o', desc: _t('Giảm LĐ'), disabled: false, route: 'govt-giam' },
+                        { label: _t('Báo tăng lao động'), icon: 'fa-file-excel-o', desc: _t('Tăng LĐ'), disabled: false, route: 'govt-tang' },
                     ],
                 },
             };
 
-        let isRestoring = false;
-        let monthlyDialog = null;
+            let isRestoring = false;
+            let monthlyDialog = null;
 
-        const runTertiaryAction = (route, closePanelOnSuccess = true) => {
-            rpc.query({
-                model: 'hr.flow.wizard',
-                method: 'get_tertiary_action',
-                args: [route],
-            }).then((action) => {
-                console.log('[HR Flow] Action resolved for route', route, action);
-                if (action && action.type) {
-                    action.context = Object.assign({}, session.user_context || {}, action.context || {});
-                    const payload = { action: action, options: {} };
-                    console.log('[HR Flow] Triggering do-action payload', payload);
-                    core.bus.trigger('do-action', payload);
-                    if (closePanelOnSuccess && action.target !== 'new') {
-                        closePanel();
+            const runTertiaryAction = (route, closePanelOnSuccess = true) => {
+                rpc.query({
+                    model: 'hr.flow.wizard',
+                    method: 'get_tertiary_action',
+                    args: [route],
+                }).then((action) => {
+                    console.log('[HR Flow] Action resolved for route', route, action);
+                    if (action && action.type) {
+                        action.context = Object.assign({}, session.user_context || {}, action.context || {});
+                        const payload = { action: action, options: {} };
+                        console.log('[HR Flow] Triggering do-action payload', payload);
+                        core.bus.trigger('do-action', payload);
+                        if (closePanelOnSuccess && action.target !== 'new') {
+                            closePanel();
+                        }
+                    } else {
+                        console.warn('[HR Flow] No action resolved for', route, action);
                     }
-                } else {
-                    console.warn('[HR Flow] No action resolved for', route, action);
-                }
-            }).catch((err) => {
-                console.error('[HR Flow] Failed to resolve action', route, err);
-            });
-        };
-
-        const openGovtMonthlyDialog = () => {
-            if (monthlyDialog) {
-                monthlyDialog.close();
-                monthlyDialog = null;
-            }
-            const $content = $('<div/>', { class: 'govt-monthly-dialog' });
-            const buttons = [
-                { label: 'Download BHXH630', route: 'govt-monthly-bhxh630' },
-                { label: 'Download BHXHDSTK01-DV_595', route: 'govt-monthly-bhxhdstk01' },
-                { label: 'Download Bảng kê D01-TS', route: 'govt-monthly-d01' },
-                { label: 'Download Báo giảm lao động', route: 'govt-monthly-giam' },
-                { label: 'Download Báo tăng lao động', route: 'govt-monthly-tang' },
-            ];
-            buttons.forEach((btn) => {
-                const $btn = $('<button/>', {
-                    type: 'button',
-                    class: 'govt-monthly-button',
+                }).catch((err) => {
+                    console.error('[HR Flow] Failed to resolve action', route, err);
                 });
-                $btn.append($('<i/>', { class: 'fa fa-file-excel-o' }));
-                $btn.append($('<span/>').text(btn.label));
-                $btn.on('click', () => runTertiaryAction(btn.route, false));
-                $content.append($btn);
-            });
-            monthlyDialog = new Dialog(null, {
-                title: 'Monthly Generated Tax Reports',
-                $content: $content,
-                buttons: [{ text: 'CLOSE', close: true }],
-                size: 'medium',
-            });
-            monthlyDialog.open();
-            const applyDialogClass = () => {
-                if (monthlyDialog && monthlyDialog.$modal) {
-                    monthlyDialog.$modal.addClass('govt-monthly-modal');
-                }
             };
-            applyDialogClass();
-            setTimeout(applyDialogClass, 0);
-        };
 
-        const openPanel = (key, ctx = {}) => {
-            if (!panel) return;
-            const data = tertiaryData[key] || { title: 'Quick Actions', items: [] };
-            panelTitle.textContent = data.title;
-            panelItems.innerHTML = '';
+            const openGovtMonthlyDialog = () => {
+                if (monthlyDialog) {
+                    monthlyDialog.close();
+                    monthlyDialog = null;
+                }
+                const $content = $('<div/>', { class: 'govt-monthly-dialog' });
+                const buttons = [
+                    { label: _t('Download BHXH630'), route: 'govt-monthly-bhxh630' },
+                    { label: _t('Download BHXHDSTK01-DV_595'), route: 'govt-monthly-bhxhdstk01' },
+                    { label: _t('Download Bảng kê D01-TS'), route: 'govt-monthly-d01' },
+                    { label: _t('Download Báo giảm lao động'), route: 'govt-monthly-giam' },
+                    { label: _t('Download Báo tăng lao động'), route: 'govt-monthly-tang' },
+                ];
+                buttons.forEach((btn) => {
+                    const $btn = $('<button/>', {
+                        type: 'button',
+                        class: 'govt-monthly-button',
+                    });
+                    $btn.append($('<i/>', { class: 'fa fa-file-excel-o' }));
+                    $btn.append($('<span/>').text(btn.label));
+                    $btn.on('click', () => runTertiaryAction(btn.route, false));
+                    $content.append($btn);
+                });
+                monthlyDialog = new Dialog(null, {
+                    title: _t('Monthly Generated Tax Reports'),
+                    $content: $content,
+                    buttons: [{ text: _t('CLOSE'), close: true }],
+                    size: 'medium',
+                });
+                monthlyDialog.open();
+                const applyDialogClass = () => {
+                    if (monthlyDialog && monthlyDialog.$modal) {
+                        monthlyDialog.$modal.addClass('govt-monthly-modal');
+                    }
+                };
+                applyDialogClass();
+                setTimeout(applyDialogClass, 0);
+            };
+
+            const openPanel = (key, ctx = {}) => {
+                if (!panel) return;
+                const data = tertiaryData[key] || { title: 'Quick Actions', items: [] };
+                panelTitle.textContent = data.title;
+                panelItems.innerHTML = '';
                 data.items.forEach((item) => {
                     const card = document.createElement('div');
                     card.className = 'tertiary-card' + (item.disabled ? ' is-disabled' : '');
@@ -285,255 +286,255 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                             runTertiaryAction(item.route, true);
                         });
                         card.style.cursor = 'pointer';
-                    card.title = 'Open';
+                        card.title = 'Open';
+                    }
+                    panelItems.appendChild(card);
+                });
+                panel.classList.remove('hidden');
+                panel.classList.add('open');
+                if (!isRestoring) {
+                    saveState(ctx.primary || key, ctx.secondary || null, key);
                 }
-                panelItems.appendChild(card);
+                console.log('[HR Flow] Panel opened for', key, 'ctx', ctx);
+            };
+
+            const closePanel = (doClear = false) => {
+                if (!panel) return;
+                panel.classList.remove('open');
+                panel.classList.add('hidden');
+                if (doClear) {
+                    clearState();
+                }
+            };
+
+            if (panelClose) {
+                panelClose.addEventListener('click', () => closePanel(true));
+                panelClose.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        closePanel(true);
+                    }
+                });
+            }
+
+            // no details button anymore
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closePanel(true);
             });
-            panel.classList.remove('hidden');
-            panel.classList.add('open');
-            if (!isRestoring) {
-                saveState(ctx.primary || key, ctx.secondary || null, key);
-            }
-            console.log('[HR Flow] Panel opened for', key, 'ctx', ctx);
-        };
 
-        const closePanel = (doClear = false) => {
-            if (!panel) return;
-            panel.classList.remove('open');
-            panel.classList.add('hidden');
-            if (doClear) {
-                clearState();
-            }
-        };
+            workflow.querySelectorAll('[data-tertiary]').forEach((el) => {
+                const handler = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    const key = el.getAttribute('data-tertiary');
+                    console.log('[HR Flow] Tertiary element clicked:', key);
+                    openPanel(key);
+                };
+                console.log('[HR Flow] Binding tertiary click', el.getAttribute('data-tertiary'));
+                el.addEventListener('click', handler);
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        handler(e);
+                    }
+                });
+            });
 
-        if (panelClose) {
-            panelClose.addEventListener('click', () => closePanel(true));
-            panelClose.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
+            const hideAllSecondary = (alsoClear = false) => {
+                console.log('[HR Flow] Hiding all secondary rings');
+                secondaryAll.forEach((sec) => sec && sec.classList.add('hide-secondary'));
+                if (alsoClear) {
                     closePanel(true);
                 }
-            });
-        }
-
-        // no details button anymore
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closePanel(true);
-        });
-
-        workflow.querySelectorAll('[data-tertiary]').forEach((el) => {
-            const handler = (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
-                }
-                const key = el.getAttribute('data-tertiary');
-                console.log('[HR Flow] Tertiary element clicked:', key);
-                openPanel(key);
             };
-            console.log('[HR Flow] Binding tertiary click', el.getAttribute('data-tertiary'));
-            el.addEventListener('click', handler);
-            el.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    handler(e);
-                }
+            const showSecondary = (sec) => {
+                if (sec) sec.classList.remove('hide-secondary');
+                console.log('[HR Flow] Showing secondary ring', sec && sec.className);
+            };
+
+            // Start hidden
+            hideAllSecondary();
+
+            // Debug: log any click inside workflow to ensure events are firing
+            workflow.addEventListener('click', (e) => {
+                console.log('[HR Flow] Workflow click detected on', e.target && e.target.className);
             });
-        });
 
-        const hideAllSecondary = (alsoClear = false) => {
-            console.log('[HR Flow] Hiding all secondary rings');
-            secondaryAll.forEach((sec) => sec && sec.classList.add('hide-secondary'));
-            if (alsoClear) {
-                closePanel(true);
+            // CLICK-ONLY INTERACTIONS (No Hover)
+
+            // 1. Attendance: Click to toggle secondary badges visibility
+            if (attendance) {
+                attendance.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    console.log('[HR Flow] Attendance clicked - toggling secondary badges');
+                    // Toggle attendance secondary badges
+                    if (!secondaryAttendance) {
+                        console.warn('[HR Flow] Attendance secondary container missing');
+                        return;
+                    }
+                    console.log('[HR Flow] Attendance secondary class BEFORE', secondaryAttendance.className);
+                    if (secondaryAttendance.classList.contains('hide-secondary')) {
+                        hideAllSecondary(true);
+                        showSecondary(secondaryAttendance);
+                    } else {
+                        hideAllSecondary(true);
+                    }
+                    console.log('[HR Flow] Attendance secondary class AFTER', secondaryAttendance.className);
+                });
+                console.log('[HR Flow] Attendance handler bound');
             }
-        };
-        const showSecondary = (sec) => {
-            if (sec) sec.classList.remove('hide-secondary');
-            console.log('[HR Flow] Showing secondary ring', sec && sec.className);
-        };
 
-        // Start hidden
-        hideAllSecondary();
+            // 2. Payroll Configuration: Click to open tertiary panel directly
+            if (payrollConfig) {
+                payrollConfig.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    console.log('[HR Flow] Payroll Configuration clicked - opening tertiary panel');
+                    hideAllSecondary(true);
+                    openPanel('payroll_config', { primary: 'payroll_config' });
+                });
+                console.log('[HR Flow] Payroll Configuration handler bound');
+            }
 
-        // Debug: log any click inside workflow to ensure events are firing
-        workflow.addEventListener('click', (e) => {
-            console.log('[HR Flow] Workflow click detected on', e.target && e.target.className);
-        });
+            // 3. Payroll: Click to open tertiary panel directly
+            if (payroll) {
+                payroll.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    console.log('[HR Flow] Payroll clicked - opening tertiary panel');
+                    hideAllSecondary(true);
+                    openPanel('payroll', { primary: 'payroll' });
+                });
+                console.log('[HR Flow] Payroll handler bound');
+            }
 
-        // CLICK-ONLY INTERACTIONS (No Hover)
+            // 4. Approval: Click to open approval dashboard (direct action, not tertiary panel)
+            if (approval) {
+                approval.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    console.log('[HR Flow] Approval clicked - opening approval dashboard');
+                    hideAllSecondary(true);
+                    rpc.query({
+                        model: 'hr.flow.wizard',
+                        method: 'get_tertiary_action',
+                        args: ['approval-pending'],
+                    }).then((action) => {
+                        console.log('[HR Flow] Approval action resolved', action);
+                        if (action && action.type) {
+                            action.context = Object.assign({}, session.user_context || {}, action.context || {});
+                            const payload = { action: action, options: {} };
+                            console.log('[HR Flow] Triggering approval do-action payload', payload);
+                            core.bus.trigger('do-action', payload);
+                            saveState('approval', null, null);
+                        } else {
+                            console.warn('[HR Flow] No action resolved for approval-pending', action);
+                        }
+                    }).catch((err) => {
+                        console.error('[HR Flow] Failed to resolve approval action', err);
+                    });
+                });
+                console.log('[HR Flow] Approval handler bound');
+            }
 
-        // 1. Attendance: Click to toggle secondary badges visibility
-        if (attendance) {
-            attendance.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
-                }
-                console.log('[HR Flow] Attendance clicked - toggling secondary badges');
-                // Toggle attendance secondary badges
-                if (!secondaryAttendance) {
-                    console.warn('[HR Flow] Attendance secondary container missing');
+            // 5. Pay Salary: Click to open tertiary panel directly
+            if (paySalary) {
+                paySalary.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    console.log('[HR Flow] Pay Salary clicked - opening tertiary panel');
+                    hideAllSecondary(true);
+                    openPanel('pay_salary', { primary: 'pay_salary' });
+                });
+                console.log('[HR Flow] Pay Salary handler bound');
+            }
+
+            // 6. Government: Click to open tertiary panel directly
+            if (government) {
+                government.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    console.log('[HR Flow] Government clicked - opening tertiary panel');
+                    hideAllSecondary(true);
+                    openPanel('govt', { primary: 'govt' });
+                });
+                console.log('[HR Flow] Government handler bound');
+            }
+
+            // 7. Analytics: Click to open HR Analytics Dashboard directly
+            const analytics = workflow.querySelector('.badge-analytics');
+            if (analytics) {
+                analytics.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) {
+                        e.stopImmediatePropagation();
+                    }
+                    console.log('[HR Flow] Analytics clicked - opening analytics dashboard');
+                    hideAllSecondary(true);
+                    rpc.query({
+                        model: 'hr.flow.wizard',
+                        method: 'get_tertiary_action',
+                        args: ['analytics-dashboard'],
+                    }).then((action) => {
+                        console.log('[HR Flow] Analytics action resolved', action);
+                        if (action && action.type) {
+                            action.context = Object.assign({}, session.user_context || {}, action.context || {});
+                            const payload = { action: action, options: {} };
+                            console.log('[HR Flow] Triggering analytics do-action payload', payload);
+                            core.bus.trigger('do-action', payload);
+                            saveState('analytics', null, null);
+                        } else {
+                            console.warn('[HR Flow] No action resolved for analytics-dashboard', action);
+                        }
+                    }).catch((err) => {
+                        console.error('[HR Flow] Failed to resolve analytics action', err);
+                    });
+                });
+                console.log('[HR Flow] Analytics handler bound');
+            }
+
+            // Restore last state if any (runs after handlers are bound so helpers are in scope)
+            const restoreState = () => {
+                const state = loadState();
+                if (!state || (!state.primary && !state.panel)) {
                     return;
                 }
-                console.log('[HR Flow] Attendance secondary class BEFORE', secondaryAttendance.className);
-                if (secondaryAttendance.classList.contains('hide-secondary')) {
-                    hideAllSecondary(true);
+                console.log('[HR Flow] Restoring state', state);
+                isRestoring = true;
+                hideAllSecondary();
+                if (state.primary === 'attendance' && secondaryAttendance) {
                     showSecondary(secondaryAttendance);
-                } else {
-                    hideAllSecondary(true);
-                }
-                console.log('[HR Flow] Attendance secondary class AFTER', secondaryAttendance.className);
-            });
-            console.log('[HR Flow] Attendance handler bound');
-        }
-
-        // 2. Payroll Configuration: Click to open tertiary panel directly
-        if (payrollConfig) {
-            payrollConfig.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
-                }
-                console.log('[HR Flow] Payroll Configuration clicked - opening tertiary panel');
-                hideAllSecondary(true);
-                openPanel('payroll_config', { primary: 'payroll_config' });
-            });
-            console.log('[HR Flow] Payroll Configuration handler bound');
-        }
-
-        // 3. Payroll: Click to open tertiary panel directly
-        if (payroll) {
-            payroll.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
-                }
-                console.log('[HR Flow] Payroll clicked - opening tertiary panel');
-                hideAllSecondary(true);
-                openPanel('payroll', { primary: 'payroll' });
-            });
-            console.log('[HR Flow] Payroll handler bound');
-        }
-
-        // 4. Approval: Click to open approval dashboard (direct action, not tertiary panel)
-        if (approval) {
-            approval.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
-                }
-                console.log('[HR Flow] Approval clicked - opening approval dashboard');
-                hideAllSecondary(true);
-                rpc.query({
-                    model: 'hr.flow.wizard',
-                    method: 'get_tertiary_action',
-                    args: ['approval-pending'],
-                }).then((action) => {
-                    console.log('[HR Flow] Approval action resolved', action);
-                    if (action && action.type) {
-                        action.context = Object.assign({}, session.user_context || {}, action.context || {});
-                        const payload = { action: action, options: {} };
-                        console.log('[HR Flow] Triggering approval do-action payload', payload);
-                        core.bus.trigger('do-action', payload);
-                        saveState('approval', null, null);
-                    } else {
-                        console.warn('[HR Flow] No action resolved for approval-pending', action);
+                    if (state.panel) {
+                        openPanel(state.panel, { primary: 'attendance', secondary: state.secondary || state.panel });
                     }
-                }).catch((err) => {
-                    console.error('[HR Flow] Failed to resolve approval action', err);
-                });
-            });
-            console.log('[HR Flow] Approval handler bound');
-        }
-
-        // 5. Pay Salary: Click to open tertiary panel directly
-        if (paySalary) {
-            paySalary.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
+                } else if (state.panel) {
+                    openPanel(state.panel, { primary: state.primary, secondary: state.secondary });
                 }
-                console.log('[HR Flow] Pay Salary clicked - opening tertiary panel');
-                hideAllSecondary(true);
-                openPanel('pay_salary', { primary: 'pay_salary' });
-            });
-            console.log('[HR Flow] Pay Salary handler bound');
-        }
-
-        // 6. Government: Click to open tertiary panel directly
-        if (government) {
-            government.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
-                }
-                console.log('[HR Flow] Government clicked - opening tertiary panel');
-                hideAllSecondary(true);
-                openPanel('govt', { primary: 'govt' });
-            });
-            console.log('[HR Flow] Government handler bound');
-        }
-
-        // 7. Analytics: Click to open HR Analytics Dashboard directly
-        const analytics = workflow.querySelector('.badge-analytics');
-        if (analytics) {
-            analytics.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (e.stopImmediatePropagation) {
-                    e.stopImmediatePropagation();
-                }
-                console.log('[HR Flow] Analytics clicked - opening analytics dashboard');
-                hideAllSecondary(true);
-                rpc.query({
-                    model: 'hr.flow.wizard',
-                    method: 'get_tertiary_action',
-                    args: ['analytics-dashboard'],
-                }).then((action) => {
-                    console.log('[HR Flow] Analytics action resolved', action);
-                    if (action && action.type) {
-                        action.context = Object.assign({}, session.user_context || {}, action.context || {});
-                        const payload = { action: action, options: {} };
-                        console.log('[HR Flow] Triggering analytics do-action payload', payload);
-                        core.bus.trigger('do-action', payload);
-                        saveState('analytics', null, null);
-                    } else {
-                        console.warn('[HR Flow] No action resolved for analytics-dashboard', action);
-                    }
-                }).catch((err) => {
-                    console.error('[HR Flow] Failed to resolve analytics action', err);
-                });
-            });
-            console.log('[HR Flow] Analytics handler bound');
-        }
-
-        // Restore last state if any (runs after handlers are bound so helpers are in scope)
-        const restoreState = () => {
-            const state = loadState();
-            if (!state || (!state.primary && !state.panel)) {
-                return;
-            }
-            console.log('[HR Flow] Restoring state', state);
-            isRestoring = true;
-            hideAllSecondary();
-            if (state.primary === 'attendance' && secondaryAttendance) {
-                showSecondary(secondaryAttendance);
-                if (state.panel) {
-                    openPanel(state.panel, { primary: 'attendance', secondary: state.secondary || state.panel });
-                }
-            } else if (state.panel) {
-                openPanel(state.panel, { primary: state.primary, secondary: state.secondary });
-            }
-            isRestoring = false;
-        };
-        restoreState();
+                isRestoring = false;
+            };
+            restoreState();
         };
 
         // Initial bind
