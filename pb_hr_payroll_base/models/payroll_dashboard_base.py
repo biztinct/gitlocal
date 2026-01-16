@@ -440,7 +440,7 @@ class PayrollDashboard(models.Model):
         # Add specific view if available
         if view_id:
             try:
-                view_ref = self.env.ref(view_id)
+                view_ref = self.env.ref(view_id).sudo()
                 action['view_id'] = view_ref.id
                 _logger.info(f"Using country-specific view {view_id} for {self.country}")
             except:
@@ -452,9 +452,12 @@ class PayrollDashboard(models.Model):
         """Open HR Flow wizard if the module is installed."""
         self.ensure_one()
 
-        action = self.env.ref('pb_hr_flow.action_hr_flow_wizard', raise_if_not_found=False)
+        action = self.env.ref(
+            'pb_hr_flow.action_hr_flow_wizard',
+            raise_if_not_found=False
+        )
         if action:
-            return action.read()[0]
+            return action.sudo().read()[0]
 
         raise UserError(_('HR Flow module is not installed. Please install pb_hr_flow to use Workflow.'))
 
@@ -901,6 +904,18 @@ class PayrollDashboard(models.Model):
         }
         
         return access_rights
+
+    @api.model
+    def get_country_dashboard_action(self, country_code):
+        """Return a dashboard action dict without requiring action record access."""
+        access_rights = self.get_user_access_rights(self.env.user.id)
+        if not access_rights.get(country_code):
+            raise UserError(
+                _('You do not have access to %s payroll system.') % country_code
+            )
+
+        dashboard = self.sudo().get_or_create_dashboard(country_code)
+        return dashboard.sudo().action_view_country_dashboard()
     
     @api.model
     def get_dashboard_summary(self):
@@ -1099,7 +1114,7 @@ class PayrollDashboard(models.Model):
         # Try approval module if available
         try:
             action = self.env.ref('payroll_analytics_approval.action_payroll_approval_dashboard')
-            return action.read()[0]
+            return action.sudo().read()[0]
         except:
             # Fallback to payslip approval
             return {

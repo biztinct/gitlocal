@@ -28,6 +28,8 @@ msgid ""
 "<i class=\"fa fa-calculator primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Payroll</span>"
 msgstr ""
+"<i class=\"fa fa-calculator primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Lương</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -42,6 +44,8 @@ msgid ""
 "<i class=\"fa fa-check-circle primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Approval</span>"
 msgstr ""
+"<i class=\"fa fa-check-circle primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Phê duyệt</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -49,6 +53,8 @@ msgid ""
 "<i class=\"fa fa-clock-o primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Attendance</span>"
 msgstr ""
+"<i class=\"fa fa-clock-o primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Chấm công</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -63,6 +69,8 @@ msgid ""
 "<i class=\"fa fa-cogs primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Payroll<br/>Configuration</span>"
 msgstr ""
+"<i class=\"fa fa-cogs primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Cấu hình<br/>lương</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -126,6 +134,8 @@ msgid ""
 "<i class=\"fa fa-file-text primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Government<br/>Reports</span>"
 msgstr ""
+"<i class=\"fa fa-file-text primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Báo cáo<br/>chính phủ</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -182,6 +192,8 @@ msgid ""
 "<i class=\"fa fa-line-chart primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Analytics</span>"
 msgstr ""
+"<i class=\"fa fa-line-chart primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Phân tích</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -189,6 +201,8 @@ msgid ""
 "<i class=\"fa fa-money primary-badge-icon\"/>\n"
 "                                <span class=\"primary-badge-text\">Pay Salary</span>"
 msgstr ""
+"<i class=\"fa fa-money primary-badge-icon\"/>\n"
+"                                <span class=\"primary-badge-text\">Thanh toán lương</span>"
 
 #. module: pb_hr_flow
 #: model_terms:ir.ui.view,arch_db:pb_hr_flow.view_hr_flow_wizard_form
@@ -245,6 +259,8 @@ msgid ""
 "<i class=\"fa fa-users center-badge-icon\"/>\n"
 "                                <span class=\"center-badge-text\">Employee</span>"
 msgstr ""
+"<i class=\"fa fa-users center-badge-icon\"/>\n"
+"                                <span class=\"center-badge-text\">Nhân viên</span>"
 
 #. module: pb_hr_flow
 #. odoo-javascript

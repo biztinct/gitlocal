@@ -254,7 +254,7 @@ class HRFlowWizard(models.TransientModel):
             return self._get_overtime_approve_action()
 
         try:
-            action = self.env['ir.actions.actions']._for_xml_id(action_xmlid)
+            action = self.env['ir.actions.actions'].sudo()._for_xml_id(action_xmlid)
         except Exception:
             return {'type': 'ir.actions.act_window_close', 'context': {}}
 
@@ -269,7 +269,7 @@ class HRFlowWizard(models.TransientModel):
         if menu_xmlid:
             menu = self.env.ref(menu_xmlid, raise_if_not_found=False)
             if menu:
-                action['menu_id'] = menu.id
+                action['menu_id'] = menu.sudo().id
         return action
 
     @api.model
@@ -280,7 +280,9 @@ class HRFlowWizard(models.TransientModel):
         Skips the selector dashboard and opens the report wizard directly.
         """
         try:
-            view_id = self.env.ref('pb_hr_govt.view_pb_govt_report_wizard_form').id
+            view_id = self.env.ref(
+                'pb_hr_govt.view_pb_govt_report_wizard_form'
+            ).sudo().id
         except Exception:
             view_id = False
 
@@ -304,8 +306,12 @@ class HRFlowWizard(models.TransientModel):
         """
         try:
             # Try to get the view IDs
-            tree_view_id = self.env.ref('ohrms_overtime.hr_overtime_tree_view').id
-            form_view_id = self.env.ref('ohrms_overtime.hr_overtime_form_view').id
+            tree_view_id = self.env.ref(
+                'ohrms_overtime.hr_overtime_tree_view'
+            ).sudo().id
+            form_view_id = self.env.ref(
+                'ohrms_overtime.hr_overtime_form_view'
+            ).sudo().id
         except Exception:
             tree_view_id = False
             form_view_id = False
@@ -325,7 +331,7 @@ class HRFlowWizard(models.TransientModel):
         """Open the payroll approval queue dashboard"""
         self.ensure_one()
         try:
-            action = self.env['ir.actions.actions']._for_xml_id(
+            action = self.env['ir.actions.actions'].sudo()._for_xml_id(
                 'payroll_analytics_approval.action_payroll_approval_queue'
             )
             action['target'] = 'current'
@@ -346,7 +352,7 @@ class HRFlowWizard(models.TransientModel):
         """Open the bank export wizard"""
         self.ensure_one()
         try:
-            action = self.env['ir.actions.actions']._for_xml_id(
+            action = self.env['ir.actions.actions'].sudo()._for_xml_id(
                 'payroll_analytics_approval.action_payroll_bank_export_wizard'
             )
             action['target'] = 'new'
@@ -368,14 +374,14 @@ class HRFlowWizard(models.TransientModel):
         self.ensure_one()
         try:
             # Use server action to ensure dashboard record exists
-            action = self.env['ir.actions.actions']._for_xml_id(
+            action = self.env['ir.actions.actions'].sudo()._for_xml_id(
                 'pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard'
             )
             return action
         except Exception:
             # Fallback - try direct window action
             try:
-                action = self.env['ir.actions.actions']._for_xml_id(
+                action = self.env['ir.actions.actions'].sudo()._for_xml_id(
                     'pb_hr_payroll_analytics.action_open_hr_analytics_dashboard'
                 )
                 action['target'] = 'current'

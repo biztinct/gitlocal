@@ -383,28 +383,14 @@ odoo.define('pb_hr_payroll_base.enhanced_dashboard', function (require) {
          */
         _navigateToCountryDashboard: function (country) {
             var self = this;
-            var actions = {
-                'VN': 'pb_hr_payroll_vietnam.action_payroll_dashboard_vietnam',
-                'ID': 'pb_hr_payroll_indonesia.action_payroll_dashboard_indonesia',
-                'IN': 'pb_hr_payroll_india.action_payroll_dashboard_india',
-                'SG': 'pb_hr_payroll_singapore.action_payroll_dashboard_singapore',
-                'MY': 'pb_hr_payroll_malaysia.action_payroll_dashboard_malaysia',
-            };
-            
-            var actionXmlId = actions[country];
-            if (!actionXmlId) {
-                this._showErrorDialog('Dashboard not available for ' + country);
-                return;
-            }
-            
+
             // Show loading for better UX
             this._showLoadingOverlay();
-            
+
             this._rpc({
-                route: '/web/action/load',
-                params: {
-                    action_id: actionXmlId,
-                }
+                model: 'payroll.dashboard',
+                method: 'get_country_dashboard_action',
+                args: [country],
             }).then(function (action) {
                 self.do_action(action);
             }).catch(function (error) {
