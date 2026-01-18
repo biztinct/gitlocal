@@ -19,3 +19,5 @@ access_hr_analytics_export_wizard_manager,HR Analytics Export Wizard - Manager,m
 access_hr_analytics_export_wizard_admin,HR Analytics Export Wizard - Admin,model_hr_analytics_export_wizard,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
 access_hr_payroll_employee_detail_manager,HR Payroll Employee Detail - Manager,model_hr_payroll_employee_detail,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
 access_hr_payroll_employee_detail_admin,HR Payroll Employee Detail - Admin,model_hr_payroll_employee_detail,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1
+access_hr_formula_config_analytics_manager,HR Formula Config Analytics - Manager,model_hr_formula_config_analytics,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
+access_hr_formula_config_analytics_admin,HR Formula Config Analytics - Admin,model_hr_formula_config_analytics,pb_hr_payroll_base.group_payroll_super_admin,1,1,1,1

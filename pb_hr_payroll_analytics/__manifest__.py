@@ -33,6 +33,7 @@
         'hr_contract',
         'om_hr_payroll',           # Core payroll
         'pb_hr_payroll_base',      # Base country framework
+        'pb_hr_payroll_formula',   # Formula-based payroll configs
         'web',
         'spreadsheet_oca'          # UI & spreadsheet support
     ],
@@ -55,6 +56,9 @@
         'wizards/hr_analytics_export_wizard_views.xml',
         # Load dashboard after all actions are defined
         'views/hr_analytics_dashboard.xml',
+        # Formula Config Analytics (Salary Structure Analytics)
+        'views/hr_formula_config_analytics_views.xml',
+        'views/hr_payslip_line_pivot_views.xml',
         # Load menus last (they reference all actions and dashboard)
         'views/hr_analytics_menus.xml',
         'reports/hr_analytics_reports.xml',
@@ -67,6 +71,7 @@
             'pb_hr_payroll_analytics/static/src/js/hr_analytics_dashboard.js',
             'pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js',
             'pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js',
+            'pb_hr_payroll_analytics/static/src/js/hr_formula_config_analytics.js',
         ]
     },
 

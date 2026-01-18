@@ -14,7 +14,7 @@
                 
                 <group>
                     <group string="Export Parameters">
-                        <field name="country" required="1" widget="radio"/>
+                        <field name="struct_id" required="1"/>
                         <field name="date_from" required="1"/>
                         <field name="date_to" required="1"/>
                     </group>
@@ -26,16 +26,32 @@
                 </group>
                 
                 <!-- Preview Section -->
-                        <group string="Export Preview" attrs="{'invisible': [('preview_data', '=', False)]}">
-                            <div class="alert alert-success" colspan="2">
-                                <h5><i class="fa fa-check"/> Export Preview Ready</h5>
-                                <p>
-                                    Found <strong><field name="preview_record_count" readonly="1"/></strong> employees 
-                                    with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong>
-                                </p>
-                            </div>
-                            <field name="preview_data" widget="text" readonly="1" colspan="2"/>
-                        </group>
+                <group string="Export Preview" attrs="{'invisible': ['&amp;', ('preview_record_count', '=', 0), ('preview_data', '=', False)]}">
+                    <div class="alert alert-success" colspan="2" attrs="{'invisible': [('preview_record_count', '=', 0)]}">
+                        <h5><i class="fa fa-check"/> Export Preview Ready</h5>
+                        <p>
+                            Found <strong><field name="preview_record_count" readonly="1"/></strong> employees 
+                            with total amount of <strong><field name="preview_total_amount" widget="monetary" readonly="1"/></strong>
+                        </p>
+                    </div>
+                    <div class="alert alert-warning" colspan="2" attrs="{'invisible': ['|', ('preview_record_count', '>', 0), ('preview_data', '=', False)]}">
+                        <h5><i class="fa fa-exclamation-triangle"/> Export Preview</h5>
+                        <field name="preview_data" readonly="1" nolabel="1"/>
+                    </div>
+                    <field name="preview_line_ids" nolabel="1" colspan="2" attrs="{'invisible': [('preview_record_count', '=', 0)]}">
+                        <tree string="Export Preview" create="false" delete="false">
+                            <field name="employee_id"/>
+                            <field name="bank_name"/>
+                            <field name="account_number"/>
+                            <field name="amount" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="reference"/>
+                            <field name="date"/>
+                            <field name="department"/>
+                            <field name="job_position"/>
+                        </tree>
+                    </field>
+                </group>
 
                 
                 <!-- Export Results -->
@@ -49,7 +65,8 @@
                 </group>
                 
                 <footer>
-                    <button string="Preview Export" name="action_preview_export" type="object" class="btn-info" attrs="{'invisible': [('preview_data', '!=', False)]}"/>
+                    <button string="Preview Export" name="action_preview_export" type="object" class="btn-info" attrs="{'invisible': [('preview_record_count', '>', 0)]}"/>
+                    <button string="Details" name="action_show_details" type="object" class="btn-secondary" attrs="{'invisible': [('preview_record_count', '=', 0)]}"/>
                     <button string="Generate Export" name="action_generate_export" type="object" class="btn-primary" attrs="{'invisible': [('export_file', '!=', False)]}"/>
                     <button string="Download File" name="action_download_export" type="object" class="btn-success" attrs="{'invisible': [('export_file', '=', False)]}"/>
                     <button string="Reset" name="action_reset_wizard" type="object" class="btn-secondary" attrs="{'invisible': [('export_file', '=', False)]}"/>
@@ -72,7 +89,7 @@
                 
                 <group>
                     <group>
-                        <field name="country" required="1"/>
+                        <field name="struct_id" required="1"/>
                         <field name="export_format"/>
                         <field name="include_header"/>
                     </group>
