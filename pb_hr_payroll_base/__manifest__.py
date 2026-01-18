@@ -98,6 +98,7 @@ for all country-specific modules while maintaining clean separation of concerns.
             'pb_hr_payroll_base/static/src/css/payroll_dashboard_enhanced.css',  # CREATE THIS FILE
             'pb_hr_payroll_base/static/src/js/payroll_dashboard_enhanced.js',    # CREATE THIS FILE
             'pb_hr_payroll_base/static/src/js/breadcrumb_override.js',           # Breadcrumb override for country selector
+            'pb_hr_payroll_base/static/src/js/control_panel_home_icon.js',       # Control panel home icon
 
             # Chart.js for analytics
             'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',

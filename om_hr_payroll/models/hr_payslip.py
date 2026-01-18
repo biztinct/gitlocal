@@ -949,6 +949,17 @@ class HrPayslipRun(models.Model):
                                  states={'draft': [('readonly', False)]},
                                  help="If its checked, indicates that all payslips generated from here are refund payslips.")
 
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        result = super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        groupby_list = groupby if isinstance(groupby, list) else [groupby]
+        groupby_state = any(group and group.split(':')[0] == 'state' for group in groupby_list)
+        if groupby_state:
+            for group in result:
+                if group.get('state') == 'done':
+                    group['__fold'] = True
+        return result
+
     def draft_payslip_run(self):
         for line in self.slip_ids:
             line.action_payslip_done()
