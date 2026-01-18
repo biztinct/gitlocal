@@ -3,6 +3,7 @@ access_payroll_analytics_public,payroll.analytics.public,model_payroll_analytics
 access_payroll_analytics_user,payroll.analytics.user,model_payroll_analytics,pb_hr_payroll_base.group_payroll_base_user,1,1,1,0
 access_payroll_analytics_manager,payroll.analytics.manager,model_payroll_analytics,pb_hr_payroll_base.group_payroll_base_manager,1,1,1,1
 access_payroll_bank_export_wizard_public,payroll.bank.export.wizard.public,model_payroll_bank_export_wizard,,1,1,1,1
+access_payroll_bank_export_preview_line_public,payroll.bank.export.preview.line.public,model_payroll_bank_export_preview_line,,1,1,1,1
 access_payroll_comparison_public,payroll.comparison.public,model_payroll_comparison,,1,0,0,0
 access_bank_export_log_public,bank.export.log.public,model_bank_export_log,,1,0,0,0
 access_payroll_analytics_settings_public,payroll.analytics.settings.public,model_payroll_analytics_settings,,1,1,1,1

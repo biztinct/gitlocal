@@ -73,4 +73,13 @@
         sequence="7"
     />
 
+    <!-- Salary Structure Analytics (Formula Config Based) -->
+    <menuitem
+        id="menu_formula_config_analytics"
+        name="Salary Structure Analytics"
+        parent="menu_hr_analytics_root"
+        action="action_prepare_formula_config_analytics"
+        sequence="8"
+    />
+
 </odoo>
