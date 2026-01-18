@@ -157,6 +157,28 @@
     font-weight: bold;
 }
 
+/* =================================================================================
+   CONTROL PANEL HOME ICON
+   ================================================================================= */
+
+.o_hr_flow_home_link {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 12px;
+    padding-right: 12px;
+    border-right: 1px solid var(--medium-gray);
+    color: var(--dark-gray);
+    text-decoration: none;
+}
+
+.o_hr_flow_home_link i {
+    font-size: 16px;
+}
+
+.o_hr_flow_home_link:hover {
+    color: var(--primary-color);
+}
+
 /* Enhanced Country Title */
 .country-title {
     color: white;
