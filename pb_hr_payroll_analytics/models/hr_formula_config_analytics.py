@@ -659,6 +659,47 @@ class HrFormulaConfigAnalytics(models.Model):
             ],
         }
 
+    def action_open_pivot_by_department_name(self, dept_name):
+        """Open pivot view filtered by department name (called from chart/card click)"""
+        self.ensure_one()
+        if not self.selected_config_id:
+            raise UserError(_("Please select a salary config first"))
+
+        # Find department by name
+        department = self.env['hr.department'].search([
+            ('name', '=', dept_name),
+            ('company_id', '=', self.company_id.id)
+        ], limit=1)
+
+        if not department:
+            raise UserError(_("Department '%s' not found") % dept_name)
+
+        # Get payslips for this config and department
+        payslips = self._get_payslips_in_range(
+            config_id=self.selected_config_id.id,
+            department_id=department.id
+        )
+
+        visible_codes = self.selected_config_id.rule_ids.filtered(
+            lambda r: r.report_visible
+        ).mapped('code')
+
+        return {
+            'name': _('Pivot: %s - %s') % (self.selected_config_id.name, dept_name),
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.payslip.line',
+            'view_mode': 'pivot,tree',
+            'views': [
+                (self.env.ref('pb_hr_payroll_analytics.view_payslip_line_formula_pivot').id, 'pivot'),
+                (False, 'tree')
+            ],
+            'domain': [
+                ('slip_id', 'in', payslips.ids),
+                ('code', 'in', visible_codes),
+                ('report_visible', '=', True)
+            ],
+        }
+
     @api.model
     def get_or_create_dashboard(self):
         """Get or create the singleton dashboard record for current company"""
@@ -670,6 +711,14 @@ class HrFormulaConfigAnalytics(models.Model):
             dashboard = self.create({
                 'name': 'Salary Structure Analytics',
                 'company_id': self.env.company.id
+            })
+        else:
+            # Reset to hierarchy view when dashboard is opened
+            # This ensures fresh start each time user navigates to the dashboard
+            dashboard.write({
+                'active_view': 'hierarchy',
+                'selected_config_id': False,
+                'selected_department_id': False,
             })
 
         return dashboard

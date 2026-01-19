@@ -6,7 +6,7 @@
     <!-- Shows: Employees (rows) vs Components (columns) with amounts        -->
     <!-- ================================================================== -->
 
-    <!-- Main Pivot View: Employee x Component Code -->
+    <!-- Main Pivot View: Employee x Component Name -->
     <record id="view_payslip_line_formula_pivot" model="ir.ui.view">
         <field name="name">Payslip Lines - Formula Config Pivot</field>
         <field name="model">hr.payslip.line</field>
@@ -15,8 +15,8 @@
             <pivot string="Employee x Components" display_quantity="true" sample="1">
                 <!-- Rows: Employee names -->
                 <field name="employee_id" type="row"/>
-                <!-- Columns: Component code -->
-                <field name="code" type="col"/>
+                <!-- Columns: Component name (user-friendly) -->
+                <field name="name" type="col"/>
                 <!-- Measures: Amount -->
                 <field name="amount" type="measure"/>
             </pivot>
@@ -51,8 +51,8 @@
                 <!-- Rows: Department, then Employee -->
                 <field name="department_id" type="row"/>
                 <field name="employee_id" type="row"/>
-                <!-- Columns: Component code -->
-                <field name="code" type="col"/>
+                <!-- Columns: Component name (user-friendly) -->
+                <field name="name" type="col"/>
                 <!-- Measures: Amount -->
                 <field name="amount" type="measure"/>
             </pivot>
