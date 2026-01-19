@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from odoo.tools.safe_eval import safe_eval
 
 
 class HRFlowWizard(models.TransientModel):
@@ -263,7 +264,17 @@ class HRFlowWizard(models.TransientModel):
             action['target'] = 'current'
         action.setdefault('context', {})
 
-        # No special context handling needed for current routes
+        if key == 'payroll-batch-workflow':
+            ctx = action.get('context') or {}
+            # Handle case where context is a string (needs evaluation)
+            if isinstance(ctx, str):
+                try:
+                    ctx = safe_eval(ctx, {'uid': self.env.uid, 'user': self.env.user})
+                except Exception:
+                    ctx = {}
+            action_context = dict(ctx)
+            action_context['group_by'] = ['state']
+            action['context'] = action_context
 
         # Resolve menu id if present
         if menu_xmlid:
