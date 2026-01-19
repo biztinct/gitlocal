@@ -21,7 +21,9 @@ class HrPayslipImportMappingWizard(models.TransientModel):
         self.ensure_one()
         if self.copy_from_structure_id:
             self._copy_mapping_fields(self.copy_from_structure_id)
-        action = self.env.ref('pb_hr_payroll_formula.action_payslip_import_mapping').read()[0]
+        action = self.env['ir.actions.actions'].sudo()._for_xml_id(
+            'pb_hr_payroll_formula.action_payslip_import_mapping'
+        )
         context = dict(self.env.context or {})
         context['default_salary_structure_id'] = self.salary_structure_id.id
         context['search_default_salary_structure_id'] = self.salary_structure_id.id

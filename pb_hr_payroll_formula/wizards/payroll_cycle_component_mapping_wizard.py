@@ -22,7 +22,9 @@ class HrPayrollCycleComponentMappingWizard(models.TransientModel):
 
     def action_open_mappings(self):
         self.ensure_one()
-        action = self.env.ref('pb_hr_payroll_formula.action_payroll_cycle_component_mapping').read()[0]
+        action = self.env['ir.actions.actions'].sudo()._for_xml_id(
+            'pb_hr_payroll_formula.action_payroll_cycle_component_mapping'
+        )
         context = dict(self.env.context or {})
         context['default_mid_cycle_config_id'] = self.mid_cycle_config_id.id
         context['default_end_cycle_config_id'] = self.end_cycle_config_id.id
