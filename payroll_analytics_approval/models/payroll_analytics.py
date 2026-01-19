@@ -158,6 +158,17 @@ class PayrollAnalytics(models.Model):
             else:
                 # Re-raise other exceptions
                 raise
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        result = super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        groupby_list = groupby if isinstance(groupby, list) else [groupby]
+        groupby_state = any(group and group.split(':')[0] == 'state' for group in groupby_list)
+        if groupby_state:
+            for group in result:
+                if group.get('state') == 'approved':
+                    group['__fold'] = True
+        return result
     
     def action_open_dashboard(self):
         """Open analytics dashboard for this record - regenerate with current data"""

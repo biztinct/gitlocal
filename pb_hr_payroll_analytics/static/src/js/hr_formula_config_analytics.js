@@ -79,6 +79,22 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         'employer_cost': 'Employer Costs'
     };
 
+    // Cycle type labels (display values)
+    var cycleTypeLabels = {
+        'regular': 'Regular',
+        'end_cycle': 'End Cycle',
+        'mid_cycle': 'Mid Cycle',
+        'bonus': 'Bonus',
+        'thirteenth': '13th Month',
+        'special': 'Special'
+    };
+
+    // Format cycle type for display
+    var formatCycleType = function (cycleType) {
+        if (!cycleType) return 'Regular';
+        return cycleTypeLabels[cycleType] || cycleType.replace(/_/g, ' ').replace(/\b\w/g, function (l) { return l.toUpperCase(); });
+    };
+
     // =================================================================
     // FORMULA CONFIG ANALYTICS CONTROLLER
     // =================================================================
@@ -354,7 +370,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                                 '</div>' +
                                 '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
                                     '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Cycle</div>' +
-                                    '<div style="font-size: 14px; font-weight: bold; color: ' + cardStyle.text + ';">' + (config.cycle_type || 'regular') + '</div>' +
+                                    '<div style="font-size: 14px; font-weight: bold; color: ' + cardStyle.text + ';">' + formatCycleType(config.cycle_type) + '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
