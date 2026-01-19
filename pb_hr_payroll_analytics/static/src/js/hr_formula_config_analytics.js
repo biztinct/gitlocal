@@ -21,7 +21,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         ChartLib = window.ChartLib || {};
     }
 
-    // Color palettes for charts
+    // Color palettes for charts and cards
     var colorPalettes = {
         primary: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12', '#9b59b6', '#1abc9c', '#e91e63', '#00bcd4'],
         pastel: ['#FFB6C1', '#87CEEB', '#98FB98', '#FFD700', '#DDA0DD', '#87CEFA', '#FFA07A', '#98D8C8'],
@@ -43,6 +43,17 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             'rgba(244, 92, 67, 0.8)',
             'rgba(79, 172, 254, 0.8)',
             'rgba(0, 242, 254, 0.8)'
+        ],
+        // Light pastel card styles with borders and glow
+        cardStyles: [
+            { bg: 'linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%)', border: '#d946ef', text: '#86198f', glow: 'rgba(217, 70, 239, 0.3)' },
+            { bg: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', border: '#3b82f6', text: '#1e40af', glow: 'rgba(59, 130, 246, 0.3)' },
+            { bg: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', border: '#10b981', text: '#065f46', glow: 'rgba(16, 185, 129, 0.3)' },
+            { bg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', border: '#f59e0b', text: '#92400e', glow: 'rgba(245, 158, 11, 0.3)' },
+            { bg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)', border: '#ec4899', text: '#9d174d', glow: 'rgba(236, 72, 153, 0.3)' },
+            { bg: 'linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%)', border: '#14b8a6', text: '#115e59', glow: 'rgba(20, 184, 166, 0.3)' },
+            { bg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', border: '#6366f1', text: '#3730a3', glow: 'rgba(99, 102, 241, 0.3)' },
+            { bg: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)', border: '#f97316', text: '#9a3412', glow: 'rgba(249, 115, 22, 0.3)' }
         ]
     };
 
@@ -316,60 +327,68 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     var card = document.createElement('div');
                     card.className = 'config-card';
                     card.dataset.configId = config.id;
-                    card.style.cssText = 'background: white; border-radius: 12px; padding: 0; cursor: pointer; ' +
-                        'box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; overflow: hidden;';
 
-                    var gradientColors = colorPalettes.gradient[index % colorPalettes.gradient.length];
+                    // Get pastel card style for this card
+                    var cardStyle = colorPalettes.cardStyles[index % colorPalettes.cardStyles.length];
+
+                    card.style.cssText = 'background: ' + cardStyle.bg + '; border-radius: 12px; padding: 0; cursor: pointer; ' +
+                        'border: 3px solid ' + cardStyle.border + '; ' +
+                        'box-shadow: 0 0 20px ' + cardStyle.glow + ', 0 4px 15px ' + cardStyle.glow + '; ' +
+                        'transition: transform 0.3s, box-shadow 0.3s; overflow: hidden;';
 
                     card.innerHTML =
-                        '<div style="background: ' + gradientColors + '; padding: 15px; color: white;">' +
+                        '<div style="background: ' + cardStyle.border + '20; padding: 15px; border-bottom: 2px solid ' + cardStyle.border + '40;">' +
                             '<div style="display: flex; align-items: center; gap: 10px;">' +
-                                '<i class="fa fa-file-text" style="font-size: 24px;"></i>' +
+                                '<i class="fa fa-file-text" style="font-size: 24px; color: ' + cardStyle.text + ';"></i>' +
                                 '<div>' +
-                                    '<h5 style="margin: 0; font-size: 16px;">' + config.name + '</h5>' +
-                                    '<span style="opacity: 0.9; font-size: 12px;">' + (config.code || '') + '</span>' +
+                                    '<h5 style="margin: 0; font-size: 16px; font-weight: 700; color: ' + cardStyle.text + ';">' + config.name + '</h5>' +
+                                    '<span style="opacity: 0.8; font-size: 12px; color: ' + cardStyle.text + ';">' + (config.code || '') + '</span>' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
                         '<div style="padding: 15px;">' +
                             '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">' +
-                                '<div style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">' +
-                                    '<div style="font-size: 11px; color: #7f8c8d;">Country</div>' +
-                                    '<div style="font-size: 14px; font-weight: bold; color: #2c3e50;">' + (config.country_code || '-') + '</div>' +
+                                '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Country</div>' +
+                                    '<div style="font-size: 14px; font-weight: bold; color: ' + cardStyle.text + ';">' + (config.country_code || '-') + '</div>' +
                                 '</div>' +
-                                '<div style="text-align: center; padding: 10px; background: #f8f9fa; border-radius: 8px;">' +
-                                    '<div style="font-size: 11px; color: #7f8c8d;">Cycle</div>' +
-                                    '<div style="font-size: 14px; font-weight: bold; color: #2c3e50;">' + (config.cycle_type || 'regular') + '</div>' +
+                                '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Cycle</div>' +
+                                    '<div style="font-size: 14px; font-weight: bold; color: ' + cardStyle.text + ';">' + (config.cycle_type || 'regular') + '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
-                                '<div style="text-align: center; padding: 10px; background: #e8f4fd; border-radius: 8px;">' +
-                                    '<div style="font-size: 11px; color: #3498db;">Employees</div>' +
-                                    '<div style="font-size: 18px; font-weight: bold; color: #2980b9;">' + config.employee_count + '</div>' +
+                                '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Employees</div>' +
+                                    '<div style="font-size: 18px; font-weight: bold; color: ' + cardStyle.text + ';">' + config.employee_count + '</div>' +
                                 '</div>' +
-                                '<div style="text-align: center; padding: 10px; background: #e8f6ef; border-radius: 8px;">' +
-                                    '<div style="font-size: 11px; color: #27ae60;">Departments</div>' +
-                                    '<div style="font-size: 18px; font-weight: bold; color: #229954;">' + config.departments.length + '</div>' +
+                                '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Departments</div>' +
+                                    '<div style="font-size: 18px; font-weight: bold; color: ' + cardStyle.text + ';">' + config.departments.length + '</div>' +
                                 '</div>' +
                             '</div>' +
-                            '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ecf0f1; text-align: center;">' +
-                                '<div style="font-size: 12px; color: #7f8c8d;">Total Cost</div>' +
-                                '<div style="font-size: 20px; font-weight: bold; color: #2c3e50;">' + formatCurrency(config.total_cost) + '</div>' +
+                            '<div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid ' + cardStyle.border + '30; text-align: center;">' +
+                                '<div style="font-size: 12px; color: ' + cardStyle.text + '; opacity: 0.8;">Total Cost</div>' +
+                                '<div style="font-size: 20px; font-weight: bold; color: ' + cardStyle.text + ';">' + formatCurrency(config.total_cost) + '</div>' +
                             '</div>' +
                         '</div>' +
-                        '<div style="background: #f8f9fa; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;">' +
-                            '<span style="color: #7f8c8d; font-size: 12px;">Click to drill down</span>' +
-                            '<i class="fa fa-chevron-right" style="color: #3498db;"></i>' +
+                        '<div style="background: rgba(255,255,255,0.5); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid ' + cardStyle.border + '30;">' +
+                            '<span style="color: ' + cardStyle.text + '; font-size: 12px; opacity: 0.8;">Click to drill down</span>' +
+                            '<i class="fa fa-chevron-right" style="color: ' + cardStyle.border + ';"></i>' +
                         '</div>';
 
-                    // Hover effects
+                    // Store card style for hover effects
+                    card.dataset.glowColor = cardStyle.glow;
+                    card.dataset.borderColor = cardStyle.border;
+
+                    // Hover effects with enhanced glow
                     card.onmouseenter = function () {
                         this.style.transform = 'translateY(-5px)';
-                        this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                        this.style.boxShadow = '0 0 30px ' + this.dataset.glowColor + ', 0 8px 25px ' + this.dataset.glowColor;
                     };
                     card.onmouseleave = function () {
                         this.style.transform = 'translateY(0)';
-                        this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+                        this.style.boxShadow = '0 0 20px ' + this.dataset.glowColor + ', 0 4px 15px ' + this.dataset.glowColor;
                     };
 
                     configsGrid.appendChild(card);
@@ -416,40 +435,45 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             if (!deptsGrid) return;
 
             deptsGrid.style.display = 'block';
-            deptsGrid.innerHTML = '<h4 style="grid-column: 1/-1; color: #2c3e50; margin-bottom: 15px;">' +
+            deptsGrid.innerHTML = '<h4 style="grid-column: 1/-1; color: #334155; margin-bottom: 15px;">' +
                 '<i class="fa fa-sitemap"></i> Departments in <strong>' + config.name + '</strong></h4>';
-            deptsGrid.style.cssText += 'display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; ' +
-                'margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;';
+            deptsGrid.style.cssText += 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; ' +
+                'margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; ' +
+                'border: 2px solid #e2e8f0;';
 
             if (config.departments.length === 0) {
-                deptsGrid.innerHTML += '<div style="text-align: center; color: #95a5a6; padding: 20px;">' +
+                deptsGrid.innerHTML += '<div style="text-align: center; color: #64748b; padding: 20px;">' +
                     '<p>No departments found for this config.</p></div>';
                 return;
             }
 
             config.departments.forEach(function (dept, index) {
+                var style = colorPalettes.cardStyles[index % colorPalettes.cardStyles.length];
                 var card = document.createElement('div');
                 card.className = 'department-card';
                 card.dataset.configId = config.id;
                 card.dataset.departmentId = dept.id;
-                card.style.cssText = 'background: white; border-radius: 8px; padding: 15px; cursor: pointer; ' +
-                    'border-left: 4px solid ' + colorPalettes.primary[index % colorPalettes.primary.length] + '; ' +
-                    'box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s;';
+                card.style.cssText = 'background: ' + style.bg + '; border-radius: 10px; padding: 18px; cursor: pointer; ' +
+                    'border: 3px solid ' + style.border + '; ' +
+                    'box-shadow: 0 0 15px ' + style.glow + ', 0 4px 12px ' + style.glow + '; ' +
+                    'transition: all 0.3s ease;';
 
                 card.innerHTML =
-                    '<div style="font-weight: bold; color: #2c3e50; margin-bottom: 8px;">' +
-                        '<i class="fa fa-users" style="margin-right: 5px;"></i>' + dept.name +
+                    '<div style="font-weight: bold; color: ' + style.text + '; margin-bottom: 10px; font-size: 14px;">' +
+                        '<i class="fa fa-users" style="margin-right: 6px;"></i>' + dept.name +
                     '</div>' +
-                    '<div style="display: flex; justify-content: space-between; font-size: 12px; color: #7f8c8d;">' +
-                        '<span>' + dept.employee_count + ' employees</span>' +
-                        '<span style="color: #27ae60; font-weight: bold;">' + formatCurrency(dept.gross_pay) + '</span>' +
+                    '<div style="display: flex; justify-content: space-between; font-size: 12px; color: ' + style.text + '; opacity: 0.85;">' +
+                        '<span><i class="fa fa-user" style="margin-right: 4px;"></i>' + dept.employee_count + ' employees</span>' +
+                        '<span style="font-weight: bold;">' + formatCurrency(dept.gross_pay) + '</span>' +
                     '</div>';
 
                 card.onmouseenter = function () {
-                    this.style.transform = 'translateX(5px)';
+                    this.style.transform = 'translateY(-3px) scale(1.02)';
+                    this.style.boxShadow = '0 0 25px ' + style.glow + ', 0 8px 20px ' + style.glow;
                 };
                 card.onmouseleave = function () {
-                    this.style.transform = 'translateX(0)';
+                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.boxShadow = '0 0 15px ' + style.glow + ', 0 4px 12px ' + style.glow;
                 };
 
                 deptsGrid.appendChild(card);
@@ -694,17 +718,24 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         },
 
         _renderConfigDetailCharts: function (data) {
-            // Chart: Components for this config
+            var self = this;
+
+            // Chart: Components for this config (clickable to open pivot)
             if (data.components && document.getElementById('chart-config-components')) {
                 var nonZeroComponents = data.components.filter(function (c) { return c.total !== 0; });
                 var labels = nonZeroComponents.map(function (c) { return c.name; });
                 var values = nonZeroComponents.map(function (c) { return Math.abs(c.total); });
 
                 this._destroyChart('chart-config-components');
-                this._createDoughnutChart('chart-config-components', labels, values, colorPalettes.primary);
+                this._createDoughnutChart('chart-config-components', labels, values, colorPalettes.primary, function (event, elements) {
+                    if (elements && elements.length > 0) {
+                        // Click on chart segment opens the config pivot
+                        self._openConfigPivot();
+                    }
+                });
             }
 
-            // Chart: By Department
+            // Chart: By Department (clickable to drill down to department)
             if (data.departments && document.getElementById('chart-config-departments')) {
                 // Aggregate totals by department
                 var deptTotals = {};
@@ -719,23 +750,87 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 var deptValues = deptLabels.map(function (d) { return deptTotals[d]; });
 
                 this._destroyChart('chart-config-departments');
-                this._createBarChart('chart-config-departments', deptLabels, deptValues);
+                this._createBarChart('chart-config-departments', deptLabels, deptValues, function (event, elements) {
+                    if (elements && elements.length > 0) {
+                        var clickedIndex = elements[0].index;
+                        var deptName = deptLabels[clickedIndex];
+                        // Find department ID and navigate
+                        self._openDepartmentPivotByName(deptName);
+                    }
+                });
             }
         },
 
         _renderConfigDepartments: function (data) {
+            var self = this;
             var grid = document.getElementById('config-departments-grid');
             if (!grid || !data.departments) return;
 
             grid.innerHTML = '';
 
+            // Store department info for click handling
+            var deptInfo = data.department_info || [];
+
             data.departments.forEach(function (deptName, index) {
+                var style = colorPalettes.cardStyles[index % colorPalettes.cardStyles.length];
                 var card = document.createElement('div');
-                card.style.cssText = 'background: #f8f9fa; border-radius: 8px; padding: 15px; text-align: center; ' +
-                    'border-left: 4px solid ' + colorPalettes.primary[index % colorPalettes.primary.length] + ';';
-                card.innerHTML = '<i class="fa fa-building-o" style="color: ' + colorPalettes.primary[index % colorPalettes.primary.length] + ';"></i> ' +
-                    '<span style="font-weight: bold;">' + deptName + '</span>';
+                card.className = 'config-dept-card';
+                card.dataset.departmentName = deptName;
+
+                card.style.cssText = 'background: ' + style.bg + '; border-radius: 10px; padding: 18px; text-align: center; ' +
+                    'cursor: pointer; border: 3px solid ' + style.border + '; ' +
+                    'box-shadow: 0 0 15px ' + style.glow + ', 0 4px 12px ' + style.glow + '; ' +
+                    'transition: all 0.3s ease;';
+
+                card.innerHTML = '<i class="fa fa-building-o" style="color: ' + style.text + '; font-size: 18px; margin-bottom: 8px; display: block;"></i>' +
+                    '<span style="font-weight: 700; color: ' + style.text + '; font-size: 14px;">' + deptName + '</span>';
+
+                // Hover effects
+                card.onmouseenter = function () {
+                    this.style.transform = 'translateY(-3px) scale(1.02)';
+                    this.style.boxShadow = '0 0 25px ' + style.glow + ', 0 8px 20px ' + style.glow;
+                };
+                card.onmouseleave = function () {
+                    this.style.transform = 'translateY(0) scale(1)';
+                    this.style.boxShadow = '0 0 15px ' + style.glow + ', 0 4px 12px ' + style.glow;
+                };
+
+                // Click to open pivot for this department
+                card.onclick = function () {
+                    self._openDepartmentPivotByName(deptName);
+                };
+
                 grid.appendChild(card);
+            });
+        },
+
+        _openConfigPivot: function () {
+            // Call the server action to open pivot view
+            var self = this;
+            var resId = this.model.get(this.handle).res_id;
+
+            rpc.query({
+                model: 'hr.formula.config.analytics',
+                method: 'action_open_config_pivot',
+                args: [[resId]]
+            }).then(function (action) {
+                self.do_action(action);
+            });
+        },
+
+        _openDepartmentPivotByName: function (deptName) {
+            // Call the server action to open pivot view filtered by department name
+            var self = this;
+            var resId = this.model.get(this.handle).res_id;
+
+            rpc.query({
+                model: 'hr.formula.config.analytics',
+                method: 'action_open_pivot_by_department_name',
+                args: [[resId], deptName]
+            }).then(function (action) {
+                self.do_action(action);
+            }).catch(function (error) {
+                console.error('[Formula Config Analytics] Error opening department pivot:', error);
             });
         },
 
@@ -779,7 +874,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         // CHART HELPERS
         // =================================================================
 
-        _createDoughnutChart: function (elementId, labels, data, colors) {
+        _createDoughnutChart: function (elementId, labels, data, colors, onClick) {
             if (!window.Chart || !document.getElementById(elementId)) return;
 
             var ctx = document.getElementById(elementId).getContext('2d');
@@ -797,6 +892,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
+                    onClick: onClick || null,
                     plugins: {
                         legend: {
                             position: 'bottom',
@@ -814,9 +910,14 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     }
                 }
             });
+
+            // Add cursor pointer style when clickable
+            if (onClick) {
+                document.getElementById(elementId).style.cursor = 'pointer';
+            }
         },
 
-        _createBarChart: function (elementId, labels, data) {
+        _createBarChart: function (elementId, labels, data, onClick) {
             if (!window.Chart || !document.getElementById(elementId)) return;
 
             var ctx = document.getElementById(elementId).getContext('2d');
@@ -836,6 +937,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     responsive: true,
                     maintainAspectRatio: true,
                     indexAxis: 'y',
+                    onClick: onClick || null,
                     plugins: {
                         legend: { display: false },
                         tooltip: {
@@ -855,6 +957,11 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     }
                 }
             });
+
+            // Add cursor pointer style when clickable
+            if (onClick) {
+                document.getElementById(elementId).style.cursor = 'pointer';
+            }
         },
 
         _destroyChart: function (elementId) {
