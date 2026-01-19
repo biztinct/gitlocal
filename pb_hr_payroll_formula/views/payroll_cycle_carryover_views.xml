@@ -14,6 +14,7 @@
                 <field name="import_batch_id"/>
                 <field name="payslip_run_id"/>
                 <field name="state" widget="badge"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -55,6 +56,9 @@
                 <field name="source_component_id"/>
                 <filter name="state_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
                 <filter name="state_posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="active" string="Active" domain="[('active', '=', True)]"/>
+                <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
                 <group expand="0" string="Group By">
                     <filter name="group_config" string="Formula Config" context="{'group_by': 'formula_config_id'}"/>
                     <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>

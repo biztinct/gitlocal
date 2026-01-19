@@ -44,6 +44,9 @@
             <form string="Payroll Import Batch">
                 <header>
                     <!-- Action Buttons based on state -->
+                    <button name="action_open_payslip_run" string="Payslip Run" type="object"
+                            class="btn-primary" icon="fa-external-link"
+                            attrs="{'invisible': ['|', ('state', '!=', 'done'), ('payslip_run_id', '=', False)]}"/>
                     <button name="action_load_file" string="Load File" type="object"
                             class="btn-primary" icon="fa-upload"
                             attrs="{'invisible': [('state', '!=', 'draft')]}"/>
