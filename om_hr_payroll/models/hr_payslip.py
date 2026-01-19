@@ -1404,7 +1404,7 @@ class HrPayslipRun(models.Model):
 
             mapping_cache = {}
             if config:
-                mappings = self.env['hr.payslip.import.mapping'].search([
+                mappings = self.env['hr.payslip.import.mapping'].sudo().search([
                     ('salary_structure_id', '=', config.id),
                     ('component_id', '!=', False),
                 ])

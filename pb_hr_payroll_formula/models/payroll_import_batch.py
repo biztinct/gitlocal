@@ -941,7 +941,7 @@ class HrPayrollImportBatch(models.Model):
         return None
 
     def _get_mapped_value_for_field(self, raw_data, model_name, field_name):
-        mapping = self.env['hr.payslip.import.mapping'].search([
+        mapping = self.env['hr.payslip.import.mapping'].sudo().search([
             ('salary_structure_id', '=', self.formula_config_id.id),
             ('target_model_id.model', '=', model_name),
             ('target_field_id.name', '=', field_name),
@@ -1026,7 +1026,7 @@ class HrPayrollImportBatch(models.Model):
         return str(value)
 
     def _get_model_mappings(self, model_name):
-        return self.env['hr.payslip.import.mapping'].search([
+        return self.env['hr.payslip.import.mapping'].sudo().search([
             ('salary_structure_id', '=', self.formula_config_id.id),
             ('target_model_id.model', '=', model_name),
         ])
@@ -2254,7 +2254,7 @@ class HrPayrollImportBatch(models.Model):
         if config:
             rule_ids = config.rule_ids.ids
             if rule_ids:
-                mappings = self.env['hr.payslip.import.mapping'].search([
+                mappings = self.env['hr.payslip.import.mapping'].sudo().search([
                     ('salary_structure_id', '=', config.id),
                     ('component_id', 'in', rule_ids),
                 ])
