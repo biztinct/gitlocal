@@ -15,7 +15,9 @@ class HrPayslipConfigWizard(models.TransientModel):
 
     def action_open_config(self):
         self.ensure_one()
-        action = self.env.ref('pb_hr_payroll_formula.action_payslip_config').read()[0]
+        action = self.env['ir.actions.actions'].sudo()._for_xml_id(
+            'pb_hr_payroll_formula.action_payslip_config'
+        )
         context = dict(self.env.context or {})
         context['default_salary_structure_id'] = self.salary_structure_id.id
         context['search_default_salary_structure_id'] = self.salary_structure_id.id

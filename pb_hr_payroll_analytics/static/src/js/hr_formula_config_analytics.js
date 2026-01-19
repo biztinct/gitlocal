@@ -44,16 +44,16 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             'rgba(79, 172, 254, 0.8)',
             'rgba(0, 242, 254, 0.8)'
         ],
-        // Light pastel card styles with borders and glow
+        // Light pastel card styles with borders and glow (2 shades lighter backgrounds)
         cardStyles: [
-            { bg: 'linear-gradient(135deg, #fae8ff 0%, #f5d0fe 100%)', border: '#d946ef', text: '#86198f', glow: 'rgba(217, 70, 239, 0.3)' },
-            { bg: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)', border: '#3b82f6', text: '#1e40af', glow: 'rgba(59, 130, 246, 0.3)' },
-            { bg: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)', border: '#10b981', text: '#065f46', glow: 'rgba(16, 185, 129, 0.3)' },
-            { bg: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)', border: '#f59e0b', text: '#92400e', glow: 'rgba(245, 158, 11, 0.3)' },
-            { bg: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)', border: '#ec4899', text: '#9d174d', glow: 'rgba(236, 72, 153, 0.3)' },
-            { bg: 'linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%)', border: '#14b8a6', text: '#115e59', glow: 'rgba(20, 184, 166, 0.3)' },
-            { bg: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', border: '#6366f1', text: '#3730a3', glow: 'rgba(99, 102, 241, 0.3)' },
-            { bg: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)', border: '#f97316', text: '#9a3412', glow: 'rgba(249, 115, 22, 0.3)' }
+            { bg: 'linear-gradient(135deg, #fdf4ff 0%, #fae8ff 100%)', border: '#d946ef', text: '#86198f', glow: 'rgba(217, 70, 239, 0.3)' },
+            { bg: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '#3b82f6', text: '#1e40af', glow: 'rgba(59, 130, 246, 0.3)' },
+            { bg: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', border: '#10b981', text: '#065f46', glow: 'rgba(16, 185, 129, 0.3)' },
+            { bg: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)', border: '#f59e0b', text: '#92400e', glow: 'rgba(245, 158, 11, 0.3)' },
+            { bg: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)', border: '#ec4899', text: '#9d174d', glow: 'rgba(236, 72, 153, 0.3)' },
+            { bg: 'linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)', border: '#14b8a6', text: '#115e59', glow: 'rgba(20, 184, 166, 0.3)' },
+            { bg: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)', border: '#6366f1', text: '#3730a3', glow: 'rgba(99, 102, 241, 0.3)' },
+            { bg: 'linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%)', border: '#f97316', text: '#9a3412', glow: 'rgba(249, 115, 22, 0.3)' }
         ]
     };
 
@@ -454,7 +454,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             deptsGrid.innerHTML = '<h4 style="grid-column: 1/-1; color: #334155; margin-bottom: 15px;">' +
                 '<i class="fa fa-sitemap"></i> Departments in <strong>' + config.name + '</strong></h4>';
             deptsGrid.style.cssText += 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; ' +
-                'margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; ' +
+                'margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 12px; ' +
                 'border: 2px solid #e2e8f0;';
 
             if (config.departments.length === 0) {

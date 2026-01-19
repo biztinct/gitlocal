@@ -239,7 +239,7 @@ class HRFlowWizard(models.TransientModel):
             'govt-monthly-giam': ('pb_hr_govt.action_govt_monthly_giam_ld', False),
             'govt-monthly-tang': ('pb_hr_govt.action_govt_monthly_tang_ld', False),
             # Analytics - Uses server action to prepare dashboard
-            'analytics-dashboard': ('pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard', False),
+            'analytics-dashboard': ('pb_hr_payroll_analytics.action_prepare_formula_config_analytics', False),
         }
 
         action_xmlid, menu_xmlid = mapping.get(key, (False, False))
