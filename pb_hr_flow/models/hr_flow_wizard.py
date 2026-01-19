@@ -226,7 +226,7 @@ class HRFlowWizard(models.TransientModel):
             # Pay Salary - Bank Export uses wizard action
             'pay-salary-bank': ('payroll_analytics_approval.action_payroll_bank_export_wizard', False),
             'pay-salary-payments': ('account.action_account_payments', False),
-            'pay-salary-journals': ('account.action_account_journal_form', False),
+            'pay-salary-journals': ('account.action_move_journal_line', False),
             # Government reports - Handled separately via _get_govt_report_action
             'govt-bhxh630': ('_govt_report', 'bhxh630'),
             'govt-bhxhdstk01': ('_govt_report', 'bhxhdstk01'),
@@ -276,7 +276,13 @@ class HRFlowWizard(models.TransientModel):
             action_context['group_by'] = ['state']
             action['context'] = action_context
         if key == 'pay-salary-journals':
-            action['domain'] = [('name', 'ilike', 'Payroll')]
+            action_domain = action.get('domain') or []
+            if isinstance(action_domain, str):
+                try:
+                    action_domain = safe_eval(action_domain, {'uid': self.env.uid, 'user': self.env.user})
+                except Exception:
+                    action_domain = []
+            action['domain'] = list(action_domain) + [('journal_id.name', 'ilike', 'Payroll')]
 
         # Resolve menu id if present
         if menu_xmlid:
