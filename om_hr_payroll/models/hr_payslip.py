@@ -984,7 +984,11 @@ class HrPayslipRun(models.Model):
             self._auto_generate_batch_analytics_on_level2()
 
         notify_action = self._notify_general_manager_for_batch_approval()
-        return notify_action or result
+        reload_action = {'type': 'ir.actions.client', 'tag': 'reload'}
+        if notify_action:
+            notify_action.setdefault('params', {})['next'] = reload_action
+            return notify_action
+        return reload_action or result
 
     def _notify_general_manager_for_batch_approval(self):
         """Send approval email to General Manager and return a notification action."""
@@ -1177,12 +1181,36 @@ class HrPayslipRun(models.Model):
     def action_payslip_run_level2_done(self):
         for line in self.slip_ids:
             line.action_payslip_level2_done()
-        return self.write({'state': 'done'})
+        result = self.write({'state': 'done'})
+        self._sync_analytics_state_on_done()
+        return {'type': 'ir.actions.client', 'tag': 'reload'} or result
 
     def action_payslip_run_cancel(self):
         for line in self.slip_ids:
             line.action_payslip_cancel()
         return self.write({'state': 'cancel'})
+
+    def _sync_analytics_state_on_done(self):
+        if 'payroll.analytics' not in self.env:
+            return
+        analytics_model = self.env['payroll.analytics']
+        for run in self:
+            if not run.date_start or not run.date_end:
+                continue
+            structure = run.slip_ids[:1].struct_id
+            country = 'VN'
+            if structure and hasattr(structure, 'country_id') and structure.country_id and structure.country_id.code:
+                country = structure.country_id.code
+            analytics = analytics_model.search([
+                ('country', '=', country),
+                ('date_from', '=', run.date_start),
+                ('date_to', '=', run.date_end)
+            ], limit=1)
+            if analytics and analytics.state != 'exported':
+                analytics.write({
+                    'state': 'approved',
+                    'payslip_run_id': run.id,
+                })
 
 
     def unlink(self):

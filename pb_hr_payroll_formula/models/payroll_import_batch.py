@@ -2842,3 +2842,20 @@ class HrPayrollImportBatch(models.Model):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', self.created_payslip_ids.ids)],
         }
+
+    def action_open_payslip_run(self):
+        self.ensure_one()
+        if not self.payslip_run_id:
+            return False
+        view = self.env.ref('om_hr_payroll.hr_payslip_run_form', raise_if_not_found=False)
+        action = {
+            'type': 'ir.actions.act_window',
+            'name': _('Payslip Run'),
+            'res_model': 'hr.payslip.run',
+            'view_mode': 'form',
+            'res_id': self.payslip_run_id.id,
+            'target': 'current',
+        }
+        if view:
+            action['views'] = [(view.id, 'form')]
+        return action

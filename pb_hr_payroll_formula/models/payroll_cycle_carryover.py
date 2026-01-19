@@ -62,6 +62,7 @@ class HrPayrollCycleCarryover(models.Model):
         ('draft', 'Draft'),
         ('posted', 'Posted'),
     ], string='State', default='draft', required=True)
+    active = fields.Boolean(default=True)
 
     @api.constrains('date_from', 'date_to')
     def _check_dates(self):
