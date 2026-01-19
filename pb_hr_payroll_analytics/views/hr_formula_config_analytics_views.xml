@@ -334,18 +334,21 @@
                                     <h4 style="color: #2c3e50; margin-bottom: 15px;">
                                         <i class="fa fa-user" title="Employee"/> Employee Breakdown
                                     </h4>
-                                    <table id="employee-breakdown-table" class="table table-striped table-hover">
-                                        <thead style="background: #34495e; color: white;">
+                                    <div style="overflow-x: auto; width: 100%;">
+                                        <table id="employee-breakdown-table" class="table table-striped table-hover"
+                                               style="min-width: 100%; width: max-content; white-space: nowrap;">
+                                            <thead style="background: #34495e; color: white;">
                                             <tr>
                                                 <th>Employee</th>
                                                 <th>Job Title</th>
                                                 <!-- Additional columns rendered by JS based on components -->
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Rendered by JS -->
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Rendered by JS -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
