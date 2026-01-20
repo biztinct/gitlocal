@@ -7323,8 +7323,8 @@ msgstr "Này Giữa kỳ để Cuối kỳ Thành phần Ánh xạ đã tồn t�
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_payroll_import_batch_form
-msgid "This will create employees, contracts and payslips. Continue?"
-msgstr "Này sẽ Tạo nhân viên, hợp đồng và phiếu lương. Tiếp tục?"
+msgid "This will update existing or create new employees, contracts and payslips. Continue?"
+msgstr "Điều này sẽ cập nhật hoặc tạo mới nhân viên, hợp đồng và phiếu lương. Tiếp tục?"
 
 #. module: pb_hr_payroll_formula
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_formula.view_multisheet_import_wizard_form
