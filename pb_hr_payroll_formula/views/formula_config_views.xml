@@ -181,11 +181,6 @@
                     <notebook>
                         <!-- Formula Rules Tab -->
                         <page string="Formula Rules" name="rules">
-                            <group>
-                                <button name="action_import_from_structure" string="Import from Structure"
-                                        type="object" class="btn-secondary"
-                                        attrs="{'invisible': [('structure_id', '=', False)]}"/>
-                            </group>
                             <field name="rule_ids" nolabel="1">
                                 <tree editable="bottom" decoration-danger="not is_valid"
                                       decoration-warning="has_circular_ref"
