@@ -861,6 +861,29 @@ class PayrollAnalytics(models.Model):
             ('date_start', '>=', self.date_from),
             ('date_end', '<=', self.date_to)
         ])
+
+        # Finalize the specific batch linked to this analytics record when possible
+        if self.payslip_run_id:
+            runs_to_finalize = self.payslip_run_id.filtered(lambda r: r.state == 'level2')
+        else:
+            runs_to_finalize = self.env['hr.payslip.run'].search([
+                ('state', '=', 'level2'),
+                ('date_start', '>=', self.date_from),
+                ('date_end', '<=', self.date_to)
+            ])
+
+        if runs_to_finalize:
+            _logger.info(
+                "Final approve: setting %d payslip run(s) to done from analytics %s",
+                len(runs_to_finalize),
+                self.id,
+            )
+            runs_to_finalize.sudo().action_payslip_run_level2_done()
+        else:
+            _logger.info(
+                "Final approve: no level2 payslip runs found to finalize for analytics %s",
+                self.id,
+            )
         
         _logger.info(f"Found {len(all_payslip_runs)} total payslip runs in period")
         for run in all_payslip_runs:
