@@ -38,6 +38,7 @@ const ensureHomeIcon = () => {
 
         if (existing) {
             existing.dataset.actionId = actionId;
+            existing.setAttribute("href", `/web#action=${actionId}`);
             return;
         }
 
@@ -47,19 +48,20 @@ const ensureHomeIcon = () => {
         link.setAttribute("aria-label", "Open HR Flow Dashboard");
         link.setAttribute("title", "Home");
         link.dataset.actionId = actionId;
+        link.setAttribute("href", `/web#action=${actionId}`);
         link.innerHTML = "<i class=\"fa fa-home\"></i>";
 
         link.addEventListener("click", (ev) => {
-            ev.preventDefault();
             const targetAction = link.dataset.actionId || DEFAULT_ACTION_ID;
             const actionService = window.__hr_flow_action_service;
             if (actionService && actionService.doAction) {
+                ev.preventDefault();
                 actionService.doAction(targetAction, {
                     clear_breadcrumbs: true,
                     clearBreadcrumbs: true,
                 });
-                return;
             }
+            window.location.href = `/web#action=${targetAction}`;
         });
 
         breadcrumb.insertAdjacentElement("beforebegin", link);
@@ -111,6 +113,7 @@ patch(ControlPanel.prototype, "pb_hr_payroll_base_home_icon", {
 
         if (existing) {
             existing.dataset.actionId = context.home_action_id || "";
+            existing.setAttribute("href", `/web#action=${context.home_action_id || DEFAULT_ACTION_ID}`);
             return;
         }
 
@@ -130,15 +133,20 @@ patch(ControlPanel.prototype, "pb_hr_payroll_base_home_icon", {
         link.setAttribute("aria-label", "Open HR Flow Dashboard");
         link.setAttribute("title", "Home");
         link.dataset.actionId = context.home_action_id || "";
+        link.setAttribute("href", `/web#action=${context.home_action_id || DEFAULT_ACTION_ID}`);
         link.innerHTML = "<i class=\"fa fa-home\"></i>";
 
         link.addEventListener("click", (ev) => {
-            ev.preventDefault();
-            const actionId = link.dataset.actionId || "pb_hr_flow.action_hr_flow_wizard";
-            this.env.services.action.doAction(actionId, {
-                clear_breadcrumbs: true,
-                clearBreadcrumbs: true,
-            });
+            const actionId = link.dataset.actionId || DEFAULT_ACTION_ID;
+            if (this.env.services.action) {
+                ev.preventDefault();
+                this.env.services.action.doAction(actionId, {
+                    clear_breadcrumbs: true,
+                    clearBreadcrumbs: true,
+                });
+                return;
+            }
+            window.location.href = `/web#action=${actionId}`;
         });
 
         breadcrumb.insertAdjacentElement("beforebegin", link);
