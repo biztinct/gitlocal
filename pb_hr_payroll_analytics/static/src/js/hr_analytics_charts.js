@@ -1,16 +1,10 @@
 /* HR Analytics Charts - Chart.js Integration with 10+ Chart Types */
 
-console.log('[HR Analytics] Charts.js file loaded');
-
 odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     'use strict';
 
-    console.log('[HR Analytics] Charts module definition starting...');
-
     var Chart = window.Chart || {};
     var charts = {};
-
-    console.log('[HR Analytics] Chart object available:', !!Chart);
 
     // Color Palettes
     var colorPalettes = {
@@ -54,7 +48,6 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
                         var index = activeElements[0].index;
                         var label = labels[index];
                         var value = data[index];
-                        console.log('[HR Analytics] Chart segment clicked:', label, value);
                         onClickCallback(label, value, index);
                     }
                 },

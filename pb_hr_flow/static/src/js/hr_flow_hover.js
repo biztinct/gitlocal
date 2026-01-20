@@ -8,7 +8,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
     const Dialog = require('web.Dialog');
 
     domReady(function () {
-        console.log('[HR Flow] JS loaded');
         const STORAGE_KEY = 'hr_flow_state';
         const _t = core._t;
 
@@ -16,7 +15,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             try {
                 return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || 'null');
             } catch (e) {
-                console.warn('[HR Flow] Failed to load state', e);
                 return null;
             }
         };
@@ -24,12 +22,10 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
         const saveState = (primary, secondary, panelKey) => {
             const payload = { primary: primary || null, secondary: secondary || null, panel: panelKey || null };
             sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-            console.log('[HR Flow] State saved', payload);
         };
 
         const clearState = () => {
             sessionStorage.removeItem(STORAGE_KEY);
-            console.log('[HR Flow] State cleared');
         };
 
         const bindWorkflow = () => {
@@ -45,7 +41,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 workflow = clone;
             }
             workflow.dataset.hrFlowBound = '1';
-            console.log('[HR Flow] Workflow found and bound');
 
             const secondaryAttendance = workflow.querySelector('.secondary-badges-attendance');
             const secondaryPayrollConfig = workflow.querySelector('.secondary-badges-payroll-config');
@@ -74,24 +69,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             const panelTitle = document.getElementById('tertiary-panel-title');
             const panelItems = document.getElementById('tertiary-items');
             const panelClose = document.getElementById('tertiary-panel-close');
-
-            console.log('[HR Flow] Workflow found, binding handlers');
-            console.log('[HR Flow] Primaries found', {
-                attendance: !!attendance,
-                payrollConfig: !!payrollConfig,
-                payroll: !!payroll,
-                approval: !!approval,
-                paySalary: !!paySalary,
-                government: !!government,
-            });
-            console.log('[HR Flow] Secondary containers', {
-                attendance: !!secondaryAttendance,
-                payrollConfig: !!secondaryPayrollConfig,
-                payroll: !!secondaryPayroll,
-                approval: !!secondaryApproval,
-                paySalary: !!secondaryPaySalary,
-                government: !!secondaryGovt,
-            });
 
             // Hard-disable pointer events on the containers themselves (only badges should receive events)
             secondaryAll.forEach((sec) => {
@@ -198,20 +175,14 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     method: 'get_tertiary_action',
                     args: [route],
                 }).then((action) => {
-                    console.log('[HR Flow] Action resolved for route', route, action);
                     if (action && action.type) {
                         action.context = Object.assign({}, session.user_context || {}, action.context || {});
                         const payload = { action: action, options: {} };
-                        console.log('[HR Flow] Triggering do-action payload', payload);
                         core.bus.trigger('do-action', payload);
                         if (closePanelOnSuccess && action.target !== 'new') {
                             closePanel();
                         }
-                    } else {
-                        console.warn('[HR Flow] No action resolved for', route, action);
                     }
-                }).catch((err) => {
-                    console.error('[HR Flow] Failed to resolve action', route, err);
                 });
             };
 
@@ -273,7 +244,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         card.title = 'Access required';
                     } else if (item.route) {
                         card.addEventListener('click', function () {
-                            console.log('[HR Flow] Tertiary card click -> route', item.route);
                             // Persist state so breadcrumb return restores this panel/secondary
                             if (!isRestoring) {
                                 saveState(ctx.primary || key, ctx.secondary || item.route, key);
@@ -294,7 +264,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 if (!isRestoring) {
                     saveState(ctx.primary || key, ctx.secondary || null, key);
                 }
-                console.log('[HR Flow] Panel opened for', key, 'ctx', ctx);
             };
 
             const closePanel = (doClear = false) => {
@@ -329,10 +298,8 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         e.stopImmediatePropagation();
                     }
                     const key = el.getAttribute('data-tertiary');
-                    console.log('[HR Flow] Tertiary element clicked:', key);
                     openPanel(key);
                 };
-                console.log('[HR Flow] Binding tertiary click', el.getAttribute('data-tertiary'));
                 el.addEventListener('click', handler);
                 el.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -342,7 +309,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             });
 
             const hideAllSecondary = (alsoClear = false) => {
-                console.log('[HR Flow] Hiding all secondary rings');
                 secondaryAll.forEach((sec) => sec && sec.classList.add('hide-secondary'));
                 if (alsoClear) {
                     closePanel(true);
@@ -350,16 +316,10 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             };
             const showSecondary = (sec) => {
                 if (sec) sec.classList.remove('hide-secondary');
-                console.log('[HR Flow] Showing secondary ring', sec && sec.className);
             };
 
             // Start hidden
             hideAllSecondary();
-
-            // Debug: log any click inside workflow to ensure events are firing
-            workflow.addEventListener('click', (e) => {
-                console.log('[HR Flow] Workflow click detected on', e.target && e.target.className);
-            });
 
             // CLICK-ONLY INTERACTIONS (No Hover)
 
@@ -371,22 +331,17 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (e.stopImmediatePropagation) {
                         e.stopImmediatePropagation();
                     }
-                    console.log('[HR Flow] Attendance clicked - toggling secondary badges');
                     // Toggle attendance secondary badges
                     if (!secondaryAttendance) {
-                        console.warn('[HR Flow] Attendance secondary container missing');
                         return;
                     }
-                    console.log('[HR Flow] Attendance secondary class BEFORE', secondaryAttendance.className);
                     if (secondaryAttendance.classList.contains('hide-secondary')) {
                         hideAllSecondary(true);
                         showSecondary(secondaryAttendance);
                     } else {
                         hideAllSecondary(true);
                     }
-                    console.log('[HR Flow] Attendance secondary class AFTER', secondaryAttendance.className);
                 });
-                console.log('[HR Flow] Attendance handler bound');
             }
 
             // 2. Payroll Configuration: Click to open tertiary panel directly
@@ -397,11 +352,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (e.stopImmediatePropagation) {
                         e.stopImmediatePropagation();
                     }
-                    console.log('[HR Flow] Payroll Configuration clicked - opening tertiary panel');
                     hideAllSecondary(true);
                     openPanel('payroll_config', { primary: 'payroll_config' });
                 });
-                console.log('[HR Flow] Payroll Configuration handler bound');
             }
 
             // 3. Payroll: Click to open tertiary panel directly
@@ -412,11 +365,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (e.stopImmediatePropagation) {
                         e.stopImmediatePropagation();
                     }
-                    console.log('[HR Flow] Payroll clicked - opening tertiary panel');
                     hideAllSecondary(true);
                     openPanel('payroll', { primary: 'payroll' });
                 });
-                console.log('[HR Flow] Payroll handler bound');
             }
 
             // 4. Approval: Click to open approval dashboard (direct action, not tertiary panel)
@@ -427,28 +378,20 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (e.stopImmediatePropagation) {
                         e.stopImmediatePropagation();
                     }
-                    console.log('[HR Flow] Approval clicked - opening approval dashboard');
                     hideAllSecondary(true);
                     rpc.query({
                         model: 'hr.flow.wizard',
                         method: 'get_tertiary_action',
                         args: ['approval-pending'],
                     }).then((action) => {
-                        console.log('[HR Flow] Approval action resolved', action);
                         if (action && action.type) {
                             action.context = Object.assign({}, session.user_context || {}, action.context || {});
                             const payload = { action: action, options: {} };
-                            console.log('[HR Flow] Triggering approval do-action payload', payload);
                             core.bus.trigger('do-action', payload);
                             saveState('approval', null, null);
-                        } else {
-                            console.warn('[HR Flow] No action resolved for approval-pending', action);
                         }
-                    }).catch((err) => {
-                        console.error('[HR Flow] Failed to resolve approval action', err);
                     });
                 });
-                console.log('[HR Flow] Approval handler bound');
             }
 
             // 5. Pay Salary: Click to open tertiary panel directly
@@ -459,11 +402,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (e.stopImmediatePropagation) {
                         e.stopImmediatePropagation();
                     }
-                    console.log('[HR Flow] Pay Salary clicked - opening tertiary panel');
                     hideAllSecondary(true);
                     openPanel('pay_salary', { primary: 'pay_salary' });
                 });
-                console.log('[HR Flow] Pay Salary handler bound');
             }
 
             // 6. Government: Click to open tertiary panel directly
@@ -474,11 +415,9 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (e.stopImmediatePropagation) {
                         e.stopImmediatePropagation();
                     }
-                    console.log('[HR Flow] Government clicked - opening tertiary panel');
                     hideAllSecondary(true);
                     openPanel('govt', { primary: 'govt' });
                 });
-                console.log('[HR Flow] Government handler bound');
             }
 
             // 7. Analytics: Click to open HR Analytics Dashboard directly
@@ -490,28 +429,20 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                     if (e.stopImmediatePropagation) {
                         e.stopImmediatePropagation();
                     }
-                    console.log('[HR Flow] Analytics clicked - opening analytics dashboard');
                     hideAllSecondary(true);
                     rpc.query({
                         model: 'hr.flow.wizard',
                         method: 'get_tertiary_action',
                         args: ['analytics-dashboard'],
                     }).then((action) => {
-                        console.log('[HR Flow] Analytics action resolved', action);
                         if (action && action.type) {
                             action.context = Object.assign({}, session.user_context || {}, action.context || {});
                             const payload = { action: action, options: {} };
-                            console.log('[HR Flow] Triggering analytics do-action payload', payload);
                             core.bus.trigger('do-action', payload);
                             saveState('analytics', null, null);
-                        } else {
-                            console.warn('[HR Flow] No action resolved for analytics-dashboard', action);
                         }
-                    }).catch((err) => {
-                        console.error('[HR Flow] Failed to resolve analytics action', err);
                     });
                 });
-                console.log('[HR Flow] Analytics handler bound');
             }
 
             // Restore last state if any (runs after handlers are bound so helpers are in scope)
@@ -520,7 +451,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 if (!state || (!state.primary && !state.panel)) {
                     return;
                 }
-                console.log('[HR Flow] Restoring state', state);
                 isRestoring = true;
                 hideAllSecondary();
                 if (state.primary === 'attendance' && secondaryAttendance) {
@@ -548,7 +478,6 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                 const workflow = document.querySelector('.circular-workflow');
                 // Only rebind if workflow exists and is not already bound
                 if (workflow && !workflow.dataset.hrFlowBound) {
-                    console.log('[HR Flow] Detected new workflow, rebinding');
                     bindWorkflow();
                 }
             }, 100);

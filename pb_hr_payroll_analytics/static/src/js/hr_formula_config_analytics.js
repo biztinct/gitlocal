@@ -1,11 +1,7 @@
 /* Salary Structure Analytics Dashboard - Formula Config Analytics Controller */
 
-console.log('[Formula Config Analytics] Dashboard.js file loaded');
-
 odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require) {
     'use strict';
-
-    console.log('[Formula Config Analytics] Module definition starting...');
 
     var FormController = require('web.FormController');
     var FormView = require('web.FormView');
@@ -15,9 +11,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
     var ChartLib;
     try {
         ChartLib = require('pb_hr_payroll_analytics.Charts');
-        console.log('[Formula Config Analytics] ChartLib loaded successfully');
     } catch (e) {
-        console.warn('[Formula Config Analytics] ChartLib not available, will use fallback');
         ChartLib = window.ChartLib || {};
     }
 
@@ -110,7 +104,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         }),
 
         init: function () {
-            console.log('[Formula Config Analytics] Controller init');
             this._super.apply(this, arguments);
             this.charts = {};
             this.chartJSLoaded = false;
@@ -118,7 +111,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         },
 
         willStart: function () {
-            console.log('[Formula Config Analytics] willStart');
             return Promise.all([
                 this._super.apply(this, arguments),
                 this._loadChartJS()
@@ -126,14 +118,12 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         },
 
         start: function () {
-            console.log('[Formula Config Analytics] start');
             return this._super.apply(this, arguments).then(() => {
                 setTimeout(() => this._setupDashboard(), 500);
             });
         },
 
         on_attach_callback: function () {
-            console.log('[Formula Config Analytics] View re-attached');
             var self = this;
             setTimeout(function () {
                 self._setupDashboard();
@@ -141,7 +131,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         },
 
         destroy: function () {
-            console.log('[Formula Config Analytics] Destroying charts');
             this._destroyAllCharts();
             this._super.apply(this, arguments);
         },
@@ -154,22 +143,18 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             var self = this;
             return new Promise(function (resolve) {
                 if (window.Chart) {
-                    console.log('[Formula Config Analytics] Chart.js already loaded');
                     self.chartJSLoaded = true;
                     resolve();
                     return;
                 }
 
-                console.log('[Formula Config Analytics] Loading Chart.js from CDN...');
                 var script = document.createElement('script');
                 script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
                 script.onload = function () {
-                    console.log('[Formula Config Analytics] Chart.js loaded successfully');
                     self.chartJSLoaded = true;
                     resolve();
                 };
                 script.onerror = function () {
-                    console.error('[Formula Config Analytics] Failed to load Chart.js');
                     resolve();
                 };
                 document.head.appendChild(script);
@@ -182,11 +167,8 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
         _setupDashboard: function () {
             var self = this;
-            console.log('[Formula Config Analytics] Setting up dashboard');
             var recordData = this.model.get(this.handle).data;
             var activeView = recordData.active_view || 'hierarchy';
-
-            console.log('[Formula Config Analytics] Active view:', activeView);
 
             // Load appropriate view based on active_view state
             switch (activeView) {
@@ -223,7 +205,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         _activateTabByName: function (tabName) {
             // Tab activation for Odoo 16 notebook
             var self = this;
-            console.log('[Formula Config Analytics] _activateTabByName:', tabName);
 
             // Map of page names to their expected tab text
             var tabTextMap = {
@@ -259,10 +240,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 });
             }
 
-            console.log('[Formula Config Analytics] Tab target index:', targetIndex, 'Total tabs:', tabs.length);
-
             if (targetIndex >= 0 && tabs[targetIndex]) {
-                console.log('[Formula Config Analytics] Clicking tab:', tabs[targetIndex].textContent);
                 tabs[targetIndex].click();
 
                 // Also ensure the tab content is visible
@@ -277,11 +255,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                         pages[targetIndex].classList.add('active', 'show');
                     }
                 }, 50);
-            } else {
-                console.log('[Formula Config Analytics] Could not find tab. Available tabs:');
-                tabs.forEach(function (t, i) {
-                    console.log('  Tab', i, ':', t.textContent.trim());
-                });
             }
         },
 
@@ -298,12 +271,10 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             // Skip auto-render during _setupDashboard if not in hierarchy view
             // But always render when called explicitly (e.g., from tab click)
             if (!forceRender && activeView !== 'hierarchy' && activeView !== 'config_detail') {
-                console.log('[Formula Config Analytics] Skipping hierarchy auto-render, active view:', activeView);
                 return;
             }
 
             if (!hierarchyJson) {
-                console.log('[Formula Config Analytics] No hierarchy data available');
                 // Clear loading message
                 var configsGrid = document.getElementById('configs-grid');
                 if (configsGrid) {
@@ -319,13 +290,12 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 this.currentData.hierarchy = data;
                 this._renderHierarchy(data);
             } catch (e) {
-                console.error('[Formula Config Analytics] Error parsing hierarchy data:', e);
+                // JSON parsing error - silent fail
             }
         },
 
         _renderHierarchy: function (data) {
             var self = this;
-            console.log('[Formula Config Analytics] Rendering hierarchy with', data.configs.length, 'configs');
 
             // Render Config Cards
             var configsGrid = document.getElementById('configs-grid');
@@ -416,8 +386,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             var configId = parseInt(ev.currentTarget.dataset.configId);
             var self = this;
 
-            console.log('[Formula Config Analytics] Config clicked:', configId);
-
             // Find config in current data
             var config = this.currentData.hierarchy.configs.find(function (c) {
                 return c.id === configId;
@@ -435,12 +403,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 model: 'hr.formula.config.analytics',
                 method: 'action_navigate_to_config',
                 args: [[this.model.get(this.handle).res_id], configId]
-            }).then(function () {
-                console.log('[Formula Config Analytics] Navigation state updated');
-                // Optionally reload to show config_detail tab with charts
-                // self.reload().then(function () {
-                //     setTimeout(function () { self._activateTab('config_detail'); }, 300);
-                // });
             });
         },
 
@@ -502,8 +464,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             var self = this;
             var resId = this.model.get(this.handle).res_id;
 
-            console.log('[Formula Config Analytics] Department clicked:', departmentId, 'Config:', configId, 'Record ID:', resId);
-
             // Show loading indicator
             var deptsGrid = document.getElementById('departments-grid');
             if (deptsGrid) {
@@ -512,28 +472,19 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     '<p>Loading department details...</p></div>';
             }
 
-            console.log('[Formula Config Analytics] Making RPC call to action_navigate_to_department...');
-
             rpc.query({
                 model: 'hr.formula.config.analytics',
                 method: 'action_navigate_to_department',
                 args: [[resId], configId, departmentId]
             }).then(function (result) {
-                console.log('[Formula Config Analytics] RPC call successful, result:', result);
-                console.log('[Formula Config Analytics] Calling reload...');
                 return self.reload();
             }).then(function () {
-                console.log('[Formula Config Analytics] Reload completed successfully');
                 // Directly activate department_detail tab and load content
-                // Don't rely on on_attach_callback or active_view field
-                console.log('[Formula Config Analytics] Directly activating department_detail tab');
                 setTimeout(function () {
                     self._activateTabByName('department_detail');
                     self._loadDepartmentDetailView();
                 }, 400);
             }).catch(function (error) {
-                console.error('[Formula Config Analytics] Error navigating to department:', error);
-                console.error('[Formula Config Analytics] Error details:', JSON.stringify(error));
                 if (deptsGrid) {
                     deptsGrid.innerHTML = '<div style="text-align: center; padding: 20px; color: #e74c3c;">' +
                         '<i class="fa fa-exclamation-triangle" style="font-size: 24px;"></i>' +
@@ -544,7 +495,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
         _activateTab: function (tabName) {
             var self = this;
-            console.log('[Formula Config Analytics] Attempting to activate tab:', tabName);
 
             // Map of tab names to their display text (for fallback matching)
             var tabTextMap = {
@@ -594,7 +544,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             }
 
             if (tabLink) {
-                console.log('[Formula Config Analytics] Found tab link, clicking:', tabLink);
                 // Use setTimeout to ensure DOM is ready
                 setTimeout(function () {
                     tabLink.click();
@@ -621,9 +570,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     // Now load the view content
                     self._loadDepartmentDetailView();
                 }, 100);
-            } else {
-                console.log('[Formula Config Analytics] Could not find tab:', tabName);
-                console.log('[Formula Config Analytics] Available tabs:', document.querySelectorAll('.nav-link'));
             }
         },
 
@@ -642,7 +588,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 this._renderConsolidatedCharts(data);
                 this._renderComponentsTable(data);
             } catch (e) {
-                console.error('[Formula Config Analytics] Error parsing consolidated data:', e);
+                // JSON parsing error - silent fail
             }
         },
 
@@ -729,7 +675,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 this._renderConfigDetailCharts(data);
                 this._renderConfigDepartments(data);
             } catch (e) {
-                console.error('[Formula Config Analytics] Error parsing config detail data:', e);
+                // JSON parsing error - silent fail
             }
         },
 
@@ -845,8 +791,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 args: [[resId], deptName]
             }).then(function (action) {
                 self.do_action(action);
-            }).catch(function (error) {
-                console.error('[Formula Config Analytics] Error opening department pivot:', error);
             });
         },
 
@@ -858,8 +802,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             var tabName = ev.currentTarget.getAttribute('name') ||
                           ev.currentTarget.closest('.nav-link')?.getAttribute('name') ||
                           ev.currentTarget.getAttribute('href')?.replace('#', '');
-
-            console.log('[Formula Config Analytics] Tab clicked:', tabName);
 
             var self = this;
             setTimeout(function () {
@@ -882,7 +824,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         },
 
         _onFilterChange: function () {
-            console.log('[Formula Config Analytics] Filter changed, reloading...');
             this.reload();
         },
 
@@ -1002,19 +943,10 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
         // =================================================================
 
         _loadDepartmentDetailView: function () {
-            console.log('[Formula Config Analytics] Loading department detail view');
             var recordData = this.model.get(this.handle).data;
             var deptJson = recordData.department_detail_data_json;
 
-            console.log('[Formula Config Analytics] Department JSON data:', deptJson ? deptJson.substring(0, 200) + '...' : 'null');
-
-            // Check if we have a selected department
-            var selectedDept = recordData.selected_department_id;
-            var selectedConfig = recordData.selected_config_id;
-            console.log('[Formula Config Analytics] Selected config:', selectedConfig, 'department:', selectedDept);
-
             if (!deptJson || deptJson === '{}') {
-                console.log('[Formula Config Analytics] No department detail data available');
                 // Show message in the table
                 var table = document.getElementById('employee-breakdown-table');
                 if (table) {
@@ -1030,10 +962,9 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
             try {
                 var data = JSON.parse(deptJson);
-                console.log('[Formula Config Analytics] Parsed department data:', data.department, 'employees:', data.employee_count);
                 this._renderEmployeeTable(data);
             } catch (e) {
-                console.error('[Formula Config Analytics] Error parsing department detail data:', e);
+                // JSON parsing error - silent fail
             }
         },
 
@@ -1094,8 +1025,6 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
     var viewRegistry = require('web.view_registry');
     viewRegistry.add('formula_config_analytics_dashboard', FormulaConfigAnalyticsFormView);
-
-    console.log('[Formula Config Analytics] Module registered successfully');
 
     return {
         Controller: FormulaConfigAnalyticsController,

@@ -22,14 +22,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var self = this;
             return this._super.apply(this, arguments).then(function () {
                 if (self.modelName === 'payroll.analytics') {
-                    // Check if this is a forced refresh from action_open_dashboard
-                    var forceRefresh = self.initialState && self.initialState.context && self.initialState.context.force_refresh;
-                    if (forceRefresh) {
-                        console.log('Force refresh detected from action_open_dashboard');
-                    }
-                    
                     self._initializeDashboard();
-                    
+
                     // Set up navigation event listeners
                     self._setupNavigationListeners();
                 }
@@ -38,21 +32,19 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
         _setupNavigationListeners: function() {
             var self = this;
-            
+
             // Listen for browser navigation events that could change the record
             window.addEventListener('popstate', function() {
                 if (self.modelName === 'payroll.analytics') {
-                    console.log('Browser navigation detected, refreshing dashboard...');
                     setTimeout(() => {
                         self._setupDashboard();
                     }, 500);
                 }
             });
-            
+
             // Listen for hash changes that could indicate record navigation
             window.addEventListener('hashchange', function() {
                 if (self.modelName === 'payroll.analytics') {
-                    console.log('URL hash changed, refreshing dashboard...');
                     setTimeout(() => {
                         self._setupDashboard();
                     }, 500);
@@ -62,14 +54,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
         _initializeDashboard: function () {
             var self = this;
-            
+
             // Load Chart.js if not already loaded
             if (typeof Chart === 'undefined' && !this.chartJSLoaded) {
                 this._loadChartJS().then(function () {
                     self.chartJSLoaded = true;
                     self._setupDashboard();
                 }).catch(function(error) {
-                    console.error('Failed to load Chart.js:', error);
                     self._showChartLoadError();
                 });
             } else {
@@ -83,15 +74,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     resolve();
                     return;
                 }
-                
+
                 var script = document.createElement('script');
                 script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
                 script.onload = function() {
-                    console.log('Chart.js loaded successfully');
                     resolve();
                 };
                 script.onerror = function() {
-                    console.error('Failed to load Chart.js');
                     reject(new Error('Chart.js loading failed'));
                 };
                 document.head.appendChild(script);
@@ -100,21 +89,19 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
         _destroyAllCharts: function() {
             var self = this;
-            console.log('Destroying existing charts...');
-            
+
             // Destroy existing charts to prevent conflicts
             Object.keys(this.charts).forEach(function (key) {
                 if (self.charts[key]) {
                     try {
                         self.charts[key].destroy();
-                        console.log('Destroyed chart:', key);
                     } catch (e) {
-                        console.warn('Error destroying chart:', key, e);
+                        // Silent fail on chart destroy
                     }
                 }
             });
             this.charts = {};
-            
+
             // Also clear canvas elements to ensure clean state
             var canvases = ['componentsChart', 'comparisonChart', 'varianceChart'];
             canvases.forEach(function(canvasId) {
@@ -130,7 +117,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         try {
                             canvas.chart.destroy();
                         } catch (e) {
-                            console.warn('Error destroying canvas chart:', e);
+                            // Silent fail on canvas chart destroy
                         }
                         delete canvas.chart;
                     }
@@ -152,13 +139,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     var salaryComponents = self._getFieldValue('salary_components');
                     var comparisonData = self._getFieldValue('comparison_data');
                     var anomalyAlerts = self._getFieldValue('anomaly_alerts');
-
-                    console.log('Dashboard data:', {
-                        employeeMetrics: employeeMetrics,
-                        salaryComponents: salaryComponents,
-                        comparisonData: comparisonData,
-                        anomalyAlerts: anomalyAlerts
-                    });
 
                     // Parse and validate data with proper error handling
                     var parsedComponents = {};
@@ -189,7 +169,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                             }
                         }
                     } catch (e) {
-                        console.error('Error parsing dashboard data:', e);
                         // Set default values on parse error
                         parsedComponents = {};
                         parsedComparison = {};
@@ -199,7 +178,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
                     // Ensure parsedAlerts is always an array before proceeding
                     if (!Array.isArray(parsedAlerts)) {
-                        console.warn('Alerts data is not an array, converting to empty array');
                         parsedAlerts = [];
                     }
 
@@ -212,7 +190,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         if (Object.keys(parsedComponents).length > 0) {
                             self._createCharts(parsedComponents, parsedComparison);
                         } else {
-                            console.warn('No salary components data available for charts');
                             self._showNoDataMessage();
                         }
 
@@ -238,7 +215,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     });
                     
                 } catch (error) {
-                    console.error('Error setting up dashboard:', error);
                     self._showGeneralError();
                 }
             }, 500);
@@ -282,7 +258,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 
                 return null;
             } catch (e) {
-                console.error('Error getting field value for ' + fieldName + ':', e);
                 return null;
             }
         },
@@ -315,7 +290,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 }
                 return components;
             }).catch(function (error) {
-                console.error('Failed to load component names:', error);
                 return components;
             });
         },
@@ -352,15 +326,14 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     }
                 }
             } catch (error) {
-                console.error('Error updating metric cards:', error);
+                // Silent fail on metric card update
             }
         },
 
         _createCharts: function (components, comparison) {
             var self = this;
-            
+
             if (typeof Chart === 'undefined') {
-                console.error('Chart.js not loaded');
                 this._showChartLoadError();
                 return;
             }
@@ -371,7 +344,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     try {
                         self.charts[key].destroy();
                     } catch (e) {
-                        console.warn('Error destroying chart:', key, e);
+                        // Silent fail on chart destroy
                     }
                 }
             });
@@ -381,19 +354,19 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             try {
                 this._createComponentChart(components);
             } catch (e) {
-                console.error('Error creating component chart:', e);
+                // Silent fail on chart creation
             }
-            
+
             try {
                 this._createComparisonChart(components, comparison);
             } catch (e) {
-                console.error('Error creating comparison chart:', e);
+                // Silent fail on chart creation
             }
-            
+
             try {
                 this._createVarianceChart(components, comparison);
             } catch (e) {
-                console.error('Error creating variance chart:', e);
+                // Silent fail on chart creation
             }
         },
 
@@ -401,7 +374,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var self = this;
             var ctx = document.getElementById('componentsChart');
             if (!ctx) {
-                console.warn('Components chart canvas not found');
                 return;
             }
 
@@ -491,7 +463,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var self = this;
             var ctx = document.getElementById('comparisonChart');
             if (!ctx) {
-                console.warn('Comparison chart canvas not found');
                 return;
             }
 
@@ -591,7 +562,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var self = this;
             var ctx = document.getElementById('varianceChart');
             if (!ctx) {
-                console.warn('Variance chart canvas not found');
                 return;
             }
 
@@ -716,7 +686,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
         _openPivotForComponent: function (componentCode, componentLabel) {
             if (!componentCode && !componentLabel) {
-                console.warn('Drill-down skipped: empty component');
                 return;
             }
             var code = componentCode || componentLabel;
@@ -737,21 +706,17 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         self._destroyAllCharts();
                     }, 80);
                 }
-            }).catch(function (error) {
-                console.error('Failed to open component pivot:', error);
             });
         },
 
         _displayAnomalyAlerts: function (alerts) {
             var container = document.getElementById('anomaly-alerts-container');
             if (!container) {
-                console.warn('Anomaly alerts container not found');
                 return;
             }
 
             // Ensure alerts is an array
             if (!Array.isArray(alerts)) {
-                console.warn('Alerts parameter is not an array:', alerts);
                 alerts = [];
             }
 
@@ -764,7 +729,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             alerts.forEach(function (alert) {
                 // Validate alert object structure
                 if (!alert || typeof alert !== 'object') {
-                    console.warn('Invalid alert object:', alert);
                     return;
                 }
 
@@ -787,7 +751,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
         _populateAnalysisTable: function (components, comparison) {
             var tbody = document.getElementById('analysis-table-body');
             if (!tbody) {
-                console.warn('Analysis table body not found');
                 return;
             }
 
@@ -853,8 +816,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         if (action && action.type) {
                             core.bus.trigger('do-action', { action: action, options: {} });
                         }
-                    }).catch(function (error) {
-                        console.error('Failed to open component details:', error);
                     });
                 });
             });
@@ -863,15 +824,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
         _generateRecommendations: function (components, comparison, alerts) {
             var recList = document.getElementById('recommendations-list');
             var warnList = document.getElementById('warnings-list');
-            
+
             if (!recList || !warnList) {
-                console.warn('Recommendation or warning list elements not found');
                 return;
             }
 
             // Ensure alerts is an array
             if (!Array.isArray(alerts)) {
-                console.warn('Alerts parameter is not an array in _generateRecommendations:', alerts);
                 alerts = [];
             }
 
@@ -925,15 +884,14 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
             // Populate lists with safe HTML generation
             try {
-                recList.innerHTML = recommendations.map(function(r) { 
-                    return '<li><i class="fa fa-check text-success"></i> ' + (r || '') + '</li>'; 
+                recList.innerHTML = recommendations.map(function(r) {
+                    return '<li><i class="fa fa-check text-success"></i> ' + (r || '') + '</li>';
                 }).join('');
-                
-                warnList.innerHTML = warnings.map(function(w) { 
-                    return '<li><i class="fa fa-warning text-warning"></i> ' + (w || '') + '</li>'; 
+
+                warnList.innerHTML = warnings.map(function(w) {
+                    return '<li><i class="fa fa-warning text-warning"></i> ' + (w || '') + '</li>';
                 }).join('');
             } catch (error) {
-                console.error('Error populating recommendation lists:', error);
                 recList.innerHTML = '<li>Error loading recommendations</li>';
                 warnList.innerHTML = '<li>Error loading warnings</li>';
             }
@@ -976,8 +934,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         if (action && action.type) {
                             core.bus.trigger('do-action', { action: action, options: {} });
                         }
-                    }).catch(function (error) {
-                        console.error('Failed to open pivot:', error);
                     });
                 };
             };
@@ -1062,10 +1018,9 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             this._super.apply(this, arguments);
             // Re-initialize dashboard when navigating between records
             if (this.modelName === 'payroll.analytics') {
-                console.log('Navigation detected, refreshing dashboard...');
                 setTimeout(() => {
                     this._setupDashboard();
-                }, 200); // Slightly longer delay for navigation
+                }, 200);
             }
         },
 
@@ -1076,7 +1031,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             if (this.modelName === 'payroll.analytics') {
                 var currentRecordId = this.renderer && this.renderer.state && this.renderer.state.res_id;
                 if (currentRecordId !== this._lastRecordId) {
-                    console.log('Record changed from', this._lastRecordId, 'to', currentRecordId, '- refreshing dashboard');
                     this._lastRecordId = currentRecordId;
                     // Refresh dashboard after a short delay to ensure DOM is updated
                     setTimeout(() => {
@@ -1099,7 +1053,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             // If this is analytics dashboard, refresh after reload
             if (this.modelName === 'payroll.analytics') {
                 result.then(function() {
-                    console.log('Dashboard reloaded, refreshing charts...');
                     setTimeout(() => {
                         self._setupDashboard();
                     }, 400);
@@ -1114,7 +1067,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             var result = this._super.apply(this, arguments);
             if (this.modelName === 'payroll.analytics') {
                 result.then(function() {
-                    console.log('Data saved, refreshing dashboard...');
                     setTimeout(() => {
                         self._setupDashboard();
                     }, 300);
@@ -1132,7 +1084,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     try {
                         self.charts[key].destroy();
                     } catch (e) {
-                        console.warn('Error destroying chart:', key, e);
+                        // Silent fail on chart destroy
                     }
                 }
             });
@@ -1165,13 +1117,11 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         args: [country],
                     }).then(function (stats) {
                         self._updateDashboardStats(country, stats);
-                    }).catch(function(error) {
-                        console.error('Error loading dashboard stats:', error);
                     });
                 }
             }
         },
-        
+
         _updateDashboardStats: function (country, stats) {
             var countryCode = country.toLowerCase();
             
@@ -1229,7 +1179,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     self.do_action(action);
                 }
             }).catch(function(error) {
-                console.error('Error opening analytics dashboard:', error);
                 if (self.displayNotification) {
                     self.displayNotification({
                         title: 'Error',
@@ -1253,7 +1202,6 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     self.do_action(action);
                 }
             }).catch(function(error) {
-                console.error('Error opening bank export:', error);
                 if (self.displayNotification) {
                     self.displayNotification({
                         title: 'Error',
@@ -1324,18 +1272,13 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
                         args: [country],
                     }).then(function (stats) {
                         self._updateDashboardStats(country, stats);
-                    }).catch(function(error) {
-                        console.warn('Could not load dashboard stats:', error);
-                        // Don't show error notification for stats loading failure
                     });
                 }
             }
         },
-        
+
         _updateDashboardStats: function (country, stats) {
             // This method can be used to update tile statistics if needed
-            // For now, keeping it simple since we removed the stat displays
-            console.log('Dashboard stats for', country, ':', stats);
         },
 
         _setupDashboardHandlers: function() {
@@ -1408,19 +1351,11 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
                     if (self.do_action) {
                         self.do_action(result);
                     }
-                } else {
-                    // If no valid action returned, don't show error since dashboard might still work
-                    console.log('Analytics dashboard action completed');
                 }
             }).catch(function(error) {
-                console.error('Analytics dashboard error:', error);
-                
                 // Only show user-friendly error if it's a real failure
                 if (error && error.message && !error.message.includes('[object Object]')) {
                     self._showNotification('Could not open analytics dashboard: ' + error.message, 'warning');
-                } else {
-                    // For [object Object] errors, don't notify user since dashboard might still work
-                    console.warn('Analytics dashboard opened but returned unexpected response');
                 }
             });
         },
@@ -1461,21 +1396,15 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
                 } else if (result && result.params && result.params.message) {
                     // Handle notification-type responses
                     self._showNotification(result.params.message, result.params.type || 'info');
-                } else {
-                    console.log('Bank export action completed');
                 }
             }).catch(function(error) {
-                console.error('Bank export error:', error);
-                
                 // Only show meaningful errors to user
                 if (error && error.message && !error.message.includes('[object Object]')) {
                     self._showNotification('Could not open bank export: ' + error.message, 'warning');
-                } else {
-                    console.warn('Bank export completed but returned unexpected response');
                 }
             });
         },
-        
+
         _showNotification: function(message, type) {
             try {
                 if (this.displayNotification) {
@@ -1485,12 +1414,9 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
                         type: type || 'info',
                         sticky: false
                     });
-                } else {
-                    // Fallback for older Odoo versions
-                    console.log(type.toUpperCase() + ': ' + message);
                 }
             } catch (e) {
-                console.log('Notification: ' + message);
+                // Silent fail on notification
             }
         },
         

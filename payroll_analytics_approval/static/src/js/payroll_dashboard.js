@@ -35,8 +35,6 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
                 args: [country],
             }).then(function (data) {
                 self._updateDashboardStats(data);
-            }).catch(function (error) {
-                console.warn('Could not load dashboard data:', error);
             });
         },
 
@@ -327,8 +325,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
             }).catch(function (error) {
                 // Re-enable the button on error
                 self.$('#final-approve-btn').prop('disabled', false).text('FINAL APPROVE');
-                self._showNotification('Error approving payroll: ' + error.message.data.message, 'danger');
-                console.error('Approval error:', error);
+                self._showNotification('Error approving payroll: ' + (error.message && error.message.data ? error.message.data.message : 'Unknown error'), 'danger');
             });
         },
 
