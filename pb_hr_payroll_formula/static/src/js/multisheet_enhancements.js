@@ -9,19 +9,13 @@ import { registry } from "@web/core/registry";
  * 2. Removes HTML tooltips from HTML widget fields
  */
 
-console.log('=== MULTISHEET ENHANCEMENTS MODULE LOADED ===');
-
 // Function to remove title attributes from HTML fields to prevent tooltip
 function removeHtmlTooltips() {
-    console.log('Removing HTML tooltips...');
-
     // Find all cells with HTML content in the "Depends On" column
     const htmlCells = document.querySelectorAll(
         'td[data-name="referenced_sheet_names_html"], ' +
         'td[data-name="sheet_name_html"]'
     );
-
-    console.log(`Found ${htmlCells.length} HTML cells to process`);
 
     htmlCells.forEach((cell, index) => {
         // Remove title attribute
@@ -32,15 +26,11 @@ function removeHtmlTooltips() {
         childElements.forEach(child => {
             child.removeAttribute('title');
         });
-
-        console.log(`Processed cell ${index}: removed title attributes`);
     });
 }
 
 // Add dual scrollbar functionality to list views
 function addDualScrollbar() {
-    console.log('\n=== DUAL SCROLLBAR: Starting detection ===');
-
     // Try multiple selector patterns to find the table containers
     const selectors = [
         '.o_field_widget[name="available_sheet_ids"] .o_list_renderer',
@@ -55,49 +45,36 @@ function addDualScrollbar() {
     let listRenderers = [];
     for (const selector of selectors) {
         const elements = document.querySelectorAll(selector);
-        console.log(`Selector "${selector}" found ${elements.length} elements`);
         if (elements.length > 0) {
             listRenderers = Array.from(elements);
-            console.log(`Using selector: ${selector}`);
             break;
         }
     }
 
     if (listRenderers.length === 0) {
-        console.log('No list renderers found for multisheet wizard selectors.');
         return;
     }
 
-    console.log(`Processing ${listRenderers.length} list renderer containers\n`);
-
     listRenderers.forEach((renderer, index) => {
-        console.log(`--- Processing renderer ${index} ---`);
-
         // Skip if already has dual scrollbar
         if (renderer.querySelector('.dual-scrollbar-wrapper') ||
             renderer.parentElement?.querySelector('.dual-scrollbar-wrapper')) {
-            console.log('Dual scrollbar already exists, skipping');
             return;
         }
 
         // Get the table element
         const table = renderer.querySelector('table.o_list_table');
         if (!table) {
-            console.log('No table found in renderer');
             return;
         }
 
         const tableWidth = table.scrollWidth;
         const containerWidth = renderer.clientWidth;
-        console.log(`Table dimensions: scrollWidth=${tableWidth}px, containerWidth=${containerWidth}px`);
 
         // Only add scrollbar if table is significantly wider than container
         if (tableWidth <= containerWidth + 10) {
-            console.log('Table fits in container, no scrollbar needed');
             return;
         }
-
-        console.log(`✓ Table needs scrollbar (${tableWidth}px > ${containerWidth}px)`);
 
         // Find the scrollable element (might be the renderer itself or a child)
         let scrollableElement = renderer;
@@ -107,7 +84,6 @@ function addDualScrollbar() {
             const scrollableChild = renderer.querySelector('.o_list_view, [style*="overflow"]');
             if (scrollableChild) {
                 scrollableElement = scrollableChild;
-                console.log('Using scrollable child element');
             }
         }
 
@@ -145,7 +121,6 @@ function addDualScrollbar() {
             if (current.classList.contains('o_field_widget')) {
                 insertParent = current;
                 insertBefore = current.firstElementChild;
-                console.log('Found field widget container for insertion');
                 break;
             }
             current = current.parentElement;
@@ -153,9 +128,7 @@ function addDualScrollbar() {
 
         if (insertParent && insertBefore) {
             insertParent.insertBefore(topScrollWrapper, insertBefore);
-            console.log('✓ Dual scrollbar DOM element inserted');
         } else {
-            console.log('✗ Could not find insertion point');
             return;
         }
 
@@ -165,7 +138,6 @@ function addDualScrollbar() {
             const currentWidth = parseInt(topScrollInner.style.width) || 0;
             if (Math.abs(newTableWidth - currentWidth) > 5) {
                 topScrollInner.style.width = newTableWidth + 'px';
-                console.log(`Synced widths: ${newTableWidth}px`);
             }
         }
 
@@ -187,8 +159,6 @@ function addDualScrollbar() {
         // Add event listeners
         topScrollWrapper.addEventListener('scroll', syncScrollTop);
         scrollableElement.addEventListener('scroll', syncScrollBottom);
-
-        console.log('✓ Scroll event listeners attached');
 
         // Initial sync with delays
         setTimeout(syncWidths, 50);
@@ -213,8 +183,6 @@ function addDualScrollbar() {
                 attributeFilter: ['style', 'class']
             });
 
-            console.log('✓ Observers attached');
-
             // Store cleanup function
             topScrollWrapper._cleanup = () => {
                 topScrollWrapper.removeEventListener('scroll', syncScrollTop);
@@ -223,19 +191,13 @@ function addDualScrollbar() {
                 mutationObserver.disconnect();
             };
         } catch (e) {
-            console.error('Error setting up observers:', e);
+            // Silent fail on observer setup
         }
-
-        console.log('✓ Dual scrollbar setup complete for renderer ' + index);
     });
-
-    console.log('=== DUAL SCROLLBAR: Detection complete ===\n');
 }
 
 // Add autocomplete dropdown for primary key column selection
 function addPrimaryKeyAutocomplete() {
-    console.log('\n=== PRIMARY KEY AUTOCOMPLETE: Starting setup ===');
-
     // Try multiple selectors to find primary key input fields
     const selectors = [
         'input[name="primary_key_column_name"]',
@@ -248,7 +210,6 @@ function addPrimaryKeyAutocomplete() {
     let pkInputs = [];
     for (const selector of selectors) {
         pkInputs = document.querySelectorAll(selector);
-        console.log(`Selector "${selector}" found ${pkInputs.length} elements`);
         if (pkInputs.length > 0) {
             break;
         }
@@ -256,25 +217,13 @@ function addPrimaryKeyAutocomplete() {
 
     // Fallback: Search for any input in the primary_key_column_name column
     if (pkInputs.length === 0) {
-        console.log('No inputs found with standard selectors. Searching in table rows...');
         const availableSheetTable = document.querySelector('.o_field_widget[name="available_sheet_ids"] table');
         if (availableSheetTable) {
             // Find all rows
             const rows = availableSheetTable.querySelectorAll('tbody tr');
-            console.log(`Found ${rows.length} table rows to search`);
-
             // For each row, find inputs (Odoo renders inputs dynamically in editable tree)
-            rows.forEach((row, idx) => {
-                const inputs = row.querySelectorAll('input[type="text"]');
-                console.log(`Row ${idx}: Found ${inputs.length} text inputs`);
-                inputs.forEach((inp, i) => {
-                    console.log(`  Input ${i}: name="${inp.name}", id="${inp.id}", class="${inp.className}"`);
-                });
-            });
         }
     }
-
-    console.log(`Total primary key input fields found: ${pkInputs.length}`);
 
     pkInputs.forEach((input, index) => {
         // Skip if already has autocomplete
@@ -288,14 +237,12 @@ function addPrimaryKeyAutocomplete() {
         // Find the row containing this input
         const row = input.closest('tr');
         if (!row) {
-            console.log(`Input ${index}: No parent row found`);
             return;
         }
 
         // Find the available_column_names hidden field in the same row
         const availableColsInput = row.querySelector('input[name="available_column_names"]');
         if (!availableColsInput || !availableColsInput.value) {
-            console.log(`Input ${index}: No available columns data found`);
             return;
         }
 
@@ -303,14 +250,11 @@ function addPrimaryKeyAutocomplete() {
         let availableColumns = [];
         try {
             availableColumns = JSON.parse(availableColsInput.value);
-            console.log(`Input ${index}: Found ${availableColumns.length} available columns:`, availableColumns);
         } catch (e) {
-            console.warn(`Input ${index}: Failed to parse available columns:`, e);
             return;
         }
 
         if (availableColumns.length === 0) {
-            console.log(`Input ${index}: No columns available for this sheet`);
             return;
         }
 
@@ -337,11 +281,7 @@ function addPrimaryKeyAutocomplete() {
         input.setAttribute('list', datalistId);
         input.setAttribute('autocomplete', 'off'); // Disable browser autocomplete
         input.setAttribute('placeholder', `Select from: ${availableColumns.slice(0, 2).join(', ')}...`);
-
-        console.log(`✓ Input ${index}: Autocomplete setup complete with ${availableColumns.length} options`);
     });
-
-    console.log('=== PRIMARY KEY AUTOCOMPLETE: Setup complete ===\n');
 
     // Also set up click event listener for cells that will trigger inline editing
     setupCellClickListener();
@@ -349,17 +289,13 @@ function addPrimaryKeyAutocomplete() {
 
 // Setup click listener for primary key column cells to add autocomplete when editing starts
 function setupCellClickListener() {
-    console.log('Setting up click listeners for primary key column cells...');
-
     const availableSheetTable = document.querySelector('.o_field_widget[name="available_sheet_ids"] table');
     if (!availableSheetTable) {
-        console.log('Table not found, will retry later');
         return;
     }
 
     // Find all cells in the primary_key_column_name column
     const pkCells = availableSheetTable.querySelectorAll('td[name="primary_key_column_name"]');
-    console.log(`Found ${pkCells.length} primary key column cells`);
 
     pkCells.forEach((cell, index) => {
         // Skip if already has listener
@@ -371,21 +307,14 @@ function setupCellClickListener() {
 
         // Add click listener
         cell.addEventListener('click', function(event) {
-            console.log(`Cell ${index} clicked, waiting for input to appear...`);
-
             // Wait a bit for Odoo to render the input field
             setTimeout(() => {
                 const input = cell.querySelector('input');
                 if (input) {
-                    console.log(`Input appeared in cell ${index}, setting up autocomplete`);
                     setupAutocompleteForInput(input, index);
-                } else {
-                    console.log(`No input found in cell ${index} after click`);
                 }
             }, 100);
         });
-
-        console.log(`✓ Click listener added to cell ${index}`);
     });
 }
 
@@ -393,7 +322,6 @@ function setupCellClickListener() {
 function setupAutocompleteForInput(input, index) {
     // Skip if already has autocomplete
     if (input.hasAttribute('data-autocomplete-setup')) {
-        console.log(`Input ${index} already has autocomplete`);
         return;
     }
 
@@ -402,14 +330,12 @@ function setupAutocompleteForInput(input, index) {
     // Find the row containing this input
     const row = input.closest('tr');
     if (!row) {
-        console.log(`Input ${index}: No parent row found`);
         return;
     }
 
     // Find the available_column_names hidden field in the same row
     const availableColsInput = row.querySelector('input[name="available_column_names"]');
     if (!availableColsInput || !availableColsInput.value) {
-        console.log(`Input ${index}: No available columns data found`);
         return;
     }
 
@@ -417,14 +343,11 @@ function setupAutocompleteForInput(input, index) {
     let availableColumns = [];
     try {
         availableColumns = JSON.parse(availableColsInput.value);
-        console.log(`Input ${index}: Found ${availableColumns.length} available columns:`, availableColumns);
     } catch (e) {
-        console.warn(`Input ${index}: Failed to parse available columns:`, e);
         return;
     }
 
     if (availableColumns.length === 0) {
-        console.log(`Input ${index}: No columns available for this sheet`);
         return;
     }
 
@@ -451,28 +374,22 @@ function setupAutocompleteForInput(input, index) {
     input.setAttribute('list', datalistId);
     input.setAttribute('autocomplete', 'off');
     input.setAttribute('placeholder', `Select from: ${availableColumns.slice(0, 2).join(', ')}...`);
-
-    console.log(`✓ Input ${index}: Autocomplete setup complete with ${availableColumns.length} options`);
 }
 
 // Main enhancement function
 function applyEnhancements() {
-    console.log('\n=== APPLYING MULTISHEET ENHANCEMENTS ===');
     removeHtmlTooltips();
     addDualScrollbar();
     addPrimaryKeyAutocomplete();
-    console.log('=== ENHANCEMENTS APPLIED ===\n');
 }
 
 // Run when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM Content Loaded - applying enhancements');
         setTimeout(applyEnhancements, 100);
     });
 } else {
     // DOM already loaded
-    console.log('DOM already loaded - applying enhancements');
     setTimeout(applyEnhancements, 100);
 }
 
@@ -532,10 +449,6 @@ function startObserving() {
         childList: true,
         subtree: true
     });
-
-    console.log('✓ MutationObserver started for dynamic content');
 }
 
 startObserving();
-
-console.log('=== MULTISHEET ENHANCEMENTS MODULE INITIALIZED ===\n');
