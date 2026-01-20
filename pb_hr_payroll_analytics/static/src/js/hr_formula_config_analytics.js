@@ -974,12 +974,20 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             var table = document.getElementById('employee-breakdown-table');
             if (!table || !data.employees) return;
 
-            // Get all unique component codes
-            var componentCodes = [];
+            // Get all unique component codes with display names
+            var componentMap = {};
+            var componentList = [];
             data.employees.forEach(function (emp) {
                 Object.keys(emp.components || {}).forEach(function (code) {
-                    if (componentCodes.indexOf(code) === -1) {
-                        componentCodes.push(code);
+                    if (!componentMap[code]) {
+                        var componentName = (emp.components[code] && emp.components[code].name) || code;
+                        componentMap[code] = {
+                            code: code,
+                            name: componentName
+                        };
+                        componentList.push(componentMap[code]);
+                    } else if (!componentMap[code].name && emp.components[code] && emp.components[code].name) {
+                        componentMap[code].name = emp.components[code].name;
                     }
                 });
             });
@@ -987,9 +995,18 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             // Update table header
             var thead = table.querySelector('thead tr');
             if (thead) {
-                thead.innerHTML = '<th>' + _t('Employee') + '</th><th>' + _t('Job Title') + '</th>';
-                componentCodes.forEach(function (code) {
-                    thead.innerHTML += '<th class="text-right">' + code + '</th>';
+                thead.innerHTML = '';
+                var thEmployee = document.createElement('th');
+                thEmployee.textContent = _t('Employee');
+                thead.appendChild(thEmployee);
+                var thJob = document.createElement('th');
+                thJob.textContent = _t('Job Title');
+                thead.appendChild(thJob);
+                componentList.forEach(function (component) {
+                    var th = document.createElement('th');
+                    th.className = 'text-right';
+                    th.textContent = component.name || component.code;
+                    thead.appendChild(th);
                 });
             }
 
@@ -1003,7 +1020,8 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     row.innerHTML = '<td><strong>' + emp.name + '</strong></td>' +
                         '<td>' + (emp.job_title || '-') + '</td>';
 
-                    componentCodes.forEach(function (code) {
+                    componentList.forEach(function (component) {
+                        var code = component.code;
                         var amount = emp.components[code] ? emp.components[code].total : 0;
                         var amountClass = amount < 0 ? 'text-danger' : '';
                         row.innerHTML += '<td class="text-right ' + amountClass + '">' + formatCurrency(amount) + '</td>';
