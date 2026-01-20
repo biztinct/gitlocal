@@ -240,8 +240,8 @@
                             <field name="consolidated_data_json" invisible="1"/>
                         </page>
 
-                        <!-- Tab 3: Config Detail -->
-                        <page string="Config Detail" name="config_detail"
+                        <!-- Tab 3: Salary Details -->
+                        <page string="Salary Details" name="config_detail"
                               attrs="{'invisible': [('selected_config_id', '=', False)]}">
                             <div style="padding: 20px;">
                                 <!-- Config Header - Light Pastel with Border and Glow -->

@@ -32,7 +32,7 @@ class HrFormulaConfigAnalytics(models.Model):
     active_view = fields.Selection([
         ('hierarchy', 'Hierarchy Home'),
         ('consolidated', 'Consolidated View'),
-        ('config_detail', 'Config Detail'),
+        ('config_detail', 'Salary Details'),
         ('department_detail', 'Department Detail')
     ], default='hierarchy', string='Active View')
 
@@ -139,7 +139,7 @@ class HrFormulaConfigAnalytics(models.Model):
 
     config_detail_data_json = fields.Text(
         compute='_compute_config_detail_data',
-        string='Config Detail Data (JSON)'
+        string='Salary Details Data (JSON)'
     )
 
     department_detail_data_json = fields.Text(
