@@ -59,7 +59,7 @@
                     <button name="action_process" string="Process All" type="object"
                             class="btn-success" icon="fa-play"
                             attrs="{'invisible': [('state', 'not in', ['validated', 'matched'])]}"
-                            confirm="This will create employees, contracts and payslips. Continue?"/>
+                            confirm="This will update existing or create new employees, contracts and payslips. Continue?"/>
                     <button name="action_rebuild_cycle_carryover" string="Rebuild Carryover" type="object"
                             class="btn-secondary" icon="fa-refresh"
                             attrs="{'invisible': ['|', ('state', '!=', 'done'), ('cycle_type', '!=', 'mid_cycle')]}"/>

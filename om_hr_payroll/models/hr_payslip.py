@@ -933,6 +933,7 @@ class HrPayslipRun(models.Model):
     name = fields.Char(required=True, readonly=True, states={'draft': [('readonly', False)]})
     slip_ids = fields.One2many('hr.payslip', 'payslip_run_id', string='Payslips', readonly=True,
                                states={'draft': [('readonly', False)]})
+    active = fields.Boolean(default=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('level1', 'HR Manager pending'),

@@ -608,6 +608,8 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                     <filter string="Draft" name="draft" domain="[('state','=','draft')]" help="Draft Payslip Batches"/>
                     <filter name="done_filter" string="Done" domain="[('state','=','close')]"
                             help="Done Payslip Batches"/>
+                    <filter name="archived" string="Archived" domain="[('active','=',False)]"
+                            context="{'active_test': False}"/>
                 </search>
             </field>
         </record>
