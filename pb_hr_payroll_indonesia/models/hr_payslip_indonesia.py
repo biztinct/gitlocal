@@ -296,6 +296,21 @@ class HrPayslipIndonesia(models.Model):
             return stripped
         return str(value)
 
+    @staticmethod
+    def _report_format_identifier_value_raw(value):
+        if value is None:
+            return ''
+        if isinstance(value, bool):
+            return '1' if value else '0'
+        if isinstance(value, (int, float)):
+            if isinstance(value, float) and abs(value - int(value)) < 1e-9:
+                return str(int(value))
+            raw = ('%f' % value).rstrip('0').rstrip('.')
+            return raw or '0'
+        if isinstance(value, str):
+            return value.strip()
+        return str(value)
+
     def _report_get_identifier_sections(self):
         """Build dynamic payslip sections from identifier payload."""
         self.ensure_one()
@@ -345,7 +360,10 @@ class HrPayslipIndonesia(models.Model):
                 value = item.get('value')
                 if self._report_should_hide_identifier_value(value):
                     continue
-                display_value = self._report_format_identifier_value(value, item.get('name'))
+                if identifier == 'H':
+                    display_value = self._report_format_identifier_value_raw(value)
+                else:
+                    display_value = self._report_format_identifier_value(value, item.get('name'))
                 if display_value == '':
                     continue
                 lines.append({
