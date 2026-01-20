@@ -5,6 +5,8 @@ odoo.define('pb_hr_payroll_analytics.Export', function (require) {
 
     var rpc = require('web.rpc');
     var framework = require('web.framework');
+    var core = require('web.core');
+    var _t = core._t;
 
     return {
         // =====================================================================
@@ -45,7 +47,7 @@ odoo.define('pb_hr_payroll_analytics.Export', function (require) {
         exportToExcel: function(reportType, data) {
             var ws = XLSX.utils.json_to_sheet(data);
             var wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Report');
+            XLSX.utils.book_append_sheet(wb, ws, _t('Report'));
             XLSX.writeFile(wb, reportType + '_' + new Date().getTime() + '.xlsx');
         },
 
@@ -99,7 +101,7 @@ odoo.define('pb_hr_payroll_analytics.Export', function (require) {
 
             var link = document.createElement('a');
             link.href = canvas.toDataURL('image/png');
-            link.download = (fileName || 'chart') + '.png';
+            link.download = (fileName || _t('chart')) + '.png';
             link.click();
         },
 
@@ -151,7 +153,7 @@ odoo.define('pb_hr_payroll_analytics.Export', function (require) {
             var printWindow = window.open('', '', 'height=600,width=800');
             var printContents = document.getElementById(contentElementId).innerHTML;
 
-            printWindow.document.write('<html><head><title>HR Analytics Report</title>');
+            printWindow.document.write('<html><head><title>' + _t('HR Analytics Report') + '</title>');
             printWindow.document.write('<link rel="stylesheet" href="/pb_hr_payroll_analytics/static/src/css/hr_analytics_dashboard.css">');
             printWindow.document.write('</head><body>');
             printWindow.document.write(printContents);

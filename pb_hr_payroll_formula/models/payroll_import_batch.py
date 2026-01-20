@@ -114,6 +114,12 @@ class HrPayrollImportBatch(models.Model):
         required=True
     )
 
+    active = fields.Boolean(
+        string='Active',
+        default=True,
+        help="If unchecked, this record will be archived and hidden from the default view."
+    )
+
     # Import Lines (Staging Data)
     import_line_ids = fields.One2many(
         'hr.payroll.import.line',

@@ -2349,3 +2349,195 @@ msgstr "so với tháng trước"
 #: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.payroll_analytics_dashboard_template
 msgid "• Final Approval Review"
 msgstr "• Đánh giá phê duyệt cuối cùng"
+
+#. module: payroll_analytics_approval
+msgid "Payroll Analytics"
+msgstr "Phân tích bảng lương"
+
+#. module: payroll_analytics_approval
+msgid "Success"
+msgstr "Thành công"
+
+#. module: payroll_analytics_approval
+msgid "Warning"
+msgstr "Cảnh báo"
+
+#. module: payroll_analytics_approval
+msgid "Info"
+msgstr "Thông tin"
+
+#. module: payroll_analytics_approval
+msgid "Normal"
+msgstr "Bình thường"
+
+#. module: payroll_analytics_approval
+msgid "Employee count is stable compared to last month"
+msgstr "Số lượng nhân viên ổn định so với tháng trước"
+
+#. module: payroll_analytics_approval
+msgid "Total payroll variance is within acceptable range"
+msgstr "Chênh lệch tổng quỹ lương nằm trong phạm vi cho phép"
+
+#. module: payroll_analytics_approval
+msgid "No critical anomalies detected in salary components"
+msgstr "Không phát hiện bất thường nghiêm trọng ở các thành phần lương"
+
+#. module: payroll_analytics_approval
+msgid "Bank export file can be generated after approval"
+msgstr "Có thể tạo tệp ngân hàng sau khi phê duyệt"
+
+#. module: payroll_analytics_approval
+msgid "No Anomalies Detected"
+msgstr "Không phát hiện bất thường"
+
+#. module: payroll_analytics_approval
+msgid "All payroll components are within expected ranges."
+msgstr "Tất cả thành phần lương nằm trong phạm vi kỳ vọng."
+
+#. module: payroll_analytics_approval
+msgid "Are you sure you want to approve this payroll? This action cannot be undone."
+msgstr "Bạn có chắc muốn phê duyệt bảng lương này? Hành động này không thể hoàn tác."
+
+#. module: payroll_analytics_approval
+msgid "Processing..."
+msgstr "Đang xử lý..."
+
+#. module: payroll_analytics_approval
+msgid "Payroll approved successfully! Refreshing page..."
+msgstr "Đã phê duyệt bảng lương thành công! Đang làm mới trang..."
+
+#. module: payroll_analytics_approval
+msgid "FINAL APPROVE"
+msgstr "PHÊ DUYỆT CUỐI"
+
+#. module: payroll_analytics_approval
+msgid "Error approving payroll: "
+msgstr "Lỗi phê duyệt bảng lương: "
+
+#. module: payroll_analytics_approval
+msgid "Unknown error"
+msgstr "Lỗi không xác định"
+
+#. module: payroll_analytics_approval
+msgid "Chart.js loading failed"
+msgstr "Không thể tải Chart.js"
+
+#. module: payroll_analytics_approval
+msgid "No Significant Variance"
+msgstr "Không có chênh lệch đáng kể"
+
+#. module: payroll_analytics_approval
+msgid "Current month values are similar to previous month"
+msgstr "Giá trị tháng hiện tại tương tự tháng trước"
+
+#. module: payroll_analytics_approval
+msgid "Variance: "
+msgstr "Chênh lệch: "
+
+#. module: payroll_analytics_approval
+msgid "No anomalies detected"
+msgstr "Không phát hiện bất thường"
+
+#. module: payroll_analytics_approval
+msgid "Unknown Component"
+msgstr "Thành phần không xác định"
+
+#. module: payroll_analytics_approval
+msgid "No message available"
+msgstr "Không có thông báo"
+
+#. module: payroll_analytics_approval
+msgid "Alert"
+msgstr "Cảnh báo"
+
+#. module: payroll_analytics_approval
+msgid "Overall payroll is trending upward - consider budget implications"
+msgstr "Tổng quỹ lương đang tăng - cân nhắc tác động ngân sách"
+
+#. module: payroll_analytics_approval
+msgid "Overall payroll is trending downward - good cost management"
+msgstr "Tổng quỹ lương đang giảm - quản lý chi phí tốt"
+
+#. module: payroll_analytics_approval
+msgid "No anomalies detected - payroll appears consistent"
+msgstr "Không phát hiện bất thường - bảng lương có vẻ ổn định"
+
+#. module: payroll_analytics_approval
+msgid "Large variance detected in "
+msgstr "Phát hiện chênh lệch lớn ở "
+
+#. module: payroll_analytics_approval
+msgid "Review all components carefully before approval"
+msgstr "Rà soát kỹ tất cả thành phần trước khi phê duyệt"
+
+#. module: payroll_analytics_approval
+msgid "Verify employee counts and salary calculations"
+msgstr "Xác minh số lượng nhân viên và tính toán lương"
+
+#. module: payroll_analytics_approval
+msgid "Data appears consistent with previous period"
+msgstr "Dữ liệu nhất quán với kỳ trước"
+
+#. module: payroll_analytics_approval
+msgid "No critical issues detected"
+msgstr "Không phát hiện vấn đề nghiêm trọng"
+
+#. module: payroll_analytics_approval
+msgid "Error loading recommendations"
+msgstr "Lỗi khi tải khuyến nghị"
+
+#. module: payroll_analytics_approval
+msgid "Error loading warnings"
+msgstr "Lỗi khi tải cảnh báo"
+
+#. module: payroll_analytics_approval
+msgid "Charts will display when payroll data is processed"
+msgstr "Biểu đồ sẽ hiển thị khi dữ liệu bảng lương được xử lý"
+
+#. module: payroll_analytics_approval
+msgid "No data for this chart"
+msgstr "Không có dữ liệu cho biểu đồ này"
+
+#. module: payroll_analytics_approval
+msgid "Chart Loading Error"
+msgstr "Lỗi tải biểu đồ"
+
+#. module: payroll_analytics_approval
+msgid "Unable to load Chart.js library"
+msgstr "Không thể tải thư viện Chart.js"
+
+#. module: payroll_analytics_approval
+msgid "Data Parse Error"
+msgstr "Lỗi phân tích dữ liệu"
+
+#. module: payroll_analytics_approval
+msgid "Unable to parse analytics data. Please contact your administrator."
+msgstr "Không thể phân tích dữ liệu phân tích. Vui lòng liên hệ quản trị viên."
+
+#. module: payroll_analytics_approval
+msgid "Dashboard Load Error"
+msgstr "Lỗi tải bảng điều khiển"
+
+#. module: payroll_analytics_approval
+msgid "There was an issue loading the dashboard. Please refresh the page."
+msgstr "Có lỗi khi tải bảng điều khiển. Vui lòng làm mới trang."
+
+#. module: payroll_analytics_approval
+msgid "Failed to open analytics dashboard"
+msgstr "Không thể mở bảng điều khiển phân tích"
+
+#. module: payroll_analytics_approval
+msgid "Failed to open bank export"
+msgstr "Không thể mở xuất ngân hàng"
+
+#. module: payroll_analytics_approval
+msgid "Loading..."
+msgstr "Đang tải..."
+
+#. module: payroll_analytics_approval
+msgid "Could not open analytics dashboard: "
+msgstr "Không thể mở bảng điều khiển phân tích: "
+
+#. module: payroll_analytics_approval
+msgid "Could not open bank export: "
+msgstr "Không thể mở xuất ngân hàng: "

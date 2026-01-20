@@ -8,6 +8,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
     var viewRegistry = require('web.view_registry');
     var core = require('web.core');
     var rpc = require('web.rpc');
+    var _t = core._t;
 
     var PayrollAnalyticsDashboard = FormController.extend({
         
@@ -81,7 +82,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     resolve();
                 };
                 script.onerror = function() {
-                    reject(new Error('Chart.js loading failed'));
+                    reject(new Error(_t('Chart.js loading failed')));
                 };
                 document.head.appendChild(script);
             });
@@ -496,13 +497,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Current Month',
+                        label: _t('Current Month'),
                         data: currentData,
                         backgroundColor: 'rgba(102, 187, 106, 0.8)',
                         borderColor: 'rgba(102, 187, 106, 1)',
                         borderWidth: 2
                     }, {
-                        label: 'Previous Month',
+                        label: _t('Previous Month'),
                         data: previousData,
                         backgroundColor: 'rgba(149, 165, 166, 0.8)',
                         borderColor: 'rgba(149, 165, 166, 1)',
@@ -617,8 +618,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     if (parent) {
                         parent.innerHTML = '<div class="no-variance-message text-center p-4">' +
                             '<i class="fa fa-info-circle fa-2x text-muted mb-2"></i>' +
-                            '<h5 class="text-muted">No Significant Variance</h5>' +
-                            '<p class="text-muted">Current month values are similar to previous month</p>' +
+                            '<h5 class="text-muted">' + _t('No Significant Variance') + '</h5>' +
+                            '<p class="text-muted">' + _t('Current month values are similar to previous month') + '</p>' +
                             '</div>';
                     }
                 }
@@ -630,7 +631,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Variance %',
+                        label: _t('Variance %'),
                         data: varianceData,
                         backgroundColor: colors,
                         borderColor: colors.map(c => c.replace('0.8', '1')),
@@ -669,7 +670,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    return 'Variance: ' + context.parsed.y.toFixed(1) + '%';
+                                    return _t('Variance: ') + context.parsed.y.toFixed(1) + '%';
                                 }
                             }
                         }
@@ -721,7 +722,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             }
 
             if (!alerts.length) {
-                container.innerHTML = '<div class="alert alert-success"><i class="fa fa-check-circle"></i> No anomalies detected</div>';
+                container.innerHTML = '<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + _t('No anomalies detected') + '</div>';
                 return;
             }
 
@@ -740,8 +741,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 
                 html += '<div class="alert ' + severityClass + ' fade-in">';
                 html += '<i class="fa ' + iconClass + '"></i> ';
-                html += '<strong>' + (alert.component_name || alert.component || 'Unknown Component') + '</strong><br>';
-                html += (alert.message || 'No message available');
+                html += '<strong>' + (alert.component_name || alert.component || _t('Unknown Component')) + '</strong><br>';
+                html += (alert.message || _t('No message available'));
                 html += '</div>';
             });
 
@@ -782,8 +783,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 var varianceClass = variance > 0 ? 'text-success' : (variance < 0 ? 'text-danger' : 'text-muted');
                 var statusBadge = status === 'alert' ? 'badge-danger' : 
                                  status === 'warning' ? 'badge-warning' : 'badge-success';
-                var statusText = status === 'alert' ? 'Alert' :
-                                status === 'warning' ? 'Warning' : 'Normal';
+                var statusText = status === 'alert' ? _t('Alert') :
+                                status === 'warning' ? _t('Warning') : _t('Normal');
 
                 html += '<tr class="analysis-row-clickable" data-component-code="' + code + '">';
                 html += '<td><strong>' + (component.name || '') + '</strong></td>';
@@ -839,13 +840,13 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
             // Generate recommendations based on data
             if (comparison && comparison.trend === 'increasing') {
-                recommendations.push('Overall payroll is trending upward - consider budget implications');
+                recommendations.push(_t('Overall payroll is trending upward - consider budget implications'));
             } else if (comparison && comparison.trend === 'decreasing') {
-                recommendations.push('Overall payroll is trending downward - good cost management');
+                recommendations.push(_t('Overall payroll is trending downward - good cost management'));
             }
             
             if (alerts.length === 0) {
-                recommendations.push('No anomalies detected - payroll appears consistent');
+                recommendations.push(_t('No anomalies detected - payroll appears consistent'));
             }
 
             // Check for large variances
@@ -855,7 +856,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     var variance = comparison.variance[code];
                     if (Math.abs(variance) > 30) {
                         var componentName = (components[code] && components[code].name) || code;
-                        warnings.push('Large variance detected in ' + componentName + ' (' + variance.toFixed(1) + '%)');
+                        warnings.push(_t('Large variance detected in ') + componentName + ' (' + variance.toFixed(1) + '%)');
                         hasLargeVariances = true;
                     }
                 });
@@ -870,16 +871,16 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
 
             // Default recommendations if none generated
             if (recommendations.length === 0) {
-                recommendations.push('Review all components carefully before approval');
-                recommendations.push('Verify employee counts and salary calculations');
+                recommendations.push(_t('Review all components carefully before approval'));
+                recommendations.push(_t('Verify employee counts and salary calculations'));
                 if (!hasLargeVariances) {
-                    recommendations.push('Data appears consistent with previous period');
+                    recommendations.push(_t('Data appears consistent with previous period'));
                 }
             }
 
             // Default warnings if none generated
             if (warnings.length === 0) {
-                warnings.push('No critical issues detected');
+                warnings.push(_t('No critical issues detected'));
             }
 
             // Populate lists with safe HTML generation
@@ -892,8 +893,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                     return '<li><i class="fa fa-warning text-warning"></i> ' + (w || '') + '</li>';
                 }).join('');
             } catch (error) {
-                recList.innerHTML = '<li>Error loading recommendations</li>';
-                warnList.innerHTML = '<li>Error loading warnings</li>';
+                recList.innerHTML = '<li>' + _t('Error loading recommendations') + '</li>';
+                warnList.innerHTML = '<li>' + _t('Error loading warnings') + '</li>';
             }
         },
 
@@ -949,8 +950,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             chartContainers.forEach(function (container) {
                 container.innerHTML = '<div class="no-data-message text-center p-4">' +
                     '<i class="fa fa-info-circle fa-3x text-muted mb-3"></i>' +
-                    '<h5 class="text-muted">No Data Available</h5>' +
-                    '<p class="text-muted">Charts will display when payroll data is processed</p>' +
+                    '<h5 class="text-muted">' + _t('No Data Available') + '</h5>' +
+                    '<p class="text-muted">' + _t('Charts will display when payroll data is processed') + '</p>' +
                     '</div>';
             });
         },
@@ -963,7 +964,7 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
                 if (parent) {
                     parent.innerHTML = '<div class="no-data-message text-center p-4">' +
                         '<i class="fa fa-info-circle fa-2x text-muted mb-2"></i>' +
-                        '<p class="text-muted">No data for this chart</p>' +
+                        '<p class="text-muted">' + _t('No data for this chart') + '</p>' +
                         '</div>';
                 }
             }
@@ -974,8 +975,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             chartContainers.forEach(function (container) {
                 container.innerHTML = '<div class="error-message text-center p-4">' +
                     '<i class="fa fa-exclamation-triangle fa-3x text-danger mb-3"></i>' +
-                    '<h5 class="text-danger">Chart Loading Error</h5>' +
-                    '<p class="text-muted">Unable to load Chart.js library</p>' +
+                    '<h5 class="text-danger">' + _t('Chart Loading Error') + '</h5>' +
+                    '<p class="text-muted">' + _t('Unable to load Chart.js library') + '</p>' +
                     '</div>';
             });
         },
@@ -985,8 +986,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             if (container) {
                 container.innerHTML = '<div class="alert alert-danger text-center">' +
                     '<i class="fa fa-exclamation-triangle fa-2x mb-3"></i>' +
-                    '<h4>Data Parse Error</h4>' +
-                    '<p>Unable to parse analytics data. Please contact your administrator.</p>' +
+                    '<h4>' + _t('Data Parse Error') + '</h4>' +
+                    '<p>' + _t('Unable to parse analytics data. Please contact your administrator.') + '</p>' +
                     '</div>';
             }
         },
@@ -996,8 +997,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             if (container) {
                 container.innerHTML = '<div class="alert alert-warning text-center">' +
                     '<i class="fa fa-warning fa-2x mb-3"></i>' +
-                    '<h4>Dashboard Load Error</h4>' +
-                    '<p>There was an issue loading the dashboard. Please refresh the page.</p>' +
+                    '<h4>' + _t('Dashboard Load Error') + '</h4>' +
+                    '<p>' + _t('There was an issue loading the dashboard. Please refresh the page.') + '</p>' +
                     '</div>';
             }
         },
@@ -1181,8 +1182,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             }).catch(function(error) {
                 if (self.displayNotification) {
                     self.displayNotification({
-                        title: 'Error',
-                        message: 'Failed to open analytics dashboard',
+                        title: _t('Error'),
+                        message: _t('Failed to open analytics dashboard'),
                         type: 'danger'
                     });
                 }
@@ -1204,8 +1205,8 @@ odoo.define('payroll_analytics_approval.enhanced_dashboard', function (require) 
             }).catch(function(error) {
                 if (self.displayNotification) {
                     self.displayNotification({
-                        title: 'Error',
-                        message: 'Failed to open bank export',
+                        title: _t('Error'),
+                        message: _t('Failed to open bank export'),
                         type: 'danger'
                     });
                 }
@@ -1324,7 +1325,7 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
             // Show loading state
             if (button) {
                 var originalText = button.innerHTML;
-                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Loading...';
+                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ' + _t('Loading...') ;
                 button.disabled = true;
                 
                 // Restore button state after delay regardless of outcome
@@ -1355,7 +1356,7 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
             }).catch(function(error) {
                 // Only show user-friendly error if it's a real failure
                 if (error && error.message && !error.message.includes('[object Object]')) {
-                    self._showNotification('Could not open analytics dashboard: ' + error.message, 'warning');
+                    self._showNotification(_t('Could not open analytics dashboard: ') + error.message, 'warning');
                 }
             });
         },
@@ -1366,7 +1367,7 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
             // Show loading state
             if (button) {
                 var originalText = button.innerHTML;
-                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Loading...';
+                button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ' + _t('Loading...') ;
                 button.disabled = true;
                 
                 // Restore button state after delay
@@ -1400,7 +1401,7 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
             }).catch(function(error) {
                 // Only show meaningful errors to user
                 if (error && error.message && !error.message.includes('[object Object]')) {
-                    self._showNotification('Could not open bank export: ' + error.message, 'warning');
+                    self._showNotification(_t('Could not open bank export: ') + error.message, 'warning');
                 }
             });
         },
@@ -1409,7 +1410,7 @@ odoo.define('payroll_analytics_approval.dashboard_controller_fixed', function (r
             try {
                 if (this.displayNotification) {
                     this.displayNotification({
-                        title: type === 'danger' ? 'Error' : type === 'warning' ? 'Warning' : 'Info',
+                        title: type === 'danger' ? _t('Error') : type === 'warning' ? _t('Warning') : _t('Info'),
                         message: message,
                         type: type || 'info',
                         sticky: false
