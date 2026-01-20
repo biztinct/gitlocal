@@ -210,7 +210,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             var tabTextMap = {
                 'hierarchy': 'Hierarchy Home',
                 'consolidated': 'Consolidated View',
-                'config_detail': 'Config Detail',
+                'config_detail': 'Salary Details',
                 'department_detail': 'Department Detail'
             };
 
@@ -500,7 +500,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             var tabTextMap = {
                 'hierarchy': 'Hierarchy Home',
                 'consolidated': 'Consolidated View',
-                'config_detail': 'Config Detail',
+                'config_detail': 'Salary Details',
                 'department_detail': 'Department Detail'
             };
 

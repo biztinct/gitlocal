@@ -12,7 +12,7 @@
         <field name="model">hr.payslip.line</field>
         <field name="priority">100</field>
         <field name="arch" type="xml">
-            <pivot string="Employee x Components" display_quantity="true" sample="1">
+            <pivot string="Employee x Components" display_quantity="false" sample="1">
                 <!-- Rows: Employee names -->
                 <field name="employee_id" type="row"/>
                 <!-- Columns: Component name (user-friendly) -->
