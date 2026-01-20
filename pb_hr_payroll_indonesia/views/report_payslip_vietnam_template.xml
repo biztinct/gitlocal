@@ -33,26 +33,23 @@
                                     <t t-esc="(o.date_to or o.date_from).strftime('%m/%Y') if (o.date_to or o.date_from) else ''"/>
                                 </th>
                             </tr>
-                            <tr>
-                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">MÃ SỐ NHÂN VIÊN</td>
-                                <t t-set="employee_code" t-value="o._report_get_raw_value('MSNV', 'EMPLOYEE ID', 'EMPLOYEEID')"/>
-                                <td style="border: 1px solid #000; padding: 4px;">
-                                    <t t-esc="employee_code or o.employee_id.employee_id or o.employee_id.identification_id or ''"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">HỌ TÊN</td>
-                                <td style="border: 1px solid #000; padding: 4px;"><t t-esc="o.employee_id.name or ''"/></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="border: 1px solid #000; padding: 4px;">Ngày công tiêu chuẩn trong tháng</td>
-                                <td style="border: 1px solid #000; padding: 4px;">
-                                    <t t-esc="o._report_fmt_amount(o._report_get_line_total_by_keys('STANDARDWORKINGDAY', 'STANDARD WORKING DAY', 'STANDARD WORKING DAYS', 'WORKING DAY CURRENT MONTH', 'WORKINGDAYCURRENTMONTH', 'WORKING DAY', 'WORKINGDAY', 'WORK100', 'STANDARD', 'STDWORK', 'NGAYCONG', 'SALARY CALCULATION DAYS', 'TOTAL DAYS/MONTH', 'TOTAL DAYS MONTH', 'WORKDAYS IN THE MONTH', 'CONG GOES TO WORK ON WEEKDAYS'))"/>
-                                </td>
-                            </tr>
                             <t t-set="identifier_sections" t-value="o._report_get_identifier_sections()"/>
                             <t t-if="identifier_sections is not None">
-                                <t t-foreach="identifier_sections" t-as="section">
+                                <t t-set="identifier_h_sections" t-value="[s for s in identifier_sections if s.get('identifier') == 'H']"/>
+                                <t t-set="other_sections" t-value="[s for s in identifier_sections if s.get('identifier') != 'H']"/>
+                                <t t-foreach="identifier_h_sections" t-as="section">
+                                    <t t-foreach="section['lines']" t-as="line">
+                                        <tr>
+                                            <td colspan="2" style="border: 1px solid #000; padding: 4px;">
+                                                <t t-esc="line['name']"/>
+                                            </td>
+                                            <td style="border: 1px solid #000; padding: 4px; text-align: right;">
+                                                <t t-esc="line['value']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-foreach="other_sections" t-as="section">
                                     <tr>
                                         <td colspan="2" style="border: 1px solid #000; background: #e4f0f2; padding: 6px; text-align: left; font-weight: bold;">
                                             <t t-esc="section['title']"/>
