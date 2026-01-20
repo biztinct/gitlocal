@@ -278,6 +278,8 @@
                 <filter string="Excel Import" name="excel" domain="[('source_type', '=', 'excel')]"/>
                 <filter string="Connector Import" name="connector" domain="[('source_type', '=', 'connector')]"/>
                 <separator/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <separator/>
                 <group expand="0" string="Group By">
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Source" name="group_source" context="{'group_by': 'source_type'}"/>

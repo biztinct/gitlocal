@@ -6,6 +6,8 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
     var FormController = require('web.FormController');
     var FormView = require('web.FormView');
     var rpc = require('web.rpc');
+    var core = require('web.core');
+    var _t = core._t;
 
     var ChartLib;
     try {
@@ -95,7 +97,7 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                         resolve();
                     };
                     script.onerror = function () {
-                        reject(new Error('Failed to load Chart.js'));
+                        reject(new Error(_t('Failed to load Chart.js')));
                     };
                     document.head.appendChild(script);
                 }
@@ -230,7 +232,13 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         _loadPersonnelCostsCharts: function () {
             try {
                 // Sample data for Personnel Costs
-                var departments = ['Engineering', 'Sales', 'Operations', 'HR', 'Finance'];
+                var departments = [
+                    _t('Engineering'),
+                    _t('Sales'),
+                    _t('Operations'),
+                    _t('HR'),
+                    _t('Finance')
+                ];
                 var basicSalaries = [45000, 38000, 32000, 28000, 35000];
                 var allowances = [5000, 4000, 3000, 2000, 4000];
                 var contributions = [8000, 7000, 6000, 5000, 6500];
@@ -273,17 +281,17 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                     try {
                         var datasets = [
                             {
-                                label: 'Basic Salary',
+                                label: _t('Basic Salary'),
                                 data: basicSalaries,
                                 backgroundColor: '#3498db'
                             },
                             {
-                                label: 'Allowances',
+                                label: _t('Allowances'),
                                 data: allowances,
                                 backgroundColor: '#2ecc71'
                             },
                             {
-                                label: 'Contributions',
+                                label: _t('Contributions'),
                                 data: contributions,
                                 backgroundColor: '#e74c3c'
                             }
@@ -316,14 +324,22 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         _loadCrossCountryCharts: function () {
             try {
                 // Sample data for cross-country comparison
-                var countries = ['Vietnam', 'Indonesia', 'India', 'Singapore', 'Thailand', 'Malaysia', 'Cambodia'];
+                var countries = [
+                    _t('Vietnam'),
+                    _t('Indonesia'),
+                    _t('India'),
+                    _t('Singapore'),
+                    _t('Thailand'),
+                    _t('Malaysia'),
+                    _t('Cambodia')
+                ];
                 var costs = [1245, 820, 420, 185, 85, 45, 25];
                 var headcount = [450, 280, 120, 45, 32, 15, 8];
 
                 // Chart 3: Cost by Country (Vertical Bar)
                 if (document.getElementById('bar-chart-country-costs')) {
                     var datasets = [{
-                        label: 'Total Cost',
+                        label: _t('Total Cost'),
                         data: costs,
                         backgroundColor: '#3498db'
                     }];
@@ -364,7 +380,11 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         _loadStatutoryContribCharts: function () {
             try {
                 // Sample data for Statutory Contributions
-                var contribTypes = ['Social Insurance', 'Health Insurance', 'Unemployment Insurance'];
+                var contribTypes = [
+                    _t('Social Insurance'),
+                    _t('Health Insurance'),
+                    _t('Unemployment Insurance')
+                ];
                 var employeeData = [5000, 3000, 500];
                 var employerData = [8000, 4000, 1000];
                 var totals = [13000, 7000, 1500];
@@ -382,12 +402,12 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 if (document.getElementById('stacked-bar-chart-statutory')) {
                     var datasets = [
                         {
-                            label: 'Employee Contributions',
+                            label: _t('Employee Contributions'),
                             data: employeeData,
                             backgroundColor: '#3498db'
                         },
                         {
-                            label: 'Employer Contributions',
+                            label: _t('Employer Contributions'),
                             data: employerData,
                             backgroundColor: '#2ecc71'
                         }
@@ -409,7 +429,7 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         _loadHeadcountCharts: function () {
             try {
                 // Sample data for Headcount Analysis
-                var types = ['Full-time', 'Part-time', 'Contractor'];
+                var types = [_t('Full-time'), _t('Part-time'), _t('Contractor')];
                 var counts = [850, 125, 25];
 
                 // Pie chart: Headcount by Type
@@ -432,13 +452,19 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
 
         _loadDependentsCharts: function () {
             // Sample data for dependents analysis
-            var departments = ['Engineering', 'Sales', 'Operations', 'HR', 'Finance'];
+            var departments = [
+                _t('Engineering'),
+                _t('Sales'),
+                _t('Operations'),
+                _t('HR'),
+                _t('Finance')
+            ];
             var dependentCounts = [45, 32, 28, 15, 22];
 
             // Bar chart: Dependents by Department
             if (document.getElementById('bar-chart-dependents')) {
                 var datasets = [{
-                    label: 'Dependents Count',
+                    label: _t('Dependents Count'),
                     data: dependentCounts,
                     backgroundColor: '#9b59b6'
                 }];
@@ -457,7 +483,13 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
         _loadBudgetVarianceCharts: function () {
             try {
                 // Sample data for Budget Variance
-                var departments = ['Engineering', 'Sales', 'Operations', 'HR', 'Finance'];
+                var departments = [
+                    _t('Engineering'),
+                    _t('Sales'),
+                    _t('Operations'),
+                    _t('HR'),
+                    _t('Finance')
+                ];
                 var budgetAmounts = [250000, 200000, 180000, 120000, 150000];
                 var actualAmounts = [245000, 215000, 175000, 125000, 155000];
                 var variancePercentages = [2, 7.5, 2.8, 4.2, 3.3];
@@ -466,12 +498,12 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 if (document.getElementById('grouped-bar-chart-budget')) {
                     var datasets = [
                         {
-                            label: 'Budget',
+                            label: _t('Budget'),
                             data: budgetAmounts,
                             backgroundColor: '#3498db'
                         },
                         {
-                            label: 'Actual',
+                            label: _t('Actual'),
                             data: actualAmounts,
                             backgroundColor: '#2ecc71'
                         }
@@ -493,7 +525,7 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                     });
 
                     var datasets = [{
-                        label: 'Variance %',
+                        label: _t('Variance %'),
                         data: variancePercentages,
                         backgroundColor: colors
                     }];
@@ -520,12 +552,15 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
             // if (!annual) return;
 
             // Sample monthly data for trend
-            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var months = [
+                _t('Jan'), _t('Feb'), _t('Mar'), _t('Apr'), _t('May'), _t('Jun'),
+                _t('Jul'), _t('Aug'), _t('Sep'), _t('Oct'), _t('Nov'), _t('Dec')
+            ];
             var monthlyCosts = [95000, 96000, 98000, 97000, 99000, 101000, 100000, 102000, 101000, 103000, 104000, 105000];
 
             if (document.getElementById('line-chart-annual-trend')) {
                 var datasets = [{
-                    label: 'Monthly Cost',
+                    label: _t('Monthly Cost'),
                     data: monthlyCosts,
                     borderColor: '#3498db',
                     backgroundColor: 'rgba(52, 152, 219, 0.1)',
@@ -570,15 +605,15 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
                 self.do_action(action);
             }).catch(function (error) {
                 // Try to get more detailed error message
-                var errorMsg = 'Unknown error';
+                var errorMsg = _t('Unknown error');
                 if (error && error.message && error.message.data) {
                     errorMsg = error.message.data.message || error.message.data.name || errorMsg;
                 } else if (error && error.message) {
                     errorMsg = error.message;
                 }
                 self.displayNotification({
-                    title: 'Drill-Down Error',
-                    message: 'Failed to load employee details: ' + errorMsg,
+                    title: _t('Drill-Down Error'),
+                    message: _t('Failed to load employee details: ') + errorMsg,
                     type: 'danger'
                 });
             });
@@ -610,7 +645,7 @@ odoo.define('pb_hr_payroll_analytics.Dashboard', function (require) {
             }).then(function () {
                 self._setupDashboard();
                 self._loadTabData(self.activeTab);
-                self.do_notify('Success', 'Analytics refreshed successfully');
+                self.do_notify(_t('Success'), _t('Analytics refreshed successfully'));
             });
         },
 

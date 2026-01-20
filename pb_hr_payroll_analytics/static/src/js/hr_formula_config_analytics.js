@@ -6,6 +6,8 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
     var FormController = require('web.FormController');
     var FormView = require('web.FormView');
     var rpc = require('web.rpc');
+    var core = require('web.core');
+    var _t = core._t;
 
     // Load Chart Library
     var ChartLib;
@@ -64,28 +66,28 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
     // Category type labels
     var categoryTypeLabels = {
-        'basic': 'Basic Salary',
-        'allowance': 'Allowances',
-        'deduction': 'Deductions',
-        'tax': 'Taxes',
-        'social_security': 'Social Security',
-        'net': 'Net Salary',
-        'employer_cost': 'Employer Costs'
+        'basic': _t('Basic Salary'),
+        'allowance': _t('Allowances'),
+        'deduction': _t('Deductions'),
+        'tax': _t('Taxes'),
+        'social_security': _t('Social Security'),
+        'net': _t('Net Salary'),
+        'employer_cost': _t('Employer Costs')
     };
 
     // Cycle type labels (display values)
     var cycleTypeLabels = {
-        'regular': 'Regular',
-        'end_cycle': 'End Cycle',
-        'mid_cycle': 'Mid Cycle',
-        'bonus': 'Bonus',
-        'thirteenth': '13th Month',
-        'special': 'Special'
+        'regular': _t('Regular'),
+        'end_cycle': _t('End Cycle'),
+        'mid_cycle': _t('Mid Cycle'),
+        'bonus': _t('Bonus'),
+        'thirteenth': _t('13th Month'),
+        'special': _t('Special')
     };
 
     // Format cycle type for display
     var formatCycleType = function (cycleType) {
-        if (!cycleType) return 'Regular';
+        if (!cycleType) return _t('Regular');
         return cycleTypeLabels[cycleType] || cycleType.replace(/_/g, ' ').replace(/\b\w/g, function (l) { return l.toUpperCase(); });
     };
 
@@ -208,10 +210,10 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
             // Map of page names to their expected tab text
             var tabTextMap = {
-                'hierarchy': 'Hierarchy Home',
-                'consolidated': 'Consolidated View',
-                'config_detail': 'Salary Details',
-                'department_detail': 'Department Detail'
+                'hierarchy': _t('Hierarchy Home'),
+                'consolidated': _t('Consolidated View'),
+                'config_detail': _t('Salary Details'),
+                'department_detail': _t('Department Detail')
             };
 
             // Method 1: Find by page name attribute
@@ -280,7 +282,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 if (configsGrid) {
                     configsGrid.innerHTML = '<div style="text-align: center; color: #95a5a6; padding: 40px; grid-column: 1/-1;">' +
                         '<i class="fa fa-info-circle" style="font-size: 30px;"></i>' +
-                        '<p>No hierarchy data available. Try refreshing.</p></div>';
+                        '<p>' + _t('No hierarchy data available. Try refreshing.') + '</p></div>';
                 }
                 return;
             }
@@ -305,7 +307,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 if (data.configs.length === 0) {
                     configsGrid.innerHTML = '<div style="text-align: center; color: #95a5a6; padding: 40px; grid-column: 1/-1;">' +
                         '<i class="fa fa-info-circle" style="font-size: 30px;"></i>' +
-                        '<p>No active salary configs found for this company.</p></div>';
+                        '<p>' + _t('No active salary configs found for this company.') + '</p></div>';
                     return;
                 }
 
@@ -335,31 +337,31 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                         '<div style="padding: 15px;">' +
                             '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">' +
                                 '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
-                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Country</div>' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">' + _t('Country') + '</div>' +
                                     '<div style="font-size: 14px; font-weight: bold; color: ' + cardStyle.text + ';">' + (config.country_code || '-') + '</div>' +
                                 '</div>' +
                                 '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
-                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Cycle</div>' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">' + _t('Cycle') + '</div>' +
                                     '<div style="font-size: 14px; font-weight: bold; color: ' + cardStyle.text + ';">' + formatCycleType(config.cycle_type) + '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">' +
                                 '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
-                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Employees</div>' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">' + _t('Employees') + '</div>' +
                                     '<div style="font-size: 18px; font-weight: bold; color: ' + cardStyle.text + ';">' + config.employee_count + '</div>' +
                                 '</div>' +
                                 '<div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.7); border-radius: 8px; border: 1px solid ' + cardStyle.border + '40;">' +
-                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">Departments</div>' +
+                                    '<div style="font-size: 11px; color: ' + cardStyle.text + '; opacity: 0.8;">' + _t('Departments') + '</div>' +
                                     '<div style="font-size: 18px; font-weight: bold; color: ' + cardStyle.text + ';">' + config.departments.length + '</div>' +
                                 '</div>' +
                             '</div>' +
                             '<div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid ' + cardStyle.border + '30; text-align: center;">' +
-                                '<div style="font-size: 12px; color: ' + cardStyle.text + '; opacity: 0.8;">Total Cost</div>' +
+                                '<div style="font-size: 12px; color: ' + cardStyle.text + '; opacity: 0.8;">' + _t('Total Cost') + '</div>' +
                                 '<div style="font-size: 20px; font-weight: bold; color: ' + cardStyle.text + ';">' + formatCurrency(config.total_cost) + '</div>' +
                             '</div>' +
                         '</div>' +
                         '<div style="background: rgba(255,255,255,0.5); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid ' + cardStyle.border + '30;">' +
-                            '<span style="color: ' + cardStyle.text + '; font-size: 12px; opacity: 0.8;">Click to drill down</span>' +
+                            '<span style="color: ' + cardStyle.text + '; font-size: 12px; opacity: 0.8;">' + _t('Click to drill down') + '</span>' +
                             '<i class="fa fa-chevron-right" style="color: ' + cardStyle.border + ';"></i>' +
                         '</div>';
 
@@ -414,14 +416,14 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
             deptsGrid.style.display = 'block';
             deptsGrid.innerHTML = '<h4 style="grid-column: 1/-1; color: #334155; margin-bottom: 15px;">' +
-                '<i class="fa fa-sitemap"></i> Departments in <strong>' + config.name + '</strong></h4>';
+                '<i class="fa fa-sitemap"></i> ' + _t('Departments in') + ' <strong>' + config.name + '</strong></h4>';
             deptsGrid.style.cssText += 'display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; ' +
                 'margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 12px; ' +
                 'border: 2px solid #e2e8f0;';
 
             if (config.departments.length === 0) {
                 deptsGrid.innerHTML += '<div style="text-align: center; color: #64748b; padding: 20px;">' +
-                    '<p>No departments found for this config.</p></div>';
+                    '<p>' + _t('No departments found for this config.') + '</p></div>';
                 return;
             }
 
@@ -441,7 +443,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                         '<i class="fa fa-users" style="margin-right: 6px;"></i>' + dept.name +
                     '</div>' +
                     '<div style="display: flex; justify-content: space-between; font-size: 12px; color: ' + style.text + '; opacity: 0.85;">' +
-                        '<span><i class="fa fa-user" style="margin-right: 4px;"></i>' + dept.employee_count + ' employees</span>' +
+                        '<span><i class="fa fa-user" style="margin-right: 4px;"></i>' + dept.employee_count + ' ' + _t('Employees') + '</span>' +
                         '<span style="font-weight: bold;">' + formatCurrency(dept.gross_pay) + '</span>' +
                     '</div>';
 
@@ -469,7 +471,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             if (deptsGrid) {
                 deptsGrid.innerHTML = '<div style="text-align: center; padding: 20px; color: #3498db;">' +
                     '<i class="fa fa-spinner fa-spin" style="font-size: 24px;"></i>' +
-                    '<p>Loading department details...</p></div>';
+                    '<p>' + _t('Loading department details...') + '</p></div>';
             }
 
             rpc.query({
@@ -488,7 +490,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 if (deptsGrid) {
                     deptsGrid.innerHTML = '<div style="text-align: center; padding: 20px; color: #e74c3c;">' +
                         '<i class="fa fa-exclamation-triangle" style="font-size: 24px;"></i>' +
-                        '<p>Error loading department. Please try again.</p></div>';
+                        '<p>' + _t('Error loading department. Please try again.') + '</p></div>';
                 }
             });
         },
@@ -498,10 +500,10 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
 
             // Map of tab names to their display text (for fallback matching)
             var tabTextMap = {
-                'hierarchy': 'Hierarchy Home',
-                'consolidated': 'Consolidated View',
-                'config_detail': 'Salary Details',
-                'department_detail': 'Department Detail'
+                'hierarchy': _t('Hierarchy Home'),
+                'consolidated': _t('Consolidated View'),
+                'config_detail': _t('Salary Details'),
+                'department_detail': _t('Department Detail')
             };
 
             // Method 1: Find by data-bs-target containing the page name
@@ -883,7 +885,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Amount',
+                        label: _t('Amount'),
                         data: data,
                         backgroundColor: colorPalettes.gradient,
                         borderColor: colorPalettes.primary,
@@ -954,7 +956,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
                     if (tbody) {
                         tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: #95a5a6; padding: 40px;">' +
                             '<i class="fa fa-info-circle" style="font-size: 24px;"></i>' +
-                            '<p>No employee data available for the selected department and period.</p></td></tr>';
+                            '<p>' + _t('No employee data available for the selected department and period.') + '</p></td></tr>';
                     }
                 }
                 return;
@@ -985,7 +987,7 @@ odoo.define('pb_hr_payroll_analytics.FormulaConfigAnalytics', function (require)
             // Update table header
             var thead = table.querySelector('thead tr');
             if (thead) {
-                thead.innerHTML = '<th>Employee</th><th>Job Title</th>';
+                thead.innerHTML = '<th>' + _t('Employee') + '</th><th>' + _t('Job Title') + '</th>';
                 componentCodes.forEach(function (code) {
                     thead.innerHTML += '<th class="text-right">' + code + '</th>';
                 });

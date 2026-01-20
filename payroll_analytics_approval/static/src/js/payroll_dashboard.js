@@ -6,6 +6,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
     var rpc = require('web.rpc');
     var Dialog = require('web.Dialog');
     var QWeb = core.qweb;
+    var _t = core._t;
 
     var PayrollAnalyticsDashboard = AbstractAction.extend({
         template: 'payroll_analytics_approval.dashboard_template',
@@ -71,7 +72,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
             
             this.do_action({
                 type: 'ir.actions.act_window',
-                name: 'Payroll Approval',
+                name: _t('Payroll Approval'),
                 res_model: 'payroll.analytics',
                 view_mode: 'tree,form',
                 domain: [('country', '=', country), ('state', '=', 'ready')],
@@ -84,7 +85,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
             
             this.do_action({
                 type: 'ir.actions.act_window',
-                name: 'Export Bank File',
+                name: _t('Export Bank File'),
                 res_model: 'payroll.bank.export.wizard',
                 view_mode: 'form',
                 target: 'new',
@@ -97,7 +98,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
         _openAnalyticsOverview: function () {
             this.do_action({
                 type: 'ir.actions.act_window',
-                name: 'Payroll Analytics',
+                name: _t('Payroll Analytics'),
                 res_model: 'payroll.analytics',
                 view_mode: 'tree,form',
                 context: {}
@@ -106,7 +107,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
 
         _showNotification: function (message, type) {
             this.displayNotification({
-                title: type === 'success' ? 'Success' : type === 'warning' ? 'Warning' : 'Info',
+                title: type === 'success' ? _t('Success') : type === 'warning' ? _t('Warning') : _t('Info'),
                 message: message,
                 type: type || 'info',
                 sticky: false,
@@ -189,13 +190,13 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
                 data: {
                     labels: this.chartData.components.labels || [],
                     datasets: [{
-                        label: 'Current Month',
+                        label: _t('Current Month'),
                         data: comparisonData.current || [],
                         backgroundColor: 'rgba(52, 152, 219, 0.8)',
                         borderColor: '#3498db',
                         borderWidth: 1
                     }, {
-                        label: 'Previous Month',
+                        label: _t('Previous Month'),
                         data: comparisonData.previous || [],
                         backgroundColor: 'rgba(149, 165, 166, 0.8)',
                         borderColor: '#95a5a6',
@@ -231,7 +232,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
                     '<td><code>' + code + '</code></td>' +
                     '<td class="text-right">' + (component.total || 0).toLocaleString() + '</td>' +
                     '<td class="text-right">' + (component.average || 0).toLocaleString() + '</td>' +
-                    '<td class="text-center"><span class="badge badge-success">Normal</span></td>'
+                    '<td class="text-center"><span class="badge badge-success">' + _t('Normal') + '</span></td>'
                 );
                 
                 tbody.append(row);
@@ -240,10 +241,10 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
 
         _showRecommendations: function () {
             var recommendations = [
-                'Employee count is stable compared to last month',
-                'Total payroll variance is within acceptable range',
-                'No critical anomalies detected in salary components',
-                'Bank export file can be generated after approval'
+                _t('Employee count is stable compared to last month'),
+                _t('Total payroll variance is within acceptable range'),
+                _t('No critical anomalies detected in salary components'),
+                _t('Bank export file can be generated after approval')
             ];
             
             var list = this.$('#recommendations-list');
@@ -264,8 +265,8 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
             if (!this.anomalies || Object.keys(this.anomalies).length === 0) {
                 alertsContainer.append(
                     '<div class="alert alert-success">' +
-                    '<h5><i class="fa fa-check-circle"></i> No Anomalies Detected</h5>' +
-                    '<p>All payroll components are within expected ranges.</p>' +
+                    '<h5><i class="fa fa-check-circle"></i> ' + _t('No Anomalies Detected') + '</h5>' +
+                    '<p>' + _t('All payroll components are within expected ranges.') + '</p>' +
                     '</div>'
                 );
                 return;
@@ -289,7 +290,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
         _showApprovalConfirmation: function () {
             var self = this;
             
-            if (confirm('Are you sure you want to approve this payroll? This action cannot be undone.')) {
+            if (confirm(_t('Are you sure you want to approve this payroll? This action cannot be undone.'))) {
                 self._finalApprove();
             }
         },
@@ -298,7 +299,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
             var self = this;
             
             // Disable the button to prevent multiple clicks
-            self.$('#final-approve-btn').prop('disabled', true).text('Processing...');
+            self.$('#final-approve-btn').prop('disabled', true).text(_t('Processing...'));
             
             rpc.query({
                 model: 'payroll.analytics',
@@ -316,7 +317,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
                     self.do_action(result);
                 } else {
                     // Fallback - show notification and force reload
-                    self._showNotification('Payroll approved successfully! Refreshing page...', 'success');
+                    self._showNotification(_t('Payroll approved successfully! Refreshing page...'), 'success');
                     
                     setTimeout(function () {
                         window.location.reload(true);
@@ -324,15 +325,15 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
                 }
             }).catch(function (error) {
                 // Re-enable the button on error
-                self.$('#final-approve-btn').prop('disabled', false).text('FINAL APPROVE');
-                self._showNotification('Error approving payroll: ' + (error.message && error.message.data ? error.message.data.message : 'Unknown error'), 'danger');
+                self.$('#final-approve-btn').prop('disabled', false).text(_t('FINAL APPROVE'));
+                self._showNotification(_t('Error approving payroll: ') + (error.message && error.message.data ? error.message.data.message : _t('Unknown error')), 'danger');
             });
         },
 
         _exportBankFile: function () {
             this.do_action({
                 type: 'ir.actions.act_window',
-                name: 'Export Bank File',
+                name: _t('Export Bank File'),
                 res_model: 'payroll.bank.export.wizard',
                 view_mode: 'form',
                 target: 'new',
@@ -344,7 +345,7 @@ odoo.define('payroll_analytics_approval.dashboard_main', function (require) {
 
         _showNotification: function (message, type) {
             this.displayNotification({
-                title: type === 'success' ? 'Success' : type === 'danger' ? 'Error' : 'Info',
+                title: type === 'success' ? _t('Success') : type === 'danger' ? _t('Error') : _t('Info'),
                 message: message,
                 type: type === 'danger' ? 'danger' : type || 'info',
                 sticky: false,

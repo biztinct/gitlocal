@@ -3,6 +3,9 @@
 odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
     'use strict';
 
+    var core = require('web.core');
+    var _t = core._t;
+
     var Chart = window.Chart || {};
     var charts = {};
 
@@ -247,7 +250,7 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
             type: 'scatter',
             data: {
                 datasets: [{
-                    label: 'Countries',
+                    label: _t('Countries'),
                     data: dataPoints,
                     backgroundColor: 'rgba(52, 152, 219, 0.6)',
                     borderColor: '#3498db',
@@ -263,8 +266,8 @@ odoo.define('pb_hr_payroll_analytics.Charts', function (require) {
                     legend: { display: true }
                 },
                 scales: {
-                    y: { beginAtZero: true, title: { display: true, text: 'Cost per Employee' } },
-                    x: { title: { display: true, text: 'Headcount' } }
+                    y: { beginAtZero: true, title: { display: true, text: _t('Cost per Employee') } },
+                    x: { title: { display: true, text: _t('Headcount') } }
                 }
             }
         });
