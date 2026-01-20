@@ -258,6 +258,10 @@ class HrPayslip(models.Model):
             'context': ctx,
         }
 
+    def action_print_payslip(self):
+        self.ensure_one()
+        return self.env.ref('om_hr_payroll.action_report_payslip').report_action(self)
+
 #Biztinct
     def action_send_email_backend(self):
         self.ensure_one()

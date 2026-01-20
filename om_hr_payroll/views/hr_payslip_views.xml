@@ -78,13 +78,15 @@
                     <header>
                     <button name="action_send_email_tree" type="object" string="Email Payslips" class="oe_highlight"/> 
                     </header>                  
-                    <field name="number"/>
                     <field name="employee_id"/>
                     <field name="name"/>
                     <field name="date_from"/>
                     <field name="date_to"/>
                     <field name="state"/>
-                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                    <button name="action_print_payslip" type="object" string="Print Payslip"
+                            class="btn btn-primary btn-sm" attrs="{'invisible': [('state', 'not in', ['done', 'verify'])]}"/>
+                    <button name="action_send_email" type="object" string="Send E-Mail"
+                            class="btn btn-primary btn-sm" attrs="{'invisible': [('state', 'not in', ['done', 'verify'])]}"/>
                     <field name="payslip_run_id" invisible="1"/>
                 </tree>
             </field>
