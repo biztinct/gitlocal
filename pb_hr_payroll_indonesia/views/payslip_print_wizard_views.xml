@@ -26,7 +26,7 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_send_email_all']" position="after">
                 <button string="Print Payslips" 
-                        name="action_print_payslips" 
+                        name="action_print_payslips_zip" 
                         type="object" 
                         class="oe_highlight" 
                         states="done"
@@ -43,7 +43,7 @@
         <field name="binding_type">action</field>
         <field name="state">code</field>
         <field name="code">
-action = records.action_print_payslips()
+action = records.action_print_payslips_zip()
         </field>
     </record>
     
