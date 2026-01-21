@@ -34,7 +34,7 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
     # Basic wizard fields
     name = fields.Char(string='Export Name', compute='_compute_name', store=True)
     analytics_id = fields.Many2one('payroll.analytics', string='Analytics')
-    struct_id = fields.Many2one('hr.payroll.structure', string='Salary Structure', required=True)
+    formula_config_id = fields.Many2one('hr.formula.config', string='Salary Configuration', required=True)
     date_from = fields.Date(string='Date From', required=True, default=fields.Date.today)
     date_to = fields.Date(string='Date To', required=True, default=fields.Date.today)
     export_format = fields.Selection([
@@ -79,8 +79,8 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         """Set defaults based on context"""
         res = super().default_get(fields_list)
         
-        if self.env.context.get('default_struct_id'):
-            res['struct_id'] = self.env.context['default_struct_id']
+        if self.env.context.get('default_formula_config_id'):
+            res['formula_config_id'] = self.env.context['default_formula_config_id']
         
         # Set current month dates
         today = datetime.date.today()
@@ -97,19 +97,19 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         
         return res
     
-    @api.depends('struct_id', 'date_from', 'date_to')
+    @api.depends('formula_config_id', 'date_from', 'date_to')
     def _compute_name(self):
         """Compute display name for the wizard"""
         for record in self:
-            if record.struct_id and record.date_from and record.date_to:
-                record.name = f"{record.struct_id.name} Bank Export ({record.date_from} to {record.date_to})"
+            if record.formula_config_id and record.date_from and record.date_to:
+                record.name = f"{record.formula_config_id.name} Bank Export ({record.date_from} to {record.date_to})"
             else:
                 record.name = "Bank Export Wizard"
     
-    @api.onchange('date_from', 'date_to', 'struct_id')
+    @api.onchange('date_from', 'date_to', 'formula_config_id')
     def _onchange_generate_preview(self):
         """Generate preview when dates or salary structure change"""
-        if self.date_from and self.date_to and self.struct_id:
+        if self.date_from and self.date_to and self.formula_config_id:
             self._generate_preview()
     
     def _generate_preview(self):
@@ -123,7 +123,7 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
             if not payslips:
                 self.preview_record_count = 0
                 self.preview_total_amount = 0
-                self.preview_data = "No approved payslips found for the selected period and salary structure."
+                self.preview_data = "No approved payslips found for the selected period and salary configuration."
                 return
             
             # Generate full export data for preview
@@ -167,8 +167,8 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
             ('date_to', '<=', self.date_to),
             ('state', '=', 'done')
         ]
-        if self.struct_id:
-            domain.append(('struct_id', '=', self.struct_id.id))
+        if self.formula_config_id and self.formula_config_id.structure_id:
+            domain.append(('struct_id', '=', self.formula_config_id.structure_id.id))
 
         return self.env['hr.payslip'].search(domain)
     
@@ -180,7 +180,7 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         payslips = self._get_payslips_for_export()
         
         if not payslips:
-            raise UserError(_('No approved payslips found for the selected period and salary structure'))
+            raise UserError(_('No approved payslips found for the selected period and salary configuration'))
         
         # Generate export data
         export_data = self._prepare_export_data(payslips)
@@ -326,7 +326,7 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         return net_pay
 
     def _get_structure_slug(self):
-        structure = self.struct_id
+        structure = self.formula_config_id.structure_id if self.formula_config_id else False
         if not structure:
             return 'structure'
         base = structure.code or structure.name or 'structure'
@@ -414,8 +414,8 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
             domain.append(('date_from', '>=', self.date_from))
         if self.date_to:
             domain.append(('date_to', '<=', self.date_to))
-        if self.struct_id:
-            domain.append(('struct_id', '=', self.struct_id.id))
+        if self.formula_config_id and self.formula_config_id.structure_id:
+            domain.append(('struct_id', '=', self.formula_config_id.structure_id.id))
 
         return {
             'type': 'ir.actions.act_window',
