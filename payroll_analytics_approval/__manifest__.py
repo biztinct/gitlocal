@@ -33,6 +33,7 @@
         'hr_contract', 
         'om_hr_payroll',
         'pb_hr_payroll_base',  # Required for payroll.dashboard model
+        'pb_hr_payroll_formula',
         'web',
         'spreadsheet_oca',
     ],
