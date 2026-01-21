@@ -53,7 +53,38 @@ class IrActionsReport(models.Model):
                     raise UserError(_("No valid payslips found to print."))
 
         # Call super to get the streams
-        collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+        try:
+            collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+        except EmptyFileError:
+            if self.model != 'hr.payslip' or not res_ids:
+                raise
+            _logger.warning(
+                "Empty PDF detected while rendering payslips %s. Retrying individually.",
+                res_ids,
+            )
+            collected_streams = {}
+            empty_payslip_ids = []
+            for record_id in res_ids:
+                try:
+                    per_streams = super()._render_qweb_pdf_prepare_streams(
+                        report_ref, data, res_ids=[record_id]
+                    )
+                except EmptyFileError:
+                    empty_payslip_ids.append(record_id)
+                    continue
+                if per_streams:
+                    collected_streams.update(per_streams)
+                else:
+                    empty_payslip_ids.append(record_id)
+
+            if empty_payslip_ids and not collected_streams:
+                empty_payslips = self.env['hr.payslip'].browse(empty_payslip_ids)
+                employee_names = empty_payslips.mapped('employee_id.name')
+                raise UserError(_(
+                    "Could not generate PDF for any payslips. "
+                    "Please check that the payslip template is correctly configured.\n\n"
+                    "Affected employees: %s"
+                ) % ', '.join(employee_names))
 
         # For payslip reports, filter out empty streams to prevent EmptyFileError
         if self.model == 'hr.payslip' and collected_streams:

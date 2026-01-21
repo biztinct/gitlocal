@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
+import base64
+import io
 import json
 import re
+import zipfile
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools import formatLang
@@ -434,6 +437,73 @@ class HrPayslipIndonesia(models.Model):
 
 class HrPayslipRun(models.Model):
     _inherit = 'hr.payslip.run'
+
+    def action_print_payslips_zip(self):
+        """Generate a ZIP file with individual payslip PDFs for this batch."""
+        self.ensure_one()
+        payslips = self.slip_ids.filtered(lambda slip: slip.state in ['done', 'level1', 'level2'])
+
+        if not payslips:
+            raise UserError(_('No confirmed payslips found to print.'))
+
+        zip_buffer = io.BytesIO()
+        failed_payslips = []
+
+        def _safe_filename(value):
+            return re.sub(r'[^A-Za-z0-9_.-]+', '_', (value or '').strip()) or 'payslip'
+
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for payslip in payslips:
+                try:
+                    report_name = payslip._get_report_name()
+                    report = self.env['ir.actions.report']._get_report_from_name(report_name)
+                    if not report:
+                        report = self.env.ref('om_hr_payroll.action_report_payslip')
+                    pdf_content, _ = report._render_qweb_pdf(report.report_name, res_ids=[payslip.id])
+                except Exception as exc:
+                    _logger.warning("Failed to render payslip %s: %s", payslip.id, exc)
+                    failed_payslips.append(payslip)
+                    continue
+
+                if not pdf_content:
+                    failed_payslips.append(payslip)
+                    continue
+
+                filename = _safe_filename(payslip.employee_id.name or payslip.name)
+                filename = f"{filename}-{payslip.date_to or ''}.pdf"
+                zip_file.writestr(filename, pdf_content)
+
+        if zip_buffer.tell() == 0 or zip_buffer.getbuffer().nbytes == 0:
+            employee_names = failed_payslips.mapped('employee_id.name')
+            raise UserError(_(
+                "Could not generate PDF for any payslips. "
+                "Please check that the payslip template is correctly configured.\n\n"
+                "Affected employees: %s"
+            ) % ', '.join(employee_names))
+
+        zip_buffer.seek(0)
+        attachment = self.env['ir.attachment'].create({
+            'name': f"{self.name or 'payslips'}-zip",
+            'type': 'binary',
+            'datas': base64.b64encode(zip_buffer.read()),
+            'res_model': 'hr.payslip.run',
+            'res_id': self.id,
+            'mimetype': 'application/zip',
+        })
+
+        action = {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
+        }
+
+        if failed_payslips:
+            employee_names = failed_payslips.mapped('employee_id.name')
+            action['context'] = dict(self.env.context, **{
+                'warning_title': _('Partial export'),
+                'warning_message': _('Some payslips could not be generated: %s') % ', '.join(employee_names),
+            })
+        return action
     
     def action_print_payslips(self):
         """Override to use country-specific templates"""
