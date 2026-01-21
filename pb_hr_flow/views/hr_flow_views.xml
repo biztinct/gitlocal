@@ -1021,7 +1021,8 @@
                                 <div role="button"
                                      tabindex="0"
                                      data-tertiary="payroll-test"
-                                     class="secondary-badge secondary-payroll-test">
+                                     class="secondary-badge secondary-payroll-test"
+                                     groups="base.group_system">
                                     <i class="fa fa-flask secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Test Calculation</span>
                                 </div>
@@ -1092,14 +1093,16 @@
                                 <div role="button"
                                      tabindex="0"
                                      data-tertiary="pay-salary-payments"
-                                     class="secondary-badge secondary-pay-salary-payments">
+                                     class="secondary-badge secondary-pay-salary-payments"
+                                     groups="base.group_system">
                                     <i class="fa fa-money secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Payments</span>
                                 </div>
                                 <div role="button"
                                      tabindex="0"
                                      data-tertiary="pay-salary-journals"
-                                     class="secondary-badge secondary-pay-salary-journals">
+                                     class="secondary-badge secondary-pay-salary-journals"
+                                     groups="base.group_system">
                                     <i class="fa fa-book secondary-badge-icon"></i>
                                     <span class="secondary-badge-text">Journals</span>
                                 </div>

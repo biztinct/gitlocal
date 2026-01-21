@@ -10,6 +10,13 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
     domReady(function () {
         const STORAGE_KEY = 'hr_flow_state';
         const _t = core._t;
+        const adminRoutes = new Set([
+            'payroll-retro',
+            'payroll-test',
+            'pay-salary-payments',
+            'pay-salary-journals',
+        ]);
+        const adminCheck = session.user_has_group('base.group_system').catch(function () { return false; });
 
         const loadState = () => {
             try {
@@ -228,42 +235,45 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
             const openPanel = (key, ctx = {}) => {
                 if (!panel) return;
                 const data = tertiaryData[key] || { title: 'Quick Actions', items: [] };
-                panelTitle.textContent = data.title;
-                panelItems.innerHTML = '';
-                data.items.forEach((item) => {
-                    const card = document.createElement('div');
-                    card.className = 'tertiary-card' + (item.disabled ? ' is-disabled' : '');
-                    if (item.className) {
-                        item.className.split(' ').forEach((cls) => card.classList.add(cls));
+                adminCheck.then(function (isAdmin) {
+                    const items = isAdmin ? data.items : data.items.filter((item) => !adminRoutes.has(item.route));
+                    panelTitle.textContent = data.title;
+                    panelItems.innerHTML = '';
+                    items.forEach((item) => {
+                        const card = document.createElement('div');
+                        card.className = 'tertiary-card' + (item.disabled ? ' is-disabled' : '');
+                        if (item.className) {
+                            item.className.split(' ').forEach((cls) => card.classList.add(cls));
+                        }
+                        card.innerHTML =
+                            '<i class="fa ' + item.icon + ' tertiary-card-icon"></i>' +
+                            '<p class="tertiary-card-title">' + item.label + '</p>' +
+                            '<p class="tertiary-card-desc">' + item.desc + '</p>';
+                        if (item.disabled) {
+                            card.title = 'Access required';
+                        } else if (item.route) {
+                            card.addEventListener('click', function () {
+                                // Persist state so breadcrumb return restores this panel/secondary
+                                if (!isRestoring) {
+                                    saveState(ctx.primary || key, ctx.secondary || item.route, key);
+                                }
+                                if (item.route === 'govt-monthly-generated') {
+                                    openGovtMonthlyDialog();
+                                    return;
+                                }
+                                runTertiaryAction(item.route, true);
+                            });
+                            card.style.cursor = 'pointer';
+                            card.title = 'Open';
+                        }
+                        panelItems.appendChild(card);
+                    });
+                    panel.classList.remove('hidden');
+                    panel.classList.add('open');
+                    if (!isRestoring) {
+                        saveState(ctx.primary || key, ctx.secondary || null, key);
                     }
-                    card.innerHTML =
-                        '<i class="fa ' + item.icon + ' tertiary-card-icon"></i>' +
-                        '<p class="tertiary-card-title">' + item.label + '</p>' +
-                        '<p class="tertiary-card-desc">' + item.desc + '</p>';
-                    if (item.disabled) {
-                        card.title = 'Access required';
-                    } else if (item.route) {
-                        card.addEventListener('click', function () {
-                            // Persist state so breadcrumb return restores this panel/secondary
-                            if (!isRestoring) {
-                                saveState(ctx.primary || key, ctx.secondary || item.route, key);
-                            }
-                            if (item.route === 'govt-monthly-generated') {
-                                openGovtMonthlyDialog();
-                                return;
-                            }
-                            runTertiaryAction(item.route, true);
-                        });
-                        card.style.cursor = 'pointer';
-                        card.title = 'Open';
-                    }
-                    panelItems.appendChild(card);
                 });
-                panel.classList.remove('hidden');
-                panel.classList.add('open');
-                if (!isRestoring) {
-                    saveState(ctx.primary || key, ctx.secondary || null, key);
-                }
             };
 
             const closePanel = (doClear = false) => {
