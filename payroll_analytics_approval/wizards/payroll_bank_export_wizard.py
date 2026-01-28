@@ -35,6 +35,7 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
     name = fields.Char(string='Export Name', compute='_compute_name', store=True)
     analytics_id = fields.Many2one('payroll.analytics', string='Analytics')
     formula_config_id = fields.Many2one('hr.formula.config', string='Salary Configuration', required=True)
+    payslip_run_id = fields.Many2one('hr.payslip.run', string='Payslip Batch')
     date_from = fields.Date(string='Date From', required=True, default=fields.Date.today)
     date_to = fields.Date(string='Date To', required=True, default=fields.Date.today)
     export_format = fields.Selection([
@@ -106,11 +107,26 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
             else:
                 record.name = "Bank Export Wizard"
     
-    @api.onchange('date_from', 'date_to', 'formula_config_id')
+    @api.onchange('date_from', 'date_to', 'formula_config_id', 'payslip_run_id')
     def _onchange_generate_preview(self):
         """Generate preview when dates or salary structure change"""
         if self.date_from and self.date_to and self.formula_config_id:
             self._generate_preview()
+        return {
+            'domain': {
+                'payslip_run_id': self._get_payslip_run_domain(),
+            }
+        }
+
+    def _get_payslip_run_domain(self):
+        domain = []
+        if self.formula_config_id and self.formula_config_id.structure_id:
+            domain.append(('slip_ids.struct_id', '=', self.formula_config_id.structure_id.id))
+        if self.date_from:
+            domain.append(('date_start', '>=', self.date_from))
+        if self.date_to:
+            domain.append(('date_end', '<=', self.date_to))
+        return domain
     
     def _generate_preview(self):
         """Generate preview of export data"""
@@ -169,6 +185,8 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
         ]
         if self.formula_config_id and self.formula_config_id.structure_id:
             domain.append(('struct_id', '=', self.formula_config_id.structure_id.id))
+        if self.payslip_run_id:
+            domain.append(('payslip_run_id', '=', self.payslip_run_id.id))
 
         return self.env['hr.payslip'].search(domain)
     
