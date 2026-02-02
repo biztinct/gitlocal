@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- =============================================
+             VIETNAM INSURANCE POLICY - 2024 RATES
+             Based on official Vietnam social insurance regulations
+             ============================================= -->
+        
+        <record id="vietnam_insurance_policy_2024" model="vietnam.insurance.policy">
+            <field name="name">BHXH Vietnam 2024</field>
+            <field name="code">VN-INS-2024</field>
+            <field name="effective_date" eval="'2024-01-01'"/>
+            <field name="active" eval="True"/>
+            
+            <!-- Social Insurance (BHXH) - 17.5% employer, 8% employee -->
+            <field name="si_employer_rate">17.5</field>
+            <field name="si_employee_rate">8.0</field>
+            <field name="si_max_salary_ceiling">46800000</field>
+            <field name="si_applicable_salary_type">basic_allowances</field>
+            <field name="si_include_in_employee_cost" eval="True"/>
+            
+            <!-- Health Insurance (BHYT) - 3% employer, 1.5% employee -->
+            <field name="hi_employer_rate">3.0</field>
+            <field name="hi_employee_rate">1.5</field>
+            <field name="hi_max_salary_ceiling">46800000</field>
+            <field name="hi_include_in_employee_cost" eval="True"/>
+            
+            <!-- Unemployment Insurance (BHTN) - 1% employer, 1% employee -->
+            <field name="ui_employer_rate">1.0</field>
+            <field name="ui_employee_rate">1.0</field>
+            <field name="ui_max_salary_ceiling">93600000</field>
+            <field name="ui_include_in_employee_cost" eval="True"/>
+            
+            <!-- Occupational Accident/Disease (TNLĐ-BNN) - 0.5% employer only -->
+            <field name="oa_employer_rate">0.5</field>
+            <field name="od_employer_rate">0.0</field>
+            
+            <!-- Notes -->
+            <field name="notes">Vietnam Social Insurance rates effective from January 2024.
+
+Salary Ceiling: 46,800,000 VND (36 x Regional Minimum Wage of 1,300,000 VND)
+
+Rates breakdown:
+- BHXH (Social Insurance): Employer 17.5%, Employee 8%
+- BHYT (Health Insurance): Employer 3%, Employee 1.5%
+- BHTN (Unemployment Insurance): Employer 1%, Employee 1%
+- TNLĐ-BNN (OA/OD): Employer 0.5%, Employee 0%
+
+Total: Employer 22%, Employee 10.5%</field>
+        </record>
+
+        <!-- =============================================
+             ALTERNATIVE POLICY - THACO Style 
+             ============================================= -->
+        
+        <record id="vietnam_insurance_policy_thaco_2024" model="vietnam.insurance.policy">
+            <field name="name">BHXH THACO 2024</field>
+            <field name="code">THACO-INS-2024</field>
+            <field name="effective_date" eval="'2024-01-01'"/>
+            <field name="active" eval="True"/>
+            
+            <!-- Social Insurance (BHXH) -->
+            <field name="si_employer_rate">17.5</field>
+            <field name="si_employee_rate">8.0</field>
+            <field name="si_max_salary_ceiling">20000000</field>
+            <field name="si_applicable_salary_type">basic_allowances</field>
+            <field name="si_include_in_employee_cost" eval="True"/>
+            
+            <!-- Health Insurance (BHYT) -->
+            <field name="hi_employer_rate">3.0</field>
+            <field name="hi_employee_rate">1.5</field>
+            <field name="hi_max_salary_ceiling">20000000</field>
+            <field name="hi_include_in_employee_cost" eval="True"/>
+            
+            <!-- Unemployment Insurance (BHTN) -->
+            <field name="ui_employer_rate">1.0</field>
+            <field name="ui_employee_rate">1.0</field>
+            <field name="ui_max_salary_ceiling">20000000</field>
+            <field name="ui_include_in_employee_cost" eval="True"/>
+            
+            <!-- Occupational Accident/Disease (TNLĐ-BNN) -->
+            <field name="oa_employer_rate">0.5</field>
+            <field name="od_employer_rate">0.0</field>
+            
+            <field name="notes">THACO Group specific insurance policy with company-defined salary ceiling of 20,000,000 VND.</field>
+        </record>
+
+        <!-- =============================================
+             VIETNAM TAX TABLE - Progressive PIT 2024
+             Based on Circular 111/2013/TT-BTC
+             ============================================= -->
+        
+        <record id="vietnam_tax_table_2024" model="vietnam.tax.table">
+            <field name="name">Vietnam PIT 2024</field>
+            <field name="code">VN-PIT-2024</field>
+            <field name="tax_year">2024</field>
+            <field name="active" eval="True"/>
+            <field name="personal_deduction">11000000</field>
+            <field name="dependent_deduction">4400000</field>
+            <field name="insurance_exemption" eval="True"/>
+            <field name="include_basic_income_tax" eval="True"/>
+            <field name="include_defense_fund" eval="True"/>
+            <field name="notes">Vietnam Personal Income Tax (Thuế TNCN) progressive rates per Circular 111/2013/TT-BTC.
+
+Personal Deduction: 11,000,000 VND/month
+Dependent Deduction: 4,400,000 VND/month per registered dependent
+
+Tax calculation is based on taxable income after deductions.
+Taxable Income = Gross Income - Social Insurance - Personal Deduction - (Dependents × Dependent Deduction)</field>
+        </record>
+        
+        <!-- Tax Slabs for Progressive PIT -->
+        <record id="vietnam_tax_slab_1" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_2024"/>
+            <field name="income_from">0</field>
+            <field name="income_to">5000000</field>
+            <field name="tax_rate">5</field>
+            <field name="fixed_amount">0</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <record id="vietnam_tax_slab_2" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_2024"/>
+            <field name="income_from">5000001</field>
+            <field name="income_to">10000000</field>
+            <field name="tax_rate">10</field>
+            <field name="fixed_amount">250000</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <record id="vietnam_tax_slab_3" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_2024"/>
+            <field name="income_from">10000001</field>
+            <field name="income_to">18000000</field>
+            <field name="tax_rate">15</field>
+            <field name="fixed_amount">750000</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <record id="vietnam_tax_slab_4" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_2024"/>
+            <field name="income_from">18000001</field>
+            <field name="income_to">32000000</field>
+            <field name="tax_rate">20</field>
+            <field name="fixed_amount">1650000</field>
+            <field name="sequence">40</field>
+        </record>
+        
+        <record id="vietnam_tax_slab_5" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_2024"/>
+            <field name="income_from">32000001</field>
+            <field name="income_to">52000000</field>
+            <field name="tax_rate">25</field>
+            <field name="fixed_amount">3250000</field>
+            <field name="sequence">50</field>
+        </record>
+        
+        <record id="vietnam_tax_slab_6" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_2024"/>
+            <field name="income_from">52000001</field>
+            <field name="income_to">80000000</field>
+            <field name="tax_rate">30</field>
+            <field name="fixed_amount">5850000</field>
+            <field name="sequence">60</field>
+        </record>
+        
+        <record id="vietnam_tax_slab_7" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_2024"/>
+            <field name="income_from">80000001</field>
+            <field name="income_to">0</field>
+            <field name="tax_rate">35</field>
+            <field name="fixed_amount">9850000</field>
+            <field name="sequence">70</field>
+        </record>
+
+        <!-- =============================================
+             NON-RESIDENT TAX TABLE - Flat 20%
+             ============================================= -->
+        
+        <record id="vietnam_tax_table_nonresident" model="vietnam.tax.table">
+            <field name="name">Vietnam PIT Non-Resident</field>
+            <field name="code">VN-PIT-NR</field>
+            <field name="tax_year">2024</field>
+            <field name="active" eval="True"/>
+            <field name="personal_deduction">0</field>
+            <field name="dependent_deduction">0</field>
+            <field name="insurance_exemption" eval="False"/>
+            <field name="notes">Flat 20% tax rate for non-resident individuals in Vietnam.
+
+Non-residents are not eligible for personal deduction or dependent deductions.
+Income is taxed at a flat rate of 20% on gross employment income.</field>
+        </record>
+
+        <!-- Single slab for non-resident: 20% flat rate -->
+        <record id="vietnam_tax_slab_nr_1" model="vietnam.tax.slab">
+            <field name="table_id" ref="vietnam_tax_table_nonresident"/>
+            <field name="income_from">0</field>
+            <field name="income_to">0</field>
+            <field name="tax_rate">20</field>
+            <field name="fixed_amount">0</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- =============================================
+             INSURANCE ADJUSTMENTS - Sample Data
+             ============================================= -->
+        
+        <!-- Sample adjustment for Nguyen Huu Tho - Backdated collection -->
+        <record id="vietnam_insurance_adj_01" model="vietnam.insurance.adjustment">
+            <field name="employee_id" search="[('name', 'ilike', 'Nguyen Huu Tho')]"/>
+            <field name="adjustment_date" eval="'2026-01-28'"/>
+            <field name="period_from" eval="'2025-10-01'"/>
+            <field name="period_to" eval="'2025-12-31'"/>
+            <field name="adjustment_type">backdated</field>
+            <field name="insurance_type">all</field>
+            <field name="old_contribution">3150000</field>
+            <field name="new_contribution">4200000</field>
+            <field name="employer_amount">735000</field>
+            <field name="employee_amount">315000</field>
+            <field name="reason">salary_correction</field>
+            <field name="state">draft</field>
+            <field name="notes">Backdated insurance adjustment for Q4 2025.
+Salary base was corrected from 15,000,000 VND to 20,000,000 VND.
+This adjustment covers the difference in contributions for:
+- BHXH: Oct-Dec 2025
+- BHYT: Oct-Dec 2025  
+- BHTN: Oct-Dec 2025</field>
+        </record>
+
+        <!-- Sample adjustment - Rate correction -->
+        <record id="vietnam_insurance_adj_02" model="vietnam.insurance.adjustment">
+            <field name="employee_id" search="[('name', 'ilike', 'Nguyen Huu Tho')]"/>
+            <field name="adjustment_date" eval="'2026-01-15'"/>
+            <field name="period_from" eval="'2025-07-01'"/>
+            <field name="period_to" eval="'2025-09-30'"/>
+            <field name="adjustment_type">correction</field>
+            <field name="insurance_type">si</field>
+            <field name="old_contribution">1575000</field>
+            <field name="new_contribution">1680000</field>
+            <field name="employer_amount">73500</field>
+            <field name="employee_amount">31500</field>
+            <field name="reason">rate_change</field>
+            <field name="state">confirmed</field>
+            <field name="notes">Social Insurance rate correction for Q3 2025.
+Applied new SI rates as per government circular effective July 2025.</field>
+        </record>
+
+        <!-- =============================================
+             NOTE: Employee Insurance/Tax data cannot be loaded via XML
+             because Odoo doesn't support updating existing records via search.
+             
+             To populate the Insurance (BH) and Tax tabs for Nguyen Huu Tho,
+             manually set these values in the employee form:
+             
+             Insurance Policy: BHXH Vietnam 2024
+             SI Number: 0123456789 | SI Salary Base: 18,000,000
+             HI Number: DN4012345678901 | HI Salary Base: 18,000,000
+             UI Number: TN0123456789 | UI Salary Base: 18,000,000
+             Tax Table: Vietnam PIT 2024
+             Tax Regime: New | Residency: Resident
+             Tax Code: 8012345678
+             ============================================= -->
+
+        <!-- =============================================
+             EMPLOYEE DEPENDENTS - Nguyen Huu Tho
+             ============================================= -->
+        
+        <!-- Dependent 1: Spouse -->
+        <record id="dependent_nguyen_wife" model="vietnam.employee.dependent">
+            <field name="employee_id" search="[('name', 'ilike', 'Nguyen Huu Tho')]"/>
+            <field name="name">Trần Thị Mai</field>
+            <field name="relationship">spouse</field>
+            <field name="date_of_birth" eval="'1992-05-15'"/>
+            <field name="identification_number">036192012345</field>
+            <field name="tax_registration_number">8012345679</field>
+            <field name="effective_from" eval="'2020-03-01'"/>
+            <field name="status">eligible</field>
+            <field name="tax_allowance">4400000</field>
+            <field name="registration_date" eval="'2020-03-15'"/>
+            <field name="notes">Wife - Registered as dependent for tax deduction purposes.</field>
+        </record>
+        
+        <!-- Dependent 2: Child -->
+        <record id="dependent_nguyen_child" model="vietnam.employee.dependent">
+            <field name="employee_id" search="[('name', 'ilike', 'Nguyen Huu Tho')]"/>
+            <field name="name">Nguyễn Minh Anh</field>
+            <field name="relationship">child</field>
+            <field name="date_of_birth" eval="'2018-08-20'"/>
+            <field name="identification_number">BC20180820-001</field>
+            <field name="effective_from" eval="'2018-09-01'"/>
+            <field name="status">eligible</field>
+            <field name="tax_allowance">4400000</field>
+            <field name="registration_date" eval="'2018-09-15'"/>
+            <field name="notes">Daughter - Birth certificate registered.</field>
+        </record>
+        
+        <!-- Dependent 3: Parent -->
+        <record id="dependent_nguyen_mother" model="vietnam.employee.dependent">
+            <field name="employee_id" search="[('name', 'ilike', 'Nguyen Huu Tho')]"/>
+            <field name="name">Nguyễn Thị Hoa</field>
+            <field name="relationship">parent</field>
+            <field name="date_of_birth" eval="'1958-12-03'"/>
+            <field name="identification_number">036158003456</field>
+            <field name="effective_from" eval="'2022-01-01'"/>
+            <field name="status">eligible</field>
+            <field name="tax_allowance">4400000</field>
+            <field name="registration_date" eval="'2022-01-20'"/>
+            <field name="notes">Mother - No income, registered as tax dependent.</field>
+        </record>
+
+    </data>
+</odoo>

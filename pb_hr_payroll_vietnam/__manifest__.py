@@ -53,6 +53,7 @@ Supported Features:
         'pb_hr_payroll_base',
         'hr_holidays',
         'payroll_analytics_approval',
+        'pb_hr_payroll_analytics',
     ],
     'data': [
         # Security
@@ -61,12 +62,24 @@ Supported Features:
         # Data files - Vietnam-specific dashboard and spreadsheet
         'data/payroll_dashboard_data.xml',
         'data/spreadsheet_data.xml',                     # Vietnam spreadsheet template
+        'data/vietnam_sequence_data.xml',                # IR sequences for INS/TAX
+        'data/vietnam_demo_data.xml',                    # Sample Insurance Policies & Tax Tables
         
         # Views - Server Actions first, then Dashboard (references actions), then Menu Structure (references view)
         'views/vietnam_server_actions.xml',           # Server actions (must load first)
         'views/payroll_dashboard_vietnam.xml',        # Professional Vietnam dashboard 
         'views/payroll_menu_structure.xml',           # Menu structure references dashboard view
         'views/payroll_analytics_integration.xml',    # Analytics integration (when payroll_analytics_approval is installed)
+        
+        # Vietnam Insurance & Tax Views (INS01-04, TAX01-03)
+        'views/vietnam_insurance_policy_views.xml',      # INS01: Insurance policy configuration
+        'views/vietnam_insurance_analytics_views.xml',   # INS03: Insurance contribution analysis wizard
+        'views/vietnam_insurance_analytics_tab.xml',     # INS03: Insurance tab in Salary Structure Analytics
+        'views/vietnam_insurance_adjustment_views.xml',  # INS04: Insurance adjustments
+        'views/vietnam_tax_table_views.xml',             # TAX01: Tax tables and slabs
+        'views/vietnam_employee_dependent_views.xml',    # TAX03: Dependent management
+        'views/vietnam_employee_form_extension.xml',     # INS02/TAX02: Employee form tabs
+        'views/vietnam_menu_structure.xml',              # Menu structure for INS/TAX
         
         # Wizards
         'wizards/govt_report_selector_views.xml',     # Government report selector
@@ -92,11 +105,9 @@ Supported Features:
         # - reports/vietnam_tax_report.xml
     ],
     'assets': {
-        # TODO: Add asset files when needed:
-        # 'web.assets_backend': [
-        #     'pb_hr_payroll_vietnam/static/src/css/vietnam_payroll.css',
-        #     'pb_hr_payroll_vietnam/static/src/js/vietnam_dashboard.js',
-        # ],
+        'web.assets_backend': [
+            'pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js',
+        ],
     },
     'external_dependencies': {
         'python': [

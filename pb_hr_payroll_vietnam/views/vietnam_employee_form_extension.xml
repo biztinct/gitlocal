@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =============================================
+         EMPLOYEE FORM EXTENSION - INS02 / TAX02 / TAX03 TABS
+         ============================================= -->
+    
+    <!-- Extend Employee Form with Insurance Tab (INS02) -->
+    <record id="view_employee_form_vietnam_insurance" model="ir.ui.view">
+        <field name="name">hr.employee.form.vietnam.insurance</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <!-- Insurance (BH) Tab -->
+                <page string="Insurance (BH)" name="vietnam_insurance">
+                    <group>
+                        <group string="Insurance Policy">
+                            <field name="vn_insurance_policy_id"/>
+                        </group>
+                        <group string="Work Info">
+                            <field name="vn_work_region"/>
+                            <field name="vn_foreign_insurance_exempt"/>
+                            <field name="vn_exempt_oa_od"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Social Insurance (BHXH)">
+                        <group>
+                            <field name="vn_si_number"/>
+                            <field name="vn_si_enrolled"/>
+                            <field name="vn_si_enrollment_status"/>
+                        </group>
+                        <group>
+                            <field name="vn_si_salary_base"/>
+                            <field name="vn_si_effective_date"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Health Insurance (BHYT)">
+                        <group>
+                            <field name="vn_hi_number"/>
+                            <field name="vn_hi_enrolled"/>
+                        </group>
+                        <group>
+                            <field name="vn_hi_salary_base"/>
+                            <field name="vn_hi_effective_date"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Unemployment Insurance (BHTN)">
+                        <group>
+                            <field name="vn_ui_number"/>
+                            <field name="vn_ui_enrolled"/>
+                        </group>
+                        <group>
+                            <field name="vn_ui_salary_base"/>
+                            <field name="vn_ui_effective_date"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Contribution Summary" class="o_label_nowrap">
+                        <group>
+                            <field name="vn_employer_insurance_cost" widget="monetary"/>
+                            <field name="vn_employee_insurance_cost" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="vn_total_insurance_contribution" widget="monetary"/>
+                        </group>
+                    </group>
+                </page>
+                
+                <!-- Tax / Dependents Tab -->
+                <page string="Tax &amp; Dependents" name="vietnam_tax">
+                    <group string="Tax Configuration">
+                        <group>
+                            <field name="vn_tax_table_id"/>
+                            <field name="vn_tax_regime"/>
+                            <field name="vn_tax_effective_date"/>
+                        </group>
+                        <group>
+                            <field name="vn_residency_status"/>
+                            <field name="vn_personal_tax_rate"/>
+                            <field name="vn_monthly_tax_allowance" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Dependents (Người phụ thuộc)">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <strong>Eligible Dependents:</strong> 
+                                    <field name="vn_eligible_dependent_count" class="oe_inline"/>
+                                </div>
+                                <div>
+                                    <strong>Dependent Tax Allowance:</strong> 
+                                    <field name="vn_dependent_tax_allowance" class="oe_inline" widget="monetary"/>
+                                </div>
+                            </div>
+                            <field name="vn_dependent_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="relationship"/>
+                                    <field name="date_of_birth"/>
+                                    <field name="effective_from"/>
+                                    <field name="effective_to"/>
+                                    <field name="status" widget="badge"
+                                           decoration-success="status == 'eligible'"
+                                           decoration-warning="status == 'pending'"
+                                           decoration-danger="status == 'ineligible'"/>
+                                    <field name="tax_allowance"/>
+                                </tree>
+                            </field>
+                        </div>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

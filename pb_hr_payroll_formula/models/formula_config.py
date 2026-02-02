@@ -161,6 +161,11 @@ class HrFormulaConfig(models.Model):
     )
 
     # ==========================================
+    # NOTE: Country-specific fields (e.g., Vietnam insurance/tax links)
+    # should be added via model inheritance in country-specific modules
+    # ==========================================
+
+    # ==========================================
     # FORMULA RULES (One2many)
     # ==========================================
     rule_ids = fields.One2many(

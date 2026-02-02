@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =============================================
+         EMPLOYEE DEPENDENT VIEWS (TAX03)
+         ============================================= -->
+    
+    <!-- Tree View (for One2many in Employee form) -->
+    <record id="view_vietnam_employee_dependent_tree" model="ir.ui.view">
+        <field name="name">vietnam.employee.dependent.tree</field>
+        <field name="model">vietnam.employee.dependent</field>
+        <field name="arch" type="xml">
+            <tree string="Dependents" editable="bottom">
+                <field name="name"/>
+                <field name="relationship"/>
+                <field name="date_of_birth"/>
+                <field name="effective_from"/>
+                <field name="effective_to"/>
+                <field name="status" widget="badge"
+                       decoration-success="status == 'eligible'"
+                       decoration-warning="status == 'pending'"
+                       decoration-danger="status == 'ineligible'"/>
+                <field name="tax_allowance"/>
+                <field name="is_currently_eligible" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View (for popup) -->
+    <record id="view_vietnam_employee_dependent_form" model="ir.ui.view">
+        <field name="name">vietnam.employee.dependent.form</field>
+        <field name="model">vietnam.employee.dependent</field>
+        <field name="arch" type="xml">
+            <form string="Dependent">
+                <sheet>
+                    <group>
+                        <group string="Dependent Information">
+                            <field name="name"/>
+                            <field name="relationship"/>
+                            <field name="date_of_birth"/>
+                            <field name="identification_number"/>
+                            <field name="tax_registration_number"/>
+                        </group>
+                        <group string="Eligibility">
+                            <field name="effective_from"/>
+                            <field name="effective_to"/>
+                            <field name="status"/>
+                            <field name="is_currently_eligible" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Tax Allowance">
+                            <field name="tax_allowance"/>
+                            <field name="registration_date"/>
+                        </group>
+                        <group string="Employee">
+                            <field name="employee_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_vietnam_employee_dependent_search" model="ir.ui.view">
+        <field name="name">vietnam.employee.dependent.search</field>
+        <field name="model">vietnam.employee.dependent</field>
+        <field name="arch" type="xml">
+            <search string="Dependents">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <filter string="Eligible" name="eligible" domain="[('status', '=', 'eligible')]"/>
+                <filter string="Currently Eligible" name="current" domain="[('is_currently_eligible', '=', True)]"/>
+                <filter string="Pending" name="pending" domain="[('status', '=', 'pending')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Employee" name="employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Relationship" name="relationship" context="{'group_by': 'relationship'}"/>
+                    <filter string="Status" name="status" context="{'group_by': 'status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action (for standalone access) -->
+    <record id="action_vietnam_employee_dependent" model="ir.actions.act_window">
+        <field name="name">Employee Dependents</field>
+        <field name="res_model">vietnam.employee.dependent</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_vietnam_employee_dependent_search"/>
+        <field name="context">{'search_default_current': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No dependents found
+            </p>
+            <p>
+                Add dependents via the Employee form to track tax deduction eligibility.
+            </p>
+        </field>
+    </record>
+
+</odoo>
