@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =============================================
+         MENU STRUCTURE FOR VIETNAM INSURANCE & TAX
+         ============================================= -->
+    
+    <!-- Root Menu: Vietnam Payroll Configuration -->
+    <menuitem id="menu_vietnam_payroll_config_root"
+              name="Vietnam Settings"
+              parent="om_hr_payroll.menu_hr_payroll_configuration"
+              sequence="50"/>
+    
+    <!-- Insurance Configuration Menu -->
+    <menuitem id="menu_vietnam_insurance_config"
+              name="Insurance"
+              parent="menu_vietnam_payroll_config_root"
+              sequence="10"/>
+    
+    <menuitem id="menu_vietnam_insurance_policies"
+              name="Insurance Policies"
+              action="action_vietnam_insurance_policy"
+              parent="menu_vietnam_insurance_config"
+              sequence="10"/>
+    
+    <menuitem id="menu_vietnam_insurance_adjustments"
+              name="Insurance Adjustments"
+              action="action_vietnam_insurance_adjustment"
+              parent="menu_vietnam_insurance_config"
+              sequence="20"/>
+    
+    <menuitem id="menu_vietnam_insurance_analytics"
+              name="Contribution Analysis"
+              action="action_vietnam_insurance_analytics"
+              parent="menu_vietnam_insurance_config"
+              sequence="30"/>
+    
+    <!-- Tax Configuration Menu -->
+    <menuitem id="menu_vietnam_tax_config"
+              name="Tax"
+              parent="menu_vietnam_payroll_config_root"
+              sequence="20"/>
+    
+    <menuitem id="menu_vietnam_tax_tables"
+              name="Tax Tables"
+              action="action_vietnam_tax_table"
+              parent="menu_vietnam_tax_config"
+              sequence="10"/>
+    
+    <menuitem id="menu_vietnam_employee_dependents"
+              name="Employee Dependents"
+              action="action_vietnam_employee_dependent"
+              parent="menu_vietnam_tax_config"
+              sequence="20"/>
+
+</odoo>

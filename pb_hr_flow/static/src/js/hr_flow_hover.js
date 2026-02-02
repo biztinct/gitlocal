@@ -93,6 +93,10 @@ odoo.define('pb_hr_flow.hr_flow_hover', function (require) {
                         { label: _t('Payslip Configuration'), icon: 'fa-cogs', desc: _t('Identifiers & labels'), disabled: false, route: 'payroll-payslip-config' },
                         { label: _t('Employee/Contract Mapping'), icon: 'fa-exchange', desc: _t('Map fields to components'), disabled: false, route: 'payroll-employee-contract-mapping' },
                         { label: _t('Mid-Cycle Mapping'), icon: 'fa-random', desc: _t('Map mid-cycle to end-cycle'), disabled: false, route: 'payroll-cycle-mapping' },
+                        { label: _t('Insurance Policies'), icon: 'fa-shield', desc: _t('BHXH/BHYT/BHTN rates'), disabled: false, route: 'vietnam-insurance-policies' },
+                        { label: _t('Insurance Adjustments'), icon: 'fa-pencil-square-o', desc: _t('Manual adjustments'), disabled: false, route: 'vietnam-insurance-adjustments' },
+                        { label: _t('Tax Tables'), icon: 'fa-percent', desc: _t('PIT rates & slabs'), disabled: false, route: 'vietnam-tax-tables' },
+                        { label: _t('Employee Dependents'), icon: 'fa-users', desc: _t('Tax deductions'), disabled: false, route: 'vietnam-employee-dependents' },
                     ],
                 },
                 payroll: {

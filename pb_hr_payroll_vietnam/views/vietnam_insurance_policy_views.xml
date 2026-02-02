@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =============================================
+         INSURANCE POLICY VIEWS (INS01)
+         ============================================= -->
+    
+    <!-- Tree View -->
+    <record id="view_vietnam_insurance_policy_tree" model="ir.ui.view">
+        <field name="name">vietnam.insurance.policy.tree</field>
+        <field name="model">vietnam.insurance.policy</field>
+        <field name="arch" type="xml">
+            <tree string="Insurance Policies">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="effective_date"/>
+                <field name="end_date"/>
+                <field name="total_employer_rate" string="Employer %"/>
+                <field name="total_employee_rate" string="Employee %"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_vietnam_insurance_policy_form" model="ir.ui.view">
+        <field name="name">vietnam.insurance.policy.form</field>
+        <field name="model">vietnam.insurance.policy</field>
+        <field name="arch" type="xml">
+            <form string="Insurance Policy">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Policy Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. BHXH Vietnam 2024"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="effective_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <!-- Social Insurance Tab -->
+                        <page string="Social Insurance (BHXH)" name="social_insurance">
+                            <group>
+                                <group string="Contribution Rates">
+                                    <field name="si_employer_rate"/>
+                                    <field name="si_employee_rate"/>
+                                </group>
+                                <group string="Salary Base">
+                                    <field name="si_max_salary_ceiling"/>
+                                    <field name="si_applicable_salary_type"/>
+                                    <field name="si_include_in_employee_cost"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Health Insurance Tab -->
+                        <page string="Health Insurance (BHYT)" name="health_insurance">
+                            <group>
+                                <group string="Contribution Rates">
+                                    <field name="hi_employer_rate"/>
+                                    <field name="hi_employee_rate"/>
+                                </group>
+                                <group string="Salary Base">
+                                    <field name="hi_max_salary_ceiling"/>
+                                    <field name="hi_include_in_employee_cost"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Unemployment Insurance Tab -->
+                        <page string="Unemployment Insurance (BHTN)" name="unemployment_insurance">
+                            <group>
+                                <group string="Contribution Rates">
+                                    <field name="ui_employer_rate"/>
+                                    <field name="ui_employee_rate"/>
+                                </group>
+                                <group string="Salary Base">
+                                    <field name="ui_max_salary_ceiling"/>
+                                    <field name="ui_include_in_employee_cost"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Occupational Accident/Disease Tab -->
+                        <page string="OA/OD (TNLĐ-BNN)" name="occupational">
+                            <group>
+                                <group string="Employer Rates">
+                                    <field name="oa_employer_rate"/>
+                                    <field name="od_employer_rate"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Waivers Tab -->
+                        <page string="Waivers &amp; Exemptions" name="waivers">
+                            <group>
+                                <group string="Foreign Employee Waivers">
+                                    <field name="waive_ui_foreign"/>
+                                    <field name="waive_hi_foreign"/>
+                                </group>
+                                <group string="Other Waivers">
+                                    <field name="waive_ui_no_fund_areas"/>
+                                    <field name="oa_waiver_enabled"/>
+                                    <field name="oa_waiver_max_months" 
+                                           attrs="{'invisible': [('oa_waiver_enabled', '=', False)]}"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Notes Tab -->
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                    
+                    <!-- Summary Footer -->
+                    <group string="Contribution Summary">
+                        <group>
+                            <field name="total_employer_rate"/>
+                        </group>
+                        <group>
+                            <field name="total_employee_rate"/>
+                        </group>
+                    </group>
+                </sheet>
+                
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_vietnam_insurance_policy_search" model="ir.ui.view">
+        <field name="name">vietnam.insurance.policy.search</field>
+        <field name="model">vietnam.insurance.policy</field>
+        <field name="arch" type="xml">
+            <search string="Insurance Policies">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="company_id"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Current Year" name="current_year" 
+                        domain="[('effective_date', '&gt;=', (context_today().strftime('%Y-01-01')))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Company" name="company" context="{'group_by': 'company_id'}"/>
+                    <filter string="Year" name="year" context="{'group_by': 'effective_date:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_vietnam_insurance_policy" model="ir.actions.act_window">
+        <field name="name">Insurance Policies</field>
+        <field name="res_model">vietnam.insurance.policy</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_vietnam_insurance_policy_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Insurance Policy
+            </p>
+            <p>
+                Define statutory insurance rates (BHXH, BHYT, BHTN) for Vietnam payroll.
+            </p>
+        </field>
+    </record>
+
+</odoo>

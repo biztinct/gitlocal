@@ -240,6 +240,11 @@ class HRFlowWizard(models.TransientModel):
             'govt-monthly-tang': ('pb_hr_govt.action_govt_monthly_tang_ld', False),
             # Analytics - Uses server action to prepare dashboard
             'analytics-dashboard': ('pb_hr_payroll_analytics.action_prepare_formula_config_analytics', False),
+            # Vietnam Insurance & Tax Settings
+            'vietnam-insurance-policies': ('pb_hr_payroll_vietnam.action_vietnam_insurance_policy', False),
+            'vietnam-insurance-adjustments': ('pb_hr_payroll_vietnam.action_vietnam_insurance_adjustment', False),
+            'vietnam-tax-tables': ('pb_hr_payroll_vietnam.action_vietnam_tax_table', False),
+            'vietnam-employee-dependents': ('pb_hr_payroll_vietnam.action_vietnam_employee_dependent', False),
         }
 
         action_xmlid, menu_xmlid = mapping.get(key, (False, False))

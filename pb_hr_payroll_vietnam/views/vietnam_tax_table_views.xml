@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =============================================
+         TAX TABLE VIEWS (TAX01)
+         ============================================= -->
+    
+    <!-- Tree View -->
+    <record id="view_vietnam_tax_table_tree" model="ir.ui.view">
+        <field name="name">vietnam.tax.table.tree</field>
+        <field name="model">vietnam.tax.table</field>
+        <field name="arch" type="xml">
+            <tree string="Tax Tables">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="tax_year"/>
+                <field name="slab_count"/>
+                <field name="personal_deduction"/>
+                <field name="dependent_deduction"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_vietnam_tax_table_form" model="ir.ui.view">
+        <field name="name">vietnam.tax.table.form</field>
+        <field name="model">vietnam.tax.table</field>
+        <field name="arch" type="xml">
+            <form string="Tax Table">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_create_default_slabs" type="object"
+                                string="Create Default 2024 Slabs" class="oe_stat_button"
+                                icon="fa-magic"
+                                confirm="This will replace existing slabs. Continue?"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Tax Table Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Vietnam Income Tax 2024"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="tax_year"/>
+                            <field name="country_code" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <!-- Tax Slabs Tab -->
+                        <page string="Tax Slabs" name="slabs">
+                            <field name="slab_ids">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="income_from"/>
+                                    <field name="income_to"/>
+                                    <field name="tax_rate"/>
+                                    <field name="fixed_amount"/>
+                                    <field name="formula_description" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        
+                        <!-- Deductions Tab -->
+                        <page string="Deductions &amp; Exemptions" name="deductions">
+                            <group>
+                                <group string="Personal Deductions">
+                                    <field name="personal_deduction"/>
+                                    <field name="dependent_deduction"/>
+                                </group>
+                                <group string="Exemptions">
+                                    <field name="insurance_exemption"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <!-- Tax Components Tab -->
+                        <page string="Tax Components" name="components">
+                            <group>
+                                <field name="include_basic_income_tax"/>
+                                <field name="include_defense_fund"/>
+                            </group>
+                        </page>
+                        
+                        <!-- Notes Tab -->
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_vietnam_tax_table_search" model="ir.ui.view">
+        <field name="name">vietnam.tax.table.search</field>
+        <field name="model">vietnam.tax.table</field>
+        <field name="arch" type="xml">
+            <search string="Tax Tables">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="tax_year"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Current Year" name="current_year" 
+                        domain="[('tax_year', '=', context_today().year)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Year" name="year" context="{'group_by': 'tax_year'}"/>
+                    <filter string="Company" name="company" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_vietnam_tax_table" model="ir.actions.act_window">
+        <field name="name">Tax Tables</field>
+        <field name="res_model">vietnam.tax.table</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_vietnam_tax_table_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Tax Table
+            </p>
+            <p>
+                Define progressive income tax slabs and deductions for Vietnam payroll.
+            </p>
+        </field>
+    </record>
+
+    <!-- =============================================
+         TAX SLAB VIEWS (Embedded in Tax Table)
+         ============================================= -->
+    
+    <!-- Standalone Tree View (for reference) -->
+    <record id="view_vietnam_tax_slab_tree" model="ir.ui.view">
+        <field name="name">vietnam.tax.slab.tree</field>
+        <field name="model">vietnam.tax.slab</field>
+        <field name="arch" type="xml">
+            <tree string="Tax Slabs">
+                <field name="table_id"/>
+                <field name="sequence"/>
+                <field name="income_from"/>
+                <field name="income_to"/>
+                <field name="tax_rate"/>
+                <field name="fixed_amount"/>
+                <field name="formula_description"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

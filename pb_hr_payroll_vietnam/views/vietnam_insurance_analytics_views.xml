@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         INSURANCE ANALYTICS WIZARD - Form View
+         ============================================ -->
+    <record id="vietnam_insurance_analytics_form" model="ir.ui.view">
+        <field name="name">vietnam.insurance.analytics.form</field>
+        <field name="model">vietnam.insurance.analytics</field>
+        <field name="arch" type="xml">
+            <form string="Insurance Contribution Analysis">
+                <sheet>
+                    <!-- Header with report name -->
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <!-- Filters Section -->
+                    <group string="Report Filters" attrs="{'invisible': [('employee_count', '>', 0)]}">
+                        <group>
+                            <field name="company_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="insurance_policy_id" options="{'no_create': True}"/>
+                            <field name="department_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="employee_ids" widget="many2many_tags"/>
+                            <field name="include_inactive"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Generate Button -->
+                    <div class="text-center mb-4" attrs="{'invisible': [('employee_count', '>', 0)]}">
+                        <button name="action_generate_report" 
+                                type="object" 
+                                string="Generate Report" 
+                                class="btn-primary btn-lg"/>
+                    </div>
+                    
+                    <!-- Summary Statistics -->
+                    <group attrs="{'invisible': [('employee_count', '=', 0)]}">
+                        <group string="Enrollment Summary" class="oe_subtotal_footer">
+                            <field name="employee_count" string="Total Employees"/>
+                            <field name="si_enrolled_count" string="SI Enrolled"/>
+                            <field name="hi_enrolled_count" string="HI Enrolled"/>
+                            <field name="ui_enrolled_count" string="UI Enrolled"/>
+                        </group>
+                        <group string="Period">
+                            <field name="date_from" readonly="1"/>
+                            <field name="date_to" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Contribution Breakdown -->
+                    <notebook attrs="{'invisible': [('employee_count', '=', 0)]}">
+                        <page string="Contribution Summary" name="summary">
+                            <group>
+                                <group string="Social Insurance (BHXH)">
+                                    <field name="total_si_employer" string="Employer (17.5%)"/>
+                                    <field name="total_si_employee" string="Employee (8%)"/>
+                                </group>
+                                <group string="Health Insurance (BHYT)">
+                                    <field name="total_hi_employer" string="Employer (3%)"/>
+                                    <field name="total_hi_employee" string="Employee (1.5%)"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Unemployment Insurance (BHTN)">
+                                    <field name="total_ui_employer" string="Employer (1%)"/>
+                                    <field name="total_ui_employee" string="Employee (1%)"/>
+                                </group>
+                                <group string="Occupational (TNLĐ-BNN)">
+                                    <field name="total_oa_od" string="Employer (0.5%)"/>
+                                </group>
+                            </group>
+                            
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="total_employer_contribution" class="oe_subtotal_footer_separator"/>
+                                <field name="total_employee_contribution"/>
+                                <field name="grand_total" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Employee Details" name="details">
+                            <field name="line_ids" readonly="1">
+                                <tree string="Employee Contributions" editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="department_id"/>
+                                    <field name="si_salary_base" sum="Total Base"/>
+                                    <field name="si_employer" sum="SI ER"/>
+                                    <field name="si_employee" sum="SI EE"/>
+                                    <field name="hi_employer" sum="HI ER"/>
+                                    <field name="hi_employee" sum="HI EE"/>
+                                    <field name="ui_employer" sum="UI ER"/>
+                                    <field name="ui_employee" sum="UI EE"/>
+                                    <field name="oa_od" sum="OA/OD"/>
+                                    <field name="total_employer" sum="Total ER"/>
+                                    <field name="total_employee" sum="Total EE"/>
+                                    <field name="si_enrolled" widget="boolean_toggle"/>
+                                    <field name="hi_enrolled" widget="boolean_toggle"/>
+                                    <field name="ui_enrolled" widget="boolean_toggle"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    
+                    <!-- Export Actions -->
+                    <footer attrs="{'invisible': [('employee_count', '=', 0)]}">
+                        <button string="Export Excel" name="action_export_excel" type="object" class="btn-secondary"/>
+                        <button string="Print PDF" name="action_print_pdf" type="object" class="btn-secondary"/>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         INSURANCE ANALYTICS - Action
+         ============================================ -->
+    <record id="action_vietnam_insurance_analytics" model="ir.actions.act_window">
+        <field name="name">Insurance Contribution Analysis</field>
+        <field name="res_model">vietnam.insurance.analytics</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{}</field>
+    </record>
+
+</odoo>
