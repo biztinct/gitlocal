@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 
 class HrPayslipVietnam(models.Model):
-    _inherit = 'hr.payslip'
+    _inherit = ['hr.payslip']
 
     # Add currency_id field if it doesn't exist in base model
     currency_id = fields.Many2one('res.currency', string='Currency', 

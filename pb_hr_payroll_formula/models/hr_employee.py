@@ -4,7 +4,7 @@ from odoo import fields, models
 
 
 class HrEmployee(models.Model):
-    _inherit = 'hr.employee'
+    _inherit = ['hr.employee']
 
     division = fields.Char(string='Division')
     position_name = fields.Char(string='Position')

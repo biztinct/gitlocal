@@ -867,7 +867,7 @@ class HrPayslip(models.Model):
 
 class HrPayslipLine(models.Model):
     _name = 'hr.payslip.line'
-    _inherit = 'hr.salary.rule'
+    _inherit = ['hr.salary.rule']
     _description = 'Payslip Line'
     _order = 'date_to desc, contract_id, sequence'
 
@@ -1692,7 +1692,7 @@ class HrPayslipRun(models.Model):
 
 class PayslipLinesXlsx(models.Model):
     _name = 'report.om_hr_payroll.payslip_lines_xlsx'
-    _inherit = 'report.report_xlsx.abstract'
+    _inherit = ['report.report_xlsx.abstract']
     _description = 'Payslip Lines XLSX Report'
  
     

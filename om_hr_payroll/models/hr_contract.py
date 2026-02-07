@@ -48,7 +48,7 @@ class HrContract(models.Model):
     Employee contract based on the visa, work permits
     allows to configure different Salary structure
     """
-    _inherit = 'hr.contract'
+    _inherit = ['hr.contract']
     _description = 'Employee Contract'
 
     struct_id = fields.Many2one('hr.payroll.structure', string='Salary Structure')

@@ -4,7 +4,7 @@
 {
     "name": "Vietnam Government XLS Reports",
     "summary": "Generates mandated Vietnamese government XLS reports (BHXH/BHYT/BHTN).",
-    "version": "16.0.1.0.0",
+    "version": "19.0.1.0.0",
     "license": "AGPL-3",
     "author": "Your Company",
     "website": "",

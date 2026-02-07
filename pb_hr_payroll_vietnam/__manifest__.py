@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Vietnam Payroll',
-    'version': '16.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Vietnam-specific Payroll Implementation',
     'description': """
@@ -42,7 +42,7 @@ Vietnam Labor Law Compliance:
 Supported Features:
 ===================
 • Multi-region minimum wage support
-• Zoho CRM integration for employee data
+• Formula-based payroll calculation engine
 • Bank transfer export formats
 • Payslip templates in Vietnamese/English
 • Analytics and reporting dashboards
@@ -59,9 +59,8 @@ Supported Features:
         # Security
         'security/ir.model.access.csv',
         
-        # Data files - Vietnam-specific dashboard and spreadsheet
+        # Data files - Vietnam-specific dashboard
         'data/payroll_dashboard_data.xml',
-        'data/spreadsheet_data.xml',                     # Vietnam spreadsheet template
         'data/vietnam_sequence_data.xml',                # IR sequences for INS/TAX
         'data/vietnam_demo_data.xml',                    # Sample Insurance Policies & Tax Tables
         

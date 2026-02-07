@@ -12,7 +12,7 @@ class HrPayslipFormula(models.Model):
     """
     Extends hr.payslip to support formula-based computation.
     """
-    _inherit = 'hr.payslip'
+    _inherit = ['hr.payslip']
 
     # ==========================================
     # FORMULA COMPUTATION FIELDS

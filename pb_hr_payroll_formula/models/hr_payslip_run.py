@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 
 
 class HrPayslipRun(models.Model):
-    _inherit = 'hr.payslip.run'
+    _inherit = ['hr.payslip.run']
 
     def action_recompute_formula_lines_batch(self):
         total = 0

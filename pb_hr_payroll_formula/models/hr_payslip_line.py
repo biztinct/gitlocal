@@ -4,7 +4,7 @@ from odoo import fields, models
 
 
 class HrPayslipLine(models.Model):
-    _inherit = 'hr.payslip.line'
+    _inherit = ['hr.payslip.line']
 
     report_visible = fields.Boolean(
         string='Report Visible',
