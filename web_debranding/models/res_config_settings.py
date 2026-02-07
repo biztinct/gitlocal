@@ -1,5 +1,6 @@
 # Copyright 2021-2022 Ivan Yelizariev <https://it-projects.info/team/yelizariev>
 # License OPL-1 (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#odoo-apps) for derivative work.
+# Odoo 19 compatibility: fields_view_get replaced with _get_view
 
 from lxml import etree
 
@@ -10,18 +11,14 @@ class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
     @api.model
-    def fields_view_get(
-        self, view_id=None, view_type="form", toolbar=False, submenu=False
-    ):
-        ret_val = super(ResConfigSettings, self).fields_view_get(
-            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
-        )
+    def _get_view(self, view_id=None, view_type='form', **options):
+        """Odoo 19: Replaced fields_view_get with _get_view."""
+        arch, view = super()._get_view(view_id=view_id, view_type=view_type, **options)
 
-        page_name = ret_val["name"]
-        if not page_name == "res.config.settings.view.form":
-            return ret_val
+        if view.name != "res.config.settings.view.form":
+            return arch, view
 
-        doc = etree.XML(ret_val["arch"])
+        doc = arch  # arch is already an etree Element in Odoo 19
 
         general_redirect_queries = [
             "//div[@id='sms']",
@@ -42,7 +39,8 @@ class ResConfigSettings(models.TransientModel):
         for query in crm_redirect_queries:
             for item in doc.xpath(query):
                 checkbox = item.getprevious()
-                checkbox.getparent().remove(checkbox)
+                if checkbox is not None:
+                    checkbox.getparent().remove(checkbox)
                 item.getparent().remove(item)
 
         snailmail_query = "//div[@id='send_invoices_followups']"
@@ -57,17 +55,12 @@ class ResConfigSettings(models.TransientModel):
         for item in doc.xpath(enterprise_query):
             item.set("style", "display:none")
 
-        # Hide doc links in Settings (unmaintained feature, because the module already replaces links to custom ones)
-        # question_mark_query = "//a[@class='o_doc_link']"
-        # for item in doc.xpath(question_mark_query):
-        #     item.set("style", "display:none")
-
         container_query = "//div[@class='row mt16 o_settings_container']"
         for item in doc.xpath(container_query):
             if not item.getchildren():
                 title = item.getprevious()
-                title.getparent().remove(title)
+                if title is not None:
+                    title.getparent().remove(title)
                 item.getparent().remove(item)
 
-        ret_val["arch"] = etree.tostring(doc)
-        return ret_val
+        return arch, view
