@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payroll Analytics & Approval',
-    'version': '16.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Advanced Payroll Analytics, Approval Dashboard & Bank Export',
     'description': """
@@ -35,7 +35,6 @@
         'pb_hr_payroll_base',  # Required for payroll.dashboard model
         'pb_hr_payroll_formula',
         'web',
-        'spreadsheet_oca',
     ],
     'data': [
         # Security

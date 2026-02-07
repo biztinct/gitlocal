@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'HR Analytics & Reporting',
-    'version': '16.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Professional HR analytics with personnel costs, statutory contributions, headcount analysis',
     'description': """
@@ -35,7 +35,6 @@
         'pb_hr_payroll_base',      # Base country framework
         'pb_hr_payroll_formula',   # Formula-based payroll configs
         'web',
-        'spreadsheet_oca'          # UI & spreadsheet support
     ],
 
     'data': [

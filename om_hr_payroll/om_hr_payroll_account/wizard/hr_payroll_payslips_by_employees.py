@@ -4,7 +4,7 @@ from odoo import api, models
 
 
 class HrPayslipEmployees(models.TransientModel):
-    _inherit = 'hr.payslip.employees'
+    _inherit = ['hr.payslip.employees']
 
     def compute_sheet(self):
         journal_id = False

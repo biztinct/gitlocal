@@ -9,7 +9,7 @@ class HrFormulaConfigAnalyticsVietnam(models.Model):
     Extends hr.formula.config.analytics to add Vietnam-specific
     insurance contribution analytics data.
     """
-    _inherit = 'hr.formula.config.analytics'
+    _inherit = ['hr.formula.config.analytics']
 
     # ==========================================
     # INSURANCE ANALYTICS DATA (JSON)

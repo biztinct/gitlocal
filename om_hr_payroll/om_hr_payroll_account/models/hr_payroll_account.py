@@ -6,7 +6,7 @@ from odoo.tools import float_compare, float_is_zero
 
 
 class HrPayslipLine(models.Model):
-    _inherit = 'hr.payslip.line'
+    _inherit = ['hr.payslip.line']
 
     def _get_partner_id(self, credit_account):
         """
@@ -25,7 +25,7 @@ class HrPayslipLine(models.Model):
 
 
 class HrPayslip(models.Model):
-    _inherit = 'hr.payslip'
+    _inherit = ['hr.payslip']
 
     date = fields.Date('Date Account', states={'draft': [('readonly', False)]}, readonly=True,
         help="Keep empty to use the period of the validation(Payslip) date.")
@@ -164,7 +164,7 @@ class HrContract(models.Model):
 
 
 class HrPayslipRun(models.Model):
-    _inherit = 'hr.payslip.run'
+    _inherit = ['hr.payslip.run']
 
     journal_id = fields.Many2one('account.journal', 'Salary Journal', states={'draft': [('readonly', False)]}, readonly=True,
         required=True, default=lambda self: self.env['account.journal'].search([('type', '=', 'general')], limit=1))

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payroll Base Framework - Enhanced',
-    'version': '16.0.2.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Enhanced Multi-Country Payroll Base Framework with Professional Dashboard',
     'description': """
