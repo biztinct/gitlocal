@@ -1,18 +1,14 @@
-# Copyright 2015-2018,2020 Ivan Yelizariev
-# Copyright 2021 Denis Mudarisov <https://github.com/trojikman>
-# License OPL-1 (https://www.odoo.com/documentation/user/13.0/legal/licenses/licenses.html#odoo-apps) for derivative work.
+# Copyright 2016 Tecnativa, S.L. - Vicent Cubells
+# License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl.html).
 {
-    "name": "Website debranding",
-    "version": "16.0.1.0.1",
-    "author": "IT-Projects LLC, Ivan Yelizariev",
-    "license": "OPL-1",
-    "category": "Debranding",
-    "images": ["images/website_debranding.jpg"],
-    "support": "apps@itpp.dev",
-    "website": "https://odoo-debranding.com",
-    "depends": ["website", "portal_debranding"],
-    "data": ["views.xml"],
-    "demo": ["demo.xml"],
-    "auto_install": True,
+    "name": "Remove Odoo Branding from Website",
+    "version": "19.0.1.0.0",
+    "author": "Tecnativa, Odoo Community Association (OCA)",
+    "website": "https://github.com/OCA/server-brand",
+    "license": "LGPL-3",
+    "category": "Website",
+    "depends": ["website"],
+    "data": ["templates/disable_odoo.xml"],
     "installable": True,
+    "post_init_hook": "post_init_hook",
 }

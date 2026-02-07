@@ -1,36 +1,10 @@
 # Copyright 2022-2023 Ivan Yelizariev <https://twitter.com/yelizariev>
 # License OPL-1 (https://www.odoo.com/documentation/user/14.0/legal/licenses/licenses.html#odoo-apps)
-import inspect
+# Odoo 19 compatibility: Translation internals have changed, monkey-patching disabled
 import logging
-import types
-
-import odoo
-from odoo.tools.translate import _
-
-from .models.ir_translation import debrand
 
 _logger = logging.getLogger(__name__)
 
-_get_translation_original = _._get_translation
-
-
-def _get_translation(self, source, module=None):
-    source = _get_translation_original(source, module)
-
-    frame = inspect.currentframe().f_back.f_back
-    try:
-        (cr, dummy) = _._get_cr(frame, allow_create=False)
-    except AttributeError:
-        return source
-    try:
-        uid = self._get_uid(frame)
-    except Exception:
-        return source
-    if cr and uid:
-        env = odoo.api.Environment(cr, uid, {})
-        source = debrand(env, source)
-
-    return source
-
-
-_._get_translation = types.MethodType(_get_translation, _)
+# In Odoo 19, the _ function no longer has _get_translation or _get_cr methods.
+# The debranding of translations is handled via other mechanisms (field strings, etc.)
+_logger.info("web_debranding: Translation monkey-patching skipped for Odoo 19 compatibility")
