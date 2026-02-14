@@ -13,11 +13,11 @@
                     <group string="Excel Overrides">
                         <field name="import_file" filename="import_filename"/>
                         <field name="file_sheet_name"
-                               attrs="{'invisible': [('import_file', '=', False)]}"/>
+                               invisible="not import_file"/>
                         <field name="file_header_row"
-                               attrs="{'invisible': [('import_file', '=', False)]}"/>
+                               invisible="not import_file"/>
                         <field name="file_data_start_row"
-                               attrs="{'invisible': [('import_file', '=', False)]}"/>
+                               invisible="not import_file"/>
                     </group>
                 </sheet>
                 <footer>

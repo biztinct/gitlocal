@@ -37,7 +37,7 @@
     <record id="action_view_hr_analytics_annual_costs" model="ir.actions.act_window">
         <field name="name">Annual HR Costs</field>
         <field name="res_model">hr.analytics.annual.costs</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

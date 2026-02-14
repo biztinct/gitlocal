@@ -11,7 +11,7 @@
     <menuitem id="menu_hr_payroll_root"
               name="Payroll"
               sequence="50"
-              action="hr.open_view_employee_list_my"
+              action="pb_hr_flow.action_hr_flow_wizard"
               web_icon="om_hr_payroll,static/description/icon.png"/>
 
 <!--
@@ -70,7 +70,7 @@
 
                 <separator string="Contract Components" />
                 <field name="advantages_ids">
-                    <tree editable="bottom">
+                    <list editable="bottom">
                         <field
                             name="advantage_template_id"
                             options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"
@@ -79,7 +79,7 @@
                         <field name="advantage_lower_bound" />
                         <field name="advantage_upper_bound" />
                         <field name="amount" />
-                    </tree>
+                    </list>
                 </field>
             </xpath>
             
@@ -159,13 +159,13 @@
         <field name="name">hr.contract.advantage.template.tree</field>
         <field name="model">hr.contract.advantage.template</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="lower_bound"/>
                 <field name="upper_bound"/>
                 <field name="default_value"/>
-            </tree>
+            </list>
         </field>
     </record>
 

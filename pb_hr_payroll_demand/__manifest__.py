@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Workforce Demand Planning',
-    'version': '16.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Capability mapping, role analysis, and workforce demand planning with interactive dashboards',
     'description': """
@@ -41,8 +41,9 @@
         'web.assets_backend': [
             'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js',
             'pb_hr_payroll_demand/static/src/css/workforce_dashboard.css',
-            'pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js',
-            'pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml',
+            # DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
+            # 'pb_hr_payroll_demand/static/src/js/workforce_dashboard_action.js',
+            # 'pb_hr_payroll_demand/static/src/xml/workforce_dashboard_templates.xml',
         ],
     },
     'license': 'LGPL-3',

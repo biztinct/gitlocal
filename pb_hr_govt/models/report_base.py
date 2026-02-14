@@ -4,7 +4,7 @@
 from datetime import datetime
 
 from odoo import fields, models
-from odoo.modules.module import get_module_resource
+from odoo.tools.misc import file_path
 
 
 def _fmt(date_val):
@@ -141,7 +141,7 @@ class PbGovtReportBase(models.AbstractModel):
             _logger.warning("pb_hr_govt: openpyxl not installed; template %s will be blank", template_filename)
             return {name: workbook.add_worksheet(name) for name in sheet_names}
 
-        path = get_module_resource("pb_hr_govt", "government", template_filename)
+        path = file_path(f"pb_hr_govt/government/{template_filename}")
         ws_map = {}
         # Prefer xlrd for legacy .xls to avoid noisy openpyxl warnings.
         tpl = None

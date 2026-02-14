@@ -5,12 +5,12 @@
         <field name="name">hr.payslip.config.tree</field>
         <field name="model">hr.payslip.config</field>
         <field name="arch" type="xml">
-            <tree string="Payslip Configuration" editable="bottom">
+            <list string="Payslip Configuration" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="salary_structure_id" required="1"/>
                 <field name="identifier"/>
                 <field name="label"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -29,7 +29,7 @@
     <record id="action_payslip_config" model="ir.actions.act_window">
         <field name="name">Payslip Configuration</field>
         <field name="res_model">hr.payslip.config</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">list</field>
         <field name="view_id" ref="view_payslip_config_tree"/>
         <field name="search_view_id" ref="view_payslip_config_search"/>
         <field name="target">current</field>

@@ -8,14 +8,15 @@ from dateutil.relativedelta import relativedelta
 from pytz import timezone
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
-from bokeh.plotting import figure, output_file, show
-from bokeh.palettes import HighContrast3
-from bokeh.embed import components
-from bokeh.models import ColumnDataSource, HoverTool, LabelSet, Legend, FactorRange
-from bokeh.transform import factor_cmap, cumsum
-from bokeh.palettes import Category20c
+# Bokeh imports commented out - not used
+# from bokeh.plotting import figure, output_file, show
+# from bokeh.palettes import HighContrast3
+# from bokeh.embed import components
+# from bokeh.models import ColumnDataSource, HoverTool, LabelSet, Legend, FactorRange
+# from bokeh.transform import factor_cmap, cumsum
+# from bokeh.palettes import Category20c
 import json
-from pudb import set_trace
+# from pudb import set_trace  # Debug tool - not for production
 #from odoo.addons.report_xlsx.report.report_xlsx import ReportXlsx
 
 _logger = logging.getLogger(__name__)
@@ -215,17 +216,16 @@ class HrPayslip(models.Model):
             copied_payslip.compute_sheet()
             copied_payslip.action_payslip_done()
         form_view_ref = self.env.ref('om_om_hr_payroll.view_hr_payslip_form', False)
-        tree_view_ref = self.env.ref('om_om_hr_payroll.view_hr_payslip_tree', False)
+        list_view_ref = self.env.ref('om_om_hr_payroll.view_hr_payslip_tree', False)
         return {
             'name': (_("Refund Payslip")),
-            'view_mode': 'tree, form',
+            'view_mode': 'list, form',
             'view_id': False,
-            'view_type': 'form',
             'res_model': 'hr.payslip',
             'type': 'ir.actions.act_window',
             'target': 'current',
             'domain': "[('id', 'in', %s)]" % copied_payslip.ids,
-            'views': [(tree_view_ref and tree_view_ref.id or False, 'tree'), (form_view_ref and form_view_ref.id or False, 'form')],
+            'views': [(list_view_ref and list_view_ref.id or False, 'list'), (form_view_ref and form_view_ref.id or False, 'form')],
             'context': {}
         }
 
@@ -312,6 +312,10 @@ class HrPayslip(models.Model):
         Args:
             payslip: The payslip record to update.
         """
+        # Check if zoho.employee.data model exists
+        if 'zoho.employee.data' not in self.env:
+            return
+        
         payroll_from_spreadsheet = self.env[
             'ir.config_parameter'
         ].sudo().get_param('payroll_from_spreadsheet')
@@ -444,12 +448,14 @@ class HrPayslip(models.Model):
                 compute_leaves=False,
             )
 
-            zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
-            #zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', '11660')], limit=1)
+            # Check if zoho.employee.data model exists before using it
+            zoho_employee = False
+            if 'zoho.employee.data' in self.env:
+                zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
+            
             if zoho_employee:
-                #set_trace()
                 standard_whr = zoho_employee.standard_whr
-            else :
+            else:
                 standard_whr = work_data['hours']
 
             attendances = {
@@ -464,20 +470,20 @@ class HrPayslip(models.Model):
 
             res.append(attendances)
             res.extend(leaves.values())
-            #set_trace()
-            att_list = []
-            att_list = [{'name': _("Actual work incl paid leave"), 'sequence': 2, 'code': 'ACPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_incl_paid_leave },
-            {'name': _("Actual work not incl paid leave"), 'sequence': 3, 'code': 'ACNPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_excl_paid_leave},
-            {'name': _("OT 1.5 Hrs"), 'sequence': 4, 'code': 'OT15', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_normal_150_hour },
-            {'name': _("OT 2 Hrs"), 'sequence': 5, 'code': 'OT2', 'contract_id': contract.id,'number_of_hours': zoho_employee.overtime_weekend_200_hour },
-            {'name': _("OT 3 Hrs"), 'sequence': 6, 'code': 'OT3', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_holiday_300_hour },
-            {'name': _("OT Night Shift Week day"), 'sequence': 7, 'code': 'OTNW', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_210_hour },
-            {'name': _("OT Night Shift Off day"), 'sequence': 8, 'code': 'OTNO', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_270_hour },
-            {'name': _("OT Night Shift Holiday"), 'sequence': 9, 'code': 'OTNH', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_390_hour },
-            {'name': _("Night Shift"), 'sequence': 10, 'code': 'NS', 'contract_id': contract.id, 'number_of_hours': zoho_employee.nightshift_hour },
-            #{'name': _("Paid leave unused"), 'sequence': 11, 'code': 'PAIDUNUSED', 'contract_id': contract.id, 'number_of_hours': zoho_employee.paidleave_unused },            
-             ]
-            res.extend(att_list)
+            
+            # Only add zoho-based attendance lines if zoho model is available and employee found
+            if zoho_employee:
+                att_list = [{'name': _("Actual work incl paid leave"), 'sequence': 2, 'code': 'ACPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_incl_paid_leave },
+                {'name': _("Actual work not incl paid leave"), 'sequence': 3, 'code': 'ACNPL', 'contract_id': contract.id, 'number_of_hours': zoho_employee.actual_working_hours_excl_paid_leave},
+                {'name': _("OT 1.5 Hrs"), 'sequence': 4, 'code': 'OT15', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_normal_150_hour },
+                {'name': _("OT 2 Hrs"), 'sequence': 5, 'code': 'OT2', 'contract_id': contract.id,'number_of_hours': zoho_employee.overtime_weekend_200_hour },
+                {'name': _("OT 3 Hrs"), 'sequence': 6, 'code': 'OT3', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_holiday_300_hour },
+                {'name': _("OT Night Shift Week day"), 'sequence': 7, 'code': 'OTNW', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_210_hour },
+                {'name': _("OT Night Shift Off day"), 'sequence': 8, 'code': 'OTNO', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_270_hour },
+                {'name': _("OT Night Shift Holiday"), 'sequence': 9, 'code': 'OTNH', 'contract_id': contract.id, 'number_of_hours': zoho_employee.overtime_nightshift_390_hour },
+                {'name': _("Night Shift"), 'sequence': 10, 'code': 'NS', 'contract_id': contract.id, 'number_of_hours': zoho_employee.nightshift_hour },
+                 ]
+                res.extend(att_list)
 
             #Biztinct TODO
             #Get hours from the raw table populated by API
@@ -734,33 +740,33 @@ class HrPayslip(models.Model):
         #computation of the salary input
         contracts = self.env['hr.contract'].browse(contract_ids)
         worked_days_line_ids = self.get_worked_day_lines(contracts, date_from, date_to)
-        #Biztinct - populate worked days data from Zoho Employee data
-        lemployee = self.env['hr.employee'].search([('id', '=', employee_id)], limit=1)
-        zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', lemployee.employee_id)], limit=1)
-        for line in worked_days_line_ids:
-            
-            if line['code'] == 'WORK100':
-                line['number_of_hours'] = zoho_employee.standard_whr
-            elif line['code'] == 'ACPL':
-                line['number_of_hours'] = zoho_employee.actual_working_hours_incl_paid_leave
-            elif line['code'] == 'ACNPL':
-                line['number_of_hours'] = zoho_employee.actual_working_hours_excl_paid_leave
-            elif line['code'] == 'OT15':
-                line['number_of_hours'] = zoho_employee.overtime_normal_150_hour
-            elif line['code'] == 'OT2':
-                line['number_of_hours'] = zoho_employee.overtime_weekend_200_hour
-            elif line['code'] == 'OT3':
-                line['number_of_hours'] = zoho_employee.overtime_holiday_300_hour
-            elif line['code'] == 'OTNW':
-                line['number_of_hours'] = zoho_employee.overtime_nightshift_200_hour
-            elif line['code'] == 'OTNO':
-                line['number_of_hours'] = zoho_employee.overtime_nightshift_270_hour
-            elif line['code'] == 'OTNH':
-                line['number_of_hours'] = zoho_employee.overtime_nightshift_390_hour   
-            #Biztinct - Paid leave unused is amount and not hours so it should go into contract to be given at end of employment
-            #elif line['code'] == 'PAIDUNUSED':
-            #    line['number_of_hours'] = zoho_employee.paidleave_unused   
-
+        
+        #Biztinct - populate worked days data from Zoho Employee data (if available)
+        zoho_employee = False
+        if 'zoho.employee.data' in self.env:
+            lemployee = self.env['hr.employee'].search([('id', '=', employee_id)], limit=1)
+            zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', lemployee.employee_id)], limit=1)
+        
+        if zoho_employee:
+            for line in worked_days_line_ids:
+                if line['code'] == 'WORK100':
+                    line['number_of_hours'] = zoho_employee.standard_whr
+                elif line['code'] == 'ACPL':
+                    line['number_of_hours'] = zoho_employee.actual_working_hours_incl_paid_leave
+                elif line['code'] == 'ACNPL':
+                    line['number_of_hours'] = zoho_employee.actual_working_hours_excl_paid_leave
+                elif line['code'] == 'OT15':
+                    line['number_of_hours'] = zoho_employee.overtime_normal_150_hour
+                elif line['code'] == 'OT2':
+                    line['number_of_hours'] = zoho_employee.overtime_weekend_200_hour
+                elif line['code'] == 'OT3':
+                    line['number_of_hours'] = zoho_employee.overtime_holiday_300_hour
+                elif line['code'] == 'OTNW':
+                    line['number_of_hours'] = zoho_employee.overtime_nightshift_200_hour
+                elif line['code'] == 'OTNO':
+                    line['number_of_hours'] = zoho_employee.overtime_nightshift_270_hour
+                elif line['code'] == 'OTNH':
+                    line['number_of_hours'] = zoho_employee.overtime_nightshift_390_hour
 
 
         input_line_ids = self.get_inputs(contracts, date_from, date_to)
@@ -777,8 +783,10 @@ class HrPayslip(models.Model):
         if (not self.employee_id) or (not self.date_from) or (not self.date_to):
             return
  
-        #Biztinct -  Search for the employee in zoho.employee.data using the employee's name
-        zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
+        #Biztinct -  Search for the employee in zoho.employee.data using the employee's name (if model available)
+        zoho_employee = False
+        if 'zoho.employee.data' in self.env:
+            zoho_employee = self.env['zoho.employee.data'].search([('employee_id', '=', self.employee_id.employee_id)], limit=1)
         #if zoho_employee:
             # If found, update the date_from and date_to fields
         #    self.date_from = zoho_employee.start_date

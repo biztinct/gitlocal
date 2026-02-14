@@ -8,7 +8,7 @@
         <field name="name">hr.payroll.import.batch.tree</field>
         <field name="model">hr.payroll.import.batch</field>
         <field name="arch" type="xml">
-            <tree string="Payroll Import Batches" default_order="date_from desc"
+            <list string="Payroll Import Batches" default_order="date_from desc"
                   decoration-info="state == 'draft'"
                   decoration-warning="state in ['loaded', 'matched', 'validated']"
                   decoration-success="state == 'done'"
@@ -30,7 +30,7 @@
                        decoration-success="state == 'done'"
                        decoration-danger="state == 'error'"/>
                 <field name="create_date"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -46,29 +46,29 @@
                     <!-- Action Buttons based on state -->
                     <button name="action_open_payslip_run" string="Payslip Run" type="object"
                             class="btn-primary" icon="fa-external-link"
-                            attrs="{'invisible': ['|', ('state', '!=', 'done'), ('payslip_run_id', '=', False)]}"/>
+                            invisible="['|', ('state', '!=', 'done'), ('payslip_run_id', '=', False)]"/>
                     <button name="action_load_file" string="Load File" type="object"
                             class="btn-primary" icon="fa-upload"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                            invisible="[('state', '!=', 'draft')]"/>
                     <button name="action_match_employees" string="Match Employees" type="object"
                             class="btn-primary" icon="fa-users"
-                            attrs="{'invisible': [('state', 'not in', ['loaded'])]}"/>
+                            invisible="[('state', 'not in', ['loaded'])]"/>
                     <button name="action_validate" string="Validate" type="object"
                             class="btn-primary" icon="fa-check"
-                            attrs="{'invisible': [('state', 'not in', ['matched'])]}"/>
+                            invisible="[('state', 'not in', ['matched'])]"/>
                     <button name="action_process" string="Process All" type="object"
                             class="btn-success" icon="fa-play"
-                            attrs="{'invisible': [('state', 'not in', ['validated', 'matched'])]}"
+                            invisible="[('state', 'not in', ['validated', 'matched'])]"
                             confirm="This will update existing or create new employees, contracts and payslips. Continue?"/>
                     <button name="action_rebuild_cycle_carryover" string="Rebuild Carryover" type="object"
                             class="btn-secondary" icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', '!=', 'done'), ('cycle_type', '!=', 'mid_cycle')]}"/>
+                            invisible="['|', ('state', '!=', 'done'), ('cycle_type', '!=', 'mid_cycle')]"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object"
                             class="btn-secondary"
-                            attrs="{'invisible': [('state', 'in', ['draft', 'done', 'processing'])]}"/>
+                            invisible="[('state', 'in', ['draft', 'done', 'processing'])]"/>
                     <button name="action_cancel" string="Cancel" type="object"
                             class="btn-secondary"
-                            attrs="{'invisible': [('state', 'in', ['done', 'cancelled'])]}"/>
+                            invisible="[('state', 'in', ['done', 'cancelled'])]"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,loaded,matched,validated,done"/>
                 </header>
@@ -89,38 +89,38 @@
                         <button class="oe_stat_button" type="object"
                                 name="action_view_created_employees"
                                 icon="fa-users"
-                                attrs="{'invisible': [('state', '!=', 'done')]}">
+                                invisible="[('state', '!=', 'done')]">
                             <field name="new_employees" widget="statinfo" string="Created"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_error_lines"
                                 icon="fa-exclamation-triangle"
-                                attrs="{'invisible': [('error_lines', '=', 0)]}">
+                                invisible="[('error_lines', '=', 0)]">
                             <field name="error_lines" widget="statinfo" string="Errors"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_created_payslips"
                                 icon="fa-file-text-o"
-                                attrs="{'invisible': [('state', '!=', 'done')]}">
+                                invisible="[('state', '!=', 'done')]">
                             <field name="processed_lines" widget="statinfo" string="Payslips"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_proration_lines"
                                 icon="fa-pie-chart"
-                                attrs="{'invisible': [('use_proration', '=', False)]}">
+                                invisible="[('use_proration', '=', False)]">
                             <field name="proration_line_count" widget="statinfo" string="Proration"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_retro_adjustments"
                                 icon="fa-history"
-                                attrs="{'invisible': [('use_auto_retro', '=', False)]}">
+                                invisible="[('use_auto_retro', '=', False)]">
                             <field name="retro_adjustment_count" widget="statinfo" string="Retro"/>
                         </button>
                     </div>
 
                     <!-- Alerts -->
                     <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('error_lines', '=', 0)]}">
+                         invisible="[('error_lines', '=', 0)]">
                         <i class="fa fa-exclamation-triangle"/> <field name="error_lines"/> lines have errors. Please review and fix before processing.
                     </div>
 
@@ -136,16 +136,16 @@
                             <field name="formula_config_id" required="1"
                                    options="{'no_create': True}"/>
                             <field name="connector_id"
-                                   attrs="{'invisible': [('source_type', '!=', 'connector')]}"
+                                   invisible="[('source_type', '!=', 'connector')]"
                                    domain="[('connector_type', 'in', ['excel', 'zoho', 'sap', 'workday', 'oracle'])]"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group string="Period">
                             <field name="payroll_period" widget="radio"/>
                             <field name="date_from"
-                                   attrs="{'required': [('payroll_period', '=', 'custom')]}"/>
+                                   required="[('payroll_period', '=', 'custom')]"/>
                             <field name="date_to"
-                                   attrs="{'required': [('payroll_period', '=', 'custom')]}"/>
+                                   required="[('payroll_period', '=', 'custom')]"/>
                             <field name="country_code" readonly="1"/>
                         </group>
                     </group>
@@ -153,7 +153,7 @@
                     <notebook>
                         <!-- File Upload Tab -->
                         <page string="File Import" name="file_import"
-                              attrs="{'invisible': ['|', ('source_type', '!=', 'excel'), ('state', '!=', 'draft')]}">
+                              invisible="['|', ('source_type', '!=', 'excel'), ('state', '!=', 'draft')]">
                             <group>
                                 <group>
                                     <field name="import_file" filename="import_filename"
@@ -171,7 +171,7 @@
                         <!-- Import Lines Tab -->
                         <page string="Import Lines" name="import_lines">
                             <field name="import_line_ids" nolabel="1">
-                                <tree string="Import Lines" editable="bottom"
+                                <list string="Import Lines" editable="bottom"
                                       decoration-success="state == 'processed'"
                                       decoration-warning="state in ['unmatched', 'validated']"
                                       decoration-info="state == 'matched'"
@@ -192,11 +192,11 @@
                                     <field name="error_message" optional="hide"/>
                                     <button name="action_manual_match" type="object"
                                             icon="fa-search" title="Manual Match"
-                                            attrs="{'invisible': [('state', 'not in', ['draft', 'unmatched'])]}"/>
+                                            invisible="[('state', 'not in', ['draft', 'unmatched'])]"/>
                                     <button name="action_retry" type="object"
                                             icon="fa-refresh" title="Retry"
-                                            attrs="{'invisible': [('state', '!=', 'error')]}"/>
-                                </tree>
+                                            invisible="[('state', '!=', 'error')]"/>
+                                </list>
                             </field>
                         </page>
 
@@ -208,14 +208,14 @@
                                     <field name="match_by_email"/>
                                     <field name="auto_create_employees"/>
                                     <field name="auto_create_contracts"
-                                           attrs="{'invisible': [('auto_create_employees', '=', False)]}"/>
+                                           invisible="[('auto_create_employees', '=', False)]"/>
                                 </group>
                                 <group string="Payslip Options">
                                     <field name="create_payslips"/>
                                     <field name="payslip_state"
-                                           attrs="{'invisible': [('create_payslips', '=', False)]}"/>
+                                           invisible="[('create_payslips', '=', False)]"/>
                                     <field name="payroll_journal_id"
-                                           attrs="{'invisible': [('create_payslips', '=', False)]}"
+                                           invisible="[('create_payslips', '=', False)]"
                                            options="{'no_create': False}"/>
                                 </group>
                             </group>
@@ -223,14 +223,14 @@
 
                         <!-- Processing Log Tab -->
                         <page string="Processing Log" name="log"
-                              attrs="{'invisible': [('processing_log', '=', False)]}">
+                              invisible="[('processing_log', '=', False)]">
                             <field name="processing_log" readonly="1" nolabel="1"
                                    class="o_monospaced"/>
                         </page>
 
                         <!-- Results Tab -->
                         <page string="Results" name="results"
-                              attrs="{'invisible': [('state', '!=', 'done')]}">
+                              invisible="[('state', '!=', 'done')]">
                             <group>
                                 <group string="Created Records">
                                     <field name="created_employee_ids" widget="many2many_tags" readonly="1"/>
@@ -250,11 +250,7 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -280,7 +276,7 @@
                 <separator/>
                 <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
                 <separator/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Source" name="group_source" context="{'group_by': 'source_type'}"/>
                     <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
@@ -297,7 +293,7 @@
         <field name="name">hr.payroll.import.line.tree</field>
         <field name="model">hr.payroll.import.line</field>
         <field name="arch" type="xml">
-            <tree string="Import Lines"
+            <list string="Import Lines"
                   decoration-success="state == 'processed'"
                   decoration-warning="state in ['unmatched', 'validated']"
                   decoration-info="state == 'matched'"
@@ -312,7 +308,7 @@
                 <field name="payslip_id"/>
                 <field name="state" widget="badge"/>
                 <field name="error_message"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -327,13 +323,13 @@
                 <header>
                     <button name="action_manual_match" string="Manual Match" type="object"
                             class="btn-primary"
-                            attrs="{'invisible': [('state', 'not in', ['draft', 'unmatched'])]}"/>
+                            invisible="[('state', 'not in', ['draft', 'unmatched'])]"/>
                     <button name="action_retry" string="Retry" type="object"
                             class="btn-secondary"
-                            attrs="{'invisible': [('state', '!=', 'error')]}"/>
+                            invisible="[('state', '!=', 'error')]"/>
                     <button name="action_skip" string="Skip" type="object"
                             class="btn-secondary"
-                            attrs="{'invisible': [('state', 'in', ['processed', 'error'])]}"/>
+                            invisible="[('state', 'in', ['processed', 'error'])]"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,matched,validated,processed"/>
                 </header>
@@ -352,7 +348,7 @@
                             <field name="payslip_id" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Error" attrs="{'invisible': [('error_message', '=', False)]}">
+                    <group string="Error" invisible="[('error_message', '=', False)]">
                         <field name="error_message" nolabel="1" readonly="1"/>
                     </group>
                     <notebook>
@@ -361,7 +357,7 @@
                                    class="o_monospaced"/>
                         </page>
                         <page string="Computed Values" name="computed"
-                              attrs="{'invisible': [('computed_values_json', '=', False)]}">
+                              invisible="[('computed_values_json', '=', False)]">
                             <field name="computed_values_json" widget="text" readonly="1"
                                    class="o_monospaced"/>
                         </page>
@@ -387,7 +383,7 @@
                     </group>
                     <group string="Match To">
                         <field name="employee_id"
-                               attrs="{'invisible': [('create_new', '=', True)]}"
+                               invisible="[('create_new', '=', True)]"
                                options="{'no_create': True}"/>
                         <field name="create_new"/>
                     </group>
@@ -408,7 +404,7 @@
     <record id="action_payroll_import_batch" model="ir.actions.act_window">
         <field name="name">Payroll Import</field>
         <field name="res_model">hr.payroll.import.batch</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_payroll_import_batch_search"/>
         <field name="context">{'search_default_in_progress': 1, 'search_default_group_config': 1, 'show_hr_flow_home': 1, 'home_action_id': 'pb_hr_flow.action_hr_flow_wizard'}</field>
         <field name="help" type="html">

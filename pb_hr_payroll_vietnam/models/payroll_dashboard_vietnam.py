@@ -6,6 +6,7 @@ from odoo.tools.safe_eval import safe_eval
 
 
 class PayrollDashboardVietnam(models.Model):
+    _name = 'payroll.dashboard'
     _inherit = ['payroll.dashboard']
 
     def action_open_import_batch(self):

@@ -3,158 +3,124 @@
 import { onMounted, onPatched } from "@odoo/owl";
 import { patch } from "@web/core/utils/patch";
 import { ControlPanel } from "@web/search/control_panel/control_panel";
-
-let lastHomeContext = {};
-let observerStarted = false;
+import { whenReady } from "@odoo/owl";
 
 const DEFAULT_ACTION_ID = "pb_hr_flow.action_hr_flow_wizard";
-const BREADCRUMB_SELECTORS = [
-    ".o_control_panel .breadcrumb",
-    ".o_control_panel .o_breadcrumb",
-    ".o_control_panel_breadcrumbs",
-    ".o_cp_top_left .breadcrumb",
-    ".o_cp_top_left .o_breadcrumb",
-].join(", ");
+const FLOW_MODEL = "hr.flow.wizard";
 
-const ensureHomeIcon = () => {
-    const hide = lastHomeContext.hide_hr_flow_home;
-    const actionId = lastHomeContext.home_action_id || DEFAULT_ACTION_ID;
-    const breadcrumbs = Array.from(document.querySelectorAll(BREADCRUMB_SELECTORS));
+/**
+ * Check whether the Flow Dashboard (.circular-workflow) is on screen.
+ */
+const isFlowDashboardVisible = () => !!document.querySelector('.circular-workflow');
 
-    if (!breadcrumbs.length) {
-        return;
+/**
+ * Hide / show form control buttons depending on whether we are
+ * on the Flow Dashboard.
+ */
+const adjustControlPanel = () => {
+    const cp = document.querySelector('.o_control_panel');
+    if (!cp) return;
+
+    const isFlow = isFlowDashboardVisible();
+
+    // New button wrapper
+    const newBtnWrap = cp.querySelector('.o_control_panel_main_buttons');
+    if (newBtnWrap) {
+        if (isFlow) {
+            newBtnWrap.style.setProperty('display', 'none', 'important');
+        } else {
+            newBtnWrap.style.removeProperty('display');
+        }
     }
 
-    breadcrumbs.forEach((breadcrumb) => {
-        const container = breadcrumb.parentElement || breadcrumb;
-        const existing = container.querySelector(".o_hr_flow_home_link");
-
-        if (hide) {
-            if (existing) {
-                existing.remove();
-            }
-            return;
+    // Cog / actions menu
+    const cogMenu = cp.querySelector('.o_cp_action_menus');
+    if (cogMenu) {
+        if (isFlow) {
+            cogMenu.style.setProperty('display', 'none', 'important');
+        } else {
+            cogMenu.style.removeProperty('display');
         }
+    }
 
-        if (existing) {
-            existing.dataset.actionId = actionId;
-            existing.setAttribute("href", `/web#action=${actionId}`);
-            return;
+    // Save / cancel status indicator
+    const status = cp.querySelector('.o_form_status_indicator');
+    if (status) {
+        if (isFlow) {
+            status.style.setProperty('display', 'none', 'important');
+        } else {
+            status.style.removeProperty('display');
         }
+    }
 
-        const link = document.createElement("a");
-        link.className = "o_hr_flow_home_link";
-        link.setAttribute("role", "button");
-        link.setAttribute("aria-label", "Open HR Flow Dashboard");
-        link.setAttribute("title", "Home");
-        link.dataset.actionId = actionId;
-        link.setAttribute("href", `/web#action=${actionId}`);
-        link.innerHTML = "<i class=\"fa fa-home\"></i>";
+    // Home icon — always ensure exactly one
+    ensureHomeIcon(cp);
+};
 
-        link.addEventListener("click", (ev) => {
-            const targetAction = link.dataset.actionId || DEFAULT_ACTION_ID;
-            const actionService = window.__hr_flow_action_service;
-            if (actionService && actionService.doAction) {
-                ev.preventDefault();
-                actionService.doAction(targetAction, {
-                    clear_breadcrumbs: true,
-                    clearBreadcrumbs: true,
-                });
-            }
-            window.location.href = `/web#action=${targetAction}`;
-        });
+/**
+ * Add exactly one home icon to the breadcrumb area.
+ */
+const ensureHomeIcon = (cp) => {
+    if (!cp) cp = document.querySelector('.o_control_panel');
+    if (!cp) return;
 
-        breadcrumb.insertAdjacentElement("beforebegin", link);
+    const existing = cp.querySelector('.o_hr_flow_home_link');
+    if (existing) return; // already there
+
+    // Odoo 19: breadcrumbs container
+    const breadcrumbContainer = cp.querySelector('.o_control_panel_breadcrumbs');
+    if (!breadcrumbContainer) return;
+
+    const link = document.createElement('a');
+    link.className = 'o_hr_flow_home_link';
+    link.setAttribute('role', 'button');
+    link.setAttribute('aria-label', 'Open HR Flow Dashboard');
+    link.setAttribute('title', 'Home');
+    link.setAttribute('href', `/web#action=${DEFAULT_ACTION_ID}`);
+    link.innerHTML = '<i class="fa fa-home"></i>';
+    link.style.cssText = 'margin-right:8px;font-size:16px;color:#4c4c4c;cursor:pointer;text-decoration:none;display:flex;align-items:center;';
+
+    link.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const actionService = window.__hr_flow_action_service;
+        if (actionService && actionService.doAction) {
+            actionService.doAction(DEFAULT_ACTION_ID, {
+                clear_breadcrumbs: true,
+                clearBreadcrumbs: true,
+            });
+        } else {
+            window.location.href = `/web#action=${DEFAULT_ACTION_ID}`;
+        }
     });
+
+    breadcrumbContainer.insertBefore(link, breadcrumbContainer.firstChild);
 };
 
-const startObserver = () => {
-    if (observerStarted) {
-        return;
-    }
-    observerStarted = true;
-    const observer = new MutationObserver(() => ensureHomeIcon());
-    observer.observe(document.body, { childList: true, subtree: true });
-    ensureHomeIcon();
-};
-
-patch(ControlPanel.prototype, "pb_hr_payroll_base_home_icon", {
+/* ─── Patch ControlPanel to capture the action service ─── */
+patch(ControlPanel.prototype, {
     setup() {
-        this._super(...arguments);
+        super.setup(...arguments);
         if (this.env && this.env.services && this.env.services.action) {
             window.__hr_flow_action_service = this.env.services.action;
         }
-        onMounted(() => this._updateHomeIcon());
-        onPatched(() => this._updateHomeIcon());
-    },
-
-    _getHomeContext() {
-        const searchModel = this.env && this.env.searchModel;
-        const context = (searchModel && (searchModel.globalContext || searchModel.context)) || {};
-        lastHomeContext = context || {};
-        return context;
-    },
-
-    _updateHomeIcon() {
-        if (!this.el) {
-            return;
-        }
-
-        const context = this._getHomeContext();
-        const shouldShow = !context.hide_hr_flow_home;
-        const existing = this.el.querySelector(".o_hr_flow_home_link");
-
-        if (!shouldShow) {
-            if (existing) {
-                existing.remove();
-            }
-            return;
-        }
-
-        if (existing) {
-            existing.dataset.actionId = context.home_action_id || "";
-            existing.setAttribute("href", `/web#action=${context.home_action_id || DEFAULT_ACTION_ID}`);
-            return;
-        }
-
-        const container = this.el.querySelector(".o_cp_top_left") || this.el.querySelector(".o_control_panel");
-        if (!container) {
-            return;
-        }
-
-        const breadcrumb = container.querySelector(".breadcrumb, .o_breadcrumb, .o_control_panel_breadcrumbs");
-        if (!breadcrumb) {
-            return;
-        }
-
-        const link = document.createElement("a");
-        link.className = "o_hr_flow_home_link";
-        link.setAttribute("role", "button");
-        link.setAttribute("aria-label", "Open HR Flow Dashboard");
-        link.setAttribute("title", "Home");
-        link.dataset.actionId = context.home_action_id || "";
-        link.setAttribute("href", `/web#action=${context.home_action_id || DEFAULT_ACTION_ID}`);
-        link.innerHTML = "<i class=\"fa fa-home\"></i>";
-
-        link.addEventListener("click", (ev) => {
-            const actionId = link.dataset.actionId || DEFAULT_ACTION_ID;
-            if (this.env.services.action) {
-                ev.preventDefault();
-                this.env.services.action.doAction(actionId, {
-                    clear_breadcrumbs: true,
-                    clearBreadcrumbs: true,
-                });
-                return;
-            }
-            window.location.href = `/web#action=${actionId}`;
+        onMounted(() => {
+            // Small delay so the DOM is fully settled
+            setTimeout(adjustControlPanel, 50);
         });
-
-        breadcrumb.insertAdjacentElement("beforebegin", link);
+        onPatched(() => {
+            setTimeout(adjustControlPanel, 50);
+        });
     },
 });
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", startObserver);
-} else {
-    startObserver();
-}
+/* ─── Global observer as fallback ─── */
+whenReady(() => {
+    let timer;
+    const obs = new MutationObserver(() => {
+        clearTimeout(timer);
+        timer = setTimeout(adjustControlPanel, 100);
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+    // Initial run
+    setTimeout(adjustControlPanel, 500);
+});

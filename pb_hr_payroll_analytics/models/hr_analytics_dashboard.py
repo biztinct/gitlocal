@@ -459,15 +459,21 @@ class HrAnalyticsDashboard(models.Model):
             }
         }
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         """Create dashboard - only one per company"""
-        # Check if dashboard already exists for this company
-        existing = self.search([
-            ('company_id', '=', vals.get('company_id', self.env.company.id))
-        ], limit=1)
+        results = self.env['hr.analytics.dashboard']
+        
+        for vals in vals_list:
+            # Check if dashboard already exists for this company
+            company_id = vals.get('company_id', self.env.company.id)
+            existing = self.search([
+                ('company_id', '=', company_id)
+            ], limit=1)
 
-        if existing:
-            return existing
-
-        return super().create(vals)
+            if existing:
+                results |= existing
+            else:
+                results |= super().create([vals])
+        
+        return results

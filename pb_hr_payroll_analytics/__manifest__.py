@@ -67,10 +67,11 @@
         'web.assets_backend': [
             'pb_hr_payroll_analytics/static/src/css/hr_analytics_dashboard.css',
             'pb_hr_payroll_analytics/static/src/css/hr_analytics_responsive.css',
-            'pb_hr_payroll_analytics/static/src/js/hr_analytics_dashboard.js',
-            'pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js',
-            'pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js',
-            'pb_hr_payroll_analytics/static/src/js/hr_formula_config_analytics.js',
+            # DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
+            # 'pb_hr_payroll_analytics/static/src/js/hr_analytics_dashboard.js',
+            # 'pb_hr_payroll_analytics/static/src/js/hr_analytics_charts.js',
+            # 'pb_hr_payroll_analytics/static/src/js/hr_analytics_export.js',
+            # 'pb_hr_payroll_analytics/static/src/js/hr_formula_config_analytics.js',
         ]
     },
 

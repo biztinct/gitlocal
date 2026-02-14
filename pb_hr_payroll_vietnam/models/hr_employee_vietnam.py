@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 
 
 class HrEmployeeVietnam(models.Model):
+    _name = 'hr.employee'
     _inherit = ['hr.employee']
 
     # Vietnam-specific employee fields

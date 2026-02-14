@@ -9,6 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 class PayrollDashboardAnalytics(models.Model):
+    _name = 'payroll.dashboard'
     _inherit = ['payroll.dashboard']
     
     def action_open_analytics_dashboard(self):

@@ -11,6 +11,7 @@ class HrPayrollStructureFormula(models.Model):
     """
     Extends hr.payroll.structure to support formula-based configuration.
     """
+    _name = 'hr.payroll.structure'  # Explicitly set to ensure proper inheritance
     _inherit = ['hr.payroll.structure']
 
     # ==========================================

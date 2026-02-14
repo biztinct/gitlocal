@@ -3,13 +3,14 @@
     <data noupdate="0">
 
         <!-- ==========================================
-             SECURITY CATEGORIES
+             FORMULA ENGINE PRIVILEGE (Odoo 19)
+             Uses the PAYROLL category from om_hr_payroll
              ========================================== -->
 
-        <record id="module_category_formula_payroll" model="ir.module.category">
-            <field name="name">Formula Payroll</field>
-            <field name="description">Formula-based payroll calculation module</field>
-            <field name="sequence">25</field>
+        <record id="res_groups_privilege_formula" model="res.groups.privilege">
+            <field name="name">Formula Engine</field>
+            <field name="sequence">10</field>
+            <field name="category_id" ref="om_hr_payroll.module_category_payroll"/>
         </record>
 
         <!-- ==========================================
@@ -19,7 +20,7 @@
         <!-- Formula User - Can view and use formula configurations -->
         <record id="group_formula_user" model="res.groups">
             <field name="name">Formula User</field>
-            <field name="category_id" ref="module_category_formula_payroll"/>
+            <field name="privilege_id" ref="res_groups_privilege_formula"/>
             <field name="implied_ids" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
             <field name="comment">
                 Can view formula configurations and use them for payroll calculation.
@@ -30,7 +31,7 @@
         <!-- Formula Manager - Can create and manage formula configurations -->
         <record id="group_formula_manager" model="res.groups">
             <field name="name">Formula Manager</field>
-            <field name="category_id" ref="module_category_formula_payroll"/>
+            <field name="privilege_id" ref="res_groups_privilege_formula"/>
             <field name="implied_ids" eval="[(4, ref('group_formula_user'))]"/>
             <field name="comment">
                 Can create, edit, and manage formula configurations.
@@ -41,7 +42,7 @@
         <!-- Formula Admin - Full access including integrations -->
         <record id="group_formula_admin" model="res.groups">
             <field name="name">Formula Administrator</field>
-            <field name="category_id" ref="module_category_formula_payroll"/>
+            <field name="privilege_id" ref="res_groups_privilege_formula"/>
             <field name="implied_ids" eval="[(4, ref('group_formula_manager'))]"/>
             <field name="comment">
                 Full access to all formula and integration features.

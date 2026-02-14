@@ -14,7 +14,7 @@ class HrIntegrationConnector(models.Model):
     """
     _name = 'hr.integration.connector'
     _description = 'HR System Integration Connector'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread']
     _order = 'sequence, name'
     _rec_name = 'name'
 

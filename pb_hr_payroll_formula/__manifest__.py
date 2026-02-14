@@ -54,6 +54,7 @@ License: LGPL-3
 
         # Data
         'data/formula_functions_data.xml',
+        'data/payroll_accounting_data.xml',
 
         # Views
         'views/assets.xml',
@@ -92,6 +93,7 @@ License: LGPL-3
             # Multi-sheet wizard custom styling and functionality
             'pb_hr_payroll_formula/static/src/css/multisheet_wizard.css',
             'pb_hr_payroll_formula/static/src/css/payslip_json_wrap.css',
+            'pb_hr_payroll_formula/static/src/css/formula_rule_list.css',
             'pb_hr_payroll_formula/static/src/js/multisheet_enhancements.js',
 
             # NOTE: Custom Excel grid widget JS disabled until proper implementation

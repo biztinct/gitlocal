@@ -1,0 +1,15 @@
+/* Formula Rule List - prevent column text overlap */
+/* Odoo 19 uses table-layout:fixed with overflow:visible on cells.
+   We must override to hidden + ellipsis to prevent long values from bleeding. */
+
+.o_field_one2many .o_list_table td.o_data_cell {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+.o_field_one2many .o_list_table th {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}

@@ -7,6 +7,7 @@ class HrFormulaConfigVietnam(models.Model):
     """
     Extends hr.formula.config with Vietnam-specific insurance and tax links
     """
+    _name = 'hr.formula.config'
     _inherit = ['hr.formula.config']
 
     # ==========================================

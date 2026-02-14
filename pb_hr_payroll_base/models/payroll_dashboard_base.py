@@ -584,7 +584,7 @@ class PayrollDashboard(models.Model):
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Employees',
             'res_model': 'hr.employee',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', employee_ids)],
             'context': {'default_country_code': self.country}
         }
@@ -595,7 +595,7 @@ class PayrollDashboard(models.Model):
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Zoho Data',
             'res_model': 'zoho.staging.data',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('payroll_country', '=', self.country)],
             'context': {'default_payroll_country': self.country}
         }
@@ -638,7 +638,7 @@ class PayrollDashboard(models.Model):
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Salary Rules',
             'res_model': 'hr.salary.rule',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('payroll_country_code', '=', self.country)],
             'context': {'default_payroll_country_code': self.country}
         }
@@ -649,7 +649,7 @@ class PayrollDashboard(models.Model):
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Contracts',
             'res_model': 'hr.contract',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('struct_id.payroll_country_code', '=', self.country)],
             'context': {'default_country_code': self.country}
         }
@@ -667,7 +667,7 @@ class PayrollDashboard(models.Model):
             'type': 'ir.actions.act_window',
             'name': f'{self.country} Payslips',
             'res_model': 'hr.payslip',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('employee_id', 'in', employee_ids)] if employee_ids else [('id', '=', False)],
             'context': {
                 'default_country_code': self.country,
@@ -699,7 +699,7 @@ class PayrollDashboard(models.Model):
             'name': f'{self.country} Payroll Analytics',
             'type': 'ir.actions.act_window',
             'res_model': 'payroll.analytics',
-            'view_mode': 'tree,form,graph,pivot',
+            'view_mode': 'list,form,graph,pivot',
             'domain': [('country_code', '=', self.country)],
             'context': {
                 'default_country_code': self.country,
@@ -1085,7 +1085,7 @@ class PayrollDashboard(models.Model):
                 'type': 'ir.actions.act_window',
                 'name': f'{self.country} Analytics',
                 'res_model': 'hr.payslip',
-                'view_mode': 'graph,tree',
+                'view_mode': 'graph,list',
                 'domain': [],
                 'context': {'search_default_group_by_date': 1}
             }
@@ -1121,7 +1121,7 @@ class PayrollDashboard(models.Model):
                 'type': 'ir.actions.act_window',
                 'name': f'{self.country} Payroll Approval',
                 'res_model': 'hr.payslip',
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
                 'domain': [('state', '=', 'draft')],
             }
 

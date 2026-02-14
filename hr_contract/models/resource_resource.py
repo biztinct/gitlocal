@@ -5,9 +5,10 @@ from datetime import datetime
 from pytz import timezone
 
 from odoo import models
-from odoo.addons.resource.models.resource import Intervals
+from odoo.tools.intervals import Intervals
 
 class ResourceResource(models.Model):
+    _name = 'resource.resource'
     _inherit = ['resource.resource']
 
     def _get_calendars_validity_within_period(self, start, end, default_company=None):

@@ -15,13 +15,13 @@
                             type="object" 
                             string="Final Approve" 
                             class="oe_highlight btn-success"
-                            states="ready"
+                            invisible="state not in ('ready')"
                             confirm="Are you sure you want to approve this payroll? This action cannot be undone."/>
                     <button name="action_export_bank_file" 
                             type="object" 
                             string="Export Bank File" 
                             class="oe_highlight btn-primary"
-                            states="approved"/>
+                            invisible="state not in ('approved')"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 

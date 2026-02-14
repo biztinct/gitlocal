@@ -8,7 +8,7 @@
         <field name="name">hr.formula.config.tree</field>
         <field name="model">hr.formula.config</field>
         <field name="arch" type="xml">
-            <tree string="Formula Configurations" decoration-info="state == 'draft'"
+            <list string="Formula Configurations" decoration-info="state == 'draft'"
                   decoration-success="state == 'active'" decoration-muted="state == 'archived'">
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
@@ -22,7 +22,7 @@
                        decoration-warning="validation_status == 'warning'"/>
                 <field name="state" widget="badge"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -36,11 +36,11 @@
             <form string="Formula Configuration">
                 <header>
                     <button name="action_set_draft" string="Set to Draft" type="object"
-                            attrs="{'invisible': [('state', '=', 'draft')]}"
+                            invisible="[('state', '=', 'draft')]"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
                     <button name="action_import_from_structure" string="Import from Structure"
                             type="object" class="btn-secondary"
-                            attrs="{'invisible': [('structure_id', '=', False)]}"
+                            invisible="[('structure_id', '=', False)]"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
                     <button name="action_import_from_excel_multisheet" string="Import from Excel"
                             type="object" class="btn-secondary" icon="fa-file-excel-o"
@@ -48,23 +48,23 @@
                             title="Import salary components from multi-sheet Excel file with cross-sheet formula resolution"/>
                     <button name="action_regenerate_formulas" string="Regenerate Formulas"
                             type="object" class="btn-secondary" icon="fa-refresh"
-                            attrs="{'invisible': [('rule_count', '=', 0)]}"
+                            invisible="[('rule_count', '=', 0)]"
                             groups="pb_hr_payroll_formula.group_formula_manager"
                             title="Refresh all Python formulas using latest conversion engine"/>
                     <button name="action_start_testing" string="Start Testing" type="object"
                             class="btn-primary"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            invisible="[('state', '!=', 'draft')]"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
                     <button name="action_validate" string="Validate" type="object"
                             class="btn-primary"
-                            attrs="{'invisible': [('state', 'not in', ['testing'])]}"
+                            invisible="[('state', 'not in', ['testing'])]"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
                     <button name="action_activate" string="Activate" type="object"
                             class="btn-success"
-                            attrs="{'invisible': [('state', '!=', 'validated')]}"
+                            invisible="[('state', '!=', 'validated')]"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
                     <button name="action_archive" string="Archive" type="object"
-                            attrs="{'invisible': [('state', '=', 'archived')]}"
+                            invisible="[('state', '=', 'archived')]"
                             groups="pb_hr_payroll_formula.group_formula_admin"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,testing,validated,active"/>
                 </header>
@@ -79,31 +79,31 @@
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_launch_payroll_import"
                                 icon="fa-upload"
-                                attrs="{'invisible': [('state', 'not in', ['active', 'validated'])]}">
+                                invisible="[('state', 'not in', ['active', 'validated'])]">
                             <span class="o_stat_text">Payroll Import</span>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_view_cycle_carryovers"
                                 icon="fa-exchange"
-                                attrs="{'invisible': [('cycle_type', '!=', 'mid_cycle')]}">
+                                invisible="[('cycle_type', '!=', 'mid_cycle')]">
                             <field name="carryover_count" widget="statinfo" string="Carryover"/>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_view_proration_lines"
                                 icon="fa-pie-chart"
-                                attrs="{'invisible': [('use_proration', '=', False)]}">
+                                invisible="[('use_proration', '=', False)]">
                             <field name="proration_count" widget="statinfo" string="Proration"/>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_view_retro_adjustments"
                                 icon="fa-history"
-                                attrs="{'invisible': [('use_auto_retro', '=', False)]}">
+                                invisible="[('use_auto_retro', '=', False)]">
                             <field name="retro_count" widget="statinfo" string="Retro"/>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_rebuild_cycle_carryover"
                                 icon="fa-refresh"
-                                attrs="{'invisible': [('cycle_type', '!=', 'mid_cycle')]}">
+                                invisible="[('cycle_type', '!=', 'mid_cycle')]">
                             <span class="o_stat_text">Rebuild Carryover</span>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_open_excel_grid"
-                                icon="fa-table" attrs="{'invisible': [('rule_count', '=', 0)]}">
+                                icon="fa-table" invisible="[('rule_count', '=', 0)]">
                             <span class="o_stat_text">Open Grid</span>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_validate_formulas"
@@ -111,19 +111,19 @@
                             <field name="formula_rule_count" widget="statinfo" string="Formulas"/>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_run_tests"
-                                icon="fa-flask" attrs="{'invisible': [('sample_count', '=', 0)]}">
+                                icon="fa-flask" invisible="[('sample_count', '=', 0)]">
                             <field name="sample_count" widget="statinfo" string="Tests"/>
                         </button>
                     </div>
 
                     <!-- Alerts with Details -->
                     <div class="alert alert-warning" role="alert"
-                         attrs="{'invisible': [('has_errors', '=', False)]}">
+                         invisible="[('has_errors', '=', False)]">
                         <strong><i class="fa fa-exclamation-triangle"/> Formula Errors:</strong>
                         <field name="error_details" nolabel="1" class="mt-2" style="white-space: pre-wrap;"/>
                     </div>
                     <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('has_circular_refs', '=', False)]}">
+                         invisible="[('has_circular_refs', '=', False)]">
                         <strong><i class="fa fa-ban"/> Circular References:</strong>
                         <field name="circular_ref_details" nolabel="1" class="mt-2" style="white-space: pre-wrap;"/>
                     </div>
@@ -165,16 +165,16 @@
                         <group string="Proration">
                             <field name="use_proration"/>
                             <field name="proration_basis"
-                                   attrs="{'invisible': [('use_proration', '=', False)]}"/>
+                                   invisible="[('use_proration', '=', False)]"/>
                             <field name="proration_component_ids" widget="many2many_tags"
-                                   attrs="{'invisible': [('use_proration', '=', False)]}"/>
+                                   invisible="[('use_proration', '=', False)]"/>
                             <field name="proration_rounding"
-                                   attrs="{'invisible': [('use_proration', '=', False)]}"/>
+                                   invisible="[('use_proration', '=', False)]"/>
                         </group>
                         <group string="Auto Retro">
                             <field name="use_auto_retro"/>
                             <field name="retro_component_id"
-                                   attrs="{'invisible': [('use_auto_retro', '=', False)]}"/>
+                                   invisible="[('use_auto_retro', '=', False)]"/>
                         </group>
                     </group>
 
@@ -182,35 +182,36 @@
                         <!-- Formula Rules Tab -->
                         <page string="Formula Rules" name="rules">
                             <field name="rule_ids" nolabel="1">
-                                <tree editable="bottom" decoration-danger="not is_valid"
+                                <list editable="bottom" decoration-danger="not is_valid"
                                       decoration-warning="has_circular_ref"
                                       decoration-success="column_type == 'formula'">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="column_letter" string="Col"/>
-                                    <field name="source_sheet_name" string="Section"/>
-                                    <field name="name" string="Component"/>
-                                    <field name="component_type" string="Category"/>
-                                    <field name="config_id" invisible="1"/>
+                                    <field name="column_letter" string="Col" width="45px"/>
+                                    <field name="source_sheet_name" string="Section" optional="hide"/>
+                                    <field name="name" string="Component" width="200px"/>
+                                    <field name="component_type" string="Category" optional="hide"/>
+                                    <field name="config_id" column_invisible="1"/>
                                     <field name="payslip_identifier"
-                                           domain="[('salary_structure_id', '=', config_id)]"/>
-                                    <field name="code"/>
-                                    <field name="column_type" string="Type"/>
-                                    <field name="data_source" string="Source"/>
-                                    <field name="category_id"/>
-                                    <field name="report_visible"/>
+                                           domain="[('salary_structure_id', '=', config_id)]"
+                                           optional="hide"/>
+                                    <field name="code" optional="show" width="150px"/>
+                                    <field name="column_type" string="Type" width="120px"/>
+                                    <field name="data_source" string="Source" column_invisible="1"/>
+                                    <field name="category_id" optional="hide"/>
+                                    <field name="report_visible" optional="hide"/>
                                     <field name="is_contract_component" optional="hide"/>
                                     <field name="requires_new_contract"
-                                           attrs="{'invisible': [('is_contract_component', '=', False)]}"
+                                           invisible="is_contract_component == False"
                                            optional="hide"/>
-                                    <field name="excel_formula_display" attrs="{'invisible': [('column_type', '!=', 'formula')]}"/>
-                                    <field name="data_source_field" attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
-                                    <field name="constant_value" attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
+                                    <field name="excel_formula_display" invisible="column_type != 'formula'" optional="hide"/>
+                                    <field name="data_source_field" invisible="column_type != 'input'" optional="hide"/>
+                                    <field name="constant_value" invisible="column_type != 'constant'" optional="hide"/>
                                     <field name="number_format" optional="hide"/>
                                     <field name="appears_on_payslip" optional="hide"/>
-                                    <field name="is_valid" readonly="1"/>
+                                    <field name="is_valid" readonly="1" width="50px"/>
                                     <field name="validation_message" readonly="1" optional="hide"/>
-                                    <field name="has_circular_ref" invisible="1"/>
-                                </tree>
+                                    <field name="has_circular_ref" column_invisible="1"/>
+                                </list>
                             </field>
                         </page>
 
@@ -223,7 +224,7 @@
                                         type="object" class="btn-primary"/>
                             </group>
                             <field name="sample_data_ids" nolabel="1">
-                                <tree decoration-success="all_passed" decoration-danger="not all_passed">
+                                <list decoration-success="all_passed" decoration-danger="not all_passed">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="source_type"/>
@@ -234,14 +235,14 @@
                                     <button name="action_recompute" type="object"
                                             icon="fa-refresh" title="Recompute"/>
                                     <field name="all_passed" invisible="1"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
 
                         <!-- Test Results Tab -->
                         <page string="Test Results" name="results">
                             <field name="test_result_ids" nolabel="1">
-                                <tree decoration-success="status == 'passed'"
+                                <list decoration-success="status == 'passed'"
                                       decoration-danger="status == 'failed'"
                                       decoration-warning="status == 'warning'">
                                     <field name="sample_id"/>
@@ -252,7 +253,7 @@
                                     <field name="discrepancy_percent"/>
                                     <field name="status" widget="badge"/>
                                     <field name="error_message"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
 
@@ -280,15 +281,11 @@
                     </notebook>
 
                     <!-- Validation Message -->
-                    <group string="Validation Log" attrs="{'invisible': [('validation_message', '=', False)]}">
+                    <group string="Validation Log" invisible="[('validation_message', '=', False)]">
                         <field name="validation_message" nolabel="1" readonly="1"/>
                     </group>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                <chatter/>
             </form>
         </field>
     </record>
@@ -309,7 +306,7 @@
                 <field name="state"/>
                 <field name="validation_status"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <div class="oe_kanban_content">
                                 <div class="o_kanban_record_top mb-0">
@@ -358,7 +355,7 @@
                 <filter string="Indonesia" name="indonesia" domain="[('country_code', '=', 'ID')]"/>
                 <filter string="India" name="india" domain="[('country_code', '=', 'IN')]"/>
                 <filter string="Singapore" name="singapore" domain="[('country_code', '=', 'SG')]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Country" name="group_country" context="{'group_by': 'country_code'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Structure" name="group_structure" context="{'group_by': 'structure_id'}"/>
@@ -393,7 +390,7 @@
 
                     <!-- Formula Rules Grid (Editable Tree) -->
                     <field name="rule_ids" nolabel="1">
-                        <tree string="Formula Rules" editable="bottom" default_order="sequence"
+                        <list string="Formula Rules" editable="bottom" default_order="sequence"
                               decoration-success="column_type == 'formula'"
                               decoration-info="column_type == 'input'">
                             <field name="sequence" widget="handle"/>
@@ -409,14 +406,14 @@
                             <field name="data_source" string="Source"/>
                             <field name="report_visible"/>
                             <field name="excel_formula_display"
-                                   attrs="{'invisible': [('column_type', '!=', 'formula')], 'required': [('column_type', '=', 'formula')]}"/>
+                                   invisible="[('column_type', '!=', 'formula')]" required="[('column_type', '=', 'formula')]"/>
                             <field name="data_source_field"
-                                   attrs="{'invisible': [('column_type', '!=', 'input')]}"/>
+                                   invisible="[('column_type', '!=', 'input')]"/>
                             <field name="constant_value"
-                                   attrs="{'invisible': [('column_type', '!=', 'constant')]}"/>
+                                   invisible="[('column_type', '!=', 'constant')]"/>
                             <field name="default_value"/>
                             <field name="is_valid" widget="boolean" readonly="1"/>
-                        </tree>
+                        </list>
                     </field>
                 </sheet>
             </form>
@@ -429,7 +426,7 @@
     <record id="action_formula_config" model="ir.actions.act_window">
         <field name="name">Formula Configurations</field>
         <field name="res_model">hr.formula.config</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">list,kanban,form</field>
         <field name="search_view_id" ref="view_formula_config_search"/>
         <field name="context">{'search_default_active_state': 1}</field>
         <field name="help" type="html">
@@ -448,7 +445,7 @@
     <record id="action_formula_config_kanban" model="ir.actions.act_window">
         <field name="name">Salary Structure Configurations</field>
         <field name="res_model">hr.formula.config</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="view_formula_config_kanban"/>
         <field name="search_view_id" ref="view_formula_config_search"/>
         <field name="context">{'group_by': 'country_code'}</field>

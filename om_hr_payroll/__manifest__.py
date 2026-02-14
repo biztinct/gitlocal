@@ -28,8 +28,9 @@
         'views/hr_contract_type_views.xml',
         'views/hr_contract_views.xml',
         'views/hr_salary_rule_views.xml',
-        'views/hr_zoho_staging_views.xml',
-        'views/hr_zoho_views.xml',
+        # Zoho/Spreadsheet views disabled - user no longer uses these
+        # 'views/hr_zoho_staging_views.xml',
+        # 'views/hr_zoho_views.xml',
         'views/hr_payroll_report.xml',
         'views/hr_payslip_views.xml',
         'views/hr_employee_views.xml',
@@ -47,8 +48,9 @@
     'application': True,
     'assets': {
         'web.assets_frontend': [
-            'om_hr_payroll/static/src/js/payslip_portal_sidebar.js',
-            'om_hr_payroll/static/src/js/payslip_portal.js',
+            # DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
+            # 'om_hr_payroll/static/src/js/payslip_portal_sidebar.js',
+            # 'om_hr_payroll/static/src/js/payslip_portal.js',
         ],
      },
 

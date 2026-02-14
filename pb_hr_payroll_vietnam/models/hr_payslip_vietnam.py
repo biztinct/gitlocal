@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 
 
 class HrPayslipVietnam(models.Model):
+    _name = 'hr.payslip'
     _inherit = ['hr.payslip']
 
     # Add currency_id field if it doesn't exist in base model
