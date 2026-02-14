@@ -36,7 +36,7 @@ Technical Features:
         'hr',
         'hr_contract',
         'hr_holidays',
-        'hr_holidays_public',
+        # 'hr_holidays_public',  # Not available in Odoo 19
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -46,6 +46,7 @@ Technical Features:
     ],
     'assets': {
         'web.assets_backend': [
+            'pb_hr_flow/static/src/css/hr_flow_dashboard.css',
             'pb_hr_flow/static/src/js/hr_flow_hover.js',
         ],
     },

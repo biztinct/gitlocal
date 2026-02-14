@@ -11,7 +11,7 @@
                 <field name="active_tab"/>
                 <filter name="auto_refresh" string="Auto Refresh Enabled" domain="[('auto_refresh', '=', True)]"/>
                 <filter name="cache_valid" string="Cache Valid" domain="[('cache_valid', '=', True)]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter name="group_by_country" string="Country" domain="[]" context="{'group_by': 'selected_country'}"/>
                     <filter name="group_by_tab" string="Active Tab" domain="[]" context="{'group_by': 'active_tab'}"/>
                 </group>

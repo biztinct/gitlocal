@@ -321,12 +321,12 @@
         <field name="name">HR Analytics Dashboard List</field>
         <field name="model">hr.analytics.dashboard</field>
         <field name="arch" type="xml">
-            <tree string="HR Analytics Dashboards">
+            <list string="HR Analytics Dashboards">
                 <field name="name"/>
                 <field name="selected_country"/>
                 <field name="active_tab"/>
                 <field name="last_refresh"/>
-            </tree>
+            </list>
         </field>
     </record>
 

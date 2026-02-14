@@ -12,6 +12,7 @@ class HrPayslipFormula(models.Model):
     """
     Extends hr.payslip to support formula-based computation.
     """
+    _name = 'hr.payslip'  # Explicitly set for Odoo 19 inheritance compatibility
     _inherit = ['hr.payslip']
 
     # ==========================================

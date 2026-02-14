@@ -8,6 +8,7 @@ from odoo import models
 
 
 class ResourceCalendarLeaves(models.Model):
+    _name = 'resource.calendar.leaves'
     _inherit = ['resource.calendar.leaves']
 
     def _compute_calendar_id(self):

@@ -4,7 +4,6 @@
     <!-- Security Group for Vietnam Payroll -->
     <record id="group_vietnam_payroll_user" model="res.groups">
         <field name="name">Vietnam Payroll User</field>
-        <field name="category_id" ref="base.module_category_human_resources_payroll"/>
         <field name="implied_ids" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
     </record>
     

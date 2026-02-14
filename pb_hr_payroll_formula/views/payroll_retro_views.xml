@@ -5,7 +5,7 @@
         <field name="name">hr.payroll.retro.adjustment.tree</field>
         <field name="model">hr.payroll.retro.adjustment</field>
         <field name="arch" type="xml">
-            <tree string="Retro Adjustments" default_order="period_from desc">
+            <list string="Retro Adjustments" default_order="period_from desc">
                 <field name="employee_id"/>
                 <field name="component_id"/>
                 <field name="delta_amount"/>
@@ -14,7 +14,7 @@
                 <field name="original_payslip_id"/>
                 <field name="applied_in_batch_id"/>
                 <field name="state" widget="badge"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -61,7 +61,7 @@
                 <field name="formula_config_id"/>
                 <field name="applied_in_batch_id"/>
                 <filter name="state_posted" string="Posted" domain="[('state', '=', 'posted')]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter name="group_config" string="Formula Config" context="{'group_by': 'formula_config_id'}"/>
                     <filter name="group_batch" string="Applied Batch" context="{'group_by': 'applied_in_batch_id'}"/>
                     <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
@@ -74,7 +74,7 @@
     <record id="action_payroll_retro_adjustment" model="ir.actions.act_window">
         <field name="name">Retro Adjustments</field>
         <field name="res_model">hr.payroll.retro.adjustment</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_payroll_retro_adjustment_search"/>
     </record>
 

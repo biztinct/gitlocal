@@ -40,7 +40,7 @@
                             <field name="error_threshold"/>
                             <field name="send_error_report"/>
                             <field name="error_email_recipients" widget="many2many_tags"
-                                   attrs="{'invisible': [('send_error_report', '=', False)]}"/>
+                                   invisible="not send_error_report"/>
                         </group>
                     </group>
                     
@@ -66,13 +66,13 @@
                             </group>
                             
                             <field name="field_mapping_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="column_name"/>
                                     <field name="odoo_field"/>
                                     <field name="field_type"/>
                                     <field name="is_required"/>
                                     <field name="default_value"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         
@@ -109,7 +109,7 @@
                             </group>
                         </page>
                         
-                        <page string="Processing Log" name="log" attrs="{'invisible': [('state', '=', 'draft')]}">
+                        <page string="Processing Log" name="log" invisible="state == 'draft'">
                             <field name="processing_log" readonly="1" widget="text"/>
                             
                             <group>
@@ -128,7 +128,7 @@
                             string="Start Import" 
                             type="object" 
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                            invisible="state != 'draft'"/>
                     <button name="action_download_template" 
                             string="Download Template" 
                             type="object" 
@@ -137,7 +137,7 @@
                             string="Download Error Report" 
                             type="object" 
                             class="btn-warning"
-                            attrs="{'invisible': [('failed_records', '=', 0)]}"/>
+                            invisible="failed_records == 0"/>
                     <button string="Close" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

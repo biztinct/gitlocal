@@ -167,7 +167,7 @@ class HrPayrollStructure(models.Model):
                 'type': 'ir.actions.act_window',
                 'name': f'Employees - {self.name}',
                 'res_model': 'hr.employee',
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
                 'domain': [('id', 'in', employee_ids)],
                 'context': {'create': False}
             }

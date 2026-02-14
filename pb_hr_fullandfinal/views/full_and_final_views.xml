@@ -11,7 +11,7 @@
         <field name="name">hr.full.final.settlement.tree</field>
         <field name="model">hr.full.final.settlement</field>
         <field name="arch" type="xml">
-            <tree string="Full and Final" create="0" edit="0">
+            <list string="Full and Final" create="0" edit="0">
                 <header>
                     <button name="%(action_full_and_final_generate_wizard)d"
                             type="action"
@@ -31,7 +31,7 @@
                         string="Download Full and Final"
                         class="oe_highlight"
                         icon="fa-download"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -102,7 +102,7 @@
     <record id="action_full_and_final_employees" model="ir.actions.act_window">
         <field name="name">Full and Final</field>
         <field name="res_model">hr.full.final.settlement</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="view_full_and_final_tree"/>
         <field name="search_view_id" ref="view_full_and_final_search"/>
         <field name="domain">[]</field>

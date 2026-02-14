@@ -102,7 +102,7 @@ class SampleDataWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': _('Generated Samples'),
             'res_model': 'hr.formula.sample.data',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', created.ids)],
             'context': {'default_config_id': self.config_id.id},
         }

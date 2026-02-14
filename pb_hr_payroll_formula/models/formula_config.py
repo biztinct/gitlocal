@@ -124,13 +124,11 @@ class HrFormulaConfig(models.Model):
     debit_account_id = fields.Many2one(
         'account.account',
         string='Default Debit Account',
-        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
         help="Default debit account to assign when creating salary rules from this formula configuration."
     )
     credit_account_id = fields.Many2one(
         'account.account',
         string='Default Credit Account',
-        domain="[('deprecated', '=', False), ('company_id', '=', company_id)]",
         help="Default credit account to assign when creating salary rules from this formula configuration."
     )
 

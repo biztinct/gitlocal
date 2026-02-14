@@ -6,7 +6,7 @@
         <field name="name">hr.payroll.employee.detail.tree</field>
         <field name="model">hr.payroll.employee.detail</field>
         <field name="arch" type="xml">
-            <tree string="Employee Payroll Details" create="false" edit="false" decoration-info="True">
+            <list string="Employee Payroll Details" create="false" edit="false" decoration-info="True">
                 <field name="department_name" string="Department"/>
                 <field name="employee_name"/>
                 <field name="month_name"/>
@@ -14,7 +14,7 @@
                 <field name="allowances" sum="Total Allowances"/>
                 <field name="contributions" sum="Total Contributions"/>
                 <field name="total" sum="Grand Total"/>
-            </tree>
+            </list>
         </field>
     </record>
 

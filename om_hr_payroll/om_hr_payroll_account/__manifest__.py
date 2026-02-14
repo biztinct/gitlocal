@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 
 {
-    'name': 'Odoo 16 HR Payroll Accounting',
+    'name': 'Odoo 19 HR Payroll Accounting',
     'category': 'Generic Modules/Human Resources',
     'author': 'Odoo Mates, Odoo SA',
-    'version': '16.0.1.0.1',
+    'version': '19.0.1.0.0',
     'sequence': 1,
     'website': 'https://www.odoomates.tech',
     'license': 'LGPL-3',

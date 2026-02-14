@@ -62,7 +62,7 @@ Supported Features:
         # Data files - Vietnam-specific dashboard
         'data/payroll_dashboard_data.xml',
         'data/vietnam_sequence_data.xml',                # IR sequences for INS/TAX
-        'data/vietnam_demo_data.xml',                    # Sample Insurance Policies & Tax Tables
+        # 'data/vietnam_demo_data.xml',                    # DISABLED - Requires specific employees to exist
         
         # Views - Server Actions first, then Dashboard (references actions), then Menu Structure (references view)
         'views/vietnam_server_actions.xml',           # Server actions (must load first)
@@ -105,7 +105,8 @@ Supported Features:
     ],
     'assets': {
         'web.assets_backend': [
-            'pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js',
+            # DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
+            # 'pb_hr_payroll_vietnam/static/src/js/vietnam_insurance_analytics.js',
         ],
     },
     'external_dependencies': {

@@ -36,7 +36,7 @@
                 <filter string="This Month" name="this_month" 
                         domain="[('date_from', '&gt;=', context_today.strftime('%Y-%m-01'))]"/>
                 
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter string="Country" name="group_country" context="{'group_by': 'country'}"/>
                     <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
                     <filter string="Month" name="group_month" context="{'group_by': 'date_from:month'}"/>
@@ -51,7 +51,7 @@
         <field name="name">payroll.analytics.approval.tree</field>
         <field name="model">payroll.analytics</field>
         <field name="arch" type="xml">
-            <tree string="Payroll Analytics - Approval Queue" 
+            <list string="Payroll Analytics - Approval Queue" 
                   decoration-info="state == 'draft'" 
                   decoration-warning="state == 'ready'" 
                   decoration-success="state == 'approved'"
@@ -75,14 +75,14 @@
                         string="Open Dashboard" 
                         class="btn-primary"
                         icon="fa-bar-chart"
-                        states="ready,approved"/>
+                        invisible="state not in ('ready', 'approved')"/>
                         
                 <button name="action_approve_payroll" 
                         type="object" 
                         string="Approve" 
                         class="btn-success"
                         icon="fa-check"
-                        states="ready"
+                        invisible="state not in ('ready')"
                         confirm="Are you sure you want to approve this payroll?"/>
                         
                 <button name="action_export_bank_file" 
@@ -90,7 +90,7 @@
                         string="Export" 
                         class="btn-info"
                         icon="fa-download"
-                        states="approved"/>
+                        invisible="state not in ('approved')"/>
                         
                 <button name="action_refresh_analytics" 
                         type="object" 
@@ -98,7 +98,7 @@
                         class="btn-secondary"
                         icon="fa-refresh"
                         help="Update analytics with current payslip data"/>
-            </tree>
+            </list>
         </field>
     </record>
     
@@ -120,7 +120,7 @@
                 <field name="approval_title"/>
                 
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <div class="oe_kanban_content">
                                 <div class="o_kanban_record_top">
@@ -206,10 +206,10 @@
     <record id="action_payroll_approval_dashboard" model="ir.actions.act_window">
         <field name="name">Payroll Approval Dashboard</field>
         <field name="res_model">payroll.analytics</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
                                       (0, 0, {'view_mode': 'kanban', 'view_id': ref('view_payroll_approval_kanban')}),
-                                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_payroll_approval_tree')}),
+                                      (0, 0, {'view_mode': 'list', 'view_id': ref('view_payroll_approval_tree')}),
                                       (0, 0, {'view_mode': 'form', 'view_id': ref('view_payroll_analytics_dashboard')})]"/>
         <field name="domain">[('state', 'in', ['ready', 'approved'])]</field>
         <field name="context">{'search_default_ready': 1, 'auto_refresh_analytics': 1}</field>

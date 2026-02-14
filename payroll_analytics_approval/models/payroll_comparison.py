@@ -44,6 +44,31 @@ class PayrollComparison(models.Model):
     payroll_variance = fields.Float(string='Payroll Variance %', readonly=True)
     average_salary_variance = fields.Float(string='Average Salary Variance %', readonly=True)
     
+    # Computed average salary fields (for Odoo 19 views - replaces t-if calculation)
+    current_average_salary = fields.Monetary(
+        string='Current Avg Salary', 
+        compute='_compute_average_salaries',
+        currency_field='currency_id'
+    )
+    previous_average_salary = fields.Monetary(
+        string='Previous Avg Salary',
+        compute='_compute_average_salaries', 
+        currency_field='currency_id'
+    )
+    
+    @api.depends('current_total_payroll', 'current_total_employees', 
+                 'previous_total_payroll', 'previous_total_employees')
+    def _compute_average_salaries(self):
+        for record in self:
+            record.current_average_salary = (
+                record.current_total_payroll / record.current_total_employees 
+                if record.current_total_employees else 0
+            )
+            record.previous_average_salary = (
+                record.previous_total_payroll / record.previous_total_employees
+                if record.previous_total_employees else 0
+            )
+    
     # Configuration
     variance_threshold = fields.Float(string='Variance Threshold %', default=10.0)
     include_charts = fields.Boolean(string='Include Charts', default=True)

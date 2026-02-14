@@ -52,34 +52,34 @@
         <field name="model_id" ref="pb_hr_govt.model_pb_govt_report_wizard"/>
         <field name="state">code</field>
         <field name="code">action = env['pb.govt.report.wizard'].action_export_monthly('bhxh630')</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+
     </record>
     <record id="action_govt_monthly_bhxhdstk01" model="ir.actions.server">
         <field name="name">Monthly BHXHDSTK01-DV_595</field>
         <field name="model_id" ref="pb_hr_govt.model_pb_govt_report_wizard"/>
         <field name="state">code</field>
         <field name="code">action = env['pb.govt.report.wizard'].action_export_monthly('bhxhdstk01')</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+
     </record>
     <record id="action_govt_monthly_bangke_d01" model="ir.actions.server">
         <field name="name">Monthly BangKe D01</field>
         <field name="model_id" ref="pb_hr_govt.model_pb_govt_report_wizard"/>
         <field name="state">code</field>
         <field name="code">action = env['pb.govt.report.wizard'].action_export_monthly('bangke_d01')</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+
     </record>
     <record id="action_govt_monthly_giam_ld" model="ir.actions.server">
         <field name="name">Monthly Giam Lao Dong</field>
         <field name="model_id" ref="pb_hr_govt.model_pb_govt_report_wizard"/>
         <field name="state">code</field>
         <field name="code">action = env['pb.govt.report.wizard'].action_export_monthly('giam_ld')</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+
     </record>
     <record id="action_govt_monthly_tang_ld" model="ir.actions.server">
         <field name="name">Monthly Tang Lao Dong</field>
         <field name="model_id" ref="pb_hr_govt.model_pb_govt_report_wizard"/>
         <field name="state">code</field>
         <field name="code">action = env['pb.govt.report.wizard'].action_export_monthly('tang_ld')</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+
     </record>
 </odoo>

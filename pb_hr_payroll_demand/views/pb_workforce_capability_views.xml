@@ -5,7 +5,7 @@
             <field name="name">pb.workforce.capability.tree</field>
             <field name="model">pb.workforce.capability</field>
             <field name="arch" type="xml">
-                <tree default_order="sequence,name" create="true" editable="bottom">
+                <list default_order="sequence,name" create="true" editable="bottom">
                     <field name="name"/>
                     <field name="code" optional="show"/>
                     <field name="capability_type" widget="selection"/>
@@ -16,7 +16,7 @@
                     <field name="planned_fte" optional="hide"/>
                     <field name="approved_budget" widget="monetary" optional="hide"/>
                     <field name="active"/>
-                </tree>
+                </list>
             </field>
         </record>
 
@@ -33,7 +33,7 @@
                     <field name="approved_budget"/>
                     <field name="color"/>
                     <templates>
-                        <t t-name="kanban-box">
+                        <t t-name="card">
                             <div t-attf-class="oe_kanban_global_click pb-capability-card o_kanban_card oe_kanban_color_#{kanban_getcolor(record.color.raw_value)}">
                                 <div class="pb-capability-card__header">
                                     <div class="pb-capability-card__name">
@@ -108,13 +108,13 @@
                             </page>
                             <page string="Subactivities">
                                 <field name="subactivity_ids">
-                                    <tree editable="bottom">
+                                    <list editable="bottom">
                                         <field name="name"/>
                                         <field name="description"/>
                                         <field name="focus_level"/>
                                         <field name="sequence"/>
                                         <field name="is_automation_candidate"/>
-                                    </tree>
+                                    </list>
                                 </field>
                             </page>
                             <page string="Skills">
@@ -145,7 +145,7 @@
                     <filter name="filter_enabler" string="Enabler" domain="[('capability_type', '=', 'enabler')]"/>
                     <filter name="filter_mature" string="Mature" domain="[('maturity', '=', 'mature')]"/>
                     <filter name="filter_needs_review" string="Needs Review" domain="[('next_review_date', '&lt;', context_today())]"/>
-                    <group expand="0" string="Group By">
+                    <group name="group_by">
                         <filter name="group_type" string="Type" context="{'group_by': 'capability_type'}"/>
                         <filter name="group_maturity" string="Maturity" context="{'group_by': 'maturity'}"/>
                         <filter name="group_owner" string="Owner" context="{'group_by': 'owner_id'}"/>

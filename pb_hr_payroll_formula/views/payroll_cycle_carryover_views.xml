@@ -5,7 +5,7 @@
         <field name="name">hr.payroll.cycle.carryover.tree</field>
         <field name="model">hr.payroll.cycle.carryover</field>
         <field name="arch" type="xml">
-            <tree string="Mid-Cycle Carryover" default_order="date_from desc">
+            <list string="Mid-Cycle Carryover" default_order="date_from desc">
                 <field name="employee_id"/>
                 <field name="source_component_id"/>
                 <field name="amount"/>
@@ -15,7 +15,7 @@
                 <field name="payslip_run_id"/>
                 <field name="state" widget="badge"/>
                 <field name="active" invisible="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -59,7 +59,7 @@
                 <separator/>
                 <filter name="active" string="Active" domain="[('active', '=', True)]"/>
                 <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter name="group_config" string="Formula Config" context="{'group_by': 'formula_config_id'}"/>
                     <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
                 </group>
@@ -70,7 +70,7 @@
     <record id="action_payroll_cycle_carryover" model="ir.actions.act_window">
         <field name="name">Mid-Cycle Carryover</field>
         <field name="res_model">hr.payroll.cycle.carryover</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_payroll_cycle_carryover_search"/>
     </record>
 

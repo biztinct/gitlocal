@@ -12,7 +12,7 @@ action = {
     'type': 'ir.actions.act_window',
     'name': 'Batch Payslips',
     'res_model': 'hr.payslip.run',
-    'view_mode': 'kanban,tree,form',
+    'view_mode': 'kanban,list,form',
     'domain': [],
     'context': {
         'default_country': 'VN',
@@ -27,7 +27,7 @@ action = {
     <record id="action_vietnam_employees_kanban" model="ir.actions.act_window">
         <field name="name">Employees</field>
         <field name="res_model">hr.employee</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="hr.hr_kanban_view_employees"/>
         <field name="domain">[]</field>
         <field name="context">{'default_country': 'VN'}</field>
@@ -36,7 +36,7 @@ action = {
     <record id="action_vietnam_contracts_kanban" model="ir.actions.act_window">
         <field name="name">Contracts</field>
         <field name="res_model">hr.contract</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="hr_contract.hr_contract_view_kanban"/>
         <field name="domain">[]</field>
         <field name="context">{'default_country': 'VN'}</field>
@@ -45,7 +45,7 @@ action = {
     <record id="action_vietnam_payslip_batch_kanban" model="ir.actions.act_window">
         <field name="name">Batch Payslips</field>
         <field name="res_model">hr.payslip.run</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="om_hr_payroll.hr_payslip_run_view_kanban"/>
         <field name="search_view_id" ref="om_hr_payroll.hr_payslip_run_filter"/>
         <field name="domain">[]</field>
