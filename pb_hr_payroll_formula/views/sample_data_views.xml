@@ -46,9 +46,9 @@
                     <field name="discrepancy_count" invisible="1"/>
 
                     <widget name="web_ribbon" title="All Passed" bg_color="bg-success"
-                            invisible="[('all_passed', '!=', True)]"/>
+                            invisible="not all_passed"/>
                     <widget name="web_ribbon" title="Failed" bg_color="bg-danger"
-                            invisible="['|', ('all_passed', '=', True), ('discrepancy_count', '=', 0)]"/>
+                            invisible="all_passed or discrepancy_count == 0"/>
 
                     <div class="oe_title">
                         <label for="name"/>
@@ -68,9 +68,9 @@
                         <group string="Source">
                             <field name="source_type" widget="radio"/>
                             <field name="source_employee_id"
-                                   invisible="[('source_type', 'not in', ['employee'])]"/>
+                                   invisible="source_type != 'employee'"/>
                             <field name="source_payslip_id"
-                                   invisible="[('source_type', 'not in', ['payslip'])]"/>
+                                   invisible="source_type != 'payslip'"/>
                             <field name="source_date"/>
                         </group>
                     </group>
@@ -78,7 +78,7 @@
                     <notebook>
                         <!-- User-Friendly Input (for Manual Entry) -->
                         <page string="Input Values (Table)" name="input_table"
-                              invisible="[('source_type', '!=', 'manual')]">
+                              invisible="source_type != 'manual'">
                             <div class="alert alert-info mb-3" role="alert" style="margin: 0 0 16px 0;">
                                 <div class="d-flex align-items-center">
                                     <i class="fa fa-info-circle fa-lg me-3"/>
@@ -100,10 +100,10 @@
                             <div class="mb-3">
                                 <button name="action_generate_input_lines" string="Load Input Columns"
                                         type="object" class="btn btn-secondary me-2" icon="fa-download"
-                                        invisible="[('config_id', '=', False)]"/>
+                                        invisible="not config_id"/>
                                 <button name="%(action_compute_sample_wizard)d" string="Sync &amp; Compute"
                                         type="action" class="btn btn-primary" icon="fa-play"
-                                        invisible="[('config_id', '=', False)]"/>
+                                        invisible="not config_id"/>
                             </div>
                             <field name="input_line_ids" nolabel="1">
                                 <list string="Input Values" editable="bottom">
@@ -303,7 +303,7 @@
                     </group>
                     <group>
                         <field name="status" widget="badge"/>
-                        <field name="error_message" invisible="[('error_message', '=', False)]"/>
+                        <field name="error_message" invisible="not error_message"/>
                     </group>
                 </sheet>
             </form>

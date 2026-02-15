@@ -36,13 +36,13 @@
             <form string="Insurance Adjustment">
                 <header>
                     <button name="action_confirm" string="Confirm" type="object"
-                            invisible="[('state', '!=', 'draft')]" class="btn-primary"/>
+                            invisible="state != 'draft'" class="btn-primary"/>
                     <button name="action_apply" string="Apply to Payroll" type="object"
-                            invisible="[('state', '!=', 'confirmed')]" class="btn-primary"/>
+                            invisible="state != 'confirmed'" class="btn-primary"/>
                     <button name="action_cancel" string="Cancel" type="object"
-                            invisible="[('state', 'in', ('applied', 'cancelled'))]"/>
+                            invisible="state in ('applied', 'cancelled')"/>
                     <button name="action_reset_draft" string="Reset to Draft" type="object"
-                            invisible="[('state', '!=', 'cancelled')]"/>
+                            invisible="state != 'cancelled'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,applied"/>
                 </header>
                 <sheet>

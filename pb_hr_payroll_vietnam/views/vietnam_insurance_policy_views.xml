@@ -116,7 +116,7 @@
                                     <field name="waive_ui_no_fund_areas"/>
                                     <field name="oa_waiver_enabled"/>
                                     <field name="oa_waiver_max_months" 
-                                           invisible="[('oa_waiver_enabled', '=', False)]"/>
+                                           invisible="not oa_waiver_enabled"/>
                                 </group>
                             </group>
                         </page>
