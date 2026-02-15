@@ -46,29 +46,29 @@
                     <!-- Action Buttons based on state -->
                     <button name="action_open_payslip_run" string="Payslip Run" type="object"
                             class="btn-primary" icon="fa-external-link"
-                            invisible="['|', ('state', '!=', 'done'), ('payslip_run_id', '=', False)]"/>
+                            invisible="state != 'done' or not payslip_run_id"/>
                     <button name="action_load_file" string="Load File" type="object"
                             class="btn-primary" icon="fa-upload"
-                            invisible="[('state', '!=', 'draft')]"/>
+                            invisible="state != 'draft'"/>
                     <button name="action_match_employees" string="Match Employees" type="object"
                             class="btn-primary" icon="fa-users"
-                            invisible="[('state', 'not in', ['loaded'])]"/>
+                            invisible="state != 'loaded'"/>
                     <button name="action_validate" string="Validate" type="object"
                             class="btn-primary" icon="fa-check"
-                            invisible="[('state', 'not in', ['matched'])]"/>
+                            invisible="state != 'matched'"/>
                     <button name="action_process" string="Process All" type="object"
                             class="btn-success" icon="fa-play"
-                            invisible="[('state', 'not in', ['validated', 'matched'])]"
+                            invisible="state not in ('validated', 'matched')"
                             confirm="This will update existing or create new employees, contracts and payslips. Continue?"/>
                     <button name="action_rebuild_cycle_carryover" string="Rebuild Carryover" type="object"
                             class="btn-secondary" icon="fa-refresh"
-                            invisible="['|', ('state', '!=', 'done'), ('cycle_type', '!=', 'mid_cycle')]"/>
+                            invisible="state != 'done' or cycle_type != 'mid_cycle'"/>
                     <button name="action_reset_to_draft" string="Reset to Draft" type="object"
                             class="btn-secondary"
-                            invisible="[('state', 'in', ['draft', 'done', 'processing'])]"/>
+                            invisible="state in ('draft', 'done', 'processing')"/>
                     <button name="action_cancel" string="Cancel" type="object"
                             class="btn-secondary"
-                            invisible="[('state', 'in', ['done', 'cancelled'])]"/>
+                            invisible="state in ('done', 'cancelled')"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,loaded,matched,validated,done"/>
                 </header>
@@ -89,38 +89,38 @@
                         <button class="oe_stat_button" type="object"
                                 name="action_view_created_employees"
                                 icon="fa-users"
-                                invisible="[('state', '!=', 'done')]">
+                                invisible="state != 'done'">
                             <field name="new_employees" widget="statinfo" string="Created"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_error_lines"
                                 icon="fa-exclamation-triangle"
-                                invisible="[('error_lines', '=', 0)]">
+                                invisible="error_lines == 0">
                             <field name="error_lines" widget="statinfo" string="Errors"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_created_payslips"
                                 icon="fa-file-text-o"
-                                invisible="[('state', '!=', 'done')]">
+                                invisible="state != 'done'">
                             <field name="processed_lines" widget="statinfo" string="Payslips"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_proration_lines"
                                 icon="fa-pie-chart"
-                                invisible="[('use_proration', '=', False)]">
+                                invisible="not use_proration">
                             <field name="proration_line_count" widget="statinfo" string="Proration"/>
                         </button>
                         <button class="oe_stat_button" type="object"
                                 name="action_view_retro_adjustments"
                                 icon="fa-history"
-                                invisible="[('use_auto_retro', '=', False)]">
+                                invisible="not use_auto_retro">
                             <field name="retro_adjustment_count" widget="statinfo" string="Retro"/>
                         </button>
                     </div>
 
                     <!-- Alerts -->
                     <div class="alert alert-danger" role="alert"
-                         invisible="[('error_lines', '=', 0)]">
+                         invisible="error_lines == 0">
                         <i class="fa fa-exclamation-triangle"/> <field name="error_lines"/> lines have errors. Please review and fix before processing.
                     </div>
 
@@ -136,16 +136,16 @@
                             <field name="formula_config_id" required="1"
                                    options="{'no_create': True}"/>
                             <field name="connector_id"
-                                   invisible="[('source_type', '!=', 'connector')]"
+                                   invisible="source_type != 'connector'"
                                    domain="[('connector_type', 'in', ['excel', 'zoho', 'sap', 'workday', 'oracle'])]"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group string="Period">
                             <field name="payroll_period" widget="radio"/>
                             <field name="date_from"
-                                   required="[('payroll_period', '=', 'custom')]"/>
+                                   required="payroll_period == 'custom'"/>
                             <field name="date_to"
-                                   required="[('payroll_period', '=', 'custom')]"/>
+                                   required="payroll_period == 'custom'"/>
                             <field name="country_code" readonly="1"/>
                         </group>
                     </group>
@@ -153,7 +153,7 @@
                     <notebook>
                         <!-- File Upload Tab -->
                         <page string="File Import" name="file_import"
-                              invisible="['|', ('source_type', '!=', 'excel'), ('state', '!=', 'draft')]">
+                              invisible="source_type != 'excel' or state != 'draft'">
                             <group>
                                 <group>
                                     <field name="import_file" filename="import_filename"
@@ -192,10 +192,10 @@
                                     <field name="error_message" optional="hide"/>
                                     <button name="action_manual_match" type="object"
                                             icon="fa-search" title="Manual Match"
-                                            invisible="[('state', 'not in', ['draft', 'unmatched'])]"/>
+                                            invisible="state not in ('draft', 'unmatched')"/>
                                     <button name="action_retry" type="object"
                                             icon="fa-refresh" title="Retry"
-                                            invisible="[('state', '!=', 'error')]"/>
+                                            invisible="state != 'error'"/>
                                 </list>
                             </field>
                         </page>
@@ -208,14 +208,14 @@
                                     <field name="match_by_email"/>
                                     <field name="auto_create_employees"/>
                                     <field name="auto_create_contracts"
-                                           invisible="[('auto_create_employees', '=', False)]"/>
+                                           invisible="not auto_create_employees"/>
                                 </group>
                                 <group string="Payslip Options">
                                     <field name="create_payslips"/>
                                     <field name="payslip_state"
-                                           invisible="[('create_payslips', '=', False)]"/>
+                                           invisible="not create_payslips"/>
                                     <field name="payroll_journal_id"
-                                           invisible="[('create_payslips', '=', False)]"
+                                           invisible="not create_payslips"
                                            options="{'no_create': False}"/>
                                 </group>
                             </group>
@@ -223,14 +223,14 @@
 
                         <!-- Processing Log Tab -->
                         <page string="Processing Log" name="log"
-                              invisible="[('processing_log', '=', False)]">
+                              invisible="not processing_log">
                             <field name="processing_log" readonly="1" nolabel="1"
                                    class="o_monospaced"/>
                         </page>
 
                         <!-- Results Tab -->
                         <page string="Results" name="results"
-                              invisible="[('state', '!=', 'done')]">
+                              invisible="state != 'done'">
                             <group>
                                 <group string="Created Records">
                                     <field name="created_employee_ids" widget="many2many_tags" readonly="1"/>
@@ -323,13 +323,13 @@
                 <header>
                     <button name="action_manual_match" string="Manual Match" type="object"
                             class="btn-primary"
-                            invisible="[('state', 'not in', ['draft', 'unmatched'])]"/>
+                            invisible="state not in ('draft', 'unmatched')"/>
                     <button name="action_retry" string="Retry" type="object"
                             class="btn-secondary"
-                            invisible="[('state', '!=', 'error')]"/>
+                            invisible="state != 'error'"/>
                     <button name="action_skip" string="Skip" type="object"
                             class="btn-secondary"
-                            invisible="[('state', 'in', ['processed', 'error'])]"/>
+                            invisible="state in ('processed', 'error')"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,matched,validated,processed"/>
                 </header>
@@ -348,7 +348,7 @@
                             <field name="payslip_id" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Error" invisible="[('error_message', '=', False)]">
+                    <group string="Error" invisible="not error_message">
                         <field name="error_message" nolabel="1" readonly="1"/>
                     </group>
                     <notebook>
@@ -357,7 +357,7 @@
                                    class="o_monospaced"/>
                         </page>
                         <page string="Computed Values" name="computed"
-                              invisible="[('computed_values_json', '=', False)]">
+                              invisible="not computed_values_json">
                             <field name="computed_values_json" widget="text" readonly="1"
                                    class="o_monospaced"/>
                         </page>
@@ -383,7 +383,7 @@
                     </group>
                     <group string="Match To">
                         <field name="employee_id"
-                               invisible="[('create_new', '=', True)]"
+                               invisible="create_new"
                                options="{'no_create': True}"/>
                         <field name="create_new"/>
                     </group>

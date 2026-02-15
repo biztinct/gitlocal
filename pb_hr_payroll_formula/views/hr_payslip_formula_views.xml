@@ -11,7 +11,7 @@
                         type="object"
                         string="Recompute Formulas"
                         class="oe_highlight"
-                        invisible="[('calculation_method', '!=', 'formula')]"/>
+                        invisible="calculation_method != 'formula'"/>
             </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page string="Formula Input JSON" name="formula_input_json">

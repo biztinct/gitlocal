@@ -95,6 +95,7 @@ License: LGPL-3
             'pb_hr_payroll_formula/static/src/css/payslip_json_wrap.css',
             'pb_hr_payroll_formula/static/src/css/formula_rule_list.css',
             'pb_hr_payroll_formula/static/src/js/multisheet_enhancements.js',
+            'pb_hr_payroll_formula/static/src/js/formula_grid_top_scroll.js',
 
             # NOTE: Custom Excel grid widget JS disabled until proper implementation
             # The standard Odoo tree view is used instead for formula configuration

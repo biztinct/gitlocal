@@ -42,7 +42,7 @@
             <form string="Formula Rule">
                 <sheet>
                     <widget name="web_ribbon" title="Invalid" bg_color="bg-danger"
-                            invisible="[('is_valid', '=', True)]"/>
+                            invisible="is_valid"/>
 
                     <div class="oe_title">
                         <label for="name"/>
@@ -68,7 +68,7 @@
                     <notebook>
                         <!-- Input Column Settings -->
                         <page string="Input Settings" name="input"
-                              invisible="[('column_type', '!=', 'input')]">
+                              invisible="column_type != 'input'">
                             <group>
                                 <group string="Data Source">
                                     <field name="data_source_field" placeholder="e.g., basic_salary"/>
@@ -79,11 +79,11 @@
 
                         <!-- Formula Settings -->
                         <page string="Formula" name="formula"
-                              invisible="[('column_type', '!=', 'formula')]">
+                              invisible="column_type != 'formula'">
 
                             <!-- Evaluation Error Alert (shown prominently if there's an error) -->
                             <div class="alert alert-danger" role="alert" style="margin-bottom: 20px;"
-                                 invisible="[('has_evaluation_error', '=', False)]">
+                                 invisible="not has_evaluation_error">
                                 <h4 class="alert-heading">
                                     <i class="fa fa-exclamation-triangle"/> Formula Evaluation Error
                                 </h4>
@@ -121,7 +121,7 @@
 
                         <!-- Constant Settings -->
                         <page string="Constant" name="constant"
-                              invisible="[('column_type', '!=', 'constant')]">
+                              invisible="column_type != 'constant'">
                             <group>
                                 <field name="constant_value"/>
                             </group>
@@ -143,7 +143,7 @@
                                 <group string="Contract">
                                     <field name="is_contract_component"/>
                                     <field name="requires_new_contract"
-                                           invisible="[('is_contract_component', '=', False)]"/>
+                                           invisible="not is_contract_component"/>
                                 </group>
                             </group>
                         </page>
@@ -159,10 +159,10 @@
                                 <group string="Data Source Configuration">
                                     <field name="data_source"/>
                                     <field name="integration_connector_id"
-                                           invisible="[('data_source', '!=', 'integration')]" required="[('data_source', '=', 'integration')]"
+                                           invisible="data_source != 'integration'" required="data_source == 'integration'"
                                            options="{'no_create': True}"/>
                                     <field name="source_field_mapping"
-                                           invisible="[('data_source', '!=', 'integration')]"/>
+                                           invisible="data_source != 'integration'"/>
                                 </group>
                             </group>
                             <group string="Information" class="oe_read_only">
