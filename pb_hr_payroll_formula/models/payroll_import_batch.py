@@ -308,17 +308,18 @@ class HrPayrollImportBatch(models.Model):
             self.date_from = today.replace(day=1)
             self.date_to = today.replace(day=last_day)
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
         """Generate sequence name on create"""
-        if vals.get('name', _('New Import Batch')) == _('New Import Batch'):
-            vals['name'] = self.env['ir.sequence'].next_by_code('hr.payroll.import.batch') or _('New Import Batch')
-        if not vals.get('payroll_journal_id'):
-            company_id = vals.get('company_id') or self.env.company.id
-            journal = self._get_first_general_journal(self.env['res.company'].browse(company_id))
-            if journal:
-                vals['payroll_journal_id'] = journal.id
-        return super().create(vals)
+        for vals in vals_list:
+            if vals.get('name', _('New Import Batch')) == _('New Import Batch'):
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.payroll.import.batch') or _('New Import Batch')
+            if not vals.get('payroll_journal_id'):
+                company_id = vals.get('company_id') or self.env.company.id
+                journal = self._get_first_general_journal(self.env['res.company'].browse(company_id))
+                if journal:
+                    vals['payroll_journal_id'] = journal.id
+        return super().create(vals_list)
 
     def action_load_file(self):
         """Load data from Excel/CSV file into import lines"""

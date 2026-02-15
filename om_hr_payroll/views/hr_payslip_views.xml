@@ -665,18 +665,20 @@ if not isinstance(action, bool):  # Check if action is not a boolean
                     <field name="date_end"/>
                     <field name="state"/>
                     <field name="credit_note"/>
-                    <card>
-                        <field name="name" class="fw-bold fs-5"/>
-                        <div class="text-muted">
-                            <i class="fa fa-calendar"/> <field name="date_start"/> to <field name="date_end"/>
-                        </div>
-                        <div t-if="record.credit_note.raw_value" class="mt-2">
-                            <span class="badge text-bg-warning">Credit Note</span>
-                        </div>
-                        <footer>
-                            <field name="state" widget="label_selection" options="{'classes': {'draft': 'secondary', 'level1': 'info', 'level2': 'warning', 'done': 'success', 'cancel': 'danger'}}"/>
-                        </footer>
-                    </card>
+                    <templates>
+                        <t t-name="card">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <div class="text-muted">
+                                <i class="fa fa-calendar"/> <field name="date_start"/> to <field name="date_end"/>
+                            </div>
+                            <div t-if="record.credit_note.raw_value" class="mt-2">
+                                <span class="badge text-bg-warning">Credit Note</span>
+                            </div>
+                            <footer>
+                                <field name="state" widget="label_selection" options="{'classes': {'draft': 'secondary', 'level1': 'info', 'level2': 'warning', 'done': 'success', 'cancel': 'danger'}}"/>
+                            </footer>
+                        </t>
+                    </templates>
                 </kanban>
             </field>
         </record>
@@ -737,10 +739,10 @@ if not isinstance(action, bool):  # Check if action is not a boolean
         <record id="action_hr_payslip_run_tree" model="ir.actions.act_window">
             <field name="name">Batch Payslips</field>
             <field name="res_model">hr.payslip.run</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">kanban,list,form</field>
             <field name="search_view_id" ref="hr_payslip_run_filter"/>
             <field name="context">{
-                'group_by': ['date_end:year'],
+                'group_by': ['state'],
                 'order': 'date_end desc'
             }</field>
         </record>
