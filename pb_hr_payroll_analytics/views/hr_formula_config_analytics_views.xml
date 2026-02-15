@@ -12,8 +12,7 @@
         <field name="priority">16</field>
         <field name="arch" type="xml">
             <form string="Salary Structure Analytics"
-                  create="false" delete="false"
-                  js_class="formula_config_analytics_dashboard">
+                  create="false" delete="false">
 
                 <!-- Header Actions -->
                 <header>
