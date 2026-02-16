@@ -8,8 +8,7 @@
         <field name="arch" type="xml">
             <form string="Payroll Analytics Dashboard" 
                   create="false" 
-                  edit="false" 
-                  js_class="payroll_analytics_dashboard">
+                  edit="false">
                 <header>
                     <button name="action_approve_payroll" 
                             type="object" 
