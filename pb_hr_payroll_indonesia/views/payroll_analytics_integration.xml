@@ -8,10 +8,7 @@
         <field name="model">payroll.dashboard</field>
         <field name="inherit_id" ref="pb_hr_payroll_indonesia.view_payroll_dashboard_indonesia"/>
         <field name="arch" type="xml">
-            <!-- Add js_class to the form element -->
-            <form position="attributes">
-                <attribute name="js_class">payroll_dashboard_integration</attribute>
-            </form>
+            <!-- js_class removed - not compatible with Odoo 19 -->
             
             <!-- Update header background to light variation of 21435F -->
             <xpath expr="//div[@class='dashboard-header']" position="attributes">
