@@ -61,6 +61,8 @@ License: LGPL-3
         'views/formula_config_views.xml',
         'views/formula_rule_views.xml',
         'views/integration_views.xml',
+        'views/api_data_store_views.xml',
+        'views/api_transformation_rule_views.xml',
         'views/payroll_import_views.xml',
         'views/contract_component_change_views.xml',
         'views/payslip_config_views.xml',

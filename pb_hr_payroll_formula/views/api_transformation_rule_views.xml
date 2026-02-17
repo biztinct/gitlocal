@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         TRANSFORMATION RULE — TREE VIEW
+         ========================================== -->
+
+    <record id="view_api_transformation_rule_tree" model="ir.ui.view">
+        <field name="name">hr.api.transformation.rule.tree</field>
+        <field name="model">hr.api.transformation.rule</field>
+        <field name="arch" type="xml">
+            <list string="Transformation Rules" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="output_key"/>
+                <field name="rule_type"/>
+                <field name="source_data_type"/>
+                <field name="aggregate_field"
+                       invisible="rule_type not in ('sum', 'avg', 'min', 'max')"/>
+                <field name="filter_expression"
+                       invisible="rule_type in ('python',)"/>
+                <field name="default_value"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         TRANSFORMATION RULE — FORM VIEW
+         ========================================== -->
+
+    <record id="view_api_transformation_rule_form" model="ir.ui.view">
+        <field name="name">hr.api.transformation.rule.form</field>
+        <field name="model">hr.api.transformation.rule</field>
+        <field name="arch" type="xml">
+            <form string="Transformation Rule">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g., Count Dependents"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Rule Configuration">
+                            <field name="connector_id"/>
+                            <field name="output_key" placeholder="e.g., NUM_DEPENDENTS"/>
+                            <field name="rule_type"/>
+                            <field name="source_data_type"/>
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Default &amp; Settings">
+                            <field name="default_value"/>
+                            <field name="description" placeholder="Explain what this rule computes..."/>
+                        </group>
+                    </group>
+
+                    <!-- Aggregate Settings -->
+                    <group string="Aggregate Settings"
+                           invisible="rule_type not in ('sum', 'avg', 'min', 'max', 'count')">
+                        <field name="aggregate_field"
+                               invisible="rule_type == 'count'"
+                               placeholder="e.g., days, amount"/>
+                        <field name="filter_expression"
+                               placeholder="e.g., rec.get('status') == 'Active'"/>
+                    </group>
+
+                    <!-- Date Settings -->
+                    <group string="Date Calculation Settings"
+                           invisible="rule_type not in ('date_diff', 'date_check')">
+                        <group>
+                            <field name="date_source_field"
+                                   placeholder="e.g., date_of_joining"/>
+                            <field name="date_compare_to"/>
+                            <field name="date_fixed_value"
+                                   invisible="date_compare_to != 'fixed'"/>
+                        </group>
+                        <group>
+                            <field name="date_unit"
+                                   invisible="rule_type != 'date_diff'"/>
+                            <field name="date_check_operator"
+                                   invisible="rule_type != 'date_check'"/>
+                            <field name="date_check_value"
+                                   invisible="date_check_operator != 'within'"/>
+                        </group>
+                    </group>
+
+                    <!-- Python Expression -->
+                    <group string="Python Expression"
+                           invisible="rule_type != 'python'">
+                        <div class="alert alert-info" colspan="2">
+                            <h5><i class="fa fa-info-circle"/> Available Variables</h5>
+                            <ul>
+                                <li><code>records</code> — list of extracted_data dicts for the selected source data type</li>
+                                <li><code>employee_data</code> — the employee's own extracted_data dict</li>
+                                <li><code>all_records</code> — dict of {data_type: [records]} for all types</li>
+                                <li><code>period_start</code>, <code>period_end</code> — batch period dates</li>
+                                <li><code>env</code> — Odoo environment</li>
+                                <li><code>employee</code> — hr.employee record (if matched)</li>
+                                <li><code>datetime</code>, <code>date</code>, <code>relativedelta</code></li>
+                            </ul>
+                            <p>Must set <code>result = &lt;value&gt;</code> as the output.</p>
+                        </div>
+                        <field name="python_code" widget="ace" options="{'mode': 'python'}"
+                               colspan="2" nolabel="1"
+                               placeholder="# Example: Count minor dependents&#10;children = [r for r in records if r.get('relationship') == 'Child']&#10;minors = [c for c in children if c.get('age', 0) &lt; 18]&#10;result = len(minors)"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         TRANSFORMATION RULE — SEARCH VIEW
+         ========================================== -->
+
+    <record id="view_api_transformation_rule_search" model="ir.ui.view">
+        <field name="name">hr.api.transformation.rule.search</field>
+        <field name="model">hr.api.transformation.rule</field>
+        <field name="arch" type="xml">
+            <search string="Transformation Rules">
+                <field name="name"/>
+                <field name="output_key"/>
+                <field name="connector_id"/>
+                <separator/>
+                <filter string="Active" name="active_rules" domain="[('active', '=', True)]"/>
+                <separator/>
+                <group name="group_by">
+                    <filter string="Connector" name="group_connector" context="{'group_by': 'connector_id'}"/>
+                    <filter string="Rule Type" name="group_type" context="{'group_by': 'rule_type'}"/>
+                    <filter string="Source Data Type" name="group_source" context="{'group_by': 'source_data_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==========================================
+         TRANSFORMATION RULE — ACTION
+         ========================================== -->
+
+    <record id="action_api_transformation_rule" model="ir.actions.act_window">
+        <field name="name">Transformation Rules</field>
+        <field name="res_model">hr.api.transformation.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active_rules': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create transformation rules
+            </p>
+            <p>
+                Transformation rules derive new values from stored API data,
+                such as counting dependents, calculating tenure, or summing
+                attendance days. The results feed into payroll field mappings.
+            </p>
+        </field>
+    </record>
+
+</odoo>

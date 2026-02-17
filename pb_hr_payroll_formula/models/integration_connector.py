@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import time
+import logging
+from datetime import date, datetime
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
-import logging
 
 _logger = logging.getLogger(__name__)
 
@@ -150,6 +153,24 @@ class HrIntegrationConnector(models.Model):
     )
 
     # ==========================================
+    # API DATA STORE & TRANSFORMATION RULES
+    # ==========================================
+    data_store_ids = fields.One2many(
+        'hr.api.data.store',
+        'connector_id',
+        string='Stored Data',
+    )
+    data_store_count = fields.Integer(
+        string='Stored Records',
+        compute='_compute_data_store_count',
+    )
+    transformation_rule_ids = fields.One2many(
+        'hr.api.transformation.rule',
+        'connector_id',
+        string='Transformation Rules',
+    )
+
+    # ==========================================
     # CONNECTION STATUS
     # ==========================================
     connection_status = fields.Selection([
@@ -246,6 +267,13 @@ class HrIntegrationConnector(models.Model):
     def _compute_mapping_count(self):
         for record in self:
             record.mapping_count = len(record.field_mapping_ids)
+
+    def _compute_data_store_count(self):
+        for record in self:
+            record.data_store_count = self.env['hr.api.data.store'].search_count([
+                ('connector_id', '=', record.id),
+                ('state', '!=', 'archived'),
+            ])
 
     # ==========================================
     # CONNECTION ACTIONS
@@ -384,14 +412,275 @@ class HrIntegrationConnector(models.Model):
         }
 
     def action_view_sync_history(self):
-        """View sync history"""
+        """View sync history — now shows data store records."""
         self.ensure_one()
-        # TODO: Implement sync history model
-        pass
+        return self.action_view_data_store()
+
+    def action_view_data_store(self):
+        """View stored API data records for this connector."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('API Data Store — %s') % self.name,
+            'res_model': 'hr.api.data.store',
+            'view_mode': 'list,form',
+            'domain': [('connector_id', '=', self.id)],
+            'context': {
+                'default_connector_id': self.id,
+                'search_default_active_records': 1,
+            },
+        }
+
+    # ==========================================
+    # PULL DATA — Core API Integration
+    # ==========================================
+    def action_pull_data(self, data_types=None, period_from=None, period_to=None,
+                         triggered_by='manual'):
+        """
+        Pull data from external HRIS and store in hr.api.data.store.
+
+        This is the primary entry point for the Pull → Store → Transform pipeline.
+
+        Args:
+            data_types: list of data type strings to pull (default: ['employee', 'salary'])
+            period_from: start of period (date)
+            period_to: end of period (date)
+            triggered_by: 'manual' or 'cron'
+
+        Returns:
+            Action dict with notification of results.
+        """
+        self.ensure_one()
+        DataStore = self.env['hr.api.data.store']
+
+        if not data_types:
+            data_types = ['employee', 'salary']
+
+        # Default period: current month
+        if not period_from:
+            import calendar
+            today = date.today()
+            period_from = today.replace(day=1)
+            last_day = calendar.monthrange(today.year, today.month)[1]
+            period_to = today.replace(day=last_day)
+
+        results = {
+            'pulled': 0,
+            'changes': 0,
+            'errors': [],
+        }
+
+        try:
+            connector = self._get_connector_instance()
+
+            # Authenticate
+            if not connector.authenticate():
+                raise UserError(_('Authentication failed for connector %s') % self.name)
+
+            # Pull employee data
+            if 'employee' in data_types:
+                start_time = time.time()
+                employees = connector.fetch_employees()
+                pull_ms = int((time.time() - start_time) * 1000)
+
+                if employees:
+                    for emp_data in employees:
+                        self._store_api_record(
+                            DataStore, emp_data,
+                            data_type='employee',
+                            period_from=period_from,
+                            period_to=period_to,
+                            pull_ms=pull_ms,
+                            triggered_by=triggered_by,
+                            results=results,
+                        )
+
+            # Pull salary/payroll data
+            if 'salary' in data_types:
+                start_time = time.time()
+                try:
+                    # Get employee IDs for payroll pull
+                    emp_ids = []
+                    emp_records = DataStore.search([
+                        ('connector_id', '=', self.id),
+                        ('data_type', '=', 'employee'),
+                        ('state', 'in', ['extracted']),
+                    ])
+                    for emp_rec in emp_records:
+                        ext_id = emp_rec.employee_external_id
+                        if ext_id and ext_id not in emp_ids:
+                            emp_ids.append(ext_id)
+
+                    if emp_ids:
+                        payroll_data = connector.fetch_payroll_data(
+                            emp_ids,
+                            str(period_from),
+                            str(period_to),
+                        )
+                        pull_ms = int((time.time() - start_time) * 1000)
+
+                        if payroll_data:
+                            for emp_id, salary_data in payroll_data.items():
+                                self._store_api_record(
+                                    DataStore, salary_data,
+                                    data_type='salary',
+                                    employee_external_id=str(emp_id),
+                                    period_from=period_from,
+                                    period_to=period_to,
+                                    pull_ms=pull_ms,
+                                    triggered_by=triggered_by,
+                                    results=results,
+                                )
+                except Exception as e:
+                    results['errors'].append(f"Salary pull error: {str(e)}")
+                    _logger.warning("Salary pull failed for connector %s: %s", self.name, str(e))
+
+            # Update connector sync status
+            self.write({
+                'last_sync': fields.Datetime.now(),
+                'last_sync_status': 'success' if not results['errors'] else 'partial',
+                'last_sync_message': _(
+                    'Pulled %d records (%d with changes). %d errors.'
+                ) % (results['pulled'], results['changes'], len(results['errors'])),
+                'total_synced_records': results['pulled'],
+            })
+
+            # Run transformation rules on newly pulled records
+            new_records = DataStore.search([
+                ('connector_id', '=', self.id),
+                ('state', '=', 'extracted'),
+                ('pull_date', '>=', fields.Datetime.now()),
+            ])
+            if new_records and self.transformation_rule_ids:
+                active_rules = self.transformation_rule_ids.filtered('active')
+                if active_rules:
+                    active_rules._execute_for_records(new_records)
+
+        except Exception as e:
+            self.write({
+                'last_sync_status': 'failed',
+                'last_error': str(e),
+                'last_sync_message': _('Pull failed: %s') % str(e),
+            })
+            _logger.exception("Pull failed for connector %s: %s", self.name, str(e))
+            raise UserError(_('Data pull failed: %s') % str(e))
+
+        msg = _('Pulled %d records from %s. %d changes detected.') % (
+            results['pulled'], self.name, results['changes']
+        )
+        if results['errors']:
+            msg += _(' %d errors encountered.') % len(results['errors'])
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Data Pull Complete'),
+                'message': msg,
+                'type': 'success' if not results['errors'] else 'warning',
+            }
+        }
+
+    def _store_api_record(self, DataStore, raw_data, data_type,
+                          employee_external_id=None, period_from=None,
+                          period_to=None, pull_ms=0, triggered_by='manual',
+                          results=None):
+        """
+        Create a data store record from raw API data.
+
+        Handles:
+        1. Storing the raw payload
+        2. Extracting flattened data
+        3. Computing version + diff against previous
+        4. Attempting employee matching
+        """
+        if results is None:
+            results = {'pulled': 0, 'changes': 0, 'errors': []}
+
+        # Try to extract employee external ID from the data if not provided
+        if not employee_external_id and isinstance(raw_data, dict):
+            for key in ('EmployeeID', 'employee_id', 'emp_id', 'empId',
+                        'RecordId', 'record_id', 'ID', 'id'):
+                val = raw_data.get(key)
+                if val:
+                    employee_external_id = str(val)
+                    break
+
+        try:
+            record = DataStore.create({
+                'connector_id': self.id,
+                'data_type': data_type,
+                'employee_external_id': employee_external_id,
+                'period_from': period_from,
+                'period_to': period_to,
+                'raw_payload': raw_data,
+                'pull_date': fields.Datetime.now(),
+                'pull_duration_ms': pull_ms,
+                'pull_triggered_by': triggered_by,
+                'state': 'raw',
+                'company_id': self.company_id.id,
+            })
+
+            # Extract data
+            record.action_extract()
+
+            # Compute version and diff
+            record._compute_version_and_diff()
+
+            # Try to match employee
+            record._find_matching_employee()
+            if record._find_matching_employee():
+                record.employee_id = record._find_matching_employee().id
+
+            results['pulled'] += 1
+            if record.has_changes:
+                results['changes'] += 1
+
+        except Exception as e:
+            results['errors'].append(str(e))
+            _logger.warning("Failed to store API record: %s", str(e))
+
+    def action_recompute_transformations(self):
+        """Recompute all transformation rules for extracted data store records."""
+        self.ensure_one()
+        records = self.env['hr.api.data.store'].search([
+            ('connector_id', '=', self.id),
+            ('state', '=', 'extracted'),
+        ])
+        if not records:
+            raise UserError(_('No extracted records found to transform.'))
+
+        active_rules = self.transformation_rule_ids.filtered('active')
+        if not active_rules:
+            raise UserError(_('No active transformation rules configured.'))
+
+        active_rules._execute_for_records(records)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Transformations Complete'),
+                'message': _('Recomputed %d rules for %d records.') % (
+                    len(active_rules), len(records)
+                ),
+                'type': 'success',
+            }
+        }
 
     def action_launch_payroll_import(self):
         """Launch payroll import using this connector"""
         self.ensure_one()
+
+        # Determine best source type
+        if self.connector_type == 'excel':
+            source_type = 'excel'
+        elif self.data_store_count > 0:
+            # If data store has records, default to api_data_store
+            source_type = 'api_data_store'
+        else:
+            source_type = 'connector'
+
         return {
             'type': 'ir.actions.act_window',
             'name': _('New Payroll Import'),
@@ -400,7 +689,7 @@ class HrIntegrationConnector(models.Model):
             'target': 'current',
             'context': {
                 'default_connector_id': self.id,
-                'default_source_type': 'connector' if self.connector_type != 'excel' else 'excel',
+                'default_source_type': source_type,
             },
         }
 
