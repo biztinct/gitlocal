@@ -44,3 +44,8 @@ access_proration_line_user,hr.payroll.proration.line.user,model_hr_payroll_prora
 access_proration_line_manager,hr.payroll.proration.line.manager,model_hr_payroll_proration_line,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_retro_adjustment_user,hr.payroll.retro.adjustment.user,model_hr_payroll_retro_adjustment,pb_hr_payroll_formula.group_formula_user,1,0,0,0
 access_retro_adjustment_manager,hr.payroll.retro.adjustment.manager,model_hr_payroll_retro_adjustment,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_api_data_store_user,hr.api.data.store.user,model_hr_api_data_store,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_api_data_store_manager,hr.api.data.store.manager,model_hr_api_data_store,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_api_transformation_rule_user,hr.api.transformation.rule.user,model_hr_api_transformation_rule,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_api_transformation_rule_manager,hr.api.transformation.rule.manager,model_hr_api_transformation_rule,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_api_transformation_rule_admin,hr.api.transformation.rule.admin,model_hr_api_transformation_rule,pb_hr_payroll_formula.group_formula_admin,1,1,1,1

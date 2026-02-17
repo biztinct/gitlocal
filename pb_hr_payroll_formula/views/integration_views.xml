@@ -33,6 +33,10 @@
                 <header>
                     <button name="action_test_connection" string="Test Connection" type="object"
                             class="btn-primary"/>
+                    <button name="action_pull_data" string="Pull Data" type="object"
+                            class="btn-secondary"
+                            invisible="connection_status != 'connected' or connector_type == 'excel'"
+                            confirm="Pull data from the external HRIS? This will store new records in the API Data Store."/>
                     <button name="action_sync_now" string="Sync Now" type="object"
                             invisible="connection_status != 'connected'"/>
                     <button name="action_fetch_available_fields" string="Fetch Fields" type="object"
@@ -45,6 +49,11 @@
                                 icon="fa-upload"
                                 invisible="connection_status != 'connected'">
                             <span class="o_stat_text">Payroll Import</span>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_view_data_store"
+                                icon="fa-database"
+                                invisible="connector_type == 'excel'">
+                            <field name="data_store_count" widget="statinfo" string="Data Store"/>
                         </button>
                         <button class="oe_stat_button" type="object" name="action_view_mappings"
                                 icon="fa-exchange">
@@ -177,6 +186,36 @@
                                     <field name="default_value"/>
                                 </list>
                             </field>
+                        </page>
+
+                        <!-- Transformation Rules -->
+                        <page string="Transformation Rules" name="transformations"
+                              invisible="connector_type == 'excel'">
+                            <div class="alert alert-info mb-3">
+                                <i class="fa fa-magic"/> Transformation rules derive computed values
+                                from stored API data (e.g., count dependents, calculate tenure).
+                                Results are merged with extracted data at mapping time.
+                            </div>
+                            <field name="transformation_rule_ids" nolabel="1"
+                                   context="{'default_connector_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="output_key"/>
+                                    <field name="rule_type"/>
+                                    <field name="source_data_type"/>
+                                    <field name="aggregate_field"
+                                           invisible="rule_type not in ('sum', 'avg', 'min', 'max')"/>
+                                    <field name="default_value"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                            <div class="mt-2">
+                                <button name="action_recompute_transformations"
+                                        string="⟳ Recompute All" type="object"
+                                        class="btn-secondary btn-sm"
+                                        confirm="Recompute all transformation rules for extracted records?"/>
+                            </div>
                         </page>
 
                         <!-- Error Log -->

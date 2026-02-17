@@ -92,6 +92,18 @@
               action="action_field_mapping"
               sequence="20"/>
 
+    <menuitem id="menu_api_data_store"
+              name="API Data Store"
+              parent="menu_formula_integrations"
+              action="action_api_data_store"
+              sequence="30"/>
+
+    <menuitem id="menu_transformation_rules"
+              name="Transformation Rules"
+              parent="menu_formula_integrations"
+              action="action_api_transformation_rule"
+              sequence="40"/>
+
     <!-- Testing Submenu -->
     <menuitem id="menu_formula_testing"
               name="Testing"

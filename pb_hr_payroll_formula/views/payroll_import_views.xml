@@ -49,7 +49,10 @@
                             invisible="state != 'done' or not payslip_run_id"/>
                     <button name="action_load_file" string="Load File" type="object"
                             class="btn-primary" icon="fa-upload"
-                            invisible="state != 'draft'"/>
+                            invisible="state != 'draft' or source_type != 'excel'"/>
+                    <button name="action_load_from_data_store" string="Load from Data Store" type="object"
+                            class="btn-primary" icon="fa-database"
+                            invisible="state != 'draft' or source_type != 'api_data_store'"/>
                     <button name="action_match_employees" string="Match Employees" type="object"
                             class="btn-primary" icon="fa-users"
                             invisible="state != 'loaded'"/>
@@ -136,7 +139,7 @@
                             <field name="formula_config_id" required="1"
                                    options="{'no_create': True}"/>
                             <field name="connector_id"
-                                   invisible="source_type != 'connector'"
+                                   invisible="source_type not in ('connector', 'api_data_store')"
                                    domain="[('connector_type', 'in', ['excel', 'zoho', 'sap', 'workday', 'oracle'])]"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
@@ -273,6 +276,7 @@
                 <separator/>
                 <filter string="Excel Import" name="excel" domain="[('source_type', '=', 'excel')]"/>
                 <filter string="Connector Import" name="connector" domain="[('source_type', '=', 'connector')]"/>
+                <filter string="API Data Store" name="api_data_store" domain="[('source_type', '=', 'api_data_store')]"/>
                 <separator/>
                 <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
                 <separator/>

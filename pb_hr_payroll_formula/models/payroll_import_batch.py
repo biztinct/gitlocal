@@ -38,6 +38,7 @@ class HrPayrollImportBatch(models.Model):
     source_type = fields.Selection([
         ('excel', 'Excel/CSV File'),
         ('connector', 'Integration Connector'),
+        ('api_data_store', 'API Data Store'),
         ('manual', 'Manual Entry'),
     ], string='Source Type', required=True, default='excel', tracking=True)
 
@@ -428,6 +429,112 @@ class HrPayrollImportBatch(models.Model):
         self._log("Created %d import lines" % len(line_vals_list))
 
         # Refresh the form to reflect new state and stats
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    def action_load_from_data_store(self):
+        """Load data from API Data Store into import lines.
+
+        This bridges the API Data Store with the existing payroll pipeline.
+        It reads from extracted_data + computed_data (merged) and creates
+        import lines, then marks the data store records as consumed.
+        """
+        self.ensure_one()
+
+        if self.source_type != 'api_data_store':
+            raise UserError(_("Source type must be 'API Data Store' to use this action."))
+
+        if not self.connector_id:
+            raise UserError(_("Please select a Connector first."))
+
+        if not self.formula_config_id:
+            raise UserError(_("Please select a Formula Configuration first."))
+
+        DataStore = self.env['hr.api.data.store']
+
+        # Find extracted (not yet consumed) salary records for this connector
+        domain = [
+            ('connector_id', '=', self.connector_id.id),
+            ('state', '=', 'extracted'),
+            ('data_type', 'in', ['salary', 'employee']),
+        ]
+
+        # Filter by period if specified
+        if self.date_from and self.date_to:
+            domain += [
+                '|',
+                ('period_from', '=', False),
+                ('period_from', '>=', self.date_from),
+                '|',
+                ('period_to', '=', False),
+                ('period_to', '<=', self.date_to),
+            ]
+
+        store_records = DataStore.search(domain, order='employee_external_id, data_type')
+
+        if not store_records:
+            raise UserError(_(
+                "No extracted data found in the API Data Store for connector '%s'. "
+                "Please pull data first using the 'Pull Data' button on the connector."
+            ) % self.connector_id.name)
+
+        # Group records by employee
+        employee_data = {}
+        for rec in store_records:
+            ext_id = rec.employee_external_id or f"_unknown_{rec.id}"
+            if ext_id not in employee_data:
+                employee_data[ext_id] = {
+                    'store_records': DataStore,
+                    'merged_data': {},
+                }
+            employee_data[ext_id]['store_records'] |= rec
+            # Merge mappable data (extracted + computed)
+            employee_data[ext_id]['merged_data'].update(rec.get_mappable_data())
+
+        # Clear existing lines
+        self.import_line_ids.unlink()
+
+        line_vals_list = []
+        for idx, (ext_id, emp_data) in enumerate(employee_data.items(), start=1):
+            raw_data = emp_data['merged_data']
+
+            # Extract key fields for matching
+            employee_code = self._normalize_code(self._extract_field(raw_data, [
+                'employee_code', 'employee code', 'emp_code', 'emp code',
+                'EmployeeID', 'employee_id', 'emp_id',
+                'staff id', 'staff code', 'code', 'id',
+            ]) or ext_id)
+
+            employee_name = self._extract_field(raw_data, [
+                'employee_name', 'name', 'full_name', 'emp_name',
+                'FirstName', 'Display Name',
+            ])
+
+            employee_email = self._extract_field(raw_data, [
+                'email', 'work_email', 'emp_email', 'employee_email',
+                'Email', 'EmailID',
+            ])
+
+            line_vals_list.append({
+                'batch_id': self.id,
+                'sequence': idx,
+                'raw_data_json': json.dumps(raw_data, default=json_serializer),
+                'employee_code': employee_code,
+                'employee_name': employee_name,
+                'employee_email': employee_email,
+                'state': 'draft',
+            })
+
+        # Bulk create lines
+        self.env['hr.payroll.import.line'].create(line_vals_list)
+
+        # Mark data store records as consumed
+        store_records.action_mark_consumed(self)
+
+        self.state = 'loaded'
+        self._log("Loaded %d employees from API Data Store (%s)" % (
+            len(line_vals_list), self.connector_id.name
+        ))
+
         return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def _load_multisheet_data(self, file_content, connector):
