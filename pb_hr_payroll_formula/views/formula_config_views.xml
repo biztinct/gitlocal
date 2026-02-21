@@ -38,10 +38,7 @@
                     <button name="action_set_draft" string="Set to Draft" type="object"
                             invisible="state == 'draft'"
                             groups="pb_hr_payroll_formula.group_formula_manager"/>
-                    <button name="action_import_from_structure" string="Import from Structure"
-                            type="object" class="btn-secondary"
-                            invisible="not structure_id"
-                            groups="pb_hr_payroll_formula.group_formula_manager"/>
+
                     <button name="action_import_from_excel_multisheet" string="Import from Excel"
                             type="object" class="btn-secondary" icon="fa-file-excel-o"
                             groups="pb_hr_payroll_formula.group_formula_manager"
