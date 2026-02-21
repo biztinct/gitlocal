@@ -35,7 +35,8 @@ class HrIntegrationConnector(models.Model):
         ('excel', 'Excel File Import'),
         ('sap', 'SAP SuccessFactors'),
         ('workday', 'Workday'),
-        ('oracle', 'Oracle HCM')
+        ('oracle', 'Oracle HCM'),
+        ('demo', 'Demo / Stub (Testing)')
     ], string='Connector Type', required=True, tracking=True)
 
     description = fields.Text(
@@ -406,7 +407,7 @@ class HrIntegrationConnector(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Field Mappings'),
             'res_model': 'hr.integration.field.mapping',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('connector_id', '=', self.id)],
             'context': {'default_connector_id': self.id},
         }
@@ -455,6 +456,9 @@ class HrIntegrationConnector(models.Model):
 
         if not data_types:
             data_types = ['employee', 'salary']
+            # Demo connector supports all data types
+            if self.connector_type == 'demo':
+                data_types = ['employee', 'salary', 'dependent', 'attendance', 'leave']
 
         # Default period: current month
         if not period_from:
@@ -534,6 +538,95 @@ class HrIntegrationConnector(models.Model):
                 except Exception as e:
                     results['errors'].append(f"Salary pull error: {str(e)}")
                     _logger.warning("Salary pull failed for connector %s: %s", self.name, str(e))
+
+            # Pull dependent data (one record per dependent)
+            if 'dependent' in data_types and hasattr(connector, 'fetch_dependents'):
+                try:
+                    start_time = time.time()
+                    emp_ids = list(set(
+                        r.employee_external_id for r in DataStore.search([
+                            ('connector_id', '=', self.id),
+                            ('data_type', '=', 'employee'),
+                            ('state', 'in', ['extracted']),
+                        ]) if r.employee_external_id
+                    ))
+                    if emp_ids:
+                        dep_data = connector.fetch_dependents(emp_ids)
+                        pull_ms = int((time.time() - start_time) * 1000)
+                        for emp_id, deps in dep_data.items():
+                            for dep_record in deps:
+                                self._store_api_record(
+                                    DataStore, dep_record,
+                                    data_type='dependent',
+                                    employee_external_id=str(emp_id),
+                                    period_from=period_from,
+                                    period_to=period_to,
+                                    pull_ms=pull_ms,
+                                    triggered_by=triggered_by,
+                                    results=results,
+                                )
+                except Exception as e:
+                    results['errors'].append(f"Dependent pull error: {str(e)}")
+                    _logger.warning("Dependent pull failed for connector %s: %s", self.name, str(e))
+
+            # Pull attendance data
+            if 'attendance' in data_types and hasattr(connector, 'fetch_attendance'):
+                try:
+                    start_time = time.time()
+                    emp_ids = list(set(
+                        r.employee_external_id for r in DataStore.search([
+                            ('connector_id', '=', self.id),
+                            ('data_type', '=', 'employee'),
+                            ('state', 'in', ['extracted']),
+                        ]) if r.employee_external_id
+                    ))
+                    if emp_ids:
+                        att_data = connector.fetch_attendance(emp_ids, str(period_from), str(period_to))
+                        pull_ms = int((time.time() - start_time) * 1000)
+                        for emp_id, att_record in att_data.items():
+                            self._store_api_record(
+                                DataStore, att_record,
+                                data_type='attendance',
+                                employee_external_id=str(emp_id),
+                                period_from=period_from,
+                                period_to=period_to,
+                                pull_ms=pull_ms,
+                                triggered_by=triggered_by,
+                                results=results,
+                            )
+                except Exception as e:
+                    results['errors'].append(f"Attendance pull error: {str(e)}")
+                    _logger.warning("Attendance pull failed for connector %s: %s", self.name, str(e))
+
+            # Pull leave data (one record per leave entry)
+            if 'leave' in data_types and hasattr(connector, 'fetch_leaves'):
+                try:
+                    start_time = time.time()
+                    emp_ids = list(set(
+                        r.employee_external_id for r in DataStore.search([
+                            ('connector_id', '=', self.id),
+                            ('data_type', '=', 'employee'),
+                            ('state', 'in', ['extracted']),
+                        ]) if r.employee_external_id
+                    ))
+                    if emp_ids:
+                        leave_data = connector.fetch_leaves(emp_ids, str(period_from), str(period_to))
+                        pull_ms = int((time.time() - start_time) * 1000)
+                        for emp_id, leaves in leave_data.items():
+                            for leave_record in leaves:
+                                self._store_api_record(
+                                    DataStore, leave_record,
+                                    data_type='leave',
+                                    employee_external_id=str(emp_id),
+                                    period_from=period_from,
+                                    period_to=period_to,
+                                    pull_ms=pull_ms,
+                                    triggered_by=triggered_by,
+                                    results=results,
+                                )
+                except Exception as e:
+                    results['errors'].append(f"Leave pull error: {str(e)}")
+                    _logger.warning("Leave pull failed for connector %s: %s", self.name, str(e))
 
             # Update connector sync status
             self.write({
@@ -706,6 +799,7 @@ class HrIntegrationConnector(models.Model):
             SAPConnector,
             WorkdayConnector,
             OracleConnector,
+            DemoConnector,
         )
 
         connector_map = {
@@ -714,6 +808,7 @@ class HrIntegrationConnector(models.Model):
             'sap': SAPConnector,
             'workday': WorkdayConnector,
             'oracle': OracleConnector,
+            'demo': DemoConnector,
         }
 
         connector_class = connector_map.get(self.connector_type)

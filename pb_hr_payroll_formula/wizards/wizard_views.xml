@@ -128,71 +128,106 @@
     </record>
 
     <!-- ==========================================
-         INTEGRATION SYNC WIZARD
+         INTEGRATION SYNC WIZARD (Advanced Pull)
          ========================================== -->
 
     <record id="view_integration_sync_wizard_form" model="ir.ui.view">
         <field name="name">hr.integration.sync.wizard.form</field>
         <field name="model">hr.integration.sync.wizard</field>
         <field name="arch" type="xml">
-            <form string="Sync Data from External System">
-                <header>
-                    <field name="state" widget="statusbar"/>
-                </header>
+            <form string="Pull Data with Options">
+
                 <sheet>
-                    <group>
-                        <group string="Connection">
-                            <field name="connector_id"/>
-                            <field name="config_id"/>
-                            <field name="sync_mode" widget="radio"/>
-                        </group>
-                        <group string="Options">
-                            <field name="create_mappings"/>
-                            <field name="anonymize"/>
-                            <field name="max_records"/>
-                        </group>
-                    </group>
-
-                    <!-- File Upload for Excel -->
-                    <group string="File Upload">
-                        <field name="import_file" filename="import_filename"/>
-                        <field name="import_filename" invisible="1"/>
-                    </group>
-
-                    <!-- Date Range for API connectors -->
-                    <group string="Date Range">
-                        <field name="date_from"/>
-                        <field name="date_to"/>
-                    </group>
-
-                    <!-- Preview Section -->
-                    <group string="Preview" invisible="state == 'setup'">
-                        <div class="row">
-                            <div class="col-6">
-                                <field name="field_count" readonly="1"/>
-                            </div>
-                            <div class="col-6">
-                                <field name="record_count" readonly="1"/>
-                            </div>
+                    <!-- Setup State -->
+                    <div invisible="state != 'setup'">
+                        <div class="alert alert-info mb-3">
+                            <i class="fa fa-info-circle"/>
+                            Select what data to pull, the period, and optionally
+                            preview before committing. Data flows into the
+                            <b>API Data Store</b> and transformation rules run automatically.
                         </div>
-                        <field name="preview_data" widget="text" readonly="1" nolabel="1"
-                               invisible="preview_data == False"/>
-                    </group>
+
+                        <group>
+                            <group string="Connection">
+                                <field name="connector_id" readonly="1"/>
+                                <field name="connector_type" invisible="1"/>
+                            </group>
+                            <group string="Period">
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="Data Types to Pull">
+                                <field name="pull_employee"/>
+                                <field name="pull_salary"/>
+                                <field name="pull_dependent"/>
+                                <field name="pull_attendance"/>
+                                <field name="pull_leave"/>
+                            </group>
+                            <group string="Options">
+                                <field name="max_records"/>
+                                <field name="run_transformations"/>
+                            </group>
+                        </group>
+
+                        <!-- Excel file upload (only for Excel connectors) -->
+                        <group string="File Upload"
+                               invisible="connector_type != 'excel'">
+                            <field name="import_file" filename="import_filename"/>
+                            <field name="import_filename" invisible="1"/>
+                        </group>
+                    </div>
+
+                    <!-- Preview State -->
+                    <div invisible="state != 'preview'">
+                        <div class="alert alert-warning mb-3">
+                            <i class="fa fa-eye"/>
+                            <b>Preview</b> — Review the data below, then click
+                            <b>Pull Now</b> to commit to the Data Store.
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="preview_employee_count"/>
+                                <field name="preview_record_count"/>
+                            </group>
+                        </group>
+
+                        <field name="preview_data" widget="text" readonly="1"
+                               nolabel="1" class="o_field_text"
+                               style="font-family: monospace; white-space: pre-wrap;"/>
+                    </div>
+
+                    <!-- Done State -->
+                    <div invisible="state != 'done'">
+                        <div class="alert alert-success mb-3">
+                            <i class="fa fa-check-circle"/>
+                            Data has been pulled into the API Data Store.
+                        </div>
+                    </div>
                 </sheet>
 
                 <footer>
-                    <button name="action_test_connection" string="Test Connection"
+                    <!-- Setup buttons -->
+                    <button name="action_preview" string="Preview"
                             type="object" class="btn-secondary"
-                            invisible="state != 'setup'"/>
-                    <button name="action_fetch_fields" string="Discover Fields"
-                            type="object" class="btn-secondary"
-                            invisible="state != 'setup'"/>
-                    <button name="action_fetch_data" string="Preview Data"
-                            type="object" class="btn-secondary"
-                            invisible="state != 'setup'"/>
-                    <button name="action_sync" string="Sync Data"
+                            invisible="state != 'setup'"
+                            title="Preview what will be pulled"/>
+                    <button name="action_pull" string="Pull Now"
                             type="object" class="btn-primary"
-                            invisible="sync_mode == 'preview'"/>
+                            invisible="state != 'setup'"
+                            title="Pull immediately without preview"/>
+
+                    <!-- Preview buttons -->
+                    <button name="action_pull" string="Pull Now"
+                            type="object" class="btn-primary"
+                            invisible="state != 'preview'"/>
+                    <button name="action_back_to_setup" string="← Back"
+                            type="object" class="btn-secondary"
+                            invisible="state != 'preview'"/>
+
                     <button string="Close" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
@@ -200,7 +235,7 @@
     </record>
 
     <record id="action_integration_sync_wizard" model="ir.actions.act_window">
-        <field name="name">Sync External Data</field>
+        <field name="name">Pull Data with Options</field>
         <field name="res_model">hr.integration.sync.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

@@ -156,6 +156,22 @@ class HrApiTransformationRule(models.Model):
     active = fields.Boolean(string='Active', default=True)
 
     # ==========================================
+    # OPEN FORM (for inline list views)
+    # ==========================================
+    def action_open_form(self):
+        """Open this record in a popup form dialog."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'views': [(False, 'form')],
+            'target': 'new',
+            'context': self.env.context,
+        }
+
+    # ==========================================
     # EXECUTION ENGINE
     # ==========================================
     def _execute_for_records(self, data_store_records):

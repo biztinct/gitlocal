@@ -67,7 +67,7 @@ class HrPayrollStructureFormula(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Formula Configurations'),
             'res_model': 'hr.formula.config',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('structure_id', '=', self.id)],
             'context': {
                 'default_structure_id': self.id,

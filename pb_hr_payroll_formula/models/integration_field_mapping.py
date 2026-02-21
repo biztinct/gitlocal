@@ -292,6 +292,22 @@ Example: value * 1.1 if value > 1000 else value
         return self.transform_value(value, record)
 
     # ==========================================
+    # OPEN FORM (for inline list views)
+    # ==========================================
+    def action_open_form(self):
+        """Open this record in a popup form dialog."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'views': [(False, 'form')],
+            'target': 'new',
+            'context': self.env.context,
+        }
+
+    # ==========================================
     # ACTIONS
     # ==========================================
     def action_test_mapping(self):

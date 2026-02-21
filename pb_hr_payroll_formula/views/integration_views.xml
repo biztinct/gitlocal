@@ -184,6 +184,9 @@
                                            invisible="transformation_type in ('direct', 'python')"/>
                                     <field name="is_required"/>
                                     <field name="default_value"/>
+                                    <button name="action_open_form" type="object"
+                                            icon="fa-pencil" title="Open"
+                                            class="btn-link"/>
                                 </list>
                             </field>
                         </page>
@@ -208,6 +211,9 @@
                                            invisible="rule_type not in ('sum', 'avg', 'min', 'max')"/>
                                     <field name="default_value"/>
                                     <field name="active"/>
+                                    <button name="action_open_form" type="object"
+                                            icon="fa-pencil" title="Open"
+                                            class="btn-link"/>
                                 </list>
                             </field>
                             <div class="mt-2">
