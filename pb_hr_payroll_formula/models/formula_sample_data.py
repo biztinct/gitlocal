@@ -256,6 +256,13 @@ class HrFormulaSampleData(models.Model):
                 row_style = "background:#f6f8fa;font-weight:bold;" if is_formula else ""
                 formula_value = rule.excel_formula or ''
                 formula_value = re.sub(r'(?<![A-Za-z0-9_])\$?([A-Z]{1,3})\$?\d+', r'\1', formula_value)
+
+                # Format numeric values: round to integer, no decimals
+                if isinstance(value, (int, float)):
+                    display_value = f"{int(round(value)):,}"
+                else:
+                    display_value = str(value) if value else ''
+
                 rows_html.append(
                     f"<tr style='{row_style}'>"
                     f"<td style='white-space:nowrap'>{rule.column_letter or ''}</td>"
@@ -264,7 +271,7 @@ class HrFormulaSampleData(models.Model):
                     f"<td style='white-space:normal;word-break:break-word;'>{rule.name or ''}</td>"
                     f"<td style='white-space:normal;word-break:break-word;'>"
                     f"{rule.code or ''}</td>"
-                    f"<td style='text-align:right;white-space:nowrap'>{value}</td>"
+                    f"<td style='text-align:right;white-space:nowrap'>{display_value}</td>"
                     f"<td style='white-space:normal;word-break:break-word;' title='{formula_value}'>"
                     f"{formula_value}</td>"
                     "</tr>"
