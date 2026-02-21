@@ -51,7 +51,7 @@ class PayrollDashboardVietnam(models.Model):
         })
 
         action.update({
-            'view_mode': 'kanban,tree,form',
+            'view_mode': 'kanban,list,form',
             'views': views,
             'target': 'current',
             'context': ctx,

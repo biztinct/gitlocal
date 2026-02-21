@@ -578,10 +578,10 @@ class HrFormulaConfigAnalytics(models.Model):
             'name': _('Pivot: %s') % self.selected_config_id.name,
             'type': 'ir.actions.act_window',
             'res_model': 'hr.payslip.line',
-            'view_mode': 'pivot,tree',
+            'view_mode': 'pivot,list',
             'views': [
                 (self.env.ref('pb_hr_payroll_analytics.view_payslip_line_formula_pivot').id, 'pivot'),
-                (False, 'tree')
+                (False, 'list')
             ],
             'domain': [
                 ('slip_id', 'in', payslips.ids),
@@ -612,10 +612,10 @@ class HrFormulaConfigAnalytics(models.Model):
             'name': _('Pivot: %s - %s') % (self.selected_config_id.name, self.selected_department_id.name),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.payslip.line',
-            'view_mode': 'pivot,tree',
+            'view_mode': 'pivot,list',
             'views': [
                 (self.env.ref('pb_hr_payroll_analytics.view_payslip_line_formula_pivot').id, 'pivot'),
-                (False, 'tree')
+                (False, 'list')
             ],
             'domain': [
                 ('slip_id', 'in', payslips.ids),
@@ -647,10 +647,10 @@ class HrFormulaConfigAnalytics(models.Model):
             'name': _('Consolidated Pivot: All Salary Structures'),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.payslip.line',
-            'view_mode': 'pivot,tree',
+            'view_mode': 'pivot,list',
             'views': [
                 (self.env.ref('pb_hr_payroll_analytics.view_payslip_line_formula_pivot').id, 'pivot'),
-                (False, 'tree')
+                (False, 'list')
             ],
             'domain': [
                 ('slip_id', 'in', payslips.ids),
@@ -688,10 +688,10 @@ class HrFormulaConfigAnalytics(models.Model):
             'name': _('Pivot: %s - %s') % (self.selected_config_id.name, dept_name),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.payslip.line',
-            'view_mode': 'pivot,tree',
+            'view_mode': 'pivot,list',
             'views': [
                 (self.env.ref('pb_hr_payroll_analytics.view_payslip_line_formula_pivot').id, 'pivot'),
-                (False, 'tree')
+                (False, 'list')
             ],
             'domain': [
                 ('slip_id', 'in', payslips.ids),

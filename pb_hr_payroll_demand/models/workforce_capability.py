@@ -138,7 +138,7 @@ class WorkforceCapability(models.Model):
             'type': 'ir.actions.act_window',
             'res_model': 'pb.workforce.role',
             'name': _('Roles for %s') % self.name,
-            'view_mode': 'tree,kanban,form,pivot',
+            'view_mode': 'list,kanban,form,pivot',
             'domain': [('capability_id', '=', self.id)],
             'context': {
                 'default_capability_id': self.id,

@@ -10,7 +10,7 @@
         <record id="action_pb_workforce_capability" model="ir.actions.act_window">
             <field name="name">Capabilities</field>
             <field name="res_model">pb.workforce.capability</field>
-            <field name="view_mode">kanban,tree,form,pivot,graph</field>
+            <field name="view_mode">kanban,list,form,pivot,graph</field>
             <field name="context">{'default_capability_type': 'primary'}</field>
             <field name="domain">[]</field>
         </record>
@@ -18,20 +18,20 @@
         <record id="action_pb_workforce_skill" model="ir.actions.act_window">
             <field name="name">Skills Library</field>
             <field name="res_model">pb.workforce.skill</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">list,form</field>
         </record>
 
         <record id="action_pb_workforce_role" model="ir.actions.act_window">
             <field name="name">Roles</field>
             <field name="res_model">pb.workforce.role</field>
-            <field name="view_mode">kanban,tree,form,pivot,graph</field>
+            <field name="view_mode">kanban,list,form,pivot,graph</field>
             <field name="context">{}</field>
         </record>
 
         <record id="action_pb_workforce_demand_plan" model="ir.actions.act_window">
             <field name="name">Demand Plans</field>
             <field name="res_model">pb.workforce.demand.plan</field>
-            <field name="view_mode">tree,form,graph,pivot</field>
+            <field name="view_mode">list,form,graph,pivot</field>
             <field name="context">{'search_default_group_by_year': 1}</field>
         </record>
 
