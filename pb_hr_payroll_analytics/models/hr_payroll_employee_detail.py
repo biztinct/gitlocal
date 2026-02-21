@@ -241,7 +241,7 @@ class HrPayrollEmployeeDetail(models.TransientModel):
             'name': f'📊 {department_name} Department - Employee Payroll Details',
             'type': 'ir.actions.act_window',
             'res_model': 'hr.payroll.employee.detail',
-            'view_mode': 'pivot,tree,graph',
+            'view_mode': 'pivot,list,graph',
             'views': [
                 (self.env.ref('pb_hr_payroll_analytics.view_hr_payroll_employee_detail_pivot').id, 'pivot'),
                 (self.env.ref('pb_hr_payroll_analytics.view_hr_payroll_employee_detail_tree').id, 'tree'),

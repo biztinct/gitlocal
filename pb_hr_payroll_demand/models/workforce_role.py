@@ -228,7 +228,7 @@ class WorkforceRole(models.Model):
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'pb.workforce.demand.plan',
-            'view_mode': 'tree,form,graph,pivot',
+            'view_mode': 'list,form,graph,pivot',
             'name': _('Demand Plans - %s') % self.name,
             'domain': [('role_id', '=', self.id)],
             'context': {

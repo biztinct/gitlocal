@@ -68,7 +68,7 @@
     <record id="action_hr_payroll_employee_detail" model="ir.actions.act_window">
         <field name="name">Employee Payroll Details</field>
         <field name="res_model">hr.payroll.employee.detail</field>
-        <field name="view_mode">pivot,tree,graph</field>
+        <field name="view_mode">pivot,list,graph</field>
         <field name="context">{
             'group_by': ['employee_name'],
             'pivot_measures': ['basic_salary', 'allowances', 'contributions', 'total'],
