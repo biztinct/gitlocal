@@ -679,7 +679,7 @@ class HrPayrollImportBatch(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Error Lines'),
             'res_model': 'hr.payroll.import.line',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('batch_id', '=', self.id), ('state', '=', 'error')],
             'context': {'default_batch_id': self.id},
         }
@@ -2943,7 +2943,7 @@ class HrPayrollImportBatch(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Created Employees'),
             'res_model': 'hr.employee',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.created_employee_ids.ids)],
         }
 
@@ -2953,7 +2953,7 @@ class HrPayrollImportBatch(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Created Payslips'),
             'res_model': 'hr.payslip',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.created_payslip_ids.ids)],
         }
 
