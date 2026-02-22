@@ -22,10 +22,16 @@
               sequence="10"/>
 
     <menuitem id="menu_shift_planning"
-              name="Shift Planning"
+              name="Shift Roster"
+              parent="menu_shift_management"
+              action="action_shift_planning_grid"
+              sequence="1"/>
+
+    <menuitem id="menu_shift_planning_list"
+              name="Shift List"
               parent="menu_shift_management"
               action="action_shift_planning"
-              sequence="1"/>
+              sequence="2"/>
 
     <menuitem id="menu_my_shifts"
               name="My Shifts"

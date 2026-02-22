@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client Action: Shift Planning Grid -->
+    <record id="action_shift_planning_grid" model="ir.actions.client">
+        <field name="name">Shift Roster</field>
+        <field name="tag">shift_planning_grid</field>
+    </record>
+
+</odoo>
