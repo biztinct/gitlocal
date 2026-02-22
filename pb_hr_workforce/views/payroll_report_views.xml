@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit batch run form to add Reports button -->
+    <record id="view_hr_payslip_run_form_inherit_workforce" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.workforce.inherit</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_download_payslip_xlsx']" position="after">
+                <button string="📊 Payroll Report"
+                        type="object"
+                        name="action_open_payroll_report"
+                        class="oe_highlight"
+                        icon="fa-bar-chart"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
