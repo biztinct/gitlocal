@@ -22,6 +22,21 @@
               action="action_attendance_live"
               sequence="5"/>
 
+    <!-- Timecards -->
+    <menuitem id="menu_attendance_timecard"
+              name="Timecards"
+              parent="menu_workforce_root"
+              action="action_attendance_timecard"
+              sequence="6"/>
+
+    <!-- Payroll Report -->
+    <menuitem id="menu_payroll_report"
+              name="Payroll Report"
+              parent="menu_workforce_root"
+              action="action_payroll_report_dashboard"
+              sequence="7"
+              groups="om_hr_payroll.group_hr_payroll_user"/>
+
     <!-- Shift Management -->
     <menuitem id="menu_shift_management"
               name="Shift Management"
