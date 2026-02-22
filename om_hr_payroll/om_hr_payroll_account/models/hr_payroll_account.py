@@ -14,7 +14,15 @@ class HrPayslipLine(models.Model):
         """
         # use partner of salary rule or fallback on employee's address
         register_partner_id = self.salary_rule_id.register_id.partner_id
-        partner_id = register_partner_id.id or self.slip_id.employee_id.address_home_id.id
+        employee = self.slip_id.employee_id
+        # Odoo 19: address_home_id removed; fallback chain
+        employee_partner_id = (
+            getattr(employee, 'work_contact_id', False) and employee.work_contact_id.id
+            or getattr(employee, 'address_id', False) and employee.address_id.id
+            or getattr(employee, 'user_partner_id', False) and employee.user_partner_id.id
+            or False
+        )
+        partner_id = register_partner_id.id or employee_partner_id
         if credit_account:
             if register_partner_id or self.salary_rule_id.account_credit.account_type in ('asset_receivable', 'liability_payable'):
                 return partner_id

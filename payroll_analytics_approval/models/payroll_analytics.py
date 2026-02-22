@@ -188,7 +188,7 @@ class PayrollAnalytics(models.Model):
         self.write(analytics_data)
         
         # Force computation of stored fields
-        self.invalidate_cache()
+        self.invalidate_recordset()
         self._compute_analytics()
         
         _logger.info(f"Updated analytics: {self.total_employees} employees, {self.total_payroll} total payroll")
@@ -241,7 +241,7 @@ class PayrollAnalytics(models.Model):
             
             # Update the existing record with fresh data
             existing.write(analytics_data)
-            existing.invalidate_cache()  # Force refresh
+            existing.invalidate_recordset()  # Force refresh
             existing._compute_analytics()  # Recalculate stored fields
             _logger.info(f"Updated existing analytics record {existing.id} for {country}")
             return existing
@@ -976,7 +976,7 @@ class PayrollAnalytics(models.Model):
         return {'type': 'ir.actions.client', 'tag': 'reload'}
     
     @api.model
-    def search(self, domain, offset=0, limit=None, order=None, count=False):
+    def search(self, domain, offset=0, limit=None, order=None):
         """Override search to auto-refresh analytics when accessed via Approval Queue"""
         # Check if this search is from the Approval Queue (has auto_refresh_analytics context)
         if self.env.context.get('auto_refresh_analytics'):
@@ -985,7 +985,7 @@ class PayrollAnalytics(models.Model):
             _logger.info("Approval Queue accessed - skipping auto-refresh for performance")
         
         # Always use standard search for best performance
-        return super().search(domain, offset=offset, limit=limit, order=order, count=count)
+        return super().search(domain, offset=offset, limit=limit, order=order)
     
     @api.model
     def get_analytics_stats(self, country):

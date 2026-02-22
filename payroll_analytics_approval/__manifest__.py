@@ -69,6 +69,8 @@
             # JavaScript Files - DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
             # 'payroll_analytics_approval/static/src/js/payroll_charts.js',
             # 'payroll_analytics_approval/static/src/js/payroll_dashboard.js',
+            # Odoo 19 compatible chart rendering
+            'payroll_analytics_approval/static/src/js/payroll_charts_v19.js',
         ],
         'web.assets_frontend': [
             # Frontend assets if needed

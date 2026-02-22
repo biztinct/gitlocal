@@ -425,24 +425,16 @@ const bindWorkflow = () => {
         });
     }
 
-    // 4. Approval: Click to open approval queue directly
+    // 4. Approval: Click to open tertiary panel
     if (approval) {
-        approval.addEventListener('click', async (e) => {
+        approval.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             if (e.stopImmediatePropagation) {
                 e.stopImmediatePropagation();
             }
             hideAllSecondary(true);
-            try {
-                const action = await callModel('hr.flow.wizard', 'get_tertiary_action', ['approval-pending']);
-                if (action && action.type) {
-                    doAction(action);
-                    saveState('approval', null, null);
-                }
-            } catch (err) {
-                console.error('HR Flow: approval action failed', err);
-            }
+            openPanel('approval', { primary: 'approval' });
         });
     }
 

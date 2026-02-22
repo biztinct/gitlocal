@@ -47,9 +47,9 @@
                     <button name="action_open_payslip_run" string="Payslip Run" type="object"
                             class="btn-primary" icon="fa-external-link"
                             invisible="state != 'done' or not payslip_run_id"/>
-                    <button name="action_load_file" string="Load File" type="object"
+                    <button name="action_load_file" string="Start Import" type="object"
                             class="btn-primary" icon="fa-upload"
-                            invisible="state != 'draft' or source_type != 'excel'"/>
+                            invisible="state != 'draft' or source_type != 'excel' or not import_file"/>
                     <button name="action_load_from_data_store" string="Load from Data Store" type="object"
                             class="btn-primary" icon="fa-database"
                             invisible="state != 'draft' or source_type != 'api_data_store'"/>
@@ -118,6 +118,12 @@
                                 icon="fa-history"
                                 invisible="not use_auto_retro">
                             <field name="retro_adjustment_count" widget="statinfo" string="Retro"/>
+                        </button>
+                        <button class="oe_stat_button" type="object"
+                                name="action_view_carryovers"
+                                icon="fa-exchange"
+                                invisible="cycle_type != 'mid_cycle' or state != 'done'">
+                            <field name="carryover_count" widget="statinfo" string="Carryovers"/>
                         </button>
                     </div>
 

@@ -23,7 +23,6 @@ class HrPayslipImportMapping(models.Model):
         ondelete='cascade',
         domain=(
             "[('model_id', '=', target_model_id),"
-            " ('store', '=', True),"
             " ('readonly', '=', False),"
             " ('ttype', 'not in', ('one2many', 'many2many'))]"
         )
