@@ -162,6 +162,10 @@ class HrPayrollImportBatch(models.Model):
         string='Retro Adjustments',
         compute='_compute_retro_adjustment_count'
     )
+    carryover_count = fields.Integer(
+        string='Carryovers',
+        compute='_compute_carryover_count'
+    )
 
     # State
     state = fields.Selection([
@@ -253,8 +257,8 @@ class HrPayrollImportBatch(models.Model):
 
     @api.onchange('formula_config_id')
     def _onchange_formula_config_id(self):
-        """Default payroll journal from configuration if not already set."""
-        if self.formula_config_id and not self.payroll_journal_id:
+        """Default payroll journal from configuration."""
+        if self.formula_config_id and self.formula_config_id.payroll_journal_id:
             self.payroll_journal_id = self.formula_config_id.payroll_journal_id
 
     @api.onchange('company_id')
@@ -284,6 +288,24 @@ class HrPayrollImportBatch(models.Model):
             batch.retro_adjustment_count = self.env['hr.payroll.retro.adjustment'].search_count([
                 ('applied_in_batch_id', '=', batch.id)
             ])
+
+    def _compute_carryover_count(self):
+        for batch in self:
+            batch.carryover_count = self.env['hr.payroll.cycle.carryover'].search_count([
+                ('import_batch_id', '=', batch.id)
+            ])
+
+    def action_view_carryovers(self):
+        """Open the list of carryover records created for this batch."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Carryovers - %s') % self.name,
+            'res_model': 'hr.payroll.cycle.carryover',
+            'view_mode': 'list,form',
+            'domain': [('import_batch_id', '=', self.id)],
+            'context': {'default_import_batch_id': self.id},
+        }
 
     @api.onchange('payroll_period')
     def _onchange_payroll_period(self):
@@ -316,10 +338,18 @@ class HrPayrollImportBatch(models.Model):
             if vals.get('name', _('New Import Batch')) == _('New Import Batch'):
                 vals['name'] = self.env['ir.sequence'].next_by_code('hr.payroll.import.batch') or _('New Import Batch')
             if not vals.get('payroll_journal_id'):
-                company_id = vals.get('company_id') or self.env.company.id
-                journal = self._get_first_general_journal(self.env['res.company'].browse(company_id))
-                if journal:
-                    vals['payroll_journal_id'] = journal.id
+                # First try formula config's journal
+                config_id = vals.get('formula_config_id')
+                if config_id:
+                    config = self.env['hr.formula.config'].browse(config_id)
+                    if config.payroll_journal_id:
+                        vals['payroll_journal_id'] = config.payroll_journal_id.id
+                # Fall back to first general journal only if still not set
+                if not vals.get('payroll_journal_id'):
+                    company_id = vals.get('company_id') or self.env.company.id
+                    journal = self._get_first_general_journal(self.env['res.company'].browse(company_id))
+                    if journal:
+                        vals['payroll_journal_id'] = journal.id
         return super().create(vals_list)
 
     def action_load_file(self):
@@ -1291,7 +1321,7 @@ class HrPayrollImportBatch(models.Model):
         carryover_model = self.env['hr.payroll.cycle.carryover']
         carryover_model.search([('import_batch_id', '=', self.id)]).unlink()
 
-        payslips = payslips.filtered(lambda p: p.state in ('done', 'paid'))
+        payslips = payslips.filtered(lambda p: p.state in ('done', 'paid', 'level1', 'level2'))
         if not payslips:
             _logger.info(
                 "Carryover: no completed payslips for batch %s (config %s).",

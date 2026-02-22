@@ -47,6 +47,9 @@
     'images': ['static/description/banner.png'],
     'application': True,
     'assets': {
+        'web.assets_backend': [
+            'om_hr_payroll/static/src/js/smart_float_field.js',
+        ],
         'web.assets_frontend': [
             # DISABLED: Legacy odoo.define/require syntax incompatible with Odoo 19
             # 'om_hr_payroll/static/src/js/payslip_portal_sidebar.js',

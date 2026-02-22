@@ -14,8 +14,8 @@
                     <field name="code"/>
                     <field name="quantity"/>
                     <field name="rate"/>
-                    <field name="amount"/>
-                    <field name="total"/>
+                    <field name="amount" widget="smart_float"/>
+                    <field name="total" widget="smart_float"/>
                     <field name="amount_select" invisible="1"/>
                     <field name="register_id" invisible="1"/>
                 </list>
@@ -241,8 +241,8 @@
                                         <field name="quantity"/>
                                         <field name="rate"/>
                                         <field name="salary_rule_id"/>
-                                        <field name="amount"/>
-                                        <field name="total"/>
+                                        <field name="amount" widget="smart_float"/>
+                                        <field name="total" widget="smart_float"/>
                                     </list>
                                     <form string="Payslip Line">
                                         <group col="4">

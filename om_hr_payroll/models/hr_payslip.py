@@ -884,16 +884,27 @@ class HrPayslipLine(models.Model):
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True)
     contract_id = fields.Many2one('hr.contract', string='Contract', required=True, index=True)
     rate = fields.Float(string='Rate (%)', default=100.0)
-    amount = fields.Float()
+    amount = fields.Float(digits=(16, 2))
     quantity = fields.Float(default=1.0)
-    total = fields.Float(compute='_compute_total', string='Total', store=True)
+    total = fields.Float(compute='_compute_total', string='Total', store=True, digits=(16, 2))
     date_from = fields.Date(related='slip_id.date_from', string='Date From', store=True)
     date_to = fields.Date(related='slip_id.date_to', string='Date To', store=True)
     costcenter = fields.Char(related='slip_id.contract_id.costcenter', string='Cost center', store=True)
+    @staticmethod
+    def _smart_round(value):
+        """Round large values (>=1000) to integer, keep 2 decimals for small values.
+        Large = salary amounts in VND (no sub-units).
+        Small = hours, quantities, rates.
+        """
+        if abs(value) >= 1000:
+            return round(value)
+        return round(value, 2)
+
     @api.depends('quantity', 'amount', 'rate')
     def _compute_total(self):
         for line in self:
-            line.total = float(line.quantity) * line.amount * line.rate / 100
+            raw = float(line.quantity) * line.amount * line.rate / 100
+            line.total = self._smart_round(raw)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -904,6 +915,9 @@ class HrPayslipLine(models.Model):
                 values['contract_id'] = values.get('contract_id') or payslip.contract_id and payslip.contract_id.id
                 if not values['contract_id']:
                     raise UserError(_('You must set a contract to create a payslip line.'))
+            # Smart round amount for storage: >=1000 → integer, <1000 → 2 decimals
+            if 'amount' in values and isinstance(values['amount'], (int, float)):
+                values['amount'] = self._smart_round(values['amount'])
         return super(HrPayslipLine, self).create(vals_list)
 
 
