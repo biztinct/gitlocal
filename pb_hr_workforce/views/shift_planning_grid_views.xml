@@ -7,4 +7,10 @@
         <field name="tag">shift_planning_grid</field>
     </record>
 
+    <!-- Client Action: Live Attendance Feed -->
+    <record id="action_attendance_live" model="ir.actions.client">
+        <field name="name">Live Attendance</field>
+        <field name="tag">attendance_live</field>
+    </record>
+
 </odoo>

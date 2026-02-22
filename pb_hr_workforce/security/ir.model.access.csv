@@ -11,3 +11,5 @@ access_workforce_dashboard_manager,hr.workforce.dashboard.manager,model_hr_workf
 access_workforce_dashboard_user,hr.workforce.dashboard.user,model_hr_workforce_dashboard,hr_attendance.group_hr_attendance_officer,1,1,1,0
 access_shift_planning_grid_manager,hr.shift.planning.grid.manager,model_hr_shift_planning_grid,hr_attendance.group_hr_attendance_manager,1,1,1,1
 access_shift_planning_grid_user,hr.shift.planning.grid.user,model_hr_shift_planning_grid,hr_attendance.group_hr_attendance_officer,1,1,1,0
+access_attendance_live_manager,hr.attendance.live.manager,model_hr_attendance_live,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_attendance_live_user,hr.attendance.live.user,model_hr_attendance_live,hr_attendance.group_hr_attendance_officer,1,1,1,0

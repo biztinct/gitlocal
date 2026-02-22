@@ -15,6 +15,13 @@
               action="action_workforce_dashboard_server"
               sequence="1"/>
 
+    <!-- Live Attendance -->
+    <menuitem id="menu_attendance_live"
+              name="Live Attendance"
+              parent="menu_workforce_root"
+              action="action_attendance_live"
+              sequence="5"/>
+
     <!-- Shift Management -->
     <menuitem id="menu_shift_management"
               name="Shift Management"
