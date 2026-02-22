@@ -1,25 +1,16 @@
 {
     'name': 'Workforce Management',
-    'version': '19.0.1.1.0',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Attendance',
-    'summary': 'Deputy-style shift planning, roster grid, overtime tracking, and visual workforce dashboards',
+    'summary': 'Deputy-style shift roster, live attendance feed, overtime tracking, and visual dashboards',
     'description': """
-Workforce Management — Visual HR Dashboard
-===========================================
+Workforce Management — Deputy-Style HR Tools
+=============================================
 
-Extends Odoo's attendance, leave, and work-entry modules with:
-
-* **Deputy-Style Shift Grid** — Visual weekly grid with employee rows, day columns, and colored shift cards
-* **Shift Templates & Planning** — Define shift patterns, assign to employees, track compliance
-* **Overtime Requests & Approvals** — Configurable OT rules with Vietnam presets
-* **Workforce Dashboard** — Real-time KPI cards and Chart.js analytics
-
-Key Features:
-============
-* Click-to-create shift cards on a weekly grid
-* Publish/unpublish shifts with one click
-* Configurable overtime multipliers per country
-* Mobile-responsive design with dark mode support
+* **Shift Roster Grid** — Weekly/fortnight grid with employee rows, day columns, colored shift cards
+* **Live Attendance Feed** — Real-time 4-column Kanban (On Shift / Checked Out / Not Started / On Leave)
+* **Overtime Requests** — Configurable OT rules with approval workflow
+* **Workforce Dashboard** — KPI cards and Chart.js analytics
     """,
     'author': 'Payobook',
     'website': 'https://payobook.com',
@@ -32,13 +23,10 @@ Key Features:
         'pb_hr_flow',
     ],
     'data': [
-        # Security
         'security/ir.model.access.csv',
         'security/workforce_security.xml',
-        # Data
         'data/overtime_config_data.xml',
         'data/shift_template_data.xml',
-        # Views
         'views/shift_template_views.xml',
         'views/shift_planning_views.xml',
         'views/overtime_request_views.xml',
@@ -51,8 +39,10 @@ Key Features:
         'web.assets_backend': [
             'pb_hr_workforce/static/src/css/workforce_dashboard.css',
             'pb_hr_workforce/static/src/css/shift_planning_grid.css',
+            'pb_hr_workforce/static/src/css/attendance_live.css',
             'pb_hr_workforce/static/src/js/workforce_dashboard.js',
             'pb_hr_workforce/static/src/js/shift_planning_grid.js',
+            'pb_hr_workforce/static/src/js/attendance_live.js',
         ],
     },
     'installable': True,
