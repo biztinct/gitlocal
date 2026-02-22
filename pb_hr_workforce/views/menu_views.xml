@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Workforce Management Menu Structure -->
+    <menuitem id="menu_workforce_root"
+              name="Workforce"
+              web_icon="pb_hr_workforce,static/description/icon.png"
+              groups="hr_attendance.group_hr_attendance_officer"
+              sequence="245"/>
+
+    <!-- Dashboard -->
+    <menuitem id="menu_workforce_dashboard"
+              name="Dashboard"
+              parent="menu_workforce_root"
+              action="action_workforce_dashboard_server"
+              sequence="1"/>
+
+    <!-- Shift Management -->
+    <menuitem id="menu_shift_management"
+              name="Shift Management"
+              parent="menu_workforce_root"
+              sequence="10"/>
+
+    <menuitem id="menu_shift_planning"
+              name="Shift Planning"
+              parent="menu_shift_management"
+              action="action_shift_planning"
+              sequence="1"/>
+
+    <menuitem id="menu_my_shifts"
+              name="My Shifts"
+              parent="menu_shift_management"
+              action="action_my_shifts"
+              sequence="2"/>
+
+    <menuitem id="menu_shift_templates"
+              name="Shift Templates"
+              parent="menu_shift_management"
+              action="action_shift_template"
+              sequence="10"
+              groups="hr_attendance.group_hr_attendance_manager"/>
+
+    <!-- Overtime -->
+    <menuitem id="menu_overtime"
+              name="Overtime"
+              parent="menu_workforce_root"
+              sequence="20"/>
+
+    <menuitem id="menu_overtime_requests"
+              name="Overtime Requests"
+              parent="menu_overtime"
+              action="action_overtime_request"
+              sequence="1"/>
+
+    <menuitem id="menu_overtime_to_approve"
+              name="To Approve"
+              parent="menu_overtime"
+              action="action_overtime_to_approve"
+              sequence="2"
+              groups="hr_attendance.group_hr_attendance_manager"/>
+
+    <menuitem id="menu_my_overtime"
+              name="My Overtime"
+              parent="menu_overtime"
+              action="action_my_overtime"
+              sequence="3"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_workforce_config"
+              name="Configuration"
+              parent="menu_workforce_root"
+              sequence="90"
+              groups="hr_attendance.group_hr_attendance_manager"/>
+
+    <menuitem id="menu_overtime_config"
+              name="Overtime Rules"
+              parent="menu_workforce_config"
+              action="action_overtime_config"
+              sequence="1"/>
+
+    <menuitem id="menu_shift_templates_config"
+              name="Shift Templates"
+              parent="menu_workforce_config"
+              action="action_shift_template"
+              sequence="2"/>
+
+</odoo>
