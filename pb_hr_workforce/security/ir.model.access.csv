@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_shift_template_manager,hr.shift.template.manager,model_hr_shift_template,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_shift_template_user,hr.shift.template.user,model_hr_shift_template,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_shift_planning_manager,hr.shift.planning.manager,model_hr_shift_planning,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_shift_planning_user,hr.shift.planning.user,model_hr_shift_planning,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_overtime_config_manager,hr.overtime.config.manager,model_hr_overtime_config,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_overtime_config_user,hr.overtime.config.user,model_hr_overtime_config,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_overtime_request_manager,hr.overtime.request.manager,model_hr_overtime_request,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_overtime_request_user,hr.overtime.request.user,model_hr_overtime_request,hr_attendance.group_hr_attendance_officer,1,1,1,0
+access_workforce_dashboard_manager,hr.workforce.dashboard.manager,model_hr_workforce_dashboard,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_workforce_dashboard_user,hr.workforce.dashboard.user,model_hr_workforce_dashboard,hr_attendance.group_hr_attendance_officer,1,1,1,0
