@@ -26,6 +26,13 @@ function fmtH(h) {
 class ShiftPlanningGrid extends Component {
     static template = xml`
     <div class="spg-container">
+        <div class="wf-breadcrumb">
+            <span class="wf-bc-home" t-on-click="goHome"><i class="fa fa-home"/></span>
+            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
+            <span class="wf-bc-link" t-on-click="goFlowDashboard">Flow Dashboard</span>
+            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
+            <span class="wf-bc-current">Shift Roster</span>
+        </div>
         <!-- TOOLBAR ROW 1 -->
         <div class="spg-toolbar">
             <div class="spg-toolbar-left">
@@ -522,6 +529,11 @@ class ShiftPlanningGrid extends Component {
         } catch (_) {
             this.notification.add('Copy failed', { type: 'danger' });
         }
+    }
+
+    goHome() { this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard'); }
+    goFlowDashboard() {
+        this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard');
     }
 }
 

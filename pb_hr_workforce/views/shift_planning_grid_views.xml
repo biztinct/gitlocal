@@ -25,4 +25,10 @@
         <field name="tag">attendance_timecard</field>
     </record>
 
+    <!-- Client Action: Overtime Rules Dashboard (Deputy-style) -->
+    <record id="action_overtime_rules_dashboard" model="ir.actions.client">
+        <field name="name">Overtime Rules</field>
+        <field name="tag">overtime_rules_dashboard</field>
+    </record>
+
 </odoo>

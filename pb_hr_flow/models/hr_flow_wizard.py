@@ -177,6 +177,14 @@ class HRFlowWizard(models.TransientModel):
         """
         # Map keys to action xmlid and optional menu xmlid
         mapping = {
+            # Workforce (Attendance tile actions)
+            'wf-dashboard': ('pb_hr_workforce.action_workforce_dashboard_server', False),
+            'wf-live-attendance': ('pb_hr_workforce.action_attendance_live', False),
+            'wf-timecards': ('pb_hr_workforce.action_attendance_timecard', False),
+            'wf-shift-roster': ('pb_hr_workforce.action_shift_planning_grid', False),
+            'wf-payroll-report': ('pb_hr_workforce.action_payroll_report_dashboard', False),
+            'wf-overtime-rules': ('pb_hr_workforce.action_overtime_rules_dashboard', False),
+            'wf-shift-templates': ('pb_hr_workforce.action_shift_template', False),
             # Overtime
             'overtime-request': ('ohrms_overtime.hr_overtime_action', False),
             'overtime-approve': ('_overtime_approve', False),  # Custom action with domain filter

@@ -110,6 +110,19 @@ const tertiaryData = {
             { label: _t('Journals'), icon: 'fa-book', desc: _t('Accounting entries'), disabled: false, route: 'pay-salary-journals' },
         ],
     },
+    attendance: {
+        title: _t('Attendance & Workforce'),
+        items: [
+            { label: _t('Workforce Dashboard'), icon: 'fa-tachometer', desc: _t('KPI overview & analytics'), disabled: false, route: 'wf-dashboard' },
+            { label: _t('Live Attendance'), icon: 'fa-wifi', desc: _t('Real-time check-in feed'), disabled: false, route: 'wf-live-attendance' },
+            { label: _t('Timecards'), icon: 'fa-clock-o', desc: _t('Visual Gantt timeline'), disabled: false, route: 'wf-timecards' },
+            { label: _t('Shift Roster'), icon: 'fa-calendar', desc: _t('Weekly shift grid'), disabled: false, route: 'wf-shift-roster' },
+            { label: _t('Payroll Report'), icon: 'fa-bar-chart', desc: _t('Employee pay run comparison'), disabled: false, route: 'wf-payroll-report' },
+            { label: _t('Overtime Rules'), icon: 'fa-balance-scale', desc: _t('Rate rules & applicability'), disabled: false, route: 'wf-overtime-rules' },
+            { label: _t('Shift Templates'), icon: 'fa-clone', desc: _t('Reusable shift patterns'), disabled: false, route: 'wf-shift-templates' },
+            { label: _t('Leave Dashboard'), icon: 'fa-leaf', desc: _t('Leave overview'), disabled: false, route: 'leaves-dashboard' },
+        ],
+    },
     overtime: {
         title: _t('Overtime'),
         items: [
@@ -379,7 +392,7 @@ const bindWorkflow = () => {
 
     // CLICK-ONLY INTERACTIONS
 
-    // 1. Attendance: Click to toggle secondary badges visibility
+    // 1. Attendance: Click to open tertiary panel directly (tiles, no circles)
     if (attendance) {
         attendance.addEventListener('click', (e) => {
             e.preventDefault();
@@ -387,15 +400,8 @@ const bindWorkflow = () => {
             if (e.stopImmediatePropagation) {
                 e.stopImmediatePropagation();
             }
-            if (!secondaryAttendance) {
-                return;
-            }
-            if (secondaryAttendance.classList.contains('hide-secondary')) {
-                hideAllSecondary(true);
-                showSecondary(secondaryAttendance);
-            } else {
-                hideAllSecondary(true);
-            }
+            hideAllSecondary(true);
+            openPanel('attendance', { primary: 'attendance' });
         });
     }
 
