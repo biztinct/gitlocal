@@ -8,6 +8,11 @@ from dateutil.relativedelta import relativedelta
 from pytz import timezone
 from odoo import api, fields, models, tools, _
 from odoo.exceptions import UserError, ValidationError
+try:
+    from vendor_license_core.services.enforce import require_license
+except ImportError:
+    def require_license(func):
+        return func
 # Bokeh imports commented out - not used
 # from bokeh.plotting import figure, output_file, show
 # from bokeh.palettes import HighContrast3
@@ -140,6 +145,7 @@ class HrPayslip(models.Model):
     def action_payslip_draft(self):
         return self.write({'state': 'draft'})
 
+    @require_license
     def action_payslip_done(self):
         #self.compute_sheet()
         #Biztinct
@@ -387,6 +393,7 @@ class HrPayslip(models.Model):
                         line.amount = getattr(zoho_data, zoho_field) or 0.0
 
 
+    @require_license
     def compute_sheet(self):
         for payslip in self:
             number = payslip.number or self.env['ir.sequence'].next_by_code('salary.slip')
