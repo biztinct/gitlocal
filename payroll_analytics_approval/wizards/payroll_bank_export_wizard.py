@@ -1,5 +1,10 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+try:
+    from vendor_license_core.services.enforce import require_license
+except ImportError:
+    def require_license(func):
+        return func
 import csv
 import io
 import base64
@@ -190,6 +195,7 @@ class PayrollBankExportWizardStandalone(models.TransientModel):
 
         return self.env['hr.payslip'].search(domain)
     
+    @require_license
     def action_generate_export(self):
         """Generate bank export file"""
         self.ensure_one()

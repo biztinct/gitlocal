@@ -2,6 +2,11 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, AccessError
+try:
+    from vendor_license_core.services.enforce import require_license
+except ImportError:
+    def require_license(func):
+        return func
 import json
 import logging
 from datetime import datetime, timedelta
@@ -849,6 +854,7 @@ class PayrollAnalytics(models.Model):
             ['date_to:month'],
         )
     
+    @require_license
     def action_approve_payroll(self):
         """Final approval action"""
         self.ensure_one()
@@ -937,6 +943,7 @@ class PayrollAnalytics(models.Model):
             }
         }
     
+    @require_license
     def action_export_bank_file(self):
         """Export bank file for approved payroll"""
         self.ensure_one()
