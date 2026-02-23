@@ -13,6 +13,13 @@ class AttendanceTimecard extends Component {
     static props = { action: { type: Object, optional: true }, "*": true };
     static template = xml`
     <div class="tc-container">
+        <div class="wf-breadcrumb">
+            <span class="wf-bc-home" t-on-click="goHome"><i class="fa fa-home"/></span>
+            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
+            <span class="wf-bc-link" t-on-click="goFlowDashboard">Flow Dashboard</span>
+            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
+            <span class="wf-bc-current">Timecards</span>
+        </div>
         <!-- Toolbar -->
         <div class="tc-toolbar">
             <div class="tc-toolbar-left">
@@ -280,6 +287,11 @@ class AttendanceTimecard extends Component {
             views: [[false, 'form']],
             target: 'current',
         });
+    }
+
+    goHome() { this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard'); }
+    goFlowDashboard() {
+        this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard');
     }
 }
 

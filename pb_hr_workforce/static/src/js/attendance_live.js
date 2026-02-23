@@ -12,6 +12,13 @@ import { useService } from "@web/core/utils/hooks";
 class AttendanceLive extends Component {
     static template = xml`
     <div class="atl-container">
+        <div class="wf-breadcrumb">
+            <span class="wf-bc-home" t-on-click="goHome"><i class="fa fa-home"/></span>
+            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
+            <span class="wf-bc-link" t-on-click="goFlowDashboard">Flow Dashboard</span>
+            <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
+            <span class="wf-bc-current">Live Attendance</span>
+        </div>
         <!-- Toolbar -->
         <div class="atl-toolbar">
             <div class="atl-toolbar-left">
@@ -296,6 +303,11 @@ class AttendanceLive extends Component {
             views: [[false, 'form']],
             target: 'current',
         });
+    }
+
+    goHome() { this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard'); }
+    goFlowDashboard() {
+        this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard');
     }
 }
 

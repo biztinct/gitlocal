@@ -940,42 +940,7 @@
                                 <span class="primary-badge-text">Analytics</span>
                             </div>
 
-                            <!-- SECONDARY LEVEL: Attendance Submenu (appears on hover) -->
-                            <div class="secondary-badges-attendance hide-secondary">
-                                <!-- Overtime -->
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="overtime"
-                                     class="secondary-badge secondary-overtime">
-                                    <i class="fa fa-hourglass-end secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Overtime</span>
-                                </div>
-
-                                <!-- Shift -->
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="shift"
-                                     class="secondary-badge secondary-shift">
-                                    <i class="fa fa-calendar secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Shift</span>
-                                </div>
-
-                                <!-- Timesheet -->
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="timesheet"
-                                     class="secondary-badge secondary-timesheet">
-                                    <i class="fa fa-table secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Timesheet</span>
-                                </div>
-                                <div role="button"
-                                     tabindex="0"
-                                     data-tertiary="leaves"
-                                     class="secondary-badge secondary-leaves">
-                                    <i class="fa fa-leaf secondary-badge-icon"></i>
-                                    <span class="secondary-badge-text">Leaves</span>
-                                </div>
-                            </div>
+                            <!-- Attendance secondary circles removed — now uses tertiary tile panel -->
 
                             <!-- SECONDARY LEVEL: Payroll Configuration Submenu -->
                             <div class="secondary-badges-payroll-config hide-secondary">
