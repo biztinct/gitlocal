@@ -1,5 +1,4 @@
 /** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
 /**
  * Workforce Dashboard Charts — Odoo 19 compatible
  * Polls for the dashboard form, reads chart data via RPC, renders Chart.js charts.
@@ -92,7 +91,7 @@ const createHoursTrendChart = (ctx, data) => {
         data: {
             labels,
             datasets: [{
-                label: _t("Total Hours"),
+                label: 'Total Hours',
                 data: values,
                 borderColor: COLORS.primary,
                 backgroundColor: COLORS.primaryLight,
@@ -129,7 +128,7 @@ const createOTDeptChart = (ctx, data) => {
         data: {
             labels,
             datasets: [{
-                label: _t("OT Hours"),
+                label: 'OT Hours',
                 data: values,
                 backgroundColor: COLORS.palette.slice(0, labels.length).map(c => c + '33'),
                 borderColor: COLORS.palette.slice(0, labels.length),

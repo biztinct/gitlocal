@@ -1994,7 +1994,7 @@ msgstr "Khuyến nghị xử lý chuyển khoản theo đợt nếu khối lư�
 #. module: payroll_analytics_approval
 #: model:ir.model.fields,field_description:payroll_analytics_approval.field_payroll_bank_export_preview_line__reference
 msgid "Reference"
-msgstr "Tham chiếu"
+msgstr "Reference"
 
 #. module: payroll_analytics_approval
 #: model_terms:ir.ui.view,arch_db:payroll_analytics_approval.view_payroll_approval_tree

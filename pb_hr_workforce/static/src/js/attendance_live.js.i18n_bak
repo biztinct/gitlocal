@@ -1,5 +1,4 @@
 /** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
 /**
  * Deputy-style Live Attendance Feed — Odoo 19 OWL Client Action
  * Real-time Kanban with status columns: On Shift | Checked Out | Not Started | On Leave
@@ -288,7 +287,7 @@ class AttendanceLive extends Component {
 
     async refresh() {
         await this.loadData();
-        this.notification.add(_t("Attendance data refreshed"), { type: 'info' });
+        this.notification.add('Attendance data refreshed', { type: 'info' });
     }
 
     onDepartmentChange(ev) {

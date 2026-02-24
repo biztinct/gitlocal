@@ -779,7 +779,7 @@ msgstr "Tổng hợp Chế độ xem"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_cache__context_data
 msgid "Context (JSON)"
-msgstr "Ngữ cảnh (JSON)"
+msgstr "Context (JSON)"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__contractor_count
@@ -1527,7 +1527,7 @@ msgstr "Bao gồm visualizations trong đã xuất báo cáo"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__trend_direction__increasing
 msgid "Increasing (>5%)"
-msgstr "Tăng (>5%)"
+msgstr "Increasing (>5%)"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__in
@@ -1767,7 +1767,7 @@ msgstr "Hàng tháng Số lượng nhân sự (JSON)"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_headcount__movements
 msgid "Movements (JSON)"
-msgstr "Biến động (JSON)"
+msgstr "Movements (JSON)"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__my_activity_date_deadline
@@ -2097,7 +2097,7 @@ msgstr "Projection Cơ sở"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_formula_config_analytics__period_type__quarterly
 msgid "Quarterly"
-msgstr "Hàng quý"
+msgstr "Quarterly"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__state__ready
@@ -2223,7 +2223,7 @@ msgstr "Một số Đang chờ"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_annual_costs__trend_direction__stable
 msgid "Stable (±5%)"
-msgstr "Ổn định (±5%)"
+msgstr "Stable (±5%)"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__state
@@ -2301,7 +2301,7 @@ msgstr "Thuế Phúc lợi Tác động (JSON)"
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_payslip_line_formula_search
 msgid "Taxes"
-msgstr "Thuế"
+msgstr "Taxes"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__th
@@ -2556,12 +2556,12 @@ msgstr "Chênh lệch percentage bởi phòng cấm"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_statutory_contrib__state__verified
 msgid "Verified"
-msgstr "Đã xác minh"
+msgstr "Verified"
 
 #. module: pb_hr_payroll_analytics
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_analytics.view_hr_analytics_statutory_form
 msgid "Verify"
-msgstr "Xác minh"
+msgstr "Verify"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_analytics_dashboard__selected_country__vn
@@ -2603,7 +2603,7 @@ msgstr "Năm-over-năm chi phí phân tích và projections"
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields.selection,name:pb_hr_payroll_analytics.selection__hr_formula_config_analytics__period_type__yearly
 msgid "Yearly"
-msgstr "Hàng năm"
+msgstr "Yearly"
 
 #. module: pb_hr_payroll_analytics
 #: model:ir.model.fields,field_description:pb_hr_payroll_analytics.field_hr_analytics_annual_costs__yoy_comparison

@@ -1,5 +1,4 @@
 /** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
 /**
  * Payroll Analytics Dashboard Charts — Odoo 19 compatible
  * Standalone DOM-based approach: detects when the analytics dashboard form
@@ -100,8 +99,8 @@ const createComparisonChart = (ctx, components, comparison) => {
         data: {
             labels,
             datasets: [
-                { label: _t("Current"), data: currentData, backgroundColor: 'rgba(102, 187, 106, 0.8)', borderColor: 'rgba(102, 187, 106, 1)', borderWidth: 2 },
-                { label: _t("Previous"), data: previousData, backgroundColor: 'rgba(149, 165, 166, 0.8)', borderColor: 'rgba(149, 165, 166, 1)', borderWidth: 2 },
+                { label: 'Current', data: currentData, backgroundColor: 'rgba(102, 187, 106, 0.8)', borderColor: 'rgba(102, 187, 106, 1)', borderWidth: 2 },
+                { label: 'Previous', data: previousData, backgroundColor: 'rgba(149, 165, 166, 0.8)', borderColor: 'rgba(149, 165, 166, 1)', borderWidth: 2 },
             ],
         },
         options: {
@@ -192,7 +191,7 @@ const renderTable = (components, comparison) => {
         const v = (comparison && comparison.variance && comparison.variance[code]) || 0;
         const vClass = v > 0 ? 'text-success' : v < 0 ? 'text-danger' : 'text-muted';
         const badge = Math.abs(v) > 20 ? 'badge-danger' : Math.abs(v) > 10 ? 'badge-warning' : 'badge-success';
-        const status = Math.abs(v) > 20 ? _t("Alert") : Math.abs(v) > 10 ? _t("Warning") : _t("Normal");
+        const status = Math.abs(v) > 20 ? 'Alert' : Math.abs(v) > 10 ? 'Warning' : 'Normal';
         return `<tr>
             <td><strong>${comp.name || code}</strong></td>
             <td>${fmt(cur)}</td><td>${fmt(prev)}</td>
@@ -223,8 +222,8 @@ const renderRecommendations = (components, comparison, alerts) => {
     if (!Array.isArray(alerts)) alerts = [];
     if (!alerts.length) recs.push('No anomalies detected — payroll appears consistent');
     alerts.filter(a => a && a.severity === 'high').forEach(a => warns.push(a.message));
-    if (!recs.length) { recs.push(_t("Review all components carefully before approval")); }
-    if (!warns.length) { warns.push(_t("No critical issues detected")); }
+    if (!recs.length) { recs.push('Review all components carefully before approval'); }
+    if (!warns.length) { warns.push('No critical issues detected'); }
 
     recList.innerHTML = recs.map(r => `<li><i class="fa fa-check text-success"></i> ${r}</li>`).join('');
     warnList.innerHTML = warns.map(w => `<li><i class="fa fa-warning text-warning"></i> ${w}</li>`).join('');

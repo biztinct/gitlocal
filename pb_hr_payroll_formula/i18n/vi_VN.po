@@ -7973,3 +7973,10 @@ msgstr "{\"Tổng thu nhập\": 12500000, \"Thực nhận\": 10000000,...}"
 #, python-format
 msgid "✓ All formulas are valid and evaluate correctly!"
 msgstr "✓ Tất cả công thức là Hợp lệ và đánh giá correctly!"
+
+#. module: pb_hr_payroll_formula
+#. odoo-javascript
+#: code:addons/pb_hr_payroll_formula/static/src/js/cell_editor.js:0
+#, python-format
+msgid "Invalid number"
+msgstr "Số không hợp lệ"

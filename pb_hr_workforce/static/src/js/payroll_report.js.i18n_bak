@@ -1,5 +1,4 @@
 /** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
 /**
  * Rippling-style Payroll Report Dashboard
  * Tab 1: Employee Earnings Grid with Current vs. Previous comparison
@@ -365,7 +364,7 @@ class PayrollReport extends Component {
             }
         } catch (e) {
             console.error('Report load failed:', e);
-            this.notification.add(_t("Failed to load payroll report"), { type: 'danger' });
+            this.notification.add('Failed to load payroll report', { type: 'danger' });
         }
         this.state.loading = false;
     }

@@ -432,7 +432,7 @@ msgstr "Truy cập để Vietnam bảng lương hệ thống"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_salary_rule_form_base
 msgid "Accounting"
-msgstr "Kế toán"
+msgstr "Accounting"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_needaction
@@ -488,7 +488,7 @@ msgstr "Bổ sung Statistics"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__address
 msgid "Address"
-msgstr "Địa chỉ"
+msgstr "Address"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__address_field
@@ -650,7 +650,7 @@ msgstr "Animated quốc gia selector với permission quản lý"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__annually
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__annually
 msgid "Annually"
-msgstr "Hàng năm"
+msgstr "Annually"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_form
@@ -926,12 +926,12 @@ msgstr "Bi-hàng tháng"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__bi-weekly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__bi-weekly
 msgid "Bi-weekly"
-msgstr "Hai tuần một lần"
+msgstr "Bi-weekly"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__birthday
 msgid "Birthday"
-msgstr "Sinh nhật"
+msgstr "Birthday"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__birthday_field
@@ -941,14 +941,14 @@ msgstr "Birthday Trường"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__import_type__bonuses
 msgid "Bonuses"
-msgstr "Thưởng"
+msgstr "Bonuses"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__field_type__boolean
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__boolean
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__boolean
 msgid "Boolean"
-msgstr "Đúng/Sai"
+msgstr "Boolean"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_import_wizard__file_format__csv
@@ -1136,7 +1136,7 @@ msgstr "Đang tính Phân tích"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
 msgid "Confidential"
-msgstr "Bảo mật"
+msgstr "Confidential"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
@@ -1181,7 +1181,7 @@ msgstr "Kết nối thất bại với trạng thái mã: %s"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
 msgid "Connector"
-msgstr "Kết nối"
+msgstr "Connector"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_employee_import_wizard_form
@@ -1522,7 +1522,7 @@ msgstr "Tùy chỉnh Validations"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__daily
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__daily
 msgid "Daily"
-msgstr "Hàng ngày"
+msgstr "Daily"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__dark
@@ -1724,17 +1724,17 @@ msgstr "Phòng cấm Bộ lọc"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__structure_state__deprecated
 msgid "Deprecated"
-msgstr "Ngừng sử dụng"
+msgstr "Deprecated"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_salary_rule_category__description
 msgid "Description"
-msgstr "Mô tả"
+msgstr "Description"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__zoho_connection_status__disconnected
 msgid "Disconnected"
-msgstr "Đã ngắt kết nối"
+msgstr "Disconnected"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__display_name
@@ -1826,7 +1826,7 @@ msgstr "Email Trường"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__emergency_contact
 msgid "Emergency Contact"
-msgstr "Liên hệ khẩn cấp"
+msgstr "Emergency Contact"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__emergency_contact_field
@@ -2258,7 +2258,7 @@ msgstr "Tệp định dạng %s không supported vẫn"
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__import_filename
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_import_wizard__import_filename
 msgid "Filename"
-msgstr "Tên tệp"
+msgstr "Filename"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__fixed
@@ -2269,7 +2269,7 @@ msgstr "Cố định Lương"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.payroll_country_selector_enhanced
 msgid "Flow"
-msgstr "Quy trình"
+msgstr "Flow"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__message_follower_ids
@@ -2324,7 +2324,7 @@ msgstr ""
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__custom_field_mapping__target_field__gender
 msgid "Gender"
-msgstr "Giới tính"
+msgstr "Gender"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_employee_import_wizard__gender_field
@@ -2382,7 +2382,7 @@ msgstr "Go để Cài đặt → Users và gán quốc gia-cụ thể nhóm:"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__in_gratuity
 msgid "Gratuity"
-msgstr "Phụ cấp thôi việc"
+msgstr "Gratuity"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -2442,7 +2442,7 @@ msgstr "Sức khỏe Bảo hiểm (HI)"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__payroll_schedule__hourly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__hourly
 msgid "Hourly"
-msgstr "Theo giờ"
+msgstr "Hourly"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract__wage_calculation__hourly
@@ -2704,7 +2704,7 @@ msgstr "Được nhập Nhân viên"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "Inactive"
-msgstr "Không hoạt động"
+msgstr "Inactive"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_analytics_wizard__include_all_employees
@@ -3082,7 +3082,7 @@ msgstr "Chính Tệp đính kèm"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__state__maintenance
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_search_enhanced
 msgid "Maintenance"
-msgstr "Bảo trì"
+msgstr "Maintenance"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__my
@@ -3174,7 +3174,7 @@ msgstr "Chỉ số có được đã cập nhật thành công."
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__minimal
 msgid "Minimal"
-msgstr "Tối thiểu"
+msgstr "Minimal"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payslip_line__min_amount
@@ -3186,7 +3186,7 @@ msgstr "Tối thiểu Số tiền"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__data_source__mixed
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_analytics__data_source__mixed
 msgid "Mixed Sources"
-msgstr "Nguồn hỗn hợp"
+msgstr "Mixed Sources"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_enhanced
@@ -3196,7 +3196,7 @@ msgstr "Mobile-responsive design với modern animations"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__payroll_dashboard__dashboard_theme__modern
 msgid "Modern"
-msgstr "Hiện đại"
+msgstr "Modern"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__monthly
@@ -3665,7 +3665,7 @@ msgstr "Pension Được bật"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_analytics_wizard_form
 msgid "Performance"
-msgstr "Hiệu suất"
+msgstr "Performance"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_analytics__period_name
@@ -3913,7 +3913,7 @@ msgstr "Xử lý để Nhân viên"
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_zoho_staging_data_search_enhanced
 msgid "Processed"
-msgstr "Đã xử lý"
+msgstr "Processed"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__processed_date
@@ -4017,7 +4017,7 @@ msgstr "Python mã để transform giá trị. Sử dụng \"giá trị\" variab
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_analytics_search
 msgid "Quarter"
-msgstr "Quý"
+msgstr "Quarter"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__quarterly
@@ -4025,7 +4025,7 @@ msgstr "Quý"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__quarterly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__quarterly
 msgid "Quarterly"
-msgstr "Hàng quý"
+msgstr "Quarterly"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_dashboard_form_base
@@ -4189,7 +4189,7 @@ msgstr ""
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_hr_payroll_structure_search_base
 msgid "Schedule"
-msgstr "Lịch trình"
+msgstr "Schedule"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_hr_payroll_structure__schedule_pay
@@ -4237,7 +4237,7 @@ msgstr "Lựa chọn"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__semi-annually
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__semi-annually
 msgid "Semi-annually"
-msgstr "Nửa năm"
+msgstr "Semi-annually"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__send_error_report
@@ -4264,7 +4264,7 @@ msgstr "Gửi Chào mừng Email"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_dashboard__sequence
 msgid "Sequence"
-msgstr "Thứ tự"
+msgstr "Sequence"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
@@ -4334,7 +4334,7 @@ msgstr "Singapore Bảng lương Người dùng"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Skills Development Levy (SDL)"
-msgstr "Thuế phát triển kỹ năng (SDL)"
+msgstr "Skills Development Levy (SDL)"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__skip_errors
@@ -4567,7 +4567,7 @@ msgstr "Thuế và Phúc lợi"
 #: model:hr.salary.rule.category,name:pb_hr_payroll_base.salary_rule_category_taxes_demo
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_salary_rule_category__category_type__tax
 msgid "Taxes"
-msgstr "Thuế"
+msgstr "Taxes"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_salary_configuration_workflow
@@ -4584,7 +4584,7 @@ msgstr "Kiểm thử Kết nối"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__field_mapping__field_type__char
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__zoho_staging_field_mapping__data_type__char
 msgid "Text"
-msgstr "Văn bản"
+msgstr "Text"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__country_code__th
@@ -4687,7 +4687,7 @@ msgstr "Transport Phụ cấp - Vietnam"
 #. module: pb_hr_payroll_base
 #: model_terms:ir.ui.view,arch_db:pb_hr_payroll_base.view_payroll_setup_guide
 msgid "Troubleshooting"
-msgstr "Xử lý sự cố"
+msgstr "Troubleshooting"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,help:pb_hr_payroll_base.field_payroll_dashboard__activity_exception_decoration
@@ -4810,7 +4810,7 @@ msgstr "VN Unemployment Bảo hiểm (Người sử dụng lao động)"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_union_fee
 msgid "VN Union Fee"
-msgstr "Phí công đoàn VN"
+msgstr "VN Union Fee"
 
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_payroll_import_wizard__validate_currency
@@ -4936,7 +4936,7 @@ msgstr "Vietnam Người sử dụng lao động Đóng góp"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields,field_description:pb_hr_payroll_base.field_zoho_staging_data__vn_personal_income_tax
 msgid "Vietnam PIT"
-msgstr "Thuế TNCN Việt Nam"
+msgstr "Vietnam PIT"
 
 #. module: pb_hr_payroll_base
 #: model:res.groups,name:pb_hr_payroll_base.group_payroll_vietnam
@@ -5018,7 +5018,7 @@ msgstr "Trang web giao tiếp history"
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_contract_type__payroll_schedule__weekly
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__hr_payroll_structure__schedule_pay__weekly
 msgid "Weekly"
-msgstr "Hàng tuần"
+msgstr "Weekly"
 
 #. module: pb_hr_payroll_base
 #: model_terms:ir.actions.act_window,help:pb_hr_payroll_base.action_payroll_dashboard_enhanced
@@ -5081,7 +5081,7 @@ msgstr "Workmen's Compensation Quỹ"
 #. module: pb_hr_payroll_base
 #: model:ir.model.fields.selection,name:pb_hr_payroll_base.selection__analytics_wizard__period_type__yearly
 msgid "Yearly"
-msgstr "Hàng năm"
+msgstr "Yearly"
 
 #. module: pb_hr_payroll_base
 #. odoo-python
