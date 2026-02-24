@@ -1,5 +1,4 @@
 /** @odoo-module **/
-import { _t } from "@web/core/l10n/translation";
 /**
  * Deputy-Style Overtime Rules Dashboard
  * Visual card-based OT rules with inline premium edit/create modal
@@ -11,11 +10,11 @@ import { rpc } from "@web/core/network/rpc";
 import { useService } from "@web/core/utils/hooks";
 
 const OT_TYPES = [
-    { value: 'weekday', label: _t("Weekday"), icon: 'fa-briefcase', color: '#2563eb', desc: _t("Extra hours on regular work days") },
-    { value: 'weekend', label: _t("Weekend"), icon: 'fa-calendar-o', color: '#7c3aed', desc: 'All hours on Saturday & Sunday' },
-    { value: 'holiday', label: _t("Holiday"), icon: 'fa-star', color: '#ea580c', desc: _t("All hours on public holidays") },
-    { value: 'night', label: _t("Night Shift"), icon: 'fa-moon-o', color: '#1e293b', desc: _t("Hours within night time window") },
-    { value: 'extended', label: _t("Extended"), icon: 'fa-bolt', color: '#dc2626', desc: _t("OT exceeding daily max cap") },
+    { value: 'weekday', label: 'Weekday', icon: 'fa-briefcase', color: '#2563eb', desc: 'Extra hours on regular work days' },
+    { value: 'weekend', label: 'Weekend', icon: 'fa-calendar-o', color: '#7c3aed', desc: 'All hours on Saturday & Sunday' },
+    { value: 'holiday', label: 'Holiday', icon: 'fa-star', color: '#ea580c', desc: 'All hours on public holidays' },
+    { value: 'night', label: 'Night Shift', icon: 'fa-moon-o', color: '#1e293b', desc: 'Hours within night time window' },
+    { value: 'extended', label: 'Extended', icon: 'fa-bolt', color: '#dc2626', desc: 'OT exceeding daily max cap' },
 ];
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -398,10 +397,10 @@ class OvertimeRulesDashboard extends Component {
 
     get daysSummary() {
         const active = DAY_FIELDS.map((f, i) => this.state.form[f] ? DAYS[i] : null).filter(Boolean);
-        if (active.length === 7) return _t("Every day");
+        if (active.length === 7) return 'Every day';
         if (active.length === 5 && !this.state.form.apply_saturday && !this.state.form.apply_sunday) return 'Weekdays (Mon–Fri)';
         if (active.length === 2 && this.state.form.apply_saturday && this.state.form.apply_sunday) return 'Weekends (Sat–Sun)';
-        return active.join(', ') || _t("No days selected");
+        return active.join(', ') || 'No days selected';
     }
 
     typeIcon(t) { return (OT_TYPES.find(o => o.value === t) || {}).icon || 'fa-clock-o'; }
@@ -498,7 +497,7 @@ class OvertimeRulesDashboard extends Component {
     async saveRule() {
         const f = this.state.form;
         if (!f.name) {
-            this.notificationService.add(_t("Please enter a rule name"), { type: 'warning' });
+            this.notificationService.add('Please enter a rule name', { type: 'warning' });
             return;
         }
         this.state.saving = true;
@@ -520,13 +519,13 @@ class OvertimeRulesDashboard extends Component {
                     model: 'hr.overtime.config', method: 'write',
                     args: [[f.id], vals], kwargs: {},
                 });
-                this.notificationService.add(_t("Rule updated"), { type: 'success' });
+                this.notificationService.add('Rule updated', { type: 'success' });
             } else {
                 await rpc('/web/dataset/call_kw/hr.overtime.config/create', {
                     model: 'hr.overtime.config', method: 'create',
                     args: [vals], kwargs: {},
                 });
-                this.notificationService.add(_t("Rule created"), { type: 'success' });
+                this.notificationService.add('Rule created', { type: 'success' });
             }
             this.state.modalOpen = false;
             await this.loadRules();
@@ -544,7 +543,7 @@ class OvertimeRulesDashboard extends Component {
                 model: 'hr.overtime.config', method: 'unlink',
                 args: [[this.state.form.id]], kwargs: {},
             });
-            this.notificationService.add(_t("Rule deleted"), { type: 'info' });
+            this.notificationService.add('Rule deleted', { type: 'info' });
             this.state.modalOpen = false;
             await this.loadRules();
         } catch (e) {

@@ -160,7 +160,7 @@ msgstr "Có hiệu lực"
 #. module: om_hr_payroll
 #: model_terms:ir.actions.act_window,help:om_hr_payroll.action_contribution_register_form
 msgid "Add a new contribution register"
-msgstr "Thêm sổ đóng góp mới"
+msgstr ""
 
 #. module: om_hr_payroll
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.view_hr_payslip_form
@@ -981,7 +981,7 @@ msgstr "Bảng lương"
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_report_hr_payroll_report_contribution_register
 msgid "Payroll Contribution Register Report"
-msgstr "Báo cáo sổ đóng góp bảng lương"
+msgstr ""
 
 #. module: om_hr_payroll
 #: model_terms:ir.ui.view,arch_db:om_hr_payroll.res_config_settings_view_form
@@ -1002,7 +1002,7 @@ msgstr "Phiếu lương"
 #: code:addons/om_hr_payroll/models/hr_payslip.py:82
 #, python-format
 msgid "Payslip 'Date From' must be earlier 'Date To'."
-msgstr "'Từ ngày' của phiếu lương phải trước 'Đến ngày'."
+msgstr ""
 
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_hr_payslip_run
@@ -1021,12 +1021,12 @@ msgstr "Chi tiết phiếu lương"
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_employee__payslip_count
 msgid "Payslip Count"
-msgstr "Số phiếu lương"
+msgstr ""
 
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_report_hr_payroll_report_payslip_details
 msgid "Payslip Details Report"
-msgstr "Báo cáo chi tiết phiếu lương"
+msgstr ""
 
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_hr_payslip_input
@@ -1061,7 +1061,7 @@ msgstr "Dòng Phiếu lương theo Contribution Register"
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_payslip_lines_contribution_register
 msgid "Payslip Lines by Contribution Registers"
-msgstr "Dòng phiếu lương theo sổ đóng góp"
+msgstr ""
 
 #. module: om_hr_payroll
 #: model:ir.model.fields,field_description:om_hr_payroll.field_hr_payslip__name
@@ -1231,7 +1231,7 @@ msgstr "Tính toán Lương"
 #. module: om_hr_payroll
 #: model:ir.model,name:om_hr_payroll.model_hr_salary_rule
 msgid "Salary Rule"
-msgstr "Quy tắc lương"
+msgstr ""
 
 #. module: om_hr_payroll
 #: model:ir.actions.act_window,name:om_hr_payroll.action_hr_salary_rule_category
@@ -1481,7 +1481,7 @@ msgstr "Sai phạm vi định nghĩa trong quy tắc lương %s (%s)."
 #: code:addons/om_hr_payroll/models/hr_salary_rule.py:36
 #, python-format
 msgid "You cannot create a recursive salary structure."
-msgstr "Bạn không thể tạo cơ cấu lương đệ quy."
+msgstr ""
 
 #. module: om_hr_payroll
 #: code:addons/om_hr_payroll/models/hr_payslip.py:127

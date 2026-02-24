@@ -71,7 +71,7 @@ class ShiftPlanningGrid extends Component {
                     <button t-attf-class="spg-toggle-btn {{ state.numDays === 14 ? 'active' : '' }}"
                             t-on-click="() => this.setView(14)">Fortnight</button>
                 </div>
-                <button class="spg-copy-btn" t-on-click="copyWeek" title=_t("Copy shifts to next week")>
+                <button class="spg-copy-btn" t-on-click="copyWeek" title="Copy shifts to next week">
                     <i class="fa fa-copy"/> Copy Week
                 </button>
                 <button class="spg-publish-btn" t-on-click="publishAll"
@@ -201,7 +201,7 @@ class ShiftPlanningGrid extends Component {
                                                     <t t-esc="shift.template_name"/>
                                                 </div>
                                                 <span class="spg-conflict-icon" t-if="this.hasConflict(emp.id, shift.id)"
-                                                      title=_t("Shift conflict detected")>⚠️</span>
+                                                      title="Shift conflict detected">⚠️</span>
                                                 <div class="spg-shift-actions">
                                                     <button class="spg-shift-del" t-if="shift.state === 'draft'"
                                                             t-on-click.stop="() => this.deleteShift(shift.id)"

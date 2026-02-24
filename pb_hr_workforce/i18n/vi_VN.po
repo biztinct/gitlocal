@@ -1,0 +1,194 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * pb_hr_workforce
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_hr_workforce\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-24 00:00+0000\n"
+"PO-Revision-Date: 2026-02-24 00:00+0000\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Weekday"
+msgstr "Ngày thường"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Extra hours on regular work days"
+msgstr "Giờ làm thêm vào ngày thường"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Weekend"
+msgstr "Cuối tuần"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Holiday"
+msgstr "Ngày lễ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "All hours on public holidays"
+msgstr "Tất cả giờ vào ngày lễ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Night Shift"
+msgstr "Ca đêm"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Hours within night time window"
+msgstr "Giờ trong khung thời gian đêm"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Extended"
+msgstr "Kéo dài"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "OT exceeding daily max cap"
+msgstr "Tăng ca vượt mức tối đa trong ngày"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Every day"
+msgstr "Mỗi ngày"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "No days selected"
+msgstr "Chưa chọn ngày"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Please enter a rule name"
+msgstr "Vui lòng nhập tên quy tắc"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Rule updated"
+msgstr "Đã cập nhật quy tắc"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Rule created"
+msgstr "Đã tạo quy tắc"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/overtime_rules.js:0
+#, python-format
+msgid "Rule deleted"
+msgstr "Đã xóa quy tắc"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/workforce_dashboard.js:0
+#, python-format
+msgid "Total Hours"
+msgstr "Tổng giờ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/workforce_dashboard.js:0
+#, python-format
+msgid "OT Hours"
+msgstr "Giờ tăng ca"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_live.js:0
+#, python-format
+msgid "Attendance data refreshed"
+msgstr "Đã làm mới dữ liệu chấm công"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/payroll_report.js:0
+#, python-format
+msgid "Failed to load payroll report"
+msgstr "Không thể tải báo cáo lương"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Copy shifts to next week"
+msgstr "Sao chép ca sang tuần sau"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Shift conflict detected"
+msgstr "Phát hiện trùng ca"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Failed to load shift grid"
+msgstr "Không thể tải lưới ca"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Employee is on leave this day"
+msgstr "Nhân viên nghỉ phép ngày này"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Shift created"
+msgstr "Đã tạo ca"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Failed to create shift"
+msgstr "Không thể tạo ca"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Shift deleted"
+msgstr "Đã xóa ca"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Cannot delete this shift"
+msgstr "Không thể xóa ca này"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Publish failed"
+msgstr "Xuất bản thất bại"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/shift_planning_grid.js:0
+#, python-format
+msgid "Copy failed"
+msgstr "Sao chép thất bại"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_timecard.js:0
+#, python-format
+msgid "With hours only"
+msgstr "Chỉ hiển thị giờ"

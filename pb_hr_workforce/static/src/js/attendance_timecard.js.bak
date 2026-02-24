@@ -156,7 +156,7 @@ class AttendanceTimecard extends Component {
             <div class="tc-empty" t-if="filteredEmployees.length === 0">
                 <i class="fa fa-clock-o fa-3x"/>
                 <h3>No timecard data</h3>
-                <p t-if="state.showOnlyWithHours">No employees with attendance hours this week. Uncheck _t("With hours only") to see all.</p>
+                <p t-if="state.showOnlyWithHours">No employees with attendance hours this week. Uncheck "With hours only" to see all.</p>
                 <p t-if="!state.showOnlyWithHours">No employees found.</p>
             </div>
         </div>
