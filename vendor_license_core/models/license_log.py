@@ -16,6 +16,7 @@ class VendorLicenseLog(models.Model):
         ('expired', 'License Expired'),
         ('tamper', 'Tampering Detected'),
         ('fingerprint_mismatch', 'Fingerprint Mismatch'),
+        ('integrity_fail', 'Integrity Check Failed'),
     ], string='Event', required=True)
 
     details = fields.Text('Details')

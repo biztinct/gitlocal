@@ -3,8 +3,15 @@
    With OT differentiation and vertical scroll
    ============================================ */
 
+/* Force Odoo action wrapper to fill remaining height */
+.o_action:has(.tc-container) {
+    height: 100%;
+    overflow: hidden;
+}
+
 .tc-container {
     height: calc(100vh - 55px);
+    max-height: calc(100vh - 55px);
     background: #f5f6fa;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     display: flex;
