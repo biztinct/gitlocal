@@ -113,6 +113,24 @@ class VendorLicenseState(models.Model):
         # Clear the enforcement cache so next @require_license picks up new state
         clear_license_cache()
 
+        # ── File Integrity Check ──
+        try:
+            from ..services.integrity import verify_integrity
+            integrity = verify_integrity()
+            if not integrity['ok']:
+                _logger.error("INTEGRITY CHECK FAILED: %s", integrity['message'])
+                self.env['vendor.license.log'].sudo().create({
+                    'event_type': 'integrity_fail',
+                    'details': (
+                        f"{integrity['message']}\n"
+                        f"Modified: {integrity.get('modified', [])}\n"
+                        f"Missing: {integrity.get('missing', [])}"
+                    ),
+                    'fingerprint_hash': get_fingerprint(),
+                })
+        except Exception as e:
+            _logger.debug("Integrity check skipped: %s", e)
+
         if result['ok']:
             _logger.info("License check PASSED: %s", result['status'])
         else:
