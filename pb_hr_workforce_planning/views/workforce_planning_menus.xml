@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================ -->
+    <!-- WORKFORCE PLANNING MENU STRUCTURE            -->
+    <!-- ============================================ -->
+
+    <!-- Top-level menu -->
+    <menuitem id="menu_wfp_root"
+        name="Workforce Planning"
+        web_icon="pb_hr_workforce_planning,static/description/icon.png"
+        groups="group_wfp_user"
+        sequence="95"/>
+
+    <!-- Dashboard -->
+    <menuitem id="menu_wfp_dashboard"
+        name="Planning Dashboard"
+        parent="menu_wfp_root"
+        action="action_wfp_dashboard"
+        sequence="10"/>
+
+    <!-- Scenarios -->
+    <menuitem id="menu_wfp_scenarios_parent"
+        name="Scenarios"
+        parent="menu_wfp_root"
+        sequence="20"/>
+
+    <menuitem id="menu_wfp_scenarios"
+        name="All Scenarios"
+        parent="menu_wfp_scenarios_parent"
+        action="action_wfp_scenario"
+        sequence="10"/>
+
+    <!-- Forecasts -->
+    <menuitem id="menu_wfp_forecasts_parent"
+        name="Forecasts"
+        parent="menu_wfp_root"
+        sequence="30"/>
+
+    <menuitem id="menu_wfp_forecasts"
+        name="Employee Forecasts"
+        parent="menu_wfp_forecasts_parent"
+        action="action_wfp_forecast"
+        sequence="10"/>
+
+    <menuitem id="menu_wfp_projections"
+        name="Monthly Projections"
+        parent="menu_wfp_forecasts_parent"
+        action="action_wfp_projection"
+        sequence="20"/>
+
+    <!-- Compensation -->
+    <menuitem id="menu_wfp_compensation_parent"
+        name="Compensation"
+        parent="menu_wfp_root"
+        sequence="40"/>
+
+    <menuitem id="menu_wfp_cycles"
+        name="Compensation Cycles"
+        parent="menu_wfp_compensation_parent"
+        action="action_wfp_cycle"
+        sequence="10"/>
+
+    <menuitem id="menu_wfp_headcount"
+        name="Headcount Changes"
+        parent="menu_wfp_compensation_parent"
+        action="action_wfp_headcount"
+        sequence="20"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_wfp_config_parent"
+        name="Configuration"
+        parent="menu_wfp_root"
+        groups="group_wfp_manager"
+        sequence="90"/>
+
+    <menuitem id="menu_wfp_tag_components"
+        name="Tag Formula Components"
+        parent="menu_wfp_config_parent"
+        action="action_wfp_tagging_wizard"
+        sequence="10"/>
+
+    <menuitem id="menu_wfp_grades"
+        name="Pay Grades"
+        parent="menu_wfp_config_parent"
+        action="action_wfp_grade"
+        sequence="20"/>
+
+    <menuitem id="menu_wfp_merit_matrices"
+        name="Merit Matrices"
+        parent="menu_wfp_config_parent"
+        action="action_wfp_merit_matrix"
+        sequence="30"/>
+
+    <menuitem id="menu_wfp_export"
+        name="Export Forecast"
+        parent="menu_wfp_config_parent"
+        action="action_wfp_export_wizard"
+        sequence="40"/>
+</odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add WFP Category to formula rule form view -->
+    <record id="view_formula_rule_wfp_inherit" model="ir.ui.view">
+        <field name="name">hr.formula.rule.wfp.inherit</field>
+        <field name="model">hr.formula.rule</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_rule_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='component_type']" position="after">
+                <field name="wfp_category"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add WFP Category column to formula rule tree -->
+    <record id="view_formula_rule_tree_wfp_inherit" model="ir.ui.view">
+        <field name="name">hr.formula.rule.tree.wfp.inherit</field>
+        <field name="model">hr.formula.rule</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_rule_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='component_type']" position="after">
+                <field name="wfp_category" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Grade to contract form -->
+    <record id="view_contract_wfp_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.wfp.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='wage']" position="after">
+                <field name="grade_id" options="{'no_create': True}"/>
+                <field name="compa_ratio" invisible="not grade_id"/>
+                <field name="range_penetration" invisible="not grade_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================ -->
+    <!-- SCENARIO VIEWS                               -->
+    <!-- ============================================ -->
+
+    <!-- Tree View -->
+    <record id="view_wfp_scenario_tree" model="ir.ui.view">
+        <field name="name">wfp.planning.scenario.tree</field>
+        <field name="model">wfp.planning.scenario</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'draft'" decoration-success="state == 'approved'" decoration-muted="state == 'archived'">
+                <field name="name"/>
+                <field name="formula_config_id"/>
+                <field name="fiscal_year"/>
+                <field name="effective_date"/>
+                <field name="headcount"/>
+                <field name="total_current_cost" widget="monetary"/>
+                <field name="total_forecast_cost" widget="monetary"/>
+                <field name="total_increase_pct" widget="float" string="Increase %"/>
+                <field name="budget_variance" widget="monetary"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'calculated'" decoration-success="state == 'approved'" decoration-muted="state == 'archived'"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_wfp_scenario_form" model="ir.ui.view">
+        <field name="name">wfp.planning.scenario.form</field>
+        <field name="model">wfp.planning.scenario</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_calculate" type="object" string="Calculate Forecast" class="btn-primary" invisible="state not in ('draft', 'calculated')" icon="fa-calculator"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-success" invisible="state != 'calculated'" icon="fa-check"/>
+                    <button name="action_archive" type="object" string="Archive" invisible="state not in ('approved', 'calculated')" icon="fa-archive"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state not in ('calculated', 'archived')" icon="fa-undo"/>
+                    <button name="action_duplicate_scenario" type="object" string="Duplicate" icon="fa-copy"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,calculated,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_forecasts" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="forecast_count" widget="statinfo" string="Forecasts"/>
+                        </button>
+                        <button name="action_view_projections" type="object" class="oe_stat_button" icon="fa-line-chart">
+                            <field name="rule_count" widget="statinfo" string="Rules"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Scenario Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="formula_config_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="owner_id"/>
+                        </group>
+                        <group string="Period">
+                            <field name="fiscal_year"/>
+                            <field name="effective_date"/>
+                            <field name="budget_amount"/>
+                        </group>
+                    </group>
+
+                    <!-- KPI Summary -->
+                    <group string="Forecast Summary" invisible="state == 'draft'">
+                        <group>
+                            <field name="headcount"/>
+                            <field name="total_current_cost" widget="monetary"/>
+                            <field name="total_forecast_cost" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="total_increase_amount" widget="monetary"/>
+                            <field name="total_increase_pct"/>
+                            <field name="budget_variance" widget="monetary"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Increase Rules" name="rules">
+                            <field name="rule_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="increase_type"/>
+                                    <field name="increase_pct" invisible="increase_type != 'percentage'"/>
+                                    <field name="increase_amount" invisible="increase_type != 'fixed_amount'"/>
+                                    <field name="merit_matrix_id" invisible="increase_type != 'merit_matrix'"/>
+                                    <field name="component_target"/>
+                                    <field name="apply_to"/>
+                                    <field name="department_ids" widget="many2many_tags" invisible="apply_to != 'department'"/>
+                                    <field name="job_ids" widget="many2many_tags" invisible="apply_to != 'job'"/>
+                                    <field name="exclude_probation"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Scope Filters" name="filters">
+                            <group>
+                                <group>
+                                    <field name="filter_department_ids" widget="many2many_tags"/>
+                                    <field name="filter_job_ids" widget="many2many_tags"/>
+                                </group>
+                                <group>
+                                    <field name="filter_location"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_wfp_scenario_kanban" model="ir.ui.view">
+        <field name="name">wfp.planning.scenario.kanban</field>
+        <field name="model">wfp.planning.scenario</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="headcount"/>
+                <field name="total_increase_pct"/>
+                <field name="formula_config_id"/>
+                <field name="effective_date"/>
+                <field name="currency_id"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>
+                                <field name="name"/>
+                            </strong>
+                            <field name="state" widget="label_selection" options="{'classes': {'draft': 'info', 'calculated': 'warning', 'approved': 'success', 'archived': 'secondary'}}"/>
+                        </div>
+                        <div class="text-muted small mb-1">
+                            <field name="formula_config_id"/>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>
+                                <i class="fa fa-users me-1" title="Employees"/>
+                                <field name="headcount"/> employees
+                            </span>
+                            <span class="fw-bold">
+                                <field name="total_increase_pct" widget="float" digits="[5,1]"/>%
+                            </span>
+                        </div>
+                        <div class="text-muted small">
+                            Effective: <field name="effective_date"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_wfp_scenario_search" model="ir.ui.view">
+        <field name="name">wfp.planning.scenario.search</field>
+        <field name="model">wfp.planning.scenario</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="formula_config_id"/>
+                <field name="owner_id"/>
+                <filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="calculated" string="Calculated" domain="[('state','=','calculated')]"/>
+                <filter name="approved" string="Approved" domain="[('state','=','approved')]"/>
+                <separator/>
+                <filter name="my_scenarios" string="My Scenarios" domain="[('owner_id','=',uid)]"/>
+                <group>
+                    <filter name="by_state" string="Status" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter name="by_config" string="Formula Config" domain="[]" context="{'group_by': 'formula_config_id'}"/>
+                    <filter name="by_year" string="Fiscal Year" domain="[]" context="{'group_by': 'fiscal_year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="action_wfp_scenario" model="ir.actions.act_window">
+        <field name="name">Planning Scenarios</field>
+        <field name="res_model">wfp.planning.scenario</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_wfp_scenario_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first workforce planning scenario
+            </p>
+            <p>
+                Define increase rules, select a formula configuration, and run 
+                the simulation engine to forecast total employer costs.
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Compensation Cycle Tree -->
+    <record id="view_wfp_cycle_tree" model="ir.ui.view">
+        <field name="name">wfp.compensation.cycle.tree</field>
+        <field name="model">wfp.compensation.cycle</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="fiscal_year"/>
+                <field name="effective_date"/>
+                <field name="budget_amount" widget="monetary"/>
+                <field name="allocated_amount" widget="monetary"/>
+                <field name="remaining_amount" widget="monetary"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Compensation Cycle Form -->
+    <record id="view_wfp_cycle_form" model="ir.ui.view">
+        <field name="name">wfp.compensation.cycle.form</field>
+        <field name="model">wfp.compensation.cycle</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_open" type="object" string="Open for Recommendations" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_review" type="object" string="Submit for Review" invisible="state != 'open'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-success" invisible="state != 'review'"/>
+                    <button name="action_apply" type="object" string="Apply to Contracts" class="btn-warning" invisible="state != 'approved'" confirm="This will update employee contracts with the approved amounts. Continue?"/>
+                    <button name="action_close" type="object" string="Close" invisible="state != 'applied'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,review,approved,applied"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_approve" class="oe_stat_button" icon="fa-list">
+                            <field name="recommendation_count" widget="statinfo" string="Recommendations"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="scenario_id"/>
+                            <field name="fiscal_year"/>
+                            <field name="effective_date"/>
+                            <field name="deadline"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="budget_amount"/>
+                            <field name="allocated_amount"/>
+                            <field name="remaining_amount"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Recommendations">
+                            <field name="recommendation_ids">
+                                <list editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="department_id"/>
+                                    <field name="current_base" widget="monetary"/>
+                                    <field name="new_base" widget="monetary"/>
+                                    <field name="recommended_increase" widget="monetary"/>
+                                    <field name="recommended_pct"/>
+                                    <field name="recommendation_note"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_wfp_cycle" model="ir.actions.act_window">
+        <field name="name">Compensation Cycles</field>
+        <field name="res_model">wfp.compensation.cycle</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

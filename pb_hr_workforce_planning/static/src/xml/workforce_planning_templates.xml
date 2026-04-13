@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pb_hr_workforce_planning.WfpDashboard">
+        <div class="wfp-dashboard">
+            <!-- HEADER -->
+            <div class="wfp-header">
+                <div class="wfp-header-left">
+                    <div class="wfp-logo">
+                        <i class="fa fa-line-chart"/>
+                    </div>
+                    <div>
+                        <h1 class="wfp-title">Workforce Planning</h1>
+                        <p class="wfp-subtitle">Compensation Forecasting &amp; Scenario Analysis</p>
+                    </div>
+                </div>
+                <div class="wfp-header-right">
+                    <select class="wfp-scenario-select" t-on-change="onScenarioChange">
+                        <option value="">Select Scenario...</option>
+                        <t t-foreach="state.scenarios" t-as="s" t-key="s.id">
+                            <option t-att-value="s.id"
+                                    t-att-selected="s.id === state.selectedScenarioId">
+                                <t t-esc="s.name"/>
+                                (<t t-esc="s.state"/>)
+                            </option>
+                        </t>
+                    </select>
+                    <button class="wfp-btn wfp-btn-primary" t-on-click="onNewScenario">
+                        <i class="fa fa-plus me-1"/> New Scenario
+                    </button>
+                    <button class="wfp-btn wfp-btn-secondary" t-on-click="onExport"
+                            t-att-disabled="!state.selectedScenarioId">
+                        <i class="fa fa-file-excel-o me-1"/> Export
+                    </button>
+                    <button class="wfp-btn wfp-btn-ghost" t-on-click="onTagComponents">
+                        <i class="fa fa-tags me-1"/> Tag Components
+                    </button>
+                </div>
+            </div>
+
+            <!-- LOADING -->
+            <div t-if="state.loading" class="wfp-loading">
+                <div class="wfp-spinner"/>
+                <p>Loading scenario data...</p>
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div t-if="!state.loading and !state.dashboardData" class="wfp-empty">
+                <i class="fa fa-calculator fa-3x mb-3"/>
+                <h2>No Calculated Scenarios</h2>
+                <p>Create a scenario, add increase rules, and click "Calculate Forecast" to see results here.</p>
+                <button class="wfp-btn wfp-btn-primary mt-3" t-on-click="onNewScenario">
+                    <i class="fa fa-plus me-1"/> Create First Scenario
+                </button>
+            </div>
+
+            <!-- DASHBOARD CONTENT -->
+            <div t-if="!state.loading and state.dashboardData" class="wfp-content">
+
+                <!-- SCENARIO INFO BAR -->
+                <div class="wfp-info-bar" t-on-click="onViewScenario">
+                    <span class="wfp-info-item">
+                        <i class="fa fa-cog me-1"/>
+                        <t t-esc="state.dashboardData.scenario.formula_config"/>
+                    </span>
+                    <span class="wfp-info-item">
+                        <i class="fa fa-globe me-1"/>
+                        <t t-esc="state.dashboardData.scenario.country_code || 'All'"/>
+                    </span>
+                    <span class="wfp-info-item">
+                        <i class="fa fa-calendar me-1"/>
+                        Effective: <t t-esc="state.dashboardData.scenario.effective_date"/>
+                    </span>
+                    <span class="wfp-info-item">
+                        FY <t t-esc="state.dashboardData.scenario.fiscal_year"/>
+                    </span>
+                    <span t-attf-class="wfp-state-badge wfp-state-#{state.dashboardData.scenario.state}">
+                        <t t-esc="state.dashboardData.scenario.state"/>
+                    </span>
+                </div>
+
+                <!-- KPI CARDS -->
+                <div class="wfp-kpi-row">
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fa fa-users"/>
+                        </div>
+                        <div class="wfp-kpi-body">
+                            <span class="wfp-kpi-value">
+                                <t t-esc="_formatCurrency(state.dashboardData.kpis.headcount)"/>
+                            </span>
+                            <span class="wfp-kpi-label">Headcount</span>
+                        </div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-icon" style="background: linear-gradient(135deg, #21435F, #2d6a9f);">
+                            <i class="fa fa-money"/>
+                        </div>
+                        <div class="wfp-kpi-body">
+                            <span class="wfp-kpi-value">
+                                <t t-esc="_formatCompact(state.dashboardData.kpis.current_cost)"/>
+                            </span>
+                            <span class="wfp-kpi-label">Current TCOW</span>
+                        </div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-icon" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+                            <i class="fa fa-arrow-up"/>
+                        </div>
+                        <div class="wfp-kpi-body">
+                            <span class="wfp-kpi-value">
+                                <t t-esc="_formatCompact(state.dashboardData.kpis.forecast_cost)"/>
+                            </span>
+                            <span class="wfp-kpi-label">Forecast TCOW</span>
+                        </div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-icon" style="background: linear-gradient(135deg, #e67e22, #f39c12);">
+                            <i class="fa fa-percent"/>
+                        </div>
+                        <div class="wfp-kpi-body">
+                            <span class="wfp-kpi-value">
+                                <t t-esc="_formatPct(state.dashboardData.kpis.increase_pct)"/>
+                            </span>
+                            <span class="wfp-kpi-label">Total Increase</span>
+                        </div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div t-attf-class="wfp-kpi-icon" t-att-style="state.dashboardData.kpis.variance >= 0 ? 'background: linear-gradient(135deg, #27ae60, #2ecc71);' : 'background: linear-gradient(135deg, #e74c3c, #c0392b);'">
+                            <i class="fa fa-balance-scale"/>
+                        </div>
+                        <div class="wfp-kpi-body">
+                            <span class="wfp-kpi-value">
+                                <t t-esc="_formatCompact(state.dashboardData.kpis.variance)"/>
+                            </span>
+                            <span class="wfp-kpi-label">Budget Variance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHARTS ROW -->
+                <div class="wfp-charts-row">
+                    <div class="wfp-chart-card wfp-chart-wide">
+                        <h3 class="wfp-chart-title">
+                            <i class="fa fa-area-chart me-2"/>Monthly Cost Projection
+                        </h3>
+                        <canvas t-ref="monthlyChart"/>
+                    </div>
+                    <div class="wfp-chart-card">
+                        <h3 class="wfp-chart-title">
+                            <i class="fa fa-building me-2"/>Department Impact
+                        </h3>
+                        <canvas t-ref="deptChart"/>
+                    </div>
+                </div>
+
+                <div class="wfp-charts-row">
+                    <div class="wfp-chart-card">
+                        <h3 class="wfp-chart-title">
+                            <i class="fa fa-industry me-2"/>Top Employer Cost Changes
+                        </h3>
+                        <canvas t-ref="employerChart"/>
+                    </div>
+                </div>
+
+                <!-- EMPLOYEE TABLE -->
+                <div class="wfp-table-card">
+                    <div class="wfp-table-header">
+                        <h3 class="wfp-chart-title">
+                            <i class="fa fa-table me-2"/>Employee Forecast Detail
+                        </h3>
+                        <input type="text" class="wfp-search-input"
+                               placeholder="Search employees, departments, rules..."
+                               t-on-input="onSearchInput"/>
+                    </div>
+                    <div class="wfp-table-scroll">
+                        <table class="wfp-table">
+                            <thead>
+                                <tr>
+                                    <th t-on-click="() => this.onSort('name')">Employee</th>
+                                    <th t-on-click="() => this.onSort('department')">Dept</th>
+                                    <th t-on-click="() => this.onSort('job')">Job</th>
+                                    <th class="text-end" t-on-click="() => this.onSort('current_base')">Cur. Base</th>
+                                    <th class="text-end" t-on-click="() => this.onSort('current_total')">Cur. TCOW</th>
+                                    <th class="text-end" t-on-click="() => this.onSort('forecast_base')">Fcst. Base</th>
+                                    <th class="text-end" t-on-click="() => this.onSort('forecast_total')">Fcst. TCOW</th>
+                                    <th class="text-end" t-on-click="() => this.onSort('increase_amount')">Increase</th>
+                                    <th class="text-end" t-on-click="() => this.onSort('increase_pct')">Inc. %</th>
+                                    <th t-on-click="() => this.onSort('rule_name')">Rule</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="filteredEmployees" t-as="emp" t-key="emp.id">
+                                    <tr t-attf-class="#{emp.increase_pct > 10 ? 'wfp-row-high' : emp.increase_pct > 5 ? 'wfp-row-mid' : 'wfp-row-normal'}">
+                                        <td><t t-esc="emp.name"/></td>
+                                        <td><t t-esc="emp.department"/></td>
+                                        <td><t t-esc="emp.job"/></td>
+                                        <td class="text-end"><t t-esc="_formatCurrency(emp.current_base)"/></td>
+                                        <td class="text-end"><t t-esc="_formatCurrency(emp.current_total)"/></td>
+                                        <td class="text-end"><t t-esc="_formatCurrency(emp.forecast_base)"/></td>
+                                        <td class="text-end"><t t-esc="_formatCurrency(emp.forecast_total)"/></td>
+                                        <td class="text-end wfp-cell-increase">
+                                            <t t-esc="_formatCurrency(emp.increase_amount)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <span t-attf-class="wfp-pct-badge #{emp.increase_pct > 10 ? 'wfp-pct-high' : emp.increase_pct > 5 ? 'wfp-pct-mid' : 'wfp-pct-low'}">
+                                                <t t-esc="emp.increase_pct.toFixed(1)"/>%
+                                            </span>
+                                        </td>
+                                        <td class="wfp-rule-cell"><t t-esc="emp.rule_name"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
