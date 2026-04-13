@@ -248,6 +248,13 @@ class HRFlowWizard(models.TransientModel):
             'govt-monthly-tang': ('pb_hr_govt.action_govt_monthly_tang_ld', False),
             # Analytics - Uses server action to prepare dashboard
             'analytics-dashboard': ('pb_hr_payroll_analytics.action_prepare_formula_config_analytics', False),
+            # Workforce Planning
+            'wfp-scenarios': ('pb_hr_workforce_planning.action_wfp_scenario', False),
+            'wfp-forecasts': ('pb_hr_workforce_planning.action_wfp_forecast', False),
+            'wfp-tagging': ('pb_hr_workforce_planning.action_wfp_tagging_wizard', False),
+            'wfp-pay-grades': ('pb_hr_workforce_planning.action_wfp_grade', False),
+            'wfp-merit-matrix': ('pb_hr_workforce_planning.action_wfp_merit_matrix', False),
+            'wfp-comp-cycles': ('pb_hr_workforce_planning.action_wfp_cycle', False),
             # Vietnam Insurance & Tax Settings
             'vietnam-insurance-policies': ('pb_hr_payroll_vietnam.action_vietnam_insurance_policy', False),
             'vietnam-insurance-adjustments': ('pb_hr_payroll_vietnam.action_vietnam_insurance_adjustment', False),

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Pay Grade Tree -->
+    <record id="view_wfp_grade_tree" model="ir.ui.view">
+        <field name="name">wfp.pay.grade.tree</field>
+        <field name="model">wfp.pay.grade</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="grade_level"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="range_min" widget="monetary"/>
+                <field name="range_mid" widget="monetary"/>
+                <field name="range_max" widget="monetary"/>
+                <field name="range_spread" string="Spread %"/>
+                <field name="country_code"/>
+                <field name="job_family"/>
+                <field name="contract_count" string="Contracts"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Pay Grade Form -->
+    <record id="view_wfp_grade_form" model="ir.ui.view">
+        <field name="name">wfp.pay.grade.form</field>
+        <field name="model">wfp.pay.grade</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="code" class="oe_inline"/> -
+                            <field name="name" class="oe_inline"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Grade Info">
+                            <field name="grade_level"/>
+                            <field name="country_code"/>
+                            <field name="job_family"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Salary Range">
+                            <field name="range_min"/>
+                            <field name="range_mid"/>
+                            <field name="range_max"/>
+                            <field name="range_spread"/>
+                        </group>
+                    </group>
+                    <field name="note"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_wfp_grade" model="ir.actions.act_window">
+        <field name="name">Pay Grades</field>
+        <field name="res_model">wfp.pay.grade</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

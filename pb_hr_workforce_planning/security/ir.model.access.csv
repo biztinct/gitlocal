@@ -1,0 +1,25 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+wfp_scenario_user,wfp.planning.scenario user,model_wfp_planning_scenario,group_wfp_user,1,0,0,0
+wfp_scenario_manager,wfp.planning.scenario manager,model_wfp_planning_scenario,group_wfp_manager,1,1,1,1
+wfp_rule_user,wfp.increase.rule user,model_wfp_increase_rule,group_wfp_user,1,0,0,0
+wfp_rule_manager,wfp.increase.rule manager,model_wfp_increase_rule,group_wfp_manager,1,1,1,1
+wfp_forecast_user,wfp.employee.forecast user,model_wfp_employee_forecast,group_wfp_user,1,0,0,0
+wfp_forecast_manager,wfp.employee.forecast manager,model_wfp_employee_forecast,group_wfp_manager,1,1,1,1
+wfp_projection_user,wfp.monthly.projection user,model_wfp_monthly_projection,group_wfp_user,1,0,0,0
+wfp_projection_manager,wfp.monthly.projection manager,model_wfp_monthly_projection,group_wfp_manager,1,1,1,1
+wfp_grade_user,wfp.pay.grade user,model_wfp_pay_grade,group_wfp_user,1,0,0,0
+wfp_grade_admin,wfp.pay.grade admin,model_wfp_pay_grade,group_wfp_admin,1,1,1,1
+wfp_merit_user,wfp.merit.matrix user,model_wfp_merit_matrix,group_wfp_user,1,0,0,0
+wfp_merit_admin,wfp.merit.matrix admin,model_wfp_merit_matrix,group_wfp_admin,1,1,1,1
+wfp_merit_cell_user,wfp.merit.matrix.cell user,model_wfp_merit_matrix_cell,group_wfp_user,1,0,0,0
+wfp_merit_cell_admin,wfp.merit.matrix.cell admin,model_wfp_merit_matrix_cell,group_wfp_admin,1,1,1,1
+wfp_cycle_user,wfp.compensation.cycle user,model_wfp_compensation_cycle,group_wfp_user,1,0,0,0
+wfp_cycle_manager,wfp.compensation.cycle manager,model_wfp_compensation_cycle,group_wfp_manager,1,1,1,1
+wfp_recommendation_user,wfp.compensation.recommendation user,model_wfp_compensation_recommendation,group_wfp_user,1,0,0,0
+wfp_recommendation_manager,wfp.compensation.recommendation manager,model_wfp_compensation_recommendation,group_wfp_manager,1,1,1,1
+wfp_headcount_user,wfp.headcount.change user,model_wfp_headcount_change,group_wfp_user,1,0,0,0
+wfp_headcount_manager,wfp.headcount.change manager,model_wfp_headcount_change,group_wfp_manager,1,1,1,1
+wfp_comparison_user,wfp.scenario.comparison user,model_wfp_scenario_comparison,group_wfp_user,1,1,1,1
+wfp_tagging_wizard_manager,wfp.tagging.wizard manager,model_wfp_tagging_wizard,group_wfp_manager,1,1,1,1
+wfp_tagging_line_manager,wfp.tagging.wizard.line manager,model_wfp_tagging_wizard_line,group_wfp_manager,1,1,1,1
+wfp_export_wizard_user,wfp.export.wizard user,model_wfp_export_wizard,group_wfp_user,1,1,1,1
