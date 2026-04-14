@@ -430,3 +430,261 @@ class WfpPlanningScenario(models.Model):
             'monthly': monthly,
             'employees': employees,
         }
+
+    @api.model
+    def get_labor_analytics_data(self, department_id=False, date_from=False, date_to=False):
+        """Return labor analytics data for the Labor Analytics tab.
+
+        Pulls data from hr.attendance, hr.shift.planning, hr.overtime.request
+        via soft dependency on pb_hr_workforce.
+        """
+        from datetime import date as d_date, datetime, timedelta
+        from collections import defaultdict
+        import json
+
+        # Use sudo for cross-company analytics reads
+        sudo_env = self.sudo().env
+
+        today = d_date.today()
+        if not date_from:
+            date_from = today.replace(day=1)
+        else:
+            date_from = fields.Date.from_string(date_from)
+        if not date_to:
+            date_to = today
+        else:
+            date_to = fields.Date.from_string(date_to)
+
+        # Employee scope
+        emp_domain = [('active', '=', True)]
+        if department_id:
+            emp_domain.append(('department_id', '=', department_id))
+        employees = sudo_env['hr.employee'].search(emp_domain)
+        emp_ids = employees.ids
+
+        # ── KPIs ──
+        total_employees = len(employees)
+
+        # Present today
+        today_start = datetime.combine(today, datetime.min.time())
+        today_end = today_start + timedelta(days=1)
+        Attendance = sudo_env['hr.attendance']
+        checked_in_today = Attendance.search([
+            ('employee_id', 'in', emp_ids),
+            ('check_in', '>=', today_start),
+            ('check_in', '<', today_end),
+        ]).mapped('employee_id')
+        present_today = len(set(checked_in_today.ids))
+        absent_today = total_employees - present_today
+        presence_rate = round(
+            (present_today / total_employees * 100) if total_employees else 0, 1
+        )
+
+        # Average hours this week
+        week_start = today - timedelta(days=today.weekday())
+        week_atts = Attendance.search([
+            ('employee_id', 'in', emp_ids),
+            ('check_in', '>=', datetime.combine(week_start, datetime.min.time())),
+            ('check_out', '!=', False),
+        ])
+        total_week_hrs = sum(a.worked_hours for a in week_atts)
+        avg_hours_week = round(
+            (total_week_hrs / total_employees) if total_employees else 0, 1
+        )
+
+        # Total worked hours in period
+        period_atts = Attendance.search([
+            ('employee_id', 'in', emp_ids),
+            ('check_in', '>=', datetime.combine(date_from, datetime.min.time())),
+            ('check_in', '<=', datetime.combine(date_to, datetime.max.time())),
+            ('check_out', '!=', False),
+        ])
+        total_period_hrs = round(sum(a.worked_hours for a in period_atts), 1)
+
+        # Standard hours (assumption: 8hr/day, 22 days/month)
+        working_days = max(1, (date_to - date_from).days + 1)
+        # Rough weekday count
+        weekday_count = sum(
+            1 for i in range(working_days)
+            if (date_from + timedelta(days=i)).weekday() < 5
+        )
+        standard_hours = weekday_count * 8 * total_employees
+        utilization_rate = round(
+            (total_period_hrs / standard_hours * 100) if standard_hours else 0, 1
+        )
+
+        # OT hours
+        ot_hours = 0.0
+        try:
+            OTLine = sudo_env['hr.attendance.overtime.line']
+            ot_records = OTLine.search([
+                ('employee_id', 'in', emp_ids),
+                ('date', '>=', date_from),
+                ('date', '<=', date_to),
+            ])
+            ot_hours = round(sum(o.duration for o in ot_records), 1)
+        except Exception:
+            pass
+
+        # Pending OT requests
+        pending_ot = 0
+        try:
+            pending_ot = sudo_env['hr.overtime.request'].search_count([
+                ('employee_id', 'in', emp_ids),
+                ('state', '=', 'submitted'),
+            ])
+        except Exception:
+            pass
+
+        # Shift compliance
+        shift_compliance = 100.0
+        total_shifts = 0
+        try:
+            shifts = sudo_env['hr.shift.planning'].search([
+                ('employee_id', 'in', emp_ids),
+                ('date', '>=', date_from),
+                ('date', '<=', date_to),
+                ('state', '=', 'completed'),
+            ])
+            total_shifts = len(shifts)
+            if shifts:
+                on_time = len(shifts.filtered(
+                    lambda s: s.compliance_status == 'on_time'
+                ))
+                shift_compliance = round(on_time / len(shifts) * 100, 1)
+        except Exception:
+            pass
+
+        # Pending leaves
+        pending_leaves = sudo_env['hr.leave'].search_count([
+            ('employee_id', 'in', emp_ids),
+            ('state', '=', 'confirm'),
+        ])
+
+        # ── Labor Cost Estimate ──
+        # Hourly rate from contracts
+        contracts = sudo_env['hr.contract'].search([
+            ('employee_id', 'in', emp_ids),
+            ('state', '=', 'open'),
+        ])
+        total_monthly_wage = sum(c.wage for c in contracts)
+        std_hours_month = 176  # 22 days x 8 hours
+        avg_hourly_rate = round(
+            (total_monthly_wage / len(contracts) / std_hours_month)
+            if contracts else 0, 0
+        )
+        labor_cost_period = round(total_period_hrs * avg_hourly_rate, 0)
+        ot_cost = round(ot_hours * avg_hourly_rate * 1.5, 0)  # 1.5x OT rate
+
+        # ── Charts Data ──
+
+        # 1. Attendance by day of week
+        attendance_by_day = {d: 0 for d in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+        day_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        for att in period_atts:
+            dow = att.check_in.weekday()
+            attendance_by_day[day_names[dow]] += 1
+
+        # 2. Hours trend (8 weeks)
+        hours_trend = []
+        for i in range(7, -1, -1):
+            ws = today - timedelta(weeks=i, days=today.weekday())
+            we = ws + timedelta(days=6)
+            w_atts = Attendance.search([
+                ('employee_id', 'in', emp_ids),
+                ('check_in', '>=', datetime.combine(ws, datetime.min.time())),
+                ('check_in', '<=', datetime.combine(we, datetime.max.time())),
+                ('check_out', '!=', False),
+            ])
+            hrs = round(sum(a.worked_hours for a in w_atts), 1)
+            hours_trend.append({
+                'week': ws.strftime('W%V'),
+                'hours': hrs,
+                'target': total_employees * 40,  # 40hr standard week
+            })
+
+        # 3. Department breakdown
+        dept_breakdown = []
+        departments = sudo_env['hr.department'].search([])
+        for dept in departments:
+            dept_emps = employees.filtered(lambda e: e.department_id == dept)
+            if not dept_emps:
+                continue
+            dept_atts = Attendance.search([
+                ('employee_id', 'in', dept_emps.ids),
+                ('check_in', '>=', datetime.combine(date_from, datetime.min.time())),
+                ('check_in', '<=', datetime.combine(date_to, datetime.max.time())),
+                ('check_out', '!=', False),
+            ])
+            dept_hrs = round(sum(a.worked_hours for a in dept_atts), 1)
+            dept_target = len(dept_emps) * weekday_count * 8
+            dept_breakdown.append({
+                'name': dept.name,
+                'headcount': len(dept_emps),
+                'hours': dept_hrs,
+                'target': dept_target,
+                'utilization': round(
+                    (dept_hrs / dept_target * 100) if dept_target else 0, 1
+                ),
+            })
+        dept_breakdown.sort(key=lambda x: x['utilization'], reverse=True)
+
+        # 4. Top employees by hours
+        emp_hours = defaultdict(float)
+        for att in period_atts:
+            emp_hours[att.employee_id.id] += att.worked_hours
+
+        top_employees = []
+        for emp in employees:
+            hrs = round(emp_hours.get(emp.id, 0), 1)
+            ct = sudo_env['hr.contract'].search([
+                ('employee_id', '=', emp.id),
+                ('state', '=', 'open'),
+            ], limit=1)
+            hourly = round(
+                (ct.wage / std_hours_month) if ct and ct.wage else 0, 0
+            )
+            top_employees.append({
+                'id': emp.id,
+                'name': emp.name,
+                'department': emp.department_id.name or '',
+                'hours': hrs,
+                'target': weekday_count * 8,
+                'utilization': round(
+                    (hrs / (weekday_count * 8) * 100)
+                    if weekday_count else 0, 1
+                ),
+                'hourly_rate': hourly,
+                'labor_cost': round(hrs * hourly, 0),
+            })
+        top_employees.sort(key=lambda x: x['hours'], reverse=True)
+
+        return {
+            'kpis': {
+                'total_employees': total_employees,
+                'present_today': present_today,
+                'absent_today': absent_today,
+                'presence_rate': presence_rate,
+                'avg_hours_week': avg_hours_week,
+                'total_hours': total_period_hrs,
+                'standard_hours': standard_hours,
+                'utilization_rate': utilization_rate,
+                'ot_hours': ot_hours,
+                'ot_cost': ot_cost,
+                'pending_ot': pending_ot,
+                'pending_leaves': pending_leaves,
+                'shift_compliance': shift_compliance,
+                'total_shifts': total_shifts,
+                'labor_cost': labor_cost_period,
+                'avg_hourly_rate': avg_hourly_rate,
+            },
+            'attendance_by_day': attendance_by_day,
+            'hours_trend': hours_trend,
+            'dept_breakdown': dept_breakdown,
+            'employees': top_employees,
+            'period': {
+                'from': str(date_from),
+                'to': str(date_to),
+            },
+        }
+
