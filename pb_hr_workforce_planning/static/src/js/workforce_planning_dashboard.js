@@ -3,7 +3,65 @@
 import { registry } from "@web/core/registry";
 import { Component, useState, onWillStart, onMounted, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
-import { loadJS } from "@web/core/assets";
+import { _t } from "@web/core/l10n/translation";
+
+// Chart.js dark-mode defaults
+const CHART_COLORS = {
+    blue: '#3b82f6',
+    green: '#10b981',
+    orange: '#d97706',
+    red: '#dc2626',
+    purple: '#7c3aed',
+    cyan: '#0891b2',
+    blueAlpha: 'rgba(37, 99, 235, 0.15)',
+    greenAlpha: 'rgba(5, 150, 105, 0.15)',
+    orangeAlpha: 'rgba(217, 119, 6, 0.15)',
+    redAlpha: 'rgba(220, 38, 38, 0.15)',
+    purpleAlpha: 'rgba(124, 58, 237, 0.15)',
+    cyanAlpha: 'rgba(8, 145, 178, 0.15)',
+    text: '#64748b',
+    grid: 'rgba(0, 0, 0, 0.04)',
+    palette: ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#db2777', '#0d9488'],
+    paletteAlpha: ['rgba(37,99,235,0.15)', 'rgba(5,150,105,0.15)', 'rgba(217,119,6,0.15)',
+        'rgba(220,38,38,0.15)', 'rgba(124,58,237,0.15)', 'rgba(8,145,178,0.15)',
+        'rgba(219,39,119,0.15)', 'rgba(13,148,136,0.15)'],
+};
+
+const CHART_DEFAULTS = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 800, easing: 'easeOutQuart' },
+    plugins: {
+        legend: {
+            display: false,
+            labels: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 } },
+        },
+        tooltip: {
+            backgroundColor: '#ffffff',
+            titleColor: '#1e293b',
+            bodyColor: '#475569',
+            borderColor: '#e2e8f0',
+            borderWidth: 1,
+            cornerRadius: 8,
+            padding: 12,
+            titleFont: { family: "'Inter', sans-serif", weight: '700', size: 13 },
+            bodyFont: { family: "'Inter', sans-serif", size: 12 },
+            displayColors: true,
+            boxPadding: 4,
+        },
+    },
+    scales: {
+        x: {
+            grid: { color: CHART_COLORS.grid, drawBorder: false },
+            ticks: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 } },
+        },
+        y: {
+            grid: { color: CHART_COLORS.grid, drawBorder: false },
+            ticks: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 } },
+            beginAtZero: true,
+        },
+    },
+};
 
 class WfpDashboard extends Component {
     static template = "pb_hr_workforce_planning.WfpDashboard";
@@ -17,19 +75,28 @@ class WfpDashboard extends Component {
         this.monthlyChartRef = useRef("monthlyChart");
         this.deptChartRef = useRef("deptChart");
         this.employerChartRef = useRef("employerChart");
+        this.compareChartRef = useRef("compareChart");
+
+        this.chartInstances = {};
 
         this.state = useState({
             scenarios: [],
             selectedScenarioId: null,
             dashboardData: null,
             loading: true,
-            compareMode: false,
+            activeTab: "compensation",
+            hasLaborModule: false,
+            laborData: null,
+            laborLoaded: false,
             searchQuery: "",
             sortField: "increase_amount",
             sortOrder: "desc",
+            compareScenarioId: null,
         });
 
         onWillStart(async () => {
+            await this._loadChartJS();
+            await this._checkLaborModule();
             await this._loadScenarios();
         });
 
@@ -41,6 +108,32 @@ class WfpDashboard extends Component {
     }
 
     // ==========================================
+    // INIT
+    // ==========================================
+    async _loadChartJS() {
+        if (typeof Chart !== 'undefined') return;
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
+    async _checkLaborModule() {
+        try {
+            const count = await this.orm.searchCount("ir.module.module", [
+                ["name", "=", "pb_hr_workforce"],
+                ["state", "=", "installed"],
+            ]);
+            this.state.hasLaborModule = count > 0;
+        } catch {
+            this.state.hasLaborModule = false;
+        }
+    }
+
+    // ==========================================
     // DATA LOADING
     // ==========================================
     async _loadScenarios() {
@@ -49,7 +142,7 @@ class WfpDashboard extends Component {
                 "wfp.planning.scenario",
                 [["state", "in", ["calculated", "approved"]]],
                 ["id", "name", "state", "fiscal_year", "headcount",
-                 "total_increase_pct", "formula_config_id"],
+                    "total_increase_pct", "formula_config_id"],
                 { order: "create_date desc", limit: 50 }
             );
             this.state.scenarios = scenarios;
@@ -75,8 +168,7 @@ class WfpDashboard extends Component {
             );
             this.state.dashboardData = data;
             this.state.loading = false;
-            // Re-render charts after state update
-            setTimeout(() => this._renderCharts(), 100);
+            setTimeout(() => this._renderCharts(), 150);
         } catch (e) {
             console.error("WFP Dashboard: Error loading data", e);
             this.state.loading = false;
@@ -84,11 +176,18 @@ class WfpDashboard extends Component {
     }
 
     // ==========================================
-    // CHART RENDERING
+    // CHART RENDERING (Chart.js)
     // ==========================================
+    _destroyChart(key) {
+        if (this.chartInstances[key]) {
+            this.chartInstances[key].destroy();
+            delete this.chartInstances[key];
+        }
+    }
+
     _renderCharts() {
         const data = this.state.dashboardData;
-        if (!data) return;
+        if (!data || typeof Chart === 'undefined') return;
 
         this._renderMonthlyChart(data.monthly);
         this._renderDeptChart(data.departments);
@@ -97,153 +196,191 @@ class WfpDashboard extends Component {
 
     _renderMonthlyChart(monthly) {
         const canvas = this.monthlyChartRef.el;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
+        if (!canvas || !monthly || monthly.length === 0) return;
+        this._destroyChart('monthly');
 
-        // Simple canvas chart — monthly cost bars
-        const W = canvas.width = canvas.parentElement.clientWidth;
-        const H = canvas.height = 280;
-        ctx.clearRect(0, 0, W, H);
+        const labels = monthly.map(m => m.period);
+        const preData = monthly.map(m => m.is_pre ? m.total_cost : null);
+        const postData = monthly.map(m => !m.is_pre ? m.total_cost : null);
 
-        if (!monthly || monthly.length === 0) return;
-
-        const maxVal = Math.max(...monthly.map(m => m.total_cost)) || 1;
-        const barW = (W - 80) / monthly.length;
-        const chartH = H - 60;
-
-        // Gradient background
-        const grad = ctx.createLinearGradient(0, 0, 0, H);
-        grad.addColorStop(0, "rgba(33, 67, 95, 0.02)");
-        grad.addColorStop(1, "rgba(33, 67, 95, 0.08)");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, W, H);
-
-        monthly.forEach((m, i) => {
-            const x = 50 + i * barW;
-            const h = (m.total_cost / maxVal) * chartH;
-            const y = chartH - h + 20;
-
-            // Bar
-            const barGrad = ctx.createLinearGradient(x, y, x, y + h);
-            if (m.is_pre) {
-                barGrad.addColorStop(0, "rgba(33, 67, 95, 0.6)");
-                barGrad.addColorStop(1, "rgba(33, 67, 95, 0.3)");
-            } else {
-                barGrad.addColorStop(0, "rgba(39, 174, 96, 0.8)");
-                barGrad.addColorStop(1, "rgba(39, 174, 96, 0.4)");
-            }
-            ctx.fillStyle = barGrad;
-            ctx.beginPath();
-            ctx.roundRect(x + 4, y, barW - 8, h, [4, 4, 0, 0]);
-            ctx.fill();
-
-            // Label
-            ctx.fillStyle = "#666";
-            ctx.font = "10px Inter, sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(m.period, x + barW / 2, H - 8);
+        this.chartInstances.monthly = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: _t('Current'),
+                        data: preData,
+                        backgroundColor: CHART_COLORS.cyanAlpha,
+                        borderColor: CHART_COLORS.cyan,
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        barPercentage: 0.7,
+                    },
+                    {
+                        label: _t('Forecast'),
+                        data: postData,
+                        backgroundColor: CHART_COLORS.greenAlpha,
+                        borderColor: CHART_COLORS.green,
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        barPercentage: 0.7,
+                    },
+                ],
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                plugins: {
+                    ...CHART_DEFAULTS.plugins,
+                    legend: { display: true, position: 'top',
+                        labels: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 },
+                            usePointStyle: true, pointStyle: 'rectRounded', padding: 16 }
+                    },
+                    tooltip: {
+                        ...CHART_DEFAULTS.plugins.tooltip,
+                        callbacks: {
+                            label: (ctx) => {
+                                const val = ctx.raw || 0;
+                                return ` ${ctx.dataset.label}: ${this._formatCompact(val)}`;
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    ...CHART_DEFAULTS.scales,
+                    y: {
+                        ...CHART_DEFAULTS.scales.y,
+                        ticks: {
+                            ...CHART_DEFAULTS.scales.y.ticks,
+                            callback: (v) => this._formatCompact(v),
+                        },
+                    },
+                },
+            },
         });
-
-        // Y-axis labels
-        ctx.fillStyle = "#999";
-        ctx.font = "10px Inter, sans-serif";
-        ctx.textAlign = "right";
-        for (let i = 0; i <= 4; i++) {
-            const val = (maxVal / 4) * i;
-            const y = chartH - (val / maxVal) * chartH + 20;
-            ctx.fillText(this._formatCompact(val), 45, y + 4);
-            ctx.strokeStyle = "rgba(0,0,0,0.05)";
-            ctx.beginPath();
-            ctx.moveTo(50, y);
-            ctx.lineTo(W - 10, y);
-            ctx.stroke();
-        }
     }
 
     _renderDeptChart(departments) {
         const canvas = this.deptChartRef.el;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
+        if (!canvas || !departments) return;
+        this._destroyChart('dept');
 
-        const W = canvas.width = canvas.parentElement.clientWidth;
         const entries = Object.entries(departments || {});
-        const H = canvas.height = Math.max(200, entries.length * 40 + 40);
-
-        ctx.clearRect(0, 0, W, H);
         if (entries.length === 0) return;
 
-        const maxVal = Math.max(...entries.map(([, d]) => Math.max(d.current, d.forecast))) || 1;
-        const barH = 14;
-
         entries.sort((a, b) => b[1].forecast - a[1].forecast);
-        entries.forEach(([dept, data], i) => {
-            const y = 20 + i * 40;
+        const labels = entries.map(([name]) => name.substring(0, 20));
+        const currentData = entries.map(([, d]) => d.current);
+        const forecastData = entries.map(([, d]) => d.forecast);
 
-            // Dept label
-            ctx.fillStyle = "#333";
-            ctx.font = "11px Inter, sans-serif";
-            ctx.textAlign = "left";
-            ctx.fillText(dept.substring(0, 25), 10, y);
-
-            // Current bar
-            const barArea = W - 200;
-            const cw = (data.current / maxVal) * barArea;
-            ctx.fillStyle = "rgba(33, 67, 95, 0.4)";
-            ctx.beginPath();
-            ctx.roundRect(180, y + 4, cw, barH, 3);
-            ctx.fill();
-
-            // Forecast bar
-            const fw = (data.forecast / maxVal) * barArea;
-            ctx.fillStyle = "rgba(39, 174, 96, 0.6)";
-            ctx.beginPath();
-            ctx.roundRect(180, y + 4 + barH + 2, fw, barH, 3);
-            ctx.fill();
-
-            // Values
-            ctx.fillStyle = "#999";
-            ctx.font = "9px Inter, sans-serif";
-            ctx.textAlign = "left";
-            ctx.fillText(this._formatCompact(data.current), 180 + cw + 4, y + 15);
-            ctx.fillText(this._formatCompact(data.forecast), 180 + fw + 4, y + 31);
+        this.chartInstances.dept = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: _t('Current'),
+                        data: currentData,
+                        backgroundColor: CHART_COLORS.blueAlpha,
+                        borderColor: CHART_COLORS.blue,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                    {
+                        label: _t('Forecast'),
+                        data: forecastData,
+                        backgroundColor: CHART_COLORS.greenAlpha,
+                        borderColor: CHART_COLORS.green,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                indexAxis: 'y',
+                plugins: {
+                    ...CHART_DEFAULTS.plugins,
+                    legend: { display: true, position: 'top',
+                        labels: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 },
+                            usePointStyle: true, pointStyle: 'rectRounded', padding: 16 }
+                    },
+                    tooltip: {
+                        ...CHART_DEFAULTS.plugins.tooltip,
+                        callbacks: {
+                            label: (ctx) => ` ${ctx.dataset.label}: ${this._formatCompact(ctx.raw)}`,
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        ...CHART_DEFAULTS.scales.x,
+                        ticks: {
+                            ...CHART_DEFAULTS.scales.x.ticks,
+                            callback: (v) => this._formatCompact(v),
+                        },
+                    },
+                    y: { ...CHART_DEFAULTS.scales.y, beginAtZero: false },
+                },
+            },
         });
     }
 
     _renderEmployerChart(employees) {
         const canvas = this.employerChartRef.el;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
+        if (!canvas || !employees || employees.length === 0) return;
+        this._destroyChart('employer');
 
-        const W = canvas.width = canvas.parentElement.clientWidth;
-        const H = canvas.height = 200;
-        ctx.clearRect(0, 0, W, H);
-
-        if (!employees || employees.length === 0) return;
-
-        // Top 10 by employer cost increase
         const sorted = [...employees]
-            .sort((a, b) => (b.forecast_employer - b.current_employer) - (a.forecast_employer - a.current_employer))
-            .slice(0, 10);
+            .sort((a, b) => (b.forecast_employer - b.current_employer) -
+                (a.forecast_employer - a.current_employer))
+            .slice(0, 12);
 
-        const maxDelta = Math.max(...sorted.map(e => Math.abs(e.forecast_employer - e.current_employer))) || 1;
-        const barW = (W - 60) / sorted.length;
+        const labels = sorted.map(e => e.name.split(' ')[0]);
+        const deltas = sorted.map(e => e.forecast_employer - e.current_employer);
+        const colors = deltas.map(d => d >= 0 ? CHART_COLORS.redAlpha : CHART_COLORS.greenAlpha);
+        const borders = deltas.map(d => d >= 0 ? CHART_COLORS.red : CHART_COLORS.green);
 
-        sorted.forEach((emp, i) => {
-            const delta = emp.forecast_employer - emp.current_employer;
-            const x = 40 + i * barW;
-            const h = Math.abs(delta / maxDelta) * (H - 60);
-            const y = delta >= 0 ? H - 40 - h : H - 40;
-
-            ctx.fillStyle = delta >= 0 ? "rgba(231, 76, 60, 0.6)" : "rgba(39, 174, 96, 0.6)";
-            ctx.beginPath();
-            ctx.roundRect(x + 2, y, barW - 4, h, 3);
-            ctx.fill();
-
-            ctx.fillStyle = "#999";
-            ctx.font = "9px Inter, sans-serif";
-            ctx.textAlign = "center";
-            const name = emp.name.split(" ")[0].substring(0, 8);
-            ctx.fillText(name, x + barW / 2, H - 8);
+        this.chartInstances.employer = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: _t('Cost Change'),
+                    data: deltas,
+                    backgroundColor: colors,
+                    borderColor: borders,
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }],
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                plugins: {
+                    ...CHART_DEFAULTS.plugins,
+                    tooltip: {
+                        ...CHART_DEFAULTS.plugins.tooltip,
+                        callbacks: {
+                            label: (ctx) => {
+                                const val = ctx.raw;
+                                const sign = val >= 0 ? '+' : '';
+                                return ` ${sign}${this._formatCompact(val)}`;
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    ...CHART_DEFAULTS.scales,
+                    y: {
+                        ...CHART_DEFAULTS.scales.y,
+                        beginAtZero: false,
+                        ticks: {
+                            ...CHART_DEFAULTS.scales.y.ticks,
+                            callback: (v) => this._formatCompact(v),
+                        },
+                    },
+                },
+            },
         });
     }
 
@@ -305,6 +442,39 @@ class WfpDashboard extends Component {
         if (id) this._selectScenario(id);
     }
 
+    async onTabSwitch(tab) {
+        this.state.activeTab = tab;
+        if (tab === 'labor' && !this.state.laborLoaded) {
+            await this._loadLaborData();
+        }
+        if (tab === 'labor' && this.state.laborData) {
+            setTimeout(() => this._renderLaborCharts(), 150);
+        }
+    }
+
+    async _loadLaborData() {
+        try {
+            const data = await this.orm.call(
+                "wfp.planning.scenario",
+                "get_labor_analytics_data",
+                [],
+                { department_id: false, date_from: false, date_to: false }
+            );
+            this.state.laborData = data;
+            this.state.laborLoaded = true;
+            setTimeout(() => this._renderLaborCharts(), 150);
+        } catch (e) {
+            console.error("WFP: Error loading labor data", e);
+        }
+    }
+
+    formatMoney(val) {
+        if (!val && val !== 0) return '0';
+        if (Math.abs(val) >= 1000000) return (val / 1000000).toFixed(1) + 'M';
+        if (Math.abs(val) >= 1000) return (val / 1000).toFixed(0) + 'K';
+        return Math.round(val).toLocaleString();
+    }
+
     onSearchInput(ev) {
         this.state.searchQuery = ev.target.value;
     }
@@ -316,6 +486,99 @@ class WfpDashboard extends Component {
             this.state.sortField = field;
             this.state.sortOrder = "desc";
         }
+    }
+
+    async onCompareScenarioChange(ev) {
+        const id = parseInt(ev.target.value);
+        if (!id) {
+            this.state.compareScenarioId = null;
+            this._destroyChart('compare');
+            return;
+        }
+        this.state.compareScenarioId = id;
+        // Load comparison data
+        try {
+            const compareData = await this.orm.call(
+                "wfp.planning.scenario",
+                "get_dashboard_data",
+                [id]
+            );
+            this._renderCompareChart(compareData);
+        } catch (e) {
+            console.error("WFP: comparison load error", e);
+        }
+    }
+
+    _renderCompareChart(compareData) {
+        const canvas = this.compareChartRef.el;
+        if (!canvas) return;
+        this._destroyChart('compare');
+
+        const mainData = this.state.dashboardData;
+        if (!mainData || !compareData) return;
+
+        const mainDepts = mainData.departments || {};
+        const compareDepts = compareData.departments || {};
+        const allDepts = [...new Set([...Object.keys(mainDepts), ...Object.keys(compareDepts)])];
+        allDepts.sort();
+
+        const mainForecast = allDepts.map(d => (mainDepts[d] || {}).forecast || 0);
+        const compareForecast = allDepts.map(d => (compareDepts[d] || {}).forecast || 0);
+        const labels = allDepts.map(d => d.substring(0, 15));
+
+        const mainName = this.state.scenarios.find(s => s.id === this.state.selectedScenarioId)?.name || 'Scenario A';
+        const compareName = this.state.scenarios.find(s => s.id === this.state.compareScenarioId)?.name || 'Scenario B';
+
+        this.chartInstances.compare = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: mainName,
+                        data: mainForecast,
+                        backgroundColor: CHART_COLORS.blueAlpha,
+                        borderColor: CHART_COLORS.blue,
+                        borderWidth: 2,
+                        borderRadius: 4,
+                    },
+                    {
+                        label: compareName,
+                        data: compareForecast,
+                        backgroundColor: CHART_COLORS.purpleAlpha,
+                        borderColor: CHART_COLORS.purple,
+                        borderWidth: 2,
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                plugins: {
+                    ...CHART_DEFAULTS.plugins,
+                    legend: { display: true, position: 'top',
+                        labels: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 },
+                            usePointStyle: true, pointStyle: 'rectRounded', padding: 16 }
+                    },
+                    tooltip: {
+                        ...CHART_DEFAULTS.plugins.tooltip,
+                        callbacks: {
+                            label: (ctx) => ` ${ctx.dataset.label}: ${this._formatCompact(ctx.raw)}`,
+                        },
+                    },
+                },
+                scales: {
+                    ...CHART_DEFAULTS.scales,
+                    y: {
+                        ...CHART_DEFAULTS.scales.y,
+                        ticks: {
+                            ...CHART_DEFAULTS.scales.y.ticks,
+                            callback: (v) => this._formatCompact(v),
+                        },
+                    },
+                },
+            },
+        });
     }
 
     async onNewScenario() {
@@ -361,6 +624,116 @@ class WfpDashboard extends Component {
             view_mode: "form",
             views: [[false, "form"]],
             target: "current",
+        });
+    }
+
+    // ==========================================
+    // LABOR CHARTS
+    // ==========================================
+    _renderLaborCharts() {
+        const data = this.state.laborData;
+        if (!data || typeof Chart === 'undefined') return;
+        this._renderLaborHoursTrend(data.hours_trend);
+        this._renderLaborAttendanceDay(data.attendance_by_day);
+        this._renderLaborDeptUtil(data.dept_breakdown);
+    }
+
+    _renderLaborHoursTrend(trend) {
+        const canvas = document.getElementById('laborHoursTrendChart');
+        if (!canvas || !trend || !trend.length) return;
+        this._destroyChart('laborHours');
+        this.chartInstances['laborHours'] = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: trend.map(t => t.week),
+                datasets: [
+                    {
+                        label: 'Hours Worked',
+                        data: trend.map(t => t.hours),
+                        backgroundColor: CHART_COLORS.blueAlpha,
+                        borderColor: CHART_COLORS.blue,
+                        borderWidth: 2,
+                        borderRadius: 6,
+                    },
+                    {
+                        label: 'Target',
+                        data: trend.map(t => t.target),
+                        type: 'line',
+                        borderColor: CHART_COLORS.orange,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false,
+                    },
+                ],
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                plugins: {
+                    ...CHART_DEFAULTS.plugins,
+                    legend: { display: true, labels: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 } } },
+                },
+            },
+        });
+    }
+
+    _renderLaborAttendanceDay(byDay) {
+        const canvas = document.getElementById('laborAttendanceDayChart');
+        if (!canvas || !byDay) return;
+        this._destroyChart('laborDay');
+        const labels = Object.keys(byDay);
+        const values = Object.values(byDay);
+        this.chartInstances['laborDay'] = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Check-ins',
+                    data: values,
+                    backgroundColor: labels.map((_, i) => CHART_COLORS.palette[i % CHART_COLORS.palette.length]),
+                    borderRadius: 8,
+                    barPercentage: 0.6,
+                }],
+            },
+            options: CHART_DEFAULTS,
+        });
+    }
+
+    _renderLaborDeptUtil(depts) {
+        const canvas = document.getElementById('laborDeptUtilChart');
+        if (!canvas || !depts || !depts.length) return;
+        this._destroyChart('laborDept');
+        this.chartInstances['laborDept'] = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: depts.map(d => d.name),
+                datasets: [
+                    {
+                        label: 'Hours Worked',
+                        data: depts.map(d => d.hours),
+                        backgroundColor: CHART_COLORS.blueAlpha,
+                        borderColor: CHART_COLORS.blue,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                    {
+                        label: 'Target Hours',
+                        data: depts.map(d => d.target),
+                        backgroundColor: CHART_COLORS.orangeAlpha,
+                        borderColor: CHART_COLORS.orange,
+                        borderWidth: 1,
+                        borderRadius: 4,
+                    },
+                ],
+            },
+            options: {
+                ...CHART_DEFAULTS,
+                indexAxis: 'y',
+                plugins: {
+                    ...CHART_DEFAULTS.plugins,
+                    legend: { display: true, labels: { color: CHART_COLORS.text, font: { family: "'Inter', sans-serif", size: 11 } } },
+                },
+            },
         });
     }
 }

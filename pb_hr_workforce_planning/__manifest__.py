@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Workforce Planning & Compensation Forecasting',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Salary simulation, scenario modelling, merit cycles, and total employer cost forecasting',
     'description': """
@@ -66,6 +66,7 @@
     'assets': {
         'web.assets_backend': [
             'pb_hr_workforce_planning/static/src/css/workforce_planning.css',
+            'pb_hr_workforce_planning/static/src/css/wfp_views_enhanced.css',
             'pb_hr_workforce_planning/static/src/js/workforce_planning_dashboard.js',
             'pb_hr_workforce_planning/static/src/xml/workforce_planning_templates.xml',
         ],
