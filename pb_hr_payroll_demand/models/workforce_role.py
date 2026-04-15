@@ -40,8 +40,8 @@ class WorkforceRole(models.Model):
         string='Key Performance Indicators',
     )
     skill_ids = fields.Many2many(
-        'pb.workforce.skill',
-        'pb_workforce_skill_role_rel',
+        'hr.skill',
+        'pb_workforce_hr_skill_role_rel',
         'role_id',
         'skill_id',
         string='Required Skills',

@@ -34,7 +34,7 @@
                     <field name="color"/>
                     <templates>
                         <t t-name="card">
-                            <div t-attf-class="oe_kanban_global_click pb-capability-card o_kanban_card oe_kanban_color_#{kanban_getcolor(record.color.raw_value)}">
+                            <div class="oe_kanban_global_click pb-capability-card o_kanban_card">
                                 <div class="pb-capability-card__header">
                                     <div class="pb-capability-card__name">
                                         <strong t-esc="record.name.value"/>
@@ -117,8 +117,8 @@
                                     </list>
                                 </field>
                             </page>
-                            <page string="Skills">
-                                <field name="skill_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                            <page string="Required Skills">
+                                <field name="skill_ids" widget="many2many_tags"/>
                             </page>
                             <page string="Analytics">
                                 <group>
