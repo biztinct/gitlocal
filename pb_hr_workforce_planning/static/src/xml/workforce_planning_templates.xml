@@ -50,7 +50,23 @@
                      t-if="state.hasLaborModule">
                     <i class="fa fa-clock-o wfp-tab-icon"/>
                     Labor Analytics
-                    <span class="wfp-tab-badge">Phase B</span>
+                </div>
+                <div t-attf-class="wfp-tab #{state.activeTab === 'budget' ? 'active' : ''}"
+                     t-on-click="() => this.onTabSwitch('budget')"
+                     t-if="state.selectedScenarioId">
+                    <i class="fa fa-balance-scale wfp-tab-icon"/>
+                    Budget &amp; Actuals
+                </div>
+                <div t-attf-class="wfp-tab #{state.activeTab === 'analytics' ? 'active' : ''}"
+                     t-on-click="() => this.onTabSwitch('analytics')"
+                     t-if="state.selectedScenarioId">
+                    <i class="fa fa-diamond wfp-tab-icon"/>
+                    Analytics
+                </div>
+                <div t-attf-class="wfp-tab #{state.activeTab === 'demand' ? 'active' : ''}"
+                     t-on-click="() => this.onTabSwitch('demand')">
+                    <i class="fa fa-sitemap wfp-tab-icon"/>
+                    Workforce Demand
                 </div>
             </div>
 
@@ -327,6 +343,72 @@
                         <div class="wfp-chart-body"><canvas id="laborDeptUtilChart"/></div>
                     </div>
                 </div>
+
+                <!-- PHASE F: OT Breakdown + Absence Impact (side-by-side) -->
+                <div t-if="state.laborData" class="wfp-chart-row">
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-clock-o"/> Overtime Breakdown (Hours &amp; Cost)</div>
+                        <div class="wfp-chart-body"><canvas t-ref="otBreakdownChart"/></div>
+                    </div>
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-calendar-times-o"/> Absence Impact by Type</div>
+                        <div class="wfp-chart-body"><canvas t-ref="absenceChart"/></div>
+                    </div>
+                </div>
+
+                <!-- PHASE F: Labor Cost Forecast -->
+                <div t-if="state.laborData and state.laborData.labor_forecast.length" class="wfp-charts-row equal">
+                    <div class="wfp-chart-card wfp-chart-wide">
+                        <div class="wfp-chart-title">
+                            <i class="fa fa-line-chart"/> Labor Cost Forecast — Next 12 Weeks
+                            <span style="font-size:11px;color:var(--wfp-text-muted);margin-left:8px;">
+                                Shaded area = ±10% confidence band
+                            </span>
+                        </div>
+                        <div class="wfp-chart-body"><canvas t-ref="laborForecastChart"/></div>
+                    </div>
+                </div>
+
+                <!-- PHASE F: Employee Utilization Heatmap -->
+                <div t-if="state.laborData and state.laborData.utilization_heatmap and state.laborData.utilization_heatmap.employees.length" class="wfp-table-card">
+                    <div class="wfp-table-header">
+                        <div class="wfp-chart-title"><i class="fa fa-th"/> Employee Utilization Heatmap — Last 14 Days</div>
+                        <div style="font-size:11px;color:var(--wfp-text-muted);">
+                            <span class="wfp-hm-legend" style="background:hsl(0,70%,60%);">&lt;4h</span>
+                            <span class="wfp-hm-legend" style="background:hsl(35,80%,55%);">4-6h</span>
+                            <span class="wfp-hm-legend" style="background:hsl(120,55%,45%);">6-8h</span>
+                            <span class="wfp-hm-legend" style="background:hsl(35,80%,55%);">8-10h</span>
+                            <span class="wfp-hm-legend" style="background:hsl(0,70%,60%);">&gt;10h</span>
+                        </div>
+                    </div>
+                    <div class="wfp-table-scroll">
+                        <table class="wfp-table wfp-heatmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <t t-foreach="state.laborData.utilization_heatmap.dates" t-as="dt" t-key="dt_index">
+                                        <th class="wfp-hm-th"><t t-esc="dt"/></th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.laborData.utilization_heatmap.employees" t-as="emp" t-key="emp_index">
+                                    <tr>
+                                        <td style="font-weight:600;white-space:nowrap;"><t t-esc="emp.name"/></td>
+                                        <t t-foreach="emp.hours" t-as="h" t-key="h_index">
+                                            <td t-attf-class="wfp-hm-cell"
+                                                t-attf-style="background: #{h == 0 ? '#f1f5f9' : h &lt; 4 ? 'hsl(0,70%,60%)' : h &lt; 6 ? 'hsl(35,80%,55%)' : h &lt;= 8 ? 'hsl(120,55%,45%)' : h &lt;= 10 ? 'hsl(35,80%,55%)' : 'hsl(0,70%,60%)'}; color: #{h == 0 ? '#94a3b8' : '#fff'};">
+                                                <t t-esc="h"/>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- EMPLOYEE TABLE -->
                 <div t-if="state.laborData" class="wfp-table-card">
                     <div class="wfp-table-header">
                         <div class="wfp-chart-title"><i class="fa fa-list"/> Employee Hours &amp; Cost Breakdown</div>
@@ -354,6 +436,370 @@
                     <i class="fa fa-clock-o fa-3x"/>
                     <h2>Loading Labor Analytics...</h2>
                     <p>Analyzing attendance, overtime, and shift data.</p>
+                </div>
+            </div>
+
+            <!-- DASHBOARD CONTENT: BUDGET & ACTUALS TAB -->
+            <div t-if="!state.loading and state.activeTab === 'budget'" class="wfp-content">
+
+                <!-- BUDGET KPI CARDS -->
+                <div t-if="state.budgetData" class="wfp-kpi-row">
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Total Forecast</div>
+                        <div class="wfp-kpi-value"><t t-esc="formatMoney(state.budgetData.summary.total_forecast)"/></div>
+                        <div class="wfp-kpi-sub"><t t-esc="state.budgetData.summary.months_total"/> months planned</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Total Actual Spend</div>
+                        <div class="wfp-kpi-value" style="color:var(--wfp-accent-green);"><t t-esc="formatMoney(state.budgetData.summary.total_actual)"/></div>
+                        <div class="wfp-kpi-sub"><t t-esc="state.budgetData.summary.months_with_data"/> months with payroll data</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Variance</div>
+                        <div t-attf-class="wfp-kpi-value #{state.budgetData.summary.total_variance >= 0 ? '' : 'wfp-kpi-negative'}">
+                            <t t-esc="formatMoney(state.budgetData.summary.total_variance)"/>
+                        </div>
+                        <div class="wfp-kpi-sub"><t t-esc="state.budgetData.summary.variance_pct"/>% variance</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Budget Utilization</div>
+                        <div class="wfp-kpi-value"><t t-esc="state.budgetData.summary.budget_utilization"/>%</div>
+                        <div class="wfp-kpi-sub">of <t t-esc="formatMoney(state.budgetData.summary.scenario_budget)"/> budget</div>
+                    </div>
+                </div>
+
+                <!-- BUDGET CHARTS ROW -->
+                <div t-if="state.budgetData" class="wfp-chart-row">
+                    <div class="wfp-chart-card" style="flex:2;">
+                        <div class="wfp-chart-title"><i class="fa fa-area-chart"/> Forecast vs Actual — Monthly Timeline</div>
+                        <div class="wfp-chart-body">
+                            <canvas t-ref="budgetTimelineChart"/>
+                        </div>
+                    </div>
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-pie-chart"/> Budget Gauge</div>
+                        <div class="wfp-chart-body" style="max-height:260px;">
+                            <canvas t-ref="budgetGaugeChart"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DEPT BREAKDOWN + AUDIT TRAIL -->
+                <div t-if="state.budgetData" class="wfp-chart-row">
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-building"/> Department: Forecast vs Actual</div>
+                        <div class="wfp-chart-body">
+                            <canvas t-ref="budgetDeptChart"/>
+                        </div>
+                    </div>
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-history"/> Audit Trail</div>
+                        <div class="wfp-table-scroll" style="max-height:350px;">
+                            <t t-if="state.budgetData.audit and state.budgetData.audit.length">
+                                <div t-foreach="state.budgetData.audit" t-as="entry" t-key="entry_index"
+                                     class="wfp-audit-entry">
+                                    <div class="wfp-audit-dot">
+                                        <i t-attf-class="fa #{entry.action === 'approve' ? 'fa-check-circle' : entry.action === 'calculate' ? 'fa-calculator' : entry.action === 'reject' ? 'fa-times-circle' : 'fa-circle-o'}"
+                                           t-attf-style="color: #{entry.action === 'approve' ? 'var(--wfp-accent-green)' : entry.action === 'reject' ? 'var(--wfp-accent-red)' : 'var(--wfp-accent-blue)'};"/>
+                                    </div>
+                                    <div class="wfp-audit-body">
+                                        <div class="wfp-audit-action">
+                                            <strong><t t-esc="entry.action"/></strong>
+                                            <span class="wfp-audit-user"> by <t t-esc="entry.user"/></span>
+                                        </div>
+                                        <div class="wfp-audit-meta">
+                                            <t t-if="entry.from_state">
+                                                <span class="wfp-state-badge wfp-state-sm"><t t-esc="entry.from_state"/></span>
+                                                <i class="fa fa-arrow-right" style="margin: 0 6px; font-size:10px; color:#94a3b8;"/>
+                                            </t>
+                                            <span class="wfp-state-badge wfp-state-sm"><t t-esc="entry.to_state"/></span>
+                                            <span class="wfp-audit-date"><t t-esc="entry.date"/></span>
+                                        </div>
+                                        <div t-if="entry.note" class="wfp-audit-note"><t t-esc="entry.note"/></div>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="wfp-empty" style="padding:40px;">
+                                    <i class="fa fa-history fa-2x" style="color:#cbd5e1;"/>
+                                    <p style="margin-top:12px;">No audit trail entries yet</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOADING STATE -->
+                <div t-if="!state.budgetData" class="wfp-empty">
+                    <div class="wfp-spinner"/>
+                    <h2>Loading Budget &amp; Actuals...</h2>
+                    <p>Comparing forecast projections with real payroll data.</p>
+                </div>
+            </div>
+
+            <!-- DASHBOARD CONTENT: ANALYTICS TAB (Phase D) -->
+            <div t-if="!state.loading and state.activeTab === 'analytics'" class="wfp-content">
+
+                <!-- ANALYTICS KPI CARDS -->
+                <div t-if="state.analyticsData" class="wfp-kpi-row">
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Avg Compa Ratio</div>
+                        <div class="wfp-kpi-value"><t t-esc="state.analyticsData.summary.avg_compa"/></div>
+                        <div class="wfp-kpi-sub">market position</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Avg Increase</div>
+                        <div class="wfp-kpi-value"><t t-esc="state.analyticsData.summary.avg_increase"/>%</div>
+                        <div class="wfp-kpi-sub">across all employees</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">High Performers</div>
+                        <div class="wfp-kpi-value" style="color:var(--wfp-accent-green);"><t t-esc="state.analyticsData.summary.high_performers"/></div>
+                        <div class="wfp-kpi-sub">rated 4+ / 5</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Under Market</div>
+                        <div t-attf-class="wfp-kpi-value #{state.analyticsData.summary.under_market > 0 ? 'wfp-kpi-negative' : ''}">
+                            <t t-esc="state.analyticsData.summary.under_market"/>
+                        </div>
+                        <div class="wfp-kpi-sub">compa &lt; 0.90</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Over Market</div>
+                        <div class="wfp-kpi-value" style="color:var(--wfp-accent-orange);"><t t-esc="state.analyticsData.summary.over_market"/></div>
+                        <div class="wfp-kpi-sub">compa &gt; 1.10</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Flight Risk (High)</div>
+                        <div t-attf-class="wfp-kpi-value #{state.analyticsData.summary.flight_risk_high > 0 ? 'wfp-kpi-negative' : ''}">
+                            <t t-esc="state.analyticsData.summary.flight_risk_high"/>
+                        </div>
+                        <div class="wfp-kpi-sub">employees at risk</div>
+                    </div>
+                </div>
+
+                <!-- ROW 1: Scatter + Waterfall -->
+                <div t-if="state.analyticsData" class="wfp-chart-row">
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title">
+                            <i class="fa fa-dot-circle-o"/> Compa Ratio vs Increase %
+                            <span style="font-size:11px;color:var(--wfp-text-muted);margin-left:8px;">
+                                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:3px;"/>4-5
+                                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#3b82f6;margin:0 3px;"/>3
+                                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d97706;margin:0 3px;"/>2
+                                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#dc2626;margin:0 3px;"/>1
+                            </span>
+                        </div>
+                        <div class="wfp-chart-body">
+                            <canvas t-ref="scatterChart"/>
+                        </div>
+                    </div>
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-bar-chart"/> Cost Component Waterfall</div>
+                        <div class="wfp-chart-body">
+                            <canvas t-ref="waterfallChart"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 2: Performance + Grade Distribution -->
+                <div t-if="state.analyticsData" class="wfp-chart-row">
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-star"/> Performance Distribution</div>
+                        <div class="wfp-chart-body">
+                            <canvas t-ref="perfDistChart"/>
+                        </div>
+                    </div>
+                    <div class="wfp-chart-card" style="flex:1;">
+                        <div class="wfp-chart-title"><i class="fa fa-pie-chart"/> Cost by Pay Grade</div>
+                        <div class="wfp-chart-body">
+                            <canvas t-ref="gradeDistChart"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROW 3: Department Cost Heatmap Table -->
+                <div t-if="state.analyticsData and state.analyticsData.heatmap.length" class="wfp-table-card">
+                    <div class="wfp-table-header">
+                        <div class="wfp-chart-title"><i class="fa fa-th"/> Department Cost Heatmap — Average per Employee</div>
+                    </div>
+                    <div class="wfp-table-scroll">
+                        <table class="wfp-table">
+                            <thead>
+                                <tr>
+                                    <th>Department</th>
+                                    <th>HC</th>
+                                    <th>Avg Base</th>
+                                    <th>Avg Allowance</th>
+                                    <th>Avg Employer Cost</th>
+                                    <th>Avg Total</th>
+                                    <th>Dept Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.analyticsData.heatmap" t-as="dept" t-key="dept_index">
+                                    <tr>
+                                        <td style="font-weight:600;color:var(--wfp-text-primary);"><t t-esc="dept.department"/></td>
+                                        <td><t t-esc="dept.headcount"/></td>
+                                        <td><t t-esc="formatMoney(dept.base_avg)"/></td>
+                                        <td><t t-esc="formatMoney(dept.allowance_avg)"/></td>
+                                        <td><t t-esc="formatMoney(dept.employer_avg)"/></td>
+                                        <td style="font-weight:600;"><t t-esc="formatMoney(dept.total_avg)"/></td>
+                                        <td style="font-weight:700;color:var(--wfp-accent-blue);"><t t-esc="formatMoney(dept.total)"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- LOADING STATE -->
+                <div t-if="!state.analyticsData" class="wfp-empty">
+                    <div class="wfp-spinner"/>
+                    <h2>Loading Analytics...</h2>
+                    <p>Analyzing compa ratios, cost components, and performance data.</p>
+                </div>
+            </div>
+
+            <!-- DASHBOARD CONTENT: WORKFORCE DEMAND TAB -->
+            <div t-if="!state.loading and state.activeTab === 'demand'" class="wfp-content">
+
+                <!-- DEMAND KPI CARDS -->
+                <div t-if="state.demandData" class="wfp-kpi-row">
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Total Applicants</div>
+                        <div class="wfp-kpi-value" style="color:var(--wfp-accent-blue);"><t t-esc="state.demandData.total_applicants"/></div>
+                        <div class="wfp-kpi-sub">across <t t-esc="state.demandData.pipeline.length"/> stages</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Total Skills Tracked</div>
+                        <div class="wfp-kpi-value" style="color:var(--wfp-accent-green);"><t t-esc="state.demandData.skills.length"/></div>
+                        <div class="wfp-kpi-sub">unique skill types</div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Turnover Rate</div>
+                        <div t-attf-class="wfp-kpi-value #{state.demandData.attrition.turnover_rate > 10 ? 'wfp-kpi-negative' : ''}">
+                            <t t-esc="state.demandData.attrition.turnover_rate"/>%
+                        </div>
+                        <div class="wfp-kpi-sub">
+                            <t t-esc="state.demandData.attrition.exits"/> exits /
+                            <t t-esc="state.demandData.attrition.hires"/> hires
+                        </div>
+                    </div>
+                    <div class="wfp-kpi-card">
+                        <div class="wfp-kpi-label">Net Change</div>
+                        <div t-attf-class="wfp-kpi-value #{state.demandData.attrition.net_change >= 0 ? '' : 'wfp-kpi-negative'}">
+                            <t t-if="state.demandData.attrition.net_change > 0">+</t><t t-esc="state.demandData.attrition.net_change"/>
+                        </div>
+                        <div class="wfp-kpi-sub"><t t-esc="state.demandData.attrition.promotions"/> promotions</div>
+                    </div>
+                </div>
+
+                <!-- RECRUITMENT FUNNEL + DEPT RECRUITMENT -->
+                <div t-if="state.demandData" class="wfp-chart-row">
+                    <div class="wfp-chart-card" style="flex:1.2;">
+                        <div class="wfp-chart-title"><i class="fa fa-filter"/> Recruitment Pipeline</div>
+                        <div class="wfp-chart-body"><canvas id="recruitmentFunnelChart"/></div>
+                    </div>
+                    <div class="wfp-chart-card" style="flex:0.8;">
+                        <div class="wfp-chart-title"><i class="fa fa-building-o"/> Recruitment by Department</div>
+                        <div class="wfp-chart-body"><canvas id="deptRecruitmentChart"/></div>
+                    </div>
+                </div>
+
+                <!-- SKILLS GAP -->
+                <div t-if="state.demandData and state.demandData.skills.length" class="wfp-charts-row equal">
+                    <div class="wfp-chart-card wfp-chart-wide">
+                        <div class="wfp-chart-title">
+                            <i class="fa fa-bar-chart"/> Skills Coverage
+                            <span style="font-size:11px;color:var(--wfp-text-muted);margin-left:8px;">
+                                % of workforce with each skill (green ≥50%, amber ≥25%, red &lt;25%)
+                            </span>
+                        </div>
+                        <div class="wfp-chart-body"><canvas id="skillsGapChart"/></div>
+                    </div>
+                </div>
+
+                <!-- CAPABILITIES TABLE -->
+                <div t-if="state.demandData and state.demandData.capabilities.length" class="wfp-table-card">
+                    <div class="wfp-table-header">
+                        <div class="wfp-chart-title"><i class="fa fa-cogs"/> Organizational Capabilities</div>
+                    </div>
+                    <div class="wfp-table-scroll">
+                        <table class="wfp-table">
+                            <thead><tr><th>Capability</th><th>Type</th><th>Maturity</th><th>Roles</th><th>Role Names</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="state.demandData.capabilities" t-as="cap" t-key="cap_index">
+                                    <tr>
+                                        <td style="font-weight:600;"><t t-esc="cap.name"/></td>
+                                        <td><span class="wfp-pct-badge"><t t-esc="cap.type"/></span></td>
+                                        <td><t t-esc="cap.maturity"/></td>
+                                        <td><t t-esc="cap.role_count"/></td>
+                                        <td><t t-esc="cap.roles.join(', ')"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SKILLS DETAIL TABLE -->
+                <div t-if="state.demandData and state.demandData.skills.length" class="wfp-table-card">
+                    <div class="wfp-table-header">
+                        <div class="wfp-chart-title"><i class="fa fa-graduation-cap"/> Skills Detail</div>
+                    </div>
+                    <div class="wfp-table-scroll">
+                        <table class="wfp-table">
+                            <thead><tr><th>Skill</th><th>Employees</th><th>Coverage</th><th>Proficiency Levels</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="state.demandData.skills" t-as="sk" t-key="sk_index">
+                                    <tr>
+                                        <td style="font-weight:600;"><t t-esc="sk.skill"/></td>
+                                        <td><t t-esc="sk.employees"/></td>
+                                        <td>
+                                            <span t-attf-class="wfp-pct-badge #{sk.coverage_pct >= 50 ? 'wfp-pct-mid' : sk.coverage_pct >= 25 ? 'wfp-pct-low' : 'wfp-pct-high'}">
+                                                <t t-esc="sk.coverage_pct"/>%
+                                            </span>
+                                        </td>
+                                        <td style="font-size:12px;color:var(--wfp-text-secondary);">
+                                            <t t-foreach="Object.entries(sk.levels || {})" t-as="lv" t-key="lv_index">
+                                                <span class="wfp-pct-badge" style="margin:1px 2px;"><t t-esc="lv[0]"/>: <t t-esc="lv[1]"/></span>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- DEMAND PLANS TABLE -->
+                <div t-if="state.demandData and state.demandData.demand_plans.length" class="wfp-table-card">
+                    <div class="wfp-table-header">
+                        <div class="wfp-chart-title"><i class="fa fa-tasks"/> Workforce Demand Plans</div>
+                    </div>
+                    <div class="wfp-table-scroll">
+                        <table class="wfp-table">
+                            <thead><tr><th>Role</th><th>Year</th><th>Planned Budget</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <t t-foreach="state.demandData.demand_plans" t-as="dp" t-key="dp_index">
+                                    <tr>
+                                        <td style="font-weight:600;"><t t-esc="dp.role"/></td>
+                                        <td><t t-esc="dp.year"/></td>
+                                        <td><t t-esc="formatMoney(dp.planned_budget)"/></td>
+                                        <td><span class="wfp-pct-badge"><t t-esc="dp.status"/></span></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- LOADING STATE -->
+                <div t-if="!state.demandData" class="wfp-empty">
+                    <div class="wfp-spinner"/>
+                    <h2>Loading Workforce Demand Data...</h2>
+                    <p>Analyzing recruitment pipeline, skills, and talent data.</p>
                 </div>
             </div>
 
