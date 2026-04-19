@@ -53,6 +53,7 @@
                             <field name="budget_amount"/>
                             <field name="allocated_amount"/>
                             <field name="remaining_amount"/>
+                            <field name="approval_progress" widget="progressbar"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
@@ -67,10 +68,27 @@
                                     <field name="recommended_increase" widget="monetary"/>
                                     <field name="recommended_pct"/>
                                     <field name="recommendation_note"/>
-                                    <field name="state" widget="badge"/>
+                                    <field name="guardrail_violations" optional="show" widget="text"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'submitted'"
+                                           decoration-success="state == 'approved'"
+                                           decoration-danger="state == 'rejected'"/>
                                     <field name="currency_id" column_invisible="True"/>
+                                    <button name="action_submit" type="object" string="Submit"
+                                            class="btn-primary btn-sm"
+                                            invisible="state != 'draft'"/>
                                 </list>
                             </field>
+                        </page>
+                        <page string="Approval Chain">
+                            <field name="approval_step_ids"/>
+                        </page>
+                        <page string="Guardrails">
+                            <field name="guardrail_ids" widget="many2many_tags"/>
+                            <div class="alert alert-info mt-3" role="alert">
+                                <strong>Active guardrails</strong> are checked when recommendations are submitted.
+                                Warnings show yellow badges; blocks prevent submission entirely.
+                            </div>
                         </page>
                     </notebook>
                 </sheet>

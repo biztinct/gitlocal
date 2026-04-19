@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Workforce Planning & Compensation Forecasting',
-    'version': '19.0.2.0.0',
+    'version': '19.0.8.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Salary simulation, scenario modelling, merit cycles, and total employer cost forecasting',
     'description': """
@@ -54,6 +54,7 @@
         'views/merit_matrix_views.xml',
         'views/compensation_cycle_views.xml',
         'views/headcount_change_views.xml',
+        'views/approval_guardrail_views.xml',
         # Dashboard
         'views/workforce_planning_dashboard_views.xml',
         # Wizards

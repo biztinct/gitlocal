@@ -96,4 +96,10 @@
         parent="menu_wfp_config_parent"
         action="action_wfp_export_wizard"
         sequence="40"/>
+
+    <menuitem id="menu_wfp_guardrails"
+        name="Budget Guardrails"
+        parent="menu_wfp_config_parent"
+        action="action_wfp_budget_guardrail"
+        sequence="50"/>
 </odoo>

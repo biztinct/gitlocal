@@ -265,8 +265,8 @@
 
 /* ── Dashboard Content ── */
 .wfp-content {
-    padding: 24px 32px;
-    max-width: 1600px;
+    padding: 20px 24px;
+    max-width: 1400px;
     margin: 0 auto;
 }
 
@@ -453,10 +453,10 @@
     background: var(--wfp-bg-card);
     border: 1px solid var(--wfp-border);
     border-radius: var(--wfp-radius);
-    padding: 20px;
+    padding: 16px;
     box-shadow: var(--wfp-shadow-card);
     transition: all 0.3s ease;
-    min-height: 320px;
+    min-height: 0;
     display: flex;
     flex-direction: column;
 }
@@ -488,12 +488,26 @@
 .wfp-chart-body {
     flex: 1;
     position: relative;
-    min-height: 250px;
+    min-height: 180px;
+    max-height: 280px;
 }
 
 .wfp-chart-body canvas {
     width: 100% !important;
-    height: 100% !important;
+    max-height: 280px;
+}
+
+/* ── Chart Row Layout (flex grid for side-by-side) ── */
+.wfp-chart-row {
+    display: flex;
+    gap: var(--wfp-gap, 16px);
+    margin-bottom: 16px;
+    align-items: stretch;
+}
+
+.wfp-chart-row > .wfp-chart-card {
+    flex: 1;
+    min-width: 0;
 }
 
 /* ── Employee Table ── */
@@ -723,6 +737,9 @@
     .wfp-chart-card.wfp-chart-wide {
         grid-column: 1;
     }
+    .wfp-chart-row {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 768px) {
@@ -774,4 +791,101 @@
         box-shadow: none;
         border: 1px solid #ccc;
     }
+}
+
+/* ── Phase C: Audit Trail Timeline ── */
+.wfp-audit-entry {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--wfp-border);
+    transition: background 0.15s;
+}
+.wfp-audit-entry:hover {
+    background: var(--wfp-bg-card-hover);
+}
+.wfp-audit-entry:last-child {
+    border-bottom: none;
+}
+.wfp-audit-dot {
+    flex-shrink: 0;
+    width: 28px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 3px;
+}
+.wfp-audit-dot i {
+    font-size: 16px;
+}
+.wfp-audit-body {
+    flex: 1;
+    min-width: 0;
+}
+.wfp-audit-action {
+    font-size: 13px;
+    color: var(--wfp-text-primary);
+    text-transform: capitalize;
+}
+.wfp-audit-user {
+    color: var(--wfp-text-muted);
+    font-weight: 400;
+}
+.wfp-audit-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+.wfp-audit-date {
+    font-size: 11px;
+    color: var(--wfp-text-muted);
+    margin-left: 8px;
+}
+.wfp-audit-note {
+    font-size: 12px;
+    color: var(--wfp-text-secondary);
+    margin-top: 4px;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.02);
+    border-radius: 6px;
+}
+.wfp-state-sm {
+    font-size: 10px !important;
+    padding: 2px 8px !important;
+    font-weight: 600;
+}
+
+/* Budget negative value styling */
+.wfp-kpi-negative {
+    color: var(--wfp-accent-red) !important;
+}
+
+/* ── Phase F: Utilization Heatmap ── */
+.wfp-heatmap-table th,
+.wfp-heatmap-table td {
+    text-align: center;
+    padding: 4px 6px;
+    font-size: 11px;
+}
+.wfp-hm-cell {
+    font-weight: 700;
+    border-radius: 4px;
+    min-width: 36px;
+    font-size: 11px;
+}
+.wfp-hm-th {
+    font-size: 10px !important;
+    white-space: nowrap;
+    color: var(--wfp-text-muted);
+}
+.wfp-hm-legend {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    margin: 0 2px;
 }

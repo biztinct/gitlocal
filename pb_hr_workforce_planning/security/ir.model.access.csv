@@ -23,3 +23,13 @@ wfp_comparison_user,wfp.scenario.comparison user,model_wfp_scenario_comparison,g
 wfp_tagging_wizard_manager,wfp.tagging.wizard manager,model_wfp_tagging_wizard,group_wfp_manager,1,1,1,1
 wfp_tagging_line_manager,wfp.tagging.wizard.line manager,model_wfp_tagging_wizard_line,group_wfp_manager,1,1,1,1
 wfp_export_wizard_user,wfp.export.wizard user,model_wfp_export_wizard,group_wfp_user,1,1,1,1
+wfp_budget_actual_user,wfp.budget.actual user,model_wfp_budget_actual,group_wfp_user,1,0,0,0
+wfp_budget_actual_manager,wfp.budget.actual manager,model_wfp_budget_actual,group_wfp_manager,1,1,1,1
+wfp_approval_user,wfp.scenario.approval user,model_wfp_scenario_approval,group_wfp_user,1,0,0,0
+wfp_approval_manager,wfp.scenario.approval manager,model_wfp_scenario_approval,group_wfp_manager,1,1,1,1
+wfp_step_user,wfp.approval.step user,model_wfp_approval_step,group_wfp_user,1,0,0,0
+wfp_step_manager,wfp.approval.step manager,model_wfp_approval_step,group_wfp_manager,1,1,1,1
+wfp_guardrail_user,wfp.budget.guardrail user,model_wfp_budget_guardrail,group_wfp_user,1,0,0,0
+wfp_guardrail_admin,wfp.budget.guardrail admin,model_wfp_budget_guardrail,group_wfp_admin,1,1,1,1
+wfp_version_user,wfp.scenario.version user,model_wfp_scenario_version,group_wfp_user,1,0,0,0
+wfp_version_manager,wfp.scenario.version manager,model_wfp_scenario_version,group_wfp_manager,1,1,1,1

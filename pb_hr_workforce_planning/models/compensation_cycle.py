@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class WfpCompensationCycle(models.Model):
@@ -64,6 +65,23 @@ class WfpCompensationCycle(models.Model):
         compute='_compute_recommendation_count',
     )
 
+    # Phase E: Approval chain + guardrails
+    approval_step_ids = fields.One2many(
+        'wfp.approval.step', 'cycle_id',
+        string='Approval Chain',
+    )
+    guardrail_ids = fields.Many2many(
+        'wfp.budget.guardrail',
+        'wfp_cycle_guardrail_rel',
+        'cycle_id', 'guardrail_id',
+        string='Budget Guardrails',
+        help="Guardrails enforced during this cycle.",
+    )
+    approval_progress = fields.Float(
+        string='Approval Progress',
+        compute='_compute_approval_progress',
+    )
+
     @api.depends('recommendation_ids.recommended_increase')
     def _compute_allocated(self):
         for rec in self:
@@ -78,11 +96,58 @@ class WfpCompensationCycle(models.Model):
         for rec in self:
             rec.recommendation_count = len(rec.recommendation_ids)
 
+    def _compute_approval_progress(self):
+        for rec in self:
+            steps = rec.approval_step_ids
+            if not steps:
+                rec.approval_progress = 0
+            else:
+                done = steps.filtered(
+                    lambda s: s.state in ('approved', 'skipped')
+                )
+                rec.approval_progress = (
+                    len(done) / len(steps) * 100
+                )
+
     def action_open(self):
         self.write({'state': 'open'})
 
     def action_review(self):
-        self.write({'state': 'review'})
+        """Submit cycle for approval — activate first step + validate guardrails."""
+        for cycle in self:
+            # Check for blocking guardrails
+            blocks = []
+            guardrail_model = self.env['wfp.budget.guardrail']
+            for rec in cycle.recommendation_ids.filtered(
+                lambda r: r.state == 'submitted'
+            ):
+                violations = guardrail_model.check_recommendation(rec)
+                for v in violations:
+                    if v['level'] == 'block':
+                        blocks.append(
+                            '%s: %s' % (rec.employee_id.name, v['message'])
+                        )
+            if blocks:
+                raise UserError(_(
+                    'Cannot submit — guardrail violations:\n\n%s'
+                ) % '\n'.join(blocks))
+
+            cycle.write({'state': 'review'})
+
+            # Activate first approval step
+            first = cycle.approval_step_ids.filtered(
+                lambda s: s.state == 'pending'
+            ).sorted('sequence')
+            if first:
+                first[0].write({'state': 'active'})
+                if first[0].approver_id:
+                    cycle.activity_schedule(
+                        'mail.mail_activity_data_todo',
+                        user_id=first[0].approver_id.id,
+                        summary=_(
+                            'Compensation cycle "%s" needs your approval (%s)'
+                        ) % (cycle.name, first[0].name),
+                    )
 
     def action_approve(self):
         self.write({'state': 'approved'})
@@ -171,6 +236,14 @@ class WfpCompensationRecommendation(models.Model):
         ('applied', 'Applied'),
     ], string='Status', default='draft')
 
+    guardrail_violations = fields.Text(
+        string='Guardrail Violations',
+        compute='_compute_guardrail_violations',
+    )
+    has_blocking_violation = fields.Boolean(
+        compute='_compute_guardrail_violations',
+    )
+
     @api.depends('current_base', 'new_base')
     def _compute_increase(self):
         for rec in self:
@@ -183,3 +256,35 @@ class WfpCompensationRecommendation(models.Model):
                 ) * 100
             else:
                 rec.recommended_pct = 0.0
+
+    @api.depends('new_base', 'current_base')
+    def _compute_guardrail_violations(self):
+        guardrail_model = self.env['wfp.budget.guardrail']
+        for rec in self:
+            if not rec.new_base:
+                rec.guardrail_violations = ''
+                rec.has_blocking_violation = False
+                continue
+            violations = guardrail_model.check_recommendation(rec)
+            if violations:
+                msgs = []
+                has_block = False
+                for v in violations:
+                    icon = '🔴' if v['level'] == 'block' else '🟡'
+                    msgs.append('%s %s: %s' % (icon, v['rule'], v['message']))
+                    if v['level'] == 'block':
+                        has_block = True
+                rec.guardrail_violations = '\n'.join(msgs)
+                rec.has_blocking_violation = has_block
+            else:
+                rec.guardrail_violations = ''
+                rec.has_blocking_violation = False
+
+    def action_submit(self):
+        """Submit recommendation — blocked if hard guardrail violations."""
+        for rec in self:
+            if rec.has_blocking_violation:
+                raise UserError(_(
+                    'Cannot submit — guardrail violations:\n%s'
+                ) % rec.guardrail_violations)
+            rec.write({'state': 'submitted'})

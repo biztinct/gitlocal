@@ -37,6 +37,7 @@
                     <button name="action_archive" type="object" string="Archive" invisible="state not in ('approved', 'calculated')" icon="fa-archive"/>
                     <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state not in ('calculated', 'archived')" icon="fa-undo"/>
                     <button name="action_duplicate_scenario" type="object" string="Duplicate" icon="fa-copy"/>
+                    <button name="action_save_version" type="object" string="Save Version" icon="fa-save" class="btn-secondary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,calculated,approved"/>
                 </header>
                 <sheet>
@@ -113,6 +114,20 @@
                         </page>
                         <page string="Notes" name="notes">
                             <field name="description"/>
+                        </page>
+                        <page string="Version History" name="versions">
+                            <field name="version_ids">
+                                <list>
+                                    <field name="version_number"/>
+                                    <field name="name"/>
+                                    <field name="created_by_id"/>
+                                    <field name="create_date"/>
+                                    <field name="total_headcount"/>
+                                    <field name="total_cost" widget="monetary"/>
+                                    <field name="avg_increase_pct"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
