@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Knowledge Node Form View -->
+    <record id="view_hr_knowledge_node_form" model="ir.ui.view">
+        <field name="name">hr.knowledge.node.form</field>
+        <field name="model">hr.knowledge.node</field>
+        <field name="arch" type="xml">
+            <form string="Knowledge Node">
+                <header>
+                    <button name="action_add_connection" string="Add Connection" type="object" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view" type="object" class="oe_stat_button" icon="fa-eye">
+                            <field name="view_count" widget="statinfo" string="Views"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" placeholder="Knowledge Title..."/>
+                        </h1>
+                        <div class="o_secondary">
+                            <field name="node_type" widget="badge"/>
+                            <span class="ms-2">
+                                Confidence: <field name="confidence_score" widget="progressbar" nolabel="1"/>
+                            </span>
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Classification">
+                            <field name="node_type"/>
+                            <field name="tags" placeholder="tag1, tag2, tag3"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Metadata">
+                            <field name="confidence_score" widget="progressbar"/>
+                            <field name="last_accessed" readonly="1"/>
+                            <field name="project_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Content" name="content">
+                            <field name="content" placeholder="Describe this knowledge area, concept, or lesson learned..."/>
+                        </page>
+                        <page string="Experts" name="experts">
+                            <field name="expert_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="job_id"/>
+                                    <field name="department_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Related Skills" name="skills">
+                            <field name="skill_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Related Tasks" name="tasks">
+                            <field name="task_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="project_id"/>
+                                    <field name="stage_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Connections" name="connections">
+                            <group>
+                                <group string="Outgoing Connections">
+                                    <field name="edge_from_ids" nolabel="1">
+                                        <list>
+                                            <field name="relationship_type"/>
+                                            <field name="target_id"/>
+                                            <field name="strength" widget="progressbar"/>
+                                        </list>
+                                    </field>
+                                </group>
+                                <group string="Incoming Connections">
+                                    <field name="edge_to_ids" nolabel="1">
+                                        <list>
+                                            <field name="source_id"/>
+                                            <field name="relationship_type"/>
+                                            <field name="strength" widget="progressbar"/>
+                                        </list>
+                                    </field>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Related Nodes" name="related_nodes">
+                            <field name="related_node_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="node_type"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Knowledge Node List View -->
+    <record id="view_hr_knowledge_node_list" model="ir.ui.view">
+        <field name="name">hr.knowledge.node.list</field>
+        <field name="model">hr.knowledge.node</field>
+        <field name="arch" type="xml">
+            <list string="Knowledge Graph">
+                <field name="name"/>
+                <field name="node_type"/>
+                <field name="expert_ids" widget="many2many_tags" optional="show"/>
+                <field name="skill_ids" widget="many2many_tags" optional="show"/>
+                <field name="view_count" optional="show"/>
+                <field name="confidence_score" widget="progressbar" optional="hide"/>
+                <field name="last_accessed" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Knowledge Node Kanban View -->
+    <record id="view_hr_knowledge_node_kanban" model="ir.ui.view">
+        <field name="name">hr.knowledge.node.kanban</field>
+        <field name="model">hr.knowledge.node</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="node_type"/>
+                <field name="expert_ids"/>
+                <field name="view_count"/>
+                <field name="confidence_score"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="name"/></div>
+                                    <div class="o_secondary">
+                                        <span class="badge" t-att-class="record.node_type.raw_value == 'expertise' ? 'text-bg-success' : record.node_type.raw_value == 'best_practice' ? 'text-bg-primary' : 'text-bg-info'">
+                                            <field name="node_type"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="mb-2">
+                                    <strong>Experts:</strong>
+                                    <field name="expert_ids" widget="many2many_tags"/>
+                                </div>
+                                <div>
+                                    <strong>Views:</strong> <field name="view_count"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+    <!-- Knowledge Node Action -->
+    <record id="action_hr_knowledge_node" model="ir.actions.act_window">
+        <field name="name">Knowledge Graph</field>
+        <field name="res_model">hr.knowledge.node</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Build your Knowledge Graph
+            </p>
+            <p>
+                Capture organizational knowledge, expertise areas, best practices, and lessons learned.
+                AI automatically extracts knowledge from completed projects.
+            </p>
+        </field>
+    </record>
+
+    <!-- Knowledge Edge Form View -->
+    <record id="view_hr_knowledge_edge_form" model="ir.ui.view">
+        <field name="name">hr.knowledge.edge.form</field>
+        <field name="model">hr.knowledge.edge</field>
+        <field name="arch" type="xml">
+            <form string="Knowledge Connection">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="source_id"/>
+                            <field name="relationship_type"/>
+                            <field name="target_id"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="source_id"/>
+                            <field name="relationship_type"/>
+                            <field name="target_id"/>
+                        </group>
+                        <group>
+                            <field name="strength" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Describe how these knowledge nodes are related..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Knowledge Edge List View -->
+    <record id="view_hr_knowledge_edge_list" model="ir.ui.view">
+        <field name="name">hr.knowledge.edge.list</field>
+        <field name="model">hr.knowledge.edge</field>
+        <field name="arch" type="xml">
+            <list string="Knowledge Connections">
+                <field name="source_id"/>
+                <field name="relationship_type"/>
+                <field name="target_id"/>
+                <field name="strength" widget="progressbar"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Knowledge Graph Visualization View -->
+    <record id="view_knowledge_graph_visualization" model="ir.ui.view">
+        <field name="name">hr.knowledge.graph.visualization</field>
+        <field name="model">hr.knowledge.node</field>
+        <field name="arch" type="xml">
+            <form string="Knowledge Graph">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Knowledge Graph Visualization</h1>
+                    </div>
+                    <field name="graph_data" widget="knowledge_graph" nolabel="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Knowledge Graph Visualization Action -->
+    <record id="action_knowledge_graph_visualization" model="ir.actions.act_window">
+        <field name="name">Graph Visualization</field>
+        <field name="res_model">hr.knowledge.node</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_knowledge_graph_visualization"/>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

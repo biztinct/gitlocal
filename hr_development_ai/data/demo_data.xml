@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Demo Learning Paths -->
+    <record id="learning_path_python_basics" model="hr.learning.path">
+        <field name="name">Python Programming Fundamentals</field>
+        <field name="description">Learn Python from scratch to intermediate level</field>
+        <field name="category">technical</field>
+        <field name="level">beginner</field>
+        <field name="skill_ids" eval="[(6, 0, [ref('skill_python')])]"/>
+    </record>
+
+    <record id="learning_path_leadership" model="hr.learning.path">
+        <field name="name">Leadership Development Program</field>
+        <field name="description">Develop essential leadership and management skills</field>
+        <field name="category">leadership</field>
+        <field name="level">intermediate</field>
+        <field name="skill_ids" eval="[(6, 0, [ref('skill_leadership'), ref('skill_communication')])]"/>
+    </record>
+
+    <!-- Demo Career Paths -->
+    <record id="career_path_software_engineer" model="hr.career.path">
+        <field name="name">Software Engineering Career Path</field>
+        <field name="description">From Junior Developer to Senior Engineer</field>
+        <field name="avg_time_to_complete">48</field>
+    </record>
+
+</odoo>

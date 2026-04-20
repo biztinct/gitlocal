@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main Menu -->
+    <menuitem id="menu_hr_development_root"
+              name="Employee Development"
+              sequence="60"
+              web_icon="hr_development_ai,static/description/icon.png"/>
+
+    <!-- My Development -->
+    <menuitem id="menu_hr_development_my"
+              name="My Development"
+              parent="menu_hr_development_root"
+              sequence="10"/>
+
+    <menuitem id="menu_my_skills"
+              name="My Skills"
+              parent="menu_hr_development_my"
+              action="action_hr_employee_skill"
+              sequence="10"/>
+
+    <menuitem id="menu_my_development_plan"
+              name="My Development Plan"
+              parent="menu_hr_development_my"
+              action="action_hr_development_plan"
+              sequence="20"/>
+
+    <menuitem id="menu_my_learning"
+              name="My Learning"
+              parent="menu_hr_development_my"
+              action="action_hr_learning_enrollment"
+              sequence="30"/>
+
+    <menuitem id="menu_my_coaching_nudges"
+              name="Coaching Nudges"
+              parent="menu_hr_development_my"
+              action="action_hr_coaching_nudge"
+              sequence="40"/>
+
+    <!-- Skills -->
+    <menuitem id="menu_hr_development_skills"
+              name="Skills"
+              parent="menu_hr_development_root"
+              sequence="20"/>
+
+    <menuitem id="menu_skills_taxonomy"
+              name="Skills Library"
+              parent="menu_hr_development_skills"
+              action="action_hr_skill"
+              sequence="10"/>
+
+    <menuitem id="menu_skill_gaps"
+              name="Skill Gaps"
+              parent="menu_hr_development_skills"
+              action="action_hr_skill_gap"
+              sequence="20"/>
+
+    <!-- Learning -->
+    <menuitem id="menu_hr_development_learning"
+              name="Learning"
+              parent="menu_hr_development_root"
+              sequence="30"/>
+
+    <menuitem id="menu_learning_paths"
+              name="Learning Paths"
+              parent="menu_hr_development_learning"
+              action="action_hr_learning_path"
+              sequence="10"/>
+
+    <menuitem id="menu_enrollments"
+              name="Enrollments"
+              parent="menu_hr_development_learning"
+              action="action_hr_learning_enrollment"
+              sequence="20"/>
+
+    <menuitem id="menu_certifications"
+              name="Certifications"
+              parent="menu_hr_development_learning"
+              action="action_hr_certification"
+              sequence="30"/>
+
+    <!-- Coaching & Mentorship -->
+    <menuitem id="menu_hr_development_coaching"
+              name="Coaching &amp; Mentorship"
+              parent="menu_hr_development_root"
+              sequence="40"/>
+
+    <menuitem id="menu_coaching_sessions"
+              name="Coaching Sessions"
+              parent="menu_hr_development_coaching"
+              action="action_hr_coaching_session"
+              sequence="10"/>
+
+    <menuitem id="menu_mentorships"
+              name="Mentorships"
+              parent="menu_hr_development_coaching"
+              action="action_hr_mentorship"
+              sequence="20"/>
+
+    <!-- Knowledge -->
+    <menuitem id="menu_hr_development_knowledge"
+              name="Knowledge"
+              parent="menu_hr_development_root"
+              sequence="50"/>
+
+    <menuitem id="menu_knowledge_graph"
+              name="Knowledge Graph"
+              parent="menu_hr_development_knowledge"
+              action="action_hr_knowledge_node"
+              sequence="10"/>
+
+    <!-- Career -->
+    <menuitem id="menu_hr_development_career"
+              name="Career"
+              parent="menu_hr_development_root"
+              sequence="60"/>
+
+    <menuitem id="menu_career_paths"
+              name="Career Paths"
+              parent="menu_hr_development_career"
+              action="action_hr_career_path"
+              sequence="10"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_hr_development_config"
+              name="Configuration"
+              parent="menu_hr_development_root"
+              sequence="100"
+              groups="group_hr_development_admin"/>
+
+    <menuitem id="menu_ai_provider_config"
+              name="AI Provider"
+              parent="menu_hr_development_config"
+              action="action_ai_provider_config"
+              sequence="10"/>
+
+    <menuitem id="menu_skill_categories"
+              name="Skill Categories"
+              parent="menu_hr_development_config"
+              action="action_hr_skill_category"
+              sequence="20"/>
+
+    <menuitem id="menu_skill_levels"
+              name="Skill Levels"
+              parent="menu_hr_development_config"
+              action="action_hr_skill_level"
+              sequence="30"/>
+
+</odoo>
