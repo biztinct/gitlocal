@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_ai_provider_config_form" model="ir.ui.view">
+        <field name="name">ai.provider.config.form</field>
+        <field name="model">hr.ai.provider.config</field>
+        <field name="arch" type="xml">
+            <form string="AI Provider Configuration">
+                <header>
+                    <button name="action_test_connection" string="Test Connection" type="object" class="oe_highlight"/>
+                    <button name="action_test_all_providers" string="Test All Providers" type="object"/>
+                    <field name="connection_status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="company_id"/>
+                        <h1><field name="company_id" options="{'no_create': True}"/></h1>
+                    </div>
+                    <group>
+                        <group string="Provider Selection">
+                            <field name="provider" widget="radio"/>
+                            <field name="is_active"/>
+                        </group>
+                        <group string="Test Results">
+                            <field name="last_test_date" readonly="1"/>
+                            <field name="last_test_result" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Llama/Ollama Settings" invisible="provider != 'llama'">
+                            <group>
+                                <field name="llama_endpoint"/>
+                                <field name="model_name" placeholder="llama3.1"/>
+                                <field name="timeout"/>
+                            </group>
+                        </page>
+                        <page string="Mistral Settings" invisible="provider != 'mistral'">
+                            <group>
+                                <field name="mistral_endpoint"/>
+                                <field name="model_name" placeholder="mistral-large"/>
+                                <field name="timeout"/>
+                            </group>
+                        </page>
+                        <page string="OpenAI Settings" invisible="provider != 'openai'">
+                            <group>
+                                <field name="openai_api_key" password="True"/>
+                                <field name="model_name" placeholder="gpt-4o-mini"/>
+                                <field name="timeout"/>
+                            </group>
+                        </page>
+                        <page string="Odoo Native AI">
+                            <group>
+                                <div>
+                                    <p>Odoo Native AI uses built-in Odoo 19 AI features and rule-based approaches.</p>
+                                    <p>No external configuration required.</p>
+                                </div>
+                            </group>
+                        </page>
+                        <page string="AI Coach Appearance">
+                            <group>
+                                <group string="Avatar / Icon">
+                                    <field name="ai_coach_icon" widget="image" class="oe_avatar"/>
+                                    <div class="text-muted">
+                                        <p>Upload a custom avatar for the AI Coach panel. This image will appear in:</p>
+                                        <ul>
+                                            <li>The AI Coach pill (bottom-right button)</li>
+                                            <li>The AI Coach modal header</li>
+                                            <li>Each AI response message bubble</li>
+                                        </ul>
+                                        <p>Recommended: 128×128px PNG with transparent background.</p>
+                                    </div>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ai_provider_config_list" model="ir.ui.view">
+        <field name="name">ai.provider.config.list</field>
+        <field name="model">hr.ai.provider.config</field>
+        <field name="arch" type="xml">
+            <list string="AI Provider Configurations">
+                <field name="company_id"/>
+                <field name="provider"/>
+                <field name="connection_status"/>
+                <field name="is_active"/>
+                <field name="last_test_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_ai_provider_config" model="ir.actions.act_window">
+        <field name="name">AI Provider Configuration</field>
+        <field name="res_model">hr.ai.provider.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure AI Provider
+            </p>
+            <p>
+                Select and configure the AI provider (Llama, OpenAI, or Odoo Native) for talent intelligence features.
+            </p>
+        </field>
+    </record>
+
+</odoo>

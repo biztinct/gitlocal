@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Career Path Form View -->
+    <record id="view_hr_career_path_form" model="ir.ui.view">
+        <field name="name">hr.career.path.form</field>
+        <field name="model">hr.career.path</field>
+        <field name="arch" type="xml">
+            <form string="Career Path">
+                <header>
+                    <button name="action_view_employees_on_path" string="View Employees on this Path" type="object"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_employees_on_path" type="object" class="oe_stat_button" icon="fa-users">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Employees</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" class="o_text_overflow" placeholder="Career Path Name..."/>
+                        </h1>
+                        <h3>
+                            Starting from: <field name="start_job_id"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group string="Details">
+                            <field name="sequence"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Statistics">
+                            <field name="step_count"/>
+                            <field name="total_skills_required"/>
+                            <field name="avg_time_to_complete"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="Describe this career path and progression..."/>
+                        </page>
+                        <page string="Career Steps" name="steps">
+                            <field name="step_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="job_id"/>
+                                    <field name="min_time_in_current_role"/>
+                                    <field name="required_skills" widget="many2many_tags"/>
+                                    <field name="learning_path_ids" widget="many2many_tags"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter reload_on_follower="True"/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Career Path List View -->
+    <record id="view_hr_career_path_list" model="ir.ui.view">
+        <field name="name">hr.career.path.list</field>
+        <field name="model">hr.career.path</field>
+        <field name="arch" type="xml">
+            <list string="Career Paths">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="start_job_id"/>
+                <field name="step_count"/>
+                <field name="total_skills_required"/>
+                <field name="avg_time_to_complete" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Career Path Kanban View -->
+    <record id="view_hr_career_path_kanban" model="ir.ui.view">
+        <field name="name">hr.career.path.kanban</field>
+        <field name="model">hr.career.path</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="name"/>
+                <field name="start_job_id"/>
+                <field name="step_count"/>
+                <field name="avg_time_to_complete"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary"><field name="name"/></div>
+                                    <div class="o_secondary">
+                                        Starting: <field name="start_job_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_card_content">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <field name="step_count"/> steps
+                                    </div>
+                                    <div class="col-6" t-if="record.avg_time_to_complete.raw_value">
+                                        ~<field name="avg_time_to_complete"/> months
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search view removed - relying on Odoo's automatic search view generation -->
+
+    <!-- Career Path Action -->
+    <record id="action_hr_career_path" model="ir.actions.act_window">
+        <field name="name">Career Paths</field>
+        <field name="res_model">hr.career.path</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Career Path
+            </p>
+            <p>
+                Define career progression templates showing typical advancement routes within your organization.
+            </p>
+        </field>
+    </record>
+
+    <!-- Career Path Step Form View -->
+    <record id="view_hr_career_path_step_form" model="ir.ui.view">
+        <field name="name">hr.career.path.step.form</field>
+        <field name="model">hr.career.path.step</field>
+        <field name="arch" type="xml">
+            <form string="Career Path Step">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            Step <field name="sequence"/> - <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="career_path_id"/>
+                            <field name="job_id"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="min_time_in_current_role"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" placeholder="What does this role involve? What are the expectations?"/>
+                        </page>
+                        <page string="Required Skills" name="skills">
+                            <field name="required_skills">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Recommended Learning" name="learning">
+                            <field name="learning_path_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="category"/>
+                                    <field name="level"/>
+                                    <field name="total_duration"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

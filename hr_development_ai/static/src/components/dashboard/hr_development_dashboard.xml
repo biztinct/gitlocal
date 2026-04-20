@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="hr_development_ai.DevelopmentDashboard">
+        <div class="hr-dev-dashboard">
+            <!-- Loading State -->
+            <div t-if="state.isLoading" class="dashboard-loading">
+                <div class="loading-spinner">
+                    <i class="fa fa-spinner fa-spin fa-3x"/>
+                    <p>Loading your development dashboard...</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div t-else="" class="dashboard-content">
+                <!-- Header Section -->
+                <div class="dashboard-header">
+                    <div class="header-left">
+                        <div class="user-avatar" t-if="state.employee.image_url">
+                            <img t-att-src="state.employee.image_url" alt="Profile"/>
+                        </div>
+                        <div class="user-avatar-placeholder" t-else="">
+                            <i class="fa fa-user"/>
+                        </div>
+                        <div class="user-info">
+                            <h1 class="dashboard-title">
+                                Welcome back, <t t-esc="state.employee.name || 'Employee'"/>
+                            </h1>
+                            <p class="dashboard-subtitle">
+                                <span t-if="state.employee.job_title" t-esc="state.employee.job_title"/>
+                                <span t-if="state.employee.department"> • <t t-esc="state.employee.department"/></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-outline-primary" t-on-click="refreshDashboard">
+                            <i class="fa fa-refresh"/> Refresh
+                        </button>
+                        <button class="btn btn-primary" t-on-click="openCoaching">
+                            <i class="fa fa-comments"/> AI Coaching Chat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards Row -->
+                <div class="metrics-row">
+                    <div class="metric-card skills-metric" t-on-click="openSkills">
+                        <div class="metric-icon">
+                            <i class="fa fa-cogs"/>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" t-esc="state.skills.total || 0"/>
+                            <p class="metric-label">Total Skills</p>
+                            <span class="metric-badge" t-if="state.skills.recent_count">
+                                +<t t-esc="state.skills.recent_count"/> this month
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card learning-metric" t-on-click="openLearning">
+                        <div class="metric-icon">
+                            <i class="fa fa-graduation-cap"/>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" t-esc="state.learning.enrolled || 0"/>
+                            <p class="metric-label">Learning Paths</p>
+                            <span class="metric-badge success" t-if="state.learning.completed">
+                                <t t-esc="state.learning.completed"/> completed
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card cert-metric" t-on-click="openCertifications">
+                        <div class="metric-icon">
+                            <i class="fa fa-certificate"/>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" t-esc="state.certifications.active || 0"/>
+                            <p class="metric-label">Certifications</p>
+                            <span class="metric-badge warning" t-if="state.certifications.expiring_soon">
+                                <t t-esc="state.certifications.expiring_soon"/> expiring soon
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card coaching-metric" t-on-click="openCoaching">
+                        <div class="metric-icon">
+                            <i class="fa fa-comments"/>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" t-esc="state.coaching.total_sessions || 0"/>
+                            <p class="metric-label">Coaching Sessions</p>
+                            <span class="metric-badge" t-if="state.coaching.pending_nudges">
+                                <t t-esc="state.coaching.pending_nudges"/> pending nudges
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card mentorship-metric" t-on-click="openMentorship">
+                        <div class="metric-icon">
+                            <i class="fa fa-handshake-o"/>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" t-esc="(state.mentorship.as_mentor || 0) + (state.mentorship.as_mentee || 0)"/>
+                            <p class="metric-label">Mentorships</p>
+                            <span class="metric-badge" t-if="state.mentorship.as_mentor">
+                                <t t-esc="state.mentorship.as_mentor"/> as mentor
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="metric-card plan-metric" t-on-click="openDevelopmentPlans">
+                        <div class="metric-icon">
+                            <i class="fa fa-map-signs"/>
+                        </div>
+                        <div class="metric-content">
+                            <h3 class="metric-value" t-esc="state.developmentPlans.active || 0"/>
+                            <p class="metric-label">Dev Plans Active</p>
+                            <span class="metric-badge" t-if="state.developmentPlans.avg_progress">
+                                <t t-esc="state.developmentPlans.avg_progress"/>% progress
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="row">
+                        <!-- Skills by Category Chart -->
+                        <div class="col-md-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h4><i class="fa fa-pie-chart"/> Skills by Category</h4>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas t-ref="skillsCategoryChart"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skills by Level Chart -->
+                        <div class="col-md-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h4><i class="fa fa-bar-chart"/> Skills by Proficiency</h4>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas t-ref="skillsLevelChart"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Learning Progress Chart -->
+                        <div class="col-md-4">
+                            <div class="chart-card">
+                                <div class="chart-header">
+                                    <h4><i class="fa fa-graduation-cap"/> Learning Progress</h4>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas t-ref="learningChart"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Section: Activities + Skill Gaps -->
+                <div class="two-col-section">
+                    <div class="row">
+                        <!-- Recent Activities -->
+                        <div class="col-md-6">
+                            <div class="activity-card">
+                                <div class="card-header">
+                                    <h4><i class="fa fa-clock-o"/> Recent Activity</h4>
+                                </div>
+                                <div class="activity-list">
+                                    <div t-if="!state.recentActivities.length" class="no-data">
+                                        <i class="fa fa-inbox"/>
+                                        <p>No recent activity</p>
+                                    </div>
+                                    <t t-foreach="state.recentActivities" t-as="activity" t-key="activity_index">
+                                        <div class="activity-item">
+                                            <div t-attf-class="activity-icon bg-{{activity.color}}">
+                                                <i t-attf-class="fa {{activity.icon}}"/>
+                                            </div>
+                                            <div class="activity-content">
+                                                <p class="activity-title" t-esc="activity.title"/>
+                                                <span class="activity-meta">
+                                                    <t t-esc="activity.date"/>
+                                                    <t t-if="activity.description"> - <t t-esc="activity.description"/></t>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skill Gaps -->
+                        <div class="col-md-6">
+                            <div class="skill-gaps-card">
+                                <div class="card-header">
+                                    <h4><i class="fa fa-exclamation-triangle"/> Skill Gaps to Address</h4>
+                                    <button class="btn btn-sm btn-outline-primary" t-on-click="openSkillGaps">View All</button>
+                                </div>
+                                <div class="gap-list">
+                                    <div t-if="!state.skillGaps.length" class="no-data">
+                                        <i class="fa fa-check-circle text-success"/>
+                                        <p>No skill gaps identified</p>
+                                    </div>
+                                    <t t-foreach="state.skillGaps" t-as="gap" t-key="gap_index">
+                                        <div class="gap-item">
+                                            <div class="gap-skill">
+                                                <span class="skill-name" t-esc="gap.skill"/>
+                                                <span t-attf-class="priority-badge {{gap.priority}}" t-esc="gap.priority"/>
+                                            </div>
+                                            <div class="gap-levels">
+                                                <span class="current-level">
+                                                    Current: <t t-esc="gap.current_level"/>
+                                                </span>
+                                                <i class="fa fa-arrow-right"/>
+                                                <span class="required-level">
+                                                    Required: <t t-esc="gap.required_level"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Section -->
+                <div class="quick-actions-section">
+                    <div class="section-header">
+                        <h4><i class="fa fa-bolt"/> Quick Actions</h4>
+                    </div>
+                    <div class="actions-grid">
+                        <div class="action-card" t-on-click="openCoaching">
+                            <i class="fa fa-comments"/>
+                            <span>Start AI Coaching</span>
+                        </div>
+                        <div class="action-card" t-on-click="openLearningPaths">
+                            <i class="fa fa-road"/>
+                            <span>Browse Learning Paths</span>
+                        </div>
+                        <div class="action-card" t-on-click="openCareerPaths">
+                            <i class="fa fa-line-chart"/>
+                            <span>Explore Career Paths</span>
+                        </div>
+                        <div class="action-card" t-on-click="openMentorship">
+                            <i class="fa fa-users"/>
+                            <span>Find a Mentor</span>
+                        </div>
+                        <div class="action-card" t-on-click="openDevelopmentPlans">
+                            <i class="fa fa-tasks"/>
+                            <span>Update Dev Plan</span>
+                        </div>
+                        <div class="action-card" t-on-click="openSkills">
+                            <i class="fa fa-plus-circle"/>
+                            <span>Add New Skill</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Section (for managers) -->
+                <div t-if="state.teamStats.team_size" class="team-section">
+                    <div class="section-header" t-on-click="toggleTeamView">
+                        <h4>
+                            <i class="fa fa-users"/> My Team
+                            <span class="badge badge-primary ms-2" t-esc="state.teamStats.team_size"/>
+                        </h4>
+                        <i t-attf-class="fa fa-chevron-{{state.showTeamView ? 'up' : 'down'}}"/>
+                    </div>
+                    <div t-if="state.showTeamView" class="team-content">
+                        <div class="team-metrics">
+                            <div class="team-metric">
+                                <span class="metric-value" t-esc="state.teamStats.total_skills"/>
+                                <span class="metric-label">Total Team Skills</span>
+                            </div>
+                            <div class="team-metric">
+                                <span class="metric-value" t-esc="state.teamStats.avg_skills_per_member"/>
+                                <span class="metric-label">Avg Skills/Member</span>
+                            </div>
+                            <div class="team-metric">
+                                <span class="metric-value" t-esc="state.teamStats.learning_enrollments"/>
+                                <span class="metric-label">Learning Enrollments</span>
+                            </div>
+                            <div class="team-metric">
+                                <span class="metric-value" t-esc="state.teamStats.active_certifications"/>
+                                <span class="metric-label">Active Certifications</span>
+                            </div>
+                        </div>
+                        <div class="team-members">
+                            <t t-foreach="state.teamStats.members || []" t-as="member" t-key="member.id">
+                                <div class="team-member" t-on-click="() => openTeamMember(member.id)">
+                                    <div class="member-avatar">
+                                        <i class="fa fa-user"/>
+                                    </div>
+                                    <div class="member-info">
+                                        <span class="member-name" t-esc="member.name"/>
+                                        <span class="member-job" t-esc="member.job"/>
+                                    </div>
+                                    <div class="member-skills">
+                                        <span class="skills-count" t-esc="member.skills_count"/> skills
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

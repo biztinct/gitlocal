@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="hr_development_ai.BfsiAiDashboard">
+        <div class="ai-dash">
+
+            <!-- ═══════ LOADING STATE ═══════ -->
+            <div t-if="state.isLoading" class="ai-dash-loading">
+                <div class="ai-dash-loading-spinner"/>
+                <p>Loading AI Dashboard...</p>
+            </div>
+
+            <!-- ═══════ ERROR STATE ═══════ -->
+            <div t-if="state.error" class="ai-dash-error">
+                <i class="fa fa-exclamation-triangle"/>
+                <p t-esc="state.error"/>
+                <button class="ai-dash-btn" t-on-click="onRefresh">Retry</button>
+            </div>
+
+            <!-- ═══════ DASHBOARD CONTENT ═══════ -->
+            <div t-if="!state.isLoading and !state.error" class="ai-dash-content">
+
+                <!-- ═══════ HEADER ═══════ -->
+                <header class="ai-dash-header">
+                    <div class="ai-dash-header-left">
+                        <div class="ai-dash-logo">
+                            <i class="fa fa-bolt"/>
+                        </div>
+                        <div>
+                            <h1 class="ai-dash-title">Business Impact Dashboard</h1>
+                            <p class="ai-dash-subtitle" t-if="state.branch.name">
+                                <i class="fa fa-building"/> <t t-esc="state.branch.name"/>
+                                <span t-if="state.branch.region" class="ai-dash-region">
+                                    · <t t-esc="state.branch.region"/>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="ai-dash-header-right">
+                        <!-- Date Range Selector -->
+                        <div class="ai-dash-date-selector">
+                            <button t-foreach="['today','yesterday','wtd','mtd','qtd','custom']"
+                                    t-as="dr" t-key="dr"
+                                    t-attf-class="ai-dash-date-btn {{ state.dateRange === dr ? 'active' : '' }}"
+                                    t-on-click="() => this.onDateRangeChange(dr)">
+                                <t t-if="dr === 'today'">Today</t>
+                                <t t-elif="dr === 'yesterday'">D-1</t>
+                                <t t-elif="dr === 'wtd'">WTD</t>
+                                <t t-elif="dr === 'mtd'">MTD</t>
+                                <t t-elif="dr === 'qtd'">QTD</t>
+                                <t t-elif="dr === 'custom'"><i class="fa fa-calendar"/></t>
+                            </button>
+                        </div>
+                        <!-- Custom Date Picker -->
+                        <div t-if="state.showDatePicker" class="ai-dash-custom-dates">
+                            <input type="date" t-att-value="state.customFrom" t-on-change="onCustomFromChange"/>
+                            <span>→</span>
+                            <input type="date" t-att-value="state.customTo" t-on-change="onCustomToChange"/>
+                            <button class="ai-dash-btn-sm" t-on-click="onCustomDateApply">Apply</button>
+                        </div>
+                        <!-- AI Insights Toggle -->
+                        <button t-attf-class="ai-dash-btn-sm ai-insights-toggle {{ state.showInsights ? 'active' : '' }}"
+                                t-on-click="toggleInsights" title="Toggle AI Insights">
+                            <i class="fa fa-lightbulb-o"/> AI Insights
+                        </button>
+                        <!-- Refresh -->
+                        <button class="ai-dash-refresh" t-on-click="onRefresh" title="Refresh">
+                            <i class="fa fa-refresh"/>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- ═══════ SECTION 1: KPI SUMMARY STRIP ═══════ -->
+                <section class="ai-dash-kpi-strip">
+                    <div class="ai-dash-kpi-card">
+                        <div class="ai-dash-kpi-label">MONTHLY FORECAST</div>
+                        <div class="ai-dash-kpi-value">
+                            <span t-esc="state.kpiSummary.forecast_pct || 0"/>%
+                        </div>
+                        <div class="ai-dash-kpi-sub" t-esc="state.kpiSummary.forecast_explanation || ''"/>
+                        <div class="ai-dash-kpi-target">
+                            Target: <t t-esc="state.kpiSummary.target_revenue_formatted || 'N/A'"/>
+                        </div>
+                    </div>
+                    <div class="ai-dash-kpi-card">
+                        <div class="ai-dash-kpi-label">MTD REVENUE</div>
+                        <div class="ai-dash-kpi-value" t-esc="state.kpiSummary.mtd_revenue_formatted || '$0'"/>
+                        <div t-attf-class="ai-dash-kpi-change {{ (state.kpiSummary.revenue_change_pct || 0) >= 0 ? 'up' : 'down' }}">
+                            <i t-attf-class="fa {{ (state.kpiSummary.revenue_change_pct || 0) >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' }}"/>
+                            <t t-esc="Math.abs(state.kpiSummary.revenue_change_pct || 0)"/>% vs prev period
+                        </div>
+                    </div>
+                    <div class="ai-dash-kpi-card">
+                        <div class="ai-dash-kpi-label">AVG CONVERSION</div>
+                        <div class="ai-dash-kpi-value">
+                            <t t-esc="state.kpiSummary.avg_conversion_rate || 0"/>%
+                        </div>
+                        <div class="ai-dash-kpi-sub" t-esc="state.kpiSummary.conversion_explanation || ''"/>
+                    </div>
+                    <div class="ai-dash-kpi-card">
+                        <div class="ai-dash-kpi-label">ACTIVE BANKERS</div>
+                        <div class="ai-dash-kpi-value">
+                            <t t-esc="state.kpiSummary.active_bankers_pct || 0"/>%
+                        </div>
+                        <div class="ai-dash-kpi-sub">
+                            <t t-esc="state.kpiSummary.active_bankers_count || 0"/>/<t t-esc="state.kpiSummary.total_bankers || 0"/> bankers
+                        </div>
+                    </div>
+                    <div class="ai-dash-kpi-card">
+                        <div class="ai-dash-kpi-label">COVERAGE</div>
+                        <div class="ai-dash-kpi-value">
+                            <t t-esc="state.kpiSummary.coverage_pct || 0"/>%
+                        </div>
+                        <div class="ai-dash-kpi-sub" t-esc="state.kpiSummary.coverage_explanation || ''"/>
+                    </div>
+                </section>
+
+                <!-- ═══════ MIDDLE ROW: ROOT CAUSE + FORECAST ═══════ -->
+                <section class="ai-dash-middle-row">
+
+                    <!-- ROOT CAUSE ANALYSIS -->
+                    <div class="ai-dash-card ai-dash-root-cause">
+                        <div class="ai-dash-card-header">
+                            <h3><i class="fa fa-search"/> Root Cause Analysis</h3>
+                            <button t-if="state.rootCause.ai_available"
+                                    class="ai-dash-btn-sm ai-btn"
+                                    t-on-click="requestAiRootCause"
+                                    t-att-disabled="state.aiLoadingRootCause">
+                                <i t-attf-class="fa {{ state.aiLoadingRootCause ? 'fa-spinner fa-spin' : 'fa-magic' }}"/>
+                                AI Analyze
+                            </button>
+                        </div>
+                        <p class="ai-dash-rc-summary" t-esc="state.rootCause.summary || 'Analyzing...'"/>
+
+                        <!-- AI Enhanced text -->
+                        <div t-if="state.aiEnhancedRootCause" class="ai-dash-ai-text">
+                            <i class="fa fa-robot"/> <t t-esc="state.aiEnhancedRootCause"/>
+                        </div>
+
+                        <!-- Category chips -->
+                        <div class="ai-dash-rc-categories">
+                            <t t-foreach="state.rootCause.categories || []" t-as="cat" t-key="cat.type">
+                                <div class="ai-dash-rc-chip" t-attf-style="border-color: {{ cat.color }}">
+                                    <i t-attf-class="fa {{ cat.icon || 'fa-circle' }}" t-attf-style="color: {{ cat.color }}"/>
+                                    <span class="ai-dash-rc-chip-label" t-esc="cat.label"/>
+                                </div>
+                            </t>
+                        </div>
+                        <div class="ai-dash-rc-details">
+                            <t t-foreach="state.rootCause.categories || []" t-as="cat" t-key="cat.type + '_detail'">
+                                <div class="ai-dash-rc-detail-row">
+                                    <span class="ai-dash-rc-impact" t-attf-style="color: {{ cat.color }}">
+                                        -<t t-esc="cat.impact_formatted"/>
+                                    </span>
+                                    <span class="ai-dash-rc-detail-text" t-esc="cat.detail"/>
+                                </div>
+                            </t>
+                        </div>
+                        <button class="ai-dash-btn-outline" t-on-click="openReportModal">
+                            <i class="fa fa-file-text-o"/> Full AI Report
+                        </button>
+                    </div>
+
+                    <!-- FORECAST PERFORMANCE -->
+                    <div class="ai-dash-card ai-dash-forecast">
+                        <div class="ai-dash-card-header">
+                            <h3><i class="fa fa-line-chart"/> Forecast Performance</h3>
+                        </div>
+                        <div class="ai-dash-forecast-stat">
+                            On track for: <strong><t t-esc="state.forecast.on_track_pct || 0"/>%</strong> of target
+                            <span t-if="state.forecast.shortfall" class="ai-dash-forecast-shortfall">
+                                (<t t-esc="state.forecast.shortfall_formatted"/>)
+                            </span>
+                        </div>
+                        <div class="ai-dash-forecast-chart-wrap">
+                            <canvas t-ref="forecastChart" width="400" height="200"/>
+                        </div>
+                        <p t-if="state.forecast.ai_prediction" class="ai-dash-forecast-text">
+                            <i class="fa fa-lightbulb-o"/> <t t-esc="state.forecast.ai_prediction"/>
+                        </p>
+                        <!-- Key per-banker predictions -->
+                        <div t-if="state.forecast.key_predictions and state.forecast.key_predictions.length" class="ai-dash-predictions">
+                            <t t-foreach="state.forecast.key_predictions" t-as="pred" t-key="pred.id">
+                                <div class="ai-dash-prediction-row">
+                                    <i t-attf-class="fa fa-user-circle {{ pred.forecast_pct >= 90 ? 'pred-good' : pred.forecast_pct >= 50 ? 'pred-warn' : 'pred-bad' }}"/>
+                                    <span><t t-esc="pred.name"/></span>
+                                    <span t-attf-class="ai-dash-pred-pct {{ pred.forecast_pct >= 90 ? 'good' : pred.forecast_pct >= 50 ? 'warn' : 'bad' }}">
+                                        <t t-esc="pred.forecast_pct"/>%
+                                    </span>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════ BOTTOM ROW: TEAM TABLE + SIDEBAR ═══════ -->
+                <section class="ai-dash-bottom-row">
+
+                    <!-- TEAM PERFORMANCE TABLE -->
+                    <div class="ai-dash-card ai-dash-team-table-wrap">
+                        <div class="ai-dash-card-header">
+                            <h3><i class="fa fa-users"/> Team Performance</h3>
+                            <div class="ai-dash-table-sort">
+                                <button class="ai-dash-btn-sm" t-on-click="() => this.sortTeam('score')">Score</button>
+                                <button class="ai-dash-btn-sm" t-on-click="() => this.sortTeam('revenue')">Revenue</button>
+                                <button class="ai-dash-btn-sm" t-on-click="() => this.sortTeam('forecast')">Forecast</button>
+                                <button t-attf-class="ai-dash-btn-sm {{ state.showSummaryView ? 'active' : '' }}"
+                                        t-on-click="toggleSummaryView"
+                                        style="margin-left: 6px;">
+                                    <i class="fa fa-file-text-o" style="margin-right: 3px;"/> Summary
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ai-dash-team-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Banker</th>
+                                        <t t-if="!state.showSummaryView">
+                                            <th>Score</th>
+                                            <th>Revenue</th>
+                                            <th>Conv. Rate</th>
+                                            <th>Forecast %</th>
+                                            <th>Trend</th>
+                                            <th></th>
+                                        </t>
+                                        <t t-if="state.showSummaryView">
+                                            <th>Performance Summary</th>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.teamPerformance" t-as="member" t-key="member.id">
+                                        <tr class="ai-dash-team-row" t-on-click="() => this.onBankerClick(member.id)">
+                                            <td class="ai-dash-team-banker">
+                                                <img t-att-src="member.avatar_url"
+                                                     class="ai-dash-team-avatar"
+                                                     loading="lazy"
+                                                     alt=""/>
+                                                <div>
+                                                    <div class="ai-dash-team-name" t-esc="member.name"/>
+                                                    <div class="ai-dash-team-role" t-esc="member.banker_type_label"/>
+                                                </div>
+                                            </td>
+                                            <t t-if="!state.showSummaryView">
+                                                <td>
+                                                    <span t-attf-class="ai-dash-score-badge {{ member.overall_score >= 75 ? 'good' : member.overall_score >= 50 ? 'warn' : 'bad' }}">
+                                                        <t t-esc="Math.round(member.overall_score)"/>
+                                                    </span>
+                                                    <span class="ai-dash-rank">
+                                                        #<t t-esc="member.branch_rank"/>
+                                                        <i t-attf-class="fa {{ getRankIcon(member.rank_movement) }}" style="font-size:10px;margin-left:3px;"/>
+                                                    </span>
+                                                </td>
+                                                <td t-esc="member.revenue_formatted"/>
+                                                <td><t t-esc="member.conversion_rate"/>%</td>
+                                                <td>
+                                                    <span t-attf-class="ai-dash-forecast-badge {{ member.forecast_pct >= 90 ? 'good' : member.forecast_pct >= 70 ? 'warn' : 'bad' }}">
+                                                        <t t-esc="member.forecast_pct"/>%
+                                                    </span>
+                                                </td>
+                                                <td class="ai-dash-sparkline-cell">
+                                                    <!-- Mini sparkline via CSS bars -->
+                                                    <div class="ai-dash-sparkline">
+                                                        <t t-foreach="member.sparkline || []" t-as="v" t-key="v_index">
+                                                            <div class="ai-dash-spark-bar"
+                                                                 t-attf-style="height: {{ Math.max(8, (v / 100) * 30) }}px"/>
+                                                        </t>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button t-if="member.has_next_steps"
+                                                            class="ai-dash-next-steps-btn"
+                                                            t-on-click.stop="() => this.onNextSteps(member.id)">
+                                                        Next Steps
+                                                    </button>
+                                                </td>
+                                            </t>
+                                            <t t-if="state.showSummaryView">
+                                                <td class="ai-dash-summary-cell" style="font-size: 12.5px; line-height: 1.5; color: #334155; max-width: 500px;">
+                                                    <t t-esc="member._summary || ''"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT SIDEBAR: INSIGHTS + EXEC SUMMARY -->
+                    <div t-attf-class="ai-dash-sidebar {{ state.showInsights ? 'show' : 'hide' }}">
+
+                        <!-- SMART INSIGHTS -->
+                        <div class="ai-dash-card ai-dash-insights-card">
+                            <div class="ai-dash-card-header">
+                                <h3><i class="fa fa-lightbulb-o"/> Smart Insights</h3>
+                            </div>
+                            <div class="ai-dash-insights-tabs">
+                                <button t-attf-class="ai-dash-tab {{ state.insightsTab === 'today' ? 'active' : '' }}"
+                                        t-on-click="() => this.switchInsightsTab('today')">Today</button>
+                                <button t-attf-class="ai-dash-tab {{ state.insightsTab === 'per_banker' ? 'active' : '' }}"
+                                        t-on-click="() => this.switchInsightsTab('per_banker')">Per Banker</button>
+                            </div>
+                            <div class="ai-dash-insights-list">
+                                <t t-foreach="state.smartInsights" t-as="insight" t-key="insight.id">
+                                    <div t-attf-class="ai-dash-insight-item {{ insight.priority }}">
+                                        <div class="ai-dash-insight-avatar">
+                                            <i t-attf-class="fa {{ insight.type === 'nudge' ? 'fa-lightbulb-o' : 'fa-exclamation-circle' }}"/>
+                                        </div>
+                                        <div class="ai-dash-insight-body">
+                                            <div class="ai-dash-insight-name" t-esc="insight.banker_name"/>
+                                            <div class="ai-dash-insight-text" t-out="insight.message"/>
+                                            <div class="ai-dash-insight-time" t-esc="insight.time_ago"/>
+                                        </div>
+                                    </div>
+                                </t>
+                                <div t-if="!state.smartInsights.length" class="ai-dash-empty">
+                                    No insights available yet.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EXECUTIVE SUMMARY -->
+                        <div class="ai-dash-card ai-dash-exec-card">
+                            <div class="ai-dash-card-header">
+                                <h3><i class="fa fa-file-text"/> Executive Summary</h3>
+                                <div class="ai-dash-exec-actions">
+                                    <button class="ai-dash-btn-sm" t-on-click="copyExecSummary" title="Copy">
+                                        <i class="fa fa-copy"/>
+                                    </button>
+                                    <button t-if="state.executiveSummary.ai_available and !state.aiEnhancedExecSummary"
+                                            class="ai-dash-btn-sm ai-btn"
+                                            t-on-click="requestAiExecSummary"
+                                            t-att-disabled="state.aiLoadingExecSummary">
+                                        <i t-attf-class="fa {{ state.aiLoadingExecSummary ? 'fa-spinner fa-spin' : 'fa-magic' }}"/>
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="ai-dash-exec-text" t-esc="state.aiEnhancedExecSummary || state.executiveSummary.text || ''"/>
+
+                            <div t-if="state.executiveSummary.top_risk" class="ai-dash-exec-risk">
+                                <span class="ai-dash-exec-badge risk">Top Risk</span>
+                                <strong t-esc="state.executiveSummary.top_risk.name || ''"/>
+                                <span t-if="state.executiveSummary.top_risk.score">
+                                    — Score: <t t-esc="Math.round(state.executiveSummary.top_risk.score)"/>
+                                </span>
+                            </div>
+                            <div t-if="state.executiveSummary.top_opportunity" class="ai-dash-exec-opp">
+                                <span class="ai-dash-exec-badge opp">Top Opportunity</span>
+                                <strong t-esc="state.executiveSummary.top_opportunity.name || ''"/>
+                                <span t-if="state.executiveSummary.top_opportunity.rank_movement">
+                                    — ↑<t t-esc="state.executiveSummary.top_opportunity.rank_movement"/> ranks
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════ BENCHMARKING BAR ═══════ -->
+                <section t-if="state.benchmarking.text" class="ai-dash-benchmarking">
+                    <i class="fa fa-trophy"/>
+                    <span class="ai-dash-bench-text">
+                        <strong>Benchmarking</strong> | <t t-esc="state.benchmarking.text"/>
+                    </span>
+                </section>
+
+                <!-- ═══════ BOTTOM BAR: AI CHAT + REPORT ═══════ -->
+                <section class="ai-dash-bottom-bar">
+                    <div class="ai-dash-chat-input-wrap">
+                        <i class="fa fa-comment-o"/>
+                        <input type="text"
+                               class="ai-dash-chat-input"
+                               placeholder="Ask AI about performance..."
+                               t-att-value="state.aiChatInput"
+                               t-on-input="(ev) => this.state.aiChatInput = ev.target.value"/>
+                    </div>
+                    <button class="ai-dash-btn-action" t-on-click="openReportModal">
+                        <i class="fa fa-file-text-o"/> Generate Report
+                    </button>
+                    <button class="ai-dash-btn-action ai-btn">
+                        <i class="fa fa-robot"/> AI Chat
+                    </button>
+                </section>
+
+            </div>
+
+            <!-- ═══════ AI REPORT MODAL ═══════ -->
+            <div t-if="state.showReportModal" class="ai-report-modal-overlay" t-on-click="closeReportModal">
+                <div class="ai-report-modal" t-on-click.stop="">
+                    <div class="ai-report-modal-header">
+                        <h2>
+                            <i class="fa fa-file-text-o"/> AI Performance Report
+                        </h2>
+                        <div class="ai-report-modal-actions">
+                            <button class="ai-dash-btn-sm" t-on-click="copyReportToClipboard" title="Copy">
+                                <i class="fa fa-copy"/> Copy
+                            </button>
+                            <button class="ai-report-modal-close" t-on-click="closeReportModal">
+                                <i class="fa fa-times"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ai-report-modal-body">
+                        <div t-if="state.reportLoading" class="ai-report-loading">
+                            <div class="ai-dash-loading-spinner"/>
+                            <p>Generating AI report...</p>
+                        </div>
+                        <div t-else="" class="ai-report-content" t-out="state.reportHtml"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
