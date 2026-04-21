@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="pb_payroll_ai_insights.AiInsightChat">
+        <!-- Floating Pill Button -->
+        <div class="payai-floating-pill" t-on-click="togglePanel"
+             t-att-class="{ 'payai-pill-active': state.isOpen }">
+            <span class="payai-pill-icon">✨</span>
+            <span class="payai-pill-text">PayAI</span>
+        </div>
+
+        <!-- Chat Panel (slide out) -->
+        <div t-att-class="'payai-chat-panel ' + (state.isOpen ? 'payai-panel-open' : '')">
+            <!-- Header -->
+            <div class="payai-chat-header">
+                <div class="payai-header-left">
+                    <span class="payai-header-icon">🤖</span>
+                    <div>
+                        <div class="payai-header-title">PayAI</div>
+                        <div class="payai-header-subtitle">Intelligent Payroll Analytics</div>
+                    </div>
+                </div>
+                <div class="payai-header-actions">
+                    <button class="payai-btn-icon" t-on-click="clearHistory" title="Clear chat">
+                        🗑️
+                    </button>
+                    <button class="payai-btn-icon" t-on-click="closePanel" title="Close">
+                        ✕
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Body -->
+            <div class="payai-chat-body" t-ref="chatBody">
+                <!-- Welcome + Suggestions -->
+                <t t-if="state.showSuggestions and state.messages.length === 0">
+                    <div class="payai-welcome">
+                        <div class="payai-welcome-icon">✨</div>
+                        <h3>Welcome to PayAI</h3>
+                        <p>Ask me anything about your payroll data, or try one of these:</p>
+                        <div class="payai-suggestions">
+                            <t t-foreach="suggestions" t-as="suggestion" t-key="suggestion_index">
+                                <button class="payai-suggestion-chip"
+                                        t-on-click="() => this.sendSuggestion(suggestion)">
+                                    <t t-esc="suggestion"/>
+                                </button>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Messages -->
+                <t t-foreach="state.messages" t-as="msg" t-key="msg_index">
+                    <div t-att-class="'payai-message payai-msg-' + msg.role">
+                        <!-- Avatar -->
+                        <div class="payai-avatar">
+                            <t t-if="msg.role === 'user'">👤</t>
+                            <t t-else="">🤖</t>
+                        </div>
+
+                        <!-- Message Content -->
+                        <div class="payai-msg-content">
+                            <div class="payai-msg-text" t-esc="msg.content"/>
+
+                            <!-- Chart (if present) -->
+                            <t t-if="msg.chart">
+                                <div class="payai-msg-chart">
+                                    <ChartRenderer chartConfig="msg.chart" height="'260px'"/>
+                                    <button class="payai-pin-btn"
+                                            t-on-click="() => this.pinToDashboard(msg.chart)"
+                                            title="Pin to Dashboard">
+                                        📌 Pin to Dashboard
+                                    </button>
+                                </div>
+                            </t>
+
+                            <!-- Insights -->
+                            <t t-if="msg.insights and msg.insights.length">
+                                <div class="payai-insights">
+                                    <div class="payai-insights-title">💡 Key Insights</div>
+                                    <t t-foreach="msg.insights" t-as="insight" t-key="insight_index">
+                                        <div class="payai-insight-item">
+                                            <span class="payai-insight-bullet">•</span>
+                                            <t t-esc="insight"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <!-- Follow-up Questions -->
+                            <t t-if="msg.followUpQuestions and msg.followUpQuestions.length">
+                                <div class="payai-followups">
+                                    <t t-foreach="msg.followUpQuestions" t-as="fq" t-key="fq_index">
+                                        <button class="payai-followup-chip"
+                                                t-on-click="() => this.sendSuggestion(fq)">
+                                            <t t-esc="fq"/>
+                                        </button>
+                                    </t>
+                                </div>
+                            </t>
+
+                            <!-- Timestamp -->
+                            <div class="payai-msg-time" t-esc="formatTimestamp(msg.timestamp)"/>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Loading indicator -->
+                <t t-if="state.isLoading">
+                    <div class="payai-message payai-msg-assistant">
+                        <div class="payai-avatar">🤖</div>
+                        <div class="payai-msg-content">
+                            <div class="payai-typing">
+                                <span class="payai-dot"/>
+                                <span class="payai-dot"/>
+                                <span class="payai-dot"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </div>
+
+            <!-- Input Area -->
+            <div class="payai-chat-input-area">
+                <textarea
+                    t-ref="chatInput"
+                    class="payai-chat-input"
+                    placeholder="Ask PayAI anything..."
+                    t-att-value="state.inputText"
+                    t-on-input="onInputChange"
+                    t-on-keydown="onInputKeydown"
+                    rows="1"
+                />
+                <button class="payai-send-btn"
+                        t-on-click="sendMessage"
+                        t-att-disabled="state.isLoading || !state.inputText.trim()">
+                    <span>➤</span>
+                </button>
+            </div>
+        </div>
+    </t>
+</templates>

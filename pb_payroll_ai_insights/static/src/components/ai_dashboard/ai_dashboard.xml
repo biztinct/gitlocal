@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="pb_payroll_ai_insights.AiDashboard">
+        <div class="payai-dashboard">
+            <!-- Header -->
+            <div class="payai-dash-header">
+                <div class="payai-dash-header-left">
+                    <h1 class="payai-dash-title">📊 PayAI Dashboard</h1>
+                    <span class="payai-dash-subtitle" t-esc="state.dashboardName"/>
+                </div>
+                <div class="payai-dash-header-actions">
+                    <button class="payai-dash-btn" t-on-click="openChat">💬 Chat</button>
+                    <button class="payai-dash-btn payai-dash-btn-outline" t-on-click="refreshDashboard">🔄 Refresh</button>
+                </div>
+            </div>
+
+            <!-- Copilot Bar -->
+            <div class="payai-copilot-bar">
+                <span class="payai-copilot-icon">✨</span>
+                <input
+                    type="text"
+                    class="payai-copilot-input"
+                    placeholder="Ask PayAI to add a chart... (e.g., 'Add salary distribution chart')"
+                    t-att-value="state.copilotText"
+                    t-on-input="onCopilotInput"
+                    t-on-keydown="onCopilotKeydown"
+                    t-att-disabled="state.isCopilotLoading"
+                />
+                <button class="payai-copilot-btn"
+                        t-on-click="generateFromCopilot"
+                        t-att-disabled="state.isCopilotLoading || !state.copilotText.trim()">
+                    <t t-if="state.isCopilotLoading">⏳</t>
+                    <t t-else="">➤</t>
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <t t-if="state.isLoading">
+                <div class="payai-dash-loading">
+                    <div class="payai-typing">
+                        <span class="payai-dot"/><span class="payai-dot"/><span class="payai-dot"/>
+                    </div>
+                    <p>Loading dashboard...</p>
+                </div>
+            </t>
+
+            <!-- Widget Grid -->
+            <t t-elif="state.widgets.length > 0">
+                <div class="payai-dash-grid">
+                    <t t-foreach="state.widgets" t-as="widget" t-key="widget.id">
+                        <div class="payai-dash-widget"
+                             t-att-style="'grid-column: span ' + (widget.width || 6)">
+                            <div class="payai-widget-header">
+                                <span class="payai-widget-title" t-esc="widget.name"/>
+                                <button class="payai-widget-remove"
+                                        t-on-click="() => this.removeWidget(widget.id)"
+                                        title="Remove widget">✕</button>
+                            </div>
+                            <div class="payai-widget-body">
+                                <t t-if="widget.chart_config">
+                                    <ChartRenderer chartConfig="widget.chart_config" height="'280px'"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="payai-widget-empty">No chart data</div>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+
+            <!-- Empty State -->
+            <t t-else="">
+                <div class="payai-dash-empty">
+                    <div class="payai-dash-empty-icon">📊</div>
+                    <h3>Your dashboard is empty</h3>
+                    <p>Use the copilot bar above to add charts, or pin charts from the PayAI chat.</p>
+                    <button class="payai-dash-btn" t-on-click="openChat">💬 Open PayAI Chat</button>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
