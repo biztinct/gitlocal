@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
     <t t-name="pb_payroll_ai_insights.ChartRenderer">
-        <div class="payai-chart-wrapper" t-att-style="'height:' + canvasHeight">
-            <canvas t-ref="chartCanvas" t-att-id="props.chartId || ''"/>
+        <div class="payai-chart-container">
+            <!-- Chart Type Toolbar -->
+            <div class="payai-chart-toolbar" t-if="showToolbar">
+                <t t-foreach="chartTypes" t-as="ct" t-key="ct.type">
+                    <button t-att-class="'payai-chart-type-btn ' + (state.currentType === ct.type ? 'active' : '')"
+                            t-on-click="() => this.switchChartType(ct.type)"
+                            t-att-title="ct.label">
+                        <i t-att-class="ct.icon"/>
+                    </button>
+                </t>
+            </div>
+
+            <!-- Chart Canvas -->
+            <div class="payai-chart-wrapper" t-att-style="'height:' + canvasHeight">
+                <canvas t-ref="chartCanvas" t-att-id="props.chartId || ''"/>
+            </div>
+
+            <!-- Drill-down hint -->
+            <div class="payai-drilldown-hint" t-if="props.drillDownModel">
+                <i class="fa fa-mouse-pointer"/> Click chart element to view details
+            </div>
         </div>
     </t>
 </templates>

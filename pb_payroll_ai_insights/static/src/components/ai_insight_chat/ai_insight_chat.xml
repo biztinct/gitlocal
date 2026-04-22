@@ -4,27 +4,58 @@
         <!-- Floating Pill Button -->
         <div class="payai-floating-pill" t-on-click="togglePanel"
              t-att-class="{ 'payai-pill-active': state.isOpen }">
-            <span class="payai-pill-icon">✨</span>
-            <span class="payai-pill-text">PayAI</span>
+            <div class="payai-pill-avatar">
+                <t t-if="state.aiIconUrl">
+                    <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="PayAI"/>
+                </t>
+                <t t-else="">
+                    <i class="fa fa-bolt"/>
+                </t>
+                <div class="payai-pill-glow"/>
+            </div>
+            <div class="payai-pill-text">
+                <span class="payai-pill-title">PayAI</span>
+                <span class="payai-pill-status">
+                    <span class="payai-status-dot"/>
+                    Online
+                </span>
+            </div>
         </div>
 
-        <!-- Chat Panel (slide out) -->
+        <!-- Backdrop (when panel is open) -->
+        <div t-if="state.isOpen" class="payai-backdrop" t-on-click="closePanel"/>
+
+        <!-- Chat Panel (Centered Modal) -->
         <div t-att-class="'payai-chat-panel ' + (state.isOpen ? 'payai-panel-open' : '')">
             <!-- Header -->
             <div class="payai-chat-header">
                 <div class="payai-header-left">
-                    <span class="payai-header-icon">🤖</span>
-                    <div>
-                        <div class="payai-header-title">PayAI</div>
-                        <div class="payai-header-subtitle">Intelligent Payroll Analytics</div>
+                    <div class="payai-modal-avatar">
+                        <div class="payai-avatar-core">
+                            <t t-if="state.aiIconUrl">
+                                <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="PayAI"/>
+                            </t>
+                            <t t-else="">
+                                <i class="fa fa-bolt"/>
+                            </t>
+                        </div>
+                        <div class="payai-avatar-ring ring-1"/>
+                        <div class="payai-avatar-ring ring-2"/>
+                    </div>
+                    <div class="payai-header-title-group">
+                        <h3>PayAI</h3>
+                        <div class="payai-header-status">
+                            <span class="payai-status-dot"/>
+                            Intelligent Payroll Analytics
+                        </div>
                     </div>
                 </div>
                 <div class="payai-header-actions">
                     <button class="payai-btn-icon" t-on-click="clearHistory" title="Clear chat">
-                        🗑️
+                        <i class="fa fa-trash-o"/>
                     </button>
                     <button class="payai-btn-icon" t-on-click="closePanel" title="Close">
-                        ✕
+                        <i class="fa fa-times"/>
                     </button>
                 </div>
             </div>
@@ -34,9 +65,11 @@
                 <!-- Welcome + Suggestions -->
                 <t t-if="state.showSuggestions and state.messages.length === 0">
                     <div class="payai-welcome">
-                        <div class="payai-welcome-icon">✨</div>
+                        <div class="payai-welcome-icon">
+                            <i class="fa fa-magic fa-2x"/>
+                        </div>
                         <h3>Welcome to PayAI</h3>
-                        <p>Ask me anything about your payroll data, or try one of these:</p>
+                        <p>Ask me anything about your payroll, attendance, leaves, or recruitment data:</p>
                         <div class="payai-suggestions">
                             <t t-foreach="suggestions" t-as="suggestion" t-key="suggestion_index">
                                 <button class="payai-suggestion-chip"
@@ -53,8 +86,19 @@
                     <div t-att-class="'payai-message payai-msg-' + msg.role">
                         <!-- Avatar -->
                         <div class="payai-avatar">
-                            <t t-if="msg.role === 'user'">👤</t>
-                            <t t-else="">🤖</t>
+                            <div class="payai-msg-avatar">
+                                <t t-if="msg.role === 'user'">
+                                    <i class="fa fa-user"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-if="state.aiIconUrl">
+                                        <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="AI"/>
+                                    </t>
+                                    <t t-else="">
+                                        <i class="fa fa-bolt"/>
+                                    </t>
+                                </t>
+                            </div>
                         </div>
 
                         <!-- Message Content -->
@@ -64,11 +108,13 @@
                             <!-- Chart (if present) -->
                             <t t-if="msg.chart">
                                 <div class="payai-msg-chart">
-                                    <ChartRenderer chartConfig="msg.chart" height="'260px'"/>
+                                    <ChartRenderer chartConfig="msg.chart" height="'260px'"
+                                                   showToolbar="true"
+                                                   drillDownModel="msg.drillDownModel || ''"/>
                                     <button class="payai-pin-btn"
                                             t-on-click="() => this.pinToDashboard(msg.chart)"
                                             title="Pin to Dashboard">
-                                        📌 Pin to Dashboard
+                                        <i class="fa fa-thumb-tack"/> Pin to Dashboard
                                     </button>
                                 </div>
                             </t>
@@ -76,7 +122,9 @@
                             <!-- Insights -->
                             <t t-if="msg.insights and msg.insights.length">
                                 <div class="payai-insights">
-                                    <div class="payai-insights-title">💡 Key Insights</div>
+                                    <div class="payai-insights-title">
+                                        <i class="fa fa-lightbulb-o"/> Key Insights
+                                    </div>
                                     <t t-foreach="msg.insights" t-as="insight" t-key="insight_index">
                                         <div class="payai-insight-item">
                                             <span class="payai-insight-bullet">•</span>
@@ -107,7 +155,16 @@
                 <!-- Loading indicator -->
                 <t t-if="state.isLoading">
                     <div class="payai-message payai-msg-assistant">
-                        <div class="payai-avatar">🤖</div>
+                        <div class="payai-avatar">
+                            <div class="payai-msg-avatar">
+                                <t t-if="state.aiIconUrl">
+                                    <img t-att-src="state.aiIconUrl" class="payai-ai-icon" alt="AI"/>
+                                </t>
+                                <t t-else="">
+                                    <i class="fa fa-bolt"/>
+                                </t>
+                            </div>
+                        </div>
                         <div class="payai-msg-content">
                             <div class="payai-typing">
                                 <span class="payai-dot"/>
@@ -133,7 +190,7 @@
                 <button class="payai-send-btn"
                         t-on-click="sendMessage"
                         t-att-disabled="state.isLoading || !state.inputText.trim()">
-                    <span>➤</span>
+                    <i class="fa fa-paper-plane"/>
                 </button>
             </div>
         </div>

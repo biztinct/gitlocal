@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import base64
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -57,6 +58,13 @@ class PayrollAIConfig(models.Model):
         default=True,
     )
 
+    ai_icon = fields.Image(
+        string='AI Chat Avatar',
+        help='Custom icon/avatar for the PayAI chat panel. '
+             'Recommended size: 128×128 pixels. If not set, a default icon is used.',
+        max_width=256, max_height=256,
+    )
+
     company_id = fields.Many2one(
         'res.company',
         string='Company',
@@ -65,6 +73,17 @@ class PayrollAIConfig(models.Model):
     )
 
     # --- Helper Methods ---
+
+    @api.model
+    def rpc_get_ai_icon_url(self):
+        """Return the AI chat icon as a data URL for the frontend."""
+        config = self.get_active_config()
+        if config and config.ai_icon:
+            icon_b64 = config.ai_icon
+            if isinstance(icon_b64, bytes):
+                icon_b64 = icon_b64.decode('utf-8')
+            return 'data:image/png;base64,' + icon_b64
+        return False
 
     @api.model
     def get_active_config(self):

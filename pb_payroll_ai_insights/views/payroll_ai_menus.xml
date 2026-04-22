@@ -8,28 +8,28 @@
 
     <!-- Chat Menu -->
     <menuitem id="menu_payai_chat"
-              name="💬 Chat with PayAI"
+              name="Chat with PayAI"
               parent="menu_payai_root"
               action="action_payai_chat_full"
               sequence="10"/>
 
     <!-- Dashboard Menu -->
     <menuitem id="menu_payai_dashboard"
-              name="📊 Dashboard"
+              name="Dashboard"
               parent="menu_payai_root"
               action="action_payai_dashboard"
               sequence="20"/>
 
     <!-- History Menu -->
     <menuitem id="menu_payai_history"
-              name="📋 Chat History"
+              name="Chat History"
               parent="menu_payai_root"
               action="action_payai_conversations"
               sequence="30"/>
 
     <!-- Configuration Menu -->
     <menuitem id="menu_payai_config_parent"
-              name="⚙️ Configuration"
+              name="Configuration"
               parent="menu_payai_root"
               sequence="90"
               groups="group_payai_admin"/>

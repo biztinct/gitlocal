@@ -33,6 +33,12 @@
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
+                    <group>
+                        <group string="Appearance">
+                            <field name="ai_icon" widget="image" class="oe_avatar"/>
+                            <p class="text-muted">Upload a custom avatar for the PayAI chat panel. 128×128px recommended.</p>
+                        </group>
+                    </group>
                     <div class="alert alert-info" role="alert">
                         <strong>💡 Quick Start:</strong>
                         <ol>
