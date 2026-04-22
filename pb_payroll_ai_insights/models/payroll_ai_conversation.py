@@ -179,6 +179,66 @@ class PayrollAIConversation(models.Model):
                 session.action_clear()
         return True
 
+    @api.model
+    def rpc_send_voice_message(self, audio_base64, session_id=None, tts_enabled=False):
+        """
+        RPC endpoint for voice input.
+        Receives base64 audio → Whisper → AI engine → response (+ optional TTS).
+
+        Args:
+            audio_base64 (str): Base64-encoded audio blob (webm format from MediaRecorder)
+            session_id (int): Optional session ID
+            tts_enabled (bool): If True, also return TTS audio of the response
+
+        Returns:
+            dict: Same as rpc_send_message plus transcribed_text and tts_audio
+        """
+        import base64
+
+        # Decode audio
+        try:
+            audio_bytes = base64.b64decode(audio_base64)
+        except Exception as e:
+            _logger.error("PayAI voice: Failed to decode audio: %s", e)
+            return {'error': 'Failed to decode audio data'}
+
+        # Get AI provider for Whisper
+        config_model = self.env['payroll.ai.config']
+        config = config_model.get_active_config()
+        if not config:
+            return {'error': 'PayAI not configured. Go to PayAI → Configuration.'}
+
+        provider = config.get_provider_instance()
+        if not provider or not hasattr(provider, 'transcribe_audio'):
+            return {'error': 'Voice feature requires OpenAI provider with Whisper support'}
+
+        # Transcribe audio → text
+        try:
+            transcribed_text = provider.transcribe_audio(audio_bytes)
+        except Exception as e:
+            _logger.error("PayAI voice transcription failed: %s", e)
+            return {'error': f'Transcription failed: {str(e)}'}
+
+        if not transcribed_text or not transcribed_text.strip():
+            return {'error': 'Could not understand audio. Please try again.'}
+
+        # Process transcribed text through normal message flow
+        result = self.rpc_send_message(transcribed_text, session_id)
+
+        # Add the transcribed text so frontend knows what was said
+        result['transcribed_text'] = transcribed_text
+
+        # Generate TTS if requested
+        if tts_enabled and result.get('response'):
+            try:
+                tts_bytes = provider.text_to_speech(result['response'])
+                result['tts_audio'] = base64.b64encode(tts_bytes).decode('utf-8')
+            except Exception as e:
+                _logger.warning("PayAI TTS failed (non-critical): %s", e)
+                result['tts_audio'] = False
+
+        return result
+
 
 class PayrollAIMessage(models.Model):
     """Individual message in a PayAI conversation."""

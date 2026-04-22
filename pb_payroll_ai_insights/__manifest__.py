@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'PayAI — Intelligent Payroll Analytics',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'AI-powered payroll analytics with conversational charts, dashboards, and insights',
     'description': """
@@ -20,10 +20,16 @@ Features
 * **Multiple Chart Types**: Bar, line, pie, doughnut, radar, scatter, bubble charts
 * **Floating Pill + Full Page**: Quick-access pill for fast queries, full-page view for deep analysis
 * **Narrative Insights**: AI-generated text explanations accompanying every chart
+* **Voice-to-Chart**: Microphone input with Whisper STT + TTS audio response
+* **Predictive Forecasting**: AI-powered payroll cost predictions with confidence bands
+* **Proactive Pulse Engine**: Anomaly detection with daily alerts and AI narratives
+* **Executive PDF Reports**: AI-narrated payroll reports with data tables
 
 AI Provider Support
 -------------------
 * OpenAI GPT-4o / GPT-4o-mini (primary)
+* OpenAI Whisper (voice transcription)
+* OpenAI TTS (text-to-speech)
 * Ollama / Llama / Mistral (planned)
 
 Inspired by: Power BI Copilot, ThoughtSpot, Julius AI, Tableau Pulse, Zoho Zia
@@ -47,11 +53,16 @@ Inspired by: Power BI Copilot, ThoughtSpot, Julius AI, Tableau Pulse, Zoho Zia
 
         # Data
         'data/payroll_ai_config_data.xml',
+        'data/payroll_ai_pulse_cron.xml',
+
+        # Reports
+        'report/payroll_ai_report_templates.xml',
 
         # Views
         'views/payroll_ai_config_views.xml',
         'views/payroll_ai_chat_views.xml',
         'views/payroll_ai_dashboard_views.xml',
+        'views/payroll_ai_pulse_views.xml',
         'views/payroll_ai_menus.xml',
     ],
     'assets': {

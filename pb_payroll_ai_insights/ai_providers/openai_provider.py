@@ -87,3 +87,64 @@ class OpenAIProvider(BaseAIProvider):
     def is_available(self):
         """Check if OpenAI is available."""
         return bool(self.api_key)
+
+    def transcribe_audio(self, audio_bytes, language='en'):
+        """
+        Transcribe audio to text using OpenAI Whisper API.
+
+        Args:
+            audio_bytes: Raw audio file bytes (webm, mp3, wav, etc.)
+            language: Language hint for Whisper (default: 'en')
+
+        Returns:
+            str: Transcribed text
+        """
+        try:
+            import io
+            client = self._get_client()
+
+            # Wrap bytes in a file-like object with a name
+            audio_file = io.BytesIO(audio_bytes)
+            audio_file.name = "voice_recording.webm"
+
+            response = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+                language=language,
+            )
+            text = response.text.strip()
+            _logger.info("PayAI Whisper: transcribed %d bytes → '%s'",
+                         len(audio_bytes), text[:80])
+            return text
+        except Exception as e:
+            _logger.error("PayAI Whisper transcription error: %s", e)
+            raise
+
+    def text_to_speech(self, text, voice='alloy'):
+        """
+        Convert text to speech using OpenAI TTS API.
+
+        Args:
+            text: Text to synthesize (max ~4096 chars)
+            voice: Voice preset: alloy, echo, fable, onyx, nova, shimmer
+
+        Returns:
+            bytes: MP3 audio bytes
+        """
+        try:
+            client = self._get_client()
+            # Truncate long text for TTS
+            tts_text = text[:4000] if len(text) > 4000 else text
+
+            response = client.audio.speech.create(
+                model="tts-1",
+                voice=voice,
+                input=tts_text,
+            )
+            audio_bytes = response.content
+            _logger.info("PayAI TTS: generated %d bytes audio for %d chars",
+                         len(audio_bytes), len(tts_text))
+            return audio_bytes
+        except Exception as e:
+            _logger.error("PayAI TTS error: %s", e)
+            raise

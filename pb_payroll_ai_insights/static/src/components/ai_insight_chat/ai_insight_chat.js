@@ -28,7 +28,14 @@ export class AiInsightChat extends Component {
             sessionId: null,
             showSuggestions: true,
             aiIconUrl: false,
+            isRecording: false,
+            recordingDuration: 0,
         });
+
+        // Voice recording state
+        this._mediaRecorder = null;
+        this._audioChunks = [];
+        this._recordingTimer = null;
 
         this.suggestions = [
             "Show me salary distribution by department",
@@ -163,6 +170,169 @@ export class AiInsightChat extends Component {
             console.error("Pin to dashboard error:", error);
             this.notification.add("Failed to pin chart", { type: "danger" });
         }
+    }
+
+    // --- Voice Recording ---
+
+    async toggleVoiceRecording() {
+        if (this.state.isRecording) {
+            this._stopRecording();
+        } else {
+            await this._startRecording();
+        }
+    }
+
+    async _startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this._audioChunks = [];
+            this._mediaRecorder = new MediaRecorder(stream, {
+                mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                    ? 'audio/webm;codecs=opus' : 'audio/webm',
+            });
+
+            this._mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) this._audioChunks.push(e.data);
+            };
+
+            this._mediaRecorder.onstop = () => {
+                // Stop all tracks
+                stream.getTracks().forEach(t => t.stop());
+                this._sendVoiceMessage();
+            };
+
+            this._mediaRecorder.start();
+            this.state.isRecording = true;
+            this.state.recordingDuration = 0;
+
+            // Timer for visual feedback
+            this._recordingTimer = setInterval(() => {
+                this.state.recordingDuration++;
+            }, 1000);
+        } catch (err) {
+            console.error("Microphone access denied:", err);
+            this.notification.add(
+                "Microphone access denied. Please allow microphone in browser settings.",
+                { type: "warning" }
+            );
+        }
+    }
+
+    _stopRecording() {
+        if (this._mediaRecorder && this._mediaRecorder.state === 'recording') {
+            this._mediaRecorder.stop();
+        }
+        this.state.isRecording = false;
+        if (this._recordingTimer) {
+            clearInterval(this._recordingTimer);
+            this._recordingTimer = null;
+        }
+    }
+
+    async _sendVoiceMessage() {
+        if (this._audioChunks.length === 0) return;
+
+        const audioBlob = new Blob(this._audioChunks, { type: 'audio/webm' });
+        this._audioChunks = [];
+
+        // Convert to base64
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+
+        // Show "Transcribing..." message
+        this.state.messages.push({
+            role: "user",
+            content: "🎙️ Voice message (transcribing...)",
+            chart: null,
+            insights: [],
+            isVoice: true,
+            timestamp: new Date().toISOString(),
+        });
+        this.state.showSuggestions = false;
+        this.state.isLoading = true;
+        this._scrollToBottom();
+
+        try {
+            const result = await rpc("/web/dataset/call_kw", {
+                model: "payroll.ai.conversation",
+                method: "rpc_send_voice_message",
+                args: [base64, this.state.sessionId, true],
+                kwargs: {},
+            });
+
+            if (result.error) {
+                // Update the user message to show error
+                const lastUserMsg = this.state.messages[this.state.messages.length - 1];
+                if (lastUserMsg) lastUserMsg.content = "🎙️ " + result.error;
+                this.state.isLoading = false;
+                return;
+            }
+
+            this.state.sessionId = result.session_id;
+
+            // Update the user message with transcribed text
+            const userMsg = this.state.messages[this.state.messages.length - 1];
+            if (userMsg) {
+                userMsg.content = "🎙️ " + (result.transcribed_text || "Voice message");
+            }
+
+            // Add assistant response
+            this.state.messages.push({
+                role: "assistant",
+                content: result.response || "",
+                chart: result.chart || null,
+                insights: result.insights || [],
+                followUpQuestions: result.follow_up_questions || [],
+                drillDownModel: result.drilldown_model || "",
+                intent: result.intent || "",
+                hasTts: !!result.tts_audio,
+                ttsAudio: result.tts_audio || null,
+                timestamp: new Date().toISOString(),
+            });
+
+            // Auto-play TTS if available
+            if (result.tts_audio) {
+                this._playTtsAudio(result.tts_audio);
+            }
+        } catch (error) {
+            console.error("PayAI voice error:", error);
+            this.state.messages.push({
+                role: "assistant",
+                content: "Sorry, voice processing failed. Please try typing your question.",
+                chart: null,
+                insights: [],
+                timestamp: new Date().toISOString(),
+            });
+        }
+
+        this.state.isLoading = false;
+        this._scrollToBottom();
+    }
+
+    _playTtsAudio(base64Audio) {
+        try {
+            const audioBytes = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0));
+            const blob = new Blob([audioBytes], { type: 'audio/mp3' });
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            audio.play().catch(e => console.warn("TTS autoplay blocked:", e));
+            audio.onended = () => URL.revokeObjectURL(url);
+        } catch (e) {
+            console.warn("TTS playback error:", e);
+        }
+    }
+
+    playMessageAudio(msg) {
+        if (msg.ttsAudio) {
+            this._playTtsAudio(msg.ttsAudio);
+        }
+    }
+
+    formatRecordingTime() {
+        const s = this.state.recordingDuration;
+        const mins = Math.floor(s / 60);
+        const secs = s % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
     // --- Helpers ---

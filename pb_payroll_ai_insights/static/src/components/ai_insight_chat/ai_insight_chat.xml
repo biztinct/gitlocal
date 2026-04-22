@@ -146,6 +146,15 @@
                                 </div>
                             </t>
 
+                            <!-- TTS Audio Replay -->
+                            <t t-if="msg.hasTts">
+                                <button class="payai-tts-replay"
+                                        t-on-click="() => this.playMessageAudio(msg)"
+                                        title="Replay audio response">
+                                    <i class="fa fa-volume-up"/> Listen
+                                </button>
+                            </t>
+
                             <!-- Timestamp -->
                             <div class="payai-msg-time" t-esc="formatTimestamp(msg.timestamp)"/>
                         </div>
@@ -178,20 +187,37 @@
 
             <!-- Input Area -->
             <div class="payai-chat-input-area">
-                <textarea
-                    t-ref="chatInput"
-                    class="payai-chat-input"
-                    placeholder="Ask PayAI anything..."
-                    t-att-value="state.inputText"
-                    t-on-input="onInputChange"
-                    t-on-keydown="onInputKeydown"
-                    rows="1"
-                />
-                <button class="payai-send-btn"
-                        t-on-click="sendMessage"
-                        t-att-disabled="state.isLoading || !state.inputText.trim()">
-                    <i class="fa fa-paper-plane"/>
-                </button>
+                <!-- Recording Indicator -->
+                <t t-if="state.isRecording">
+                    <div class="payai-recording-indicator">
+                        <span class="payai-rec-dot"/>
+                        <span class="payai-rec-text">Recording <t t-esc="formatRecordingTime()"/></span>
+                    </div>
+                </t>
+                <t t-else="">
+                    <textarea
+                        t-ref="chatInput"
+                        class="payai-chat-input"
+                        placeholder="Ask PayAI anything..."
+                        t-att-value="state.inputText"
+                        t-on-input="onInputChange"
+                        t-on-keydown="onInputKeydown"
+                        rows="1"
+                    />
+                </t>
+                <div class="payai-input-actions">
+                    <button t-att-class="'payai-mic-btn ' + (state.isRecording ? 'recording' : '')"
+                            t-on-click="toggleVoiceRecording"
+                            t-att-disabled="state.isLoading"
+                            t-att-title="state.isRecording ? 'Stop recording' : 'Voice input'">
+                        <i t-att-class="state.isRecording ? 'fa fa-stop' : 'fa fa-microphone'"/>
+                    </button>
+                    <button class="payai-send-btn"
+                            t-on-click="sendMessage"
+                            t-att-disabled="state.isLoading || state.isRecording || !state.inputText.trim()">
+                        <i class="fa fa-paper-plane"/>
+                    </button>
+                </div>
             </div>
         </div>
     </t>

@@ -102,6 +102,12 @@ class PayrollDataQuery(models.Model):
 
         # --- Core routes (always available) ---
 
+        # Forecast / Prediction (must come before trend, cost, etc.)
+        elif any(kw in msg_lower for kw in ['forecast', 'predict', 'projection', 'next month',
+                                             'next quarter', 'next year', 'future',
+                                             'estimate', 'projected', 'what will']):
+            return self._query_forecast_data(msg_lower, context)
+
         # Payroll periods/months/batches (must be before salary which matches 'pay')
         elif any(kw in msg_lower for kw in ['how many month', 'months payroll', 'payroll generated',
                                              'payroll run', 'payslip', 'pay period', 'batch',
@@ -677,3 +683,87 @@ class PayrollDataQuery(models.Model):
             'suggested_chart': 'doughnut',
             'drilldown_model': 'hr.employee',
         }
+
+    # =========================================================================
+    # Forecast / Prediction Query
+    # =========================================================================
+
+    def _query_forecast_data(self, message, context):
+        """
+        Gather 12 months of historical payroll cost data for AI-powered forecasting.
+        The AI engine will use this data to predict the next 3 months.
+        """
+        Payslip = self.env['hr.payslip'].sudo()
+
+        today = fields.Date.today()
+        # Get data for last 12 months
+        date_from = today - relativedelta(months=12)
+        date_from = date_from.replace(day=1)  # Start of month
+
+        domain = [
+            ('state', 'in', ['done', 'paid']),
+            ('date_from', '>=', date_from),
+        ]
+        if context.get('department_id'):
+            domain.append(('employee_id.department_id', '=', context['department_id']))
+
+        payslips = Payslip.search(domain)
+
+        # Aggregate by month
+        monthly_data = {}
+        for ps in payslips:
+            month_key = ps.date_from.strftime('%Y-%m')
+            month_label = ps.date_from.strftime('%b %Y')
+            if month_key not in monthly_data:
+                monthly_data[month_key] = {
+                    'month': month_key,
+                    'label': month_label,
+                    'total_cost': 0,
+                    'employee_count': 0,
+                    'employees_seen': set(),
+                }
+            monthly_data[month_key]['total_cost'] += sum(
+                line.total for line in ps.line_ids if line.total > 0
+            ) if ps.line_ids else 0
+            monthly_data[month_key]['employees_seen'].add(ps.employee_id.id)
+
+        # Convert to sorted list
+        result = []
+        for key in sorted(monthly_data.keys()):
+            data = monthly_data[key]
+            result.append({
+                'month': data['month'],
+                'label': data['label'],
+                'total_cost': round(data['total_cost'], 2),
+                'employee_count': len(data['employees_seen']),
+                'avg_cost_per_employee': round(
+                    data['total_cost'] / max(len(data['employees_seen']), 1), 2
+                ),
+            })
+
+        # Determine what the user wants to forecast
+        forecast_focus = 'total payroll cost'
+        if 'headcount' in message:
+            forecast_focus = 'headcount'
+        elif 'salary' in message or 'wage' in message:
+            forecast_focus = 'average salary'
+
+        return {
+            'query_type': 'forecast',
+            'title': f'Payroll Forecast — {forecast_focus.title()}',
+            'data': result,
+            'forecast_months': 3,
+            'forecast_focus': forecast_focus,
+            'currency': self.env.company.currency_id.symbol or '$',
+            'suggested_chart': 'line',
+            'is_forecast': True,
+            'instructions': (
+                'Based on the historical data provided, PREDICT the next 3 months values. '
+                'In the chart, use a SOLID line for historical data and a DASHED line '
+                'with a lighter color/opacity for the forecasted period. '
+                'Add a fill/shaded area under the forecast to indicate uncertainty. '
+                'Include your confidence level and reasoning in the insights.'
+            ),
+            'drilldown_model': 'hr.payslip',
+        }
+
