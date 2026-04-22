@@ -207,6 +207,7 @@ Remember to use the PayAI color palette and choose the best chart type for this 
                 'insights': result.get('insights', []),
                 'follow_up_questions': result.get('follow_up_questions', []),
                 'intent': 'payroll_data',
+                'drilldown_model': payroll_data.get('drilldown_model', ''),
             }
         except Exception as e:
             _logger.warning("Failed to parse chart response: %s", e)
@@ -217,6 +218,7 @@ Remember to use the PayAI color palette and choose the best chart type for this 
                 'insights': [],
                 'follow_up_questions': [],
                 'intent': 'payroll_data',
+                'drilldown_model': payroll_data.get('drilldown_model', ''),
             }
 
     def _process_knowledge_query(self, provider, message, conversation_history):

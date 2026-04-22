@@ -19,6 +19,35 @@ class PayrollDataQuery(models.Model):
     _name = 'payroll.data.query'
     _description = 'PayAI Data Query Engine'
 
+    # --- Soft Dependency Helper ---
+
+    @api.model
+    def _is_module_installed(self, module_name):
+        """Check if an Odoo module is installed (soft dependency)."""
+        try:
+            return self.env['ir.module.module'].sudo().search_count([
+                ('name', '=', module_name),
+                ('state', '=', 'installed'),
+            ]) > 0
+        except Exception:
+            return False
+
+    def _module_not_installed_response(self, module_name, feature_name):
+        """Return a helpful response when a required module is not installed."""
+        return {
+            'query_type': 'module_not_installed',
+            'title': f'{feature_name} — Module Not Installed',
+            'data': [],
+            'message': (
+                f'The {feature_name} feature requires the \'{module_name}\' module '
+                f'to be installed. Please install it from Apps to enable '
+                f'{feature_name.lower()} queries in PayAI.'
+            ),
+            'suggested_chart': None,
+        }
+
+    # --- Main Router ---
+
     @api.model
     def query_for_message(self, message, context=None):
         """
@@ -37,11 +66,47 @@ class PayrollDataQuery(models.Model):
         # Route to appropriate query based on keywords
         # IMPORTANT: More specific routes must come BEFORE generic ones
 
+        # --- Soft-dependency routes (optional modules) ---
+
+        # Attendance (hr_attendance)
+        if any(kw in msg_lower for kw in ['attendance', 'check in', 'check out', 'checkin',
+                                           'checkout', 'present', 'absent', 'late arrival',
+                                           'working hours', 'clock in', 'clock out']):
+            if not self._is_module_installed('hr_attendance'):
+                return self._module_not_installed_response('hr_attendance', 'Attendance')
+            return self._query_attendance_data(msg_lower, context)
+
+        # Leaves (hr_holidays)
+        elif any(kw in msg_lower for kw in ['leave', 'absence', 'time off', 'vacation',
+                                             'sick leave', 'annual leave', 'holiday',
+                                             'leave balance', 'days off']):
+            if not self._is_module_installed('hr_holidays'):
+                return self._module_not_installed_response('hr_holidays', 'Leaves / Time Off')
+            return self._query_leave_data(msg_lower, context)
+
+        # Recruitment (hr_recruitment)
+        elif any(kw in msg_lower for kw in ['recruit', 'applicant', 'hiring', 'candidate',
+                                             'vacancy', 'job opening', 'interview',
+                                             'application', 'onboarding', 'new hire']):
+            if not self._is_module_installed('hr_recruitment'):
+                return self._module_not_installed_response('hr_recruitment', 'Recruitment')
+            return self._query_recruitment_data(msg_lower, context)
+
+        # Timesheets (hr_timesheet)
+        elif any(kw in msg_lower for kw in ['timesheet', 'hours logged', 'time spent',
+                                             'project hours', 'time tracking', 'logged hours',
+                                             'billable hours', 'time entry']):
+            if not self._is_module_installed('hr_timesheet'):
+                return self._module_not_installed_response('hr_timesheet', 'Timesheets')
+            return self._query_timesheet_data(msg_lower, context)
+
+        # --- Core routes (always available) ---
+
         # Payroll periods/months/batches (must be before salary which matches 'pay')
-        if any(kw in msg_lower for kw in ['how many month', 'months payroll', 'payroll generated',
-                                           'payroll run', 'payslip', 'pay period', 'batch',
-                                           'months generated', 'payroll period', 'payroll month',
-                                           'which month', 'processed payroll']):
+        elif any(kw in msg_lower for kw in ['how many month', 'months payroll', 'payroll generated',
+                                             'payroll run', 'payslip', 'pay period', 'batch',
+                                             'months generated', 'payroll period', 'payroll month',
+                                             'which month', 'processed payroll']):
             return self._query_payroll_periods(msg_lower, context)
         elif any(kw in msg_lower for kw in ['salary', 'wage', 'compensation', 'ctc', 'earning',
                                              'salary distribution']):
@@ -72,7 +137,193 @@ class PayrollDataQuery(models.Model):
             return self._query_general_summary(context)
 
     # =========================================================================
-    # Query Methods
+    # Soft-Dependency Query Methods (optional modules)
+    # =========================================================================
+
+    def _query_attendance_data(self, message, context):
+        """Query attendance data — check-ins, working hours, late arrivals."""
+        Attendance = self.env['hr.attendance'].sudo()
+
+        # Default to last 30 days to keep data volume manageable
+        today = fields.Date.today()
+        date_from = today - timedelta(days=30)
+
+        domain = [('check_in', '>=', date_from)]
+        if context.get('department_id'):
+            domain.append(('employee_id.department_id', '=', context['department_id']))
+
+        attendances = Attendance.search(domain, order='check_in desc')
+
+        # Group by department
+        dept_data = {}
+        for att in attendances:
+            dept = att.employee_id.department_id.name or 'Unassigned'
+            if dept not in dept_data:
+                dept_data[dept] = {'total_hours': 0, 'count': 0, 'employees': set()}
+            if att.worked_hours:
+                dept_data[dept]['total_hours'] += att.worked_hours
+            dept_data[dept]['count'] += 1
+            dept_data[dept]['employees'].add(att.employee_id.id)
+
+        result = []
+        for dept, data in sorted(dept_data.items(), key=lambda x: x[1]['total_hours'], reverse=True):
+            avg_hours = data['total_hours'] / data['count'] if data['count'] else 0
+            result.append({
+                'department': dept,
+                'total_hours': round(data['total_hours'], 1),
+                'records': data['count'],
+                'unique_employees': len(data['employees']),
+                'avg_hours_per_day': round(avg_hours, 1),
+            })
+
+        return {
+            'query_type': 'attendance_by_department',
+            'title': f'Attendance Summary (Last 30 Days)',
+            'data': result,
+            'total_records': sum(d['records'] for d in result),
+            'total_hours': round(sum(d['total_hours'] for d in result), 1),
+            'date_range': f'{date_from} to {today}',
+            'suggested_chart': 'bar',
+            'drilldown_model': 'hr.attendance',
+        }
+
+    def _query_leave_data(self, message, context):
+        """Query leave/time-off data — by type, department, status."""
+        Leave = self.env['hr.leave'].sudo()
+
+        # Get all leaves from this year
+        year_start = fields.Date.today().replace(month=1, day=1)
+        domain = [('date_from', '>=', year_start)]
+        if context.get('department_id'):
+            domain.append(('employee_id.department_id', '=', context['department_id']))
+
+        leaves = Leave.search(domain)
+
+        # Group by leave type
+        type_data = {}
+        for leave in leaves:
+            lt = leave.holiday_status_id.name if leave.holiday_status_id else 'Other'
+            if lt not in type_data:
+                type_data[lt] = {'count': 0, 'days': 0, 'approved': 0, 'pending': 0}
+            type_data[lt]['count'] += 1
+            type_data[lt]['days'] += leave.number_of_days or 0
+            if leave.state == 'validate':
+                type_data[lt]['approved'] += 1
+            elif leave.state in ('draft', 'confirm'):
+                type_data[lt]['pending'] += 1
+
+        result = [
+            {
+                'leave_type': lt,
+                'count': d['count'],
+                'total_days': round(d['days'], 1),
+                'approved': d['approved'],
+                'pending': d['pending'],
+            }
+            for lt, d in sorted(type_data.items(), key=lambda x: x[1]['days'], reverse=True)
+        ]
+
+        return {
+            'query_type': 'leave_by_type',
+            'title': f'Leave Summary ({fields.Date.today().year})',
+            'data': result,
+            'total_leaves': sum(d['count'] for d in result),
+            'total_days': round(sum(d['total_days'] for d in result), 1),
+            'suggested_chart': 'doughnut',
+            'drilldown_model': 'hr.leave',
+        }
+
+    def _query_recruitment_data(self, message, context):
+        """Query recruitment pipeline — applicants by stage, department."""
+        Applicant = self.env['hr.applicant'].sudo()
+
+        applicants = Applicant.search([])
+
+        # Group by stage
+        stage_data = {}
+        dept_data = {}
+        for app in applicants:
+            stage = app.stage_id.name if app.stage_id else 'New'
+            dept = app.department_id.name if app.department_id else 'Unassigned'
+
+            stage_data.setdefault(stage, 0)
+            stage_data[stage] += 1
+
+            dept_data.setdefault(dept, 0)
+            dept_data[dept] += 1
+
+        stages = [
+            {'stage': s, 'count': c}
+            for s, c in sorted(stage_data.items(), key=lambda x: x[1], reverse=True)
+        ]
+
+        departments = [
+            {'department': d, 'applicants': c}
+            for d, c in sorted(dept_data.items(), key=lambda x: x[1], reverse=True)
+        ]
+
+        return {
+            'query_type': 'recruitment_pipeline',
+            'title': 'Recruitment Pipeline',
+            'data': stages,
+            'departments': departments,
+            'total_applicants': len(applicants),
+            'total_stages': len(stage_data),
+            'suggested_chart': 'bar',
+            'drilldown_model': 'hr.applicant',
+        }
+
+    def _query_timesheet_data(self, message, context):
+        """Query timesheet data — hours by project and employee."""
+        Timesheet = self.env['account.analytic.line'].sudo()
+
+        # Last 30 days
+        today = fields.Date.today()
+        date_from = today - timedelta(days=30)
+
+        domain = [
+            ('date', '>=', date_from),
+            ('project_id', '!=', False),  # Only project timesheets
+        ]
+        if context.get('department_id'):
+            domain.append(('employee_id.department_id', '=', context['department_id']))
+
+        lines = Timesheet.search(domain)
+
+        # Group by project
+        project_data = {}
+        for line in lines:
+            proj = line.project_id.name if line.project_id else 'No Project'
+            if proj not in project_data:
+                project_data[proj] = {'hours': 0, 'entries': 0, 'employees': set()}
+            project_data[proj]['hours'] += line.unit_amount or 0
+            project_data[proj]['entries'] += 1
+            if line.employee_id:
+                project_data[proj]['employees'].add(line.employee_id.id)
+
+        result = [
+            {
+                'project': proj,
+                'total_hours': round(d['hours'], 1),
+                'entries': d['entries'],
+                'unique_employees': len(d['employees']),
+            }
+            for proj, d in sorted(project_data.items(), key=lambda x: x[1]['hours'], reverse=True)
+        ]
+
+        return {
+            'query_type': 'timesheet_by_project',
+            'title': f'Timesheet Hours by Project (Last 30 Days)',
+            'data': result,
+            'total_hours': round(sum(d['total_hours'] for d in result), 1),
+            'total_entries': sum(d['entries'] for d in result),
+            'date_range': f'{date_from} to {today}',
+            'suggested_chart': 'bar',
+            'drilldown_model': 'account.analytic.line',
+        }
+
+    # =========================================================================
+    # Core Query Methods (always available)
     # =========================================================================
 
     def _query_salary_data(self, message, context):
@@ -120,6 +371,7 @@ class PayrollDataQuery(models.Model):
             ),
             'currency': self.env.company.currency_id.symbol or '$',
             'suggested_chart': 'bar',
+            'drilldown_model': 'hr.contract',
         }
 
     def _query_headcount_data(self, message, context):
@@ -148,6 +400,7 @@ class PayrollDataQuery(models.Model):
             'total_headcount': sum(d['headcount'] for d in result),
             'department_count': len(result),
             'suggested_chart': 'bar',
+            'drilldown_model': 'hr.employee',
         }
 
     def _query_overtime_data(self, message, context):
@@ -185,6 +438,7 @@ class PayrollDataQuery(models.Model):
             'total_overtime': round(sum(d['overtime_cost'] for d in result), 2),
             'currency': self.env.company.currency_id.symbol or '$',
             'suggested_chart': 'bar',
+            'drilldown_model': 'hr.payslip.line',
         }
 
     def _query_deduction_data(self, message, context):
@@ -221,6 +475,7 @@ class PayrollDataQuery(models.Model):
             'total_deductions': round(sum(d['amount'] for d in result), 2),
             'currency': self.env.company.currency_id.symbol or '$',
             'suggested_chart': 'doughnut',
+            'drilldown_model': 'hr.payslip.line',
         }
 
     def _query_payroll_cost_data(self, message, context):
@@ -268,6 +523,7 @@ class PayrollDataQuery(models.Model):
             'data': result,
             'currency': self.env.company.currency_id.symbol or '$',
             'suggested_chart': 'line',
+            'drilldown_model': 'hr.payslip',
         }
 
     def _query_trend_data(self, message, context):
@@ -305,6 +561,7 @@ class PayrollDataQuery(models.Model):
             'data': list(dept_map.values()),
             'total_departments': len(dept_map),
             'suggested_chart': 'bar',
+            'drilldown_model': 'hr.employee',
         }
 
     def _query_individual_data(self, message, context):
@@ -337,6 +594,7 @@ class PayrollDataQuery(models.Model):
             'total_employees': len(result),
             'currency': self.env.company.currency_id.symbol or '$',
             'suggested_chart': 'bar',
+            'drilldown_model': 'hr.employee',
         }
 
     def _query_payroll_periods(self, message, context):
@@ -376,6 +634,7 @@ class PayrollDataQuery(models.Model):
             'total_done': sum(d['done'] for d in result),
             'total_draft': sum(d['draft'] for d in result),
             'suggested_chart': 'bar',
+            'drilldown_model': 'hr.payslip',
         }
 
     def _query_general_summary(self, context):
@@ -416,4 +675,5 @@ class PayrollDataQuery(models.Model):
             },
             'currency': self.env.company.currency_id.symbol or '$',
             'suggested_chart': 'doughnut',
+            'drilldown_model': 'hr.employee',
         }

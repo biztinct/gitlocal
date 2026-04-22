@@ -7,9 +7,9 @@ import { rpc } from "@web/core/network/rpc";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
 
 /**
- * AiInsightChat — Floating pill + slide-out chat panel for PayAI.
- * Renders as a persistent bottom-right pill that expands into a chat panel.
- * Charts are rendered inline in chat messages using ChartRenderer.
+ * AiInsightChat — Floating pill → Centered modal chat for PayAI.
+ * Renders as a persistent bottom-right pill that expands into a
+ * centered modal with blurred backdrop (inspired by ChatGPT/Intercom).
  */
 export class AiInsightChat extends Component {
     static template = "pb_payroll_ai_insights.AiInsightChat";
@@ -27,18 +27,21 @@ export class AiInsightChat extends Component {
             inputText: "",
             sessionId: null,
             showSuggestions: true,
+            aiIconUrl: false,
         });
 
         this.suggestions = [
             "Show me salary distribution by department",
             "What is the total headcount?",
-            "Overtime costs this month",
+            "Attendance summary by department",
+            "Leave breakdown by type",
+            "Recruitment pipeline status",
             "Compare department payroll costs",
-            "What does CTC stand for?",
         ];
 
         onMounted(() => {
             this._loadHistory();
+            this._loadAiIcon();
         });
     }
 
@@ -47,7 +50,7 @@ export class AiInsightChat extends Component {
     togglePanel() {
         this.state.isOpen = !this.state.isOpen;
         if (this.state.isOpen && this.inputRef.el) {
-            setTimeout(() => this.inputRef.el?.focus(), 200);
+            setTimeout(() => this.inputRef.el?.focus(), 300);
         }
     }
 
@@ -108,6 +111,7 @@ export class AiInsightChat extends Component {
                 chart: result.chart || null,
                 insights: result.insights || [],
                 followUpQuestions: result.follow_up_questions || [],
+                drillDownModel: result.drilldown_model || "",
                 intent: result.intent || "",
                 timestamp: new Date().toISOString(),
             });
@@ -154,7 +158,7 @@ export class AiInsightChat extends Component {
                 args: [chartConfig],
                 kwargs: {},
             });
-            this.notification.add("Chart pinned to dashboard! 📌", { type: "success" });
+            this.notification.add("Chart pinned to dashboard!", { type: "success" });
         } catch (error) {
             console.error("Pin to dashboard error:", error);
             this.notification.add("Failed to pin chart", { type: "danger" });
@@ -162,6 +166,23 @@ export class AiInsightChat extends Component {
     }
 
     // --- Helpers ---
+
+    async _loadAiIcon() {
+        try {
+            const iconUrl = await rpc("/web/dataset/call_kw", {
+                model: "payroll.ai.config",
+                method: "rpc_get_ai_icon_url",
+                args: [],
+                kwargs: {},
+            });
+            if (iconUrl) {
+                this.state.aiIconUrl = iconUrl;
+            }
+        } catch (error) {
+            // Silently fail — will use fallback FA icon
+            console.debug("No custom AI icon configured");
+        }
+    }
 
     async _loadHistory() {
         try {

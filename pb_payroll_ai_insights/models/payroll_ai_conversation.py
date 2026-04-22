@@ -151,6 +151,7 @@ class PayrollAIConversation(models.Model):
             'insights': result.get('insights', []),
             'follow_up_questions': result.get('follow_up_questions', []),
             'intent': result.get('intent', ''),
+            'drilldown_model': result.get('drilldown_model', ''),
         }
 
     @api.model
