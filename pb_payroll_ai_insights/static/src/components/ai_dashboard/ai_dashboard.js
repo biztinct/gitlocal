@@ -1,14 +1,13 @@
 /** @odoo-module **/
 
-import { Component, useState, onMounted } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onWillUnmount, onPatched } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { rpc } from "@web/core/network/rpc";
 import { ChartRenderer } from "../chart_renderer/chart_renderer";
 
 /**
- * AiDashboard — AI-configurable dashboard with chart widget grid.
- * Users can add charts from chat, remove widgets, and generate dashboards via AI.
+ * AiDashboard — AI-configurable dashboard with Gridstack-powered drag & resize.
  */
 export class AiDashboard extends Component {
     static template = "pb_payroll_ai_insights.AiDashboard";
@@ -17,6 +16,9 @@ export class AiDashboard extends Component {
     setup() {
         this.notification = useService("notification");
         this.action = useService("action");
+        this.gridRef = useRef("gridContainer");
+        this.grid = null;
+        this._saveTimeout = null;
 
         this.state = useState({
             dashboardId: null,
@@ -27,9 +29,125 @@ export class AiDashboard extends Component {
             isCopilotLoading: false,
         });
 
-        onMounted(() => {
-            this._loadDashboard();
+        this._gridNeedsInit = false;
+
+        onMounted(async () => {
+            await this._loadDashboard();
+            // Mark that grid needs init after OWL renders widget DOM
+            this._gridNeedsInit = true;
         });
+
+        // onPatched fires AFTER OWL has finished rendering DOM updates.
+        // This is where Gridstack can safely find grid-stack-item elements.
+        onPatched(() => {
+            if (this._gridNeedsInit && this.state.widgets.length > 0) {
+                this._gridNeedsInit = false;
+                // Small delay to ensure DOM is fully painted
+                requestAnimationFrame(() => {
+                    setTimeout(() => this._initGridstack(), 50);
+                });
+            }
+        });
+
+        onWillUnmount(() => {
+            this._destroyGrid();
+            if (this._saveTimeout) {
+                clearTimeout(this._saveTimeout);
+            }
+        });
+    }
+
+    // --- Gridstack ---
+
+    _destroyGrid() {
+        if (this.grid) {
+            this.grid.destroy(false);
+            this.grid = null;
+        }
+    }
+
+    _initGridstack() {
+        if (!this.gridRef.el || typeof GridStack === "undefined") {
+            console.warn("Gridstack: container or library not available, retrying...");
+            setTimeout(() => this._initGridstack(), 200);
+            return;
+        }
+
+        // Don't re-init if already initialized
+        if (this.grid) {
+            this._destroyGrid();
+        }
+
+        // Initialize Gridstack
+        this.grid = GridStack.init({
+            column: 12,
+            cellHeight: 80,
+            margin: 10,
+            animate: true,
+            float: false,
+            resizable: {
+                handles: "se,sw",
+            },
+            draggable: {
+                handle: ".payai-widget-header",
+            },
+            minRow: 1,
+        }, this.gridRef.el);
+
+        // Listen for changes (drag end, resize end)
+        this.grid.on("change", (event, items) => {
+            this._onGridChange(items);
+        });
+
+        // On resize, re-render charts inside resized widgets
+        this.grid.on("resizestop", (event, el) => {
+            // Trigger chart re-render by dispatching a resize event
+            setTimeout(() => {
+                window.dispatchEvent(new Event("resize"));
+            }, 100);
+        });
+    }
+
+    _onGridChange(items) {
+        // Debounce save — don't fire on every pixel
+        if (this._saveTimeout) clearTimeout(this._saveTimeout);
+        this._saveTimeout = setTimeout(() => {
+            this._savePositions();
+        }, 800);
+    }
+
+    async _savePositions() {
+        if (!this.grid) return;
+
+        const items = this.grid.getGridItems();
+        const positions = [];
+
+        for (const el of items) {
+            const node = el.gridstackNode;
+            const widgetId = parseInt(el.getAttribute("data-widget-id"));
+            if (node && widgetId) {
+                positions.push({
+                    id: widgetId,
+                    x: node.x,
+                    y: node.y,
+                    w: node.w,
+                    h: node.h,
+                });
+            }
+        }
+
+        if (positions.length === 0) return;
+
+        try {
+            await rpc("/web/dataset/call_kw", {
+                model: "payroll.ai.dashboard",
+                method: "rpc_save_widget_positions",
+                args: [positions],
+                kwargs: {},
+            });
+        } catch (error) {
+            console.error("Save positions error:", error);
+        }
     }
 
     // --- Dashboard Actions ---
@@ -54,6 +172,14 @@ export class AiDashboard extends Component {
 
     async removeWidget(widgetId) {
         try {
+            // Remove from Gridstack if present
+            if (this.grid) {
+                const el = this.gridRef.el?.querySelector(`[data-widget-id="${widgetId}"]`);
+                if (el) {
+                    this.grid.removeWidget(el, false);
+                }
+            }
+
             await rpc("/web/dataset/call_kw", {
                 model: "payroll.ai.dashboard",
                 method: "rpc_remove_widget",
@@ -94,7 +220,11 @@ export class AiDashboard extends Component {
             });
             this.state.widgets = result.widgets || [];
             this.state.copilotText = "";
-            this.notification.add("Dashboard updated! ✨", { type: "success" });
+            this.notification.add("Dashboard updated!", { type: "success" });
+
+            // Flag for re-init after OWL re-renders
+            this._destroyGrid();
+            this._gridNeedsInit = true;
         } catch (error) {
             console.error("Copilot error:", error);
             this.notification.add("Failed to generate. Check AI configuration.", { type: "danger" });
@@ -107,7 +237,9 @@ export class AiDashboard extends Component {
     }
 
     async refreshDashboard() {
+        this._destroyGrid();
         await this._loadDashboard();
+        this._gridNeedsInit = true;
         this.notification.add("Dashboard refreshed", { type: "info" });
     }
 }

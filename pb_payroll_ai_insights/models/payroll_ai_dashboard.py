@@ -87,8 +87,10 @@ class PayrollAIDashboard(models.Model):
             'name': title or chart_config.get('options', {}).get('plugins', {}).get('title', {}).get('text', 'Chart'),
             'chart_config': json.dumps(chart_config),
             'position': position,
-            'width': 6,  # Half width default
+            'width': 6,  # Half width default (6 of 12 columns)
             'height': 4,
+            'grid_x': 0,
+            'grid_y': 0,  # Gridstack auto-positions when y=0
         })
 
     @api.model
@@ -105,6 +107,8 @@ class PayrollAIDashboard(models.Model):
                 'position': w.position,
                 'width': w.width,
                 'height': w.height,
+                'grid_x': w.grid_x,
+                'grid_y': w.grid_y,
             })
 
         return {
@@ -129,6 +133,26 @@ class PayrollAIDashboard(models.Model):
         widget = self.env['payroll.ai.dashboard.widget'].browse(widget_id).exists()
         if widget and widget.dashboard_id.user_id.id == self.env.user.id:
             widget.unlink()
+        return True
+
+    @api.model
+    def rpc_save_widget_positions(self, positions):
+        """
+        RPC endpoint to save widget grid positions after drag/resize.
+
+        Args:
+            positions (list): [{id, x, y, w, h}, ...]
+        """
+        Widget = self.env['payroll.ai.dashboard.widget']
+        for pos in positions:
+            widget = Widget.browse(pos.get('id')).exists()
+            if widget and widget.dashboard_id.user_id.id == self.env.user.id:
+                widget.write({
+                    'grid_x': pos.get('x', 0),
+                    'grid_y': pos.get('y', 0),
+                    'width': pos.get('w', 6),
+                    'height': pos.get('h', 4),
+                })
         return True
 
     @api.model
@@ -181,6 +205,18 @@ class PayrollAIDashboardWidget(models.Model):
     position = fields.Integer(
         string='Grid Position',
         default=1,
+    )
+
+    grid_x = fields.Integer(
+        string='Grid X',
+        default=0,
+        help='Horizontal position in the Gridstack grid (0-based)',
+    )
+
+    grid_y = fields.Integer(
+        string='Grid Y',
+        default=0,
+        help='Vertical position in the Gridstack grid (0-based)',
     )
 
     width = fields.Integer(
