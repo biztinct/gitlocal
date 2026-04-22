@@ -1,5 +1,5 @@
 /* ============================================================================
-   PayAI Dashboard Styles
+   PayAI Dashboard Styles — with Gridstack integration
    ============================================================================ */
 
 .payai-dashboard {
@@ -22,6 +22,11 @@
     font-weight: 700;
     color: #1e293b;
     margin: 0;
+
+    i {
+        margin-right: 8px;
+        color: #6366f1;
+    }
 }
 
 .payai-dash-subtitle {
@@ -45,6 +50,8 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+
+    i { margin-right: 5px; }
 
     &:hover {
         transform: translateY(-1px);
@@ -86,6 +93,7 @@
 .payai-copilot-icon {
     font-size: 20px;
     flex-shrink: 0;
+    color: #6366f1;
 }
 
 .payai-copilot-input {
@@ -123,39 +131,66 @@
     }
 }
 
-/* --- Widget Grid --- */
-.payai-dash-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 20px;
+/* ============================================================================
+   Gridstack Overrides & Widget Styling
+   ============================================================================ */
+
+.grid-stack {
+    min-height: 200px;
 }
 
+/* Widget card inside grid cell */
 .payai-dash-widget {
     background: #ffffff;
     border-radius: 16px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     overflow: hidden;
     border: 1px solid #e2e8f0;
-    transition: box-shadow 0.2s, transform 0.2s;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s;
 
     &:hover {
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
     }
 }
 
+/* Header — drag handle area */
 .payai-widget-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 14px 18px;
+    gap: 8px;
+    padding: 8px 14px;
     border-bottom: 1px solid #f1f5f9;
+    cursor: grab;
+    user-select: none;
+    flex-shrink: 0;
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.payai-drag-icon {
+    color: #cbd5e1;
+    font-size: 12px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+
+    .payai-widget-header:hover & {
+        color: #6366f1;
+    }
 }
 
 .payai-widget-title {
-    font-size: 14px;
+    flex: 1;
+    font-size: 13px;
     font-weight: 600;
     color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .payai-widget-remove {
@@ -171,6 +206,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    flex-shrink: 0;
 
     &:hover {
         background: #fef2f2;
@@ -179,7 +215,11 @@
 }
 
 .payai-widget-body {
-    padding: 16px;
+    flex: 1;
+    min-height: 0;       /* critical for flex children to shrink */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .payai-widget-empty {
@@ -187,6 +227,59 @@
     padding: 40px;
     color: #94a3b8;
     font-size: 13px;
+}
+
+/* --- Gridstack drag/resize visual feedback --- */
+
+.grid-stack-item.ui-draggable-dragging {
+    .payai-dash-widget {
+        box-shadow: 0 16px 40px rgba(99, 102, 241, 0.2);
+        border-color: #a5b4fc;
+    }
+}
+
+.grid-stack-item.ui-resizable-resizing {
+    .payai-dash-widget {
+        box-shadow: 0 12px 32px rgba(99, 102, 241, 0.15);
+        border-color: #c7d2fe;
+    }
+}
+
+/* Gridstack placeholder (shows where widget will land) */
+.grid-stack > .grid-stack-placeholder > .placeholder-content {
+    background: rgba(99, 102, 241, 0.06) !important;
+    border: 2px dashed #a5b4fc !important;
+    border-radius: 16px !important;
+}
+
+/* Resize handle styling */
+.grid-stack > .grid-stack-item > .ui-resizable-handle {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.grid-stack > .grid-stack-item:hover > .ui-resizable-handle {
+    opacity: 1;
+}
+
+.grid-stack > .grid-stack-item > .ui-resizable-se {
+    width: 20px !important;
+    height: 20px !important;
+    bottom: 4px !important;
+    right: 4px !important;
+    background: transparent;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 12px;
+        height: 12px;
+        border-right: 2px solid #a5b4fc;
+        border-bottom: 2px solid #a5b4fc;
+        border-radius: 0 0 4px 0;
+    }
 }
 
 /* --- Loading & Empty States --- */
@@ -206,6 +299,7 @@
     .payai-dash-empty-icon {
         font-size: 56px;
         margin-bottom: 16px;
+        color: #6366f1;
     }
 
     h3 {
@@ -226,14 +320,6 @@
 @media (max-width: 768px) {
     .payai-dashboard {
         padding: 16px;
-    }
-
-    .payai-dash-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .payai-dash-widget {
-        grid-column: span 1 !important;
     }
 
     .payai-dash-header {

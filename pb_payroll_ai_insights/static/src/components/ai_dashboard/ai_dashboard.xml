@@ -48,29 +48,38 @@
                 </div>
             </t>
 
-            <!-- Widget Grid -->
+            <!-- Gridstack Widget Grid -->
             <t t-elif="state.widgets.length > 0">
-                <div class="payai-dash-grid">
+                <div class="grid-stack" t-ref="gridContainer">
                     <t t-foreach="state.widgets" t-as="widget" t-key="widget.id">
-                        <div class="payai-dash-widget"
-                             t-att-style="'grid-column: span ' + (widget.width || 6)">
-                            <div class="payai-widget-header">
-                                <span class="payai-widget-title" t-esc="widget.name"/>
-                                <button class="payai-widget-remove"
-                                        t-on-click="() => this.removeWidget(widget.id)"
-                                        title="Remove widget">
-                                    <i class="fa fa-times"/>
-                                </button>
-                            </div>
-                            <div class="payai-widget-body">
-                                <t t-if="widget.chart_config">
-                                    <ChartRenderer chartConfig="widget.chart_config" height="'280px'"
-                                                   showToolbar="true"
-                                                   drillDownModel="'hr.employee'"/>
-                                </t>
-                                <t t-else="">
-                                    <div class="payai-widget-empty">No chart data</div>
-                                </t>
+                        <div class="grid-stack-item"
+                             t-att-data-widget-id="widget.id"
+                             t-att-gs-x="widget.grid_x || 0"
+                             t-att-gs-y="widget.grid_y || 0"
+                             t-att-gs-w="widget.width || 6"
+                             t-att-gs-h="widget.height || 4"
+                             gs-min-w="3"
+                             gs-min-h="3">
+                            <div class="grid-stack-item-content payai-dash-widget">
+                                <div class="payai-widget-header">
+                                    <i class="fa fa-arrows payai-drag-icon"/>
+                                    <span class="payai-widget-title" t-esc="widget.name"/>
+                                    <button class="payai-widget-remove"
+                                            t-on-click="() => this.removeWidget(widget.id)"
+                                            title="Remove widget">
+                                        <i class="fa fa-times"/>
+                                    </button>
+                                </div>
+                                <div class="payai-widget-body">
+                                    <t t-if="widget.chart_config">
+                                        <ChartRenderer chartConfig="widget.chart_config" height="'100%'"
+                                                       showToolbar="true"
+                                                       drillDownModel="'hr.employee'"/>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="payai-widget-empty">No chart data</div>
+                                    </t>
+                                </div>
                             </div>
                         </div>
                     </t>

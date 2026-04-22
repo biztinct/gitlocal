@@ -14,7 +14,7 @@
             </div>
 
             <!-- Chart Canvas -->
-            <div class="payai-chart-wrapper" t-att-style="'height:' + canvasHeight">
+            <div class="payai-chart-wrapper">
                 <canvas t-ref="chartCanvas" t-att-id="props.chartId || ''"/>
             </div>
 

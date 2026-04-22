@@ -40,9 +40,12 @@ export class ChartRenderer extends Component {
             { type: "radar", label: "Radar", icon: "fa fa-bullseye" },
             { type: "polarArea", label: "Polar", icon: "fa fa-compass" },
         ];
+        this._resizeObserver = null;
 
         onMounted(() => {
             this.renderChart();
+            // Watch for container resize (e.g., from Gridstack drag/resize)
+            this._setupResizeObserver();
         });
 
         onPatched(() => {
@@ -51,6 +54,10 @@ export class ChartRenderer extends Component {
 
         onWillUnmount(() => {
             this.destroyChart();
+            if (this._resizeObserver) {
+                this._resizeObserver.disconnect();
+                this._resizeObserver = null;
+            }
         });
     }
 
@@ -65,6 +72,24 @@ export class ChartRenderer extends Component {
     get drillDownModel() {
         const model = this.props.drillDownModel;
         return model && model.length > 0 ? model : "";
+    }
+
+    _setupResizeObserver() {
+        if (!this.canvasRef.el) return;
+        const wrapper = this.canvasRef.el.parentElement;
+        if (!wrapper) return;
+
+        let resizeTimeout = null;
+        this._resizeObserver = new ResizeObserver(() => {
+            // Debounce resize events (Gridstack fires many during drag)
+            if (resizeTimeout) clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (this.chartInstance) {
+                    this.chartInstance.resize();
+                }
+            }, 100);
+        });
+        this._resizeObserver.observe(wrapper);
     }
 
     switchChartType(newType) {

@@ -56,6 +56,10 @@ Inspired by: Power BI Copilot, ThoughtSpot, Julius AI, Tableau Pulse, Zoho Zia
     ],
     'assets': {
         'web.assets_backend': [
+            # Gridstack.js library (drag & resize grid)
+            'pb_payroll_ai_insights/static/src/lib/gridstack.min.css',
+            'pb_payroll_ai_insights/static/src/lib/gridstack-all.min.js',
+
             # Chart.js library
             'pb_payroll_ai_insights/static/src/lib/chart.umd.min.js',
 
