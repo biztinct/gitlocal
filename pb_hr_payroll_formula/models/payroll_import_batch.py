@@ -2436,12 +2436,12 @@ class HrPayrollImportBatch(models.Model):
             return value
 
         # First, try using connector field mappings if available
-        if config.connector_id:
-            for mapping in config.connector_id.field_mapping_ids:
+        if self.source_type == 'connector' and config.connector_id:
+            connector = config.connector_id.sudo()
+            for mapping in connector.field_mapping_ids:
                 if mapping.target_rule_id and mapping.source_field:
                     source_value = raw_data.get(mapping.source_field)
                     if source_value is not None:
-                        # Apply transformation
                         transformed = mapping.transform_value(source_value, raw_data)
                         input_values[mapping.target_rule_id.code] = normalize_input_value(
                             mapping.target_rule_id, transformed

@@ -51,6 +51,7 @@ Supported Features:
     'website': 'https://www.yourcompany.com',
     'depends': [
         'pb_hr_payroll_base',
+        'pb_hr_payroll_formula',
         'hr_holidays',
         'payroll_analytics_approval',
         'pb_hr_payroll_analytics',
@@ -80,6 +81,11 @@ Supported Features:
         'views/vietnam_employee_form_extension.xml',     # INS02/TAX02: Employee form tabs
         'views/vietnam_menu_structure.xml',              # Menu structure for INS/TAX
         
+        # Reports - Vietnam payslip template and action
+        'views/report_payslip_vietnam_template.xml',
+        'views/hr_payroll_report_vietnam.xml',
+        'views/hr_payslip_form_override.xml',
+
         # Wizards
         'wizards/govt_report_selector_views.xml',     # Government report selector
         
