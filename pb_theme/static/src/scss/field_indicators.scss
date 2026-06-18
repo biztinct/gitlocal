@@ -1,0 +1,177 @@
+// =============================================================================
+// FIELD INDICATORS — Visual language for field editability
+// =============================================================================
+// Global system that communicates which fields users can interact with.
+// Applies dashed borders for editable fields, muted styles for read-only,
+// and amber accents for required-but-empty fields.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// Editable field — subtle dashed bottom border
+// ---------------------------------------------------------------------------
+.vu-field--editable {
+    border-bottom: 1px dashed var(--vu-field-editable-border);
+    padding-bottom: 1px;
+    transition: border-color var(--vu-transition-fast), background-color var(--vu-transition-fast);
+
+    &:hover {
+        border-bottom-color: var(--vu-brand-primary);
+        background-color: var(--vu-field-editable-bg);
+    }
+}
+
+// Inside an editing card, all non-readonly fields get the indicator
+.vu-detail-card--editing .o_field_widget:not(.o_readonly_modifier):not(.o_invisible_modifier) {
+    border-bottom: 1px dashed var(--vu-field-editable-border);
+    padding-bottom: 1px;
+    transition: border-color var(--vu-transition-fast), background-color var(--vu-transition-fast);
+
+    &:hover {
+        border-bottom-color: var(--vu-brand-primary);
+        background-color: var(--vu-field-editable-bg);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Read-only field — clean, no interaction affordance
+// ---------------------------------------------------------------------------
+.vu-field--readonly {
+    color: var(--vu-text-secondary);
+    border-bottom: none !important;
+}
+
+// In terminal states, all fields become read-only styled
+.o_form_view.vu-state--completed .vu-detail-card .o_field_widget,
+.o_form_view.vu-state--cancelled .vu-detail-card .o_field_widget,
+.o_form_view.vu-state--closed .vu-detail-card .o_field_widget {
+    color: var(--vu-text-secondary);
+}
+
+// ---------------------------------------------------------------------------
+// Required but empty — amber left accent
+// ---------------------------------------------------------------------------
+.vu-field--required-empty {
+    position: relative;
+    border-left: 3px solid var(--vu-field-required-accent) !important;
+    padding-left: var(--vu-space-sm) !important;
+}
+
+// ---------------------------------------------------------------------------
+// Recently changed / auto-filled — brief highlight animation
+// ---------------------------------------------------------------------------
+.vu-field--just-changed {
+    animation: vu-field-highlight 1.5s ease-out;
+}
+
+@keyframes vu-field-highlight {
+    0% { background-color: rgba(79, 70, 229, 0.12); }
+    100% { background-color: transparent; }
+}
+
+// ---------------------------------------------------------------------------
+// Computed / auto-filled badge
+// ---------------------------------------------------------------------------
+.vu-field--computed::after {
+    content: 'auto';
+    font-size: 0.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--vu-text-secondary);
+    background: var(--vu-surface-muted);
+    padding: 0 4px;
+    border-radius: 3px;
+    margin-left: var(--vu-space-xs);
+    vertical-align: middle;
+}
+
+// ---------------------------------------------------------------------------
+// Enhanced editing experience in Odoo forms
+// ---------------------------------------------------------------------------
+
+// Smooth input focus transitions
+.o_form_editable .o_field_widget:not(.o_readonly_modifier):not(.o_invisible_modifier) {
+    .o_input {
+        transition: border-color var(--vu-transition-fast), box-shadow var(--vu-transition-fast);
+
+        &:hover:not(:focus) {
+            border-color: var(--vu-brand-secondary);
+        }
+
+        &:focus {
+            border-color: var(--vu-brand-primary);
+            box-shadow: 0 1px 0 0 var(--vu-brand-primary);
+        }
+    }
+}
+
+// Required fields follow the same native borderless style as other inputs
+// (Odoo's red left-border is neutralised via the shared --o-input-border-color).
+.o_form_view .o_field_widget.o_required_modifier .o_input,
+.o_form_view .o_field_widget.o_required_modifier input,
+.o_form_view .o_field_widget.o_required_modifier textarea {
+    border-left-color: var(--o-input-border-color, #dee2e6) !important;
+    border-left-width: 1px !important;
+}
+
+// Mandatory field dot indicator (improves on Odoo default)
+.o_form_view .o_form_label.o_form_label_empty.o_required_modifier::after {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--vu-field-required-accent);
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+// ---------------------------------------------------------------------------
+// Pencil icon on editable fields — shows edit affordance on hover
+// ---------------------------------------------------------------------------
+$_editable-field-selector: ':not(.o_readonly_modifier):not(.o_invisible_modifier):not(.o_field_boolean):not(.o_field_image):not(.o_field_binary):not(.o_field_one2many):not(.o_field_many2many_tags):not(.o_field_many2many):not(.o_field_statusbar):not(.o_field_many2one):not(.o_field_selection)';
+
+.o_form_view .o_inner_group .o_wrap_field .o_cell.o_wrap_input .o_field_widget#{$_editable-field-selector},
+.o_form_view .vu-detail-card .o_field_widget#{$_editable-field-selector} {
+    position: relative;
+    cursor: pointer;
+
+    &::after {
+        content: '\f040'; // fa-pencil
+        font-family: 'FontAwesome';
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.6875rem;
+        color: var(--vu-text-secondary, #6b7280);
+        opacity: 0;
+        transition: opacity 0.15s ease;
+        pointer-events: none;
+    }
+
+    &:hover::after {
+        opacity: 0.6;
+    }
+}
+
+// Hide pencil on readonly fields, summary cards, and terminal states
+.o_form_view .o_field_widget.o_readonly_modifier,
+.o_form_view .vu-summary-card .o_field_widget,
+.o_form_view .vu-col-summary .o_field_widget {
+    cursor: default !important;
+
+    &::after {
+        display: none !important;
+    }
+}
+
+.o_form_view.vu-state--completed .o_field_widget,
+.o_form_view.vu-state--cancelled .o_field_widget,
+.o_form_view.vu-state--closed .o_field_widget {
+    cursor: default !important;
+
+    &::after {
+        display: none !important;
+    }
+}

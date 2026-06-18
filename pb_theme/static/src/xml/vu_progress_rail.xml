@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pb_theme.VuProgressRail">
+        <div class="vu-progress-rail">
+            <!-- Cancelled state banner -->
+            <t t-if="isCancelled">
+                <div class="vu-progress-rail__step vu-progress-rail__step--current"
+                     style="--vu-state-color: var(--vu-state-cancelled); --vu-state-bg: var(--vu-state-cancelled-bg);">
+                    <div class="vu-progress-rail__indicator">
+                        <i class="fa fa-times"/>
+                    </div>
+                    <span class="vu-progress-rail__label">Cancelled</span>
+                </div>
+            </t>
+
+            <!-- Normal state progression -->
+            <t t-if="!isCancelled">
+                <t t-foreach="processedSteps" t-as="step" t-key="step.state">
+                    <!-- Step indicator + label -->
+                    <div t-attf-class="vu-progress-rail__step vu-progress-rail__step--#{step.status}">
+                        <div class="vu-progress-rail__indicator">
+                            <t t-if="step.status === 'completed'">
+                                <i class="fa fa-check"/>
+                            </t>
+                            <t t-elif="step.status === 'current'">
+                                <span t-esc="step.stepNumber"/>
+                            </t>
+                            <t t-else="">
+                                <span t-esc="step.stepNumber"/>
+                            </t>
+                        </div>
+                        <span class="vu-progress-rail__label" t-esc="step.label"/>
+                    </div>
+
+                    <!-- Connector line (except after the last step) -->
+                    <t t-if="!step.isLast">
+                        <div t-attf-class="vu-progress-rail__connector #{step.status === 'completed' ? 'vu-progress-rail__connector--done' : 'vu-progress-rail__connector--pending'}"/>
+                    </t>
+                </t>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,170 @@
+// =============================================================================
+// PROGRESS RAIL — Horizontal workflow timeline with step indicators
+// =============================================================================
+// Shows the booking lifecycle as a connected series of steps. Each step
+// is completed, current, or future. Used via the vu_progress_rail OWL widget.
+// =============================================================================
+
+.vu-progress-rail {
+    display: flex;
+    align-items: center;
+    padding: var(--vu-space-md) var(--vu-space-lg);
+    background: var(--vu-surface-card);
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    box-shadow: var(--vu-shadow-sm);
+    overflow-x: auto;
+    gap: 0;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Step — indicator circle + label
+// ---------------------------------------------------------------------------
+.vu-progress-rail__step {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.vu-progress-rail__indicator {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.625rem;
+    font-weight: 700;
+    transition: all var(--vu-transition-base);
+    flex-shrink: 0;
+}
+
+.vu-progress-rail__label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    margin-left: var(--vu-space-xs);
+    white-space: nowrap;
+    transition: color var(--vu-transition-fast);
+}
+
+.vu-progress-rail__meta {
+    font-size: 0.5625rem;
+    color: var(--vu-text-secondary);
+    margin-left: var(--vu-space-xs);
+    white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------------
+// Connector line between steps
+// ---------------------------------------------------------------------------
+.vu-progress-rail__connector {
+    height: 2px;
+    flex: 1 1 auto;
+    min-width: 20px;
+    max-width: 72px;
+    margin: 0 var(--vu-space-xs);
+    border-radius: 1px;
+    transition: background var(--vu-transition-base);
+}
+
+// ---------------------------------------------------------------------------
+// Step states
+// ---------------------------------------------------------------------------
+
+// Completed
+.vu-progress-rail__step--completed {
+    .vu-progress-rail__indicator {
+        background: var(--vu-status-success);
+        color: white;
+
+        .fa {
+            font-size: 0.625rem;
+        }
+    }
+
+    .vu-progress-rail__label {
+        color: var(--vu-status-success);
+    }
+}
+
+// Current (active)
+.vu-progress-rail__step--current {
+    .vu-progress-rail__indicator {
+        background: var(--vu-state-color, var(--vu-brand-primary));
+        color: white;
+        box-shadow: 0 0 0 4px var(--vu-state-bg, rgba(79, 70, 229, 0.12));
+        animation: vu-rail-pulse 2.5s ease-in-out infinite;
+    }
+
+    .vu-progress-rail__label {
+        color: var(--vu-state-color, var(--vu-brand-primary));
+        font-weight: 700;
+    }
+}
+
+// Future (upcoming)
+.vu-progress-rail__step--future {
+    .vu-progress-rail__indicator {
+        background: var(--vu-surface-muted);
+        color: var(--vu-text-secondary);
+        border: 2px solid var(--vu-border-soft);
+    }
+
+    .vu-progress-rail__label {
+        color: var(--vu-text-secondary);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Connector states
+// ---------------------------------------------------------------------------
+.vu-progress-rail__connector--done {
+    background: var(--vu-status-success);
+}
+
+.vu-progress-rail__connector--pending {
+    background: var(--vu-border-soft);
+}
+
+// ---------------------------------------------------------------------------
+// Current-step pulse animation
+// ---------------------------------------------------------------------------
+@keyframes vu-rail-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 3px var(--vu-state-bg, rgba(79, 70, 229, 0.12));
+    }
+    50% {
+        box-shadow: 0 0 0 6px var(--vu-state-bg, rgba(79, 70, 229, 0.05));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Compact variant (for tight spaces / mobile)
+// ---------------------------------------------------------------------------
+.vu-progress-rail--compact {
+    padding: var(--vu-space-sm) var(--vu-space-md);
+
+    .vu-progress-rail__indicator {
+        width: 20px;
+        height: 20px;
+        font-size: 0.5625rem;
+    }
+
+    .vu-progress-rail__label {
+        font-size: 0.5625rem;
+    }
+
+    .vu-progress-rail__meta {
+        display: none;
+    }
+
+    .vu-progress-rail__connector {
+        min-width: 12px;
+        max-width: 48px;
+    }
+}

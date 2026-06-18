@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_formula_studio.PbFormulaStudio">
+    <div class="pbfs">
+      <!-- loading -->
+      <div t-if="!state.loaded" class="pbfs-loading"><div class="pbfs-spinner"/><span>Loading Formula Studio…</span></div>
+
+      <!-- empty -->
+      <div t-elif="state.empty" class="pbfs-empty-state">
+        <h2>No formula configurations yet</h2>
+        <p>Create your first payroll calculation to get started.</p>
+        <button class="pbfs-btn primary" t-on-click="openWizard">New Formula Config</button>
+      </div>
+
+      <!-- main -->
+      <div t-else="" class="pbfs-main">
+        <!-- top bar -->
+        <header class="pbfs-top">
+          <div class="pbfs-cfg">
+            <button class="pbfs-cfg-name" t-on-click="toggleConfigPicker">
+              <span class="nm" t-esc="state.config.name"/>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <span t-if="state.config.country" class="pbfs-chip" t-esc="state.config.country"/>
+            <span class="pbfs-chip cur" t-esc="'Currency ' + (state.config.currency || '')"/>
+            <span t-attf-class="pbfs-state {{ stageCls() }}"><span class="d"/><t t-esc="stageLabel()"/></span>
+            <!-- config picker dropdown -->
+            <div t-if="state.configPickerOpen" class="pbfs-picker">
+              <div t-foreach="state.configs" t-as="cfg" t-key="cfg.id" class="pbfs-picker-row" t-on-click="() => this.pickConfig(cfg.id)">
+                <span class="nm" t-esc="cfg.name"/>
+                <span class="meta" t-esc="cfg.rule_count + ' components · ' + cfg.state"/>
+              </div>
+              <div class="pbfs-picker-row new" t-on-click="openWizard">
+                <span class="nm">＋ New configuration</span>
+                <span class="meta">Guided setup</span>
+              </div>
+            </div>
+          </div>
+          <div class="pbfs-top-right">
+            <div class="pbfs-ring" title="Validation health">
+              <svg width="46" height="46">
+                <circle cx="23" cy="23" r="19" stroke="#EEF1F5" stroke-width="5" fill="none"/>
+                <circle cx="23" cy="23" r="19" stroke="#0F8A63" stroke-width="5" fill="none" stroke-linecap="round"
+                        t-att-stroke-dasharray="ring(state.config.score).dash"
+                        t-att-stroke-dashoffset="ring(state.config.score).offset"
+                        transform="rotate(-90 23 23)"/>
+              </svg>
+              <span class="val" t-esc="state.config.score"/>
+            </div>
+            <div class="pbfs-seg">
+              <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Cards
+              </button>
+              <button t-att-class="state.view === 'grid' ? 'active' : ''" t-on-click="() => this.setView('grid')">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Grid
+              </button>
+            </div>
+            <button class="pbfs-btn ai" t-on-click="openAI">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Ask PayAI
+            </button>
+            <button class="pbfs-btn primary" t-on-click="advance"><t t-esc="nextLabel()"/></button>
+          </div>
+        </header>
+
+        <!-- 3-pane -->
+        <div class="pbfs-work">
+          <!-- outline -->
+          <div class="pbfs-outline">
+            <div class="ol-head"><span class="t">Components</span></div>
+            <t t-foreach="visibleGroups" t-as="grp" t-key="grp">
+              <div class="ol-grp" t-esc="grp"/>
+              <div t-foreach="groupItems(grp)" t-as="c" t-key="c.id"
+                   t-attf-class="ol-item {{ c.id === state.selectedId ? 'active' : '' }}"
+                   t-on-click="() => this.selectComponent(c.id)">
+                <span class="ol-col" t-esc="c.col"/>
+                <span class="ol-nm" t-esc="c.name"/>
+                <span t-if="!c.is_valid" class="ol-err" title="Has errors"/>
+                <span t-attf-class="ol-typ {{ c.type }}" t-esc="c.type"/>
+              </div>
+            </t>
+          </div>
+
+          <!-- editor: cards -->
+          <div t-if="state.view === 'cards'" class="pbfs-editor">
+            <div t-if="selected" class="ed-card">
+              <div class="ed-hero">
+                <div class="col-badge" t-esc="selected.col"/>
+                <div style="flex:1">
+                  <h2><t t-esc="selected.name"/><span class="code-tag" t-esc="selected.code"/></h2>
+                  <div class="sub" t-esc="'Column ' + selected.col + ' · ' + (selected.type === 'input' ? 'Input value' : selected.type === 'constant' ? 'Fixed constant' : 'Calculated formula')"/>
+                </div>
+                <div t-if="selected.is_valid" class="valid-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Valid</div>
+                <div t-else="" class="valid-err"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Check</div>
+              </div>
+              <div class="ed-body">
+                <div class="ed-label">Formula</div>
+                <div class="formula-line">
+                  <t t-foreach="selected.tokens" t-as="tok" t-key="tok_index">
+                    <span t-if="tok.kind === 'op'" class="fop" t-esc="tok.text"/>
+                    <span t-elif="tok.kind === 'ref'" class="fchip"><span class="ref" t-esc="tok.col"/><t t-esc="tok.text"/></span>
+                    <span t-elif="tok.kind === 'num'" class="fchip fnum" t-esc="tok.text"/>
+                    <span t-else="" class="fchip src" t-esc="tok.text"/>
+                  </t>
+                </div>
+                <div class="explain">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  <p><t t-esc="selected.explain"/><br/>For <b t-esc="sampleName"/> this evaluates to <b t-esc="previewVal(selected.col)"/>.</p>
+                </div>
+                <div class="dep-map">
+                  <div class="ed-label">Dependencies</div>
+                  <div class="dep-row"><span class="lbl">Depends on</span>
+                    <t t-if="selected.depends_on.length"><span t-foreach="selected.depends_on" t-as="d" t-key="d_index" class="dep-pill" t-esc="d"/></t>
+                    <span t-else="" class="dep-pill">— none —</span>
+                  </div>
+                  <div class="dep-row"><span class="lbl">Used by</span>
+                    <t t-if="selected.used_by.length"><span t-foreach="selected.used_by" t-as="d" t-key="d_index" class="dep-pill" t-esc="d"/></t>
+                    <span t-else="" class="dep-pill">— none —</span>
+                  </div>
+                </div>
+                <div t-if="!selected.is_valid and selected.validation_message" class="ed-errbox" t-esc="selected.validation_message"/>
+              </div>
+              <div class="ed-foot">
+                <button class="pbfs-btn soft" t-on-click="openAI">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Edit with PayAI
+                </button>
+                <span class="ed-cat" t-esc="selected.category"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- editor: grid -->
+          <div t-else="" class="pbfs-gridview">
+            <table class="pbfs-grid">
+              <thead>
+                <tr><th class="corner"/>
+                  <th t-foreach="state.components" t-as="c" t-key="c.id" t-att-class="c.id === state.selectedId ? 'sel' : ''">
+                    <t t-esc="c.col"/><span class="colcode" t-esc="c.code"/>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="rowhdr" t-esc="'1'"/>
+                  <td t-foreach="state.components" t-as="c" t-key="c.id"
+                      t-attf-class="{{ c.type === 'formula' ? 'formula' : '' }} {{ c.id === state.selectedId ? 'sel' : '' }}"
+                      t-on-click="() => this.selectComponent(c.id)" t-esc="previewVal(c.col)"/>
+                </tr>
+              </tbody>
+            </table>
+            <div class="grid-hint">Showing computed values for <b t-esc="sampleName"/>. Switch to <b>Cards</b> to edit a component, or use <b>Ask PayAI</b>.</div>
+          </div>
+
+          <!-- live preview -->
+          <div class="pbfs-test">
+            <div class="tp-head"><span class="t">Live preview</span></div>
+            <button class="tp-sel" t-on-click="cycleSample"><t t-esc="sampleName"/>
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+            <t t-if="!state.samples.length">
+              <div class="tp-nosample">No sample data yet. Generate test employees to see live values.</div>
+            </t>
+            <t t-foreach="state.components" t-as="c" t-key="c.id">
+              <div t-attf-class="tp-row {{ isDeduction(c) ? 'ded' : '' }} {{ c.code === 'NET' ? 'total' : '' }}">
+                <span class="nm"><span class="c" t-esc="c.col"/><t t-esc="c.name"/></span>
+                <span class="v"><t t-if="isDeduction(c)">−</t><t t-esc="previewVal(c.col)"/></span>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- PayAI slide-in -->
+      <div t-attf-class="pbfs-ai-scrim {{ state.aiOpen ? 'open' : '' }}" t-on-click="closeAI"/>
+      <aside t-attf-class="pbfs-ai-panel {{ state.aiOpen ? 'open' : '' }}">
+        <div class="ai-top">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
+          <div><b>PayAI Formula Assistant</b><small>
+            <t t-if="state.aiLlm">Powered by <t t-esc="state.aiModel"/></t>
+            <t t-else="">Describe a rule in plain English</t>
+          </small></div>
+          <button class="x" t-on-click="closeAI"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        </div>
+        <div class="ai-body">
+          <div class="ai-msg"><div class="who">PayAI</div>
+            <div class="ai-bubble bot">Tell me what a component should compute and I'll write the formula, mapping it to your existing columns. Try:</div>
+            <div class="ai-chips">
+              <span class="ai-chip" t-on-click="() => this.aiAskChip('Net is gross minus all deductions')">Net = gross − deductions</span>
+              <span class="ai-chip" t-on-click="() => this.aiAskChip('Explain Net Salary')">Explain a formula</span>
+            </div>
+          </div>
+          <t t-foreach="state.aiMsgs" t-as="m" t-key="m_index">
+            <div class="ai-msg"><div class="who" t-esc="m.who === 'you' ? 'You' : 'PayAI'"/>
+              <div t-attf-class="ai-bubble {{ m.who === 'you' ? 'user' : 'bot' }}" t-esc="m.text"/></div>
+          </t>
+          <div t-if="state.aiProposal" class="ai-proposal">
+            <div class="ph">Proposed formula<t t-if="state.aiProposal.target_col"><t t-esc="' · column ' + state.aiProposal.target_col"/></t></div>
+            <div class="pf"><t t-esc="state.aiProposal.human"/></div>
+            <div class="map">
+              <t t-foreach="state.aiProposal.mapping" t-as="mp" t-key="mp_index">
+                <span class="mp"><b t-esc="mp.name"/> → <t t-esc="mp.col"/></span>
+              </t>
+            </div>
+            <div class="pa">
+              <button class="pbfs-btn primary" style="flex:1" t-on-click="applyProposal">
+                <t t-if="state.aiProposal.target_id">Apply to <t t-esc="state.aiProposal.target_name"/></t>
+                <t t-else="">Create as new component</t>
+              </button>
+              <button class="pbfs-btn ghost" t-on-click="discardProposal">Discard</button>
+            </div>
+          </div>
+        </div>
+        <div class="ai-input pbfs-ai-input">
+          <input placeholder="e.g. overtime is 1.5 times hourly rate" t-on-keydown="aiAskInput"/>
+          <button class="send" t-on-click="(ev) => this.aiAsk(ev.target.closest('.ai-input').querySelector('input').value)">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m4 12 16-8-6 16-3-7z"/></svg>
+          </button>
+        </div>
+      </aside>
+
+      <!-- First-setup wizard -->
+      <div t-if="state.wizardOpen" class="pbfs-wz-scrim">
+        <div class="pbfs-wz">
+          <div class="wz-rail">
+            <h3>New Formula Config</h3>
+            <div class="rsub">Set up a payroll calculation in 5 quick steps.</div>
+            <t t-foreach="[[1,'Basics','Name, country, cycle'],[2,'Components','Pick a starter set'],[3,'Formulas','Review what gets created'],[4,'Test','Sample data'],[5,'Activate','Create &amp; open']]" t-as="st" t-key="st[0]">
+              <div t-attf-class="wz-step {{ state.wizardStep === st[0] ? 'active' : (state.wizardStep > st[0] ? 'done' : '') }}">
+                <div class="num"><t t-if="state.wizardStep > st[0]">✓</t><t t-else="" t-esc="st[0]"/></div>
+                <div><div class="stt" t-esc="st[1]"/><div class="sd" t-esc="st[2]"/></div>
+              </div>
+            </t>
+          </div>
+          <div class="wz-main">
+            <div class="wz-content">
+              <!-- Step 1: Basics -->
+              <t t-if="state.wizardStep === 1">
+                <h2>The basics</h2>
+                <p class="lead">Name the configuration and choose its country and pay cycle.</p>
+                <div class="wz-fields">
+                  <div class="field full"><label>Configuration name</label>
+                    <input class="wz-input" t-att-value="state.wizardForm.name" t-on-input="(ev) => this.wizardSet('name', ev)" placeholder="e.g. Vietnam Monthly 2026"/>
+                  </div>
+                  <div class="field"><label>Country</label>
+                    <select class="wz-input" t-on-change="(ev) => this.wizardSet('country_code', ev)">
+                      <option value="VN" selected="1">Vietnam</option>
+                      <option value="ID">Indonesia</option>
+                      <option value="IN">India</option>
+                      <option value="SG">Singapore</option>
+                      <option value="TH">Thailand</option>
+                      <option value="KH">Cambodia</option>
+                      <option value="MY">Malaysia</option>
+                    </select>
+                  </div>
+                  <div class="field"><label>Cycle type</label>
+                    <select class="wz-input" t-on-change="(ev) => this.wizardSet('cycle_type', ev)">
+                      <option value="regular" selected="1">Regular</option>
+                      <option value="mid_cycle">Mid-Cycle</option>
+                      <option value="end_cycle">End-Cycle</option>
+                      <option value="full_final">Full &amp; Final</option>
+                    </select>
+                  </div>
+                </div>
+              </t>
+              <!-- Step 2: Components -->
+              <t t-elif="state.wizardStep === 2">
+                <h2>How do you want to start?</h2>
+                <p class="lead">Pick a starting point. You can add, remove or rewrite any component afterwards.</p>
+                <div class="wz-tmpl">
+                  <div t-foreach="state.wizardTemplates" t-as="tpl" t-key="tpl.key"
+                       t-attf-class="tmpl-card {{ state.wizardForm.template === tpl.key ? 'sel' : '' }}"
+                       t-on-click="() => this.pickTemplate(tpl.key)">
+                    <b t-esc="tpl.name"/><p t-esc="tpl.desc"/>
+                  </div>
+                  <div class="tmpl-card" t-on-click="importExcel">
+                    <b>Import from Excel</b><p>Upload a spreadsheet — headers, columns and formulas detected automatically.</p>
+                  </div>
+                </div>
+              </t>
+              <!-- Step 3: Formulas review -->
+              <t t-elif="state.wizardStep === 3">
+                <h2>Review the components</h2>
+                <p class="lead"><t t-esc="wizardTpl.name"/> — these will be created. You'll tune them in the cockpit.</p>
+                <div t-if="wizardTpl.preview and wizardTpl.preview.length" class="wz-preview">
+                  <div t-foreach="wizardTpl.preview" t-as="p" t-key="p_index" class="cpr">
+                    <span class="c" t-esc="p.col"/><t t-esc="p.name"/><span class="f" t-esc="p.f"/>
+                  </div>
+                  <div class="cpr more">…and the full statutory set</div>
+                </div>
+                <p t-else="" class="wz-blank">You'll start with a blank canvas and add components in the cockpit — or ask PayAI to draft them.</p>
+              </t>
+              <!-- Step 4: Test -->
+              <t t-elif="state.wizardStep === 4">
+                <h2>Test data</h2>
+                <p class="lead">We'll seed a sample employee so the live preview works immediately. Generate more from real staff anytime, then run tests from the cockpit.</p>
+                <div class="wz-note"><b>Sample — Standard</b> (Basic ₫15,000,000) will be added so you can see values right away.</div>
+              </t>
+              <!-- Step 5: Activate -->
+              <t t-else="">
+                <h2>Ready to create</h2>
+                <p class="lead">Review and create. The configuration opens in the cockpit where you validate, test and activate.</p>
+                <div class="wz-summary">
+                  <div class="sr"><span>Name</span><b t-esc="state.wizardForm.name || '—'"/></div>
+                  <div class="sr"><span>Country</span><b t-esc="state.wizardForm.country_code"/></div>
+                  <div class="sr"><span>Cycle</span><b t-esc="state.wizardForm.cycle_type"/></div>
+                  <div class="sr"><span>Starting point</span><b t-esc="wizardTpl.name || state.wizardForm.template"/></div>
+                </div>
+              </t>
+            </div>
+            <div class="wz-foot">
+              <button class="pbfs-btn ghost" t-on-click="closeWizard">Cancel</button>
+              <div style="margin-left:auto;display:flex;gap:10px;">
+                <button t-if="state.wizardStep > 1" class="pbfs-btn ghost" t-on-click="wizardBack">Back</button>
+                <button t-if="state.wizardStep &lt; 5" class="pbfs-btn primary" t-on-click="wizardNext">Continue</button>
+                <button t-else="" class="pbfs-btn primary" t-on-click="wizardCreate" t-att-disabled="state.wizardBusy">
+                  <t t-if="state.wizardBusy">Creating…</t><t t-else="">Create &amp; open</t>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

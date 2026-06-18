@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_sidebar.PbSidebar">
+    <aside class="pb-sidebar">
+        <div class="pb-sidebar-brand" t-on-click="navigateHome">
+            <div class="pb-sidebar-logo">P</div>
+            <div class="pb-brand-tx">
+                <div class="pb-brand-nm">Payobook</div>
+                <div class="pb-brand-sub">Payroll Suite</div>
+            </div>
+        </div>
+
+        <nav class="pb-sidebar-nav" t-if="state.loaded">
+            <t t-foreach="state.sections" t-as="section" t-key="section.id">
+                <div class="pb-sec-label" t-if="section.show_label" t-esc="section.name"/>
+                <div class="pb-nav-group">
+                    <t t-foreach="section.items" t-as="item" t-key="item.id">
+                        <button t-attf-class="pb-nav-item #{isActive(item.id) ? 'active' : ''}"
+                                t-on-click="() => this.onItemClick(item)">
+                            <span class="pb-ic-wrap" t-out="iconSvg(item.icon)"/>
+                            <span class="pb-nav-tx" t-esc="item.name"/>
+                            <span t-if="item.badge" class="pb-nav-badge" t-esc="item.badge"/>
+                            <span t-if="item.children.length"
+                                  t-attf-class="pb-nav-caret #{isExpanded(item.id) ? 'open' : ''}">›</span>
+                        </button>
+                        <t t-if="item.children.length and isExpanded(item.id)">
+                            <t t-foreach="item.children" t-as="child" t-key="child.id">
+                                <button t-attf-class="pb-nav-item pb-subitem #{isActive(child.id) ? 'active' : ''}"
+                                        t-on-click="() => this.navigateTo(child)">
+                                    <span class="pb-ic-wrap" t-out="iconSvg(child.icon)"/>
+                                    <span class="pb-nav-tx" t-esc="child.name"/>
+                                </button>
+                            </t>
+                        </t>
+                    </t>
+                </div>
+            </t>
+        </nav>
+
+        <div class="pb-sidebar-user">
+            <div class="pb-user-av" t-esc="userInitials"/>
+            <div class="pb-user-meta">
+                <div class="pb-user-nm" t-esc="userName"/>
+                <div class="pb-user-ro">Payobook</div>
+            </div>
+        </div>
+    </aside>
+</t>
+
+</templates>

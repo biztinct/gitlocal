@@ -1,0 +1,36 @@
+// =============================================================================
+// VU FORM ENGINE — SECTION ICON REGISTRY (Lucide, CSS-mask, currentColor)
+// -----------------------------------------------------------------------------
+// The compiler patch tags each titled inner group with `vu-sec vu-ico-<name>`.
+// Each class sets --vuf-ico, consumed by the section title's ::before glyph
+// in vu_form_engine.scss. Icons render in any color via background-color.
+// =============================================================================
+
+$vuf-icons: (
+    "layout-grid",      // default section
+    "map-pin",          // address / location
+    "credit-card",      // billing / invoicing / payment / pricing
+    "file-text",        // notes / description / terms
+    "calendar",         // schedule / dates / planning
+    "user",             // client / contact / patient / personal
+    "users",            // staff / team / assignment
+    "stethoscope",      // service / clinical / medical
+    "phone",            // communication
+    "settings",         // configuration / technical
+    "clock",            // time / duration
+    "clipboard-check",  // requirements / checklist / compliance
+    "building",         // company / facility / branch
+    "info",             // other info / misc details
+    "gauge",            // performance / KPI
+    "target",           // goals / outcome
+    "check",
+    "award",
+    "history",
+    "truck",            // delivery / logistics
+);
+
+@each $name in $vuf-icons {
+    .vu-ico-#{$name} {
+        --vuf-ico: url("/pb_theme/static/src/img/lucide/#{$name}.svg");
+    }
+}

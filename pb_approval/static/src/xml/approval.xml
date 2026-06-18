@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pb_approval.PbApproval">
+        <div class="pb-appr">
+            <div t-if="!state.loaded" class="pb-appr-loading">
+                <div class="pb-appr-spinner"/>
+                <span>Loading approvals…</span>
+            </div>
+
+            <div t-else="" class="pb-appr-wrap">
+                <!-- Header -->
+                <div class="pb-appr-head">
+                    <div>
+                        <h1>Approvals</h1>
+                        <p class="pb-appr-sub">Review and approve payroll runs through the approval chain.</p>
+                    </div>
+                </div>
+
+                <!-- Summary strip -->
+                <div class="pb-appr-kpis">
+                    <div class="pb-appr-kpi">
+                        <span class="pb-appr-kpi-val" t-esc="state.summary.count"/>
+                        <span class="pb-appr-kpi-lbl">Pending runs</span>
+                    </div>
+                    <div class="pb-appr-kpi">
+                        <span class="pb-appr-kpi-val" t-esc="vnd(state.summary.net)"/>
+                        <span class="pb-appr-kpi-lbl">Net awaiting approval</span>
+                    </div>
+                    <div class="pb-appr-kpi">
+                        <span class="pb-appr-kpi-val amber" t-esc="state.summary.hr"/>
+                        <span class="pb-appr-kpi-lbl">At HR review</span>
+                    </div>
+                    <div class="pb-appr-kpi">
+                        <span class="pb-appr-kpi-val indigo" t-esc="state.summary.gm"/>
+                        <span class="pb-appr-kpi-lbl">At GM approval</span>
+                    </div>
+                </div>
+
+                <!-- Pending queue -->
+                <div class="pb-appr-section">
+                    <h2 class="pb-appr-h2">Pending approval</h2>
+
+                    <div t-if="state.pending.length === 0" class="pb-appr-empty">
+                        <div class="pb-appr-empty-badge">All caught up</div>
+                        <p>No payroll runs are waiting on you right now.</p>
+                    </div>
+
+                    <div t-else="" class="pb-appr-cards">
+                        <div t-foreach="state.pending" t-as="run" t-key="run.id" class="pb-appr-card">
+                            <div class="pb-appr-card-main" t-on-click="() => this.openRun(run.id)">
+                                <div t-attf-class="pb-appr-stage {{ stageCls(run.state) }}">
+                                    <span class="pb-appr-dot"/>
+                                    <t t-esc="run.stage"/>
+                                </div>
+                                <div class="pb-appr-card-name">
+                                    <span class="pb-appr-run-title" t-esc="run.name"/>
+                                    <span class="pb-appr-run-period" t-esc="run.period"/>
+                                </div>
+                            </div>
+                            <div class="pb-appr-card-meta">
+                                <div class="pb-appr-metric">
+                                    <span class="pb-appr-metric-val" t-esc="run.count"/>
+                                    <span class="pb-appr-metric-lbl">payslips</span>
+                                </div>
+                                <div class="pb-appr-metric">
+                                    <span class="pb-appr-metric-val" t-esc="vnd(run.net)"/>
+                                    <span class="pb-appr-metric-lbl">net total</span>
+                                </div>
+                                <button class="pb-appr-btn" t-on-click="() => this.approve(run.id)">
+                                    Approve · <t t-esc="run.role"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recently approved -->
+                <div class="pb-appr-section" t-if="state.recent.length">
+                    <h2 class="pb-appr-h2">Recently approved</h2>
+                    <div class="pb-appr-recent">
+                        <div t-foreach="state.recent" t-as="run" t-key="run.id"
+                             class="pb-appr-recent-row" t-on-click="() => this.openRun(run.id)">
+                            <div class="pb-appr-stage green"><span class="pb-appr-dot"/>Done</div>
+                            <span class="pb-appr-recent-name" t-esc="run.name"/>
+                            <span class="pb-appr-recent-period" t-esc="run.period"/>
+                            <span class="pb-appr-recent-net" t-esc="vnd(run.net)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
