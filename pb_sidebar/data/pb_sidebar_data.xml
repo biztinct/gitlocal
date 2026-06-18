@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- ============ Sections ============ -->
+    <record id="sec_overview" model="pb.sidebar.section">
+        <field name="name">Overview</field><field name="technical_key">overview</field>
+        <field name="sequence">10</field><field name="show_label" eval="False"/>
+    </record>
+    <record id="sec_payrun" model="pb.sidebar.section">
+        <field name="name">Pay Run</field><field name="technical_key">payrun</field><field name="sequence">20</field>
+    </record>
+    <record id="sec_people" model="pb.sidebar.section">
+        <field name="name">People</field><field name="technical_key">people</field><field name="sequence">30</field>
+    </record>
+    <record id="sec_insights" model="pb.sidebar.section">
+        <field name="name">Insights</field><field name="technical_key">insights</field><field name="sequence">40</field>
+    </record>
+    <record id="sec_setup" model="pb.sidebar.section">
+        <field name="name">Setup</field><field name="technical_key">setup</field><field name="sequence">50</field>
+    </record>
+    <record id="sec_admin" model="pb.sidebar.section">
+        <field name="name">Admin</field><field name="technical_key">admin</field><field name="sequence">60</field>
+    </record>
+
+    <!-- ============ Overview ============ -->
+    <record id="item_dashboard" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_overview"/><field name="name">Dashboard</field>
+        <field name="icon">home</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_dashboard.action_pb_dashboard</field>
+        <field name="action_tag">pb_dashboard</field>
+    </record>
+    <record id="item_approvals" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_overview"/><field name="name">Approvals</field>
+        <field name="icon">clipboard-check</field><field name="sequence">20</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_approval</field>
+        <field name="match_models">hr.payslip.run</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ Pay Run ============ -->
+    <record id="item_run_payroll" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Run Payroll</field>
+        <field name="icon">zap</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_payrun_wizard.action_pb_payrun_wizard</field>
+        <field name="action_tag">pb_payrun_wizard</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_pay_runs" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Pay Runs</field>
+        <field name="icon">calendar</field><field name="sequence">20</field>
+        <field name="action_xmlid">pb_hr_payroll_base.action_hr_payslip_run_payroll</field>
+        <field name="match_models">hr.payslip.run</field>
+    </record>
+    <record id="item_payslips" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Payslips</field>
+        <field name="icon">receipt</field><field name="sequence">30</field>
+        <field name="action_xmlid">pb_payslip_review.action_pb_payslip_review</field>
+        <field name="action_tag">pb_payslip_review</field>
+        <field name="match_models">hr.payslip</field>
+    </record>
+    <record id="item_import" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Import Data</field>
+        <field name="icon">download</field><field name="sequence">40</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_integration_connector</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_integration_user'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ People ============ -->
+    <record id="item_employees" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_people"/><field name="name">Employees</field>
+        <field name="icon">users</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_hr_payroll_base.action_hr_employee_payroll</field>
+        <field name="match_models">hr.employee</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_contracts" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_people"/><field name="name">Contracts</field>
+        <field name="icon">file</field><field name="sequence">20</field>
+        <field name="action_xmlid">pb_hr_payroll_base.action_hr_contract_payroll</field>
+        <field name="match_models">hr.contract</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ Insights ============ -->
+    <record id="item_analytics" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Analytics</field>
+        <field name="icon">trending-up</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_hr_payroll_analytics.action_open_hr_analytics_dashboard</field>
+        <field name="match_models">hr.analytics.dashboard</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_reports" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Reports</field>
+        <field name="icon">file-text</field><field name="sequence">20</field>
+        <field name="action_xmlid">payroll_analytics_approval.action_payroll_analytics_reports</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ Setup ============ -->
+    <record id="item_formula" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Formula Engine</field>
+        <field name="icon">calculator</field><field name="sequence">10</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_formula_studio</field>
+        <field name="match_models">hr.formula.config</field>
+        <field name="match_action_tags">pb_formula_studio</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_structures" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Salary Structures</field>
+        <field name="icon">layers</field><field name="sequence">20</field>
+        <field name="action_xmlid">pb_hr_payroll_base.action_hr_payroll_structure_base</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_statutory" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Statutory (Insurance &amp; Tax)</field>
+        <field name="icon">shield</field><field name="sequence">30</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_insurance" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="parent_id" ref="item_statutory"/>
+        <field name="name">Insurance Policies</field><field name="icon">shield</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_hr_payroll_vietnam.action_vietnam_insurance_policy</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_tax" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="parent_id" ref="item_statutory"/>
+        <field name="name">Tax Tables</field><field name="icon">percent</field><field name="sequence">20</field>
+        <field name="action_xmlid">pb_hr_payroll_vietnam.action_vietnam_tax_table</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_integrations" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Integrations</field>
+        <field name="icon">database</field><field name="sequence">40</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_integration_connector</field>
+        <field name="match_models">hr.integration.connector</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_integration_user'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ Admin (system only) ============ -->
+    <record id="item_roles" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_admin"/><field name="name">Roles &amp; Access</field>
+        <field name="icon">lock</field><field name="sequence">10</field>
+        <field name="action_xmlid">base.action_res_users</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+    <record id="item_companies" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_admin"/><field name="name">Companies</field>
+        <field name="icon">building</field><field name="sequence">20</field>
+        <field name="action_xmlid">base.action_res_company_form</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+    <record id="item_menu_cfg" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_admin"/><field name="name">Menu &amp; Sidebar</field>
+        <field name="icon">compass</field><field name="sequence">30</field>
+        <field name="action_xmlid">pb_sidebar.action_pb_sidebar_item</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+</odoo>

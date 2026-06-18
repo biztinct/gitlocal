@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Items -->
+    <record id="view_pb_sidebar_item_list" model="ir.ui.view">
+        <field name="name">pb.sidebar.item.list</field>
+        <field name="model">pb.sidebar.item</field>
+        <field name="arch" type="xml">
+            <list string="Sidebar Items" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="section_id"/>
+                <field name="parent_id"/>
+                <field name="name"/>
+                <field name="icon"/>
+                <field name="action_xmlid"/>
+                <field name="badge"/>
+                <field name="groups_id" widget="many2many_tags"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_sidebar_item_form" model="ir.ui.view">
+        <field name="name">pb.sidebar.item.form</field>
+        <field name="model">pb.sidebar.item</field>
+        <field name="arch" type="xml">
+            <form string="Sidebar Item">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="section_id"/>
+                            <field name="parent_id"/>
+                            <field name="sequence"/>
+                            <field name="icon"/>
+                            <field name="badge"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="action_xmlid"/>
+                            <field name="action_tag"/>
+                            <field name="groups_id" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group string="Active-item matching (highlight rules)">
+                        <field name="match_action_xmlids"/>
+                        <field name="match_action_tags"/>
+                        <field name="match_models"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_sidebar_section_list" model="ir.ui.view">
+        <field name="name">pb.sidebar.section.list</field>
+        <field name="model">pb.sidebar.section</field>
+        <field name="arch" type="xml">
+            <list string="Sidebar Sections" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="technical_key"/>
+                <field name="show_label" widget="boolean_toggle"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_sidebar_item" model="ir.actions.act_window">
+        <field name="name">Sidebar Items</field>
+        <field name="res_model">pb.sidebar.item</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_pb_sidebar_section" model="ir.actions.act_window">
+        <field name="name">Sidebar Sections</field>
+        <field name="res_model">pb.sidebar.section</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

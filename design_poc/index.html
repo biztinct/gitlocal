@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payobook — UI/UX Direction POC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/tokens.css"/>
+<style>
+  body{background:radial-gradient(1200px 600px at 80% -10%, #ECE6FC 0%, transparent 60%), var(--pb-bg);}
+  .wrap{max-width:1120px;margin:0 auto;padding:46px 24px 80px;}
+  .hero{display:flex;align-items:center;gap:16px;margin-bottom:8px;}
+  .logo{width:54px;height:54px;border-radius:15px;background:linear-gradient(135deg,var(--pb-brand-500),var(--pb-brand));color:#fff;display:grid;place-items:center;font-weight:800;font-size:26px;box-shadow:var(--sh-brand);}
+  h1{font-size:30px;letter-spacing:-.02em;}
+  .lead{color:var(--pb-muted);font-size:15.5px;max-width:760px;margin:14px 0 6px;line-height:1.6;}
+  .pill{display:inline-block;background:var(--pb-brand-tint-2);color:var(--pb-brand);font-weight:700;font-size:12px;padding:4px 12px;border-radius:999px;margin-bottom:18px;}
+  .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px;}
+  @media(max-width:880px){.opts{grid-template-columns:1fr;}}
+  .opt{background:var(--pb-surface);border:1px solid var(--pb-border);border-radius:var(--r-xl);padding:24px;box-shadow:var(--sh-sm);display:flex;flex-direction:column;transition:all .2s var(--ease);position:relative;overflow:hidden;}
+  .opt:hover{transform:translateY(-4px);box-shadow:var(--sh-lg);border-color:var(--pb-brand-400);}
+  .opt .tag{font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--pb-brand);}
+  .opt h2{font-size:20px;margin:6px 0 4px;}
+  .opt .eff{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;display:inline-block;margin-bottom:12px;}
+  .e-low{background:var(--pb-success-tint);color:#0F8A63;} .e-med{background:var(--pb-warn-tint);color:#B7791F;} .e-high{background:var(--pb-danger-tint);color:#C0392B;}
+  .opt p{color:var(--pb-muted);font-size:13.5px;line-height:1.6;flex:1;}
+  .opt ul{margin:10px 0 16px;padding-left:18px;color:var(--pb-ink-2);font-size:13px;line-height:1.7;}
+  .opt .rec{position:absolute;top:14px;right:-32px;background:var(--pb-accent);color:#fff;font-size:11px;font-weight:700;padding:4px 36px;transform:rotate(45deg);}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:11px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;border:none;text-decoration:none;}
+  .btn-primary{background:var(--pb-brand);color:#fff;box-shadow:var(--sh-brand);} .btn-primary:hover{background:var(--pb-brand-600);}
+  .cmp{margin-top:42px;background:var(--pb-surface);border:1px solid var(--pb-border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm);}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:13px 18px;border-bottom:1px solid var(--pb-border-soft);}
+  th{background:var(--pb-surface-2);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--pb-muted);}
+  td:first-child{font-weight:600;color:var(--pb-ink-2);}
+  .note{margin-top:30px;color:var(--pb-muted);font-size:13px;background:var(--pb-brand-tint);border:1px solid var(--pb-brand-tint-2);border-radius:var(--r-md);padding:14px 18px;}
+  .sech{font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--pb-muted);margin:46px 0 14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero"><div class="logo">P</div><div>
+    <div class="pill">UI / UX DIRECTION · CLICKABLE POC</div>
+    <h1>Payobook — choose your interface direction</h1>
+  </div></div>
+  <p class="lead">Three ways to modernise Payobook, shown across the same four workflows — <strong>Home</strong>,
+  <strong>Payroll Run &amp; Approval</strong>, <strong>Formula Config &amp; Import</strong>, and
+  <strong>Analytics &amp; Approvals</strong> — using a fresh “Aurora” palette and a role-aware left sidebar.
+  Each option is fully clickable: switch the <strong>role</strong> (top-right) to see the menu adapt, and
+  navigate via the sidebar. Pick the one that feels right.</p>
+
+  <div class="opts">
+    <div class="opt">
+      <div class="tag">OPTION A</div><h2>Skinned Native</h2>
+      <span class="eff e-low">Lowest effort · lowest maintenance</span>
+      <p>Standard Odoo lists &amp; forms, re-skinned with the new theme (hero headers, card sections, field-edit
+      indicators, status-driven colours) + the left sidebar. Keeps 100% of native Odoo — filters, exports, chatter.</p>
+      <ul><li>Uniform across every screen</li><li>Survives Odoo upgrades</li><li>Ships fastest</li></ul>
+      <a class="btn btn-primary" href="option-a.html">Open Option A →</a>
+    </div>
+    <div class="opt">
+      <div class="rec">RECOMMENDED</div>
+      <div class="tag">OPTION B</div><h2>Hybrid</h2>
+      <span class="eff e-med">Medium effort · best balance</span>
+      <p>Theme + sidebar everywhere, <strong>plus two custom cockpits</strong> for the highest-traffic flows: a
+      Payroll-Run command centre and a Payslip review split-view. Everything else stays native.</p>
+      <ul><li>Big clicks-saved on daily work</li><li>Native fallback for the long tail</li><li>Most delight per ₫</li></ul>
+      <a class="btn btn-primary" href="option-b.html">Open Option B →</a>
+    </div>
+    <div class="opt">
+      <div class="tag">OPTION C</div><h2>Full Custom App</h2>
+      <span class="eff e-high">Highest effort · highest maintenance</span>
+      <p>An <strong>hr_development_ai-style</strong> single-page app — route stack, slide-in drawers, a multi-step
+      “Run Payroll” wizard, everything bespoke. Maximum delight; native forms are replaced for core payroll.</p>
+      <ul><li>“Smashing” end-to-end feel</li><li>Every change is hand-built OWL</li><li>Loses native list/export/studio</li></ul>
+      <a class="btn btn-primary" href="option-c.html">Open Option C →</a>
+    </div>
+  </div>
+
+  <div class="sech">How they compare</div>
+  <div class="cmp"><table>
+    <tr><th>Dimension</th><th>A · Skinned Native</th><th>B · Hybrid</th><th>C · Full Custom</th></tr>
+    <tr><td>Native Odoo retained</td><td>~100%</td><td>~80% (2 cockpits custom)</td><td>Core payroll replaced</td></tr>
+    <tr><td>Clicks saved on daily work</td><td>Some</td><td>High</td><td>Highest</td></tr>
+    <tr><td>“Delight” factor</td><td>Good</td><td>Great</td><td>Smashing</td></tr>
+    <tr><td>Build effort</td><td>Low</td><td>Medium</td><td>High</td></tr>
+    <tr><td>Upgrade / maintenance risk</td><td>Low</td><td>Medium</td><td>High</td></tr>
+    <tr><td>Filters · exports · chatter · studio</td><td>Kept</td><td>Kept (native areas)</td><td>Rebuilt by hand</td></tr>
+  </table></div>
+
+  <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.18em"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> <strong>How to evaluate:</strong> open each option, then use the <strong>Role</strong> selector
+  in the top bar (Payroll Officer → HR Approver → General Manager → System Admin) to watch the sidebar gate itself
+  per role. Click sidebar items to move between the four workflows. The palette, sidebar, and dataset are identical
+  across all three — only the work-area treatment changes.</div>
+</div>
+</body>
+</html>

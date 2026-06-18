@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_payslip_review.PayslipReview">
+    <div class="psr-root">
+        <t t-if="state.loaded and state.run">
+            <!-- Header -->
+            <div class="psr-head">
+                <div>
+                    <h1>Payslip review</h1>
+                    <div class="psr-sub" t-esc="state.run.period"/>
+                </div>
+                <div class="psr-head-r">
+                    <select class="psr-runsel" t-on-change="onRunChange">
+                        <t t-foreach="state.runs" t-as="r" t-key="r.id">
+                            <option t-att-value="r.id" t-att-selected="r.id === state.runId" t-esc="r.name"/>
+                        </t>
+                    </select>
+                </div>
+            </div>
+
+            <!-- KPI strip -->
+            <div class="psr-kpis">
+                <div class="psr-kpi"><div class="l">Payslips</div><div class="v" t-esc="state.totals.count"/></div>
+                <div class="psr-kpi g"><div class="l">Net total</div><div class="v" t-esc="vnd(state.totals.net)"/></div>
+                <div class="psr-kpi"><div class="l">Gross total</div><div class="v" t-esc="vnd(state.totals.gross)"/></div>
+                <div class="psr-kpi"><div class="l">Approved</div><div class="v"><t t-esc="state.totals.done"/>/<t t-esc="state.totals.count"/></div></div>
+                <div class="psr-kpi a"><div class="l">Need review</div><div class="v" t-esc="state.totals.flagged"/></div>
+            </div>
+
+            <!-- Filters -->
+            <div class="psr-chips">
+                <button t-attf-class="psr-chip #{state.filter==='all'?'on':''}" t-on-click="() => this.setFilter('all')">All</button>
+                <button t-attf-class="psr-chip #{state.filter==='flag'?'on':''}" t-on-click="() => this.setFilter('flag')">Need review</button>
+                <button t-attf-class="psr-chip #{state.filter==='level1'?'on':''}" t-on-click="() => this.setFilter('level1')">HR pending</button>
+                <button t-attf-class="psr-chip #{state.filter==='level2'?'on':''}" t-on-click="() => this.setFilter('level2')">GM pending</button>
+                <button t-attf-class="psr-chip #{state.filter==='done'?'on':''}" t-on-click="() => this.setFilter('done')">Done</button>
+            </div>
+
+            <!-- Split -->
+            <div class="psr-split">
+                <div class="psr-list">
+                    <t t-foreach="filteredSlips" t-as="s" t-key="s.id">
+                        <div t-attf-class="psr-card #{s.id===state.selId?'sel':''}" t-on-click="() => this.select(s.id)">
+                            <span class="psr-av" t-attf-style="background:{{s.color}}" t-esc="initials(s.emp)"/>
+                            <div class="psr-card-main">
+                                <div class="psr-card-nm" t-esc="s.emp"/>
+                                <div class="psr-card-meta" t-esc="s.title"/>
+                            </div>
+                            <div class="psr-card-r">
+                                <div class="psr-card-net" t-esc="vnd(s.net)"/>
+                                <span t-attf-class="psr-badge #{cls(s.state)}" t-esc="label(s.state)"/>
+                            </div>
+                            <span t-if="s.flag" class="psr-flagdot" title="Needs review">!</span>
+                        </div>
+                    </t>
+                    <t t-if="!filteredSlips.length"><div class="psr-empty">No payslips in this filter.</div></t>
+                </div>
+
+                <!-- Detail -->
+                <div class="psr-detail" t-if="state.detail">
+                    <div class="psr-detail-hero">
+                        <span class="psr-av lg" t-attf-style="background:{{state.detail.color}}" t-esc="initials(state.detail.emp)"/>
+                        <div>
+                            <div class="psr-detail-nm" t-esc="state.detail.emp"/>
+                            <div class="psr-detail-sub"><t t-esc="state.detail.structure"/> · <t t-esc="state.detail.period"/></div>
+                        </div>
+                        <div class="psr-detail-net">
+                            <div class="cap">Net pay</div>
+                            <div class="amt" t-esc="full(state.detail.net)"/>
+                        </div>
+                    </div>
+
+                    <!-- statusbar -->
+                    <div class="psr-status">
+                        <t t-foreach="statusFlow" t-as="f" t-key="f[0]">
+                            <div t-attf-class="psr-st #{flowIdx(state.detail.state) &gt; f_index ? 'done' : ''} #{flowIdx(state.detail.state) === f_index ? 'cur' : ''}" t-esc="f[1]"/>
+                        </t>
+                    </div>
+
+                    <!-- breakdown -->
+                    <div class="psr-bk">
+                        <div class="psr-bk-h">Salary breakdown</div>
+                        <t t-foreach="state.detail.lines" t-as="l" t-key="l_index">
+                            <div class="psr-bk-row">
+                                <span class="psr-bk-nm" t-esc="l.name"/>
+                                <span class="psr-bk-code" t-esc="l.code"/>
+                                <span t-attf-class="psr-bk-amt #{l.total &lt; 0 ? 'neg':''}" t-esc="full(l.total)"/>
+                            </div>
+                        </t>
+                        <t t-if="!state.detail.lines.length"><div class="psr-empty">No computed lines yet.</div></t>
+                    </div>
+
+                    <div class="psr-actions">
+                        <t t-if="nextLabel(state.detail.state)">
+                            <button class="psr-btn primary" t-on-click="() => this.advance(state.detail.id)" t-esc="nextLabel(state.detail.state)"/>
+                        </t>
+                        <t t-else="">
+                            <div class="psr-done-tag" t-if="state.detail.state==='done'">✓ Fully approved</div>
+                        </t>
+                    </div>
+                </div>
+                <div class="psr-detail empty" t-else=""><div class="psr-empty">Select a payslip to review.</div></div>
+            </div>
+        </t>
+        <t t-elif="state.loaded"><div class="psr-empty" style="margin-top:60px">No pay runs found yet.</div></t>
+        <t t-else=""><div class="psr-empty" style="margin-top:60px">Loading…</div></t>
+    </div>
+</t>
+
+</templates>
