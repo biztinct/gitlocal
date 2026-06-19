@@ -1,0 +1,83 @@
+.pbi {
+    --i: #4F46E5; --i600: #4338CA; --i-deep: #312E81; --i-soft: #EEF0FF; --i-soft2: #E0E4FF; --i-border: #C7CBF5;
+    --ink: #1E1B2E; --muted: #6B7280; --line: #E8E9F3; --line-soft: #F0F1F8; --bg: #F4F5FB;
+    --amber: #B45309; --amber-soft: #FEF3C7; --green: #059669; --green-soft: #D1FAE5; --cyan: #0E7490; --cyan-soft: #E0F4F9;
+    --rose: #E11D48; --slate: #64748B;
+
+    height: 100%; overflow: auto; background: var(--bg); color: var(--ink);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    .pbi-loading { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
+    .pbi-spinner { width: 34px; height: 34px; border: 3px solid var(--i-soft); border-top-color: var(--i); border-radius: 50%; animation: pbi-spin .8s linear infinite; }
+    @keyframes pbi-spin { to { transform: rotate(360deg); } }
+
+    .pbi-wrap { max-width: 1240px; margin: 0 auto; padding: 26px 30px 60px; }
+
+    .pbi-head { margin-bottom: 22px; }
+    .pbi-head h1 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0; }
+    .pbi-sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+    .pbi-sub b { color: var(--ink); font-weight: 700; }
+
+    /* KPI strip */
+    .pbi-kpis { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.2fr; gap: 14px; margin-bottom: 18px; }
+    .pbi-kpi { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: flex; flex-direction: column; gap: 5px; }
+    .pbi-kpi.hero { background: var(--i-deep); border-color: var(--i-deep); }
+    .pbi-kpi .l { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+    .pbi-kpi.hero .l { color: #C7CBF5; }
+    .pbi-kpi .v { font-size: 24px; font-weight: 800; letter-spacing: -.015em; }
+    .pbi-kpi.hero .v { color: #fff; font-size: 27px; }
+    .pbi-kpi .v.indigo { color: var(--i); } .pbi-kpi .v.amber { color: var(--amber); } .pbi-kpi .v.green { color: var(--green); }
+    .pbi-kpi .m { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+    .pbi-kpi.hero .m { color: #A5B4FC; }
+
+    /* panels */
+    .pbi-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .pbi-panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; margin-bottom: 16px; }
+    .pbi-panel-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .pbi-panel-h h2 { font-size: 15px; font-weight: 800; margin: 0; }
+    .pbi-tag { font-size: 11px; font-weight: 700; color: var(--muted); background: var(--bg); border-radius: 999px; padding: 4px 10px; }
+
+    /* trend bars */
+    .pbi-bars { display: flex; align-items: flex-end; gap: 10px; height: 190px; }
+    .pbi-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+    .pbi-bar-val { font-size: 10.5px; font-weight: 800; color: var(--i600); white-space: nowrap; }
+    .pbi-bar-track { width: 100%; max-width: 46px; flex: 1; display: flex; align-items: flex-end; background: var(--line-soft); border-radius: 8px 8px 0 0; }
+    .pbi-bar-fill { width: 100%; background: var(--i); border-radius: 8px 8px 0 0; min-height: 4px; transition: height .4s ease; }
+    .pbi-bar-col:last-child .pbi-bar-fill { background: var(--green); }
+    .pbi-bar-lbl { font-size: 10.5px; color: var(--muted); font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+    /* department list */
+    .pbi-deptlist { display: flex; flex-direction: column; gap: 14px; }
+    .pbi-deptrow-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+    .pbi-deptrow-top .nm { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbi-deptrow-top .amt { font-size: 13px; font-weight: 800; white-space: nowrap; }
+    .pbi-deptrow-top .amt .cnt { color: var(--muted); font-weight: 600; font-size: 11.5px; }
+    .pbi-deptrow-track { height: 9px; background: var(--line-soft); border-radius: 999px; overflow: hidden; }
+    .pbi-deptrow-fill { height: 100%; background: var(--i); border-radius: 999px; min-width: 4px; transition: width .4s ease; }
+
+    /* statutory split */
+    .pbi-split-track { height: 26px; border-radius: 8px; overflow: hidden; display: flex; }
+    .pbi-split-emp { background: var(--i); } .pbi-split-comp { background: var(--cyan); }
+    .pbi-split-legend { display: flex; gap: 22px; margin-top: 12px; }
+    .pbi-split-legend .lg { font-size: 12.5px; color: #475569; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+    .pbi-split-legend .lg b { color: var(--ink); }
+    .pbi-split-legend .sw { width: 12px; height: 12px; border-radius: 4px; }
+    .pbi-split-legend .sw.emp { background: var(--i); } .pbi-split-legend .sw.comp { background: var(--cyan); }
+
+    /* reports */
+    .pbi-reports { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .pbi-report { display: flex; align-items: center; gap: 13px; text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; cursor: pointer; font-family: inherit; transition: border-color .15s, box-shadow .15s, transform .15s; }
+    .pbi-report:hover { border-color: var(--i-border); box-shadow: 0 6px 18px rgba(49,46,129,.09); transform: translateY(-2px); }
+    .pbi-report .ic { width: 38px; height: 38px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--i-soft); color: var(--i); font-size: 16px; }
+    .pbi-report .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbi-report .tx .lb { font-size: 13.5px; font-weight: 700; }
+    .pbi-report .tx .ds { font-size: 11.5px; color: var(--muted); }
+    .pbi-report .ar { color: var(--i); font-weight: 800; flex: none; }
+
+    .pbi-empty { text-align: center; color: var(--muted); padding: 30px; font-size: 13.5px; }
+
+    @media (max-width: 1000px) {
+        .pbi-kpis { grid-template-columns: repeat(2, 1fr); }
+        .pbi-cols { grid-template-columns: 1fr; }
+    }
+}

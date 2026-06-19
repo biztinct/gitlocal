@@ -27,6 +27,13 @@ const ICONS = {
     circle:'<circle cx="12" cy="12" r="9"/>',
 };
 
+// App (root-menu) xmlids that own the Payobook sidebar. In any other app the
+// sidebar hides and Odoo's native top menus return.
+const PAYROLL_APPS = new Set([
+    "om_hr_payroll.menu_hr_payroll_root",
+    "pb_hr_payroll_base.menu_payroll_backup_root",
+]);
+
 export class PbSidebar extends Component {
     static template = "pb_sidebar.PbSidebar";
     static props = {};
@@ -34,6 +41,7 @@ export class PbSidebar extends Component {
     setup() {
         this.actionService = useService("action");
         this.orm = useService("orm");
+        this.menuService = useService("menu");
 
         const name = window.odoo?.session_info?.name || "User";
         this.userName = name;
@@ -45,6 +53,7 @@ export class PbSidebar extends Component {
             activeItemId: null,
             expandedItems: {},
             loaded: false,
+            visible: false,
         });
 
         this._xmlidIndex = {};
@@ -53,14 +62,31 @@ export class PbSidebar extends Component {
         this._childParent = {};
         this._homeAction = null;
 
-        useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this._resolveActive());
+        useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this._onUiUpdated());
 
         onMounted(async () => {
-            document.body.classList.add("has-pb-sidebar");
             await this._load();
-            this._resolveActive();
+            this._onUiUpdated();
         });
         onWillUnmount(() => document.body.classList.remove("has-pb-sidebar"));
+    }
+
+    _onUiUpdated() {
+        this._resolveVisibility();
+        this._resolveActive();
+        // On a direct URL load / browser refresh, getCurrentApp() can resolve a
+        // tick after the action update — re-check a few times so the sidebar still
+        // appears on payroll screens without needing a manual app click.
+        [0, 150, 400].forEach((ms) => setTimeout(() => this._resolveVisibility(), ms));
+    }
+
+    // Show the sidebar only inside a payroll app; otherwise restore native menus.
+    _resolveVisibility() {
+        let app = null;
+        try { app = this.menuService.getCurrentApp(); } catch (e) { /* ignore */ }
+        const visible = !!(app && PAYROLL_APPS.has(app.xmlid));
+        if (this.state.visible !== visible) this.state.visible = visible;
+        document.body.classList.toggle("has-pb-sidebar", visible);
     }
 
     iconSvg(name) {

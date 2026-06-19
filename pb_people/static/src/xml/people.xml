@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_people.PbPeople">
+    <div class="pbp">
+      <div t-if="!state.loaded" class="pbp-loading"><div class="pbp-spinner"/><span>Loading people…</span></div>
+
+      <div t-else="" class="pbp-wrap">
+        <!-- header -->
+        <div class="pbp-head">
+          <div>
+            <h1>People</h1>
+            <p class="pbp-sub">Workforce roster, contract status and payroll readiness.</p>
+          </div>
+          <div class="pbp-seg">
+            <button t-att-class="state.view === 'people' ? 'active' : ''" t-on-click="() => this.setView('people')">Employees</button>
+            <button t-att-class="state.view === 'contracts' ? 'active' : ''" t-on-click="() => this.setView('contracts')">Contracts</button>
+          </div>
+        </div>
+
+        <!-- KPI strip -->
+        <div class="pbp-kpis">
+          <div class="pbp-kpi"><span class="v" t-esc="state.kpis.headcount"/><span class="l">Active headcount</span></div>
+          <div class="pbp-kpi"><span class="v green" t-esc="state.kpis.running"/><span class="l">Running contracts</span></div>
+          <div class="pbp-kpi"><span class="v amber" t-esc="state.kpis.expiring"/><span class="l">Expired contracts</span></div>
+          <div class="pbp-kpi"><span class="v" t-esc="moneyFull(state.kpis.total_wage)"/><span class="l">Monthly contracted wage</span></div>
+          <div class="pbp-kpi"><span class="v indigo"><t t-esc="state.kpis.ready_pct"/>%</span><span class="l">Bank details on file</span></div>
+        </div>
+
+        <!-- toolbar -->
+        <div class="pbp-toolbar">
+          <div class="pbp-srch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" placeholder="Search name, job, department…" t-on-input="onSearch"/>
+          </div>
+          <div class="pbp-chips">
+            <t t-if="state.view === 'people'">
+              <button t-att-class="state.status==='' ? 'on' : ''" t-on-click="() => this.setStatus('')">All</button>
+              <button t-att-class="state.status==='open' ? 'on' : ''" t-on-click="() => this.setStatus('open')">Running</button>
+              <button t-att-class="state.status==='close' ? 'on' : ''" t-on-click="() => this.setStatus('close')">Expired</button>
+              <button t-att-class="state.status==='none' ? 'on' : ''" t-on-click="() => this.setStatus('none')">No contract</button>
+              <button t-att-class="state.status==='ready' ? 'on' : ''" t-on-click="() => this.setStatus('ready')">Payroll-ready</button>
+            </t>
+            <t t-else="">
+              <button t-att-class="state.status==='' ? 'on' : ''" t-on-click="() => this.setStatus('')">All</button>
+              <button t-att-class="state.status==='open' ? 'on' : ''" t-on-click="() => this.setStatus('open')">Running</button>
+              <button t-att-class="state.status==='close' ? 'on' : ''" t-on-click="() => this.setStatus('close')">Expired</button>
+              <button t-att-class="state.status==='draft' ? 'on' : ''" t-on-click="() => this.setStatus('draft')">New</button>
+            </t>
+          </div>
+        </div>
+
+        <!-- department chips (people view) -->
+        <div t-if="state.view === 'people' and state.departments.length" class="pbp-depts">
+          <button t-attf-class="dept {{ state.dept==='' ? 'on' : '' }}" t-on-click="() => this.setDept('')">All departments</button>
+          <button t-foreach="state.departments" t-as="d" t-key="d_index"
+                  t-attf-class="dept {{ state.dept===d.name ? 'on' : '' }}" t-on-click="() => this.setDept(d.name)">
+            <t t-esc="d.name"/> <span class="c" t-esc="d.count"/>
+          </button>
+        </div>
+
+        <!-- PEOPLE roster -->
+        <t t-if="state.view === 'people'">
+          <div class="pbp-grid">
+            <div t-foreach="filteredPeople" t-as="p" t-key="p.id" class="pbp-card" t-on-click="() => this.openEmployee(p.id)">
+              <div class="pbp-card-top">
+                <div t-attf-class="pbp-av {{ stateCls(p.state) }}" t-esc="p.initials"/>
+                <div class="pbp-id">
+                  <span class="nm" t-esc="p.name"/>
+                  <span class="jb" t-esc="p.job"/>
+                </div>
+                <span t-attf-class="pbp-badge {{ stateCls(p.state) }}"><span class="d"/><t t-esc="p.state_label"/></span>
+              </div>
+              <div class="pbp-card-meta">
+                <span class="dept" t-esc="p.dept"/>
+                <span t-if="p.wage" class="wage" t-esc="money(p.wage)"/>
+              </div>
+              <div class="pbp-card-foot">
+                <span t-if="p.ready" class="rdy ok"><span class="dot"/>Payroll-ready</span>
+                <span t-elif="p.state==='open' and !p.bank" class="rdy warn"><span class="dot"/>No bank details</span>
+                <span t-elif="p.state!=='open'" class="rdy muted"><span class="dot"/>No running contract</span>
+                <span t-else="" class="rdy muted"><span class="dot"/>—</span>
+                <button t-if="p.contract_id" class="lnk" t-on-click.stop="() => this.openContract(p.contract_id)">Contract →</button>
+              </div>
+            </div>
+          </div>
+          <div t-if="!filteredPeople.length" class="pbp-empty">No employees match the current filters.</div>
+          <div class="pbp-footnote">
+            Showing <b t-esc="filteredPeople.length"/> of <b t-esc="state.peopleTotal"/> active employees
+            <button class="lnk" t-on-click="openAllEmployees">Open full employee list →</button>
+          </div>
+        </t>
+
+        <!-- CONTRACTS table -->
+        <t t-else="">
+          <div class="pbp-table">
+            <div class="pbp-tr head">
+              <span class="c-emp">Employee</span><span class="c-ref">Contract</span>
+              <span class="c-st">Status</span><span class="c-struct">Structure</span>
+              <span class="c-dt">Start</span><span class="c-dt">End</span><span class="c-wage">Wage</span>
+            </div>
+            <div t-foreach="filteredContracts" t-as="c" t-key="c.id" class="pbp-tr" t-on-click="() => this.openContract(c.id)">
+              <span class="c-emp" t-esc="c.employee"/>
+              <span class="c-ref" t-esc="c.name"/>
+              <span class="c-st"><span t-attf-class="pbp-badge sm {{ stateCls(c.state) }}"><span class="d"/><t t-esc="c.state_label"/></span></span>
+              <span class="c-struct" t-esc="c.structure || '—'"/>
+              <span class="c-dt" t-esc="c.date_start || '—'"/>
+              <span class="c-dt" t-esc="c.date_end || '—'"/>
+              <span class="c-wage" t-esc="money(c.wage)"/>
+            </div>
+          </div>
+          <div t-if="!filteredContracts.length" class="pbp-empty">No contracts match the current filters.</div>
+          <div class="pbp-footnote">
+            Showing <b t-esc="filteredContracts.length"/> of <b t-esc="state.contractsTotal"/> contracts
+            <button class="lnk" t-on-click="openAllContracts">Open full contract list →</button>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

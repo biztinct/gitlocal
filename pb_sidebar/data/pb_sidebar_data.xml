@@ -62,7 +62,10 @@
     <record id="item_import" model="pb.sidebar.item">
         <field name="section_id" ref="sec_payrun"/><field name="name">Import Data</field>
         <field name="icon">download</field><field name="sequence">40</field>
-        <field name="action_xmlid">pb_hr_payroll_formula.action_integration_connector</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_import</field>
+        <field name="match_models">hr.payroll.import.batch,hr.integration.connector</field>
+        <field name="match_action_tags">pb_import</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_integration_user'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
 
@@ -70,8 +73,10 @@
     <record id="item_employees" model="pb.sidebar.item">
         <field name="section_id" ref="sec_people"/><field name="name">Employees</field>
         <field name="icon">users</field><field name="sequence">10</field>
-        <field name="action_xmlid">pb_hr_payroll_base.action_hr_employee_payroll</field>
-        <field name="match_models">hr.employee</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_people</field>
+        <field name="match_models">hr.employee,hr.contract</field>
+        <field name="match_action_tags">pb_people</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
     <record id="item_contracts" model="pb.sidebar.item">
@@ -84,14 +89,17 @@
 
     <!-- ============ Insights ============ -->
     <record id="item_analytics" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_insights"/><field name="name">Analytics</field>
+        <field name="section_id" ref="sec_insights"/><field name="name">Insights</field>
         <field name="icon">trending-up</field><field name="sequence">10</field>
-        <field name="action_xmlid">pb_hr_payroll_analytics.action_open_hr_analytics_dashboard</field>
-        <field name="match_models">hr.analytics.dashboard</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_insights</field>
+        <field name="match_models">hr.analytics.dashboard,payroll.analytics</field>
+        <field name="match_action_tags">pb_insights</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
     <record id="item_reports" model="pb.sidebar.item">
         <field name="section_id" ref="sec_insights"/><field name="name">Reports</field>
+        <field name="active" eval="False"/>
         <field name="icon">file-text</field><field name="sequence">20</field>
         <field name="action_xmlid">payroll_analytics_approval.action_payroll_analytics_reports</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
@@ -116,16 +124,22 @@
     <record id="item_statutory" model="pb.sidebar.item">
         <field name="section_id" ref="sec_setup"/><field name="name">Statutory (Insurance &amp; Tax)</field>
         <field name="icon">shield</field><field name="sequence">30</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_statutory</field>
+        <field name="match_models">vietnam.insurance.policy,vietnam.tax.table,vietnam.tax.slab</field>
+        <field name="match_action_tags">pb_statutory</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
     <record id="item_insurance" model="pb.sidebar.item">
         <field name="section_id" ref="sec_setup"/><field name="parent_id" ref="item_statutory"/>
+        <field name="active" eval="False"/>
         <field name="name">Insurance Policies</field><field name="icon">shield</field><field name="sequence">10</field>
         <field name="action_xmlid">pb_hr_payroll_vietnam.action_vietnam_insurance_policy</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
     <record id="item_tax" model="pb.sidebar.item">
         <field name="section_id" ref="sec_setup"/><field name="parent_id" ref="item_statutory"/>
+        <field name="active" eval="False"/>
         <field name="name">Tax Tables</field><field name="icon">percent</field><field name="sequence">20</field>
         <field name="action_xmlid">pb_hr_payroll_vietnam.action_vietnam_tax_table</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
