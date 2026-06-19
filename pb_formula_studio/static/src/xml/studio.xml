@@ -65,13 +65,21 @@
 
         <!-- 3-pane -->
         <div class="pbfs-work">
+          <svg id="pbfsArrows" class="pbfs-arrows"/>
           <!-- outline -->
           <div class="pbfs-outline">
-            <div class="ol-head"><span class="t">Components</span></div>
+            <div class="ol-head">
+              <span class="t">Components</span>
+              <button t-attf-class="ol-arrows {{ state.arrowsOn ? 'on' : '' }}" t-on-click="toggleArrows" title="Dependency arrows">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
             <t t-foreach="visibleGroups" t-as="grp" t-key="grp">
               <div class="ol-grp" t-esc="grp"/>
               <div t-foreach="groupItems(grp)" t-as="c" t-key="c.id"
-                   t-attf-class="ol-item {{ c.id === state.selectedId ? 'active' : '' }}"
+                   t-att-data-col="c.col"
+                   t-attf-class="ol-item {{ c.id === state.selectedId ? 'active' : '' }} {{ isDep(c.col) ? 'dep' : '' }}"
+                   t-attf-style="{{ depStyle(c) }}"
                    t-on-click="() => this.selectComponent(c.id)">
                 <span class="ol-col" t-esc="c.col"/>
                 <span class="ol-nm" t-esc="c.name"/>
@@ -96,16 +104,15 @@
               <div class="ed-body">
                 <div class="ed-label">Formula</div>
                 <div class="formula-line">
-                  <t t-foreach="selected.tokens" t-as="tok" t-key="tok_index">
+                  <t t-foreach="chips(selected.excel_formula)" t-as="tok" t-key="tok_index">
                     <span t-if="tok.kind === 'op'" class="fop" t-esc="tok.text"/>
+                    <span t-elif="tok.kind === 'func'" class="fchip ffunc" t-esc="tok.text"/>
                     <span t-elif="tok.kind === 'ref'" class="fchip"><span class="ref" t-esc="tok.col"/><t t-esc="tok.text"/></span>
                     <span t-elif="tok.kind === 'num'" class="fchip fnum" t-esc="tok.text"/>
+                    <span t-elif="tok.kind === 'paren'" class="fparen" t-esc="tok.text"/>
+                    <span t-elif="tok.kind === 'comma'" class="fcomma">,</span>
                     <span t-else="" class="fchip src" t-esc="tok.text"/>
                   </t>
-                </div>
-                <div class="explain">
-                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  <p><t t-esc="selected.explain"/><br/>For <b t-esc="sampleName"/> this evaluates to <b t-esc="previewVal(selected.col)"/>.</p>
                 </div>
                 <div class="dep-map">
                   <div class="ed-label">Dependencies</div>
@@ -119,6 +126,24 @@
                   </div>
                 </div>
                 <div t-if="!selected.is_valid and selected.validation_message" class="ed-errbox" t-esc="selected.validation_message"/>
+
+                <div t-if="selected.type === 'formula'" class="fc-section">
+                  <div class="fc-head">
+                    <span class="fc-head-t">Calculation flow</span>
+                    <span class="fc-legend-inline">
+                      <span class="lg"><span class="sw" style="background:#0E7490"/>input</span>
+                      <span class="lg"><span class="sw" style="background:#4F46E5"/>earning</span>
+                      <span class="lg"><span class="sw" style="background:#B45309"/>deduction</span>
+                      <span class="lg"><span class="sw" style="background:#059669"/>total</span>
+                    </span>
+                    <button class="fc-max" t-on-click="openExpand" title="Expand flowchart">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>Expand
+                    </button>
+                  </div>
+                  <div class="fc-inline" t-on-click="openExpand" title="Click to expand">
+                    <div class="fc-zoomwrap"><t t-call="pb_formula_studio.Flow"><t t-set="flow" t-value="inlineFlow"/></t></div>
+                  </div>
+                </div>
               </div>
               <div class="ed-foot">
                 <button class="pbfs-btn soft" t-on-click="openAI">
@@ -160,7 +185,10 @@
               <div class="tp-nosample">No sample data yet. Generate test employees to see live values.</div>
             </t>
             <t t-foreach="state.components" t-as="c" t-key="c.id">
-              <div t-attf-class="tp-row {{ isDeduction(c) ? 'ded' : '' }} {{ c.code === 'NET' ? 'total' : '' }}">
+              <div t-att-data-col="c.col"
+                   t-attf-class="tp-row {{ isDeduction(c) ? 'ded' : '' }} {{ isDep(c.col) ? 'dep' : '' }} {{ isOutcome(c.col) ? 'outcome' : '' }}"
+                   t-attf-style="{{ depStyle(c) }}"
+                   t-on-click="() => this.selectComponent(c.id)">
                 <span class="nm"><span class="c" t-esc="c.col"/><t t-esc="c.name"/></span>
                 <span class="v"><t t-if="isDeduction(c)">−</t><t t-esc="previewVal(c.col)"/></span>
               </div>
@@ -216,6 +244,38 @@
           </button>
         </div>
       </aside>
+
+      <!-- Flowchart modal (Expand / drill-down) -->
+      <div t-if="state.flowOpen" class="fc-scrim" t-on-click="closeFlow">
+        <div class="fc-modal" t-on-click.stop="() => {}">
+          <div class="fc-top">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><path d="M10 6.5h6a1 1 0 0 1 1 1V14"/></svg></div>
+            <div><b t-esc="modalComp ? modalComp.name : 'Formula flow'"/><small>Calculation flow · = <t t-esc="modalComp ? previewVal(modalComp.col) : ''"/> for <t t-esc="sampleName"/></small></div>
+            <div class="fc-crumbs">
+              <t t-foreach="modalCrumbs" t-as="cb" t-key="cb_index">
+                <span t-if="cb_index > 0">›</span>
+                <span t-attf-class="cb {{ cb_index === modalCrumbs.length - 1 ? 'cur' : '' }}" t-on-click="() => this.crumbTo(cb_index)" t-esc="cb.name"/>
+              </t>
+            </div>
+            <div class="fc-zoom">
+              <button t-on-click="zoomOut" title="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M5 12h14"/></svg></button>
+              <button class="zfit" t-on-click="zoomFit" title="Fit to window"><span class="zlabel">Fit</span></button>
+              <button t-on-click="zoomIn" title="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+            <button class="fc-x" t-on-click="closeFlow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+          <div class="fc-legend">
+            <span class="lg"><span class="sw" style="background:#0E7490"/>Input / info</span>
+            <span class="lg"><span class="sw" style="background:#4F46E5"/>Earning</span>
+            <span class="lg"><span class="sw" style="background:#B45309"/>Deduction / decision</span>
+            <span class="lg"><span class="sw" style="background:#059669"/>Total</span>
+            <span class="lg" style="margin-left:auto;color:#4F46E5">▤ click a formula box to drill in</span>
+          </div>
+          <div class="fc-canvas">
+            <div class="fc-zoomwrap"><t t-call="pb_formula_studio.Flow"><t t-set="flow" t-value="modalFlow"/></t></div>
+          </div>
+        </div>
+      </div>
 
       <!-- First-setup wizard -->
       <div t-if="state.wizardOpen" class="pbfs-wz-scrim">
@@ -319,6 +379,45 @@
           </div>
         </div>
       </div>
+    </div>
+  </t>
+
+  <!-- Reusable flowchart renderer -->
+  <t t-name="pb_formula_studio.Flow">
+    <div t-if="flow" class="fc-stage" t-attf-style="min-width:{{ flow.width }}px;min-height:{{ flow.height }}px;">
+      <svg class="fc-edges" t-att-width="flow.width" t-att-height="flow.height">
+        <t t-foreach="flow.edges" t-as="e" t-key="e_index">
+          <path t-att-d="e.d" fill="none" t-att-stroke="e.color" stroke-width="2" class="fc-edge"/>
+        </t>
+      </svg>
+      <t t-foreach="flow.nodes" t-as="n" t-key="n.id">
+        <div class="fc-node" t-attf-style="left:{{ n.x }}px;top:{{ n.y }}px;">
+          <t t-if="n.kind === 'if'">
+            <div class="node-diamond"><div class="dmd" t-attf-style="border-color:{{ n.color }}"/><div class="dtext" t-attf-style="color:{{ n.color }}" t-esc="n.label"/></div>
+          </t>
+          <t t-elif="n.kind === 'result'">
+            <div class="node-box node-result"><div class="nsub">result</div><div class="nlabel" t-esc="n.label"/><div class="nval" t-esc="n.value"/></div>
+          </t>
+          <t t-elif="n.kind === 'op'">
+            <div class="node-box op-node">
+              <div t-attf-class="op-badge {{ n.opCls }}" t-esc="n.label"/>
+              <div class="nval" t-esc="n.value"/>
+            </div>
+          </t>
+          <t t-else="">
+            <div t-attf-class="node-box {{ n.formula ? 'clickable' : '' }}" t-attf-style="--nc:{{ n.color }};border-color:{{ n.color }}"
+                 t-on-click="(ev) => this.flowNodeClick(ev, n)">
+              <div t-if="n.sub" class="nsub" t-esc="n.sub"/>
+              <div class="nlabel" t-esc="n.label"/>
+              <div class="nval" t-esc="n.value"/>
+              <div t-if="n.formula" class="drill">▤ open formula</div>
+            </div>
+          </t>
+        </div>
+      </t>
+      <t t-foreach="flow.labels" t-as="l" t-key="l_index">
+        <div t-attf-class="edge-label {{ l.cls }}" t-attf-style="left:{{ l.x }}px;top:{{ l.y }}px;" t-esc="l.text"/>
+      </t>
     </div>
   </t>
 
