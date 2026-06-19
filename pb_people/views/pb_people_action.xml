@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_people" model="ir.actions.client">
+        <field name="name">People</field>
+        <field name="tag">pb_people</field>
+    </record>
+</odoo>

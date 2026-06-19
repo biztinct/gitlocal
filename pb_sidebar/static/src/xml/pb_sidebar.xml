@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
 <t t-name="pb_sidebar.PbSidebar">
-    <aside class="pb-sidebar">
+    <aside class="pb-sidebar" t-if="state.visible">
         <div class="pb-sidebar-brand" t-on-click="navigateHome">
             <div class="pb-sidebar-logo">P</div>
             <div class="pb-brand-tx">

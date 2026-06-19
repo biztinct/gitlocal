@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_insights.PbInsights">
+    <div class="pbi">
+      <div t-if="!state.loaded" class="pbi-loading"><div class="pbi-spinner"/><span>Loading insights…</span></div>
+
+      <div t-else="" class="pbi-wrap">
+        <!-- header -->
+        <div class="pbi-head">
+          <div>
+            <h1>Insights</h1>
+            <p class="pbi-sub">
+              Payroll cost, statutory load and trends
+              <t t-if="state.runName"> · latest run <b t-esc="state.runName"/></t>
+            </p>
+          </div>
+        </div>
+
+        <!-- KPI strip -->
+        <div class="pbi-kpis">
+          <div class="pbi-kpi hero">
+            <span class="l">Latest payroll (net)</span>
+            <span class="v" t-esc="money(state.kpis.monthly_payroll)"/>
+            <span class="m"><t t-esc="state.kpis.employees_paid"/> employees paid</span>
+          </div>
+          <div class="pbi-kpi">
+            <span class="l">Active headcount</span>
+            <span class="v indigo" t-esc="state.kpis.headcount"/>
+            <span class="m"><t t-esc="state.kpis.active_contracts"/> running contracts</span>
+          </div>
+          <div class="pbi-kpi">
+            <span class="l">Average wage</span>
+            <span class="v" t-esc="money(state.kpis.avg_salary)"/>
+            <span class="m">per running contract</span>
+          </div>
+          <div class="pbi-kpi">
+            <span class="l">Statutory load</span>
+            <span class="v amber" t-esc="money(state.kpis.statutory_total)"/>
+            <span class="m">EE <t t-esc="money(state.kpis.statutory_emp)"/> · ER <t t-esc="money(state.kpis.statutory_comp)"/></span>
+          </div>
+        </div>
+
+        <div class="pbi-cols">
+          <!-- payroll trend -->
+          <div class="pbi-panel">
+            <div class="pbi-panel-h"><h2>Payroll trend</h2><span class="pbi-tag">last <t t-esc="state.trend.length"/> runs</span></div>
+            <div t-if="state.trend.length" class="pbi-bars">
+              <div t-foreach="state.trend" t-as="t" t-key="t_index" class="pbi-bar-col">
+                <div class="pbi-bar-val" t-esc="money(t.net)"/>
+                <div class="pbi-bar-track">
+                  <div class="pbi-bar-fill" t-attf-style="height:{{ pct(t.net, state.trendMax) }}%"/>
+                </div>
+                <div class="pbi-bar-lbl" t-esc="t.label"/>
+              </div>
+            </div>
+            <div t-else="" class="pbi-empty">No payslip runs yet.</div>
+          </div>
+
+          <!-- department cost -->
+          <div class="pbi-panel">
+            <div class="pbi-panel-h"><h2>Cost by department</h2><span class="pbi-tag">running contracts</span></div>
+            <div t-if="state.departments.length" class="pbi-deptlist">
+              <div t-foreach="state.departments" t-as="d" t-key="d_index" class="pbi-deptrow">
+                <div class="pbi-deptrow-top">
+                  <span class="nm" t-esc="d.name"/>
+                  <span class="amt"><t t-esc="money(d.wage)"/> <span class="cnt">· <t t-esc="d.count"/></span></span>
+                </div>
+                <div class="pbi-deptrow-track">
+                  <div class="pbi-deptrow-fill" t-attf-style="width:{{ pct(d.wage, state.deptMax) }}%"/>
+                </div>
+              </div>
+            </div>
+            <div t-else="" class="pbi-empty">No running contracts.</div>
+          </div>
+        </div>
+
+        <!-- statutory split -->
+        <div class="pbi-panel" t-if="state.kpis.statutory_total">
+          <div class="pbi-panel-h"><h2>Statutory split (latest run)</h2></div>
+          <div class="pbi-split">
+            <div class="pbi-split-track">
+              <div class="pbi-split-emp" t-attf-style="width:{{ pct(state.kpis.statutory_emp, state.kpis.statutory_total) }}%"/>
+              <div class="pbi-split-comp" t-attf-style="width:{{ pct(state.kpis.statutory_comp, state.kpis.statutory_total) }}%"/>
+            </div>
+            <div class="pbi-split-legend">
+              <span class="lg"><span class="sw emp"/>Employee · <b t-esc="money(state.kpis.statutory_emp)"/></span>
+              <span class="lg"><span class="sw comp"/>Employer · <b t-esc="money(state.kpis.statutory_comp)"/></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- reports & exports -->
+        <div class="pbi-panel" t-if="state.reports.length">
+          <div class="pbi-panel-h"><h2>Reports &amp; exports</h2></div>
+          <div class="pbi-reports">
+            <button t-foreach="state.reports" t-as="r" t-key="r.xmlid" class="pbi-report" t-on-click="() => this.openReport(r.xmlid)">
+              <span class="ic"><i t-attf-class="fa fa-{{ r.icon === 'bar-chart-2' ? 'bar-chart' : (r.icon === 'database' ? 'database' : 'file-text-o') }}"/></span>
+              <span class="tx">
+                <span class="lb" t-esc="r.label"/>
+                <span class="ds" t-esc="r.desc"/>
+              </span>
+              <span class="ar">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -600,9 +600,9 @@ class PbFormulaStudio(models.AbstractModel):
             result = {
                 'ok': True, 'kind': 'formula',
                 'formula': formula if formula.startswith('=') else '=' + formula,
-                'human': data.get('human') or formula,
+                'human': self._readable_formula(formula, by_col),
                 'mapping': mapping,
-                'reply': data.get('reply') or 'Here is the formula I built from your description.',
+                'reply': data.get('reply') or data.get('human') or 'Here is the formula I built from your description.',
             }
             if target:
                 result['target_id'] = target.id
@@ -614,6 +614,20 @@ class PbFormulaStudio(models.AbstractModel):
         except Exception as e:
             _logger.warning("PayAI LLM validation error: %s", e)
             return None
+
+    @api.model
+    def _readable_formula(self, formula, by_col):
+        """Render '=AV1-BB1' as 'Tổng thu nhập − TỔng BHXH' for display."""
+        out = []
+        for tok in re.findall(r'[A-Za-z]+\d+|\d+\.?\d*|[+\-*/()%]', (formula or '').lstrip('=')):
+            m = re.match(r'^([A-Za-z]+)\d+$', tok)
+            if m and m.group(1).upper() in by_col:
+                out.append(by_col[m.group(1).upper()].name)
+            elif tok in OP_GLYPH:
+                out.append(OP_GLYPH[tok])
+            else:
+                out.append(tok)
+        return ' '.join(out) if out else (formula or '')
 
     @api.model
     def ai_status(self):

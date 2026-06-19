@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Opt rich, bespoke HR forms OUT of the VU form engine. These forms ship
+      their own carefully-built layout (avatar hero, multi-column identity,
+      smart buttons) that fights the generic hero/card skin. The `vu-form-native`
+      class on the <form> root makes the VU compiler return the stock template
+      (see pb_theme/static/src/js/vu_form_compiler.js — per-view opt-out).
+    -->
+    <record id="vu_native_hr_employee_form" model="ir.ui.view">
+        <field name="name">hr.employee.form.vu-native</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class" add="vu-form-native" separator=" "/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="vu_native_hr_contract_form" model="ir.ui.view">
+        <field name="name">hr.contract.form.vu-native</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class" add="vu-form-native" separator=" "/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

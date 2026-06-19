@@ -58,10 +58,13 @@
     'depends': [
         'web',
         'base',
+        'hr',
+        'hr_contract',
     ],
     'data': [
         'views/webclient_templates.xml',
         'views/res_users_views.xml',
+        'views/vu_native_forms.xml',
     ],
     'assets': {
         'web._assets_primary_variables': [
