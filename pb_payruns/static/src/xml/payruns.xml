@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_payruns.PbPayruns">
+    <div class="pbr">
+      <div t-if="!state.loaded" class="pbr-loading"><div class="pbr-spinner"/><span>Loading pay runs…</span></div>
+
+      <div t-else="" class="pbr-wrap">
+        <!-- header -->
+        <div class="pbr-head">
+          <div>
+            <h1>Pay Runs</h1>
+            <p class="pbr-sub">Every batch from draft to paid — approve, report and export without leaving the board.</p>
+          </div>
+          <button class="pbr-new" t-on-click="newRun"><span class="ic">⚡</span> Run payroll</button>
+        </div>
+
+        <!-- KPI strip -->
+        <div class="pbr-kpis">
+          <div class="pbr-kpi"><span class="v" t-esc="state.kpis.total"/><span class="l">Pay runs</span></div>
+          <div class="pbr-kpi"><span class="v indigo" t-esc="state.kpis.in_pipeline"/><span class="l">In pipeline</span></div>
+          <div t-attf-class="pbr-kpi {{ state.kpis.my_pending ? 'hot' : '' }}">
+            <span class="v" t-esc="state.kpis.my_pending"/><span class="l">Awaiting your approval</span>
+          </div>
+          <div class="pbr-kpi"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div>
+          <div class="pbr-kpi"><span class="v" t-esc="money(state.kpis.period_net)"/><span class="l">Net paid (done)</span></div>
+        </div>
+
+        <!-- pipeline board -->
+        <div class="pbr-board">
+          <div t-foreach="state.columns" t-as="col" t-key="col.key" t-attf-class="pbr-col col-{{ col.key }}">
+            <div class="pbr-col-h">
+              <span class="dot"/><span class="nm" t-esc="col.label"/><span class="ct" t-esc="col.count"/>
+            </div>
+            <div class="pbr-col-body">
+              <div t-foreach="columnBatches(col.key)" t-as="b" t-key="b.id"
+                   t-attf-class="pbr-card {{ state.busy === b.id ? 'busy' : '' }}">
+                <div class="pbr-card-main" t-on-click="() => this.openBatch(b.id)">
+                  <div class="pbr-card-top">
+                    <span class="nm" t-esc="b.name"/>
+                    <span t-if="b.credit_note" class="pbr-cn">refund</span>
+                  </div>
+                  <div class="pbr-card-period" t-esc="b.period"/>
+                  <div class="pbr-card-stats">
+                    <span class="st"><span class="k">Employees</span><span class="vv" t-esc="b.employees"/></span>
+                    <span class="st"><span class="k">Net</span><span class="vv" t-esc="money(b.net)"/></span>
+                  </div>
+                  <div t-if="b.journal" class="pbr-card-jnl" t-esc="b.journal"/>
+                </div>
+                <div class="pbr-card-foot">
+                  <!-- context-aware primary action -->
+                  <t t-if="b.next_action and b.can_act">
+                    <button class="pbr-btn primary" t-on-click="() => this.advance(b)" t-esc="nextLabel(b.next_action)"/>
+                    <button class="pbr-btn ghost danger" t-on-click="() => this.reject(b)">Reject</button>
+                  </t>
+                  <t t-elif="b.next_action and !b.can_act">
+                    <span class="pbr-await">Awaiting <t t-esc="b.state === 'level1' ? 'HR' : (b.state === 'level2' ? 'GM' : '')"/> approval</span>
+                  </t>
+                  <!-- done: report / excel / email -->
+                  <t t-if="b.state === 'done'">
+                    <button class="pbr-btn primary" t-on-click="() => this.report(b)">Report</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.excel(b)">Excel</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.email(b)">Email</button>
+                  </t>
+                </div>
+              </div>
+              <div t-if="!columnBatches(col.key).length" class="pbr-col-empty">No pay runs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- rejected drawer -->
+        <div t-if="state.rejectedCount" class="pbr-rejected">
+          <button class="pbr-rejected-h" t-on-click="toggleRejected">
+            <span t-attf-class="chev {{ state.showRejected ? 'open' : '' }}">▸</span>
+            Rejected pay runs <span class="ct" t-esc="state.rejectedCount"/>
+          </button>
+          <div t-if="state.showRejected" class="pbr-rejected-list">
+            <div t-foreach="rejectedBatches" t-as="b" t-key="b.id" class="pbr-rej-row" t-on-click="() => this.openBatch(b.id)">
+              <span class="nm" t-esc="b.name"/>
+              <span class="pd" t-esc="b.period"/>
+              <span class="em"><t t-esc="b.employees"/> emp</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

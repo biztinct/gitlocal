@@ -1,0 +1,95 @@
+/* Hybrid Pay Runs kanban — Violet Storm cards + KPI hero band */
+.pbk-kpis {
+    --i: #5C619D; --i600: #4D517F; --green: #059669; --muted: #6B7280;
+    --line: #E8E9F3; --i-border: #C9CCE0;
+    display: grid; grid-template-columns: repeat(5, 1fr) auto; gap: 13px; align-items: stretch;
+    padding: 16px 18px 6px;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.pbk-kpis .pbk-kpi { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 13px 16px; display: flex; flex-direction: column; gap: 3px; box-shadow: 0 4px 14px rgba(49,46,129,.06); }
+.pbk-kpis .pbk-kpi .v { font-size: 21px; font-weight: 800; letter-spacing: -.01em; color: #1E1B2E; }
+.pbk-kpis .pbk-kpi .l { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+.pbk-kpis .pbk-kpi.indigo .v { color: var(--i); } .pbk-kpis .pbk-kpi.green .v { color: var(--green); }
+.pbk-kpis .pbk-kpi.hot { border-color: var(--i-border); border-left: 4px solid var(--i); }
+.pbk-kpis .pbk-kpi.hot .v { color: var(--i); }
+.pbk-run { display: inline-flex; align-items: center; gap: 8px; align-self: center; background: var(--i); color: #fff; border: none; border-radius: 11px; padding: 11px 18px; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 4px 12px rgba(92,97,157,.30); white-space: nowrap; }
+.pbk-run:hover { background: var(--i600); }
+.pbk-run svg { width: 17px; height: 17px; }
+
+/* kanban surface */
+.o_kanban_renderer.pbk { background: #F4F5FB; }
+
+/* neutralise native record chrome; our card carries the look */
+.pbk .o_kanban_record { padding: 0 !important; background: transparent !important; border: none !important; box-shadow: none !important; }
+.pbk .o_kanban_record:focus, .pbk .o_kanban_record:hover { box-shadow: none !important; }
+
+.pbk-card {
+    background: #fff; border: 1px solid #E8E9F3; border-left: 3px solid #94A3B8; border-radius: 13px;
+    padding: 13px 15px; transition: box-shadow .15s, border-color .15s, transform .12s;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.pbk .o_kanban_record:hover .pbk-card { box-shadow: 0 10px 26px rgba(49,46,129,.12); transform: translateY(-2px); }
+.pbk-card.pbk-st-draft { border-left-color: #64748B; }
+.pbk-card.pbk-st-level1 { border-left-color: #B45309; }
+.pbk-card.pbk-st-level2 { border-left-color: #5C619D; }
+.pbk-card.pbk-st-done { border-left-color: #059669; }
+.pbk-card.pbk-st-cancel { border-left-color: #E11D48; }
+
+.pbk-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pbk-nm { font-size: 13.5px; font-weight: 800; color: #1E1B2E; }
+.pbk-cn { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #E11D48; background: #FFE4E6; border-radius: 5px; padding: 2px 6px; }
+.pbk-period { font-size: 11.5px; color: #6B7280; font-weight: 600; margin-top: 3px; }
+.pbk-stats { display: flex; gap: 10px; margin-top: 11px; }
+.pbk-st-tile { flex: 1; display: flex; flex-direction: column; gap: 1px; background: #F4F5FB; border-radius: 9px; padding: 7px 10px; }
+.pbk-st-tile .k { font-size: 9.5px; color: #6B7280; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; }
+.pbk-st-tile .v { font-size: 14px; font-weight: 800; color: #1E1B2E; }
+.pbk-jnl { margin-top: 9px; font-size: 11px; color: #64748B; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pbk-foot { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+.pbk-btn { border: 1px solid #E8E9F3; background: #fff; color: #475569; border-radius: 8px; padding: 7px 11px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: .14s; }
+.pbk-btn:hover { border-color: #C9CCE0; }
+.pbk-btn.primary { background: #5C619D; border-color: #5C619D; color: #fff; flex: 1; }
+.pbk-btn.primary:hover { background: #4D517F; }
+.pbk-btn.ghost { background: #F4F5FB; }
+.pbk-btn.danger { color: #E11D48; }
+.pbk-btn.danger:hover { background: #FFE4E6; border-color: #FDA4AF; }
+
+/* ===== health19-style chip bar: status tabs + date chips ===== */
+.pbk-chipbar {
+    --powder: #a9c4fa;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    padding: 2px 18px 14px;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.pbk-tabs { display: flex; gap: 2px; border-bottom: 2px solid #ECEDF5; }
+.pbk-tab { position: relative; padding: 9px 16px; font-size: 13px; font-weight: 700; border: none; background: transparent; color: #6B7280; cursor: pointer; font-family: inherit; border-bottom: 2px solid transparent; margin-bottom: -2px; display: inline-flex; align-items: center; gap: 7px; transition: color .15s, border-color .15s; }
+.pbk-tab:hover { color: #4D517F; }
+.pbk-tab.active { color: #4D517F; border-bottom-color: #5C619D; background: rgba(219,229,255,.55); border-radius: 9px 9px 0 0; }
+.pbk-badge { font-size: 10px; font-weight: 800; padding: 1px 7px; border-radius: 999px; min-width: 18px; text-align: center; background: #ECEDF5; color: #4D517F; }
+.pbk-badge.slate { background: #EEF1F5; color: #64748B; }
+.pbk-badge.amber { background: #FEF3C7; color: #B45309; }
+.pbk-badge.green { background: #D1FAE5; color: #059669; }
+.pbk-badge.rose  { background: #FFE4E6; color: #E11D48; }
+
+.pbk-datechips { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.pbk-datechip { padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 999px; border: 1px solid #E8E9F3; background: #fff; color: #475569; cursor: pointer; font-family: inherit; transition: .15s; }
+.pbk-datechip:hover { border-color: var(--powder); color: #3a4a78; }
+.pbk-datechip.active { background: var(--powder); border-color: var(--powder); color: #22305c; box-shadow: 0 3px 10px rgba(169,196,250,.45); }
+.pbk-dateinput { padding: 5px 10px; font-size: 12px; border-radius: 8px; border: 1px solid #E8E9F3; font-family: inherit; color: #1E1B2E; }
+.pbk-dateinput:focus { outline: none; border-color: var(--powder); box-shadow: 0 0 0 3px rgba(169,196,250,.35); }
+.pbk-dash { color: #94A3B8; font-weight: 700; }
+
+/* ===== wow polish ===== */
+/* powder-blue hover glow on cards */
+.pbk .o_kanban_record:hover .pbk-card { box-shadow: 0 12px 30px rgba(169,196,250,.42); border-color: #a9c4fa; transform: translateY(-3px); }
+/* tidy column headers */
+.pbk .o_column_title, .pbk .o_kanban_header_title { font-weight: 800; font-size: 14px; letter-spacing: -.01em; color: #1E1B2E; }
+.pbk .o_kanban_group { background: transparent; }
+.pbk-kpis .pbk-kpi { transition: box-shadow .15s, transform .12s; }
+.pbk-kpis .pbk-kpi:hover { box-shadow: 0 8px 20px rgba(169,196,250,.32); transform: translateY(-1px); }
+
+/* remove the stray "No data to display" placeholder (group_expand already
+   shows the empty stage columns, so the overlay only overlaps the headers) */
+.o_kanban_view:has(.pbk-kpis) .o_view_nocontent,
+.o_kanban_view:has(.pbk-kpis) .o_nocontent_help { display: none !important; }
+.pbk .o_view_nocontent, .pbk .o_kanban_nocontent_help { display: none !important; }

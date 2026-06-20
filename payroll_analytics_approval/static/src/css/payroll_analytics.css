@@ -1097,24 +1097,9 @@
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #667eea;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #5a6fd8;
-}
+/* Scrollbars intentionally left at Odoo native shade — the previous global
+   ::-webkit-scrollbar rules (indigo #667eea thumb) bled into every dialog and
+   panel app-wide. Removed so all scrollbars use the browser/Odoo default grey. */
 
 /* Dashboard Tiles Styling - Theme Color #21435F */
 

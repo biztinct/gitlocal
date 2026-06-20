@@ -49,8 +49,10 @@
     <record id="item_pay_runs" model="pb.sidebar.item">
         <field name="section_id" ref="sec_payrun"/><field name="name">Pay Runs</field>
         <field name="icon">calendar</field><field name="sequence">20</field>
-        <field name="action_xmlid">pb_hr_payroll_base.action_hr_payslip_run_payroll</field>
+        <field name="action_xmlid">pb_payruns.action_pb_payruns_kanban</field>
+        <field name="action_tag"></field>
         <field name="match_models">hr.payslip.run</field>
+        <field name="match_action_tags"></field>
     </record>
     <record id="item_payslips" model="pb.sidebar.item">
         <field name="section_id" ref="sec_payrun"/><field name="name">Payslips</field>

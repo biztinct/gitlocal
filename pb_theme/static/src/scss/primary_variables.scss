@@ -5,7 +5,7 @@
 // Built on the health19 VU Form Engine, re-skinned for Payobook payroll.
 //
 // Brand: Trustworthy, modern, enterprise.  SOLID colours only — no gradients.
-// Primary = Indigo #4F46E5 · Accent = Cyan #0891B2 · Money/positive = Emerald.
+// Primary = Indigo #5C619D · Accent = Cyan #0891B2 · Money/positive = Emerald.
 // Typography: Inter (headings + body), system fallback.
 //
 // NOTE: the original $vu-* variable NAMES are kept (downstream SCSS references
@@ -33,13 +33,14 @@ $vu-leaf-green-lightest: #E7F8F1;
 
 // ===== PRIMARY UI COLOURS (Indigo) =====
 
-// Indigo — primary action colour (buttons, links, headers)
-$vu-deep-blue: #4F46E5;             // Base — indigo-600
-$vu-deep-blue-darkest: #312E81;     // Darkest — indigo-900 (heroes, dark mode)
-$vu-deep-blue-darker: #4338CA;      // Darker — indigo-700 (active states)
-$vu-deep-blue-base: #4F46E5;        // Base
-$vu-deep-blue-light: #A5B4FC;       // Light — hover backgrounds
-$vu-deep-blue-lightest: #EEF0FF;    // Lightest — subtle backgrounds
+// Violet Storm — primary action colour (buttons, links, headers). Muted
+// slate-violet; replaces the retired bright indigo #5C619D app-wide.
+$vu-deep-blue: #5C619D;             // Base — Violet Storm
+$vu-deep-blue-darkest: #3D4280;     // Darkest (heroes, dark mode)
+$vu-deep-blue-darker: #4D517F;      // Darker — Roman Violet (active/hover)
+$vu-deep-blue-base: #5C619D;        // Base
+$vu-deep-blue-light: #B9BCEC;       // Light — hover backgrounds
+$vu-deep-blue-lightest: #ECEDF5;    // Lightest — subtle backgrounds
 
 // Cyan — secondary accent (hover, icons, highlights, data-viz)
 $vu-accent-blue: #0891B2;           // Base — cyan-600
@@ -65,8 +66,8 @@ $vu-danger: #C0332A;                // Red — errors, critical
 
 // ===== WORKFLOW STATE COLORS (Payroll lifecycle) =====
 $vu-state-draft: #64748b;           // Slate — draft
-$vu-state-confirmed: #4F46E5;       // Indigo — submitted / HR pending
-$vu-state-assigned: #6366F1;        // Indigo-light — GM pending
+$vu-state-confirmed: #5C619D;       // Violet Storm — submitted / HR pending
+$vu-state-assigned: #6E72B0;        // Indigo-light — GM pending
 $vu-state-active: #B7791F;          // Amber — in progress / testing
 $vu-state-completed: #0F8A63;       // Emerald — done / paid / active
 $vu-state-cancelled: #C0332A;       // Red — cancelled
