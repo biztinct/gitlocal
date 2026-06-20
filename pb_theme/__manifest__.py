@@ -78,6 +78,7 @@
             'pb_theme/static/src/scss/vu_tokens.scss',
             'pb_theme/static/src/scss/vu_icons.scss',
             'pb_theme/static/src/scss/vu_form_engine.scss',
+            'pb_theme/static/src/js/vu_dialog_title.js',
             'pb_theme/static/src/js/vu_form_hero_registry.js',
             'pb_theme/static/src/js/vu_form_compiler.js',
             'pb_theme/static/src/js/vu_form_renderer.js',

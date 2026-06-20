@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- KPI hero band + health19-style status tabs and date chips, full-width
+       above the kanban columns. -->
+  <t t-name="pb_payruns.KanbanView" t-inherit="web.KanbanView" t-inherit-mode="primary">
+    <xpath expr="//t[@t-component='props.Renderer']" position="before">
+      <div t-if="pbState.loaded" class="pbk-kpis">
+        <div class="pbk-kpi"><span class="v" t-esc="pbState.kpis.total"/><span class="l">Pay runs</span></div>
+        <div class="pbk-kpi indigo"><span class="v" t-esc="pbState.kpis.in_pipeline"/><span class="l">In pipeline</span></div>
+        <div t-attf-class="pbk-kpi {{ pbState.kpis.my_pending ? 'hot' : '' }}">
+          <span class="v" t-esc="pbState.kpis.my_pending"/><span class="l">Awaiting your approval</span>
+        </div>
+        <div class="pbk-kpi green"><span class="v" t-esc="pbState.kpis.done"/><span class="l">Completed</span></div>
+        <div class="pbk-kpi"><span class="v" t-esc="pbMoney(pbState.kpis.period_net)"/><span class="l">Net paid (done)</span></div>
+        <button class="pbk-run" t-on-click="pbRunPayroll">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Run payroll
+        </button>
+      </div>
+
+      <div class="pbk-chipbar">
+        <div class="pbk-tabs">
+          <button t-foreach="pbStatusTabs" t-as="tab" t-key="tab.id"
+                  t-attf-class="pbk-tab {{ pbState.activeTab === tab.id ? 'active' : '' }}"
+                  t-on-click="() => this.setTab(tab.id)">
+            <t t-esc="tab.label"/>
+            <span t-if="tab.count" t-attf-class="pbk-badge {{ tab.tone }}" t-esc="tab.count"/>
+          </button>
+        </div>
+        <div class="pbk-datechips">
+          <button t-foreach="pbDateTabs" t-as="dt" t-key="dt.id"
+                  t-attf-class="pbk-datechip {{ pbState.dateFilter === dt.id ? 'active' : '' }}"
+                  t-on-click="() => this.setDateFilter(dt.id)" t-esc="dt.label"/>
+          <button t-attf-class="pbk-datechip {{ pbState.dateFilter === 'custom' ? 'active' : '' }}"
+                  t-on-click="() => this.setDateFilter('custom')">Custom</button>
+          <t t-if="pbState.dateFilter === 'custom'">
+            <input type="date" class="pbk-dateinput" t-att-value="pbState.customFrom" t-on-change="(ev) => this.onCustomDate('from', ev)"/>
+            <span class="pbk-dash">–</span>
+            <input type="date" class="pbk-dateinput" t-att-value="pbState.customTo" t-on-change="(ev) => this.onCustomDate('to', ev)"/>
+          </t>
+        </div>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

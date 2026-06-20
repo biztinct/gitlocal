@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Payslip — pay statement · Payobook POC</title>
+<link rel="stylesheet" href="payrun-poc.css"/>
+<style>
+  .ps-actionbar { display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:10px 14px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .ps-actionbar .sp { flex:1; }
+  .ps-actionbar .div { width:1px; height:22px; background:var(--line); margin:0 4px; }
+
+  /* Light tint — periwinkle wash, white avatar, deep-violet accents */
+  .ps-hero { background:var(--i-soft); border:1px solid var(--i-soft2); border-radius:18px; padding:20px 26px; display:flex; align-items:center; gap:22px; }
+  .ps-hero .av { width:64px; height:64px; border-radius:18px; background:#fff; color:var(--i); font-size:22px; box-shadow:0 2px 10px rgba(40,40,80,.10); }
+  .ps-hero .id { flex:1; min-width:0; }
+  .ps-hero .id .nm { font-size:21px; font-weight:800; }
+  .ps-hero .id .jt { font-size:13px; color:#6b6f86; margin-top:2px; }
+  .ps-hero .id .chips { display:flex; gap:8px; margin-top:11px; flex-wrap:wrap; }
+  .ps-hero .chip { display:inline-flex; align-items:center; gap:7px; font-size:11.5px; font-weight:700; background:#fff; border:1px solid var(--i-soft2); color:var(--i600); border-radius:999px; padding:5px 12px; }
+  .ps-hero .chip .ic { color:var(--i); }
+  .ps-hero .net { text-align:right; flex:none; }
+  .ps-hero .net .k { font-size:11px; font-weight:700; color:#6b6f86; text-transform:uppercase; letter-spacing:.05em; }
+  .ps-hero .net .v { font-size:33px; font-weight:800; letter-spacing:-.02em; margin-top:2px; color:var(--i600); font-variant-numeric:tabular-nums; }
+  .ps-hero .net .badge { margin-top:8px; }
+  .ps-hero .pl { margin-top:13px; }
+
+  .ps-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  .stmt .panel-h h2 { display:flex; align-items:center; gap:9px; }
+  .stmt .dotcat { width:10px; height:10px; border-radius:50%; }
+  .stmt-row { display:flex; align-items:center; justify-content:space-between; padding:10px 2px; border-bottom:1px solid var(--line-soft); font-size:13.5px; }
+  .stmt-row:last-of-type { border-bottom:none; }
+  .stmt-row .nm { color:#374151; font-weight:600; }
+  .stmt-row .nm small { color:var(--muted); font-weight:600; margin-left:7px; }
+  .stmt-row .amt { font-weight:800; font-variant-numeric:tabular-nums; }
+  .stmt-sub { display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding-top:13px; border-top:2px solid var(--line); font-size:14px; font-weight:800; }
+  .stmt-sub .amt { font-variant-numeric:tabular-nums; }
+  .ded .amt { color:var(--rose); }
+  .earn .stmt-sub .amt { color:var(--green); } .ded .stmt-sub .amt { color:var(--rose); }
+
+  .water { display:flex; align-items:stretch; height:62px; border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+  .water .seg { display:flex; flex-direction:column; justify-content:center; padding:0 18px; color:#fff; }
+  .water .seg .k { font-size:10.5px; font-weight:700; opacity:.85; text-transform:uppercase; letter-spacing:.04em; }
+  .water .seg .v { font-size:17px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .water .gross { background:#4D517F; flex:1; }
+  .water .ded { background:#E11D48; flex:0 0 200px; }
+  .water .net { background:#059669; flex:0 0 280px; align-items:flex-end; text-align:right; }
+
+  .chips-wd { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .wd { background:var(--bg); border:1px solid var(--line); border-radius:11px; padding:10px 15px; display:flex; flex-direction:column; gap:1px; }
+  .wd .k { font-size:10.5px; color:var(--muted); font-weight:700; text-transform:uppercase; }
+  .wd .v { font-size:16px; font-weight:800; }
+
+  .adv { margin-top:18px; }
+  .adv-tabs { display:flex; gap:4px; border-bottom:1px solid var(--line); padding:0 4px; flex-wrap:wrap; }
+  .adv-tab { padding:11px 16px; font-size:12.5px; font-weight:700; color:var(--muted); border-bottom:2px solid transparent; cursor:pointer; }
+  .adv-tab.on { color:var(--i); border-bottom-color:var(--i); }
+  .adv-band { font-size:11px; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin:18px 2px 8px; }
+</style>
+</head>
+<body>
+<div class="poc-bar">
+  <b>Payobook · Pay Run redesign POC</b>
+  <a href="payrun-landing.html">① Pay Runs landing</a>
+  <a href="payslip-statement.html" class="on">② Payslip statement</a>
+  <a href="payrun-batch.html">③ Batch form</a>
+  <a href="payrun-wizard.html">④ Run wizard</a>
+  <a href="payrun-report.html">⑤ Report</a>
+  <span class="sp"></span><span class="tag">white + accent rail · Lucide</span>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">P</div><div><div class="bt">Payobook</div><div class="bs">Payroll Suite</div></div></div>
+    <div class="nav"><svg class="ic nav"><use href="#i-grid"/></svg> Dashboard</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-checksquare"/></svg> Approvals</div>
+    <div class="sec">Pay Run</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-zap"/></svg> Run Payroll</div>
+    <div class="nav on"><svg class="ic nav"><use href="#i-calendar"/></svg> Pay Runs</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-receipt"/></svg> Payslips</div>
+    <div class="sec">People</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-users"/></svg> Employees</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-filetext"/></svg> Contracts</div>
+    <div class="sec">Insights</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-trending"/></svg> Insights</div>
+  </aside>
+
+  <main class="main">
+    <div class="cp">
+      <div class="cp-row">
+        <div class="cp-bc"><svg class="ic sm" style="color:var(--muted)"><use href="#i-home"/></svg><svg class="ic sm chev" style="color:var(--i-border)"><use href="#i-chevronr"/></svg><span class="home">Pay Runs</span><svg class="ic sm" style="color:var(--i-border)"><use href="#i-chevronr"/></svg><span class="home">VPTQ Mid Oct 25</span><svg class="ic sm" style="color:var(--i-border)"><use href="#i-chevronr"/></svg><span class="cur">Nguyễn Hồng Nhung</span></div>
+        <div class="cp-right"><span class="cp-pager"><span>1 / 7</span><span class="pg"><svg class="ic sm"><use href="#i-chevronl"/></svg></span><span class="pg"><svg class="ic sm"><use href="#i-chevronr"/></svg></span></span></div>
+      </div>
+    </div>
+
+    <div class="page" style="max-width:1180px;">
+      <!-- action bar: ONE solid primary, rest outline/ghost -->
+      <div class="ps-actionbar">
+        <button class="btn primary"><svg class="ic"><use href="#i-check"/></svg> Confirm</button>
+        <button class="btn outline"><svg class="ic"><use href="#i-play"/></svg> Compute</button>
+        <div class="div"></div>
+        <button class="btn ghost"><svg class="ic"><use href="#i-printer"/></svg> Print</button>
+        <button class="btn ghost"><svg class="ic"><use href="#i-mail"/></svg> Email</button>
+        <div class="sp"></div>
+        <button class="btn ghost"><svg class="ic"><use href="#i-undo"/></svg> Refund</button>
+        <button class="btn ghost danger"><svg class="ic"><use href="#i-x"/></svg> Cancel</button>
+      </div>
+
+      <!-- statement hero (Option 2 — white + indigo accent rail) -->
+      <div class="ps-hero">
+        <div class="av">NH</div>
+        <div class="id">
+          <div class="nm">Nguyễn Hồng Nhung</div>
+          <div class="jt">Kế toán viên · Ban kế toán</div>
+          <div class="chips">
+            <span class="chip"><svg class="ic sm"><use href="#i-calendar"/></svg> 01 Apr – 30 Apr 2026</span>
+            <span class="chip"><svg class="ic sm"><use href="#i-layers"/></svg> Vietnam Standard Payroll</span>
+            <span class="chip"><svg class="ic sm"><use href="#i-hash"/></svg> SLIP/2026/04/001</span>
+          </div>
+          <div class="pl">
+            <span class="pipe">
+              <span class="step done"><span class="dot">✓</span><span class="lbl">Draft</span></span><span class="bar done"></span>
+              <span class="step done"><span class="dot">✓</span><span class="lbl">HR</span></span><span class="bar done"></span>
+              <span class="step done"><span class="dot">✓</span><span class="lbl">GM</span></span><span class="bar done"></span>
+              <span class="step cur"><span class="dot">●</span><span class="lbl">Done</span></span>
+            </span>
+          </div>
+        </div>
+        <div class="net">
+          <div class="k">Net pay</div>
+          <div class="v">₫10,963,500</div>
+          <span class="badge done"><span class="d"></span>Paid</span>
+        </div>
+      </div>
+
+      <!-- earnings vs deductions -->
+      <div class="ps-grid">
+        <div class="panel stmt earn">
+          <div class="panel-h"><h2><span class="dotcat" style="background:var(--green)"></span>Earnings</h2><span class="tag">3 components</span></div>
+          <div class="stmt-row"><span class="nm">Basic salary <small>MCLNGHL</small></span><span class="amt">9,520,000</span></div>
+          <div class="stmt-row"><span class="nm">Position allowance <small>PCCC</small></span><span class="amt">2,000,000</span></div>
+          <div class="stmt-row"><span class="nm">Night / OT allowance <small>PCBANM</small></span><span class="amt">780,000</span></div>
+          <div class="stmt-sub"><span>Gross pay</span><span class="amt">₫12,300,000</span></div>
+        </div>
+        <div class="panel stmt ded">
+          <div class="panel-h"><h2><span class="dotcat" style="background:var(--rose)"></span>Deductions</h2><span class="tag">4 components</span></div>
+          <div class="stmt-row"><span class="nm">Social insurance 8% <small>BHXH</small></span><span class="amt">−984,000</span></div>
+          <div class="stmt-row"><span class="nm">Health insurance 1.5% <small>BHYT</small></span><span class="amt">−184,500</span></div>
+          <div class="stmt-row"><span class="nm">Unemployment 1% <small>BHTN</small></span><span class="amt">−123,000</span></div>
+          <div class="stmt-row"><span class="nm">Personal income tax <small>TNCN</small></span><span class="amt">−45,000</span></div>
+          <div class="stmt-sub"><span>Total deductions</span><span class="amt">−₫1,336,500</span></div>
+        </div>
+      </div>
+
+      <!-- waterfall + worked days -->
+      <div class="panel" style="margin-bottom:16px;">
+        <div class="panel-h"><h2>Gross → Deductions → Net</h2><span class="tag">April 2026</span></div>
+        <div class="water">
+          <div class="seg gross"><span class="k">Gross</span><span class="v">₫12.30M</span></div>
+          <div class="seg ded"><span class="k">− Deductions</span><span class="v">₫1.34M</span></div>
+          <div class="seg net"><span class="k">Net pay</span><span class="v">₫10.96M</span></div>
+        </div>
+        <div class="chips-wd">
+          <div class="wd"><span class="k">Worked days</span><span class="v num">22</span></div>
+          <div class="wd"><span class="k">Standard hours</span><span class="v num">176</span></div>
+          <div class="wd"><span class="k">Overtime hrs</span><span class="v num">0</span></div>
+          <div class="wd"><span class="k">Leave days</span><span class="v num">0</span></div>
+        </div>
+      </div>
+
+      <!-- power tabs (preserved under Advanced) -->
+      <div class="panel adv">
+        <div class="adv-band">Advanced · full breakdown</div>
+        <div class="adv-tabs">
+          <span class="adv-tab on">Salary Computation</span>
+          <span class="adv-tab">Details by Category</span>
+          <span class="adv-tab">Worked Days &amp; Inputs</span>
+          <span class="adv-tab">Accounting</span>
+          <span class="adv-tab">Formula Input JSON</span>
+          <span class="adv-tab">Formula Computed</span>
+        </div>
+        <table class="tbl" style="margin-top:8px;">
+          <thead><tr><th>Rule</th><th>Code</th><th>Category</th><th class="r">Qty</th><th class="r">Rate</th><th class="r">Amount</th><th class="r">Total</th></tr></thead>
+          <tbody>
+            <tr class="row"><td>Basic salary</td><td>MCLNGHL</td><td><span class="badge info">BASIC</span></td><td class="r num">1.00</td><td class="r num">100%</td><td class="r num">9,520,000</td><td class="r num">9,520,000</td></tr>
+            <tr class="row"><td>Position allowance</td><td>PCCC</td><td><span class="badge info">ALW</span></td><td class="r num">1.00</td><td class="r num">100%</td><td class="r num">2,000,000</td><td class="r num">2,000,000</td></tr>
+            <tr class="row"><td>Night / OT allowance</td><td>PCBANM</td><td><span class="badge info">ALW</span></td><td class="r num">1.00</td><td class="r num">100%</td><td class="r num">780,000</td><td class="r num">780,000</td></tr>
+            <tr class="row"><td>Gross pay</td><td>GROSS</td><td><span class="badge draft">GROSS</span></td><td class="r num">1.00</td><td class="r num">100%</td><td class="r num">12,300,000</td><td class="r num">12,300,000</td></tr>
+            <tr class="row"><td>Social insurance</td><td>BHXH</td><td><span class="badge rej">DED</span></td><td class="r num">1.00</td><td class="r num">8%</td><td class="r num">−984,000</td><td class="r num">−984,000</td></tr>
+            <tr class="row"><td>Health insurance</td><td>BHYT</td><td><span class="badge rej">DED</span></td><td class="r num">1.00</td><td class="r num">1.5%</td><td class="r num">−184,500</td><td class="r num">−184,500</td></tr>
+            <tr class="row"><td>Personal income tax</td><td>TNCN</td><td><span class="badge rej">TAX</span></td><td class="r num">1.00</td><td class="r num">—</td><td class="r num">−45,000</td><td class="r num">−45,000</td></tr>
+            <tr class="row"><td><b>Net salary</b></td><td>NET</td><td><span class="badge done">NET</span></td><td class="r num">1.00</td><td class="r num">100%</td><td class="r num"><b>10,963,500</b></td><td class="r num"><b>10,963,500</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="payrun-icons.js"></script>
+</body>
+</html>

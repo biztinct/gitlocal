@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      Enhance the native Payslip Batch form (kept editable + VU-skinned):
+        - swap the plain statusbar for the pb_pipeline approval widget
+        - inject a KPI summary band (gross / deductions / net / employees)
+        - tag the <form> for scoped styling (pb-payrun-form)
+        - show employee on the embedded payslip list
+    -->
+    <record id="hr_payslip_run_form_pb_enhance" model="ir.ui.view">
+        <field name="name">hr.payslip.run.form.pb-enhance</field>
+        <field name="model">hr.payslip.run</field>
+        <field name="inherit_id" ref="om_hr_payroll.hr_payslip_run_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="class" add="pb-payrun-form" separator=" "/>
+            </xpath>
+
+            <!-- hide the cramped native statusbar; render the workflow as a
+                 full-width numbered stepper (health19 vu_progress_rail) on the
+                 row below the action buttons -->
+            <xpath expr="//header/field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//sheet/label[@for='name']" position="before">
+                <widget name="vu_progress_rail"
+                        steps="draft,level1,level2,done"
+                        labels="Draft,HR review,GM review,Done"
+                        state_field="state"/>
+            </xpath>
+
+            <xpath expr="//sheet/group" position="after">
+                <div class="pb-payrun-kpis">
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Total gross</span>
+                        <field name="pb_total_gross" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Deductions</span>
+                        <field name="pb_total_deductions" nolabel="1" class="pb-pk-v amber"/>
+                    </div>
+                    <div class="pb-pk hero">
+                        <span class="pb-pk-l">Total net</span>
+                        <field name="pb_total_net" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                    <div class="pb-pk">
+                        <span class="pb-pk-l">Employees</span>
+                        <field name="pb_employee_count" nolabel="1" class="pb-pk-v"/>
+                    </div>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='slip_ids']" position="replace">
+                <field name="slip_ids" invisible="not slip_ids">
+                    <list decoration-muted="state == 'cancel'" create="false">
+                        <field name="employee_id"/>
+                        <field name="name" optional="hide"/>
+                        <field name="number" optional="show"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="state" widget="badge"
+                               decoration-success="state == 'done'"
+                               decoration-info="state in ('level1','level2')"
+                               decoration-muted="state == 'cancel'"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>

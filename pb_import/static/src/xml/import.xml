@@ -22,10 +22,25 @@
           <div class="pbm-kpi"><span class="v cyan" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div>
         </div>
 
-        <!-- quick launches -->
-        <div class="pbm-launches" t-if="state.launches.length">
-          <button t-foreach="state.launches" t-as="l" t-key="l.xmlid"
-                  t-attf-class="pbm-launch {{ l.primary ? 'primary' : '' }}" t-on-click="() => this.launch(l.xmlid)">
+        <!-- hero CTA: guided import -->
+        <div class="pbm-cta">
+          <span class="ic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+          </span>
+          <div class="tx">
+            <div class="lb">Start an import</div>
+            <div class="ds">A guided flow — upload your file, review matches, fix any issues, then commit.</div>
+          </div>
+          <button class="go" t-on-click="startWizard">
+            Start import
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- secondary launches -->
+        <div class="pbm-launches" t-if="secondaryLaunches.length">
+          <button t-foreach="secondaryLaunches" t-as="l" t-key="l.xmlid"
+                  class="pbm-launch" t-on-click="() => this.launch(l.xmlid)">
             <span class="tx">
               <span class="lb" t-esc="l.label"/>
               <span class="ds" t-esc="l.desc"/>
@@ -51,14 +66,23 @@
         <div class="pbm-cols">
           <!-- recent batches -->
           <div class="pbm-panel pbm-grow">
-            <div class="pbm-panel-h"><h2>Recent batches</h2><span class="pbm-tag">last <t t-esc="state.batches.length"/></span></div>
-            <div t-if="state.batches.length" class="pbm-table">
+            <div class="pbm-panel-h">
+              <h2>Recent batches</h2>
+              <div class="pbm-filters">
+                <button t-foreach="['all','draft','in_progress','done','errors']" t-as="f" t-key="f"
+                        t-attf-class="pbm-fchip {{ state.filter === f ? 'on' : '' }}" t-on-click="() => this.setFilter(f)">
+                  <t t-esc="{all:'All',draft:'Draft',in_progress:'In progress',done:'Done',errors:'Errors'}[f]"/>
+                  <span class="c" t-esc="countFor(f)"/>
+                </button>
+              </div>
+            </div>
+            <div t-if="filteredBatches.length" class="pbm-table">
               <div class="pbm-tr head">
                 <span class="c-nm">Batch</span><span class="c-src">Source</span>
                 <span class="c-st">Status</span><span class="c-ct">Lines</span>
                 <span class="c-ct">Matched</span><span class="c-ct">Errors</span><span class="c-dt">Date</span>
               </div>
-              <div t-foreach="state.batches" t-as="b" t-key="b.id" class="pbm-tr" t-on-click="() => this.openBatch(b.id)">
+              <div t-foreach="filteredBatches" t-as="b" t-key="b.id" class="pbm-tr" t-on-click="() => this.openBatch(b.id)">
                 <span class="c-nm" t-esc="b.name"/>
                 <span class="c-src" t-esc="b.source"/>
                 <span class="c-st"><span t-attf-class="pbm-badge {{ stateCls(b.state) }}"><span class="d"/><t t-esc="b.state_label"/></span></span>
@@ -68,7 +92,7 @@
                 <span class="c-dt" t-esc="b.date"/>
               </div>
             </div>
-            <div t-else="" class="pbm-empty">No import batches yet. Start one with <b>New Import Batch</b> above.</div>
+            <div t-else="" class="pbm-empty">No batches match this filter.</div>
           </div>
 
           <!-- connectors -->

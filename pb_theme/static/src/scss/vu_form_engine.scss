@@ -762,6 +762,26 @@
     padding: var(--vuf-sp-2);
 }
 
+// Force the chatter to the BOTTOM (full-width) on every form, at every screen
+// width — including STOCK forms the VU engine skips (e.g. hr.employee), which
+// otherwise keep the side chatter. Odoo 19 only stacks (flex-column) below
+// 1200px and goes side-by-side (flex-nowrap) above; this pins it column-always
+// so the sheet never gets squeezed into a narrow left strip. Scoped to forms
+// that actually have a side chatter (:has(> .o-mail-ChatterContainer)); the
+// flex item then stretches full-width on its own. Exclude the .vu-three-col
+// workspace layout (booking-style side columns) which intentionally wants a row.
+.o_form_view .o_form_renderer:not(:has(.vu-three-col)):has(> .o-mail-ChatterContainer) {
+    flex-direction: column !important;
+}
+// Odoo keeps the side-mode `.o-aside` class (with its fixed width, ~33vw) on the
+// chatter because its JS still believes the screen is wide enough for a side
+// column — so once we stack it, force it full-width so it spans the whole form.
+.o_form_view .o_form_renderer:not(:has(.vu-three-col)) > .o-mail-ChatterContainer.o-aside {
+    width: 100% !important;
+    flex: 0 0 auto !important;
+    border-left: 0 !important;
+}
+
 // =========================================================================
 // 9b. ATTACHMENT PREVIEW (mail COMBO layout) — full-width document card
 //     below the chatter instead of the squashed bottom-left mini panel
@@ -847,7 +867,10 @@
 .modal .btn-primary {
     background: var(--vuf-primary) !important;   // flat mono
     border-color: var(--vuf-primary) !important;
+    color: #fff !important;                      // guarantee a readable label
 }
+.modal .btn-primary .o_button_icon,
+.modal .btn-primary span { color: #fff !important; }
 
 // Close/Discard are dismiss actions — neutral look even when a view
 // tags them btn-primary (e.g. the lone "Close" footer button)

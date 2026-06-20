@@ -1,0 +1,86 @@
+/* Payslip pay-statement — Light-tint hero, Violet Storm palette, Lucide icons */
+.pbps {
+    --i: #5C619D; --i600: #4D517F; --i-soft: #EFEFFE; --i-soft2: #E2E3FB;
+    --ink: #1E1B2E; --muted: #6B7280; --line: #E8E9F3; --line-soft: #F0F1F8; --bg: #F4F5FB;
+    --green: #059669; --green-soft: #D1FAE5; --rose: #E11D48; --rose-soft: #FFE4E6; --amber: #B45309;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--ink);
+    display: block;
+    margin: 0 0 6px;
+
+    .pbps-ic { width: 14px; height: 14px; fill: none; stroke: var(--i); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+    /* hero */
+    .pbps-hero { background: var(--i-soft); border: 1px solid var(--i-soft2); border-radius: 18px; padding: 20px 24px; display: flex; align-items: center; gap: 20px; }
+    .pbps-av { width: 62px; height: 62px; border-radius: 17px; background: #fff; color: var(--i); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 21px; flex: none; box-shadow: 0 2px 10px rgba(40,40,80,.10); }
+    .pbps-id { flex: 1; min-width: 0; }
+    .pbps-nm { font-size: 20px; font-weight: 800; }
+    .pbps-jt { font-size: 13px; color: #6b6f86; margin-top: 2px; }
+    .pbps-chips { display: flex; gap: 8px; margin-top: 11px; flex-wrap: wrap; }
+    .pbps-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 700; background: #fff; border: 1px solid var(--i-soft2); color: var(--i600); border-radius: 999px; padding: 5px 12px; }
+    .pbps-net { text-align: right; flex: none; }
+    .pbps-net-k { font-size: 11px; font-weight: 700; color: #6b6f86; text-transform: uppercase; letter-spacing: .05em; }
+    .pbps-net-v { font-size: 30px; font-weight: 800; letter-spacing: -.02em; margin-top: 2px; color: var(--i600); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .pbps-badge { display: inline-block; margin-top: 8px; font-size: 10.5px; font-weight: 800; padding: 4px 11px; border-radius: 999px; }
+    .pbps-badge.paid { background: var(--green-soft); color: var(--green); }
+    .pbps-badge.pend { background: #fff; color: var(--i600); border: 1px solid var(--i-soft2); }
+
+    /* pipeline */
+    .pbps-pipe { display: flex; align-items: center; margin-top: 13px; }
+    .pbps-step { display: inline-flex; align-items: center; gap: 6px; }
+    .pbps-dot { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; background: #b6bacc; }
+    .pbps-lbl { font-size: 11.5px; font-weight: 700; color: #9498ad; }
+    .pbps-bar { width: 22px; height: 3px; border-radius: 2px; background: #d7d9e6; margin: 0 7px; }
+    .pbps-bar.done { background: var(--green); }
+    .pbps-step.done .pbps-dot { background: var(--green); }
+    .pbps-step.done .pbps-lbl { color: #047857; }
+    .pbps-step.cur .pbps-dot { background: var(--i); box-shadow: 0 0 0 4px rgba(92,97,157,.20); }
+    .pbps-step.cur .pbps-lbl { color: var(--i); font-weight: 800; }
+    .pbps-rej { font-size: 12.5px; font-weight: 800; color: var(--rose); background: var(--rose-soft); border-radius: 999px; padding: 5px 13px; }
+
+    /* earnings / deductions */
+    .pbps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .pbps-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; }
+    .pbps-card-h { display: flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 800; margin-bottom: 10px; }
+    .pbps-dotc { width: 10px; height: 10px; border-radius: 50%; } .pbps-dotc.earn { background: var(--green); } .pbps-dotc.ded { background: var(--rose); }
+    .pbps-tag { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--bg); border-radius: 999px; padding: 2px 9px; }
+    .pbps-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--line-soft); font-size: 13.5px; }
+    .pbps-row-nm { color: #374151; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pbps-row-nm small { color: var(--muted); margin-left: 7px; font-weight: 600; }
+    .pbps-row-amt { font-weight: 800; font-variant-numeric: tabular-nums; flex: none; white-space: nowrap; } .pbps-row-amt.ded { color: var(--rose); }
+    .pbps-sub { display: flex; align-items: center; justify-content: space-between; margin-top: 11px; padding-top: 12px; border-top: 2px solid var(--line); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .pbps-sub.earn { color: var(--green); } .pbps-sub.ded { color: var(--rose); }
+    .pbps-empty { color: var(--muted); font-size: 12.5px; padding: 8px 2px; }
+
+    /* waterfall */
+    .pbps-water { display: flex; align-items: stretch; height: 58px; border-radius: 12px; overflow: hidden; margin-top: 14px; }
+    .pbps-seg { display: flex; flex-direction: column; justify-content: center; padding: 0 16px; color: #fff; }
+    .pbps-seg .k { font-size: 10px; font-weight: 700; opacity: .9; text-transform: uppercase; letter-spacing: .04em; }
+    .pbps-seg .v { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .pbps-seg.gross { background: var(--i600); flex: 1; }
+    .pbps-seg.ded { background: var(--rose); flex: 0 0 auto; }
+    .pbps-seg.net { background: var(--green); flex: 0 0 38%; align-items: flex-end; text-align: right; }
+
+    /* worked days */
+    .pbps-worked { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .pbps-wd { background: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 9px 14px; display: flex; flex-direction: column; gap: 1px; }
+    .pbps-wd .k { font-size: 10.5px; color: var(--muted); font-weight: 700; }
+    .pbps-wd .v { font-size: 14px; font-weight: 800; }
+
+    @media (max-width: 900px) {
+        .pbps-grid { grid-template-columns: 1fr; }
+        .pbps-hero { flex-wrap: wrap; }
+        .pbps-net { text-align: left; }
+    }
+}
+
+/* The statement is a field; Odoo caps field width by default, leaving it
+   narrower than the full-width progress rail. Force it to the full form /
+   dialog content width so every section lines up uniformly top-to-bottom. */
+.pb-payslip-form .o_field_widget.o_field_pb_payslip_statement {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 1 100% !important;
+    align-self: stretch !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}

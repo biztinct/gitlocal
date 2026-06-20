@@ -12,6 +12,7 @@ const CONN_ICON = {
     zoho: "cloud", excel: "table", sap: "server", workday: "briefcase",
     oracle: "database", demo: "beaker",
 };
+const IN_PROGRESS = ["loaded", "matched", "validated", "processing"];
 
 export class PbImport extends Component {
     static template = "pb_import.PbImport";
@@ -28,6 +29,7 @@ export class PbImport extends Component {
             batches: [],
             connectors: [],
             launches: [],
+            filter: "all",
         });
         onWillStart(async () => { await this.load(); });
     }
@@ -44,6 +46,30 @@ export class PbImport extends Component {
     stateCls(s) { return STATE_CLS[s] || "muted"; }
     connIcon(t) { return CONN_ICON[t] || "plug"; }
 
+    // ---- launches: primary tile becomes the hero CTA; rest stay as tiles ----
+    get secondaryLaunches() { return this.state.launches.filter(l => !l.primary); }
+
+    // ---- status filter chips ----
+    _inFilter(b) {
+        const f = this.state.filter;
+        if (f === "all") return true;
+        if (f === "in_progress") return IN_PROGRESS.includes(b.state);
+        if (f === "errors") return b.state === "error" || (b.errors || 0) > 0;
+        return b.state === f;     // draft, done
+    }
+    get filteredBatches() { return this.state.batches.filter(b => this._inFilter(b)); }
+    countFor(key) {
+        if (key === "all") return this.state.batches.length;
+        return this.state.batches.filter(b => {
+            if (key === "in_progress") return IN_PROGRESS.includes(b.state);
+            if (key === "errors") return b.state === "error" || (b.errors || 0) > 0;
+            return b.state === key;
+        }).length;
+    }
+    setFilter(key) { this.state.filter = key; }
+
+    // ---- actions ----
+    startWizard() { this.action.doAction("pb_import_wizard.action_pb_import_wizard", { clearBreadcrumbs: true }); }
     openBatch(id) {
         if (!id) return;
         this.action.doAction({

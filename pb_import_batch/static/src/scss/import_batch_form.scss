@@ -1,0 +1,25 @@
+/* Import batch form (fallback) — powder-blue accents + segmented source type */
+.pb-import-batch-form {
+    --p: #a9c4fa; --p-strong: #4D6FBF; --p-ink: #1E2A52; --p-soft: #dbe5ff; --p-border: #cdddfb;
+
+    /* source_type radio → horizontal segmented pills (no more vertical wrap) */
+    .pb-imb-segmented { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pb-imb-segmented .o_radio_item,
+    .pb-imb-segmented label.o_form_label { display: inline-flex; align-items: center; gap: 7px; }
+    .pb-imb-segmented .o_radio_item {
+        border: 1px solid var(--p-border); border-radius: 999px; padding: 6px 14px;
+        cursor: pointer; transition: background .14s, border-color .14s; white-space: nowrap;
+    }
+    .pb-imb-segmented .o_radio_item:hover { border-color: var(--p); }
+    .pb-imb-segmented .o_radio_item:has(input:checked) { background: var(--p); border-color: var(--p); }
+    .pb-imb-segmented .o_radio_item:has(input:checked) label { color: var(--p-ink); font-weight: 700; }
+    .pb-imb-segmented input[type="radio"] { accent-color: var(--p-strong); }
+
+    /* soft cards for the inner config groups */
+    .o_inner_group[name], .o_inner_group { }
+    .o_form_sheet .o_group .o_inner_group { }
+
+    /* powder accent on the form's primary action + smart buttons */
+    .o_form_statusbar .btn-primary { background: var(--p) !important; border-color: var(--p) !important; color: var(--p-ink) !important; }
+    .o_form_statusbar .btn-primary:hover { background: #8fb2f5 !important; }
+}
