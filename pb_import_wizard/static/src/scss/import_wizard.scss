@@ -80,8 +80,23 @@
     .iw-err .who { min-width: 160px; } .iw-err .who .nm { font-weight: 700; font-size: 13px; display: block; } .iw-err .who .cd { font-size: 11px; color: var(--muted); }
     .iw-err .why { flex: 1; font-size: 12.5px; color: var(--rose); font-weight: 600; }
     .iw-err .ops { display: flex; gap: 6px; }
-    .iw-mini { border: 1px solid var(--p); background: var(--p); color: var(--p-ink); border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .iw-mini { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--p); background: var(--p); color: var(--p-ink); border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .iw-mini.ghost { background: #fff; color: #475569; border-color: var(--line); }
+    .iw-mini svg { vertical-align: -.16em; }
+
+    /* period preset chips (step 1) */
+    .iw-periods { margin-bottom: 4px; }
+
+    /* inline manual-match picker (step 3) */
+    .iw-err-wrap { border: 1px solid var(--line); border-left: 3px solid var(--rose); border-radius: 10px; overflow: hidden; }
+    .iw-err-wrap .iw-err { border: none; border-radius: 0; }
+    .iw-match { padding: 12px 14px; border-top: 1px dashed var(--line); background: #FAFBFE; display: flex; flex-direction: column; gap: 9px; }
+    .iw-match-res { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; }
+    .iw-match-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-family: inherit; text-align: left; }
+    .iw-match-row:hover { border-color: var(--p); background: rgba(169,196,250,.10); }
+    .iw-match-row .nm { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+    .iw-match-row .cd { font-size: 11px; color: var(--muted); font-family: ui-monospace, monospace; }
+    .iw-match-empty { font-size: 12px; color: var(--muted); padding: 6px 2px; }
     .iw-clear { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 40px 0; color: var(--green); font-weight: 700; font-size: 15px; }
     .iw-clear svg { stroke: var(--green); }
 

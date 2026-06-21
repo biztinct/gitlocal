@@ -53,6 +53,11 @@
 
               <div class="iw-sec">
                 <h4>Period &amp; file</h4>
+                <div class="iw-seg iw-periods">
+                  <button t-foreach="state.defaults.periods" t-as="pr" t-key="pr.id"
+                          t-attf-class="iw-segbtn {{ state.form.period === pr.id ? 'on' : '' }}"
+                          t-on-click="() => this.applyPeriod(pr)" t-esc="pr.label"/>
+                </div>
                 <div class="iw-row2">
                   <div><label>From</label><input type="date" class="iw-in" t-att-value="state.form.date_from" t-on-change="(ev) => this.onField('date_from', ev)"/></div>
                   <div><label>To</label><input type="date" class="iw-in" t-att-value="state.form.date_to" t-on-change="(ev) => this.onField('date_to', ev)"/></div>
@@ -88,7 +93,7 @@
                   <tr t-foreach="state.summary.lines" t-as="l" t-key="l.id">
                     <td class="mono" t-esc="l.code"/>
                     <td t-esc="l.name"/>
-                    <td><span t-attf-class="iw-badge {{ lineCls(l.state) }}"><t t-esc="l.is_new ? 'New' : l.state"/></span></td>
+                    <td><span t-attf-class="iw-badge {{ l.is_new ? 'new' : lineCls(l.state) }}"><t t-esc="lineLabel(l)"/></span></td>
                   </tr>
                 </tbody>
               </table>
@@ -104,12 +109,31 @@
             <t t-if="errorLines.length">
               <div class="iw-errhead"><t t-out="ic('alert',15)"/> Resolve these before committing</div>
               <div class="iw-errlist">
-                <div t-foreach="errorLines" t-as="l" t-key="l.id" class="iw-err">
-                  <div class="who"><span class="nm" t-esc="l.name"/><span class="cd" t-esc="l.code"/></div>
-                  <div class="why" t-esc="l.error or 'Unmatched'"/>
-                  <div class="ops">
-                    <button class="iw-mini" t-on-click="() => this.fixLine(l.id, 'retry')">Retry</button>
-                    <button class="iw-mini ghost" t-on-click="() => this.fixLine(l.id, 'skip')">Skip</button>
+                <div t-foreach="errorLines" t-as="l" t-key="l.id" class="iw-err-wrap">
+                  <div class="iw-err">
+                    <div class="who"><span class="nm" t-esc="l.name"/><span class="cd" t-esc="l.code"/></div>
+                    <div class="why" t-esc="l.error or 'Unmatched'"/>
+                    <div class="ops">
+                      <button t-attf-class="iw-mini {{ state.match.lineId === l.id ? '' : 'ghost' }}"
+                              t-on-click="() => this.openMatch(l.id)">Match…</button>
+                      <button class="iw-mini ghost" t-on-click="() => this.fixLine(l.id, 'retry')">Retry</button>
+                      <button class="iw-mini ghost" t-on-click="() => this.fixLine(l.id, 'skip')">Skip</button>
+                    </div>
+                  </div>
+                  <div t-if="state.match.lineId === l.id" class="iw-match">
+                    <input class="iw-in" placeholder="Search an employee by name, code or email…"
+                           t-on-input="onMatchSearch"/>
+                    <div class="iw-match-res">
+                      <button t-foreach="state.match.results" t-as="e" t-key="e.id"
+                              class="iw-match-row" t-on-click="() => this.pickEmployee(e.id)">
+                        <span class="nm" t-esc="e.name"/>
+                        <span class="cd" t-esc="e.code or e.email"/>
+                      </button>
+                      <div t-if="!state.match.results.length" class="iw-match-empty">No employees found.</div>
+                    </div>
+                    <button class="iw-mini" t-on-click="() => this.markNewEmployee(l.id)">
+                      <t t-out="ic('plus',14)"/> Create as new employee
+                    </button>
                   </div>
                 </div>
               </div>

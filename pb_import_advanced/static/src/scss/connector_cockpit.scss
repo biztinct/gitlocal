@@ -1,0 +1,45 @@
+// Connector cockpit — layout glue on top of the .pbim kit primitives.
+.pbcc {
+    .pbcc-wrap > * + * { margin-top: 14px; }
+    .pbcc-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+    .pbcc-hero-state { margin-left: auto; flex: 0 0 auto; }
+    .pbcc-hero .pbim-badge { font-size: 12px; padding: 5px 12px; }
+    .pbcc-hero .pbim-hero-av svg { width: 24px; height: 24px; }
+
+    .pbcc-actions {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); padding: 14px 18px; box-shadow: var(--pbim-sh);
+    }
+    .pbcc-actions .left, .pbcc-actions .right { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .pbcc-msg { display: flex; align-items: center; gap: 9px; font-size: 12.5px; font-weight: 600;
+        border-radius: var(--pbim-r-sm); padding: 10px 14px; background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbcc-msg.err { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+
+    .pbcc-cols { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; align-items: start; }
+    @media (max-width: 980px) { .pbcc-cols { grid-template-columns: 1fr; } }
+    .pbcc-side { display: flex; flex-direction: column; gap: 14px; }
+
+    .pbcc-count { font-size: 12px; font-weight: 800; color: var(--pbim-muted); margin-left: 4px; }
+    .pbcc-tw { max-height: 420px; }
+    .pbcc-src { font-weight: 700; }
+    .pbcc-req { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+        color: var(--pbim-amber); background: var(--pbim-amber-soft); border-radius: 999px; padding: 1px 7px; margin-left: 7px; }
+
+    .pbcc-mini { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .pbcc-mini-h { display: flex; align-items: center; gap: 12px; }
+    .pbcc-mini-h .ic { width: 40px; height: 40px; border-radius: 11px; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; }
+    .pbcc-mini-h .n { font-size: 22px; font-weight: 800; line-height: 1; }
+    .pbcc-mini-h .l { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--pbim-muted); margin-top: 3px; }
+
+    .pbcc-rules { display: flex; flex-direction: column; gap: 7px; }
+    .pbcc-rule { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        border: 1px solid var(--pbim-line); border-radius: 9px; padding: 8px 12px; }
+    .pbcc-rule .nm { font-size: 12.5px; font-weight: 600; }
+
+    .pbcc-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(244,245,251,.72);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+        color: var(--pbim-muted); font-weight: 700; }
+}

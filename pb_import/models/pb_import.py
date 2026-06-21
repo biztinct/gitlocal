@@ -24,13 +24,13 @@ CONNECTOR_LABEL = {
 LAUNCH_CANDIDATES = [
     ('pb_hr_payroll_formula.action_payroll_import_batch_new',
      'New Import Batch', 'Upload a file and run map → validate → commit', 'upload', True),
-    ('pb_hr_payroll_formula.action_multisheet_import_wizard',
+    ('pb_import_advanced.action_pb_multisheet_wizard',
      'Multi-sheet Excel', 'Guided multi-tab workbook import', 'table', False),
-    ('pb_hr_payroll_base.action_employee_import_wizard',
+    ('pb_import_advanced.action_pb_employee_wizard',
      'Import Employees', 'Create employees from file or Zoho', 'users', False),
     ('pb_hr_payroll_formula.action_integration_connector',
      'Connectors', 'Manage external HR / payroll systems', 'plug', False),
-    ('pb_hr_payroll_formula.action_formula_import_wizard',
+    ('pb_import_advanced.action_pb_formula_wizard',
      'Import Formula Config', 'Load rules from salary structure or file', 'function', False),
 ]
 

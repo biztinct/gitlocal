@@ -40,10 +40,12 @@
     .pbm-launches { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-bottom: 18px; }
     .pbm-launch { display: flex; align-items: center; gap: 12px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 13px 16px; cursor: pointer; font-family: inherit; transition: border-color .15s, box-shadow .15s, transform .15s; }
     .pbm-launch:hover { border-color: var(--i); box-shadow: 0 6px 18px rgba(80,110,180,.12); transform: translateY(-2px); }
+    .pbm-launch-ic { width: 36px; height: 36px; border-radius: 10px; flex: none; display: flex; align-items: center; justify-content: center; background: var(--i-soft); color: var(--i600); transition: .15s; }
+    .pbm-launch:hover .pbm-launch-ic { background: var(--i); color: var(--i-ink); }
     .pbm-launch .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
     .pbm-launch .tx .lb { font-size: 13.5px; font-weight: 700; }
     .pbm-launch .tx .ds { font-size: 11.5px; color: var(--muted); }
-    .pbm-launch .ar { color: var(--i600); font-weight: 800; flex: none; }
+    .pbm-launch .ar { color: var(--i600); font-weight: 800; flex: none; display: flex; align-items: center; }
 
     .pbm-panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; margin-bottom: 16px; }
     .pbm-panel-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
@@ -60,8 +62,10 @@
 
     /* pipeline */
     .pbm-pipe { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .pbm-pipe-step { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 78px; }
-    .pbm-pipe-num { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; background: var(--line-soft); color: var(--slate); }
+    .pbm-pipe-step { display: flex; flex-direction: column; align-items: center; gap: 7px; min-width: 78px; background: none; border: none; font-family: inherit; cursor: pointer; padding: 4px 2px; border-radius: 10px; transition: background .14s; }
+    .pbm-pipe-step:hover { background: var(--line-soft); }
+    .pbm-pipe-num { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; background: var(--line-soft); color: var(--slate); transition: .14s; }
+    .pbm-pipe-step:hover .pbm-pipe-num { box-shadow: 0 0 0 3px rgba(169,196,250,.30); }
     .pbm-pipe-num.on { background: var(--i); color: var(--i-ink); }
     .pbm-pipe-lbl { font-size: 11.5px; font-weight: 700; color: #475569; }
     .pbm-pipe-arrow { color: var(--i-border); font-weight: 800; font-size: 16px; padding-bottom: 18px; }

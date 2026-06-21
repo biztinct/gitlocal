@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_advanced.EmployeeWizard">
+    <div class="pbim pbw-root">
+      <div class="pbw-card" t-if="state.defaults">
+
+        <div class="pbw-head">
+          <div>
+            <div class="pbw-eyebrow">Payobook · Import</div>
+            <h2>Import employees</h2>
+          </div>
+          <button class="pbw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <!-- stepper -->
+        <div class="pbw-rail">
+          <t t-foreach="steps" t-as="s" t-key="s_index">
+            <div t-attf-class="pbw-step {{ state.step === s_index+1 ? 'cur' : (state.step > s_index+1 ? 'done' : '') }}">
+              <span class="pbw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',13)"/></t><t t-else="" t-esc="s_index+1"/></span>
+              <span class="pbw-lab" t-esc="s"/>
+            </div>
+            <div t-if="!s_last" t-attf-class="pbw-bar {{ state.step > s_index+1 ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <div class="pbw-body">
+          <div t-if="state.loading" class="pbw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+
+          <!-- STEP 1: SOURCE -->
+          <t t-if="state.step === 1 and !state.loading">
+            <div class="pbw-grid2">
+              <div class="pbw-sec">
+                <h4>Source</h4>
+                <div class="pbw-seg">
+                  <button t-foreach="state.defaults.sources" t-as="s" t-key="s.id"
+                          t-attf-class="pbw-segbtn {{ state.form.import_source === s.id ? 'on' : '' }}"
+                          t-on-click="() => this.setSource(s.id)" t-esc="s.label"/>
+                </div>
+                <label class="pbw-label">Country</label>
+                <select class="pbw-in" t-on-change="(ev) => this.onField('country_code', ev)">
+                  <option value="">— Optional —</option>
+                  <option t-foreach="state.defaults.countries" t-as="c" t-key="c.id" t-att-value="c.id" t-esc="c.label"/>
+                </select>
+
+                <t t-if="state.form.import_source === 'file'">
+                  <label class="pbw-label">Employee file (.xlsx / .csv / .json)</label>
+                  <label class="pbw-drop">
+                    <t t-out="ic('upload',22)"/>
+                    <span t-if="!state.form.file_name">Click to choose a file</span>
+                    <span t-else="" class="fn"><t t-out="ic('file',15)"/> <t t-esc="state.form.file_name"/></span>
+                    <input type="file" accept=".xlsx,.xls,.csv,.json" t-on-change="onFile" style="display:none"/>
+                  </label>
+                </t>
+                <t t-if="state.form.import_source === 'zoho'">
+                  <label class="pbw-label">Zoho API key</label>
+                  <input class="pbw-in" t-on-change="(ev) => this.onField('zoho_api_key', ev)"/>
+                  <label class="pbw-label">Zoho organization ID</label>
+                  <input class="pbw-in" t-on-change="(ev) => this.onField('zoho_org_id', ev)"/>
+                  <button class="pbim-btn ghost pbim-btn-sm" style="margin-top:8px" t-on-click="testZoho"><t t-out="ic('zap',14)"/> Test connection</button>
+                </t>
+                <t t-if="state.form.import_source === 'api'">
+                  <label class="pbw-label">API URL</label>
+                  <input class="pbw-in" placeholder="https://…" t-on-change="(ev) => this.onField('data_source_url', ev)"/>
+                </t>
+              </div>
+
+              <div class="pbw-sec">
+                <h4>Options</h4>
+                <label class="pbw-toggle"><input type="checkbox" t-att-checked="state.form.update_existing" t-on-change="() => this.toggle('update_existing')"/> Update existing employees</label>
+                <label class="pbw-toggle"><input type="checkbox" t-att-checked="state.form.create_contracts" t-on-change="() => this.toggle('create_contracts')"/> Create contracts</label>
+                <div class="pbw-note">We’ll load a preview first so you can review matches and validation before anything is created.</div>
+              </div>
+            </div>
+          </t>
+
+          <!-- STEP 2: PREVIEW -->
+          <t t-if="state.step === 2 and !state.loading and state.summary">
+            <div class="pbw-stats">
+              <div class="pbw-stat"><span class="n" t-esc="state.summary.preview.employees"/><span class="l">Employees found</span></div>
+              <div class="pbw-stat new"><span class="n" t-esc="state.summary.preview.new"/><span class="l">New</span></div>
+              <div class="pbw-stat ok"><span class="n" t-esc="state.summary.preview.existing"/><span class="l">Existing</span></div>
+              <div t-attf-class="pbw-stat {{ state.summary.preview.errors ? 'err' : '' }}"><span class="n" t-esc="state.summary.preview.errors"/><span class="l">Validation errors</span></div>
+            </div>
+            <div class="pbw-note" style="margin-top:16px">Ready to import. New employees<t t-if="state.form.create_contracts"> and their contracts</t> will be created; existing ones <t t-esc="state.form.update_existing ? 'updated' : 'skipped'"/>.</div>
+          </t>
+
+          <!-- STEP 3: DONE -->
+          <t t-if="state.step === 3 and !state.loading and state.summary">
+            <div class="pbw-result">
+              <div class="pbw-result-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Employees imported</h3>
+              <p><t t-esc="state.summary.results.imported"/> created · <t t-esc="state.summary.results.updated"/> updated · <t t-esc="state.summary.results.contracts"/> contracts</p>
+            </div>
+            <div class="pbw-stats" style="margin-top:6px">
+              <div class="pbw-stat ok"><span class="n" t-esc="state.summary.results.imported"/><span class="l">Created</span></div>
+              <div class="pbw-stat new"><span class="n" t-esc="state.summary.results.updated"/><span class="l">Updated</span></div>
+              <div class="pbw-stat"><span class="n" t-esc="state.summary.results.contracts"/><span class="l">Contracts</span></div>
+              <div t-attf-class="pbw-stat {{ state.summary.results.failed ? 'err' : '' }}"><span class="n" t-esc="state.summary.results.failed"/><span class="l">Failed</span></div>
+            </div>
+          </t>
+        </div>
+
+        <div class="pbw-foot">
+          <button t-if="state.step === 1" class="pbim-btn ghost" t-on-click="close">Cancel</button>
+          <button t-elif="state.step &lt; 3" class="pbim-btn ghost" t-on-click="back" t-att-disabled="state.loading"><t t-out="ic('back',15)"/> Back</button>
+          <button t-else="" class="pbim-btn ghost" t-on-click="close">Done</button>
+          <div class="pbw-sp"/>
+          <button t-if="state.step === 1" class="pbim-btn primary" t-att-disabled="!canPreview || state.loading" t-on-click="toPreview"><t t-out="ic('arrow',15)"/> Load preview</button>
+          <button t-if="state.step === 2" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="doImport"><t t-out="ic('check',15)"/> Import employees</button>
+          <button t-if="state.step === 3" class="pbim-btn primary" t-on-click="viewEmployees"><t t-out="ic('users',15)"/> View employees</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

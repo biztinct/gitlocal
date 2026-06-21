@@ -3,6 +3,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { ic } from "@pb_import_kit/js/import_icons";
 
 const STATE_CLS = {
     draft: "draft", loaded: "info", matched: "info", validated: "info",
@@ -12,7 +13,16 @@ const CONN_ICON = {
     zoho: "cloud", excel: "table", sap: "server", workday: "briefcase",
     oracle: "database", demo: "beaker",
 };
+// launch-tile icon names (from the model) → Lucide keys in the kit
+const TILE_ICON = {
+    upload: "upload", table: "table", users: "users", plug: "plug", function: "sigma",
+};
 const IN_PROGRESS = ["loaded", "matched", "validated", "processing"];
+// pipeline step → which Recent-batches filter it activates
+const PIPE_FILTER = {
+    draft: "draft", loaded: "in_progress", matched: "in_progress",
+    validated: "in_progress", processing: "in_progress", done: "done",
+};
 
 export class PbImport extends Component {
     static template = "pb_import.PbImport";
@@ -45,6 +55,11 @@ export class PbImport extends Component {
 
     stateCls(s) { return STATE_CLS[s] || "muted"; }
     connIcon(t) { return CONN_ICON[t] || "plug"; }
+    tileIcon(n) { return ic(TILE_ICON[n] || "upload", 18); }
+    pipeIcon() { return ic("arrow", 14); }
+
+    // clicking a pipeline step filters the Recent-batches list to that stage
+    pipeClick(key) { this.setFilter(PIPE_FILTER[key] || "all"); }
 
     // ---- launches: primary tile becomes the hero CTA; rest stay as tiles ----
     get secondaryLaunches() { return this.state.launches.filter(l => !l.primary); }
@@ -73,15 +88,15 @@ export class PbImport extends Component {
     openBatch(id) {
         if (!id) return;
         this.action.doAction({
-            type: "ir.actions.act_window", res_model: "hr.payroll.import.batch",
-            res_id: id, views: [[false, "form"]], target: "current",
+            type: "ir.actions.client", tag: "pb_import_batch_cockpit",
+            name: "Import Batch", params: { batch_id: id },
         });
     }
     openConnector(id) {
         if (!id) return;
         this.action.doAction({
-            type: "ir.actions.act_window", res_model: "hr.integration.connector",
-            res_id: id, views: [[false, "form"]], target: "current",
+            type: "ir.actions.client", tag: "pb_import_connector_cockpit",
+            name: "Connector", params: { connector_id: id },
         });
     }
     launch(xmlid) {

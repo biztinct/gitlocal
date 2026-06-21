@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_batch.BatchCockpit">
+    <div class="pbim pbim-page pbbc">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading batch…</span></div>
+
+      <div t-elif="d.error" class="pbim-wrap">
+        <div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
+          <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back to Import</button></div>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap pbbc-wrap">
+
+        <!-- top bar -->
+        <div class="pbbc-top">
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Import data</button>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+        </div>
+
+        <!-- hero -->
+        <div class="pbim-hero pbbc-hero">
+          <div class="pbim-hero-av" t-esc="initials()"/>
+          <div class="pbim-hero-id">
+            <div class="nm" t-esc="d.name"/>
+            <div class="pbim-hero-chips">
+              <span class="pbim-chip"><t t-out="ic('upload',13)"/> <t t-esc="d.source"/></span>
+              <span t-if="d.config" class="pbim-chip"><t t-out="ic('sigma',13)"/> <t t-esc="d.config"/></span>
+              <span t-if="d.date_from" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="d.date_from"/> → <t t-esc="d.date_to"/></span>
+              <span t-if="d.company" class="pbim-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="d.company"/></span>
+            </div>
+          </div>
+          <div class="pbbc-hero-state">
+            <span t-attf-class="pbim-badge {{ d.state }}"><span class="d"/><t t-esc="d.state_label"/></span>
+          </div>
+        </div>
+
+        <!-- progress rail -->
+        <div class="pbim-panel pbbc-railpanel">
+          <div class="pbim-rail">
+            <t t-foreach="d.pipeline" t-as="p" t-key="p.key">
+              <div t-attf-class="pbim-rail-step {{ p.current ? 'cur' : (p.done ? 'done' : '') }}">
+                <span class="pbim-rail-dot"><t t-if="p.done"><t t-out="ic('check',14)"/></t><t t-else="" t-esc="p_index + 1"/></span>
+                <span class="pbim-rail-lab" t-esc="p.label"/>
+              </div>
+              <div t-if="!p_last" t-attf-class="pbim-rail-bar {{ p.done ? 'done' : '' }}"/>
+            </t>
+          </div>
+        </div>
+
+        <!-- stat tiles -->
+        <div class="pbim-stats pbbc-stats">
+          <div class="pbim-stat"><span class="n" t-esc="d.counts.total"/><span class="l">Rows</span></div>
+          <div class="pbim-stat ok"><span class="n" t-esc="d.counts.matched"/><span class="l">Matched</span></div>
+          <div class="pbim-stat new"><span class="n" t-esc="d.counts.new"/><span class="l">New employees</span></div>
+          <div t-attf-class="pbim-stat {{ d.counts.errors ? 'err' : '' }}"><span class="n" t-esc="d.counts.errors"/><span class="l">Errors</span></div>
+          <div class="pbim-stat"><span class="n" t-esc="d.counts.processed"/><span class="l">Processed</span></div>
+        </div>
+
+        <!-- action bar -->
+        <div class="pbbc-actions" t-if="(d.next_actions and d.next_actions.length) or (d.state === 'done' and (d.results.created_employees or d.results.created_payslips or d.results.payslip_run_id))">
+          <div class="left">
+            <button t-foreach="d.next_actions" t-as="a" t-key="a.method"
+                    t-attf-class="pbim-btn {{ a.kind }}" t-on-click="() => this.runAction(a.method)">
+              <t t-out="ic(a.icon, 15)"/> <t t-esc="a.label"/>
+            </button>
+          </div>
+          <div class="right" t-if="d.state === 'done'">
+            <button t-if="d.results.created_employees" class="pbim-btn outline"
+                    t-on-click="() => this.openLink('action_view_created_employees')">
+              <t t-out="ic('users',15)"/> <t t-esc="d.results.created_employees"/> employees</button>
+            <button t-if="d.results.created_payslips" class="pbim-btn outline"
+                    t-on-click="() => this.openLink('action_view_created_payslips')">
+              <t t-out="ic('receipt',15)"/> <t t-esc="d.results.created_payslips"/> payslips</button>
+            <button t-if="d.results.payslip_run_id" class="pbim-btn primary" t-on-click="openRun">
+              <t t-out="ic('file',15)"/> Open payslip run</button>
+          </div>
+        </div>
+
+        <!-- lines -->
+        <div class="pbim-panel">
+          <div class="pbim-panel-h">
+            <h2 class="pbim-h2">Import lines</h2>
+            <div class="pbim-chips">
+              <button t-foreach="lineFilters" t-as="f" t-key="f"
+                      t-attf-class="pbim-fchip {{ state.filter === f ? 'on' : '' }}" t-on-click="() => this.setFilter(f)">
+                <t t-esc="lineFilterLabel(f)"/> <span class="c" t-esc="countLines(f)"/>
+              </button>
+            </div>
+          </div>
+          <div t-if="filteredLines.length" class="pbim-tablewrap pbbc-tw">
+            <table class="pbim-table">
+              <thead><tr><th>Code</th><th>Employee</th><th>Status</th><th class="ops-h"></th></tr></thead>
+              <tbody>
+                <t t-foreach="filteredLines" t-as="l" t-key="l.id">
+                  <tr>
+                    <td class="mono" t-esc="l.code"/>
+                    <td><t t-esc="l.employee_name or l.name"/></td>
+                    <td><span t-attf-class="pbim-badge {{ l.is_new ? 'new' : lineCls(l.state) }}"><t t-esc="l.state_label"/></span></td>
+                    <td class="pbbc-ops">
+                      <t t-if="l.state === 'error' or l.state === 'unmatched'">
+                        <button t-attf-class="pbim-mini {{ state.match.lineId === l.id ? '' : 'ghost' }}" t-on-click="() => this.openMatch(l.id)">Match…</button>
+                        <button class="pbim-mini ghost" t-on-click="() => this.fixLine(l.id, 'retry')">Retry</button>
+                        <button class="pbim-mini ghost" t-on-click="() => this.fixLine(l.id, 'skip')">Skip</button>
+                      </t>
+                    </td>
+                  </tr>
+                  <tr t-if="state.match.lineId === l.id">
+                    <td colspan="4" class="pbbc-match">
+                      <input class="pbbc-search" placeholder="Search an employee by name, code or email…" t-on-input="onMatchSearch"/>
+                      <div class="pbbc-match-res">
+                        <button t-foreach="state.match.results" t-as="e" t-key="e.id" class="pbbc-match-row" t-on-click="() => this.pickEmployee(e.id)">
+                          <span class="nm" t-esc="e.name"/><span class="cd" t-esc="e.code or e.email"/>
+                        </button>
+                        <div t-if="!state.match.results.length" class="pbim-empty">No employees found.</div>
+                      </div>
+                      <button class="pbim-mini" t-on-click="() => this.markNewEmployee(l.id)"><t t-out="ic('plus',14)"/> Create as new employee</button>
+                    </td>
+                  </tr>
+                </t>
+              </tbody>
+            </table>
+          </div>
+          <div t-else="" class="pbim-empty">No lines in this view.</div>
+        </div>
+
+      </div>
+
+      <!-- busy overlay -->
+      <div t-if="state.busy" class="pbbc-overlay"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+    </div>
+  </t>
+
+</templates>

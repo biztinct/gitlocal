@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_advanced.SyncWizard">
+    <div class="pbim pbw-root">
+      <div class="pbw-card" t-if="state.defaults">
+
+        <div class="pbw-head">
+          <div>
+            <div class="pbw-eyebrow">Payobook · Sync <t t-if="state.defaults.connector_name">· <t t-esc="state.defaults.connector_name"/></t></div>
+            <h2>Pull data from connector</h2>
+          </div>
+          <button class="pbw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pbw-rail">
+          <t t-foreach="steps" t-as="s" t-key="s_index">
+            <div t-attf-class="pbw-step {{ state.step === s_index+1 ? 'cur' : (state.step > s_index+1 ? 'done' : '') }}">
+              <span class="pbw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',13)"/></t><t t-else="" t-esc="s_index+1"/></span>
+              <span class="pbw-lab" t-esc="s"/>
+            </div>
+            <div t-if="!s_last" t-attf-class="pbw-bar {{ state.step > s_index+1 ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <div class="pbw-body">
+          <div t-if="state.loading" class="pbw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+
+          <!-- STEP 1 -->
+          <t t-if="state.step === 1 and !state.loading">
+            <div class="pbw-grid2">
+              <div class="pbw-sec">
+                <h4>Data to pull</h4>
+                <label t-foreach="state.defaults.data_types" t-as="dt" t-key="dt.id" class="pbw-toggle">
+                  <input type="checkbox" t-att-checked="state.form[dt.id]" t-on-change="() => this.toggle(dt.id)"/>
+                  <t t-esc="dt.label"/>
+                </label>
+              </div>
+              <div class="pbw-sec">
+                <h4>Period &amp; options</h4>
+                <div class="pbw-grid2" style="grid-template-columns:1fr 1fr;gap:10px">
+                  <div><label class="pbw-label">From</label><input type="date" class="pbw-in" t-att-value="state.form.date_from" t-on-change="(ev) => this.onField('date_from', ev)"/></div>
+                  <div><label class="pbw-label">To</label><input type="date" class="pbw-in" t-att-value="state.form.date_to" t-on-change="(ev) => this.onField('date_to', ev)"/></div>
+                </div>
+                <label class="pbw-label">Max records (optional)</label>
+                <input type="number" class="pbw-in" t-on-change="(ev) => this.onField('max_records', ev)"/>
+                <label class="pbw-toggle"><input type="checkbox" t-att-checked="state.form.run_transformations" t-on-change="() => this.toggle('run_transformations')"/> Run transformation rules</label>
+              </div>
+            </div>
+          </t>
+
+          <!-- STEP 2 -->
+          <t t-if="state.step === 2 and !state.loading and state.summary">
+            <div class="pbw-stats" style="grid-template-columns:repeat(2,1fr)">
+              <div class="pbw-stat new"><span class="n" t-esc="state.summary.preview.employees"/><span class="l">Employees found</span></div>
+              <div class="pbw-stat"><span class="n" t-esc="state.summary.preview.records"/><span class="l">Total records</span></div>
+            </div>
+            <div class="pbw-note" style="margin-top:16px">Confirm to pull this data into the staging store. You can then run a payroll import from it.</div>
+          </t>
+
+          <!-- STEP 3 -->
+          <t t-if="state.step === 3 and !state.loading and state.summary">
+            <div class="pbw-result">
+              <div class="pbw-result-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Data pulled</h3>
+              <p><t t-esc="state.summary.preview.records"/> records staged from the connector.</p>
+            </div>
+          </t>
+        </div>
+
+        <div class="pbw-foot">
+          <button t-if="state.step === 1" class="pbim-btn ghost" t-on-click="close">Cancel</button>
+          <button t-elif="state.step &lt; 3" class="pbim-btn ghost" t-on-click="back" t-att-disabled="state.loading"><t t-out="ic('back',15)"/> Back</button>
+          <button t-else="" class="pbim-btn ghost" t-on-click="close">Back to connector</button>
+          <div class="pbw-sp"/>
+          <button t-if="state.step === 1" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="toPreview"><t t-out="ic('arrow',15)"/> Preview</button>
+          <button t-if="state.step === 2" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="doPull"><t t-out="ic('download',15)"/> Pull data</button>
+          <button t-if="state.step === 3" class="pbim-btn primary" t-on-click="close"><t t-out="ic('check',15)"/> Done</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
