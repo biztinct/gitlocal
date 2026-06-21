@@ -1,0 +1,54 @@
+// =====================================================================
+//  SETUP-area theme variants of the kit — three LIGHT shades (soft-fill,
+//  dark ink, same philosophy as powder/teal):
+//    .pbim.sal  periwinkle  (Salary Structures)
+//    .pbim.sta  steel-blue  (Statutory)
+//    .pbim.itg  sky         (Integrations)
+//  Each re-tints every --pbim-* var AND overrides the hard-coded powder
+//  values baked into import_kit.scss. The class-pair specificity (0,2,0)
+//  beats the kit's `.pbim` (0,1,0).
+// =====================================================================
+
+@mixin pbim-theme($primary, $hover, $strong, $ink, $soft, $soft2, $border, $chip-ink, $bg) {
+    --pbim-primary:        #{$primary};
+    --pbim-primary-hover:  #{$hover};
+    --pbim-primary-strong: #{$strong};
+    --pbim-ink:            #{$ink};
+    --pbim-soft:           #{$soft};
+    --pbim-soft2:          #{$soft2};
+    --pbim-sky:            #{$soft2};
+    --pbim-bg:             #{$bg};
+
+    // override the hard-coded powder values in import_kit.scss
+    .pbim-hero { border-color: #{$border}; }
+    .pbim-table tr.click:hover td { background: rgba($primary, .18); }
+    .pbim-btn.outline { border-color: #{$border}; }
+    .pbim-btn.outline:hover { background: rgba($primary, .18); }
+    .pbim-rail-step.cur .pbim-rail-dot { box-shadow: 0 0 0 4px rgba($primary, .45); }
+    .pbim-fchip.on .c { background: rgba(255, 255, 255, .45); }
+    .pbim-chip { color: #{$chip-ink}; }
+    .pbim-hero-av { color: var(--pbim-primary-strong); }
+    .pbim-stat.new { border-color: var(--pbim-primary); }
+    .ppl-card:hover { box-shadow: 0 8px 22px rgba($primary, .35); }
+
+    // when this themed root IS a .pbw-root wizard (e.g. the re-skinned sync
+    // wizard), re-tint the hard-coded powder glows in pb_import_advanced's
+    // shell — high specificity (.pbim.x.pbw-root …) wins regardless of order.
+    &.pbw-root {
+        .pbw-step.cur .pbw-dot { box-shadow: 0 0 0 4px rgba($primary, .45); }
+        .pbw-in:focus { box-shadow: 0 0 0 3px rgba($primary, .45); }
+        .pbw-drop { background: rgba($primary, .10); }
+        .pbw-drop:hover { background: rgba($primary, .18); }
+        .pbw-pick-row:hover { background: rgba($primary, .10); }
+        .pbms-sheet.main { background: rgba($primary, .10); }
+    }
+}
+
+// Salary Structures — light periwinkle
+.pbim.sal { @include pbim-theme(#C9CFF5, #B3BCF0, #4A53B5, #2C3160, #E8EAFB, #DDE1F8, #C0C7EF, #3A4180, #F6F6FC); }
+
+// Statutory — light steel-blue
+.pbim.sta { @include pbim-theme(#C2D2EC, #A9BFE3, #2E5599, #1E3252, #E6EDF7, #D6E1F2, #BACBE8, #284A7E, #F4F6FB); }
+
+// Integrations — light sky
+.pbim.itg { @include pbim-theme(#BFE0F5, #A3D2F0, #1C6CA8, #123A55, #E6F3FB, #D2EBF9, #B6DCF1, #14567F, #F4F8FC); }

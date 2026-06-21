@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_import_advanced.ConnectorCockpit">
-    <div class="pbim pbim-page pbcc">
+    <div class="pbim itg pbim-page pbcc">
 
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading connector…</span></div>
 
@@ -16,7 +16,7 @@
 
         <!-- top bar -->
         <div class="pbcc-top">
-          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Import data</button>
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> <t t-esc="backLabel"/></button>
           <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
         </div>
 

@@ -7,7 +7,7 @@
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base'],
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit'],
     'data': [
         'views/pb_statutory_action.xml',
     ],
@@ -15,7 +15,11 @@
         'web.assets_backend': [
             'pb_statutory/static/src/scss/statutory.scss',
             'pb_statutory/static/src/js/statutory.js',
+            'pb_statutory/static/src/js/statutory_details.js',
+            'pb_statutory/static/src/js/statutory_wizards.js',
             'pb_statutory/static/src/xml/statutory.xml',
+            'pb_statutory/static/src/xml/statutory_details.xml',
+            'pb_statutory/static/src/xml/statutory_wizards.xml',
         ],
     },
     'installable': True,

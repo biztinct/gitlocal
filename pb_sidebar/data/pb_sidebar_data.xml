@@ -122,7 +122,10 @@
     <record id="item_structures" model="pb.sidebar.item">
         <field name="section_id" ref="sec_setup"/><field name="name">Salary Structures</field>
         <field name="icon">layers</field><field name="sequence">20</field>
-        <field name="action_xmlid">pb_hr_payroll_base.action_hr_payroll_structure_base</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_structures</field>
+        <field name="match_models">hr.payroll.structure,hr.salary.rule</field>
+        <field name="match_action_tags">pb_structures</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
     <record id="item_statutory" model="pb.sidebar.item">
@@ -151,8 +154,10 @@
     <record id="item_integrations" model="pb.sidebar.item">
         <field name="section_id" ref="sec_setup"/><field name="name">Integrations</field>
         <field name="icon">database</field><field name="sequence">40</field>
-        <field name="action_xmlid">pb_hr_payroll_formula.action_integration_connector</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_integrations</field>
         <field name="match_models">hr.integration.connector</field>
+        <field name="match_action_tags">pb_integrations</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_integration_user'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
 

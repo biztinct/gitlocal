@@ -22,6 +22,8 @@ add class "pbim" (powder) or "pbim ppl" (teal) on their root.
             'pb_import_kit/static/src/scss/import_tokens.scss',
             'pb_import_kit/static/src/scss/import_kit.scss',
             'pb_import_kit/static/src/scss/theme_people.scss',
+            'pb_import_kit/static/src/scss/theme_setup.scss',
+            'pb_import_kit/static/src/scss/wizard_shell.scss',
             'pb_import_kit/static/src/js/import_icons.js',
         ],
     },
