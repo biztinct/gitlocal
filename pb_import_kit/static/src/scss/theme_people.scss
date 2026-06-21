@@ -1,0 +1,118 @@
+// =====================================================================
+//  People theme variant of the kit — LIGHT TEAL (same philosophy as the
+//  powder default, different hue). A surface uses root class "pbim ppl";
+//  `.pbim.ppl` (0,2,0) beats the kit's `.pbim` (0,1,0) so these win.
+//  Light soft-fill, DARK ink on the fill (never white) — like powder blue.
+// =====================================================================
+.pbim.ppl {
+    // re-tint every colour token to the teal scale
+    --pbim-primary:        #9FE0D4;   // light teal soft-fill
+    --pbim-primary-hover:  #84D5C6;
+    --pbim-primary-strong: #0F7C6B;   // deep teal — text / icons / links
+    --pbim-ink:            #0E3A33;   // dark ink ON the teal fill
+    --pbim-soft:           #DDF5EF;   // lightest tint (hero bg)
+    --pbim-soft2:          #C9EFE6;
+    --pbim-sky:            #D4F1F0;
+    --pbim-bg:             #F5F7F7;   // near-neutral canvas, faint teal
+    // neutrals / semantics inherit from the kit (money emerald, rose, amber…)
+
+    // --- override the handful of HARD-CODED powder values in import_kit.scss ---
+    .pbim-hero { border-color: #BCE6DC; }
+    .pbim-table tr.click:hover td { background: rgba(159, 224, 212, .14); }
+    .pbim-btn.outline { border-color: #BCE6DC; }
+    .pbim-btn.outline:hover { background: rgba(159, 224, 212, .14); }
+    .pbim-rail-step.cur .pbim-rail-dot { box-shadow: 0 0 0 4px rgba(159, 224, 212, .40); }
+    .pbim-fchip.on .c { background: rgba(255, 255, 255, .45); }
+    .pbim-chip { color: #1f5a50; }
+    .pbim-hero-av { color: var(--pbim-primary-strong); }
+    .pbim-stat.new { border-color: var(--pbim-primary); }
+}
+
+// =====================================================================
+//  Shared People LAYOUT (Employees + Contracts landings & detail cockpits)
+//  — used by pb_people and pb_contracts. Theme comes from .pbim.ppl above.
+// =====================================================================
+.ppl-people {
+    .money { color: var(--pbim-green); font-variant-numeric: tabular-nums; }
+    .ppl-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .ppl-head-actions { display: flex; gap: 8px; flex: none; }
+
+    // bulk selection
+    .ppl-bulkbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; margin-bottom: 14px; }
+    .ppl-bulk-count { font-weight: 800; font-size: 13px; color: var(--pbim-primary-strong); }
+    .ppl-bulk-sp { flex: 1; }
+    .ppl-bulk-dept { border: 1px solid var(--pbim-line); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-family: inherit; background: #fff; }
+    .ppl-cb { width: 17px; height: 17px; accent-color: var(--pbim-primary-strong); flex: none; }
+    .ppl-card.sel { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+
+    .ppl-kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 14px; }
+    @media (max-width: 1100px) { .ppl-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .ppl-kpis { grid-template-columns: repeat(2, 1fr); } }
+
+    .ppl-filters { margin-bottom: 14px; padding: 14px 16px; }
+    .ppl-filter-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .ppl-filter-row + .ppl-filter-row { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--pbim-line-2); }
+    .ppl-dates, .ppl-depts { row-gap: 7px; }
+    .ppl-date-in { border: 1px solid var(--pbim-line); border-radius: 999px; padding: 4px 11px; font-size: 12px; font-family: inherit; }
+    .ppl-dash { color: var(--pbim-muted); }
+
+    .ppl-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--pbim-line); border-radius: 999px; padding: 6px 14px; min-width: 280px; background: #fff; }
+    .ppl-search .ic { color: var(--pbim-muted); display: flex; }
+    .ppl-search input { border: none; outline: none; font-size: 13px; font-family: inherit; flex: 1; background: transparent; color: var(--pbim-text); }
+
+    .ppl-roster { display: flex; flex-direction: column; gap: 9px; }
+    .ppl-card { display: flex; align-items: center; gap: 14px; background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: 14px; padding: 12px 16px; cursor: pointer; transition: border-color .14s, box-shadow .14s, transform .14s; box-shadow: var(--pbim-sh); }
+    .ppl-card:hover { border-color: var(--pbim-primary); box-shadow: 0 8px 22px rgba(15,124,107,.10); transform: translateY(-1px); }
+    .ppl-av { width: 44px; height: 44px; border-radius: 12px; flex: none; background-size: cover; background-position: center; background-color: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; font-weight: 800; font-size: 14px; }
+    .ppl-id { flex: 1; min-width: 0; }
+    .ppl-id .nm { font-size: 14px; font-weight: 700; color: var(--pbim-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ppl-id .jb { font-size: 12px; color: var(--pbim-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ppl-period { flex: none; min-width: 190px; font-size: 12px; color: var(--pbim-muted); display: flex; align-items: center; gap: 7px; }
+    .ppl-period .ar { color: var(--pbim-line); }
+    .ppl-meta { display: flex; align-items: center; gap: 8px; flex: none; min-width: 150px; }
+    .ppl-exp { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; color: var(--pbim-amber); background: var(--pbim-amber-soft); border-radius: 999px; padding: 2px 8px; }
+    .ppl-wage { text-align: right; flex: none; min-width: 92px; }
+    .ppl-wage .v { font-size: 14px; font-weight: 800; display: block; }
+    .ppl-wage .k { font-size: 10px; color: var(--pbim-muted); text-transform: uppercase; letter-spacing: .03em; }
+    .ppl-ready { flex: none; width: 26px; display: grid; place-items: center; }
+    .ppl-ready .ok { color: var(--pbim-green); display: flex; }
+    .ppl-ready .no { color: var(--pbim-amber); display: flex; }
+
+    .ppl-foot { margin-top: 14px; font-size: 12.5px; color: var(--pbim-muted); text-align: center; }
+    .ppl-link { border: none; background: none; color: var(--pbim-primary-strong); font-weight: 700; cursor: pointer; font-family: inherit; font-size: 12.5px; }
+}
+
+.ppl-detail {
+    .money { color: var(--pbim-green); font-variant-numeric: tabular-nums; }
+    .ppl-d-wrap > * + * { margin-top: 14px; }
+    .ppl-d-top { display: flex; align-items: center; gap: 10px; }
+    .ppl-d-top .sp { flex: 1; }
+    .ppl-d-av { background-size: cover; background-position: center; }
+    .ppl-d-state { margin-left: auto; flex: 0 0 auto; }
+    .ppl-d-state .pbim-badge { font-size: 12px; padding: 5px 12px; }
+
+    .ppl-d-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    @media (max-width: 800px) { .ppl-d-stats { grid-template-columns: repeat(2, 1fr); } }
+    .ppl-d-stats .pbim-stat .n svg { vertical-align: -.2em; }
+
+    .ppl-d-railpanel { padding: 18px 22px; }
+    .ppl-d-period { margin-top: 12px; font-size: 12.5px; color: var(--pbim-muted); font-weight: 600; }
+    .ppl-d-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+
+    .ppl-d-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+    @media (max-width: 800px) { .ppl-d-cols { grid-template-columns: 1fr; } }
+
+    .ppl-d-links { display: flex; flex-direction: column; gap: 9px; }
+    .ppl-d-link { display: flex; align-items: center; gap: 12px; border: 1px solid var(--pbim-line); border-radius: 12px; padding: 12px 14px; background: #fff; cursor: pointer; font-family: inherit; text-align: left; transition: border-color .14s, background .14s; }
+    .ppl-d-link:hover { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+    .ppl-d-link .ic { width: 38px; height: 38px; border-radius: 11px; background: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; flex: none; }
+    .ppl-d-link .n { font-size: 18px; font-weight: 800; }
+    .ppl-d-link .l { font-size: 13px; color: var(--pbim-muted); font-weight: 600; }
+    .ppl-d-link .ar { margin-left: auto; color: var(--pbim-primary-strong); display: flex; }
+
+    .ppl-d-stat-rows { display: flex; flex-direction: column; gap: 8px; }
+    .ppl-d-srow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 12px; border: 1px solid var(--pbim-line-2); border-radius: 10px; }
+    .ppl-d-srow .k { font-size: 12.5px; font-weight: 600; color: var(--pbim-text); }
+
+    .ppl-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(245,247,247,.72); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--pbim-muted); font-weight: 700; }
+}

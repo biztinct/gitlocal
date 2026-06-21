@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Payobook Import Kit',
-    'summary': 'Shared powder-blue design system for the Import workflow (tokens, primitives, Lucide icons)',
+    'name': 'Payobook UI Kit',
+    'summary': 'Shared Payobook design system (tokens, .pbim-* primitives, Lucide icons) — powder + light-teal themes',
     'description': """
-Single source of truth for the Payobook Import identity. Holds the powder-blue
-SCSS tokens, the reusable .pbim-* primitives (hero, stat, rail, table, chip,
-badge, button) and the Lucide icon map + ic() helper. Every import surface
-(landing, create wizard, batch cockpit, connector cockpit, advanced wizards)
-depends on this so the look stays identical without duplicating tokens.
+Single source of truth for bespoke Payobook OWL surfaces. Holds the SCSS
+tokens, the reusable .pbim-* primitives (hero, stat, rail, table, chip,
+badge, button) and the Lucide icon map + ic() helper. Theme variants:
+the powder-blue default (Import) and `.ppl` light-teal (People). Consumers
+add class "pbim" (powder) or "pbim ppl" (teal) on their root.
 """,
     'version': '19.0.1.0.0',
     'category': 'Human Resources/Payroll',
@@ -21,6 +21,7 @@ depends on this so the look stays identical without duplicating tokens.
             # tokens MUST load before the primitives (shared SCSS $vars + CSS custom props)
             'pb_import_kit/static/src/scss/import_tokens.scss',
             'pb_import_kit/static/src/scss/import_kit.scss',
+            'pb_import_kit/static/src/scss/theme_people.scss',
             'pb_import_kit/static/src/js/import_icons.js',
         ],
     },

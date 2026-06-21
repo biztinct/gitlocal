@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_people_advanced.OnboardWizard">
+    <div class="pbim ppl pplw-root">
+      <div class="pplw-card" t-if="state.defaults">
+
+        <div class="pplw-head">
+          <div><div class="pplw-eyebrow">Payobook · People</div><h2>Add employee</h2></div>
+          <button class="pplw-x" t-on-click="close"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pplw-rail" t-if="!state.result">
+          <t t-foreach="steps" t-as="s" t-key="s_index">
+            <div t-attf-class="pplw-step {{ state.step === s_index+1 ? 'cur' : (state.step > s_index+1 ? 'done' : '') }}">
+              <span class="pplw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',13)"/></t><t t-else="" t-esc="s_index+1"/></span>
+              <span class="pplw-lab" t-esc="s"/>
+            </div>
+            <div t-if="!s_last" t-attf-class="pplw-bar {{ state.step > s_index+1 ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <div class="pplw-body">
+          <div t-if="state.loading" class="pplw-busy"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+
+          <!-- RESULT -->
+          <t t-elif="state.result">
+            <div class="pplw-result">
+              <div class="pplw-result-ic"><t t-out="ic('check',30)"/></div>
+              <h3>Employee added</h3>
+              <p><t t-esc="state.result.employee_name"/><t t-if="state.result.contract_id"> · first contract created</t></p>
+            </div>
+          </t>
+
+          <!-- STEP 1: PERSON -->
+          <t t-elif="state.step === 1">
+            <div class="pplw-grid2">
+              <div class="pplw-sec">
+                <h4>Identity</h4>
+                <label class="pplw-label">Full name *</label>
+                <input class="pplw-in" t-on-input="(ev) => this.onField('name', ev)"/>
+                <label class="pplw-label">Work email</label>
+                <input class="pplw-in" t-on-change="(ev) => this.onField('work_email', ev)"/>
+                <label class="pplw-label">Work phone</label>
+                <input class="pplw-in" t-on-change="(ev) => this.onField('work_phone', ev)"/>
+              </div>
+              <div class="pplw-sec">
+                <h4>Location</h4>
+                <label class="pplw-label">Country</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('country_id', ev)">
+                  <option value="">— Optional —</option>
+                  <option t-foreach="state.defaults.countries" t-as="c" t-key="c.id" t-att-value="c.id" t-esc="c.name"/>
+                </select>
+                <div class="pplw-note">Statutory details (bank, tax, insurance) can be completed later on the employee’s Advanced form.</div>
+              </div>
+            </div>
+          </t>
+
+          <!-- STEP 2: ROLE -->
+          <t t-elif="state.step === 2">
+            <div class="pplw-grid2">
+              <div class="pplw-sec">
+                <h4>Department &amp; role</h4>
+                <label class="pplw-label">Department</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('department_id', ev)">
+                  <option value="">— Optional —</option>
+                  <option t-foreach="state.defaults.departments" t-as="d" t-key="d.id" t-att-value="d.id" t-esc="d.name"/>
+                </select>
+                <label class="pplw-label">Job position</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('job_id', ev)">
+                  <option value="">— Optional —</option>
+                  <option t-foreach="state.defaults.jobs" t-as="j" t-key="j.id" t-att-value="j.id" t-esc="j.name"/>
+                </select>
+              </div>
+              <div class="pplw-sec">
+                <h4>Title</h4>
+                <label class="pplw-label">Job title (free text)</label>
+                <input class="pplw-in" t-on-change="(ev) => this.onField('job_title', ev)"/>
+              </div>
+            </div>
+          </t>
+
+          <!-- STEP 3: CONTRACT -->
+          <t t-else="">
+            <div class="pplw-sec">
+              <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.with_contract" t-on-change="() => this.toggle('with_contract')"/> Create a first contract now</label>
+            </div>
+            <div t-if="state.form.with_contract" class="pplw-grid2" style="margin-top:12px">
+              <div class="pplw-sec">
+                <h4>Structure &amp; wage</h4>
+                <label class="pplw-label">Salary structure</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('struct_id', ev)">
+                  <option t-foreach="state.defaults.structures" t-as="s" t-key="s.id" t-att-value="s.id"
+                          t-att-selected="('' + s.id) === state.form.struct_id" t-esc="s.name"/>
+                </select>
+                <label class="pplw-label">Structure type</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('structure_type_id', ev)">
+                  <option value="">— Optional —</option>
+                  <option t-foreach="state.defaults.structure_types" t-as="st" t-key="st.id" t-att-value="st.id" t-esc="st.name"/>
+                </select>
+                <label class="pplw-label">Monthly wage (<t t-esc="cur"/>)</label>
+                <input type="number" class="pplw-in" t-on-change="(ev) => this.onField('wage', ev)"/>
+              </div>
+              <div class="pplw-sec">
+                <h4>Period</h4>
+                <div class="pplw-row2">
+                  <div><label class="pplw-label">Start</label><input type="date" class="pplw-in" t-att-value="state.form.date_start" t-on-change="(ev) => this.onField('date_start', ev)"/></div>
+                  <div><label class="pplw-label">End (optional)</label><input type="date" class="pplw-in" t-on-change="(ev) => this.onField('date_end', ev)"/></div>
+                </div>
+                <label class="pplw-label">Working schedule</label>
+                <select class="pplw-in" t-on-change="(ev) => this.onField('resource_calendar_id', ev)">
+                  <option t-foreach="state.defaults.calendars" t-as="cal" t-key="cal.id" t-att-value="cal.id"
+                          t-att-selected="('' + cal.id) === state.form.resource_calendar_id" t-esc="cal.name"/>
+                </select>
+                <label class="pplw-toggle"><input type="checkbox" t-att-checked="state.form.activate" t-on-change="() => this.toggle('activate')"/> Activate (set running) on create</label>
+              </div>
+            </div>
+          </t>
+        </div>
+
+        <div class="pplw-foot">
+          <button t-if="state.result" class="pbim-btn ghost" t-on-click="close">Done</button>
+          <button t-elif="state.step === 1" class="pbim-btn ghost" t-on-click="close">Cancel</button>
+          <button t-else="" class="pbim-btn ghost" t-on-click="back" t-att-disabled="state.loading"><t t-out="ic('back',15)"/> Back</button>
+          <div class="pplw-sp"/>
+          <button t-if="state.result" class="pbim-btn primary" t-on-click="openEmployee"><t t-out="ic('arrow',15)"/> Open employee</button>
+          <button t-elif="state.step &lt; 3" class="pbim-btn primary" t-att-disabled="!canNext" t-on-click="next">Next <t t-out="ic('arrow',15)"/></button>
+          <button t-else="" class="pbim-btn primary" t-att-disabled="state.loading" t-on-click="create"><t t-out="ic('check',15)"/> Create employee</button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
