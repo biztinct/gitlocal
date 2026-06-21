@@ -16,6 +16,8 @@ export class ConnectorCockpit extends Component {
         this.notif = useService("notification");
         const p = (this.props.action && (this.props.action.params || this.props.action.context)) || {};
         this.connectorId = p.connector_id || p.active_id;
+        this.backTo = p.back_to || "pb_import.action_pb_import";
+        this.backLabel = p.back_label || "Import data";
         this.state = useState({ loaded: false, busy: false, busyMsg: "", detail: null });
         onWillStart(async () => { await this.refresh(); });
     }
@@ -73,7 +75,7 @@ export class ConnectorCockpit extends Component {
             res_id: this.connectorId, views: [[false, "form"]], target: "current",
         });
     }
-    back() { this.action.doAction("pb_import.action_pb_import", { clearBreadcrumbs: true }); }
+    back() { this.action.doAction(this.backTo, { clearBreadcrumbs: true }); }
 }
 
 registry.category("actions").add("pb_import_connector_cockpit", ConnectorCockpit);

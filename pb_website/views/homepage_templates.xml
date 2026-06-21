@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!--
+    Payobook landing page — inherits website.homepage so it renders at /.
+    Suppresses Odoo's website header/footer (we ship our own bespoke nav + footer).
+  -->
+  <template id="pb_website_homepage" inherit_id="website.homepage" name="Payobook Landing Page">
+
+    <!-- Set layout flags + page title as siblings of #wrap inside the website.layout call -->
+    <xpath expr="//t[@t-call='website.layout']/div[@id='wrap']" position="before">
+      <t t-set="no_header" t-value="True"/>
+      <t t-set="no_footer" t-value="True"/>
+      <t t-set="additional_title">Payobook — Effortless Payroll Solutions</t>
+    </xpath>
+
+    <!-- Replace the empty wrap with the full bespoke landing markup -->
+    <xpath expr="//div[@id='wrap']" position="replace">
+      <div id="wrap" class="pb_landing" data-pb="root">
+
+        <!-- ========================= NAV ========================= -->
+        <header class="pbw-nav" data-pb="nav">
+          <a href="#top" class="pbw-brand" aria-label="Payobook home">
+            <span class="pbw-brand__mark" data-pb="navmark">
+              <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <path d="M7 35 L24 20 L41 35" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+                <path d="M7 24 L24 9 L41 24" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="pbw-brand__word">Payobook</span>
+          </a>
+          <nav class="pbw-nav__links" aria-label="Primary">
+            <a href="#countries">Countries</a>
+            <a href="#suite">Product</a>
+            <a href="#payai">PayAI</a>
+            <a href="#why">Why Payobook</a>
+          </nav>
+          <div class="pbw-nav__cta">
+            <a href="/web/login" class="pbw-link-quiet">Sign in</a>
+            <a href="/web/login" class="pbw-btn pbw-btn--solid">Get started</a>
+          </div>
+        </header>
+
+        <!-- ========================= HERO ========================= -->
+        <section id="top" class="pbw-hero" data-pb="hero">
+          <canvas class="pbw-hero__canvas" data-pb="aurora" aria-hidden="true"></canvas>
+          <div class="pbw-hero__veil" aria-hidden="true"></div>
+
+          <div class="pbw-hero__inner">
+            <div class="pbw-hero__copy">
+              <span class="pbw-eyebrow" data-pb="reveal">
+                <span class="pbw-eyebrow__dot"></span>
+                Multi-country payroll · now with PayAI
+              </span>
+
+              <h1 class="pbw-hero__title" data-pb="headline">
+                Payroll for all of Asia.
+                <span class="pbw-grad">Now with an AI copilot.</span>
+              </h1>
+
+              <p class="pbw-hero__sub" data-pb="reveal">
+                Payobook runs fully-compliant payroll across <strong>eight countries</strong> —
+                import, people, pay runs, approvals and statutory filing in one beautifully
+                unified suite. Ask <strong>PayAI</strong> anything and get charts, forecasts and
+                answers in seconds.
+              </p>
+
+              <div class="pbw-hero__actions" data-pb="reveal">
+                <a href="/web/login" class="pbw-btn pbw-btn--solid pbw-btn--lg">
+                  Get started
+                  <svg viewBox="0 0 24 24" fill="none" class="pbw-ic"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a href="#payai" class="pbw-btn pbw-btn--ghost pbw-btn--lg">
+                  <svg viewBox="0 0 24 24" fill="none" class="pbw-ic"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M10 9l5 3-5 3V9z" fill="currentColor"/></svg>
+                  See it in action
+                </a>
+              </div>
+
+              <dl class="pbw-hero__stats" data-pb="reveal">
+                <div><dt><span data-count="8">8</span></dt><dd>Countries</dd></div>
+                <div><dt><span data-count="9">9</span></dt><dd>Statutory regimes automated</dd></div>
+                <div><dt><span data-count="5" data-suffix="+">5+</span></dt><dd>HR integrations</dd></div>
+                <div><dt><span data-count="1">1</span></dt><dd>Unified suite</dd></div>
+              </dl>
+            </div>
+
+            <!-- Floating recreated cockpit mockup -->
+            <div class="pbw-hero__app" data-pb="mockup" aria-hidden="true">
+              <div class="pbw-app">
+                <div class="pbw-app__bar">
+                  <span class="pbw-app__dot"></span><span class="pbw-app__dot"></span><span class="pbw-app__dot"></span>
+                  <span class="pbw-app__title">Pay Run · June 2026</span>
+                  <span class="pbw-badge pbw-badge--ok">Ready to approve</span>
+                </div>
+                <div class="pbw-app__body">
+                  <div class="pbw-kpis">
+                    <div class="pbw-kpi"><span class="pbw-kpi__k">Headcount</span><span class="pbw-kpi__v">1,284</span></div>
+                    <div class="pbw-kpi"><span class="pbw-kpi__k">Gross</span><span class="pbw-kpi__v pbw-money">$4.92M</span></div>
+                    <div class="pbw-kpi"><span class="pbw-kpi__k">Net pay</span><span class="pbw-kpi__v pbw-money">$3.71M</span></div>
+                  </div>
+                  <div class="pbw-rail">
+                    <span class="pbw-rail__step is-done">Compute</span>
+                    <span class="pbw-rail__step is-done">Review</span>
+                    <span class="pbw-rail__step is-active">Approve</span>
+                    <span class="pbw-rail__step">Pay</span>
+                  </div>
+                  <div class="pbw-rows">
+                    <div class="pbw-row"><span class="pbw-av">AS</span><span class="pbw-row__name">Aisyah binti Rahman<small>Singapore · CPF</small></span><span class="pbw-row__amt pbw-money">$5,420</span></div>
+                    <div class="pbw-row"><span class="pbw-av">NT</span><span class="pbw-row__name">Nguyễn Thanh<small>Vietnam · BHXH</small></span><span class="pbw-row__amt pbw-money">$2,180</span></div>
+                    <div class="pbw-row"><span class="pbw-av">RK</span><span class="pbw-row__name">Rahul Kapoor<small>India · PF + TDS</small></span><span class="pbw-row__amt pbw-money">$3,640</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="pbw-hero__chip pbw-hero__chip--ai">
+                <svg viewBox="0 0 24 24" fill="none" class="pbw-ic"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                PayAI: net pay is up 3.1% vs May
+              </div>
+            </div>
+          </div>
+
+          <div class="pbw-hero__scroll" aria-hidden="true">
+            <span></span>Scroll
+          </div>
+        </section>
+
+        <!-- ========================= TRUST STRIP ========================= -->
+        <section class="pbw-trust" data-pb="reveal">
+          <p class="pbw-trust__label">Payroll teams across Asia-Pacific run on Payobook</p>
+          <div class="pbw-marquee" aria-hidden="true">
+            <div class="pbw-marquee__track">
+              <span>Singapore</span><i>·</i><span>Malaysia</span><i>·</i><span>Indonesia</span><i>·</i><span>India</span><i>·</i><span>Vietnam</span><i>·</i><span>Thailand</span><i>·</i><span>Cambodia</span><i>·</i>
+              <span>Singapore</span><i>·</i><span>Malaysia</span><i>·</i><span>Indonesia</span><i>·</i><span>India</span><i>·</i><span>Vietnam</span><i>·</i><span>Thailand</span><i>·</i><span>Cambodia</span><i>·</i>
+            </div>
+          </div>
+          <div class="pbw-logos">
+            <span>Zoho People</span><span>SAP SuccessFactors</span><span>Workday</span><span>Oracle HCM</span><span>Excel · CSV</span>
+          </div>
+        </section>
+
+        <!-- ========================= COUNTRIES ========================= -->
+        <section id="countries" class="pbw-sec pbw-zone-sta" data-pb="section">
+          <div class="pbw-sec__head" data-pb="reveal">
+            <span class="pbw-kicker">Compliance, handled</span>
+            <h2 class="pbw-h2">One platform. Eight countries.<br/><span class="pbw-muted">Zero compliance headaches.</span></h2>
+            <p class="pbw-lede">Local statutory rules, tax tables and government reports are built in — pick a country and Payobook computes the right contributions, every run.</p>
+          </div>
+
+          <div class="pbw-country" data-pb="reveal">
+            <div class="pbw-country__tabs" role="tablist" data-pb="country-tabs">
+              <button class="pbw-ctab is-active" data-code="SG" role="tab"><b>SG</b> Singapore</button>
+              <button class="pbw-ctab" data-code="MY" role="tab"><b>MY</b> Malaysia</button>
+              <button class="pbw-ctab" data-code="ID" role="tab"><b>ID</b> Indonesia</button>
+              <button class="pbw-ctab" data-code="IN" role="tab"><b>IN</b> India</button>
+              <button class="pbw-ctab" data-code="VN" role="tab"><b>VN</b> Vietnam</button>
+              <button class="pbw-ctab" data-code="TH" role="tab"><b>TH</b> Thailand</button>
+              <button class="pbw-ctab" data-code="KH" role="tab"><b>KH</b> Cambodia</button>
+            </div>
+
+            <div class="pbw-country__panel" data-pb="country-panel">
+              <!-- panel content injected by JS; SG default below -->
+              <div class="pbw-country__flag"><b>SG</b></div>
+              <div class="pbw-country__detail">
+                <h3>Singapore</h3>
+                <p class="pbw-country__note">Resident &amp; non-resident tax, multi-tier CPF, and statutory levies — computed automatically each pay run.</p>
+                <div class="pbw-chips">
+                  <span class="pbw-chip">CPF</span><span class="pbw-chip">SDL</span><span class="pbw-chip">FWL</span>
+                  <span class="pbw-chip">Income Tax</span><span class="pbw-chip">Transport &amp; housing allowances</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================= SUITE / PIPELINE ========================= -->
+        <section id="suite" class="pbw-sec pbw-sec--light" data-pb="section">
+          <div class="pbw-sec__head" data-pb="reveal">
+            <span class="pbw-kicker">The whole run, end to end</span>
+            <h2 class="pbw-h2">From import to payslip,<br/><span class="pbw-muted">beautifully orchestrated.</span></h2>
+            <p class="pbw-lede">Seven bespoke cockpits, one flow. Each surface is a hand-built single-page experience — no clunky forms, just clarity.</p>
+          </div>
+
+          <div class="pbw-pipe" data-pb="pipe">
+            <div class="pbw-pipe__track" data-pb="pipe-track">
+              <article class="pbw-stage pbw-zone-imp">
+                <span class="pbw-stage__n">01</span>
+                <span class="pbw-stage__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L8 8m4-4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 16v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <h3>Import</h3>
+                <p>Pull from Zoho, SAP, Workday, Oracle HCM or Excel. Map → validate → commit, with multi-sheet detection.</p>
+              </article>
+              <article class="pbw-stage pbw-zone-ppl">
+                <span class="pbw-stage__n">02</span>
+                <span class="pbw-stage__ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="2"/><path d="M3 19c0-3 3-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 8a3 3 0 010 6M21 19c0-2-1.5-3.5-3.5-4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <h3>People &amp; Contracts</h3>
+                <p>Roster, onboarding and contract wizards. Headcount and payroll-readiness at a glance.</p>
+              </article>
+              <article class="pbw-stage pbw-zone-sal">
+                <span class="pbw-stage__n">03</span>
+                <span class="pbw-stage__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="8" cy="17" r="2" fill="currentColor"/></svg></span>
+                <h3>Salary Structures</h3>
+                <p>Build components and rules visually. Country tax logic and slabs wired in.</p>
+              </article>
+              <article class="pbw-stage pbw-zone-core">
+                <span class="pbw-stage__n">04</span>
+                <span class="pbw-stage__ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M10 9l5 3-5 3V9z" fill="currentColor"/></svg></span>
+                <h3>Pay Runs</h3>
+                <p>A guided run: select period → compute → review → approve. Pipeline Kanban with live KPIs.</p>
+              </article>
+              <article class="pbw-stage pbw-zone-ppl">
+                <span class="pbw-stage__n">05</span>
+                <span class="pbw-stage__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Approvals</h3>
+                <p>Split-view payslip review and a one-click approval queue. Sign off with confidence.</p>
+              </article>
+              <article class="pbw-stage pbw-zone-sta">
+                <span class="pbw-stage__n">06</span>
+                <span class="pbw-stage__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 21h16M6 21V9l6-4 6 4v12M9 21v-5h6v5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Statutory</h3>
+                <p>Rates, ceilings and tax slabs in one cockpit — plus government XLS reports (BHXH/BHYT/BHTN).</p>
+              </article>
+              <article class="pbw-stage pbw-zone-itg">
+                <span class="pbw-stage__n">07</span>
+                <span class="pbw-stage__ic"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <h3>Payslips</h3>
+                <p>A pay-statement hero — earnings, deductions, net — exportable and crystal clear.</p>
+              </article>
+            </div>
+            <p class="pbw-pipe__hint" data-pb="reveal">Scroll to follow the run →</p>
+          </div>
+        </section>
+
+        <!-- ========================= PAYAI ========================= -->
+        <section id="payai" class="pbw-sec pbw-payai" data-pb="section">
+          <canvas class="pbw-payai__canvas" data-pb="aurora" aria-hidden="true"></canvas>
+          <div class="pbw-sec__head pbw-sec__head--dark" data-pb="reveal">
+            <span class="pbw-kicker pbw-kicker--ai">Meet PayAI</span>
+            <h2 class="pbw-h2">Ask your payroll anything.</h2>
+            <p class="pbw-lede pbw-lede--dark">A conversational copilot wired straight to your data. Type or speak a question — get charts, forecasts and answers in seconds.</p>
+          </div>
+
+          <div class="pbw-payai__grid">
+            <div class="pbw-chatcard" data-pb="reveal">
+              <div class="pbw-chat">
+                <div class="pbw-bubble pbw-bubble--user">What did we spend on payroll across Q2, by country?</div>
+                <div class="pbw-bubble pbw-bubble--ai">
+                  <span class="pbw-ai-tag"><svg viewBox="0 0 24 24" fill="none" class="pbw-ic"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg> PayAI</span>
+                  Here's Q2 net pay by country — Singapore leads at 38%. Total is up 3.1% on Q1, driven by new hires in India.
+                  <div class="pbw-chart"><canvas data-pb="payai-chart"></canvas></div>
+                </div>
+              </div>
+              <div class="pbw-chat__input">
+                <svg viewBox="0 0 24 24" fill="none" class="pbw-ic"><path d="M12 15a3 3 0 003-3V7a3 3 0 00-6 0v5a3 3 0 003 3z" stroke="currentColor" stroke-width="2"/><path d="M6 11a6 6 0 0012 0M12 18v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>Ask PayAI… or hold to speak</span>
+                <span class="pbw-send">→</span>
+              </div>
+            </div>
+
+            <ul class="pbw-payai__feats" data-pb="reveal">
+              <li><span class="pbw-feat__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><b>Predictive forecasting</b>Project payroll cost and headcount, with anomaly detection that flags the unexpected.</li>
+              <li><span class="pbw-feat__ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 003-3V7a3 3 0 00-6 0v5a3 3 0 003 3z" stroke="currentColor" stroke-width="2"/><path d="M6 11a6 6 0 0012 0M12 18v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><b>Voice-to-chart</b>Speak a question and watch the chart build itself — hands-free analytics.</li>
+              <li><span class="pbw-feat__ic"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><b>Executive PDF reports</b>One prompt turns your data into a board-ready report, charts and all.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- ========================= FORMULA + ANALYTICS ========================= -->
+        <section class="pbw-sec pbw-sec--light" data-pb="section">
+          <div class="pbw-split">
+            <div class="pbw-split__copy" data-pb="reveal">
+              <span class="pbw-kicker">Power for the people who run payroll</span>
+              <h2 class="pbw-h2">An Excel-grade formula engine.</h2>
+              <p class="pbw-lede">A familiar grid with column letters, a formula bar with autocomplete, real-time validation and circular-reference detection. Drag a column — every reference updates itself.</p>
+              <ul class="pbw-ticks">
+                <li>Excel-like grid · columns A–Z, AA, AB…</li>
+                <li>Drag-and-drop column reordering</li>
+                <li>Live validation &amp; error highlighting</li>
+                <li>Seamless multi-sheet Excel import</li>
+              </ul>
+            </div>
+            <div class="pbw-split__art" data-pb="reveal">
+              <div class="pbw-grid">
+                <div class="pbw-grid__formula"><b>fx</b><span>= BASIC * 0.12 + ALLOWANCE</span></div>
+                <div class="pbw-grid__cells">
+                  <span class="pbw-gh">A</span><span class="pbw-gh">B</span><span class="pbw-gh">C</span><span class="pbw-gh">D</span>
+                  <span>Basic</span><span class="pbw-money">3,000</span><span>HRA</span><span class="pbw-money">1,200</span>
+                  <span>EPF</span><span class="pbw-money pbw-neg">360</span><span>Tax</span><span class="pbw-money pbw-neg">214</span>
+                  <span class="pbw-gsel">Net</span><span class="pbw-money pbw-gsel">3,626</span><span>YTD</span><span class="pbw-money">41,8k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbw-split pbw-split--rev">
+            <div class="pbw-split__copy" data-pb="reveal">
+              <span class="pbw-kicker">Analytics &amp; reporting</span>
+              <h2 class="pbw-h2">Numbers that tell the story.</h2>
+              <p class="pbw-lede">Personnel cost by department, role and cost centre. Cross-country comparison, statutory tracking, budget variance and annual overviews — ten-plus chart types, exportable to PDF and Excel.</p>
+              <dl class="pbw-bignums">
+                <div><dt><span data-count="38">0</span><span data-suffix="%">%</span></dt><dd>Less time per pay run</dd></div>
+                <div><dt><span data-count="10" data-suffix="+">0</span></dt><dd>Chart types</dd></div>
+                <div><dt><span data-count="100" data-suffix="%">0</span></dt><dd>Statutory coverage</dd></div>
+              </dl>
+            </div>
+            <div class="pbw-split__art" data-pb="reveal">
+              <div class="pbw-dash">
+                <div class="pbw-dash__bars">
+                  <span style="--h:42%"></span><span style="--h:68%"></span><span style="--h:55%"></span>
+                  <span style="--h:88%"></span><span style="--h:73%"></span><span style="--h:96%"></span>
+                </div>
+                <div class="pbw-dash__row"><span>Personnel cost</span><b class="pbw-money">$4.92M</b></div>
+                <div class="pbw-dash__row"><span>Variance vs budget</span><b class="pbw-pos">+2.1%</b></div>
+                <div class="pbw-dash__row"><span>Headcount</span><b>1,284</b></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================= WHY / OUTCOMES ========================= -->
+        <section id="why" class="pbw-why" data-pb="section">
+          <div class="pbw-sec__head pbw-sec__head--dark" data-pb="reveal">
+            <span class="pbw-kicker pbw-kicker--ai">Why Payobook</span>
+            <h2 class="pbw-h2">One run. Every country. Fully compliant.</h2>
+          </div>
+          <dl class="pbw-why__nums" data-pb="reveal">
+            <div><dt><span data-count="8">0</span></dt><dd>Countries, one platform</dd></div>
+            <div><dt><span data-count="9">0</span></dt><dd>Statutory funds automated<small>CPF · EPF · SOCSO · EIS · BPJS · PF · SSF · NSSF · BHXH</small></dd></div>
+            <div><dt><span data-count="5" data-suffix="+">0</span></dt><dd>HR systems to import from</dd></div>
+            <div><dt><span data-count="10" data-suffix="+">0</span></dt><dd>Bespoke cockpits</dd></div>
+          </dl>
+        </section>
+
+        <!-- ========================= FINAL CTA ========================= -->
+        <section class="pbw-cta" data-pb="section">
+          <div class="pbw-cta__card" data-pb="reveal">
+            <span class="pbw-cta__mark">
+              <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                <path d="M7 35 L24 20 L41 35" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+                <path d="M7 24 L24 9 L41 24" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <h2 class="pbw-cta__title">Effortless payroll solutions.</h2>
+            <p class="pbw-cta__sub">Bring import, people, pay runs, approvals, statutory and PayAI together — for every country you operate in.</p>
+            <div class="pbw-cta__actions">
+              <a href="/web/login" class="pbw-btn pbw-btn--solid pbw-btn--lg">Get started</a>
+              <a href="mailto:hello@payobook.com" class="pbw-btn pbw-btn--outline pbw-btn--lg">Book a demo</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================= FOOTER ========================= -->
+        <footer class="pbw-foot">
+          <div class="pbw-foot__grid">
+            <div class="pbw-foot__brand">
+              <a href="#top" class="pbw-brand pbw-brand--foot">
+                <span class="pbw-brand__mark">
+                  <svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M7 35 L24 20 L41 35" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/><path d="M7 24 L24 9 L41 24" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="pbw-brand__word">Payobook</span>
+              </a>
+              <p>Effortless payroll solutions for Asia-Pacific. Multi-country, compliant, and beautifully unified.</p>
+            </div>
+            <div class="pbw-foot__col">
+              <h4>Product</h4>
+              <a href="#suite">Pay Runs</a><a href="#suite">Import</a><a href="#suite">People</a><a href="#payai">PayAI</a>
+            </div>
+            <div class="pbw-foot__col">
+              <h4>Countries</h4>
+              <a href="#countries">Singapore · Malaysia</a><a href="#countries">Indonesia · India</a><a href="#countries">Vietnam · Thailand</a><a href="#countries">Cambodia</a>
+            </div>
+            <div class="pbw-foot__col">
+              <h4>Company</h4>
+              <a href="https://www.payobook.com">payobook.com</a><a href="mailto:hello@payobook.com">Contact</a><a href="/web/login">Sign in</a>
+            </div>
+          </div>
+          <div class="pbw-foot__bar">
+            <span>© Payobook. All rights reserved.</span>
+            <span>Built for payroll teams across Asia-Pacific.</span>
+          </div>
+        </footer>
+
+      </div>
+    </xpath>
+  </template>
+</odoo>

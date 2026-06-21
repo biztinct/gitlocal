@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_import_advanced.SyncWizard">
-    <div class="pbim pbw-root">
+    <div class="pbim itg pbw-root">
       <div class="pbw-card" t-if="state.defaults">
 
         <div class="pbw-head">

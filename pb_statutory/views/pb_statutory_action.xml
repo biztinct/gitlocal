@@ -4,4 +4,20 @@
         <field name="name">Statutory</field>
         <field name="tag">pb_statutory</field>
     </record>
+    <record id="action_pb_policy_detail" model="ir.actions.client">
+        <field name="name">Insurance Policy</field>
+        <field name="tag">pb_policy_detail</field>
+    </record>
+    <record id="action_pb_tax_detail" model="ir.actions.client">
+        <field name="name">Tax Table</field>
+        <field name="tag">pb_tax_detail</field>
+    </record>
+    <record id="action_pb_policy_wizard" model="ir.actions.client">
+        <field name="name">New Insurance Policy</field>
+        <field name="tag">pb_policy_wizard</field>
+    </record>
+    <record id="action_pb_tax_wizard" model="ir.actions.client">
+        <field name="name">New Tax Table</field>
+        <field name="tag">pb_tax_wizard</field>
+    </record>
 </odoo>

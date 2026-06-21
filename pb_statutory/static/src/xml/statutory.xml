@@ -1,130 +1,115 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
   <t t-name="pb_statutory.PbStatutory">
-    <div class="pbs">
-      <div t-if="!state.loaded" class="pbs-loading"><div class="pbs-spinner"/><span>Loading statutory…</span></div>
+    <div class="pbim sta pbim-page ppl-people sta-board">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading statutory…</span></div>
 
-      <div t-else="" class="pbs-wrap">
-        <div class="pbs-head">
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head">
           <div>
-            <h1>Statutory</h1>
-            <p class="pbs-sub">Insurance rates, tax brackets and contribution actuals.</p>
+            <h1 class="pbim-h1">Statutory · Insurance &amp; Tax</h1>
+            <p class="pbim-sub">Contribution rates, ceilings, tax brackets and actuals.</p>
+          </div>
+          <div class="ppl-head-actions">
+            <button class="pbim-btn outline" t-on-click="newTax"><t t-out="ic('plus',15)"/> Tax table</button>
+            <button class="pbim-btn primary" t-on-click="newPolicy"><t t-out="ic('plus',16)"/> Insurance policy</button>
           </div>
         </div>
 
-        <!-- contribution actuals KPI -->
-        <div t-if="state.actuals" class="pbs-kpis">
-          <div class="pbs-kpi hero">
-            <span class="l">Total contributions <t t-if="state.actuals.run_name">· <t t-esc="state.actuals.run_name"/></t></span>
-            <span class="v" t-esc="money(state.actuals.grand_total)"/>
-            <span class="m"><t t-esc="state.actuals.covered"/> employees covered</span>
-          </div>
-          <div class="pbs-kpi">
-            <span class="l">Employee leg</span>
-            <span class="v indigo" t-esc="money(state.actuals.emp_total)"/>
-            <span class="m">withheld from pay</span>
-          </div>
-          <div class="pbs-kpi">
-            <span class="l">Employer leg</span>
-            <span class="v cyan" t-esc="money(state.actuals.comp_total)"/>
-            <span class="m">company cost</span>
-          </div>
+        <div class="ppl-kpis">
+          <div class="pbim-stat"><span class="n money" t-esc="money(state.kpis.contributions)"/><span class="l">Contributions</span></div>
+          <div class="pbim-stat new"><span class="n money" t-esc="money(state.kpis.emp_leg)"/><span class="l">Employee leg</span></div>
+          <div class="pbim-stat new"><span class="n money" t-esc="money(state.kpis.comp_leg)"/><span class="l">Employer leg</span></div>
+          <div class="pbim-stat ok"><span class="n" t-esc="state.kpis.policies"/><span class="l">Policies</span></div>
+          <div class="pbim-stat"><span class="n" t-esc="state.kpis.tax_tables"/><span class="l">Tax tables</span></div>
+          <div class="pbim-stat cyan"><span class="n" t-esc="state.kpis.dependents"/><span class="l">Dependents</span></div>
         </div>
 
-        <div class="pbs-cols">
-          <!-- insurance policy -->
-          <div class="pbs-panel">
-            <div class="pbs-panel-h">
-              <h2>Insurance rates</h2>
-              <span t-if="state.policy" class="pbs-tag" t-esc="state.policy.code"/>
+        <div class="sta-cols">
+          <div class="pbim-panel">
+            <div class="pbim-panel-h"><h2 class="pbim-h2">Active insurance rates</h2>
+              <span t-if="state.policy" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="state.policy.effective"/></span></div>
+            <div t-if="state.policy" class="pbim-tablewrap">
+              <table class="pbim-table">
+                <thead><tr><th>Scheme</th><th>Employee</th><th>Employer</th><th>Ceiling</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="state.policy.rows" t-as="r" t-key="r.key">
+                    <td t-esc="r.label"/>
+                    <td><span class="sta-rate" t-esc="r.employee + '%'"/></td>
+                    <td><span class="sta-rate" t-esc="r.employer + '%'"/></td>
+                    <td class="money" t-esc="moneyFull(r.ceiling)"/>
+                  </tr>
+                  <tr class="sta-totrow"><td>Total</td><td t-esc="state.policy.total_employee + '%'"/><td t-esc="state.policy.total_employer + '%'"/><td/></tr>
+                </tbody>
+              </table>
             </div>
-            <t t-if="state.policy">
-              <div class="pbs-policyname"><t t-esc="state.policy.name"/><span t-if="state.policy.effective"> · from <t t-esc="state.policy.effective"/></span></div>
-              <div class="pbs-rate-table">
-                <div class="pbs-rate head">
-                  <span class="c-ins">Scheme</span><span class="c-ee">Employee</span><span class="c-er">Employer</span><span class="c-cl">Ceiling</span>
-                </div>
-                <div t-foreach="state.policy.rows" t-as="r" t-key="r.key" class="pbs-rate">
-                  <span class="c-ins"><span t-attf-class="pbs-dot {{ r.key }}"/><t t-esc="r.label"/></span>
-                  <span class="c-ee" t-esc="rate(r.employee)"/>
-                  <span class="c-er" t-esc="rate(r.employer)"/>
-                  <span class="c-cl" t-esc="money(r.ceiling)"/>
-                </div>
-                <div class="pbs-rate total">
-                  <span class="c-ins">Combined</span>
-                  <span class="c-ee" t-esc="rate(state.policy.total_employee)"/>
-                  <span class="c-er" t-esc="rate(state.policy.total_employer)"/>
-                  <span class="c-cl"><t t-esc="rate(state.policy.total_combined)"/> total</span>
-                </div>
-              </div>
-            </t>
-            <div t-else="" class="pbs-empty">No active insurance policy configured.</div>
+            <div t-else="" class="pbim-empty">No active insurance policy.</div>
           </div>
 
-          <!-- contribution actuals breakdown -->
-          <div class="pbs-panel">
-            <div class="pbs-panel-h"><h2>Contributions by scheme</h2><span class="pbs-tag">latest run</span></div>
-            <t t-if="state.actuals">
-              <div class="pbs-contrib">
-                <div t-foreach="state.actuals.rows" t-as="r" t-key="r.key" class="pbs-contrib-row">
-                  <div class="pbs-contrib-top">
-                    <span class="nm"><span t-attf-class="pbs-dot {{ r.key }}"/><t t-esc="r.label"/></span>
-                    <span class="amt" t-esc="money(r.total)"/>
-                  </div>
-                  <div class="pbs-contrib-track">
-                    <div class="pbs-contrib-emp" t-attf-style="width:{{ pct(r.emp, state.actuals.grand_total) }}%"/>
-                    <div class="pbs-contrib-comp" t-attf-style="width:{{ pct(r.comp, state.actuals.grand_total) }}%"/>
-                  </div>
-                </div>
-              </div>
-              <div class="pbs-legend">
-                <span class="lg"><span class="sw emp"/>Employee</span>
-                <span class="lg"><span class="sw comp"/>Employer</span>
-              </div>
-            </t>
-            <div t-else="" class="pbs-empty">No payslip run to summarise yet.</div>
+          <div class="pbim-panel">
+            <div class="pbim-panel-h"><h2 class="pbim-h2">Tax brackets</h2>
+              <span t-if="state.tax" class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="state.tax.year"/></span></div>
+            <div t-if="state.tax and state.tax.slabs.length" class="pbim-tablewrap sta-slabs">
+              <table class="pbim-table">
+                <thead><tr><th>From</th><th>To</th><th>Rate</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="state.tax.slabs" t-as="s" t-key="s_index">
+                    <td class="money" t-esc="moneyFull(s.from)"/>
+                    <td class="money" t-esc="s.to ? moneyFull(s.to) : '∞'"/>
+                    <td><span class="sta-rate" t-esc="s.rate + '%'"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div t-else="" class="pbim-empty">No active tax table.</div>
           </div>
         </div>
 
-        <!-- tax table -->
-        <div class="pbs-panel">
-          <div class="pbs-panel-h">
-            <h2>Income tax brackets</h2>
-            <span t-if="state.tax" class="pbs-tag"><t t-esc="state.tax.name"/> · <t t-esc="state.tax.year"/></span>
+        <div class="pbim-panel">
+          <div class="pbim-panel-h">
+            <div class="pbim-seg">
+              <button t-attf-class="pbim-segbtn {{ state.view === 'policies' ? 'on' : '' }}" t-on-click="() => this.setView('policies')">Insurance policies <t t-esc="state.policies.length"/></button>
+              <button t-attf-class="pbim-segbtn {{ state.view === 'tax' ? 'on' : '' }}" t-on-click="() => this.setView('tax')">Tax tables <t t-esc="state.tax_tables.length"/></button>
+            </div>
+            <div class="pbim-chips">
+              <button t-attf-class="pbim-fchip {{ state.showActive ? 'on' : '' }}" t-on-click="toggleActive">Active only</button>
+              <t t-if="state.view === 'tax'">
+                <button t-foreach="years" t-as="y" t-key="y" t-attf-class="pbim-fchip {{ state.year === y ? 'on' : '' }}" t-on-click="() => this.setYear(y)">
+                  <t t-out="ic('calendar',12)"/> <t t-esc="y"/>
+                </button>
+              </t>
+            </div>
           </div>
-          <t t-if="state.tax">
-            <div class="pbs-deductions">
-              <div class="pbs-ded"><span class="l">Personal deduction</span><span class="v" t-esc="full(state.tax.personal_deduction)"/><span class="u">/ month</span></div>
-              <div class="pbs-ded"><span class="l">Dependent deduction</span><span class="v" t-esc="full(state.tax.dependent_deduction)"/><span class="u">/ person / month</span></div>
+
+          <div t-if="state.view === 'policies'" class="ppl-roster">
+            <div t-foreach="filteredPolicies" t-as="p" t-key="p.id" class="ppl-card" t-on-click="() => this.openPolicy(p.id)">
+              <div class="ppl-av"><t t-out="ic('checkCircle',20)"/></div>
+              <div class="ppl-id"><div class="nm" t-esc="p.name"/><div class="jb"><t t-esc="p.code"/> · effective <t t-esc="p.effective or '—'"/></div></div>
+              <div class="ppl-period sta-totals">EE <t t-esc="p.total_employee"/>% · ER <t t-esc="p.total_employer"/>%</div>
+              <div class="ppl-meta"><span t-attf-class="pbim-badge {{ p.active ? 'ok' : 'muted' }}"><t t-esc="p.active ? 'Active' : 'Archived'"/></span></div>
             </div>
-            <div t-if="state.tax.slabs.length" class="pbs-slabs">
-              <div class="pbs-slab head">
-                <span class="c-br">Taxable income (monthly)</span><span class="c-rt">Rate</span><span class="c-fx">Fixed base</span>
-              </div>
-              <div t-foreach="state.tax.slabs" t-as="s" t-key="s_index" class="pbs-slab">
-                <span class="c-br" t-esc="bracket(s)"/>
-                <span class="c-rt"><span class="pbs-pill" t-esc="rate(s.rate)"/></span>
-                <span class="c-fx" t-esc="s.fixed ? full(s.fixed) : '—'"/>
-              </div>
+            <div t-if="!filteredPolicies.length" class="pbim-empty">No insurance policies.</div>
+          </div>
+
+          <div t-else="" class="ppl-roster">
+            <div t-foreach="filteredTax" t-as="t" t-key="t.id" class="ppl-card" t-on-click="() => this.openTax(t.id)">
+              <div class="ppl-av"><t t-out="ic('sigma',20)"/></div>
+              <div class="ppl-id"><div class="nm" t-esc="t.name"/><div class="jb"><t t-esc="t.code"/> · <t t-esc="t.slabs"/> brackets</div></div>
+              <div class="ppl-period sta-totals">Personal <t t-esc="moneyFull(t.personal)"/></div>
+              <div class="ppl-meta"><span class="pbim-badge info"><t t-esc="t.year"/></span> <span t-attf-class="pbim-badge {{ t.active ? 'ok' : 'muted' }}"><t t-esc="t.active ? 'Active' : 'Archived'"/></span></div>
             </div>
-            <div t-else="" class="pbs-empty">No tax brackets defined on this table.</div>
-          </t>
-          <div t-else="" class="pbs-empty">No active tax table configured.</div>
+            <div t-if="!filteredTax.length" class="pbim-empty">No tax tables.</div>
+          </div>
         </div>
 
-        <!-- manage launches -->
-        <div class="pbs-panel" t-if="state.launches.length">
-          <div class="pbs-panel-h"><h2>Manage</h2></div>
-          <div class="pbs-launches">
-            <button t-foreach="state.launches" t-as="l" t-key="l.xmlid" class="pbs-launch" t-on-click="() => this.open(l.xmlid)">
-              <span class="tx">
-                <span class="lb" t-esc="l.label"/>
-                <span class="ds" t-esc="l.desc"/>
-              </span>
-              <span class="ar">→</span>
-            </button>
-          </div>
+        <div t-if="state.launches.length" class="sta-launches">
+          <button t-foreach="state.launches" t-as="l" t-key="l.xmlid" class="ppl-card sta-launch" t-on-click="() => this.launch(l.xmlid)">
+            <span class="ppl-av"><t t-out="tileIcon(l.icon)"/></span>
+            <span class="ppl-id"><span class="nm" t-esc="l.label"/><span class="jb" t-esc="l.desc"/></span>
+            <span class="sta-ar"><t t-out="ic('arrow',15)"/></span>
+          </button>
         </div>
       </div>
     </div>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_integrations.PbIntegrations">
+    <div class="pbim itg pbim-page ppl-people itg-board">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading integrations…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head">
+          <div>
+            <h1 class="pbim-h1">Integrations</h1>
+            <p class="pbim-sub">External HR / payroll connectors, their sync status and mappings.</p>
+          </div>
+        </div>
+
+        <div class="ppl-kpis">
+          <div class="pbim-stat"><span class="n" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div>
+          <div class="pbim-stat ok"><span class="n" t-esc="state.kpis.connected"/><span class="l">Connected</span></div>
+          <div t-attf-class="pbim-stat {{ state.kpis.errors ? 'err' : '' }}"><span class="n" t-esc="state.kpis.errors"/><span class="l">Errors</span></div>
+          <div class="pbim-stat new"><span class="n" t-esc="state.kpis.synced"/><span class="l">Synced records</span></div>
+          <div class="pbim-stat"><span class="n" t-esc="state.kpis.mappings"/><span class="l">Field mappings</span></div>
+          <div class="pbim-stat cyan"><span class="n" t-esc="state.kpis.staged"/><span class="l">Staged records</span></div>
+        </div>
+
+        <div class="pbim-panel ppl-filters">
+          <div class="ppl-filter-row">
+            <div class="pbim-chips">
+              <button t-foreach="statusChips" t-as="c" t-key="c.id"
+                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
+                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
+              </button>
+            </div>
+            <div class="ppl-search">
+              <span class="ic"><t t-out="ic('search',15)"/></span>
+              <input placeholder="Search connectors…" t-on-input="onSearch"/>
+            </div>
+          </div>
+          <div class="ppl-filter-row">
+            <div class="pbim-chips ppl-dates">
+              <button t-foreach="recencyChips" t-as="r" t-key="r.id"
+                      t-attf-class="pbim-fchip {{ state.recency === r.id ? 'on' : '' }}" t-on-click="() => this.setRecency(r.id)">
+                <t t-out="ic('refresh',12)"/> <t t-esc="r.label"/>
+              </button>
+            </div>
+            <div t-if="state.types.length" class="pbim-chips ppl-depts">
+              <button t-foreach="state.types" t-as="t" t-key="t_index"
+                      t-attf-class="pbim-fchip {{ state.type === t.type ? 'on' : '' }}" t-on-click="() => this.setType(t.type)">
+                <t t-esc="t.name"/> <span class="c" t-esc="t.count"/>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div t-if="filtered.length" class="ppl-roster">
+          <div t-foreach="filtered" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openConnector(c.id)">
+            <div class="ppl-av"><t t-out="ic(c.icon,20)"/></div>
+            <div class="ppl-id">
+              <div class="nm" t-esc="c.name"/>
+              <div class="jb"><t t-esc="c.type_label"/> · <t t-esc="syncLabel(c)"/></div>
+            </div>
+            <div class="ppl-period itg-counts"><t t-esc="c.mappings"/> mappings · <t t-esc="c.staged"/> staged · <t t-esc="c.synced"/> synced</div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ c.status_cls }}"><span class="d"/><t t-esc="c.status_label"/></span>
+            </div>
+          </div>
+        </div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty">No connectors match these filters.</div></div>
+
+        <!-- section links -->
+        <div t-if="state.links.length" class="itg-links">
+          <button t-foreach="state.links" t-as="l" t-key="l.xmlid" class="ppl-card itg-link" t-on-click="() => this.launch(l.xmlid)">
+            <span class="ppl-av"><t t-out="ic(l.icon,18)"/></span>
+            <span class="ppl-id"><span class="nm" t-esc="l.label"/><span class="jb" t-esc="l.desc"/></span>
+            <span class="itg-ar"><t t-out="ic('arrow',15)"/></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

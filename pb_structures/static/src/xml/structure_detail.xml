@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_structures.PbStructureDetail">
+    <div class="pbim sal pbim-page ppl-detail sal-detail">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading structure…</span></div>
+
+      <div t-elif="d.error" class="pbim-wrap">
+        <div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
+          <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back to Structures</button></div></div>
+      </div>
+
+      <div t-else="" class="pbim-wrap ppl-d-wrap">
+
+        <div class="ppl-d-top">
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Structures</button>
+          <div class="sp"/>
+          <button class="pbim-btn outline" t-on-click="addRule"><t t-out="ic('plus',15)"/> Add rule</button>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+        </div>
+
+        <div class="pbim-hero ppl-d-hero">
+          <div class="pbim-hero-av"><t t-out="ic('layers',24)"/></div>
+          <div class="pbim-hero-id">
+            <div class="nm"><t t-esc="d.name"/> <span t-if="d.is_base" class="sal-base">base</span></div>
+            <div class="mt"><t t-esc="d.code"/></div>
+            <div class="pbim-hero-chips">
+              <span t-if="d.country" class="pbim-chip"><t t-out="ic('briefcase',13)"/> <t t-esc="d.country"/></span>
+              <span class="pbim-chip"><t t-out="ic('calendar',13)"/> <t t-esc="d.schedule"/></span>
+            </div>
+          </div>
+          <div class="ppl-d-state">
+            <span t-attf-class="pbim-badge {{ d.state_cls }}"><span class="d"/><t t-esc="d.state_label"/></span>
+          </div>
+        </div>
+
+        <div class="ppl-d-stats" style="grid-template-columns:repeat(3,1fr)">
+          <div class="pbim-stat new"><span class="n" t-esc="d.counts.rules"/><span class="l">Salary rules</span></div>
+          <div class="pbim-stat ok"><span class="n" t-esc="d.counts.employees"/><span class="l">Employees</span></div>
+          <div class="pbim-stat"><span class="n" t-esc="d.counts.categories"/><span class="l">Categories</span></div>
+        </div>
+
+        <div t-foreach="d.rule_groups" t-as="g" t-key="g.key" class="pbim-panel sal-group">
+          <div class="pbim-panel-h"><h2 class="pbim-h2"><t t-esc="g.label"/> <span class="sal-gcount" t-esc="g.rules.length"/></h2></div>
+          <div class="pbim-tablewrap">
+            <table class="pbim-table">
+              <thead><tr><th>Code</th><th>Rule</th><th>Type</th><th>Value</th><th>On payslip</th></tr></thead>
+              <tbody>
+                <tr t-foreach="g.rules" t-as="r" t-key="r.id">
+                  <td class="mono" t-esc="r.code"/>
+                  <td t-esc="r.name"/>
+                  <td><span class="pbim-badge muted" t-esc="r.amount_label"/></td>
+                  <td>
+                    <t t-if="r.value" t-esc="r.value"/>
+                    <t t-if="r.employer_rate or r.employee_rate"> <span class="sal-rate">ER <t t-esc="r.employer_rate"/>% · EE <t t-esc="r.employee_rate"/>%</span></t>
+                  </td>
+                  <td><t t-out="r.appears ? ic('check',15) : ''"/></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div t-if="!d.rule_groups.length" class="pbim-panel"><div class="pbim-empty">No rules yet. Use “Add rule” to build this structure.</div></div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

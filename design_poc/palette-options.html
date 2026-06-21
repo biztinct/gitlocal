@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Payobook · Pale-fill palette options</title>
+<style>
+  :root{
+    --ink:#1B1733; --muted:#6E6A85; --canvas:#F6F7FB;
+    --hair:#ECEEF3; --line:#E7E5F2;
+    --green:#059669; --rose:#E11D48; --amber:#B45309;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+    background:var(--canvas);color:var(--ink);-webkit-font-smoothing:antialiased;padding:26px 26px 70px;}
+  h1{font-size:21px;font-weight:800;margin:0 0 4px;letter-spacing:-.01em;}
+  .sub{font-size:13px;color:var(--muted);margin:0 0 20px;}
+
+  /* control bar */
+  .controls{display:flex;flex-wrap:wrap;gap:18px;align-items:center;background:#fff;border:1px solid var(--hair);
+    border-radius:14px;padding:14px 18px;margin-bottom:24px;position:sticky;top:14px;z-index:5;
+    box-shadow:0 2px 10px rgba(30,40,80,.04);}
+  .cgroup{display:flex;flex-direction:column;gap:6px;}
+  .clabel{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);}
+  .seg{display:inline-flex;background:#F2F3F8;border-radius:9px;padding:3px;gap:2px;}
+  .seg button{border:none;background:transparent;font-family:inherit;font-size:12.5px;font-weight:700;color:#5A5870;
+    padding:6px 12px;border-radius:7px;cursor:pointer;transition:.14s;}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(30,40,80,.12);}
+  .hint{font-size:12px;color:var(--muted);max-width:340px;line-height:1.45;}
+
+  /* 2x2 grid of option panels */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media(max-width:1080px){.grid{grid-template-columns:1fr;}}
+  .opt{border-radius:18px;overflow:hidden;}
+  .opt-h{display:flex;align-items:center;justify-content:space-between;padding:0 4px 10px;}
+  .opt-h .t{font-size:13.5px;font-weight:800;}
+  .opt-h .d{font-size:11.5px;color:var(--muted);}
+
+  /* ---- the rendered mini-cockpit (palette via inline vars per panel) ---- */
+  .zone{ --fill:#B2FFFF; --soft:#E9FCFD; --soft2:#D6F8FA; --accent:#0E7490; --accent-mut:#5C97A0; --aink:#06363F; --bd:#CDEFF2;
+    background:#fff;padding:16px;}
+  /* surface modes */
+  .zone.flat .card{border:1px solid var(--hair);box-shadow:none;border-radius:16px;}
+  .zone.flat .kpi{border:1px solid var(--hair);box-shadow:none;border-radius:14px;}
+  .zone.elev .card{border:1px solid var(--line);box-shadow:0 6px 18px rgba(40,50,90,.09);border-radius:13px;}
+  .zone.elev .kpi{border:1px solid var(--line);box-shadow:0 3px 10px rgba(40,50,90,.06);border-radius:13px;}
+
+  .hero{display:flex;align-items:center;gap:14px;background:var(--soft);border-left:3px solid var(--accent);
+    border-radius:16px;padding:15px 17px;margin-bottom:14px;}
+  .zone.flat .hero{border:1px solid var(--hair);border-left:3px solid var(--accent);}
+  .av{width:50px;height:50px;border-radius:14px;background:#fff;display:grid;place-items:center;color:var(--accent);
+    box-shadow:0 3px 10px rgba(40,50,90,.10);}
+  .av svg{width:24px;height:24px;}
+  .hero .nm{font-size:17px;font-weight:800;color:var(--ink);}
+  .hero .mt{font-size:12px;color:var(--muted);margin-top:1px;}
+  .hchips{display:flex;gap:7px;margin-top:8px;}
+  .hchip{background:#fff;border:1px solid var(--bd);border-radius:999px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--aink);}
+
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:14px;}
+  .kpi{background:#fff;padding:12px 14px;}
+  .kpi .v{font-size:20px;font-weight:800;letter-spacing:-.01em;}
+  .kpi .v.a{color:var(--accent);} .kpi .v.g{color:var(--green);}
+  .kpi .l{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
+  .kpi.feat{background:var(--soft);}
+
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);background:#fff;border-radius:999px;
+    padding:6px 12px;font-size:12px;font-weight:700;color:#4A5578;cursor:pointer;}
+  .chip .c{font-size:10.5px;font-weight:800;background:#F0F1F6;border-radius:999px;padding:0 6px;color:#6A6A82;}
+  /* ACTIVE chip — deep vs muted */
+  .deep .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .deep .chip.on .c{background:rgba(255,255,255,.28);color:#fff;}
+  .mut  .chip.on{background:var(--soft2);border-color:var(--accent-mut);color:var(--accent);}
+  .mut  .chip.on .c{background:rgba(255,255,255,.55);color:var(--accent);}
+
+  .card{background:#fff;padding:13px 15px;display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .card .pic{width:40px;height:40px;border-radius:11px;background:var(--soft2);display:grid;place-items:center;color:var(--accent);font-weight:800;font-size:14px;}
+  .card .nm{font-size:13.5px;font-weight:700;}
+  .card .sm{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .badge{margin-left:auto;font-size:10.5px;font-weight:800;color:var(--green);background:#E7F7F0;border-radius:6px;padding:3px 8px;}
+
+  .btns{display:flex;gap:10px;}
+  .btn{border-radius:10px;padding:9px 16px;font-size:12.5px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid transparent;}
+  .btn.out{background:#fff;border-color:var(--bd);color:var(--accent);}
+  /* primary — deep vs muted */
+  .deep .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .mut  .btn.pri{background:var(--soft2);color:var(--accent);border-color:var(--accent-mut);}
+  .ic{display:inline-flex;vertical-align:-2px;margin-right:5px;}
+  .ic svg{width:15px;height:15px;}
+</style>
+</head>
+<body>
+  <h1>Payobook — pale-fill palette options</h1>
+  <p class="sub">Same screen, four combinations. Pick one <b>accent</b> style (down each column) and one <b>surface</b> style (across each row). Use the hue switcher to preview other menus.</p>
+
+  <div class="controls">
+    <div class="cgroup">
+      <span class="clabel">Preview hue (zone)</span>
+      <div class="seg" id="hueSeg">
+        <button data-hue="emp" class="on">Employees · Celeste</button>
+        <button data-hue="con">Contracts · Lav. Blush</button>
+        <button data-hue="run">Pay Runs · Lilac</button>
+        <button data-hue="itg">Integrations · Sky</button>
+      </div>
+    </div>
+    <div class="hint" id="hint">Each <b>column</b> = an accent style, each <b>row</b> = a surface style. Tell me the combo you like (e.g. “soft-muted + flat”).</div>
+  </div>
+
+  <div class="grid">
+    <!-- col 1: muted -->
+    <div class="opt">
+      <div class="opt-h"><span class="t">Soft-muted accent</span><span class="d">+ Flat &amp; airy</span></div>
+      <div class="zone mut flat" data-zone>__ZONE__</div>
+    </div>
+    <!-- col 2: deep -->
+    <div class="opt">
+      <div class="opt-h"><span class="t">Saturated-deep accent</span><span class="d">+ Flat &amp; airy</span></div>
+      <div class="zone deep flat" data-zone>__ZONE__</div>
+    </div>
+    <div class="opt">
+      <div class="opt-h"><span class="t">Soft-muted accent</span><span class="d">+ Soft elevation</span></div>
+      <div class="zone mut elev" data-zone>__ZONE__</div>
+    </div>
+    <div class="opt">
+      <div class="opt-h"><span class="t">Saturated-deep accent</span><span class="d">+ Soft elevation</span></div>
+      <div class="zone deep elev" data-zone>__ZONE__</div>
+    </div>
+  </div>
+
+<script>
+const I = {
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  file:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>',
+  plug:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v6"/><path d="M15 2v6"/><path d="M7 8h10v3a5 5 0 0 1-10 0z"/><path d="M12 16v6"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+  filter:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>',
+};
+const HUES = {
+  emp:{icon:'users', title:'Employees', mt:'128 active people · 6 departments', chips:['All','Active','On leave'],
+       k:[['128','Headcount','a'],['6','Departments',''],['₫421M','Payroll','g']],
+       card:['JD','Jane Doe','Senior Engineer · Hanoi','Active'],
+       vars:'--fill:#B2FFFF;--soft:#E9FCFD;--soft2:#D6F8FA;--accent:#0E7490;--accent-mut:#5C97A0;--aink:#06363F;--bd:#CDEFF2;'},
+  con:{icon:'file', title:'Contracts', mt:'94 running · 5 ending this month', chips:['All','Running','Ending'],
+       k:[['94','Running','a'],['5','Ending',''],['₫388M','Committed','g']],
+       card:['NT','Nguyen Tran','Permanent · since 2022','Running'],
+       vars:'--fill:#FFF0F5;--soft:#FFF5F9;--soft2:#FBE3EC;--accent:#B0436E;--accent-mut:#C58AA1;--aink:#4A1530;--bd:#F3D3DF;'},
+  run:{icon:'play', title:'Pay Runs', mt:'June 2026 · approvals in progress', chips:['All','Draft','Approval'],
+       k:[['3','Open runs','a'],['128','Payslips',''],['₫421M','Net','g']],
+       card:['06','June 2026 · Monthly','128 payslips · level 2','Approval'],
+       vars:'--fill:#E9EFFD;--soft:#F1F4FD;--soft2:#DCE3FB;--accent:#4F46E5;--accent-mut:#8388CE;--aink:#1E1B2E;--bd:#CBD2F3;'},
+  itg:{icon:'plug', title:'Integrations', mt:'5 connectors · 4 healthy', chips:['All','Connected','Error'],
+       k:[['5','Connectors','a'],['12k','Synced',''],['1h','Last sync','g']],
+       card:['ZO','Zoho People','API · synced 42m ago','Connected'],
+       vars:'--fill:#E6F3FB;--soft:#EFF7FD;--soft2:#D6EBF8;--accent:#1C6CA8;--accent-mut:#6E9CC4;--aink:#123A55;--bd:#C9E3F4;'},
+};
+function render(h){
+  const z = HUES[h];
+  const chips = z.chips.map((c,i)=>`<div class="chip ${i===1?'on':''}"><span class="ic">${I.filter}</span>${c}<span class="c">${i===0?'12':i===1?'9':'3'}</span></div>`).join('');
+  const kpis = z.k.map((k,i)=>`<div class="kpi ${i===0?'feat':''}"><div class="v ${k[2]}">${k[0]}</div><div class="l">${k[1]}</div></div>`).join('');
+  return `
+    <div class="hero">
+      <div class="av">${I[z.icon]}</div>
+      <div style="flex:1">
+        <div class="nm">${z.title}</div><div class="mt">${z.mt}</div>
+        <div class="hchips"><span class="hchip">This month</span><span class="hchip">Company: Payobook</span></div>
+      </div>
+    </div>
+    <div class="kpis">${kpis}</div>
+    <div class="chips">${chips}</div>
+    <div class="card"><div class="pic">${z.card[0]}</div><div><div class="nm">${z.card[1]}</div><div class="sm">${z.card[2]}</div></div><span class="badge">${z.card[3]}</span></div>
+    <div class="btns"><button class="btn pri"><span class="ic">${I.plus}</span>New ${z.title.replace(/s$/,'')}</button><button class="btn out"><span class="ic">${I.filter}</span>Filters</button></div>`;
+}
+function paint(h){
+  document.querySelectorAll('[data-zone]').forEach(el=>{ el.setAttribute('style',HUES[h].vars); el.innerHTML=render(h); });
+}
+document.getElementById('hueSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  document.querySelectorAll('#hueSeg button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  paint(b.dataset.hue);
+});
+paint('emp');
+</script>
+</body>
+</html>
