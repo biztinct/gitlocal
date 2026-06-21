@@ -31,6 +31,10 @@
             <xpath expr="//field[@name='source_type']" position="attributes">
                 <attribute name="class">pb-imb-segmented</attribute>
             </xpath>
+
+            <xpath expr="//field[@name='payroll_period']" position="attributes">
+                <attribute name="class">pb-imb-segmented</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>

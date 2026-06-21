@@ -14,9 +14,12 @@ const IC = {
     receipt: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M12 17.5v-11"/>',
     file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
     x: '<path d="M18 6 6 18M6 6l12 12"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
 };
 const STEPS = ["Source & file", "Review & match", "Validate", "Commit"];
 const LINE_CLS = { matched: "ok", validated: "ok", processed: "ok", new: "new", unmatched: "warn", error: "err", draft: "muted" };
+const LINE_LABEL = { matched: "Matched", validated: "Validated", processed: "Processed", unmatched: "Unmatched", error: "Error", draft: "Pending" };
 
 export class ImportWizard extends Component {
     static template = "pb_import_wizard.ImportWizard";
@@ -30,8 +33,9 @@ export class ImportWizard extends Component {
             step: 1, loading: false, busyMsg: "",
             defaults: null,
             form: { name: "", source_type: "excel", formula_config_id: "", connector_id: "",
-                    date_from: "", date_to: "", file_b64: "", file_name: "" },
+                    date_from: "", date_to: "", file_b64: "", file_name: "", period: "" },
             summary: null,
+            match: { lineId: null, term: "", results: [] },
         });
         onWillStart(async () => {
             const d = await this.orm.call("pb.import.wizard", "get_defaults", []);
@@ -45,9 +49,51 @@ export class ImportWizard extends Component {
     ic(n, s = 16) { return markup(`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n] || IC.check}</svg>`); }
     get steps() { return STEPS; }
     lineCls(s) { return LINE_CLS[s] || "muted"; }
+    lineLabel(l) { return l.is_new ? "New employee" : (LINE_LABEL[l.state] || l.state); }
 
     onField(f, ev) { this.state.form[f] = ev.target.value; }
     setSource(id) { this.state.form.source_type = id; }
+
+    // period preset chips — fill the date inputs (mirrors the native form)
+    applyPeriod(p) {
+        this.state.form.period = p.id;
+        if (p.id !== "custom") {
+            this.state.form.date_from = p.date_from;
+            this.state.form.date_to = p.date_to;
+        }
+    }
+
+    // ---- inline manual match (validate step) ----
+    openMatch(lineId) {
+        const m = this.state.match;
+        m.lineId = m.lineId === lineId ? null : lineId;
+        m.term = ""; m.results = [];
+        if (m.lineId) this._searchEmp("");
+    }
+    async onMatchSearch(ev) {
+        this.state.match.term = ev.target.value;
+        await this._searchEmp(ev.target.value);
+    }
+    async _searchEmp(term) {
+        try {
+            this.state.match.results = await this.orm.call(
+                "pb.import.wizard", "search_employees", [term, 12]);
+        } catch (e) {
+            this.state.match.results = [];
+        }
+    }
+    async pickEmployee(empId) {
+        const lineId = this.state.match.lineId;
+        if (!lineId) return;
+        this.state.summary = await this.orm.call(
+            "pb.import.wizard", "match_line", [lineId, empId, false]);
+        this.state.match.lineId = null; this.state.match.results = [];
+    }
+    async markNewEmployee(lineId) {
+        this.state.summary = await this.orm.call(
+            "pb.import.wizard", "match_line", [lineId, false, true]);
+        this.state.match.lineId = null; this.state.match.results = [];
+    }
     onFile(ev) {
         const f = ev.target.files && ev.target.files[0];
         if (!f) return;

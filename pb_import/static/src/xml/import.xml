@@ -41,11 +41,12 @@
         <div class="pbm-launches" t-if="secondaryLaunches.length">
           <button t-foreach="secondaryLaunches" t-as="l" t-key="l.xmlid"
                   class="pbm-launch" t-on-click="() => this.launch(l.xmlid)">
+            <span class="pbm-launch-ic"><t t-out="tileIcon(l.icon)"/></span>
             <span class="tx">
               <span class="lb" t-esc="l.label"/>
               <span class="ds" t-esc="l.desc"/>
             </span>
-            <span class="ar">→</span>
+            <span class="ar"><t t-out="pipeIcon()"/></span>
           </button>
         </div>
 
@@ -54,10 +55,11 @@
           <div class="pbm-panel-h"><h2>Import pipeline</h2><span class="pbm-tag">map → validate → commit</span></div>
           <div class="pbm-pipe">
             <t t-foreach="state.pipeline" t-as="p" t-key="p.key">
-              <div class="pbm-pipe-step">
+              <button class="pbm-pipe-step" t-on-click="() => this.pipeClick(p.key)"
+                      t-att-title="'Show ' + p.label + ' batches'">
                 <div t-attf-class="pbm-pipe-num {{ p.count ? 'on' : '' }}" t-esc="p.count"/>
                 <div class="pbm-pipe-lbl" t-esc="p.label"/>
-              </div>
+              </button>
               <div t-if="!p_last" class="pbm-pipe-arrow">→</div>
             </t>
           </div>

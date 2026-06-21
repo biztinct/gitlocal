@@ -7,7 +7,8 @@
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base'],
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_import_kit',
+                'pb_import_batch', 'pb_import_advanced'],
     'data': [
         'views/pb_import_action.xml',
     ],

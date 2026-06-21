@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_import_advanced.ConnectorCockpit">
+    <div class="pbim pbim-page pbcc">
+
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading connector…</span></div>
+
+      <div t-elif="d.error" class="pbim-wrap">
+        <div class="pbim-panel"><div class="pbim-empty"><t t-esc="d.error"/></div>
+          <div style="text-align:center"><button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Back to Import</button></div>
+        </div>
+      </div>
+
+      <div t-else="" class="pbim-wrap pbcc-wrap">
+
+        <!-- top bar -->
+        <div class="pbcc-top">
+          <button class="pbim-btn ghost" t-on-click="back"><t t-out="ic('back',15)"/> Import data</button>
+          <button class="pbim-btn outline" t-on-click="openAdvancedForm"><t t-out="ic('settings',15)"/> Advanced form</button>
+        </div>
+
+        <!-- hero -->
+        <div class="pbim-hero pbcc-hero">
+          <div class="pbim-hero-av"><t t-out="ic(d.icon, 24)"/></div>
+          <div class="pbim-hero-id">
+            <div class="nm" t-esc="d.name"/>
+            <div class="pbim-hero-chips">
+              <span class="pbim-chip"><t t-out="ic('plug',13)"/> <t t-esc="d.type_label"/></span>
+              <span t-if="d.api_endpoint" class="pbim-chip"><t t-out="ic('link',13)"/> <t t-esc="d.api_endpoint"/></span>
+              <span t-if="d.last_sync" class="pbim-chip"><t t-out="ic('refresh',13)"/> Last sync <t t-esc="d.last_sync"/></span>
+            </div>
+          </div>
+          <div class="pbcc-hero-state">
+            <span t-attf-class="pbim-badge {{ d.status }}"><span class="d"/><t t-esc="d.status_label"/></span>
+          </div>
+        </div>
+
+        <!-- action bar -->
+        <div class="pbcc-actions" t-if="d.next_actions and d.next_actions.length">
+          <div class="left">
+            <button t-foreach="d.next_actions" t-as="a" t-key="a.method"
+                    t-attf-class="pbim-btn {{ a.kind }}" t-on-click="() => this.runAction(a.method)">
+              <t t-out="ic(a.icon, 15)"/> <t t-esc="a.label"/>
+            </button>
+          </div>
+          <div class="right">
+            <button t-if="d.status === 'connected' and d.type !== 'excel'" class="pbim-btn outline" t-on-click="openSync">
+              <t t-out="ic('refresh',15)"/> Guided pull…</button>
+            <button class="pbim-btn outline" t-on-click="() => this.openLink('action_launch_payroll_import')">
+              <t t-out="ic('upload',15)"/> Start payroll import</button>
+          </div>
+        </div>
+
+        <!-- error / message strip -->
+        <div t-if="d.last_error" class="pbcc-msg err"><t t-out="ic('alert',15)"/> <t t-esc="d.last_error"/></div>
+        <div t-elif="d.sync_message" class="pbcc-msg"><t t-out="ic('checkCircle',15)"/> <t t-esc="d.sync_message"/></div>
+
+        <!-- sections grid -->
+        <div class="pbcc-cols">
+
+          <!-- mappings -->
+          <div class="pbim-panel">
+            <div class="pbim-panel-h">
+              <h2 class="pbim-h2">Field mappings <span class="pbcc-count" t-esc="d.mapping_count"/></h2>
+              <button t-if="d.mapping_count" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openLink('action_view_mappings')">Open all</button>
+            </div>
+            <div t-if="d.mappings.length" class="pbim-tablewrap pbcc-tw">
+              <table class="pbim-table">
+                <thead><tr><th>Source</th><th>Target rule</th><th>Transform</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="d.mappings" t-as="m" t-key="m.id">
+                    <td><span class="pbcc-src" t-esc="m.label"/><span t-if="m.required" class="pbcc-req">required</span></td>
+                    <td t-esc="m.target or '—'"/>
+                    <td class="mono" t-esc="m.transform"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div t-else="" class="pbim-empty">No field mappings yet. Use “Fetch fields” to discover them.</div>
+          </div>
+
+          <!-- side: data store + rules -->
+          <div class="pbcc-side">
+            <div class="pbim-panel pbcc-mini">
+              <div class="pbcc-mini-h"><span class="ic"><t t-out="ic('database',18)"/></span>
+                <div><div class="n" t-esc="d.data_store_count"/><div class="l">Staged records</div></div></div>
+              <button t-if="d.data_store_count" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openLink('action_view_data_store')">View data store</button>
+            </div>
+
+            <div class="pbim-panel">
+              <div class="pbim-panel-h"><h2 class="pbim-h2">Transformations <span class="pbcc-count" t-esc="d.rules.length"/></h2></div>
+              <div t-if="d.rules.length" class="pbcc-rules">
+                <div t-foreach="d.rules" t-as="r" t-key="r.id" class="pbcc-rule">
+                  <span class="nm" t-esc="r.name"/>
+                  <span t-attf-class="pbim-badge {{ r.active ? 'ok' : 'muted' }}"><t t-esc="r.active ? 'Active' : 'Off'"/></span>
+                </div>
+              </div>
+              <div t-else="" class="pbim-empty">No transformation rules.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div t-if="state.busy" class="pbcc-overlay"><div class="pbim-spin"/><span t-esc="state.busyMsg"/></div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,78 @@
+// =====================================================================
+//  Payobook Import — powder-blue tokens (LOCKED design language)
+//  Loaded first in the bundle, so these $vars are in scope for every
+//  later import SCSS file, and the mixin surfaces them as CSS custom
+//  properties on any .pbim root.
+// =====================================================================
+
+// --- powder primary (soft-fill, DARK ink on it — never white) ---
+$pbim-primary:        #a9c4fa;
+$pbim-primary-hover:  #8fb2f5;
+$pbim-primary-strong: #4D6FBF;
+$pbim-ink:            #1E2A52;   // text/icon colour ON powder fills
+
+// --- powder softs ---
+$pbim-soft:   #dbe5ff;
+$pbim-soft2:  #c0edfd;
+$pbim-sky:    #bfe3ff;
+
+// --- neutrals ---
+$pbim-text:    #1B1733;
+$pbim-muted:   #6E6A85;
+$pbim-line:    #E7E5F2;
+$pbim-line-2:  #EEF0F8;
+$pbim-bg:      #F4F5FB;
+$pbim-surface: #ffffff;
+
+// --- semantic ---
+$pbim-green:      #059669;
+$pbim-green-soft: #E7F6EF;
+$pbim-rose:       #E11D48;
+$pbim-rose-soft:  #FDECEC;
+$pbim-amber:      #B45309;
+$pbim-amber-soft: #FDF3E2;
+$pbim-cyan:       #0E7490;
+$pbim-cyan-soft:  #E0F4F9;
+$pbim-slate:      #64748B;
+$pbim-slate-soft: #EEF1F5;
+
+// --- shape ---
+$pbim-r:     14px;
+$pbim-r-sm:  10px;
+$pbim-r-lg:  18px;
+$pbim-pill:  999px;
+$pbim-sh:    0 8px 24px rgba(16, 12, 40, .07);
+$pbim-sh-lg: 0 18px 44px rgba(40, 50, 90, .12);
+
+// Emit the tokens as CSS custom properties so OWL roots can theme and so
+// the .pbim-* primitives can be re-tinted by a surface if ever needed.
+@mixin pbim-root-vars {
+    --pbim-primary:        #{$pbim-primary};
+    --pbim-primary-hover:  #{$pbim-primary-hover};
+    --pbim-primary-strong: #{$pbim-primary-strong};
+    --pbim-ink:            #{$pbim-ink};
+    --pbim-soft:           #{$pbim-soft};
+    --pbim-soft2:          #{$pbim-soft2};
+    --pbim-sky:            #{$pbim-sky};
+    --pbim-text:           #{$pbim-text};
+    --pbim-muted:          #{$pbim-muted};
+    --pbim-line:           #{$pbim-line};
+    --pbim-line-2:         #{$pbim-line-2};
+    --pbim-bg:             #{$pbim-bg};
+    --pbim-surface:        #{$pbim-surface};
+    --pbim-green:          #{$pbim-green};
+    --pbim-green-soft:     #{$pbim-green-soft};
+    --pbim-rose:           #{$pbim-rose};
+    --pbim-rose-soft:      #{$pbim-rose-soft};
+    --pbim-amber:          #{$pbim-amber};
+    --pbim-amber-soft:     #{$pbim-amber-soft};
+    --pbim-cyan:           #{$pbim-cyan};
+    --pbim-cyan-soft:      #{$pbim-cyan-soft};
+    --pbim-slate:          #{$pbim-slate};
+    --pbim-slate-soft:     #{$pbim-slate-soft};
+    --pbim-r:              #{$pbim-r};
+    --pbim-r-sm:           #{$pbim-r-sm};
+    --pbim-r-lg:           #{$pbim-r-lg};
+    --pbim-sh:             #{$pbim-sh};
+    --pbim-sh-lg:          #{$pbim-sh-lg};
+}

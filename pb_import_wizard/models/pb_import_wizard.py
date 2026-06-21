@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import calendar
 import logging
+from datetime import date, timedelta
+
 from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
@@ -10,6 +13,28 @@ SOURCES = [
     {'id': 'api_data_store', 'label': 'API data store'},
     {'id': 'manual', 'label': 'Manual entry'},
 ]
+
+
+def _period_presets():
+    """Quick period chips for step 1 — mirrors hr.payroll.import.batch
+    _onchange_payroll_period so the dates match the native form."""
+    today = date.today()
+    last_day = calendar.monthrange(today.year, today.month)[1]
+    first_cur = today.replace(day=1)
+    last_prev = first_cur - timedelta(days=1)
+    def iso(d):
+        return d.isoformat()
+    return [
+        {'id': 'current', 'label': 'This month',
+         'date_from': iso(first_cur), 'date_to': iso(today.replace(day=last_day))},
+        {'id': 'previous', 'label': 'Last month',
+         'date_from': iso(last_prev.replace(day=1)), 'date_to': iso(last_prev)},
+        {'id': 'mid_cycle', 'label': 'Mid cycle',
+         'date_from': iso(first_cur), 'date_to': iso(today.replace(day=15))},
+        {'id': 'end_cycle', 'label': 'End cycle',
+         'date_from': iso(first_cur), 'date_to': iso(today.replace(day=last_day))},
+        {'id': 'custom', 'label': 'Custom', 'date_from': '', 'date_to': ''},
+    ]
 
 
 def _err(e):
@@ -50,6 +75,7 @@ class PbImportWizard(models.AbstractModel):
             'sources': SOURCES,
             'configs': configs,
             'connectors': connectors,
+            'periods': _period_presets(),
         }
 
     # ---------------- summary ----------------
@@ -166,4 +192,34 @@ class PbImportWizard(models.AbstractModel):
                 line.action_skip()
         except Exception as e:
             _logger.debug("fix_line failed: %s", e)
+        return self.get_summary(line.batch_id.id)
+
+    # ---------------- inline manual match (mirrors line match wizard action_confirm) ----------------
+    @api.model
+    def search_employees(self, term, limit=20):
+        """Typeahead for the inline manual-match picker."""
+        term = (term or '').strip()
+        dom = []
+        if term:
+            dom = ['|', '|', ('name', 'ilike', term),
+                   ('barcode', 'ilike', term), ('work_email', 'ilike', term)]
+        out = []
+        for e in self.env['hr.employee'].search(dom, limit=limit):
+            out.append({'id': e.id, 'name': e.name,
+                        'code': e.barcode or '', 'email': e.work_email or ''})
+        return out
+
+    @api.model
+    def match_line(self, line_id, employee_id=False, create_new=False):
+        """Resolve one line: attach an existing employee, or flag a new one
+        to be created on commit. Replicates hr.payroll.import.line.match.wizard."""
+        line = self.env['hr.payroll.import.line'].browse(line_id)
+        try:
+            if create_new:
+                line.write({'is_new_employee': True, 'employee_id': False, 'state': 'matched'})
+            elif employee_id:
+                line.write({'employee_id': int(employee_id),
+                            'is_new_employee': False, 'state': 'matched'})
+        except Exception as e:
+            _logger.debug("match_line failed: %s", e)
         return self.get_summary(line.batch_id.id)
