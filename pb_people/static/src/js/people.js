@@ -1,10 +1,23 @@
 /** @odoo-module **/
-
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { ic } from "@pb_import_kit/js/import_icons";
 
-const STATE_CLS = { open: "running", close: "expired", draft: "new", cancel: "cancel", none: "none" };
+const STATE_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted", none: "muted" };
+const STATUS_CHIPS = [
+    { id: "all", label: "All" },
+    { id: "running", label: "Running" },
+    { id: "expiring", label: "Expiring soon" },
+    { id: "new", label: "New this month" },
+    { id: "none", label: "No contract" },
+];
+const DATE_CHIPS = [
+    { id: "all", label: "All time" },
+    { id: "month", label: "Joined this month" },
+    { id: "year", label: "Joined this year" },
+    { id: "custom", label: "Custom" },
+];
 
 export class PbPeople extends Component {
     static template = "pb_people.PbPeople";
@@ -13,20 +26,13 @@ export class PbPeople extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.notif = useService("notification");
         this.state = useState({
-            loaded: false,
-            view: "people",          // people | contracts
-            currency: "",
-            kpis: {},
-            departments: [],
-            people: [],
-            contracts: [],
-            peopleTotal: 0,
-            contractsTotal: 0,
-            shown: 0,
-            search: "",
-            dept: "",
-            status: "",             // "", running, expired, none, ready
+            loaded: false, currency: "", kpis: {}, departments: [],
+            people: [], peopleTotal: 0, shown: 0,
+            search: "", dept: "", status: "all",
+            dateFilter: "all", from: "", to: "",
+            selectMode: false, selected: [], bulkDept: "",
         });
         onWillStart(async () => { await this.load(); });
     }
@@ -35,11 +41,13 @@ export class PbPeople extends Component {
         const d = await this.orm.call("pb.people", "get_roster_data", []);
         Object.assign(this.state, {
             currency: d.currency, kpis: d.kpis, departments: d.departments,
-            people: d.people, contracts: d.contracts,
-            peopleTotal: d.people_total, contractsTotal: d.contracts_total,
-            shown: d.shown, loaded: true,
+            people: d.people, peopleTotal: d.people_total, shown: d.shown, loaded: true,
         });
     }
+
+    ic(n, s = 16) { return ic(n, s); }
+    get statusChips() { return STATUS_CHIPS; }
+    get dateChips() { return DATE_CHIPS; }
 
     // ---- formatting ----
     money(n) {
@@ -55,44 +63,95 @@ export class PbPeople extends Component {
         if (!n) return (this.state.currency || "₫") + "0";
         return (this.state.currency || "₫") + Math.round(n).toLocaleString("en-US");
     }
-    stateCls(s) { return STATE_CLS[s] || "none"; }
+    stateCls(s) { return STATE_CLS[s] || "muted"; }
 
     // ---- filtering ----
-    setView(v) { this.state.view = v; }
-    setStatus(s) { this.state.status = this.state.status === s ? "" : s; }
+    setStatus(s) { this.state.status = s; }
     setDept(d) { this.state.dept = this.state.dept === d ? "" : d; }
+    setDate(d) { this.state.dateFilter = d; }
     onSearch(ev) { this.state.search = (ev.target.value || "").toLowerCase(); }
+    onFrom(ev) { this.state.from = ev.target.value; }
+    onTo(ev) { this.state.to = ev.target.value; }
 
+    _monthStart() { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), 1).toISOString().slice(0, 10); }
+    _yearStart() { return new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10); }
+
+    _matchStatus(p, st) {
+        if (st === "all") return true;
+        if (st === "running") return p.state === "open";
+        if (st === "expiring") return p.days_to_expiry !== null && p.days_to_expiry >= 0 && p.days_to_expiry <= 30;
+        if (st === "new") return p.join_date && p.join_date >= this._monthStart();
+        if (st === "none") return p.state === "none";
+        return true;
+    }
+    _inStatus(p) { return this._matchStatus(p, this.state.status); }
+    _inDate(p) {
+        const f = this.state.dateFilter;
+        if (f === "all") return true;
+        if (!p.join_date) return false;
+        if (f === "month") return p.join_date >= this._monthStart();
+        if (f === "year") return p.join_date >= this._yearStart();
+        if (f === "custom") {
+            if (this.state.from && p.join_date < this.state.from) return false;
+            if (this.state.to && p.join_date > this.state.to) return false;
+            return true;
+        }
+        return true;
+    }
     get filteredPeople() {
-        const q = this.state.search, dept = this.state.dept, st = this.state.status;
+        const q = this.state.search, dept = this.state.dept;
         return this.state.people.filter(p => {
             if (dept && p.dept !== dept) return false;
-            if (st === "ready" && !p.ready) return false;
-            if (st && st !== "ready" && p.state !== st) return false;
+            if (!this._inStatus(p)) return false;
+            if (!this._inDate(p)) return false;
             if (q && !(p.name.toLowerCase().includes(q) || (p.job || "").toLowerCase().includes(q) || (p.dept || "").toLowerCase().includes(q))) return false;
             return true;
         });
     }
-    get filteredContracts() {
-        const q = this.state.search, st = this.state.status;
-        return this.state.contracts.filter(c => {
-            if (st && st !== "ready" && c.state !== st) return false;
-            if (q && !(c.employee.toLowerCase().includes(q) || (c.name || "").toLowerCase().includes(q))) return false;
-            return true;
-        });
+    countStatus(id) { return this.state.people.filter(p => this._matchStatus(p, id)).length; }
+
+    // ---- bulk selection ----
+    toggleSelectMode() { this.state.selectMode = !this.state.selectMode; if (!this.state.selectMode) { this.state.selected = []; } }
+    isSelected(id) { return this.state.selected.includes(id); }
+    toggleSelect(id) {
+        const i = this.state.selected.indexOf(id);
+        if (i >= 0) this.state.selected.splice(i, 1); else this.state.selected.push(id);
+    }
+    selectAllVisible() { this.state.selected = this.filteredPeople.map(p => p.id); }
+    clearSelection() { this.state.selected = []; }
+    onCard(p) { if (this.state.selectMode) this.toggleSelect(p.id); else this.openEmployee(p.id); }
+
+    async bulkSetDept(ev) {
+        const deptId = ev.target.value;
+        if (!deptId || !this.state.selected.length) return;
+        const res = await this.orm.call("pb.people", "bulk_apply", [this.state.selected, "set_department", deptId]);
+        if (res.error) { this.notif.add(res.error, { type: "danger" }); return; }
+        this.notif.add(`${res.count} employees moved.`, { type: "success" });
+        this.state.selected = []; this.state.bulkDept = ""; await this.load();
+    }
+    bulkExport() {
+        const ids = this.state.selected.length ? this.state.selected : this.filteredPeople.map(p => p.id);
+        const rows = this.state.people.filter(p => ids.includes(p.id));
+        const head = ["Name", "Job", "Department", "Email", "Contract", "Wage", "Joined"];
+        const esc = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"';
+        const lines = [head.map(esc).join(",")];
+        for (const p of rows) lines.push([p.name, p.job, p.dept, p.email, p.state_label, p.wage, p.join_date].map(esc).join(","));
+        const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "employees.csv"; a.click();
+        URL.revokeObjectURL(url);
     }
 
     // ---- navigation ----
     openEmployee(id) {
         if (!id) return;
-        this.action.doAction({ type: "ir.actions.act_window", res_model: "hr.employee", res_id: id, views: [[false, "form"]], target: "current" });
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_employee_detail", name: "Employee", params: { emp_id: id } });
     }
-    openContract(id) {
-        if (!id) return;
-        this.action.doAction({ type: "ir.actions.act_window", res_model: "hr.contract", res_id: id, views: [[false, "form"]], target: "current" });
+    addEmployee() {
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_onboard_wizard", name: "Add employee" });
     }
     openAllEmployees() { this.action.doAction("pb_hr_payroll_base.action_hr_employee_payroll", { clearBreadcrumbs: true }); }
-    openAllContracts() { this.action.doAction("pb_hr_payroll_base.action_hr_contract_payroll", { clearBreadcrumbs: true }); }
 }
 
 registry.category("actions").add("pb_people", PbPeople);

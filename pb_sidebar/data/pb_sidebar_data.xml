@@ -84,8 +84,10 @@
     <record id="item_contracts" model="pb.sidebar.item">
         <field name="section_id" ref="sec_people"/><field name="name">Contracts</field>
         <field name="icon">file</field><field name="sequence">20</field>
-        <field name="action_xmlid">pb_hr_payroll_base.action_hr_contract_payroll</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_contracts</field>
         <field name="match_models">hr.contract</field>
+        <field name="match_action_tags">pb_contracts</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
 

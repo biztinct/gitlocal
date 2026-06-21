@@ -1,0 +1,7 @@
+// Contracts landing + detail. Shared .ppl-people / .ppl-detail layout + the
+// light-teal theme come from pb_import_kit/static/src/scss/theme_people.scss.
+.ppl-contracts {
+    .ppl-kpis { grid-template-columns: repeat(6, 1fr); }
+    @media (max-width: 1100px) { .ppl-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .ppl-kpis { grid-template-columns: repeat(2, 1fr); } }
+}

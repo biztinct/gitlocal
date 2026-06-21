@@ -1,120 +1,112 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
   <t t-name="pb_people.PbPeople">
-    <div class="pbp">
-      <div t-if="!state.loaded" class="pbp-loading"><div class="pbp-spinner"/><span>Loading people…</span></div>
+    <div class="pbim ppl pbim-page ppl-people">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading people…</span></div>
 
-      <div t-else="" class="pbp-wrap">
+      <div t-else="" class="pbim-wrap">
+
         <!-- header -->
-        <div class="pbp-head">
+        <div class="ppl-head">
           <div>
-            <h1>People</h1>
-            <p class="pbp-sub">Workforce roster, contract status and payroll readiness.</p>
+            <h1 class="pbim-h1">Employees</h1>
+            <p class="pbim-sub">Your people, contract status and payroll readiness at a glance.</p>
           </div>
-          <div class="pbp-seg">
-            <button t-att-class="state.view === 'people' ? 'active' : ''" t-on-click="() => this.setView('people')">Employees</button>
-            <button t-att-class="state.view === 'contracts' ? 'active' : ''" t-on-click="() => this.setView('contracts')">Contracts</button>
-          </div>
-        </div>
-
-        <!-- KPI strip -->
-        <div class="pbp-kpis">
-          <div class="pbp-kpi"><span class="v" t-esc="state.kpis.headcount"/><span class="l">Active headcount</span></div>
-          <div class="pbp-kpi"><span class="v green" t-esc="state.kpis.running"/><span class="l">Running contracts</span></div>
-          <div class="pbp-kpi"><span class="v amber" t-esc="state.kpis.expiring"/><span class="l">Expired contracts</span></div>
-          <div class="pbp-kpi"><span class="v" t-esc="moneyFull(state.kpis.total_wage)"/><span class="l">Monthly contracted wage</span></div>
-          <div class="pbp-kpi"><span class="v indigo"><t t-esc="state.kpis.ready_pct"/>%</span><span class="l">Bank details on file</span></div>
-        </div>
-
-        <!-- toolbar -->
-        <div class="pbp-toolbar">
-          <div class="pbp-srch">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" placeholder="Search name, job, department…" t-on-input="onSearch"/>
-          </div>
-          <div class="pbp-chips">
-            <t t-if="state.view === 'people'">
-              <button t-att-class="state.status==='' ? 'on' : ''" t-on-click="() => this.setStatus('')">All</button>
-              <button t-att-class="state.status==='open' ? 'on' : ''" t-on-click="() => this.setStatus('open')">Running</button>
-              <button t-att-class="state.status==='close' ? 'on' : ''" t-on-click="() => this.setStatus('close')">Expired</button>
-              <button t-att-class="state.status==='none' ? 'on' : ''" t-on-click="() => this.setStatus('none')">No contract</button>
-              <button t-att-class="state.status==='ready' ? 'on' : ''" t-on-click="() => this.setStatus('ready')">Payroll-ready</button>
-            </t>
-            <t t-else="">
-              <button t-att-class="state.status==='' ? 'on' : ''" t-on-click="() => this.setStatus('')">All</button>
-              <button t-att-class="state.status==='open' ? 'on' : ''" t-on-click="() => this.setStatus('open')">Running</button>
-              <button t-att-class="state.status==='close' ? 'on' : ''" t-on-click="() => this.setStatus('close')">Expired</button>
-              <button t-att-class="state.status==='draft' ? 'on' : ''" t-on-click="() => this.setStatus('draft')">New</button>
-            </t>
+          <div class="ppl-head-actions">
+            <button t-attf-class="pbim-btn {{ state.selectMode ? 'outline' : 'ghost' }}" t-on-click="toggleSelectMode"><t t-out="ic('list',15)"/> <t t-esc="state.selectMode ? 'Done' : 'Select'"/></button>
+            <button class="pbim-btn primary" t-on-click="addEmployee"><t t-out="ic('plus',16)"/> Add employee</button>
           </div>
         </div>
 
-        <!-- department chips (people view) -->
-        <div t-if="state.view === 'people' and state.departments.length" class="pbp-depts">
-          <button t-attf-class="dept {{ state.dept==='' ? 'on' : '' }}" t-on-click="() => this.setDept('')">All departments</button>
-          <button t-foreach="state.departments" t-as="d" t-key="d_index"
-                  t-attf-class="dept {{ state.dept===d.name ? 'on' : '' }}" t-on-click="() => this.setDept(d.name)">
-            <t t-esc="d.name"/> <span class="c" t-esc="d.count"/>
-          </button>
+        <!-- bulk selection bar -->
+        <div t-if="state.selectMode" class="pbim-panel ppl-bulkbar">
+          <span class="ppl-bulk-count"><t t-esc="state.selected.length"/> selected</span>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="selectAllVisible">Select all</button>
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="clearSelection">Clear</button>
+          <div class="ppl-bulk-sp"/>
+          <select class="ppl-bulk-dept" t-att-disabled="!state.selected.length" t-on-change="bulkSetDept">
+            <option value="">Move to department…</option>
+            <option t-foreach="state.departments" t-as="dp" t-key="dp_index" t-if="dp.id" t-att-value="dp.id" t-esc="dp.name"/>
+          </select>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="bulkExport"><t t-out="ic('download',14)"/> Export CSV</button>
         </div>
 
-        <!-- PEOPLE roster -->
-        <t t-if="state.view === 'people'">
-          <div class="pbp-grid">
-            <div t-foreach="filteredPeople" t-as="p" t-key="p.id" class="pbp-card" t-on-click="() => this.openEmployee(p.id)">
-              <div class="pbp-card-top">
-                <div t-attf-class="pbp-av {{ stateCls(p.state) }}" t-esc="p.initials"/>
-                <div class="pbp-id">
-                  <span class="nm" t-esc="p.name"/>
-                  <span class="jb" t-esc="p.job"/>
-                </div>
-                <span t-attf-class="pbp-badge {{ stateCls(p.state) }}"><span class="d"/><t t-esc="p.state_label"/></span>
-              </div>
-              <div class="pbp-card-meta">
-                <span class="dept" t-esc="p.dept"/>
-                <span t-if="p.wage" class="wage" t-esc="money(p.wage)"/>
-              </div>
-              <div class="pbp-card-foot">
-                <span t-if="p.ready" class="rdy ok"><span class="dot"/>Payroll-ready</span>
-                <span t-elif="p.state==='open' and !p.bank" class="rdy warn"><span class="dot"/>No bank details</span>
-                <span t-elif="p.state!=='open'" class="rdy muted"><span class="dot"/>No running contract</span>
-                <span t-else="" class="rdy muted"><span class="dot"/>—</span>
-                <button t-if="p.contract_id" class="lnk" t-on-click.stop="() => this.openContract(p.contract_id)">Contract →</button>
-              </div>
+        <!-- KPI band -->
+        <div class="ppl-kpis">
+          <div class="pbim-stat"><span class="n" t-esc="state.kpis.headcount"/><span class="l">Headcount</span></div>
+          <div class="pbim-stat ok"><span class="n" t-esc="state.kpis.running"/><span class="l">Running contracts</span></div>
+          <div t-attf-class="pbim-stat {{ state.kpis.expiring_soon ? 'err' : '' }}"><span class="n" t-esc="state.kpis.expiring_soon"/><span class="l">Expiring ≤30d</span></div>
+          <div class="pbim-stat new"><span class="n" t-esc="state.kpis.new_hires"/><span class="l">New this month</span></div>
+          <div class="pbim-stat"><span class="n money" t-esc="money(state.kpis.total_wage)"/><span class="l">Monthly wage</span></div>
+          <div class="pbim-stat cyan"><span class="n" t-esc="state.kpis.ready_pct + '%'"/><span class="l">Payroll-ready</span></div>
+        </div>
+
+        <!-- filter bar -->
+        <div class="pbim-panel ppl-filters">
+          <div class="ppl-filter-row">
+            <div class="pbim-chips">
+              <button t-foreach="statusChips" t-as="c" t-key="c.id"
+                      t-attf-class="pbim-fchip {{ state.status === c.id ? 'on' : '' }}" t-on-click="() => this.setStatus(c.id)">
+                <t t-esc="c.label"/> <span class="c" t-esc="countStatus(c.id)"/>
+              </button>
+            </div>
+            <div class="ppl-search">
+              <span class="ic"><t t-out="ic('search',15)"/></span>
+              <input placeholder="Search name, job, department…" t-on-input="onSearch"/>
             </div>
           </div>
-          <div t-if="!filteredPeople.length" class="pbp-empty">No employees match the current filters.</div>
-          <div class="pbp-footnote">
-            Showing <b t-esc="filteredPeople.length"/> of <b t-esc="state.peopleTotal"/> active employees
-            <button class="lnk" t-on-click="openAllEmployees">Open full employee list →</button>
-          </div>
-        </t>
 
-        <!-- CONTRACTS table -->
-        <t t-else="">
-          <div class="pbp-table">
-            <div class="pbp-tr head">
-              <span class="c-emp">Employee</span><span class="c-ref">Contract</span>
-              <span class="c-st">Status</span><span class="c-struct">Structure</span>
-              <span class="c-dt">Start</span><span class="c-dt">End</span><span class="c-wage">Wage</span>
+          <div class="ppl-filter-row">
+            <div class="pbim-chips ppl-dates">
+              <button t-foreach="dateChips" t-as="d" t-key="d.id"
+                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
+                <t t-out="ic('calendar',13)"/> <t t-esc="d.label"/>
+              </button>
+              <t t-if="state.dateFilter === 'custom'">
+                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
+                <span class="ppl-dash">→</span>
+                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
+              </t>
             </div>
-            <div t-foreach="filteredContracts" t-as="c" t-key="c.id" class="pbp-tr" t-on-click="() => this.openContract(c.id)">
-              <span class="c-emp" t-esc="c.employee"/>
-              <span class="c-ref" t-esc="c.name"/>
-              <span class="c-st"><span t-attf-class="pbp-badge sm {{ stateCls(c.state) }}"><span class="d"/><t t-esc="c.state_label"/></span></span>
-              <span class="c-struct" t-esc="c.structure || '—'"/>
-              <span class="c-dt" t-esc="c.date_start || '—'"/>
-              <span class="c-dt" t-esc="c.date_end || '—'"/>
-              <span class="c-wage" t-esc="money(c.wage)"/>
+            <div t-if="state.departments.length" class="pbim-chips ppl-depts">
+              <button t-foreach="state.departments" t-as="dp" t-key="dp_index"
+                      t-attf-class="pbim-fchip {{ state.dept === dp.name ? 'on' : '' }}" t-on-click="() => this.setDept(dp.name)">
+                <t t-esc="dp.name"/> <span class="c" t-esc="dp.count"/>
+              </button>
             </div>
           </div>
-          <div t-if="!filteredContracts.length" class="pbp-empty">No contracts match the current filters.</div>
-          <div class="pbp-footnote">
-            Showing <b t-esc="filteredContracts.length"/> of <b t-esc="state.contractsTotal"/> contracts
-            <button class="lnk" t-on-click="openAllContracts">Open full contract list →</button>
+        </div>
+
+        <!-- roster -->
+        <div t-if="filteredPeople.length" class="ppl-roster">
+          <div t-foreach="filteredPeople" t-as="p" t-key="p.id" t-attf-class="ppl-card {{ state.selectMode and isSelected(p.id) ? 'sel' : '' }}" t-on-click="() => this.onCard(p)">
+            <input t-if="state.selectMode" type="checkbox" class="ppl-cb" t-att-checked="isSelected(p.id)" t-on-click.stop="() => this.toggleSelect(p.id)"/>
+            <div class="ppl-av" t-attf-style="background-image:url({{ p.avatar }})"><span t-if="!p.avatar" t-esc="p.initials"/></div>
+            <div class="ppl-id">
+              <div class="nm" t-esc="p.name"/>
+              <div class="jb"><t t-esc="p.job"/> · <t t-esc="p.dept"/></div>
+            </div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ stateCls(p.state) }}"><span class="d"/><t t-esc="p.state_label"/></span>
+              <span t-if="p.days_to_expiry !== null and p.days_to_expiry >= 0 and p.days_to_expiry &lt;= 30" class="ppl-exp"><t t-out="ic('alert',12)"/> <t t-esc="p.days_to_expiry"/>d</span>
+            </div>
+            <div class="ppl-wage">
+              <span class="v money" t-esc="p.wage ? money(p.wage) : '—'"/>
+              <span class="k">monthly</span>
+            </div>
+            <div class="ppl-ready">
+              <span t-if="p.ready" class="ok" title="Payroll ready"><t t-out="ic('checkCircle',18)"/></span>
+              <span t-else="" class="no" t-att-title="p.bank ? 'No running contract' : 'No bank details'"><t t-out="ic('alert',18)"/></span>
+            </div>
           </div>
-        </t>
+        </div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty">No employees match these filters.</div></div>
+
+        <div class="ppl-foot">
+          Showing <t t-esc="filteredPeople.length"/> of <t t-esc="state.peopleTotal"/> ·
+          <button class="ppl-link" t-on-click="openAllEmployees">Open full employee list →</button>
+        </div>
       </div>
     </div>
   </t>
