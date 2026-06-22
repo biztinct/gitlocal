@@ -10,11 +10,13 @@
     'depends': ['web', 'pb_hr_payroll_formula', 'pb_hr_payroll_base'],
     'data': [
         'views/pb_formula_studio_action.xml',
+        'views/formula_config_view_inherit.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_formula_studio/static/src/scss/studio.scss',
             'pb_formula_studio/static/src/js/formula_studio.js',
+            'pb_formula_studio/static/src/js/formula_config_views.js',
             'pb_formula_studio/static/src/xml/studio.xml',
         ],
     },

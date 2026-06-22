@@ -45,7 +45,11 @@ License: LGPL-3
         'mail',
     ],
     'external_dependencies': {
-        'python': ['formulas', 'openpyxl'],
+        # 'formulas' is an OPTIONAL runtime dep — formula_engine/converter.py does
+        # `try: import formulas / except ImportError: <regex fallback>`. Declaring it
+        # hard here wrongly blocks module upgrade when the package is absent, so it is
+        # intentionally NOT listed. Install it (pip) to enable the richer Excel parser.
+        'python': ['openpyxl'],
     },
     'data': [
         # Security

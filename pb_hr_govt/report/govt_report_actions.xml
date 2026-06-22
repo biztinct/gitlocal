@@ -1,51 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- XLS report registrations -->
-    <report
-        id="report_bhxh630_xlsx"
-        model="pb.govt.report.wizard"
-        string="BHXH630"
-        report_type="xlsx"
-        name="pb_hr_govt.bhxh630_xlsx"
-        file="BHXH630"
-        groups="pb_hr_govt.group_pb_hr_govt_user"
-    />
-    <report
-        id="report_bhxhdstk01_xlsx"
-        model="pb.govt.report.wizard"
-        string="BHXHDSTK01-DV_595"
-        report_type="xlsx"
-        name="pb_hr_govt.bhxhdstk01_xlsx"
-        file="BHXHDSTK01-DV_595"
-        groups="pb_hr_govt.group_pb_hr_govt_user"
-    />
-    <report
-        id="report_bangke_d01_xlsx"
-        model="pb.govt.report.wizard"
-        string="BangKeHS D01"
-        report_type="xlsx"
-        name="pb_hr_govt.bangke_d01_xlsx"
-        file="BangKeHS_D01"
-        groups="pb_hr_govt.group_pb_hr_govt_user"
-    />
-    <report
-        id="report_giam_ld_xlsx"
-        model="pb.govt.report.wizard"
-        string="GiamLaoDong"
-        report_type="xlsx"
-        name="pb_hr_govt.giam_ld_xlsx"
-        file="GiamLaoDong"
-        groups="pb_hr_govt.group_pb_hr_govt_user"
-    />
-    <report
-        id="report_tang_ld_xlsx"
-        model="pb.govt.report.wizard"
-        string="TangLaoDong"
-        report_type="xlsx"
-        name="pb_hr_govt.tang_ld_xlsx"
-        file="TangLaoDong"
-        groups="pb_hr_govt.group_pb_hr_govt_user"
-    />
+    <!-- XLS report registrations. Odoo 19 dropped the <report> shortcut from the
+         data RNG; these are the explicit ir.actions.report equivalents. -->
+    <record id="report_bhxh630_xlsx" model="ir.actions.report">
+        <field name="name">BHXH630</field>
+        <field name="model">pb.govt.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">pb_hr_govt.bhxh630_xlsx</field>
+        <field name="report_file">BHXH630</field>
+        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="report_bhxhdstk01_xlsx" model="ir.actions.report">
+        <field name="name">BHXHDSTK01-DV_595</field>
+        <field name="model">pb.govt.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">pb_hr_govt.bhxhdstk01_xlsx</field>
+        <field name="report_file">BHXHDSTK01-DV_595</field>
+        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="report_bangke_d01_xlsx" model="ir.actions.report">
+        <field name="name">BangKeHS D01</field>
+        <field name="model">pb.govt.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">pb_hr_govt.bangke_d01_xlsx</field>
+        <field name="report_file">BangKeHS_D01</field>
+        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="report_giam_ld_xlsx" model="ir.actions.report">
+        <field name="name">GiamLaoDong</field>
+        <field name="model">pb.govt.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">pb_hr_govt.giam_ld_xlsx</field>
+        <field name="report_file">GiamLaoDong</field>
+        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="report_tang_ld_xlsx" model="ir.actions.report">
+        <field name="name">TangLaoDong</field>
+        <field name="model">pb.govt.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">pb_hr_govt.tang_ld_xlsx</field>
+        <field name="report_file">TangLaoDong</field>
+        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
+        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
 
     <record id="action_govt_monthly_bhxh630" model="ir.actions.server">
         <field name="name">Monthly BHXH630</field>

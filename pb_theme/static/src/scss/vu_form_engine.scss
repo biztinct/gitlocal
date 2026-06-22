@@ -231,16 +231,16 @@
                     box-shadow var(--vuf-t-fast) var(--vuf-ease);
         &:hover { transform: translateY(-1px); }
     }
-    // Soft indigo "chip" buttons — calm on button-dense forms; fill solid on hover.
+    // Solid indigo primary buttons (design-system: one solid brand colour).
     .btn-primary {
-        background: var(--vuf-primary-soft) !important;
-        color: var(--vuf-primary) !important;
-        border-color: #C7CBF5 !important;
+        background: var(--vuf-primary) !important;
+        color: var(--vuf-primary-ink) !important;
+        border-color: var(--vuf-primary) !important;
         box-shadow: none !important;
         &:hover {
-            background: var(--vuf-primary) !important;
-            color: #fff !important;
-            border-color: var(--vuf-primary) !important;
+            background: #4A3D96 !important;
+            color: var(--vuf-primary-ink) !important;
+            border-color: #4A3D96 !important;
         }
     }
     .btn-secondary {

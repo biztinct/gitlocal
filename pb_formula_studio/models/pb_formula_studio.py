@@ -680,13 +680,17 @@ class PbFormulaStudio(models.AbstractModel):
     def create_config(self, vals):
         vals = vals or {}
         Config = self.env['hr.formula.config']
-        cfg = Config.create({
+        cvals = {
             'name': vals.get('name') or 'New Payroll Config',
-            'code': (vals.get('code') or (vals.get('name') or 'NEW')).upper().replace(' ', '_')[:32],
             'country_code': vals.get('country_code') or 'VN',
             'cycle_type': vals.get('cycle_type') or 'regular',
             'state': 'draft',
-        })
+        }
+        # only set code if the caller explicitly supplied one; otherwise let
+        # hr.formula.config.create() auto-generate a unique code from the name.
+        if vals.get('code'):
+            cvals['code'] = vals['code']
+        cfg = Config.create(cvals)
         template = vals.get('template') or 'blank'
         if template == 'vn_standard':
             # Assign column letters explicitly. The model's position-based

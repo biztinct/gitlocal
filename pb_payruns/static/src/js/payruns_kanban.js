@@ -5,6 +5,7 @@ import { useService } from "@web/core/utils/hooks";
 import { onWillStart, onMounted, useState } from "@odoo/owl";
 import { kanbanView } from "@web/views/kanban/kanban_view";
 import { KanbanController } from "@web/views/kanban/kanban_controller";
+import { ic } from "@pb_import_kit/js/import_icons";
 
 function fmt(d) {
     const p = (n) => String(n).padStart(2, "0");
@@ -140,6 +141,7 @@ export class PbPayrunsKanbanController extends KanbanController {
         this._applyDate();
     }
 
+    pbIc(n, s = 20) { return ic(n, s); }
     pbMoney(n) {
         const cur = this.pbState.currency || "₫";
         if (n === null || n === undefined || isNaN(n)) return cur + "0";

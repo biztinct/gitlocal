@@ -487,7 +487,7 @@ a {
 }
 
 .vu-section__icon[data-icon="building"] {
-    background: rgba(92, 97, 157, 0.12);
+    background: rgba(90, 75, 176, 0.12);
     color: #1B4F91;
 
     &::after {
@@ -628,14 +628,12 @@ a {
     z-index: 5;
 }
 
-// Buttons to feel modern
-// Soft indigo buttons — calm "chip" style; fill solid indigo on hover.
-// (Matches the soft success/warning/danger buttons below for consistency.)
+// Solid indigo primary buttons (design system: one solid brand colour).
 .btn-primary,
 .o_form_button_save {
-    background: #ECEDF5;
-    color: #5C619D;
-    border: 1px solid #C9CCE0;
+    background: #5A4BB0;
+    color: #fff;
+    border: 1px solid #5A4BB0;
     border-radius: var(--vu-radius-sm);
     box-shadow: none;
     padding: 6px 16px;
@@ -644,9 +642,9 @@ a {
     transition: background var(--vu-transition-fast), color var(--vu-transition-fast), border-color var(--vu-transition-fast);
 
     &:hover {
-        background: #5C619D;
+        background: #4A3D96;
         color: #fff;
-        border-color: #5C619D;
+        border-color: #4A3D96;
     }
 }
 
@@ -668,13 +666,13 @@ a {
 // Professional selection highlighting
 .o_list_view .o_data_row.o_selected_row,
 .o_list_view .o_data_row:focus {
-    background-color: rgba(92, 97, 157, 0.08); // Deep Blue highlight
+    background-color: rgba(90, 75, 176, 0.08); // Deep Blue highlight
 }
 
 // Healthcare Badge Colors (ID, Age, etc.) - Professional pill-shaped badges
 .badge.bg-info {
-    background: #ECEDF5 !important;
-    color: #312E81 !important;
+    background: #EDEAF8 !important;
+    color: #241F52 !important;
     border: 1.5px solid #0891B2 !important;
     border-radius: 16px !important;
     font-size: 13px !important;
@@ -684,7 +682,7 @@ a {
     transition: all 0.2s ease !important;
 
     strong {
-        color: #5C619D !important;
+        color: #5A4BB0 !important;
         font-weight: 700 !important;
         margin-right: 3px;
     }
@@ -693,7 +691,7 @@ a {
         display: inline-block !important;
         background: transparent !important;
         border: none !important;
-        color: #312E81 !important;
+        color: #241F52 !important;
         padding: 0 !important;
         margin: 0 0 0 3px !important;
         width: 100px !important;
@@ -705,7 +703,7 @@ a {
         span {
             background: transparent !important;
             border: none !important;
-            color: #312E81 !important;
+            color: #241F52 !important;
             padding: 0 !important;
             width: 100px !important;
             min-width: 80px !important;
@@ -722,18 +720,18 @@ a {
 }
 
 .badge.bg-secondary {
-    background: #ECEDF5 !important;
+    background: #EDEAF8 !important;
     color: #155E75 !important;
-    border: 1.5px solid #5C619D !important;
+    border: 1.5px solid #5A4BB0 !important;
     border-radius: 16px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     padding: 3px 10px !important;
-    box-shadow: 0 1px 3px rgba(92, 97, 157, 0.12) !important;
+    box-shadow: 0 1px 3px rgba(90, 75, 176, 0.12) !important;
     transition: all 0.2s ease !important;
 
     strong {
-        color: #5C619D !important;
+        color: #5A4BB0 !important;
         font-weight: 700 !important;
         margin-right: 3px;
     }
@@ -765,7 +763,7 @@ a {
     }
 
     &:hover {
-        box-shadow: 0 2px 6px rgba(92, 97, 157, 0.2) !important;
+        box-shadow: 0 2px 6px rgba(90, 75, 176, 0.2) !important;
         transform: translateY(-1px);
     }
 }
@@ -953,17 +951,17 @@ a {
         }
     }
 
-    // Primary action buttons (oe_highlight, btn-primary) - soft indigo chip
+    // Primary action buttons (oe_highlight, btn-primary) - solid indigo
     button.oe_highlight,
     button.btn-primary {
-        background: #ECEDF5;
-        color: #5C619D;
-        border-color: #C9CCE0;
+        background: #5A4BB0;
+        color: #fff;
+        border-color: #5A4BB0;
 
         &:hover {
-            background: #5C619D;
+            background: #4A3D96;
             color: #fff;
-            border-color: #5C619D;
+            border-color: #4A3D96;
         }
     }
 
@@ -1059,7 +1057,7 @@ a {
     button.btn-primary i.fa,
     button.oe_highlight .fa,
     button.oe_highlight i.fa {
-        color: #5C619D !important;
+        color: #5A4BB0 !important;
     }
     button.btn-primary:hover .fa,
     button.btn-primary:hover i.fa,
@@ -1139,7 +1137,7 @@ a {
     button[name*="log_lead"] i.fa,
     button[name*="log_as_lead"] .fa,
     button[name*="log_as_lead"] i.fa {
-        color: #5C619D !important;
+        color: #5A4BB0 !important;
     }
 
     // Log Activity/Clock - orange icon

@@ -97,7 +97,7 @@
     .vu-progress-rail__indicator {
         background: var(--vu-state-color, var(--vu-brand-primary));
         color: white;
-        box-shadow: 0 0 0 4px var(--vu-state-bg, rgba(92, 97, 157, 0.12));
+        box-shadow: 0 0 0 4px var(--vu-state-bg, rgba(90, 75, 176, 0.12));
         animation: vu-rail-pulse 2.5s ease-in-out infinite;
     }
 
@@ -136,10 +136,10 @@
 // ---------------------------------------------------------------------------
 @keyframes vu-rail-pulse {
     0%, 100% {
-        box-shadow: 0 0 0 3px var(--vu-state-bg, rgba(92, 97, 157, 0.12));
+        box-shadow: 0 0 0 3px var(--vu-state-bg, rgba(90, 75, 176, 0.12));
     }
     50% {
-        box-shadow: 0 0 0 6px var(--vu-state-bg, rgba(92, 97, 157, 0.05));
+        box-shadow: 0 0 0 6px var(--vu-state-bg, rgba(90, 75, 176, 0.05));
     }
 }
 

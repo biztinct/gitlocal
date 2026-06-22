@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <report
-        id="action_report_full_and_final"
-        model="hr.full.final.settlement"
-        string="Full and Final"
-        report_type="qweb-pdf"
-        name="pb_hr_fullandfinal.report_full_and_final_document"
-        file="pb_hr_fullandfinal.report_full_and_final_document"
-        print_report_name="'Full and Final - %s' % (object.employee_id.name)"
-    />
+    <!-- Odoo 19 dropped the <report> shortcut from the data RNG; use an
+         explicit ir.actions.report record (binding adds it to the Print menu). -->
+    <record id="action_report_full_and_final" model="ir.actions.report">
+        <field name="name">Full and Final</field>
+        <field name="model">hr.full.final.settlement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_fullandfinal.report_full_and_final_document</field>
+        <field name="report_file">pb_hr_fullandfinal.report_full_and_final_document</field>
+        <field name="print_report_name">'Full and Final - %s' % (object.employee_id.name)</field>
+        <field name="binding_model_id" ref="model_hr_full_final_settlement"/>
+        <field name="binding_type">report</field>
+    </record>
 
     <template id="report_full_and_final_document">
         <t t-call="web.html_container">
