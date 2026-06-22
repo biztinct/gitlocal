@@ -16,11 +16,11 @@
         </div>
 
         <div class="ppl-kpis">
-          <div class="pbim-stat"><span class="n" t-esc="state.kpis.structures"/><span class="l">Structures</span></div>
-          <div class="pbim-stat new"><span class="n" t-esc="state.kpis.rules"/><span class="l">Salary rules</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="state.kpis.categories"/><span class="l">Categories</span></div>
-          <div class="pbim-stat ok"><span class="n" t-esc="state.kpis.employees"/><span class="l">Employees covered</span></div>
-          <div class="pbim-stat cyan"><span class="n" t-esc="state.kpis.countries"/><span class="l">Countries</span></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('layers',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.structures"/><span class="l">Structures</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('list',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.rules"/><span class="l">Salary rules</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('table',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.categories"/><span class="l">Categories</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.employees"/><span class="l">Employees covered</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('cloud',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.countries"/><span class="l">Countries</span></div></div>
         </div>
 
         <div class="pbim-panel ppl-filters">

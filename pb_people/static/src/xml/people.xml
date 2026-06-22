@@ -34,12 +34,12 @@
 
         <!-- KPI band -->
         <div class="ppl-kpis">
-          <div class="pbim-stat"><span class="n" t-esc="state.kpis.headcount"/><span class="l">Headcount</span></div>
-          <div class="pbim-stat ok"><span class="n" t-esc="state.kpis.running"/><span class="l">Running contracts</span></div>
-          <div t-attf-class="pbim-stat {{ state.kpis.expiring_soon ? 'err' : '' }}"><span class="n" t-esc="state.kpis.expiring_soon"/><span class="l">Expiring ≤30d</span></div>
-          <div class="pbim-stat new"><span class="n" t-esc="state.kpis.new_hires"/><span class="l">New this month</span></div>
-          <div class="pbim-stat"><span class="n money" t-esc="money(state.kpis.total_wage)"/><span class="l">Monthly wage</span></div>
-          <div class="pbim-stat cyan"><span class="n" t-esc="state.kpis.ready_pct + '%'"/><span class="l">Payroll-ready</span></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('users',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.headcount"/><span class="l">Headcount</span></div></div>
+          <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.running"/><span class="l">Running contracts</span></div></div>
+          <div t-attf-class="pbim-stat {{ state.kpis.expiring_soon ? 'err' : '' }}"><span class="pbim-stat-ic amber"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expiring_soon"/><span class="l">Expiring ≤30d</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('user',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.new_hires"/><span class="l">New this month</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.total_wage)"/><span class="l">Monthly wage</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('check',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.ready_pct + '%'"/><span class="l">Payroll-ready</span></div></div>
         </div>
 
         <!-- filter bar -->

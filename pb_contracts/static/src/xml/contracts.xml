@@ -17,12 +17,12 @@
 
         <!-- KPI band -->
         <div class="ppl-kpis">
-          <div class="pbim-stat ok"><span class="n" t-esc="state.kpis.running"/><span class="l">Running</span></div>
-          <div t-attf-class="pbim-stat {{ state.kpis.expiring ? 'err' : '' }}"><span class="n" t-esc="state.kpis.expiring"/><span class="l">Expiring ≤30d</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="state.kpis.draft"/><span class="l">Draft</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="state.kpis.expired"/><span class="l">Expired</span></div>
-          <div class="pbim-stat"><span class="n money" t-esc="money(state.kpis.total_wage)"/><span class="l">Monthly wage</span></div>
-          <div class="pbim-stat cyan"><span class="n money" t-esc="money(state.kpis.avg_wage)"/><span class="l">Avg wage</span></div>
+          <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.running"/><span class="l">Running</span></div></div>
+          <div t-attf-class="pbim-stat {{ state.kpis.expiring ? 'err' : '' }}"><span class="pbim-stat-ic amber"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expiring"/><span class="l">Expiring ≤30d</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('file',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.draft"/><span class="l">Draft</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('calendar',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expired"/><span class="l">Expired</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic green"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.total_wage)"/><span class="l">Monthly wage</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('receipt',21)"/></span><div class="pbim-stat-tx"><span class="n money" t-esc="money(state.kpis.avg_wage)"/><span class="l">Avg wage</span></div></div>
         </div>
 
         <!-- filters -->

@@ -15,12 +15,12 @@
         </div>
 
         <div class="ppl-kpis">
-          <div class="pbim-stat"><span class="n" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div>
-          <div class="pbim-stat ok"><span class="n" t-esc="state.kpis.connected"/><span class="l">Connected</span></div>
-          <div t-attf-class="pbim-stat {{ state.kpis.errors ? 'err' : '' }}"><span class="n" t-esc="state.kpis.errors"/><span class="l">Errors</span></div>
-          <div class="pbim-stat new"><span class="n" t-esc="state.kpis.synced"/><span class="l">Synced records</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="state.kpis.mappings"/><span class="l">Field mappings</span></div>
-          <div class="pbim-stat cyan"><span class="n" t-esc="state.kpis.staged"/><span class="l">Staged records</span></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('plug',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div></div>
+          <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.connected"/><span class="l">Connected</span></div></div>
+          <div t-attf-class="pbim-stat {{ state.kpis.errors ? 'err' : '' }}"><span class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.errors"/><span class="l">Errors</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('refresh',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.synced"/><span class="l">Synced records</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('link',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.mappings"/><span class="l">Field mappings</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('database',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.staged"/><span class="l">Staged records</span></div></div>
         </div>
 
         <div class="pbim-panel ppl-filters">

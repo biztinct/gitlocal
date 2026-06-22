@@ -36,7 +36,7 @@
 
     .ppl-roster { display: flex; flex-direction: column; gap: 9px; }
     .ppl-card { display: flex; align-items: center; gap: 14px; background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: 14px; padding: 12px 16px; cursor: pointer; transition: border-color .14s, box-shadow .14s, transform .14s; box-shadow: var(--pbim-sh); }
-    .ppl-card:hover { border-color: var(--pbim-primary); box-shadow: 0 8px 22px rgba(15,124,107,.10); transform: translateY(-1px); }
+    .ppl-card:hover { border-color: var(--pbim-primary); box-shadow: 0 6px 18px rgba(90,75,176,.12); transform: translateY(-1px); }
     .ppl-av { width: 44px; height: 44px; border-radius: 12px; flex: none; background-size: cover; background-position: center; background-color: var(--pbim-soft); color: var(--pbim-primary-strong); display: grid; place-items: center; font-weight: 800; font-size: 14px; }
     .ppl-id { flex: 1; min-width: 0; }
     .ppl-id .nm { font-size: 14px; font-weight: 700; color: var(--pbim-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

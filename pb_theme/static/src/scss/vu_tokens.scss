@@ -10,11 +10,11 @@
 
 :root {
     // ── Brand / action ───────────────────────────────────────────────
-    --vuf-primary: #5C619D;          // Violet Storm — the single action color (retired indigo #5C619D)
+    --vuf-primary: #5A4BB0;          // Violet Storm — the single action color (retired indigo #5A4BB0)
     --vuf-primary-ink: #FFFFFF;
-    --vuf-primary-soft: #ECEDF5;     // tinted background for soft chips/icons
-    --vuf-primary-glow: rgba(92, 97, 157, .28);
-    --vuf-hero: #3D4280;             // deep violet hero band (flat / solid)
+    --vuf-primary-soft: #EDEAF8;     // tinted background for soft chips/icons
+    --vuf-primary-glow: rgba(90, 75, 176, .28);
+    --vuf-hero: #241F52;             // deep violet hero band (flat / solid)
     --vuf-hero-ink: #FFFFFF;
 
     // ── Neutrals ─────────────────────────────────────────────────────
@@ -55,7 +55,7 @@
     --vuf-sh-sm: 0 1px 2px rgba(16, 12, 40, .05);
     --vuf-sh-md: 0 8px 24px rgba(16, 12, 40, .07);
     --vuf-sh-lg: 0 18px 50px rgba(16, 12, 40, .14);
-    --vuf-sh-ring: 0 0 0 3px rgba(92, 97, 157, .16);
+    --vuf-sh-ring: 0 0 0 3px rgba(90, 75, 176, .16);
 
     // ── Motion ───────────────────────────────────────────────────────
     --vuf-t-fast: 120ms;
@@ -74,7 +74,7 @@
 
     // ── Workflow state accents (Payroll lifecycle) ───────────────────
     --vuf-state-draft: #64748b;       // Draft
-    --vuf-state-confirmed: #5C619D;   // HR Manager pending (indigo)
+    --vuf-state-confirmed: #5A4BB0;   // HR Manager pending (indigo)
     --vuf-state-assigned: #6E72B0;    // GM pending (indigo-light)
     --vuf-state-active: #B7791F;      // Testing / in progress (amber)
     --vuf-state-completed: #0F8A63;   // Done / Active (emerald)

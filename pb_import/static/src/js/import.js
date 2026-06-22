@@ -57,6 +57,7 @@ export class PbImport extends Component {
     connIcon(t) { return CONN_ICON[t] || "plug"; }
     tileIcon(n) { return ic(TILE_ICON[n] || "upload", 18); }
     pipeIcon() { return ic("arrow", 14); }
+    ic(n, s = 18) { return ic(n, s); }
 
     // clicking a pipeline step filters the Recent-batches list to that stage
     pipeClick(key) { this.setFilter(PIPE_FILTER[key] || "all"); }

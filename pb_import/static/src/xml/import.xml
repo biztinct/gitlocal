@@ -15,11 +15,11 @@
 
         <!-- KPI strip -->
         <div class="pbm-kpis">
-          <div class="pbm-kpi"><span class="v" t-esc="state.kpis.total_batches"/><span class="l">Import batches</span></div>
-          <div class="pbm-kpi"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div>
-          <div class="pbm-kpi"><span class="v indigo" t-esc="state.kpis.in_progress"/><span class="l">In progress</span></div>
-          <div class="pbm-kpi"><span t-attf-class="v {{ state.kpis.errors ? 'rose' : '' }}" t-esc="state.kpis.errors"/><span class="l">With errors</span></div>
-          <div class="pbm-kpi"><span class="v cyan" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div>
+          <div class="pbm-kpi"><span class="pbm-kpi-ic"><t t-out="ic('upload',21)"/></span><div class="tx"><span class="v" t-esc="state.kpis.total_batches"/><span class="l">Import batches</span></div></div>
+          <div class="pbm-kpi"><span class="pbm-kpi-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="tx"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div></div>
+          <div class="pbm-kpi"><span class="pbm-kpi-ic blue"><t t-out="ic('refresh',21)"/></span><div class="tx"><span class="v indigo" t-esc="state.kpis.in_progress"/><span class="l">In progress</span></div></div>
+          <div class="pbm-kpi"><span class="pbm-kpi-ic rose"><t t-out="ic('alert',21)"/></span><div class="tx"><span t-attf-class="v {{ state.kpis.errors ? 'rose' : '' }}" t-esc="state.kpis.errors"/><span class="l">With errors</span></div></div>
+          <div class="pbm-kpi"><span class="pbm-kpi-ic teal"><t t-out="ic('plug',21)"/></span><div class="tx"><span class="v cyan" t-esc="state.kpis.connectors"/><span class="l">Connectors</span></div></div>
         </div>
 
         <!-- hero CTA: guided import -->
