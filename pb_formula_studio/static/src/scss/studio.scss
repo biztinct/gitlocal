@@ -10,6 +10,26 @@
 
     .pbfs-loading, .pbfs-empty-state { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: var(--muted); }
     .pbfs-empty-state h2 { color: var(--ink); font-weight: 800; }
+
+    /* "finish setup" build panel — shown when the loaded config has 0 components */
+    .pbfs-build { flex: 1; min-height: 0; display: flex; align-items: flex-start; justify-content: center; overflow: auto; padding: 48px 26px; }
+    .pbfs-build-inner { width: 100%; max-width: 760px; }
+    .pbfs-build-head { text-align: center; margin-bottom: 26px; }
+    .pbfs-build-head h2 { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -.01em; }
+    .pbfs-build-head p { font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+    .pbfs-build-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 720px) { .pbfs-build-grid { grid-template-columns: 1fr; } }
+    .pbfs-build-card { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; cursor: pointer; font-family: inherit; box-shadow: 0 1px 3px rgba(16,24,40,.04); transition: border-color .15s, box-shadow .15s, transform .12s; }
+    .pbfs-build-card:hover { border-color: var(--i); box-shadow: 0 8px 22px rgba(90,75,176,.12); transform: translateY(-2px); }
+    .pbfs-build-card .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 8px; background: var(--i-soft); color: var(--i); }
+    .pbfs-build-card .ic svg { width: 22px; height: 22px; }
+    .pbfs-build-card .ic.green { background: #E3F2E9; color: #2E7D4F; }
+    .pbfs-build-card .ic.blue { background: #E5EDFD; color: #2563EB; }
+    .pbfs-build-card .ic.violet { background: #EDEAF8; color: #5A4BB0; }
+    .pbfs-build-card .t { font-size: 15px; font-weight: 800; color: var(--ink); }
+    .pbfs-build-card .d { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+    .pbfs-build-discard { display: block; margin: 22px auto 0; background: none; border: none; color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit; text-decoration: underline; }
+    .pbfs-build-discard:hover { color: var(--danger); }
     .pbfs-spinner { width: 34px; height: 34px; border: 3px solid var(--i-soft); border-top-color: var(--i); border-radius: 50%; animation: pbfs-spin .8s linear infinite; }
     @keyframes pbfs-spin { to { transform: rotate(360deg); } }
 

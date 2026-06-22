@@ -691,8 +691,13 @@ class PbFormulaStudio(models.AbstractModel):
         if vals.get('code'):
             cvals['code'] = vals['code']
         cfg = Config.create(cvals)
-        template = vals.get('template') or 'blank'
-        if template == 'vn_standard':
+        self._seed_template(cfg, vals.get('template') or 'blank')
+        return {'ok': True, 'config_id': cfg.id, 'rule_count': len(cfg.rule_ids)}
+
+    def _seed_template(self, cfg, key):
+        """Populate an empty config from a starter template. Shared by the
+        creation wizard and the cockpit 'Use Vietnam Standard' resume CTA."""
+        if key == 'vn_standard':
             # Assign column letters explicitly. The model's position-based
             # compute is unreliable during batch create (o2m cache staleness
             # makes every new rule resolve to 'A'), so we provide the stored
@@ -719,4 +724,23 @@ class PbFormulaStudio(models.AbstractModel):
                 })
             except Exception as e:
                 _logger.warning("Template sample seed failed: %s", e)
+
+    @api.model
+    def apply_starter(self, config_id, key):
+        """Apply a starter template to an EXISTING empty config (cockpit
+        'finish setup' resume). Guarded so it never duplicates rules."""
+        cfg = self.env['hr.formula.config'].browse(int(config_id))
+        if not cfg.exists():
+            return {'ok': False, 'error': 'not_found'}
+        if cfg.rule_ids:
+            return {'ok': False, 'error': 'not_empty'}
+        self._seed_template(cfg, key or 'vn_standard')
         return {'ok': True, 'config_id': cfg.id, 'rule_count': len(cfg.rule_ids)}
+
+    @api.model
+    def delete_config(self, config_id):
+        """Discard a (draft) config from the cockpit."""
+        cfg = self.env['hr.formula.config'].browse(int(config_id))
+        if cfg.exists():
+            cfg.unlink()
+        return {'ok': True}

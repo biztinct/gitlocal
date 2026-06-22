@@ -11,10 +11,12 @@
     'data': [
         'views/pb_formula_studio_action.xml',
         'views/formula_config_view_inherit.xml',
+        'views/multisheet_wizard_view_inherit.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'pb_formula_studio/static/src/scss/studio.scss',
+            'pb_formula_studio/static/src/scss/import_wizard.scss',
             'pb_formula_studio/static/src/js/formula_studio.js',
             'pb_formula_studio/static/src/js/formula_config_views.js',
             'pb_formula_studio/static/src/xml/studio.xml',
