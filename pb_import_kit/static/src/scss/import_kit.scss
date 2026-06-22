@@ -26,8 +26,8 @@
     .pbim-panel { background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh); padding: 18px 20px; }
     .pbim-panel-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 
-    // ---- hero (light powder tint) ----
-    .pbim-hero { display: flex; align-items: center; gap: 18px; background: var(--pbim-soft); border: 1px solid #cdddfb; border-radius: var(--pbim-r-lg); padding: 18px 22px; }
+    // ---- hero (light tint + deep-accent left rule) ----
+    .pbim-hero { display: flex; align-items: center; gap: 18px; background: var(--pbim-soft); border: 1px solid var(--pbim-border); border-left: 3px solid var(--pbim-primary-strong); border-radius: var(--pbim-r-lg); padding: 18px 22px; }
     .pbim-hero-av { flex: 0 0 auto; width: 60px; height: 60px; border-radius: 16px; background: #fff; color: var(--pbim-primary-strong); display: grid; place-items: center; font-size: 20px; font-weight: 800; box-shadow: 0 4px 12px rgba(40,50,90,.10); }
     .pbim-hero-id { flex: 1; min-width: 0; }
     .pbim-hero-id .nm { font-size: 19px; font-weight: 800; color: var(--pbim-ink); }
@@ -56,7 +56,7 @@
     .pbim-rail-step { display: flex; align-items: center; gap: 9px; }
     .pbim-rail-dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: #fff; border: 2px solid var(--pbim-line); color: var(--pbim-muted); flex: 0 0 auto; }
     .pbim-rail-step.done .pbim-rail-dot { background: var(--pbim-green); border-color: var(--pbim-green); color: #fff; }
-    .pbim-rail-step.cur  .pbim-rail-dot { background: var(--pbim-primary); border-color: var(--pbim-primary); color: var(--pbim-ink); box-shadow: 0 0 0 4px rgba(169,196,250,.35); }
+    .pbim-rail-step.cur  .pbim-rail-dot { background: var(--pbim-soft2); border-color: var(--pbim-primary-strong); color: var(--pbim-primary-strong); box-shadow: 0 0 0 4px var(--pbim-ring); }
     .pbim-rail-lab { font-size: 12.5px; font-weight: 700; color: var(--pbim-muted); }
     .pbim-rail-step.cur  .pbim-rail-lab { color: var(--pbim-primary-strong); }
     .pbim-rail-step.done .pbim-rail-lab { color: var(--pbim-text); }
@@ -69,7 +69,7 @@
     .pbim-table th { text-align: left; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: var(--pbim-muted); padding: 9px 14px; background: var(--pbim-bg); position: sticky; top: 0; z-index: 1; }
     .pbim-table td { padding: 9px 14px; border-top: 1px solid var(--pbim-line); }
     .pbim-table tr.click { cursor: pointer; }
-    .pbim-table tr.click:hover td { background: rgba(169,196,250,.10); }
+    .pbim-table tr.click:hover td { background: var(--pbim-ring); }
     .pbim-table td.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #475569; }
 
     // ---- status badge ----
@@ -84,24 +84,24 @@
     // ---- filter chips ----
     .pbim-chips { display: inline-flex; flex-wrap: wrap; gap: 7px; }
     .pbim-fchip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--pbim-line); background: #fff; color: #475569; border-radius: var(--pbim-pill); padding: 5px 12px; font-size: 12px; font-weight: 700; cursor: pointer; transition: .14s; font-family: inherit; }
-    .pbim-fchip:hover { border-color: var(--pbim-primary); }
+    .pbim-fchip:hover { border-color: var(--pbim-primary-strong); }
     .pbim-fchip .c { font-size: 11px; font-weight: 800; opacity: .65; }
-    .pbim-fchip.on { background: var(--pbim-primary); border-color: var(--pbim-primary); color: var(--pbim-ink); }
-    .pbim-fchip.on .c { opacity: .85; }
+    .pbim-fchip.on { background: var(--pbim-soft2); border-color: var(--pbim-primary-strong); color: var(--pbim-primary-strong); }
+    .pbim-fchip.on .c { opacity: .9; }
 
     // ---- segmented control ----
     .pbim-seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
     .pbim-segbtn { border: 1px solid var(--pbim-line); background: #fff; color: #475569; border-radius: var(--pbim-r-sm); padding: 8px 13px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: .14s; display: inline-flex; align-items: center; gap: 7px; }
-    .pbim-segbtn:hover { border-color: var(--pbim-primary); }
-    .pbim-segbtn.on { background: var(--pbim-primary); border-color: var(--pbim-primary); color: var(--pbim-ink); }
+    .pbim-segbtn:hover { border-color: var(--pbim-primary-strong); }
+    .pbim-segbtn.on { background: var(--pbim-soft2); border-color: var(--pbim-primary-strong); color: var(--pbim-primary-strong); }
 
     // ---- buttons ----
     .pbim-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: var(--pbim-r-sm); padding: 9px 16px; font-size: 13px; font-weight: 800; cursor: pointer; border: 1px solid transparent; font-family: inherit; transition: .14s; white-space: nowrap; }
     .pbim-btn svg { vertical-align: -.18em; }
-    .pbim-btn.primary { background: var(--pbim-primary); color: var(--pbim-ink); }
-    .pbim-btn.primary:hover { background: var(--pbim-primary-hover); }
-    .pbim-btn.outline { background: #fff; border-color: #cdddfb; color: var(--pbim-primary-strong); }
-    .pbim-btn.outline:hover { background: rgba(169,196,250,.10); }
+    .pbim-btn.primary { background: var(--pbim-soft2); border-color: var(--pbim-primary-strong); color: var(--pbim-primary-strong); }
+    .pbim-btn.primary:hover { background: var(--pbim-primary); }
+    .pbim-btn.outline { background: #fff; border-color: var(--pbim-border); color: var(--pbim-primary-strong); }
+    .pbim-btn.outline:hover { background: var(--pbim-ring); }
     .pbim-btn.ghost { background: #fff; border-color: var(--pbim-line); color: var(--pbim-text); }
     .pbim-btn.ghost:hover { background: var(--pbim-bg); }
     .pbim-btn.danger { background: #fff; border-color: #f3c7cf; color: var(--pbim-rose); }
@@ -110,7 +110,7 @@
     .pbim-btn-sm { padding: 5px 11px; font-size: 11.5px; border-radius: 8px; }
 
     // ---- mini inline button (table row ops) ----
-    .pbim-mini { border: 1px solid var(--pbim-primary); background: var(--pbim-primary); color: var(--pbim-ink); border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .pbim-mini { border: 1px solid var(--pbim-primary-strong); background: var(--pbim-soft2); color: var(--pbim-primary-strong); border-radius: 8px; padding: 5px 11px; font-size: 11.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
     .pbim-mini.ghost { background: #fff; color: #475569; border-color: var(--pbim-line); }
 
     // ---- note / empty ----

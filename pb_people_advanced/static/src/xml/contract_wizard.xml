@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_people_advanced.ContractWizard">
-    <div class="pbim ppl pplw-root">
+    <div class="pbim con pplw-root">
       <div class="pplw-card" t-if="state.defaults">
 
         <div class="pplw-head">

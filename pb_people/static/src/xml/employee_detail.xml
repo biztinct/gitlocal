@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_people.PbEmployeeDetail">
-    <div class="pbim ppl pbim-page ppl-detail">
+    <div class="pbim emp pbim-page ppl-detail">
 
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading employee…</span></div>
 

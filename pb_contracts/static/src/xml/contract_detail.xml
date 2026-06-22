@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_contracts.PbContractDetail">
-    <div class="pbim ppl pbim-page ppl-detail ppl-cdetail">
+    <div class="pbim con pbim-page ppl-detail ppl-cdetail">
 
       <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading contract…</span></div>
 

@@ -1,15 +1,17 @@
 // =====================================================================
-//  SETUP-area theme variants of the kit — three LIGHT shades (soft-fill,
-//  dark ink, same philosophy as powder/teal):
-//    .pbim.sal  periwinkle  (Salary Structures)
-//    .pbim.sta  steel-blue  (Statutory)
-//    .pbim.itg  sky         (Integrations)
-//  Each re-tints every --pbim-* var AND overrides the hard-coded powder
-//  values baked into import_kit.scss. The class-pair specificity (0,2,0)
-//  beats the kit's `.pbim` (0,1,0).
+//  Non-Pay-Run zones all share ONE periwinkle theme (E6E6FF → CCCCFF).
+//  Pale fill + deep accent + soft-muted active states (rules live in
+//  import_kit.scss, token-driven). Used by Employees (.emp), Contracts
+//  (.con), Salary Structures (.sal), Statutory (.sta), Integrations
+//  (.itg). The Pay-Run family (Import/Pay Runs/Run Payroll/Payslips) is
+//  Misty Blue — kit base tokens + bespoke scss, NOT a variant here.
+//  Class-pair specificity (0,2,0) beats the kit's `.pbim` (0,1,0).
+//
+//  Functional cues are KEPT: money emerald, status badges, and red `.err`
+//  tiles stay semantic. Only DECORATIVE stat fills step periwinkle shades.
 // =====================================================================
 
-@mixin pbim-theme($primary, $hover, $strong, $ink, $soft, $soft2, $border, $chip-ink, $bg) {
+@mixin pbim-theme($primary, $hover, $strong, $ink, $soft, $soft2, $border, $ring, $chip-ink, $bg) {
     --pbim-primary:        #{$primary};
     --pbim-primary-hover:  #{$hover};
     --pbim-primary-strong: #{$strong};
@@ -17,38 +19,20 @@
     --pbim-soft:           #{$soft};
     --pbim-soft2:          #{$soft2};
     --pbim-sky:            #{$soft2};
+    --pbim-border:         #{$border};
+    --pbim-ring:           #{$ring};
     --pbim-bg:             #{$bg};
 
-    // override the hard-coded powder values in import_kit.scss
-    .pbim-hero { border-color: #{$border}; }
-    .pbim-table tr.click:hover td { background: rgba($primary, .18); }
-    .pbim-btn.outline { border-color: #{$border}; }
-    .pbim-btn.outline:hover { background: rgba($primary, .18); }
-    .pbim-rail-step.cur .pbim-rail-dot { box-shadow: 0 0 0 4px rgba($primary, .45); }
-    .pbim-fchip.on .c { background: rgba(255, 255, 255, .45); }
     .pbim-chip { color: #{$chip-ink}; }
-    .pbim-hero-av { color: var(--pbim-primary-strong); }
-    .pbim-stat.new { border-color: var(--pbim-primary); }
-    .ppl-card:hover { box-shadow: 0 8px 22px rgba($primary, .35); }
+    .ppl-card:hover { box-shadow: 0 8px 22px rgba($strong, .14); }
 
-    // when this themed root IS a .pbw-root wizard (e.g. the re-skinned sync
-    // wizard), re-tint the hard-coded powder glows in pb_import_advanced's
-    // shell — high specificity (.pbim.x.pbw-root …) wins regardless of order.
-    &.pbw-root {
-        .pbw-step.cur .pbw-dot { box-shadow: 0 0 0 4px rgba($primary, .45); }
-        .pbw-in:focus { box-shadow: 0 0 0 3px rgba($primary, .45); }
-        .pbw-drop { background: rgba($primary, .10); }
-        .pbw-drop:hover { background: rgba($primary, .18); }
-        .pbw-pick-row:hover { background: rgba($primary, .10); }
-        .pbms-sheet.main { background: rgba($primary, .10); }
-    }
+    // decorative KPI tiles step through periwinkle shades (was green / cyan);
+    // their numbers take the accent. `.err` is left RED (functional).
+    .pbim-stat.ok   { background: #DEDEFB; border-color: #CFCFF4; } .pbim-stat.ok .n   { color: var(--pbim-primary-strong); }
+    .pbim-stat.cyan { background: #D4D4F8; border-color: #C5C5F0; } .pbim-stat.cyan .n { color: var(--pbim-primary-strong); }
 }
 
-// Salary Structures — light periwinkle
-.pbim.sal { @include pbim-theme(#C9CFF5, #B3BCF0, #4A53B5, #2C3160, #E8EAFB, #DDE1F8, #C0C7EF, #3A4180, #F6F6FC); }
-
-// Statutory — light steel-blue
-.pbim.sta { @include pbim-theme(#C2D2EC, #A9BFE3, #2E5599, #1E3252, #E6EDF7, #D6E1F2, #BACBE8, #284A7E, #F4F6FB); }
-
-// Integrations — light sky
-.pbim.itg { @include pbim-theme(#BFE0F5, #A3D2F0, #1C6CA8, #123A55, #E6F3FB, #D2EBF9, #B6DCF1, #14567F, #F4F8FC); }
+// One periwinkle theme for all five non-Pay-Run zones.
+.pbim.emp, .pbim.con, .pbim.sal, .pbim.sta, .pbim.itg {
+    @include pbim-theme(#DCDCFB, #CCCCFF, #4A53B5, #2C3160, #E6E6FF, #CCCCFF, #D6D6F4, rgba(74, 83, 181, .15), #3A4180, #F4F4FC);
+}
