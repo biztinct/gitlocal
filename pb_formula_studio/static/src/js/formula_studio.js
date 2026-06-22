@@ -48,6 +48,11 @@ export class PbFormulaStudio extends Component {
                 const s = await this.orm.call("pb.formula.studio", "ai_status", []);
                 this.state.aiLlm = s.llm; this.state.aiModel = s.model;
             } catch (e) { /* non-fatal */ }
+            // arriving from the native list's "New" → jump straight into the guided wizard
+            const a = this.props.action || {};
+            if ((a.params && a.params.open_wizard) || (a.context && a.context.open_wizard)) {
+                await this.openWizard();
+            }
         });
         onMounted(() => { this._bindArrowEvents(); this.redrawArrows(); });
         onPatched(() => { this.redrawArrows(); requestAnimationFrame(() => { this.applyZoom(); this.applyInlineFit(); }); });
@@ -510,7 +515,20 @@ export class PbFormulaStudio extends Component {
             } else { this.notif.add("Could not create configuration", { type: "danger" }); }
         } finally { this.state.wizardBusy = false; }
     }
-    importExcel() { this.action.doAction("pb_hr_payroll_formula.action_formula_config", { clearBreadcrumbs: true }); }
+    async importExcel() {
+        if (!this.state.wizardForm.name.trim()) { this.notif.add("Give the configuration a name first.", { type: "warning" }); this.state.wizardStep = 1; return; }
+        if (this.state.wizardBusy) return;
+        this.state.wizardBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "create_config", [{ ...this.state.wizardForm, template: "blank" }]);
+            if (!r.ok) { this.notif.add("Could not create configuration", { type: "danger" }); return; }
+            this.state.wizardOpen = false;
+            this.action.doAction(
+                { type: "ir.actions.act_window", name: "Import from Excel", res_model: "hr.formula.multisheet.import.wizard",
+                  view_mode: "form", views: [[false, "form"]], target: "new", context: { default_config_id: r.config_id } },
+                { onClose: () => this.load(r.config_id) });
+        } finally { this.state.wizardBusy = false; }
+    }
 }
 
 registry.category("actions").add("pb_formula_studio", PbFormulaStudio);

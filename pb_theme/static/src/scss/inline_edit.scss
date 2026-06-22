@@ -56,7 +56,7 @@
 // ---------------------------------------------------------------------------
 .vu-detail-card--editing {
     border-color: var(--vu-brand-primary);
-    box-shadow: 0 0 0 3px rgba(92, 97, 157, 0.08), var(--vu-shadow-md);
+    box-shadow: 0 0 0 3px rgba(90, 75, 176, 0.08), var(--vu-shadow-md);
 
     .vu-detail-card__edit-trigger {
         display: none;
@@ -172,7 +172,7 @@
 
 // In edit mode: cards show subtle editing state, hide pencil
 .o_form_editable .vu-detail-card {
-    border-color: rgba(92, 97, 157, 0.25);
+    border-color: rgba(90, 75, 176, 0.25);
 
     .vu-detail-card__edit-trigger {
         display: none;

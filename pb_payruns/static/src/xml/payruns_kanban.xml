@@ -6,13 +6,13 @@
   <t t-name="pb_payruns.KanbanView" t-inherit="web.KanbanView" t-inherit-mode="primary">
     <xpath expr="//t[@t-component='props.Renderer']" position="before">
       <div t-if="pbState.loaded" class="pbk-kpis">
-        <div class="pbk-kpi"><span class="v" t-esc="pbState.kpis.total"/><span class="l">Pay runs</span></div>
-        <div class="pbk-kpi indigo"><span class="v" t-esc="pbState.kpis.in_pipeline"/><span class="l">In pipeline</span></div>
+        <div class="pbk-kpi"><span class="pbk-kpi-ic"><t t-out="pbIc('layers',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbState.kpis.total"/><span class="l">Pay runs</span></div></div>
+        <div class="pbk-kpi indigo"><span class="pbk-kpi-ic blue"><t t-out="pbIc('refresh',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbState.kpis.in_pipeline"/><span class="l">In pipeline</span></div></div>
         <div t-attf-class="pbk-kpi {{ pbState.kpis.my_pending ? 'hot' : '' }}">
-          <span class="v" t-esc="pbState.kpis.my_pending"/><span class="l">Awaiting your approval</span>
+          <span class="pbk-kpi-ic amber"><t t-out="pbIc('alert',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbState.kpis.my_pending"/><span class="l">Awaiting your approval</span></div>
         </div>
-        <div class="pbk-kpi green"><span class="v" t-esc="pbState.kpis.done"/><span class="l">Completed</span></div>
-        <div class="pbk-kpi"><span class="v" t-esc="pbMoney(pbState.kpis.period_net)"/><span class="l">Net paid (done)</span></div>
+        <div class="pbk-kpi green"><span class="pbk-kpi-ic green"><t t-out="pbIc('checkCircle',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbState.kpis.done"/><span class="l">Completed</span></div></div>
+        <div class="pbk-kpi"><span class="pbk-kpi-ic green"><t t-out="pbIc('receipt',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbMoney(pbState.kpis.period_net)"/><span class="l">Net paid (done)</span></div></div>
         <button class="pbk-run" t-on-click="pbRunPayroll">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           Run payroll

@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 import json
+import re
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -556,6 +557,28 @@ class HrFormulaConfig(models.Model):
         ('code_uniq', 'unique(code, company_id)',
          'Configuration code must be unique per company!'),
     ]
+
+    @api.model
+    def _generate_unique_code(self, name, company_id=None):
+        """Build a meaningful, unique Reference Code from the config name
+        (e.g. 'VPTQ Mid Cycle' -> 'VPTQ_MID_CYCLE', with a _2/_3 suffix on
+        collision). Used by create() and the Formula Studio wizard so the
+        code never has to be typed by hand."""
+        base = re.sub(r'[^A-Z0-9]+', '_', (name or 'CONFIG').upper()).strip('_')[:28] or 'CONFIG'
+        company_id = company_id or self.env.company.id
+        code, n = base, 1
+        while self.with_context(active_test=False).search_count(
+                [('code', '=', code), ('company_id', '=', company_id)]):
+            n += 1
+            code = '%s_%s' % (base, n)
+        return code
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if not vals.get('code'):
+                vals['code'] = self._generate_unique_code(vals.get('name'), vals.get('company_id'))
+        return super().create(vals_list)
 
     @api.constrains('rule_ids')
     def _check_rule_codes(self):
