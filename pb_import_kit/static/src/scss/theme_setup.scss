@@ -1,38 +1,8 @@
 // =====================================================================
-//  Non-Pay-Run zones all share ONE periwinkle theme (E6E6FF → CCCCFF).
-//  Pale fill + deep accent + soft-muted active states (rules live in
-//  import_kit.scss, token-driven). Used by Employees (.emp), Contracts
-//  (.con), Salary Structures (.sal), Statutory (.sta), Integrations
-//  (.itg). The Pay-Run family (Import/Pay Runs/Run Payroll/Payslips) is
-//  Misty Blue — kit base tokens + bespoke scss, NOT a variant here.
-//  Class-pair specificity (0,2,0) beats the kit's `.pbim` (0,1,0).
-//
-//  Functional cues are KEPT: money emerald, status badges, and red `.err`
-//  tiles stay semantic. Only DECORATIVE stat fills step periwinkle shades.
+//  (Retired) Per-zone theme variants.
+//  The app now uses ONE uniform indigo design system defined in
+//  import_tokens.scss + import_kit.scss. The old `.pbim.emp/.con/.sal/
+//  .sta/.itg` periwinkle variants were removed — those root classes are
+//  now inert and simply inherit the uniform kit theme. Kept as a file so
+//  the manifest asset reference stays valid.
 // =====================================================================
-
-@mixin pbim-theme($primary, $hover, $strong, $ink, $soft, $soft2, $border, $ring, $chip-ink, $bg) {
-    --pbim-primary:        #{$primary};
-    --pbim-primary-hover:  #{$hover};
-    --pbim-primary-strong: #{$strong};
-    --pbim-ink:            #{$ink};
-    --pbim-soft:           #{$soft};
-    --pbim-soft2:          #{$soft2};
-    --pbim-sky:            #{$soft2};
-    --pbim-border:         #{$border};
-    --pbim-ring:           #{$ring};
-    --pbim-bg:             #{$bg};
-
-    .pbim-chip { color: #{$chip-ink}; }
-    .ppl-card:hover { box-shadow: 0 8px 22px rgba($strong, .14); }
-
-    // decorative KPI tiles step through periwinkle shades (was green / cyan);
-    // their numbers take the accent. `.err` is left RED (functional).
-    .pbim-stat.ok   { background: #DEDEFB; border-color: #CFCFF4; } .pbim-stat.ok .n   { color: var(--pbim-primary-strong); }
-    .pbim-stat.cyan { background: #D4D4F8; border-color: #C5C5F0; } .pbim-stat.cyan .n { color: var(--pbim-primary-strong); }
-}
-
-// One periwinkle theme for all five non-Pay-Run zones.
-.pbim.emp, .pbim.con, .pbim.sal, .pbim.sta, .pbim.itg {
-    @include pbim-theme(#DCDCFB, #CCCCFF, #4A53B5, #2C3160, #E6E6FF, #CCCCFF, #D6D6F4, rgba(74, 83, 181, .15), #3A4180, #F4F4FC);
-}

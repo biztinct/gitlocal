@@ -1,42 +1,42 @@
 // =====================================================================
-//  Payobook UI Kit — pale-fill tokens (LOCKED design language)
-//  Model: very-light tint is the card/hero FILL; the deep "strong" accent
-//  carries identity (icons, text, soft-muted active chips/buttons, links,
-//  a 3px hero left-border). Base = Misty Blue (Pay-Run family, #B5C7EB);
-//  per-zone variants (theme_setup.scss / theme_people.scss) swap only the
-//  colour tokens — the soft-muted primitive RULES live in import_kit.scss.
+//  Payobook UI Kit — UNIFORM design-system tokens (single indigo palette)
+//  Model: white card surfaces + ONE indigo primary (#5A4BB0, SOLID buttons),
+//  semantic status colours, colored Lucide icon badges on tiles. Applied
+//  app-wide; the primitive RULES live in import_kit.scss.
 // =====================================================================
 
-// --- Misty Blue primary (Pay-Run family; deep accent = identity) ---
-$pbim-primary:        #B5C7EB;   // the named Misty Blue (border/active ref)
-$pbim-primary-hover:  #A6BBE4;
-$pbim-primary-strong: #3E5C99;   // deep accent — text / icons / links / active borders
-$pbim-ink:            #18233F;   // dark ink ON the misty fill
+// --- indigo primary (the one brand colour) ---
+$pbim-primary:        #5A4BB0;   // SOLID primary (buttons, active tabs, icons, links)
+$pbim-primary-hover:  #4A3D96;
+$pbim-primary-strong: #5A4BB0;   // accent text / icons / links (reads on white)
+$pbim-primary-light:  #CBC2EE;   // light indigo (chip fill ref, hover)
+$pbim-primary-dark:   #241F52;   // pressed / deep ink
+$pbim-ink:            #1B1733;   // dark heading text (on white)
 
 // --- softs / borders / ring ---
-$pbim-soft:   #DEE7F5;           // lightest tint (hero bg)
-$pbim-soft2:  #BFD0EE;           // soft-muted active-state fill (chips/buttons) ≈ #B5C7EB
-$pbim-sky:    #BFD0EE;
-$pbim-border: #C4D2EA;           // hairline outline / hero border (mid tint)
-$pbim-ring:   rgba(62, 92, 153, .15); // focus / hover / current-step glow
+$pbim-soft:   #EDEAF8;           // lightest indigo (icon badges, hero av, active chip, note)
+$pbim-soft2:  #DDD6F2;           // slightly deeper indigo tint (hover/secondary)
+$pbim-sky:    #DDD6F2;
+$pbim-border: #E2E8F0;           // neutral hairline border (design-system grey)
+$pbim-ring:   rgba(90, 75, 176, .18); // focus / hover glow
 
 // --- neutrals ---
 $pbim-text:    #1B1733;
-$pbim-muted:   #6E6A85;
-$pbim-line:    #E7E5F2;
-$pbim-line-2:  #EEF0F8;
-$pbim-bg:      #F4F5FB;
+$pbim-muted:   #64748B;
+$pbim-line:    #E2E8F0;
+$pbim-line-2:  #F1F5F9;
+$pbim-bg:      #F5F6FA;
 $pbim-surface: #ffffff;
 
-// --- semantic ---
-$pbim-green:      #059669;
-$pbim-green-soft: #E7F6EF;
-$pbim-rose:       #E11D48;
-$pbim-rose-soft:  #FDECEC;
-$pbim-amber:      #B45309;
-$pbim-amber-soft: #FDF3E2;
-$pbim-cyan:       #0E7490;
-$pbim-cyan-soft:  #E0F4F9;
+// --- semantic (money green, info blue, warning amber, error rose, slate) ---
+$pbim-green:      #2E7D4F;   // success / money
+$pbim-green-soft: #E3F2E9;
+$pbim-rose:       #DC2668;   // error
+$pbim-rose-soft:  #FCE7EF;
+$pbim-amber:      #D97706;   // warning
+$pbim-amber-soft: #FEF3C7;
+$pbim-cyan:       #2563EB;   // info / blue
+$pbim-cyan-soft:  #E5EDFD;
 $pbim-slate:      #64748B;
 $pbim-slate-soft: #EEF1F5;
 
@@ -54,6 +54,8 @@ $pbim-sh-lg: 0 18px 44px rgba(40, 50, 90, .12);
     --pbim-primary:        #{$pbim-primary};
     --pbim-primary-hover:  #{$pbim-primary-hover};
     --pbim-primary-strong: #{$pbim-primary-strong};
+    --pbim-primary-light:  #{$pbim-primary-light};
+    --pbim-primary-dark:   #{$pbim-primary-dark};
     --pbim-ink:            #{$pbim-ink};
     --pbim-soft:           #{$pbim-soft};
     --pbim-soft2:          #{$pbim-soft2};

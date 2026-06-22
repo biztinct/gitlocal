@@ -52,11 +52,11 @@
 
         <!-- stat tiles -->
         <div class="pbim-stats pbbc-stats">
-          <div class="pbim-stat"><span class="n" t-esc="d.counts.total"/><span class="l">Rows</span></div>
-          <div class="pbim-stat ok"><span class="n" t-esc="d.counts.matched"/><span class="l">Matched</span></div>
-          <div class="pbim-stat new"><span class="n" t-esc="d.counts.new"/><span class="l">New employees</span></div>
-          <div t-attf-class="pbim-stat {{ d.counts.errors ? 'err' : '' }}"><span class="n" t-esc="d.counts.errors"/><span class="l">Errors</span></div>
-          <div class="pbim-stat"><span class="n" t-esc="d.counts.processed"/><span class="l">Processed</span></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('table',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.total"/><span class="l">Rows</span></div></div>
+          <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.matched"/><span class="l">Matched</span></div></div>
+          <div class="pbim-stat new"><span class="pbim-stat-ic blue"><t t-out="ic('user',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.new"/><span class="l">New employees</span></div></div>
+          <div t-attf-class="pbim-stat {{ d.counts.errors ? 'err' : '' }}"><span class="pbim-stat-ic rose"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.errors"/><span class="l">Errors</span></div></div>
+          <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('check',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="d.counts.processed"/><span class="l">Processed</span></div></div>
         </div>
 
         <!-- action bar -->

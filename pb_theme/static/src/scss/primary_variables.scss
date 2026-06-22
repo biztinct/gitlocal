@@ -5,7 +5,7 @@
 // Built on the health19 VU Form Engine, re-skinned for Payobook payroll.
 //
 // Brand: Trustworthy, modern, enterprise.  SOLID colours only — no gradients.
-// Primary = Indigo #5C619D · Accent = Cyan #0891B2 · Money/positive = Emerald.
+// Primary = Indigo #5A4BB0 · Accent = Cyan #0891B2 · Money/positive = Emerald.
 // Typography: Inter (headings + body), system fallback.
 //
 // NOTE: the original $vu-* variable NAMES are kept (downstream SCSS references
@@ -34,13 +34,13 @@ $vu-leaf-green-lightest: #E7F8F1;
 // ===== PRIMARY UI COLOURS (Indigo) =====
 
 // Violet Storm — primary action colour (buttons, links, headers). Muted
-// slate-violet; replaces the retired bright indigo #5C619D app-wide.
-$vu-deep-blue: #5C619D;             // Base — Violet Storm
-$vu-deep-blue-darkest: #3D4280;     // Darkest (heroes, dark mode)
-$vu-deep-blue-darker: #4D517F;      // Darker — Roman Violet (active/hover)
-$vu-deep-blue-base: #5C619D;        // Base
-$vu-deep-blue-light: #B9BCEC;       // Light — hover backgrounds
-$vu-deep-blue-lightest: #ECEDF5;    // Lightest — subtle backgrounds
+// slate-violet; replaces the retired bright indigo #5A4BB0 app-wide.
+$vu-deep-blue: #5A4BB0;             // Base — Violet Storm
+$vu-deep-blue-darkest: #241F52;     // Darkest (heroes, dark mode)
+$vu-deep-blue-darker: #4A3D96;      // Darker — Roman Violet (active/hover)
+$vu-deep-blue-base: #5A4BB0;        // Base
+$vu-deep-blue-light: #CBC2EE;       // Light — hover backgrounds
+$vu-deep-blue-lightest: #EDEAF8;    // Lightest — subtle backgrounds
 
 // Cyan — secondary accent (hover, icons, highlights, data-viz)
 $vu-accent-blue: #0891B2;           // Base — cyan-600
@@ -66,7 +66,7 @@ $vu-danger: #C0332A;                // Red — errors, critical
 
 // ===== WORKFLOW STATE COLORS (Payroll lifecycle) =====
 $vu-state-draft: #64748b;           // Slate — draft
-$vu-state-confirmed: #5C619D;       // Violet Storm — submitted / HR pending
+$vu-state-confirmed: #5A4BB0;       // Violet Storm — submitted / HR pending
 $vu-state-assigned: #6E72B0;        // Indigo-light — GM pending
 $vu-state-active: #B7791F;          // Amber — in progress / testing
 $vu-state-completed: #0F8A63;       // Emerald — done / paid / active
