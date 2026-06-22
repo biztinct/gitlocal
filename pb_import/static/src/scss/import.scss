@@ -1,7 +1,7 @@
 .pbm {
-    /* Powder-blue identity for the Import workflow (soft-fill: dark ink on powder) */
-    --i: #a9c4fa; --i600: #4D6FBF; --i-deep: #2A3F70; --i-soft: #dbe5ff; --i-soft2: #c0edfd; --i-border: #cdddfb;
-    --i-ink: #1E2A52;
+    /* Import identity — Misty Blue (#B5C7EB) fill + deep accent (#3E5C99), soft-muted actions */
+    --i: #C6D4EE; --i600: #3E5C99; --i-deep: #233A66; --i-soft: #DEE7F5; --i-soft2: #BFD0EE; --i-border: #C4D2EA;
+    --i-ink: #18233F;
     --ink: #1E1B2E; --muted: #6B7280; --line: #E8E9F3; --line-soft: #F0F1F8; --bg: #F4F5FB;
     --amber: #B45309; --amber-soft: #FEF3C7; --green: #059669; --green-soft: #D1FAE5; --cyan: #0E7490; --cyan-soft: #E0F4F9;
     --rose: #E11D48; --rose-soft: #FFE4E6; --slate: #64748B; --slate-soft: #EEF1F5;
@@ -32,8 +32,8 @@
     .pbm-cta .tx { flex: 1; min-width: 0; }
     .pbm-cta .tx .lb { font-size: 16px; font-weight: 800; }
     .pbm-cta .tx .ds { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
-    .pbm-cta .go { background: var(--i); color: var(--i-ink); border: none; border-radius: 11px; padding: 11px 20px; font-weight: 800; font-size: 13.5px; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background .15s; white-space: nowrap; }
-    .pbm-cta .go:hover { background: #8fb2f5; }
+    .pbm-cta .go { background: var(--i-soft2); color: var(--i600); border: 1px solid var(--i600); border-radius: 11px; padding: 11px 20px; font-weight: 800; font-size: 13.5px; font-family: inherit; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background .15s; white-space: nowrap; }
+    .pbm-cta .go:hover { background: var(--i); }
     .pbm-cta .go svg { width: 16px; height: 16px; }
 
     /* secondary launches */

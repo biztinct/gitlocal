@@ -1,6 +1,6 @@
-// Payobook Run Payroll wizard — Indigo, solid
+// Payobook Run Payroll wizard — Misty Blue, soft-muted
 .pw-root {
-    --pw-brand: #5C619D; --pw-ink: #1B1733; --pw-muted: #6E6A85; --pw-border: #E7E5F2;
+    --pw-brand: #3E5C99; --pw-soft: #DEE7F5; --pw-soft2: #BFD0EE; --pw-ink: #1B1733; --pw-muted: #6E6A85; --pw-border: #D5DEEE;
     padding: 28px; background: #F4F5FB; min-height: 100%; display: flex; justify-content: center;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
@@ -17,47 +17,47 @@
     .pw-step { display: flex; align-items: center; gap: 9px; }
     .pw-dot { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700;
         background: #fff; border: 2px solid var(--pw-border); color: var(--pw-muted); }
-    .pw-step.done .pw-dot { background: #10B981; border-color: #10B981; color: #fff; }
-    .pw-step.cur .pw-dot { background: var(--pw-brand); border-color: var(--pw-brand); color: #fff; box-shadow: 0 0 0 4px #ECEDF5; }
+    .pw-step.done .pw-dot { background: #059669; border-color: #059669; color: #fff; }
+    .pw-step.cur .pw-dot { background: var(--pw-soft2); border-color: var(--pw-brand); color: var(--pw-brand); box-shadow: 0 0 0 4px rgba(62,92,153,.15); }
     .pw-lab { font-size: 12.5px; font-weight: 600; color: var(--pw-muted); }
     .pw-step.cur .pw-lab, .pw-step.done .pw-lab { color: var(--pw-ink); }
     .pw-bar { width: 46px; height: 2px; background: var(--pw-border); margin: 0 12px; }
-    .pw-bar.done { background: #10B981; }
+    .pw-bar.done { background: #059669; }
 
     .pw-body { padding: 24px 26px; min-height: 220px; }
     .pw-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     @media (max-width: 680px) { .pw-grid2 { grid-template-columns: 1fr; } }
-    .pw-sec { background: #FAF9FE; border: 1px solid var(--pw-border); border-radius: 14px; padding: 16px 18px; }
+    .pw-sec { background: #F4F7FC; border: 1px solid var(--pw-border); border-radius: 14px; padding: 16px 18px; }
     .pw-sec h4 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--pw-muted); margin-bottom: 12px; }
     .pw-sec label { display: block; font-size: 11.5px; color: var(--pw-muted); font-weight: 600; margin: 8px 0 4px; }
     .pw-in { width: 100%; border: 1px solid var(--pw-border); border-radius: 9px; padding: 8px 11px; font-size: 13.5px; font-family: inherit; background: #fff; }
-    .pw-in:focus { outline: none; border-color: var(--pw-brand); box-shadow: 0 0 0 3px #ECEDF5; }
+    .pw-in:focus { outline: none; border-color: var(--pw-brand); box-shadow: 0 0 0 3px rgba(62,92,153,.15); }
     .pw-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .pw-kv { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F0EFF7; font-size: 13px; }
     .pw-kv:last-of-type { border-bottom: none; }
-    .pw-note { margin-top: 10px; font-size: 12px; color: var(--pw-muted); background: #ECEDF5; border-radius: 8px; padding: 8px 10px; }
+    .pw-note { margin-top: 10px; font-size: 12px; color: var(--pw-muted); background: #E8EEF7; border-radius: 8px; padding: 8px 10px; }
 
     .pw-busy { text-align: center; padding: 50px 0; color: var(--pw-muted); }
     .pw-spin { width: 38px; height: 38px; border: 3px solid #E7E5F2; border-top-color: var(--pw-brand); border-radius: 50%; margin: 0 auto 14px; animation: pw-spin 0.8s linear infinite; }
     @keyframes pw-spin { to { transform: rotate(360deg); } }
 
     .pw-result { text-align: center; padding: 14px 0; }
-    .pw-result-ic { width: 70px; height: 70px; border-radius: 50%; background: #ECEDF5; color: var(--pw-brand); display: grid; place-items: center; margin: 0 auto 14px; }
-    .pw-result-ic.ok { background: #E7F8F1; color: #0F8A63; }
+    .pw-result-ic { width: 70px; height: 70px; border-radius: 50%; background: #DEE7F5; color: var(--pw-brand); display: grid; place-items: center; margin: 0 auto 14px; }
+    .pw-result-ic.ok { background: #E7F6EF; color: #059669; }
     .pw-result h3 { font-size: 19px; font-weight: 800; }
     .pw-muted { color: var(--pw-muted); font-size: 13px; } .pw-muted.mb { margin-bottom: 12px; }
     .pw-statpills { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
-    .pw-statpill { background: #FAF9FE; border: 1px solid var(--pw-border); border-radius: 12px; padding: 10px 16px; min-width: 80px; }
+    .pw-statpill { background: #F4F7FC; border: 1px solid var(--pw-border); border-radius: 12px; padding: 10px 16px; min-width: 80px; }
     .pw-statpill .n { font-size: 20px; font-weight: 800; } .pw-statpill .l { font-size: 10.5px; color: var(--pw-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
 
     .pw-list { display: flex; flex-direction: column; gap: 8px; }
     .pw-li { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--pw-border); border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 600; }
     .pw-flag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; background: #FEF3E2; color: #B7791F; padding: 3px 9px; border-radius: 999px; }
 
-    .pw-foot { padding: 16px 26px; border-top: 1px solid var(--pw-border); display: flex; align-items: center; gap: 10px; background: #FAF9FE; }
+    .pw-foot { padding: 16px 26px; border-top: 1px solid var(--pw-border); display: flex; align-items: center; gap: 10px; background: #F4F7FC; }
     .pw-spacer { flex: 1; }
     .pw-btn { display: inline-flex; align-items: center; gap: 7px; border-radius: 10px; padding: 9px 16px; font-size: 13.5px; font-weight: 700; cursor: pointer; border: 1px solid transparent; font-family: inherit; }
-    .pw-btn.primary { background: var(--pw-brand); color: #fff; } .pw-btn.primary:hover { background: #4D517F; }
+    .pw-btn.primary { background: var(--pw-soft2); color: var(--pw-brand); border-color: var(--pw-brand); } .pw-btn.primary:hover { background: var(--pw-soft); }
     .pw-btn.ghost { background: #fff; border-color: var(--pw-border); color: var(--pw-ink); }
     .pw-btn.mt { margin-top: 16px; }
     .pw-btn svg { vertical-align: -.18em; }

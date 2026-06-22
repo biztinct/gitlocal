@@ -1,36 +1,10 @@
 // =====================================================================
-//  People theme variant of the kit — LIGHT TEAL (same philosophy as the
-//  powder default, different hue). A surface uses root class "pbim ppl";
-//  `.pbim.ppl` (0,2,0) beats the kit's `.pbim` (0,1,0) so these win.
-//  Light soft-fill, DARK ink on the fill (never white) — like powder blue.
-// =====================================================================
-.pbim.ppl {
-    // re-tint every colour token to the teal scale
-    --pbim-primary:        #9FE0D4;   // light teal soft-fill
-    --pbim-primary-hover:  #84D5C6;
-    --pbim-primary-strong: #0F7C6B;   // deep teal — text / icons / links
-    --pbim-ink:            #0E3A33;   // dark ink ON the teal fill
-    --pbim-soft:           #DDF5EF;   // lightest tint (hero bg)
-    --pbim-soft2:          #C9EFE6;
-    --pbim-sky:            #D4F1F0;
-    --pbim-bg:             #F5F7F7;   // near-neutral canvas, faint teal
-    // neutrals / semantics inherit from the kit (money emerald, rose, amber…)
-
-    // --- override the handful of HARD-CODED powder values in import_kit.scss ---
-    .pbim-hero { border-color: #BCE6DC; }
-    .pbim-table tr.click:hover td { background: rgba(159, 224, 212, .14); }
-    .pbim-btn.outline { border-color: #BCE6DC; }
-    .pbim-btn.outline:hover { background: rgba(159, 224, 212, .14); }
-    .pbim-rail-step.cur .pbim-rail-dot { box-shadow: 0 0 0 4px rgba(159, 224, 212, .40); }
-    .pbim-fchip.on .c { background: rgba(255, 255, 255, .45); }
-    .pbim-chip { color: #1f5a50; }
-    .pbim-hero-av { color: var(--pbim-primary-strong); }
-    .pbim-stat.new { border-color: var(--pbim-primary); }
-}
-
-// =====================================================================
 //  Shared People LAYOUT (Employees + Contracts landings & detail cockpits)
-//  — used by pb_people and pb_contracts. Theme comes from .pbim.ppl above.
+//  — used by pb_people (root "pbim emp", Celeste) and pb_contracts
+//  (root "pbim con", Lavender Blush). The teal `.pbim.ppl` theme was
+//  retired in favour of those two variants (see theme_setup.scss); this
+//  layout is theme-agnostic and reads --pbim-* tokens from whichever
+//  variant the root carries.
 // =====================================================================
 .ppl-people {
     .money { color: var(--pbim-green); font-variant-numeric: tabular-nums; }

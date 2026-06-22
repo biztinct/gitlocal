@@ -1,20 +1,24 @@
 // =====================================================================
-//  Payobook Import — powder-blue tokens (LOCKED design language)
-//  Loaded first in the bundle, so these $vars are in scope for every
-//  later import SCSS file, and the mixin surfaces them as CSS custom
-//  properties on any .pbim root.
+//  Payobook UI Kit — pale-fill tokens (LOCKED design language)
+//  Model: very-light tint is the card/hero FILL; the deep "strong" accent
+//  carries identity (icons, text, soft-muted active chips/buttons, links,
+//  a 3px hero left-border). Base = Misty Blue (Pay-Run family, #B5C7EB);
+//  per-zone variants (theme_setup.scss / theme_people.scss) swap only the
+//  colour tokens — the soft-muted primitive RULES live in import_kit.scss.
 // =====================================================================
 
-// --- powder primary (soft-fill, DARK ink on it — never white) ---
-$pbim-primary:        #a9c4fa;
-$pbim-primary-hover:  #8fb2f5;
-$pbim-primary-strong: #4D6FBF;
-$pbim-ink:            #1E2A52;   // text/icon colour ON powder fills
+// --- Misty Blue primary (Pay-Run family; deep accent = identity) ---
+$pbim-primary:        #B5C7EB;   // the named Misty Blue (border/active ref)
+$pbim-primary-hover:  #A6BBE4;
+$pbim-primary-strong: #3E5C99;   // deep accent — text / icons / links / active borders
+$pbim-ink:            #18233F;   // dark ink ON the misty fill
 
-// --- powder softs ---
-$pbim-soft:   #dbe5ff;
-$pbim-soft2:  #c0edfd;
-$pbim-sky:    #bfe3ff;
+// --- softs / borders / ring ---
+$pbim-soft:   #DEE7F5;           // lightest tint (hero bg)
+$pbim-soft2:  #BFD0EE;           // soft-muted active-state fill (chips/buttons) ≈ #B5C7EB
+$pbim-sky:    #BFD0EE;
+$pbim-border: #C4D2EA;           // hairline outline / hero border (mid tint)
+$pbim-ring:   rgba(62, 92, 153, .15); // focus / hover / current-step glow
 
 // --- neutrals ---
 $pbim-text:    #1B1733;
@@ -54,6 +58,8 @@ $pbim-sh-lg: 0 18px 44px rgba(40, 50, 90, .12);
     --pbim-soft:           #{$pbim-soft};
     --pbim-soft2:          #{$pbim-soft2};
     --pbim-sky:            #{$pbim-sky};
+    --pbim-border:         #{$pbim-border};
+    --pbim-ring:           #{$pbim-ring};
     --pbim-text:           #{$pbim-text};
     --pbim-muted:          #{$pbim-muted};
     --pbim-line:           #{$pbim-line};

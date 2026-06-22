@@ -1,5 +1,6 @@
 .pbr {
-    --i: #4F46E5; --i600: #4338CA; --i-deep: #312E81; --i-soft: #EEF0FF; --i-soft2: #E0E4FF; --i-border: #C7CBF5;
+    /* Pay Runs — Misty Blue (#B5C7EB) fill + deep accent (#3E5C99), soft-muted actions */
+    --i: #3E5C99; --i600: #2F4877; --i-deep: #233A66; --i-soft: #DEE7F5; --i-soft2: #BFD0EE; --i-border: #C4D2EA;
     --ink: #1E1B2E; --muted: #6B7280; --line: #E8E9F3; --line-soft: #F0F1F8; --bg: #F4F5FB;
     --amber: #B45309; --amber-soft: #FEF3C7; --green: #059669; --green-soft: #D1FAE5; --cyan: #0E7490;
     --rose: #E11D48; --rose-soft: #FFE4E6; --slate: #64748B; --slate-soft: #EEF1F5;
@@ -16,8 +17,8 @@
     .pbr-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 20px; }
     .pbr-head h1 { font-size: 24px; font-weight: 800; letter-spacing: -.01em; margin: 0; }
     .pbr-sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
-    .pbr-new { display: inline-flex; align-items: center; gap: 8px; background: var(--i); color: #fff; border: none; border-radius: 11px; padding: 11px 18px; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 4px 14px rgba(79,70,229,.28); transition: background .15s, transform .12s; }
-    .pbr-new:hover { background: var(--i600); transform: translateY(-1px); }
+    .pbr-new { display: inline-flex; align-items: center; gap: 8px; background: var(--i-soft2); color: var(--i); border: 1px solid var(--i); border-radius: 11px; padding: 11px 18px; font-size: 13.5px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .15s, transform .12s; }
+    .pbr-new:hover { background: var(--i-soft); transform: translateY(-1px); }
     .pbr-new .ic { font-size: 14px; }
 
     /* KPI strip */
@@ -26,8 +27,8 @@
     .pbr-kpi .v { font-size: 21px; font-weight: 800; letter-spacing: -.01em; }
     .pbr-kpi .v.indigo { color: var(--i); } .pbr-kpi .v.green { color: var(--green); }
     .pbr-kpi .l { font-size: 11.5px; color: var(--muted); font-weight: 600; }
-    .pbr-kpi.hot { background: var(--i-deep); border-color: var(--i-deep); }
-    .pbr-kpi.hot .v { color: #fff; } .pbr-kpi.hot .l { color: #C7CBF5; }
+    .pbr-kpi.hot { background: var(--i-soft); border-color: var(--i-border); border-left: 3px solid var(--i); }
+    .pbr-kpi.hot .v { color: var(--i); } .pbr-kpi.hot .l { color: var(--muted); }
 
     /* board */
     .pbr-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
@@ -45,7 +46,7 @@
 
     /* card */
     .pbr-card { border: 1px solid var(--line); border-radius: 13px; background: #fff; overflow: hidden; transition: box-shadow .15s, border-color .15s, transform .12s; }
-    .pbr-card:hover { box-shadow: 0 8px 22px rgba(49,46,129,.10); border-color: var(--i-border); transform: translateY(-2px); }
+    .pbr-card:hover { box-shadow: 0 8px 22px rgba(62,92,153,.10); border-color: var(--i-border); transform: translateY(-2px); }
     .pbr-card.busy { opacity: .55; pointer-events: none; }
     .pbr-card-main { padding: 13px 14px 11px; cursor: pointer; }
     .pbr-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -61,8 +62,8 @@
     .pbr-card-foot { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 13px; }
     .pbr-btn { border: 1px solid var(--line); background: #fff; color: #475569; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 700; font-family: inherit; cursor: pointer; transition: background .14s, border-color .14s, color .14s; }
     .pbr-btn:hover { border-color: var(--i-border); }
-    .pbr-btn.primary { background: var(--i); border-color: var(--i); color: #fff; flex: 1; }
-    .pbr-btn.primary:hover { background: var(--i600); }
+    .pbr-btn.primary { background: var(--i-soft2); border-color: var(--i); color: var(--i); flex: 1; }
+    .pbr-btn.primary:hover { background: var(--i-soft); border-color: var(--i600); }
     .pbr-btn.ghost { background: var(--bg); }
     .pbr-btn.danger { color: var(--rose); }
     .pbr-btn.danger:hover { background: var(--rose-soft); border-color: #FDA4AF; }
