@@ -529,6 +529,46 @@ export class PbFormulaStudio extends Component {
                 { onClose: () => this.load(r.config_id) });
         } finally { this.state.wizardBusy = false; }
     }
+
+    // ----- "finish setup" resume CTAs (shown when the loaded config is empty) -----
+    importExcelInto() {
+        const cid = this.state.config.id;
+        if (!cid) return;
+        this.action.doAction(
+            { type: "ir.actions.act_window", name: "Import from Excel", res_model: "hr.formula.multisheet.import.wizard",
+              view_mode: "form", views: [[false, "form"]], target: "new", context: { default_config_id: cid } },
+            { onClose: () => this.load(cid) });
+    }
+    async applyStarter(key) {
+        if (this.state.wizardBusy) return;
+        this.state.wizardBusy = true;
+        try {
+            const cid = this.state.config.id;
+            const r = await this.orm.call("pb.formula.studio", "apply_starter", [cid, key || "vn_standard"]);
+            if (r.ok) { this.notif.add(`Added ${r.rule_count} components`, { type: "success" }); await this.load(cid); }
+            else if (r.error === "not_empty") { this.notif.add("This configuration already has components.", { type: "warning" }); }
+            else { this.notif.add("Could not apply the starter.", { type: "danger" }); }
+        } finally { this.state.wizardBusy = false; }
+    }
+    async addComponentQuick() {
+        if (this.state.wizardBusy) return;
+        this.state.wizardBusy = true;
+        try {
+            const cid = this.state.config.id;
+            const r = await this.orm.call("pb.formula.studio", "add_component", [cid, {}]);
+            if (r.ok) { await this.load(cid); this.state.selectedId = r.rule_id; }
+            else { this.notif.add("Could not add a component.", { type: "danger" }); }
+        } finally { this.state.wizardBusy = false; }
+    }
+    async discardConfig() {
+        const cid = this.state.config.id;
+        if (!cid) return;
+        if (!window.confirm(`Discard the draft “${this.state.config.name}”? This cannot be undone.`)) return;
+        await this.orm.call("pb.formula.studio", "delete_config", [cid]);
+        this.notif.add("Draft discarded", { type: "success" });
+        this.state.selectedId = null;
+        await this.load();
+    }
 }
 
 registry.category("actions").add("pb_formula_studio", PbFormulaStudio);

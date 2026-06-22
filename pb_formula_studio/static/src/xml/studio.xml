@@ -63,8 +63,41 @@
           </div>
         </header>
 
+        <!-- empty config: "finish setup" resume panel (no dead-end) -->
+        <div t-if="!state.components.length" class="pbfs-build">
+          <div class="pbfs-build-inner">
+            <div class="pbfs-build-head">
+              <h2>Finish setting up <t t-esc="state.config.name"/></h2>
+              <p>This configuration has no components yet. Pick how you'd like to build it — you can mix and match afterwards.</p>
+            </div>
+            <div class="pbfs-build-grid">
+              <button class="pbfs-build-card" t-on-click="importExcelInto">
+                <span class="ic indigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+                <span class="t">Import from Excel</span>
+                <span class="d">Upload a spreadsheet — sheets, columns &amp; formulas detected automatically.</span>
+              </button>
+              <button class="pbfs-build-card" t-on-click="() => this.applyStarter('vn_standard')">
+                <span class="ic green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+                <span class="t">Vietnam Standard starter</span>
+                <span class="d">10 pre-wired components: Basic, allowances, SI/HI/UI, Gross &amp; Net.</span>
+              </button>
+              <button class="pbfs-build-card" t-on-click="addComponentQuick">
+                <span class="ic blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                <span class="t">Add a component</span>
+                <span class="d">Start from scratch and define each column yourself.</span>
+              </button>
+              <button class="pbfs-build-card" t-on-click="openAI">
+                <span class="ic violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></span>
+                <span class="t">Ask PayAI to draft</span>
+                <span class="d">Describe your payroll in plain language and let PayAI propose formulas.</span>
+              </button>
+            </div>
+            <button class="pbfs-build-discard" t-on-click="discardConfig">Discard this draft</button>
+          </div>
+        </div>
+
         <!-- 3-pane -->
-        <div class="pbfs-work">
+        <div t-else="" class="pbfs-work">
           <svg id="pbfsArrows" class="pbfs-arrows"/>
           <!-- outline -->
           <div class="pbfs-outline">

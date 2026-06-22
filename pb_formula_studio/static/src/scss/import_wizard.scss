@@ -1,0 +1,90 @@
+// =====================================================================
+//  Modern re-skin of the multi-sheet Excel import wizard
+//  (hr.formula.multisheet.import.wizard). Engine + markup untouched —
+//  pure presentation, scoped to the `.pbfs-iw` form root + its dialog.
+// =====================================================================
+$iw-primary: #5A4BB0;
+$iw-hover:   #4A3D96;
+$iw-soft:    #EDEAF8;
+$iw-soft2:   #DDD6F2;
+$iw-border:  #E2E8F0;
+$iw-ink:     #1B1733;
+$iw-muted:   #64748B;
+$iw-green:   #2E7D4F;
+
+// widen the dialog so the multi-column step tables breathe
+.modal-dialog:has(.pbfs-iw) { max-width: 980px; }
+.modal:has(.pbfs-iw) .modal-content { border-radius: 18px; overflow: hidden; }
+
+.pbfs-iw.o_form_renderer,
+.pbfs-iw {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #F5F6FA;
+
+    // ---- step rail: flatten the native statusbar into clean step pills ----
+    .o_form_statusbar { background: #fff !important; border-bottom: 1px solid $iw-border !important; padding: 12px 16px !important; box-shadow: none !important; }
+    .o_statusbar_status { display: flex !important; flex-wrap: wrap; gap: 8px; }
+    .o_statusbar_status > button,
+    .o_statusbar_status .o_arrow_button {
+        border: 1px solid $iw-border !important;
+        border-radius: 999px !important;
+        background: #fff !important;
+        color: $iw-muted !important;
+        padding: 5px 15px !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+        clip-path: none !important;          // kill the chevron arrow shape
+        height: auto !important;
+    }
+    // remove the arrow notches some Odoo builds draw with pseudo-elements
+    .o_statusbar_status > button::before, .o_statusbar_status > button::after,
+    .o_arrow_button::before, .o_arrow_button::after { display: none !important; content: none !important; }
+    // current step = solid indigo
+    .o_statusbar_status > button.o_arrow_button_current,
+    .o_statusbar_status .o_arrow_button_current,
+    .o_statusbar_status .btn-primary {
+        background: $iw-primary !important; color: #fff !important; border-color: $iw-primary !important;
+    }
+
+    // ---- step headings ----
+    .oe_title h1 { font-size: 22px !important; font-weight: 800 !important; color: $iw-ink !important; letter-spacing: -.01em; }
+
+    // ---- sheet + step content → white cards ----
+    .o_form_sheet, .o_form_sheet_bg { background: #F5F6FA !important; }
+    .o_group {
+        background: #fff !important; border: 1px solid $iw-border !important;
+        border-radius: 14px !important; padding: 16px 18px !important;
+        box-shadow: 0 1px 3px rgba(16,24,40,.04) !important; margin-bottom: 12px;
+    }
+    .o_form_label, .o_horizontal_separator { color: $iw-ink; }
+
+    // ---- alerts ----
+    .alert-info    { background: $iw-soft !important;  border: 1px solid $iw-soft2 !important; color: $iw-ink !important; border-radius: 12px !important; }
+    .alert-success { background: #E3F2E9 !important; border: 1px solid #BFE3CC !important; color: $iw-green !important; border-radius: 12px !important; }
+    .alert-warning { background: #FEF3C7 !important; border-color: #FADFA0 !important; border-radius: 12px !important; }
+    .alert ul { margin-bottom: 0; }
+
+    // ---- upload dropzone (the import_file binary field) ----
+    .o_field_binary {
+        border: 2px dashed $iw-primary; border-radius: 14px; padding: 24px;
+        background: $iw-soft; display: flex; align-items: center; justify-content: center;
+        gap: 10px; transition: background .15s;
+    }
+    .o_field_binary:hover { background: $iw-soft2; }
+    .o_field_binary .btn { background: $iw-primary !important; border-color: $iw-primary !important; color: #fff !important; border-radius: 9px; }
+
+    // ---- step tables (sheets / columns / append order / preview) ----
+    .o_list_renderer { border: 1px solid $iw-border !important; border-radius: 12px; overflow: hidden; }
+    .o_list_table > thead > tr > th { background: #F1F5F9 !important; color: $iw-muted !important; text-transform: uppercase; font-size: 10.5px; letter-spacing: .04em; font-weight: 800; }
+    .o_list_table > tbody > tr.o_data_row > td { border-top: 1px solid #F1F5F9 !important; }
+    .o_boolean_toggle .form-check-input:checked { background-color: $iw-primary !important; border-color: $iw-primary !important; }
+}
+
+// ---- footer buttons (dialog forms render the <footer> in .modal-footer) ----
+.modal:has(.pbfs-iw) .modal-footer {
+    border-top: 1px solid $iw-border;
+    .btn-primary { background: $iw-primary !important; border-color: $iw-primary !important; color: #fff !important; }
+    .btn-primary:hover { background: $iw-hover !important; border-color: $iw-hover !important; }
+    .btn-success { background: $iw-green !important; border-color: $iw-green !important; color: #fff !important; }
+}
