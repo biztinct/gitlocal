@@ -12,6 +12,7 @@
         'views/pb_formula_studio_action.xml',
         'views/formula_config_view_inherit.xml',
         'views/multisheet_wizard_view_inherit.xml',
+        'views/sample_wizard_view_inherit.xml',
     ],
     'assets': {
         'web.assets_backend': [

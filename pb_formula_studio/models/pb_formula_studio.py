@@ -78,6 +78,33 @@ class PbFormulaStudio(models.AbstractModel):
         return {r.column_letter: r for r in rules if r.column_letter}
 
     @api.model
+    def _col_num(self, col):
+        n = 0
+        for ch in (col or '').upper():
+            v = ord(ch) - 64
+            if v < 1 or v > 26:
+                return 0
+            n = n * 26 + v
+        return n
+
+    @api.model
+    def _expand_refs(self, formula, by_col):
+        """Set of referenced columns in a formula, expanding A#:B# ranges to
+        every existing member column (matches the engine's range expansion)."""
+        f = formula or ''
+        out = set()
+        for s, e in re.findall(r'([A-Za-z]+)\d+:([A-Za-z]+)\d+', f):
+            lo, hi = sorted((self._col_num(s), self._col_num(e)))
+            for col in by_col:
+                if lo <= self._col_num(col) <= hi:
+                    out.add(col)
+        # plain refs (blank out ranges so endpoints aren't missed nor double-handled)
+        rest = re.sub(r'([A-Za-z]+)\d+:([A-Za-z]+)\d+', ' ', f)
+        for c in re.findall(r'([A-Za-z]+)\d+', rest):
+            out.add(c.upper())
+        return out
+
+    @api.model
     def _tokenize(self, rule, by_col):
         """Turn '=A1*0.2' into chip tokens referencing component names."""
         if rule.column_type == 'input':
@@ -149,14 +176,14 @@ class PbFormulaStudio(models.AbstractModel):
         rules = config.rule_ids.sorted(key=lambda r: r.sequence)
         by_col = self._col_to_rule(rules)
 
-        # dependency maps
+        # dependency maps (expand A#:B# ranges to every member column)
         depends = {}
         used_by = {}
         for r in rules:
-            refs = set(re.findall(r'([A-Za-z]+)\d+', (r.excel_formula or ''))) if r.column_type == 'formula' else set()
-            depends[r.id] = [by_col[c.upper()].name for c in refs if c.upper() in by_col]
+            refs = self._expand_refs(r.excel_formula, by_col) if r.column_type == 'formula' else set()
+            depends[r.id] = [by_col[c].name for c in refs if c in by_col]
             for c in refs:
-                rr = by_col.get(c.upper())
+                rr = by_col.get(c)
                 if rr:
                     used_by.setdefault(rr.id, []).append(r.name)
 
@@ -203,6 +230,30 @@ class PbFormulaStudio(models.AbstractModel):
             'components': components,
             'samples': samples,
             'preview': preview,
+            'field_meta': self._field_meta(),
+        }
+
+    @api.model
+    def _field_meta(self):
+        """Option lists for the inline component editor (loaded once)."""
+        Rule = self.env['hr.formula.rule']
+
+        def _sel(field):
+            return [{'value': v, 'label': l}
+                    for v, l in Rule._fields[field].selection]
+
+        cats = self.env['hr.salary.rule.category'].search([], order='name')
+        rules = self.env['hr.salary.rule'].search([], order='name', limit=400)
+        connectors = (self.env['hr.integration.connector'].search([], order='name')
+                      if 'hr.integration.connector' in self.env else self.env['hr.formula.config'].browse())
+        return {
+            'categories': [{'id': c.id, 'name': c.name} for c in cats],
+            'salary_rules': [{'id': r.id, 'name': r.name, 'code': r.code or ''} for r in rules],
+            'connectors': [{'id': c.id, 'name': c.name} for c in connectors],
+            'column_types': _sel('column_type'),
+            'number_formats': _sel('number_format'),
+            'data_sources': _sel('data_source'),
+            'text_aligns': _sel('text_align'),
         }
 
     @api.model
@@ -275,22 +326,161 @@ class PbFormulaStudio(models.AbstractModel):
             rule.write(allowed)
         return {'ok': True}
 
+    # ---- inline component editor -------------------------------------
+    # Editable fields the inline editor may write. Computed/auto fields
+    # (column_letter, python_formula, formula_dependencies, has_circular_ref)
+    # and import-tracking readonly fields are deliberately excluded.
+    _EDIT_FIELDS = (
+        'name', 'code', 'column_type', 'sequence', 'category_id', 'salary_rule_id',
+        'constant_value', 'data_source_field', 'default_value',
+        'data_source', 'integration_connector_id', 'source_field_mapping',
+        'number_format', 'decimal_places', 'column_width', 'text_align',
+        'appears_on_payslip', 'is_visible_in_grid', 'report_visible',
+        'is_required', 'is_editable', 'is_contract_component', 'requires_new_contract',
+    )
+    _EDIT_M2O = ('category_id', 'salary_rule_id', 'integration_connector_id')
+
+    @api.model
+    def get_component_edit(self, rule_id):
+        """Full editable + readonly-diagnostic snapshot for one component."""
+        r = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not r.exists():
+            return {'ok': False}
+        return {
+            'ok': True,
+            'id': r.id,
+            'column_letter': r.column_letter or '',
+            'name': r.name or '',
+            'code': r.code or '',
+            'column_type': r.column_type or 'formula',
+            'sequence': r.sequence or 0,
+            'category_id': r.category_id.id or False,
+            'salary_rule_id': r.salary_rule_id.id or False,
+            'excel_formula': r.excel_formula or '',
+            'constant_value': r.constant_value or 0.0,
+            'data_source_field': r.data_source_field or '',
+            'default_value': r.default_value or 0.0,
+            'data_source': r.data_source or 'excel',
+            'integration_connector_id': r.integration_connector_id.id or False,
+            'source_field_mapping': r.source_field_mapping or '',
+            'number_format': r.number_format or 'number',
+            'decimal_places': r.decimal_places or 0,
+            'column_width': r.column_width or 120,
+            'text_align': r.text_align or 'right',
+            'appears_on_payslip': bool(r.appears_on_payslip),
+            'is_visible_in_grid': bool(r.is_visible_in_grid),
+            'report_visible': bool(r.report_visible),
+            'is_required': bool(r.is_required),
+            'is_editable': bool(r.is_editable),
+            'is_contract_component': bool(r.is_contract_component),
+            'requires_new_contract': bool(r.requires_new_contract),
+            # readonly diagnostics
+            'python_formula': r.python_formula or '',
+            'formula_dependencies': r.formula_dependencies or '',
+            'has_circular_ref': bool(r.has_circular_ref),
+            'validation_message': r.validation_message or '',
+        }
+
+    @api.model
+    def save_component(self, rule_id, vals):
+        """Comprehensive save for the inline editor. Returns refreshed validity."""
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'msg': 'Component not found'}
+        vals = vals or {}
+        write_vals = {}
+        for k in self._EDIT_FIELDS:
+            if k not in vals:
+                continue
+            v = vals[k]
+            if k in self._EDIT_M2O:
+                v = int(v) if v else False
+            write_vals[k] = v
+        # proactive duplicate-code guard (the DB unique constraint is not
+        # reliably enforced on this table, so check here).
+        if write_vals.get('code'):
+            dup = rule.config_id.rule_ids.filtered(
+                lambda r: r.id != rule.id and (r.code or '') == write_vals['code'])
+            if dup:
+                return {'ok': False,
+                        'msg': 'Code "%s" is already used by column %s.'
+                               % (write_vals['code'], dup[0].column_letter or '?')}
+        # excel_formula handled separately so we can convert + validate
+        new_formula = vals.get('excel_formula')
+        try:
+            if write_vals:
+                rule.write(write_vals)
+            ctype = write_vals.get('column_type', rule.column_type)
+            if new_formula is not None:
+                rule.excel_formula = new_formula
+            if ctype == 'formula':
+                column_map = {r.column_letter: r.code
+                              for r in rule.config_id.rule_ids if r.column_letter}
+                rule.python_formula = rule._convert_excel_to_python(rule.excel_formula or '', column_map)
+                ok, msg = self._check_formula(rule.config_id, rule.excel_formula or '', exclude_id=rule.id)
+                rule.is_valid = ok
+                rule.validation_message = '' if ok else msg
+        except Exception as e:
+            return {'ok': False, 'msg': str(e)}
+        return {'ok': True, 'is_valid': bool(rule.is_valid),
+                'validation_message': rule.validation_message or ''}
+
+    @api.model
+    def _check_formula(self, config, formula, exclude_id=None):
+        """Validate a formula string against a config's columns. -> (ok, message)."""
+        from odoo.addons.pb_hr_payroll_formula.formula_engine import FormulaValidator
+        cols = {r.column_letter: r.code for r in config.rule_ids
+                if r.column_letter and r.id != exclude_id}
+        try:
+            return FormulaValidator().validate_formula(formula or '', cols)
+        except Exception as e:  # pragma: no cover
+            return False, str(e)
+
+    @api.model
+    def validate_formula_live(self, config_id, formula, exclude_rule_id=None):
+        """Live (unsaved) validation for the editor's preview pill."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'valid': False, 'message': 'No configuration loaded.'}
+        ok, msg = self._check_formula(config, formula, exclude_id=int(exclude_rule_id) if exclude_rule_id else None)
+        return {'valid': bool(ok), 'message': msg or ''}
+
     @api.model
     def add_component(self, config_id, vals):
         config = self.env['hr.formula.config'].browse(int(config_id))
         if not config.exists():
             return {'ok': False}
         vals = vals or {}
+        # unique code per config (the model enforces uniqueness; a 2nd plain
+        # 'NEW' would otherwise raise) + next free column letter.
+        existing_codes = set(config.rule_ids.mapped('code'))
+        base = (vals.get('code') or 'NEW').upper().replace(' ', '_') or 'NEW'
+        code, n = base, 1
+        while code in existing_codes:
+            n += 1
+            code = '%s_%s' % (base, n)
+        existing_letters = set(config.rule_ids.mapped('column_letter'))
+        i = 0
+        while self._idx_letter(i) in existing_letters:
+            i += 1
         rule = self.env['hr.formula.rule'].create({
             'config_id': config.id,
             'name': vals.get('name') or 'New Component',
-            'code': (vals.get('code') or 'NEW').upper().replace(' ', '_'),
+            'code': code,
             'column_type': vals.get('column_type') or 'formula',
             'excel_formula': vals.get('excel_formula') or '',
             'constant_value': vals.get('constant_value') or 0.0,
             'sequence': max(config.rule_ids.mapped('sequence') or [0]) + 1,
+            'column_letter': self._idx_letter(i),
         })
         return {'ok': True, 'rule_id': rule.id}
+
+    @api.model
+    def delete_component(self, rule_id):
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if rule.exists():
+            rule.unlink()
+        return {'ok': True}
 
     @api.model
     def delete_component(self, rule_id):
@@ -351,6 +541,360 @@ class PbFormulaStudio(models.AbstractModel):
         if config.exists():
             config.action_set_draft()
         return self._state_result(config)
+
+    # ------------------------------------------------------------------
+    # config settings surface (bespoke OWL editor for hr.formula.config)
+    # ------------------------------------------------------------------
+    # Trimmed to fields that actually drive behavior. Dropped from the UI (and
+    # thus this payload): mid_cycle_* and the grid-display set + description are
+    # vestigial / only used by the legacy excel_grid_widget, never the cockpit.
+    _CFG_FIELDS = (
+        'name', 'code', 'country_code', 'structure_id', 'cycle_type', 'connector_id',
+        'use_color_coded_excel_import', 'payroll_journal_id', 'debit_account_id',
+        'credit_account_id', 'company_id',
+        'use_proration', 'proration_basis', 'proration_component_ids', 'proration_rounding',
+        'use_auto_retro', 'retro_component_id',
+    )
+    _CFG_M2O = ('structure_id', 'connector_id', 'payroll_journal_id', 'debit_account_id',
+                'credit_account_id', 'company_id', 'retro_component_id')
+    _CFG_M2M = ('proration_component_ids',)
+
+    @api.model
+    def _config_status(self, c):
+        return {
+            'state': c.state,
+            'validation_status': c.validation_status or 'pending',
+            'last_validated': c.last_validated and str(c.last_validated) or '',
+            'last_validated_by': c.last_validated_by.name or '',
+            'currency': {'symbol': c.currency_id.symbol or '', 'name': c.currency_id.name or ''},
+            'score': self._score(c),
+            'has_errors': bool(c.has_errors),
+            'error_details': c.error_details or '',
+            'has_circular_refs': bool(c.has_circular_refs),
+            'circular_ref_details': c.circular_ref_details or '',
+            'validation_message': c.validation_message or '',
+            'rule_count': c.rule_count,
+            'formula_rule_count': c.formula_rule_count,
+            'input_rule_count': c.input_rule_count,
+            'sample_count': c.sample_count,
+            'proration_count': c.proration_count,
+            'retro_count': c.retro_count,
+            'carryover_count': c.carryover_count,
+        }
+
+    @api.model
+    def _config_meta(self, c):
+        Cfg = self.env['hr.formula.config']
+
+        def _sel(field):
+            return [{'value': v, 'label': l} for v, l in Cfg._fields[field].selection]
+
+        comp = lambda model, **kw: [{'id': r.id, 'name': r.display_name}
+                                    for r in self.env[model].search([], **kw)]
+        connectors = (comp('hr.integration.connector', order='name')
+                      if 'hr.integration.connector' in self.env else [])
+        accts = self.env['account.account'].search(
+            [('company_ids', 'in', c.company_id.ids)] if 'company_ids' in self.env['account.account']._fields
+            else [], order='code', limit=400)
+        journals = self.env['account.journal'].search(
+            [('type', '=', 'general'), ('company_id', '=', c.company_id.id)], order='name')
+        return {
+            'structures': comp('hr.payroll.structure', order='name'),
+            'connectors': connectors,
+            'journals': [{'id': j.id, 'name': j.name} for j in journals],
+            'accounts': [{'id': a.id, 'name': '%s %s' % (a.code or '', a.name or '')} for a in accts],
+            'companies': comp('res.company', order='name'),
+            'components': [{'id': r.id, 'col': r.column_letter or '?', 'code': r.code or '', 'name': r.name or ''}
+                           for r in c.rule_ids.sorted(key=lambda r: r.sequence)],
+            'country_codes': _sel('country_code'),
+            'cycle_types': _sel('cycle_type'),
+            'proration_bases': _sel('proration_basis'),
+            'multi_company': len(self.env['res.company'].search([])) > 1,
+        }
+
+    @api.model
+    def get_config_settings(self, config_id):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False}
+        values = {}
+        for f in self._CFG_FIELDS:
+            if f in self._CFG_M2O:
+                values[f] = c[f].id or False
+            elif f in self._CFG_M2M:
+                values[f] = c[f].ids
+            else:
+                values[f] = c[f] if c[f] is not False else False
+        samples = [{'id': s.id, 'name': s.name, 'source_type': s.source_type or '',
+                    'status': s.validation_status or '', 'discrepancy_count': s.discrepancy_count,
+                    'last_computed': s.last_computed and str(s.last_computed) or ''}
+                   for s in c.sample_data_ids]
+        results = [{'sample': r.sample_id.name or '', 'rule_code': r.rule_code or '',
+                    'expected': r.expected_value, 'computed': r.computed_value,
+                    'difference': r.difference, 'status': r.status or '',
+                    'error': r.error_message or ''}
+                   for r in c.test_result_ids]
+        return {
+            'ok': True,
+            'values': values,
+            'status': self._config_status(c),
+            'meta': self._config_meta(c),
+            'samples': samples,
+            'results': results,
+        }
+
+    @api.model
+    def save_config_settings(self, config_id, vals):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': 'Configuration not found'}
+        vals = vals or {}
+        write_vals = {}
+        for k in self._CFG_FIELDS:
+            if k not in vals:
+                continue
+            v = vals[k]
+            if k in self._CFG_M2O:
+                write_vals[k] = int(v) if v else False
+            elif k in self._CFG_M2M:
+                write_vals[k] = [(6, 0, [int(x) for x in (v or [])])]
+            else:
+                write_vals[k] = v
+        try:
+            if write_vals:
+                c.write(write_vals)
+        except Exception as e:
+            return {'ok': False, 'msg': str(e).splitlines()[0] if str(e) else 'Could not save.'}
+        return {'ok': True, 'status': self._config_status(c)}
+
+    @api.model
+    def _cfg_run(self, config_id, method):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': 'Configuration not found'}
+        notif = ''
+        try:
+            res = getattr(c, method)()
+            if isinstance(res, dict) and res.get('params'):
+                notif = res['params'].get('message') or ''
+        except Exception as e:
+            return {'ok': False, 'msg': str(e).splitlines()[0] if str(e) else 'Action failed.',
+                    'status': self._config_status(c)}
+        return {'ok': True, 'notif': notif, 'status': self._config_status(c)}
+
+    @api.model
+    def cfg_start_testing(self, config_id):
+        return self._cfg_run(config_id, 'action_start_testing')
+
+    @api.model
+    def cfg_validate(self, config_id):
+        return self._cfg_run(config_id, 'action_validate')
+
+    @api.model
+    def cfg_activate(self, config_id):
+        return self._cfg_run(config_id, 'action_activate')
+
+    @api.model
+    def cfg_set_draft(self, config_id):
+        return self._cfg_run(config_id, 'action_set_draft')
+
+    @api.model
+    def cfg_archive(self, config_id):
+        return self._cfg_run(config_id, 'action_archive')
+
+    @api.model
+    def cfg_regenerate_formulas(self, config_id):
+        return self._cfg_run(config_id, 'action_regenerate_formulas')
+
+    @api.model
+    def cfg_generate_sample_data(self, config_id):
+        """One-click synthetic sample: build inputs from the input components'
+        defaults, compute current outputs, store them as an expected baseline so
+        the Live Preview AND Run Tests are immediately meaningful (no wizard)."""
+        from odoo.addons.pb_hr_payroll_formula.formula_engine import FormulaEvaluator
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': 'Configuration not found'}
+        rules = c.rule_ids.sorted(key=lambda r: r.sequence)
+        inputs = {}
+        for r in rules:
+            if r.column_type == 'input' and r.code:
+                inputs[r.code] = r.default_value or 0.0
+        try:
+            computed = FormulaEvaluator().evaluate_all(rules, inputs)
+            expected = {code: v for code, v in computed.items()}
+        except Exception as e:
+            _logger.warning("Sample generate compute failed: %s", e)
+            expected = {}
+        n = len(c.sample_data_ids) + 1
+        try:
+            self.env['hr.formula.sample.data'].create({
+                'config_id': c.id,
+                'name': 'Sample %s' % n,
+                'source_type': 'manual',
+                'input_values_json': json.dumps(inputs),
+                'expected_values_json': json.dumps(expected),
+            })
+        except Exception as e:
+            return {'ok': False, 'msg': str(e).splitlines()[0] if str(e) else 'Could not create sample.'}
+        return {'ok': True, 'notif': 'Sample data generated',
+                'settings': self.get_config_settings(config_id)}
+
+    @api.model
+    def cfg_run_tests(self, config_id):
+        r = self._cfg_run(config_id, 'action_run_tests')
+        if r.get('ok'):
+            r['settings'] = self.get_config_settings(config_id)
+        return r
+
+    @api.model
+    def cfg_import_excel(self, config_id):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False}
+        return {'ok': True, 'action': c.action_import_from_excel_multisheet()}
+
+    # ------------------------------------------------------------------
+    # Test & Validate workbench
+    # ------------------------------------------------------------------
+    def _sample_verdict(self, s):
+        """Preview when no expected; else the model's validation_status."""
+        if not (s.expected_values_json and s.expected_values_json not in ('{}', '')):
+            return 'preview'
+        return s.validation_status or 'pending'
+
+    def _sample_row(self, s):
+        return {
+            'id': s.id, 'name': s.name or '(unnamed)',
+            'source_type': s.source_type or 'manual',
+            'verdict': self._sample_verdict(s),
+            'has_expected': bool(s.expected_values_json and s.expected_values_json not in ('{}', '')),
+            'discrepancy_count': s.discrepancy_count,
+            'last_computed': s.last_computed and str(s.last_computed) or '',
+        }
+
+    @api.model
+    def get_test_data(self, config_id):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False}
+        rules = c.rule_ids.sorted(key=lambda r: r.sequence)
+        inputs = [{'code': r.code, 'col': r.column_letter or '?', 'name': r.name or '',
+                   'default': r.default_value or 0.0}
+                  for r in rules if r.column_type == 'input']
+        return {
+            'ok': True,
+            'samples': [self._sample_row(s) for s in c.sample_data_ids],
+            'input_components': inputs,
+            'currency': c.currency_id.symbol if c.currency_id else '',
+        }
+
+    @api.model
+    def get_sample_detail(self, sample_id):
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        if not s.exists():
+            return {'ok': False}
+        return {
+            'ok': True,
+            'id': s.id, 'name': s.name or '',
+            'source_type': s.source_type or 'manual',
+            'verdict': self._sample_verdict(s),
+            'has_expected': bool(s.expected_values_json and s.expected_values_json not in ('{}', '')),
+            'rows': s.get_comparison_data(),
+        }
+
+    @api.model
+    def save_sample_inputs(self, sample_id, inputs):
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        if not s.exists():
+            return {'ok': False}
+        vals = json.loads(s.input_values_json or '{}')
+        for k, v in (inputs or {}).items():
+            try:
+                vals[k] = float(v)
+            except (TypeError, ValueError):
+                vals[k] = v
+        s.input_values_json = json.dumps(vals)  # triggers _compute_results
+        return self.get_sample_detail(s.id)
+
+    @api.model
+    def rename_sample(self, sample_id, name):
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        if s.exists() and name:
+            s.name = name
+        return {'ok': True}
+
+    @api.model
+    def add_manual_sample(self, config_id):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False}
+        inputs = {r.code: (r.default_value or 0.0)
+                  for r in c.rule_ids if r.column_type == 'input' and r.code}
+        n = len(c.sample_data_ids) + 1
+        s = self.env['hr.formula.sample.data'].create({
+            'config_id': c.id, 'name': 'Sample %s' % n, 'source_type': 'manual',
+            'input_values_json': json.dumps(inputs),
+        })
+        return {'ok': True, 'sample_id': s.id, 'samples': [self._sample_row(x) for x in c.sample_data_ids]}
+
+    @api.model
+    def generate_random_samples(self, config_id, count=3, min_salary=5000000, max_salary=50000000):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False}
+        wiz = self.env['hr.formula.sample.data.wizard'].create({
+            'config_id': c.id, 'source': 'random',
+            'sample_count': int(count or 3),
+            'min_salary': float(min_salary or 5000000),
+            'max_salary': float(max_salary or 50000000),
+        })
+        try:
+            for vals in wiz._generate_random():
+                self.env['hr.formula.sample.data'].create(vals)
+        except Exception as e:
+            return {'ok': False, 'msg': str(e).splitlines()[0] if str(e) else 'Could not generate.'}
+        return {'ok': True, 'samples': [self._sample_row(x) for x in c.sample_data_ids]}
+
+    @api.model
+    def snapshot_expected(self, sample_id):
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        if not s.exists():
+            return {'ok': False}
+        s.expected_values_json = s.computed_values_json or '{}'
+        return self.get_sample_detail(s.id)
+
+    @api.model
+    def clear_expected(self, sample_id):
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        if not s.exists():
+            return {'ok': False}
+        s.expected_values_json = '{}'
+        return self.get_sample_detail(s.id)
+
+    @api.model
+    def delete_sample(self, sample_id):
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        cid = s.config_id.id if s.exists() else False
+        if s.exists():
+            s.unlink()
+        samples = []
+        if cid:
+            c = self.env['hr.formula.config'].browse(cid)
+            samples = [self._sample_row(x) for x in c.sample_data_ids]
+        return {'ok': True, 'samples': samples}
+
+    @api.model
+    def cfg_generate_wizard(self, config_id, source):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False}
+        action = c.action_generate_sample_data()
+        action.setdefault('context', {})['default_source'] = source
+        # client-side doAction needs an explicit views array (server action
+        # only sets view_mode, which makes web's _preprocessAction crash on .map)
+        action['views'] = [(False, 'form')]
+        return {'ok': True, 'action': action}
 
     # ------------------------------------------------------------------
     # PayAI : natural-language -> formula (deterministic mapper)
@@ -739,8 +1283,23 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def delete_config(self, config_id):
-        """Discard a (draft) config from the cockpit."""
+        """Delete a configuration from the cockpit (any state)."""
         cfg = self.env['hr.formula.config'].browse(int(config_id))
-        if cfg.exists():
+        if not cfg.exists():
+            return {'ok': True}
+        try:
             cfg.unlink()
+        except Exception as e:
+            # e.g. referenced by payslips / restrict FK
+            return {'ok': False, 'msg': 'Could not delete: %s' % (str(e).splitlines()[0] if str(e) else 'it may be in use.')}
         return {'ok': True}
+
+
+class SampleDataWizardStudio(models.TransientModel):
+    """Let the Test workbench's restyled generator return to the cockpit
+    instead of navigating to the stock 'created samples' list view."""
+    _inherit = 'hr.formula.sample.data.wizard'
+
+    def action_generate_and_close(self):
+        self.action_generate_samples()
+        return {'type': 'ir.actions.act_window_close'}
