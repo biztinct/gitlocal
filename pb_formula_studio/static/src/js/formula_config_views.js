@@ -17,6 +17,17 @@ function openStudioWizard(self) {
     });
 }
 
+// Opening a config row lands on its bespoke Settings surface in the cockpit
+// (instead of the dense native form).
+function openStudioSettings(self, resId) {
+    if (!resId) return;
+    return self._fcAction.doAction({
+        type: "ir.actions.client",
+        tag: "pb_formula_studio",
+        params: { config_id: resId, open_settings: 1 },
+    });
+}
+
 export class FormulaConfigListController extends ListController {
     setup() {
         super.setup();
@@ -24,6 +35,9 @@ export class FormulaConfigListController extends ListController {
     }
     async createRecord() {
         return openStudioWizard(this);
+    }
+    async openRecord(record) {
+        return openStudioSettings(this, record.resId);
     }
 }
 
@@ -34,6 +48,9 @@ export class FormulaConfigKanbanController extends KanbanController {
     }
     async createRecord() {
         return openStudioWizard(this);
+    }
+    async openRecord(record) {
+        return openStudioSettings(this, record.resId);
     }
 }
 
