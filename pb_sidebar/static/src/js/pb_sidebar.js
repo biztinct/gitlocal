@@ -2,6 +2,7 @@
 
 import { Component, useState, onMounted, onWillUnmount, markup } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
+import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 // ---- Lucide icon set (inline SVG paths; matches the Payobook POC) ----
 const ICONS = {
@@ -42,6 +43,7 @@ export class PbSidebar extends Component {
         this.actionService = useService("action");
         this.orm = useService("orm");
         this.menuService = useService("menu");
+        this.dialog = useService("dialog");
 
         const name = window.odoo?.session_info?.name || "User";
         this.userName = name;
@@ -137,6 +139,16 @@ export class PbSidebar extends Component {
     }
 
     onItemClick(item) {
+        if (item.restricted) {
+            this.dialog.add(AlertDialog, {
+                title: "Available in the full platform",
+                body: item.restriction_reason ||
+                    "This functionality is available in the full Payobook platform. " +
+                    "Please contact Payobook to arrange a personalised demonstration.",
+                confirmLabel: "Got it",
+            });
+            return;
+        }
         if (item.children && item.children.length) {
             this.state.expandedItems = { ...this.state.expandedItems, [item.id]: !this.state.expandedItems[item.id] };
         } else {

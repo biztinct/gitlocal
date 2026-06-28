@@ -40,6 +40,16 @@ class PbSidebarItem(models.Model):
     match_action_xmlids = fields.Char(string='Match Action XML IDs')
     match_action_tags = fields.Char(string='Match Action Tags')
     match_models = fields.Char(string='Match Models')
+    restricted = fields.Boolean(
+        string='Restricted (upsell)', default=False,
+        help='If set, users who lack this item\'s groups still SEE it — shown locked '
+             'with an upsell dialog instead of being hidden.')
+    restriction_reason = fields.Text(
+        string='Restriction Message',
+        help='Message shown when a locked item is clicked.')
+
+    _DEFAULT_UPSELL = ("This functionality is available in the full Payobook platform. "
+                       "Please contact Payobook to arrange a personalised demonstration.")
 
     @api.model
     def get_sidebar_data(self):
@@ -51,39 +61,58 @@ class PbSidebarItem(models.Model):
         all_items = self.search(
             [('active', '=', True)], order='section_id, sequence, id')
 
-        if is_admin:
-            visible = all_items
-        else:
-            visible = all_items.filtered(
-                lambda i: not i.groups_id or (i.groups_id & user.groups_id))
+        # Odoo 19 renamed res.users.groups_id -> group_ids; all_group_ids includes implied.
+        user_groups = user.all_group_ids
+
+        def _has_access(item):
+            return is_admin or not item.groups_id or bool(item.groups_id & user_groups)
+
+        def _state(item):
+            """(visible, locked): items the user can't access are hidden, unless
+            flagged restricted — then shown locked (upsell) instead of hidden."""
+            if _has_access(item):
+                return True, False
+            if item.restricted:
+                return True, True
+            return False, False
 
         def _split(val):
             return [v.strip() for v in (val or '').split(',') if v.strip()]
 
-        def _item_dict(item):
+        def _item_dict(item, locked):
             return {
                 'id': item.id,
                 'name': item.name,
                 'icon': item.icon or 'circle',
                 'badge': item.badge or False,
-                'action_xmlid': item.action_xmlid or False,
-                'action_tag': item.action_tag or False,
+                'action_xmlid': (item.action_xmlid or False) if not locked else False,
+                'action_tag': (item.action_tag or False) if not locked else False,
                 'match_action_xmlids': _split(item.match_action_xmlids),
                 'match_action_tags': _split(item.match_action_tags),
                 'match_models': _split(item.match_models),
+                'restricted': locked,
+                'restriction_reason': (item.restriction_reason or self._DEFAULT_UPSELL) if locked else False,
                 'children': [],
             }
 
         result = []
         for section in sections:
-            sec_items = visible.filtered(lambda i, s=section: i.section_id == s)
+            sec_items = all_items.filtered(lambda i, s=section: i.section_id == s)
             tops = sec_items.filtered(lambda i: not i.parent_id).sorted(lambda i: (i.sequence, i.id))
             items = []
             for top in tops:
-                d = _item_dict(top)
+                vis, locked = _state(top)
+                if not vis:
+                    continue
+                d = _item_dict(top, locked)
                 kids = sec_items.filtered(lambda c, p=top: c.parent_id == p).sorted(
                     lambda c: (c.sequence, c.id))
-                d['children'] = [_item_dict(k) for k in kids]
+                kid_dicts = []
+                for k in kids:
+                    kvis, klocked = _state(k)
+                    if kvis:
+                        kid_dicts.append(_item_dict(k, klocked))
+                d['children'] = kid_dicts
                 items.append(d)
             if not items:
                 continue

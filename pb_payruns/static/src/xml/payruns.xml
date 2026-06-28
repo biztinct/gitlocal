@@ -56,11 +56,14 @@
                   <t t-elif="b.next_action and !b.can_act">
                     <span class="pbr-await">Awaiting <t t-esc="b.state === 'level1' ? 'HR' : (b.state === 'level2' ? 'GM' : '')"/> approval</span>
                   </t>
-                  <!-- done: report / excel / email -->
+                  <!-- done: report / excel / email + pay salary (bank / journals / payments) -->
                   <t t-if="b.state === 'done'">
                     <button class="pbr-btn primary" t-on-click="() => this.report(b)">Report</button>
                     <button class="pbr-btn ghost" t-on-click="() => this.excel(b)">Excel</button>
                     <button class="pbr-btn ghost" t-on-click="() => this.email(b)">Email</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.bankExport(b)">Bank file</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.journals(b)">Journals</button>
+                    <button class="pbr-btn ghost" t-on-click="() => this.payments(b)">Payments</button>
                   </t>
                 </div>
               </div>

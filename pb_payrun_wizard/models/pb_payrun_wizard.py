@@ -48,6 +48,46 @@ class PbPayrunWizard(models.AbstractModel):
             pass
         return self.env['hr.employee'].search([]).ids
 
+    # ---------------- Existing-payroll detection + cleanup ----------------
+    def _period_runs(self, ds, de):
+        """Runs in the active company set overlapping [ds, de] that have payslips."""
+        runs = self.env['hr.payslip.run'].search([
+            ('date_start', '<=', de), ('date_end', '>=', ds),
+            ('company_id', 'in', self.env.companies.ids)
+        ]) if 'company_id' in self.env['hr.payslip.run']._fields else \
+            self.env['hr.payslip.run'].search([('date_start', '<=', de), ('date_end', '>=', ds)])
+        return runs.filtered(lambda r: r.slip_ids)
+
+    def _july_period(self, ds):
+        year = (ds or '2026-01-01')[:4]
+        return {'name': 'Payroll July %s' % year,
+                'date_start': '%s-07-01' % year, 'date_end': '%s-07-31' % year}
+
+    def _clean_period(self, runs):
+        """Remove a period's generated artefacts: payslips, journal moves, formula
+        computation logs and the runs themselves (fully reversible demo cleanup)."""
+        if not runs:
+            return 0
+        slips = runs.mapped('slip_ids')
+        moves = slips.mapped('move_id') if 'move_id' in slips._fields else self.env['account.move']
+        for s in slips:
+            if s.state not in ('draft', 'cancel'):
+                s.state = 'cancel'
+        if moves:
+            posted = moves.filtered(lambda m: m.state == 'posted')
+            if posted:
+                posted.button_draft()
+            moves.with_context(force_delete=True).unlink()
+        fcols = {'formula_computation_log', 'formula_computed_values', 'formula_input_values'}
+        common = fcols & set(slips._fields)
+        if common and slips:
+            slips.write({c: False for c in common})
+        n = len(slips)
+        slips.unlink()
+        runs.write({'state': 'draft'})
+        runs.unlink()
+        return n
+
     # ---------------- Step 2: create + compute ----------------
     @api.model
     def create_and_compute(self, vals):
@@ -56,6 +96,27 @@ class PbPayrunWizard(models.AbstractModel):
         name = vals.get('name') or 'Payroll run'
         ds = vals.get('date_start')
         de = vals.get('date_end')
+        force_clean = vals.get('force_clean')
+
+        # Guard: if payroll already exists for this period, ask before overwriting.
+        existing = self._period_runs(ds, de)
+        if existing and not force_clean:
+            locked = any(getattr(r, 'locked', False) for r in existing)
+            if locked:
+                return {
+                    'needs_confirmation': True, 'kind': 'historical',
+                    'message': "Historical payroll runs are locked. Would you like to "
+                               "clean July’s payroll data and rerun July payroll?",
+                    'july': self._july_period(ds),
+                }
+            return {
+                'needs_confirmation': True, 'kind': 'exists',
+                'message': "This month’s payroll already exists. Would you like to "
+                           "clear existing payroll data and run payroll again?",
+            }
+        if force_clean and existing:
+            self._clean_period(existing)
+
         run = Run.create({'name': name, 'date_start': ds, 'date_end': de})
 
         emp_ids = self._eligible_employees()

@@ -3,6 +3,7 @@
 import { Component, useState, onWillStart, markup } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 const IC = {
     check:'<path d="M20 6 9 17l-5-5"/>',
@@ -21,6 +22,7 @@ export class PayrunWizard extends Component {
         this.orm = useService("orm");
         this.action = useService("action");
         this.notif = useService("notification");
+        this.dialog = useService("dialog");
         this.state = useState({
             step: 1, loading: false, busyMsg: "",
             defaults: null, form: { name: "", date_start: "", date_end: "", struct_id: null },
@@ -42,19 +44,53 @@ export class PayrunWizard extends Component {
     onField(f, ev) { this.state.form[f] = ev.target.value; }
 
     async toCompute() {
-        // Step 1 -> 2: actually create + compute a (draft) run
+        // Step 1 -> 2: create + compute a (draft) run, guarding existing payroll.
         this.state.step = 2;
         this.state.loading = true;
         this.state.busyMsg = "Creating run and computing payslips…";
         try {
-            const res = await this.orm.call("pb.payrun.wizard", "create_and_compute", [this.state.form]);
-            this.state.summary = res;
+            await this._compute(false);
         } catch (e) {
             this.notif.add("Could not compute the run. See server logs.", { type: "danger" });
             this.state.step = 1;
         } finally {
             this.state.loading = false;
         }
+    }
+
+    async _compute(force) {
+        const payload = { ...this.state.form, force_clean: force };
+        const res = await this.orm.call("pb.payrun.wizard", "create_and_compute", [payload]);
+        if (res && res.needs_confirmation) {
+            this.state.step = 1;          // sit behind the dialog on step 1
+            this._confirmOverwrite(res);
+            return;
+        }
+        this.state.summary = res;
+    }
+
+    _confirmOverwrite(res) {
+        const historical = res.kind === "historical";
+        this.dialog.add(ConfirmationDialog, {
+            title: historical ? "Historical payroll is locked" : "Payroll already exists",
+            body: res.message,
+            confirmLabel: historical ? "Clean July & Run" : "Clean and Run",
+            cancelLabel: "Cancel",
+            confirm: async () => {
+                if (historical && res.july) {
+                    this.state.form.name = res.july.name;
+                    this.state.form.date_start = res.july.date_start;
+                    this.state.form.date_end = res.july.date_end;
+                }
+                this.state.step = 2;
+                this.state.loading = true;
+                this.state.busyMsg = "Cleaning previous data and re-running payroll…";
+                try { await this._compute(true); }
+                catch (e) { this.notif.add("Re-run failed. See server logs.", { type: "danger" }); this.state.step = 1; }
+                finally { this.state.loading = false; }
+            },
+            cancel: () => { this.state.step = 1; },
+        });
     }
 
     goto(n) {

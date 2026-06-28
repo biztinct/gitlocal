@@ -833,7 +833,7 @@
             <span class="lg"><span class="sw" style="background:#059669"/>Total</span>
             <span class="lg" style="margin-left:auto;color:#4F46E5">▤ click a formula box to drill in</span>
           </div>
-          <div class="fc-canvas">
+          <div class="fc-canvas" t-on-wheel="onWheel" t-on-pointerdown="onPanStart" t-on-pointermove="onPanMove" t-on-pointerup="onPanEnd" t-on-pointercancel="onPanEnd">
             <div class="fc-zoomwrap"><t t-call="pb_formula_studio.Flow"><t t-set="flow" t-value="modalFlow"/></t></div>
           </div>
         </div>

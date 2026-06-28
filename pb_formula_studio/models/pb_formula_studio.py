@@ -193,7 +193,9 @@ class PbFormulaStudio(models.AbstractModel):
                 'id': r.id,
                 'col': r.column_letter or '?',
                 'code': r.code or '',
-                'name': r.name or '(unnamed)',
+                # Multilingual: prefer the translatable linked salary rule's label
+                # (resolves to the reader's language); fall back to the rule name.
+                'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or '(unnamed)',
                 'type': r.column_type,
                 'group': _group_for(r),
                 'excel_formula': r.excel_formula or '',

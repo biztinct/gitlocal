@@ -16,20 +16,22 @@
                 <div class="pb-sec-label" t-if="section.show_label" t-esc="section.name"/>
                 <div class="pb-nav-group">
                     <t t-foreach="section.items" t-as="item" t-key="item.id">
-                        <button t-attf-class="pb-nav-item #{isActive(item.id) ? 'active' : ''}"
+                        <button t-attf-class="pb-nav-item #{isActive(item.id) ? 'active' : ''} #{item.restricted ? 'pb-locked' : ''}"
                                 t-on-click="() => this.onItemClick(item)">
                             <span class="pb-ic-wrap" t-out="iconSvg(item.icon)"/>
                             <span class="pb-nav-tx" t-esc="item.name"/>
-                            <span t-if="item.badge" class="pb-nav-badge" t-esc="item.badge"/>
-                            <span t-if="item.children.length"
+                            <span t-if="item.restricted" class="pb-nav-lock" t-out="iconSvg('lock')"/>
+                            <span t-if="item.badge and !item.restricted" class="pb-nav-badge" t-esc="item.badge"/>
+                            <span t-if="item.children.length and !item.restricted"
                                   t-attf-class="pb-nav-caret #{isExpanded(item.id) ? 'open' : ''}">›</span>
                         </button>
-                        <t t-if="item.children.length and isExpanded(item.id)">
+                        <t t-if="item.children.length and isExpanded(item.id) and !item.restricted">
                             <t t-foreach="item.children" t-as="child" t-key="child.id">
-                                <button t-attf-class="pb-nav-item pb-subitem #{isActive(child.id) ? 'active' : ''}"
-                                        t-on-click="() => this.navigateTo(child)">
+                                <button t-attf-class="pb-nav-item pb-subitem #{isActive(child.id) ? 'active' : ''} #{child.restricted ? 'pb-locked' : ''}"
+                                        t-on-click="() => this.onItemClick(child)">
                                     <span class="pb-ic-wrap" t-out="iconSvg(child.icon)"/>
                                     <span class="pb-nav-tx" t-esc="child.name"/>
+                                    <span t-if="child.restricted" class="pb-nav-lock" t-out="iconSvg('lock')"/>
                                 </button>
                             </t>
                         </t>

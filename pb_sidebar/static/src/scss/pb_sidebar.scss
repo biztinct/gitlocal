@@ -104,5 +104,15 @@ body.has-pb-sidebar {
     .pb-user-ro { font-size: 11px; color: var(--pb-side-muted); }
 }
 
+// ---- Restricted (locked / upsell) items ----
+.pb-sidebar .pb-nav-item.pb-locked {
+    opacity: .55;
+    &:hover { opacity: .8; background: rgba(255, 255, 255, .04); }
+}
+.pb-sidebar .pb-nav-lock {
+    margin-left: auto; display: inline-flex; align-items: center; opacity: .8;
+    svg { width: 14px; height: 14px; }
+}
+
 // Tighten the control panel a touch so content lines up under the navbar
 body.has-pb-sidebar .o_action_manager { background: var(--pb-bg, #F4F5FB); }

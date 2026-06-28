@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pb_demo_generator_form" model="ir.ui.view">
+        <field name="name">pb.demo.generator.form</field>
+        <field name="model">pb.demo.generator</field>
+        <field name="arch" type="xml">
+            <form string="Payobook Demo Generator">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Payobook Demo Environment</h1>
+                        <p>Build a complete, regenerable demo world: multilingual component
+                           library, division schemes, thousands of realistic employees and
+                           months of payroll history. Regeneration replaces prior demo data.</p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="headcount_factor"/>
+                            <field name="months"/>
+                            <field name="include_history"/>
+                        </group>
+                        <group>
+                            <div class="text-muted">
+                                Headcount factor 1.0 builds ~4,560 employees across 6 divisions
+                                plus a Singapore entity. Use a small factor (e.g. 0.05) for a
+                                quick smoke test.
+                            </div>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_generate_all" type="object" string="Generate Everything"
+                                class="btn-primary"/>
+                        <button name="action_build_foundation" type="object"
+                                string="Build Foundation Only"/>
+                        <button name="action_clean_demo" type="object" string="Clean Demo Data"
+                                class="btn-secondary"
+                                confirm="Remove all demo employees, contracts and payroll history?"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_demo_generator" model="ir.actions.act_window">
+        <field name="name">Demo Generator</field>
+        <field name="res_model">pb.demo.generator</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_pb_demo_analytics" model="ir.actions.client">
+        <field name="name">Workforce Analytics</field>
+        <field name="tag">pb_demo_analytics</field>
+    </record>
+
+    <menuitem id="menu_pb_demo_root" name="Payobook Demo"
+              parent="base.menu_administration" sequence="90"
+              groups="base.group_system"/>
+    <menuitem id="menu_pb_demo_generator" name="Demo Generator"
+              parent="menu_pb_demo_root" action="action_pb_demo_generator"
+              sequence="10" groups="base.group_system"/>
+</odoo>
