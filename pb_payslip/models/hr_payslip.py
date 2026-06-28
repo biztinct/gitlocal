@@ -60,7 +60,12 @@ class HrPayslip(models.Model):
                 continue
             if not amt:
                 continue
-            row = {'name': line.name or line.code or '—', 'code': line.code or '',
+            # Multilingual: resolve the component label from the translatable salary
+            # rule in the reader's language (user preference), falling back to the
+            # frozen line snapshot. Adding a language needs no payroll-logic change.
+            label = (line.salary_rule_id.name if line.salary_rule_id else False) \
+                or line.name or line.code or '—'
+            row = {'name': label, 'code': line.code or '',
                    'amount': abs(amt)}
             if code in DED_CODES or amt < 0:
                 deductions.append(row)

@@ -1,0 +1,59 @@
+// Payobook Demo Analytics cockpit — indigo, white cards, CSS bars.
+.pbda {
+    padding: 22px 26px 60px; background: #F4F5FB; min-height: 100%;
+    font-family: 'Inter', system-ui, sans-serif; color: #1E1B2E;
+
+    .pbda-loading { padding: 60px; text-align: center; color: #64748B; }
+
+    .pbda-hero {
+        background: #241F52; color: #fff; border-radius: 18px; padding: 26px 30px; margin-bottom: 18px;
+        // Force white: Bootstrap sets a dark heading colour that overrides inherit.
+        h1 { font-size: 26px; font-weight: 800; margin: 6px 0 4px; color: #fff; }
+    }
+    .pbda-eyebrow { font-size: 11px; letter-spacing: .14em; color: #C9C2EE; font-weight: 700; }
+    .pbda-period { color: #C9C2EE; font-size: 13px; }
+
+    .pbda-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+    .pbda-kpi {
+        background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; padding: 16px 18px;
+        border-left: 4px solid #5A4BB0;
+    }
+    .pbda-kpi-l { font-size: 11.5px; letter-spacing: .04em; color: #64748B; font-weight: 600; text-transform: uppercase; }
+    .pbda-kpi-v { font-size: 23px; font-weight: 800; margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+    .pbda-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .pbda-card {
+        background: #fff; border: 1px solid #E2E8F0; border-radius: 16px; padding: 20px 22px;
+        h3 { font-size: 15px; font-weight: 700; margin: 0 0 16px; }
+        &.pbda-wide { grid-column: span 2; }
+    }
+    @media (max-width: 1100px) {
+        .pbda-grid { grid-template-columns: 1fr; }
+        .pbda-card.pbda-wide { grid-column: span 1; }
+        .pbda-kpis { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    // horizontal bars
+    .pbda-bar-row { display: grid; grid-template-columns: 130px 1fr 92px; align-items: center; gap: 12px; margin-bottom: 11px; }
+    .pbda-bar-label { font-size: 12.5px; color: #475569; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbda-bar-track { background: #F1F2F9; border-radius: 8px; height: 18px; overflow: hidden; display: flex; }
+    .pbda-bar-track.pbda-track-2 { background: #F1F2F9; }
+    .pbda-bar { height: 100%; border-radius: 8px 0 0 8px; transition: width .4s ease; min-width: 2px; }
+    .pbda-bar-val { font-size: 12.5px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+
+    // vertical columns
+    .pbda-cols { display: flex; align-items: flex-end; gap: 8px; height: 150px; padding-top: 8px; }
+    .pbda-cols-trend { height: 180px; }
+    .pbda-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+    .pbda-col-bar { width: 60%; min-height: 3px; border-radius: 6px 6px 0 0; transition: height .4s ease; }
+    .pbda-col-stack { display: flex; align-items: flex-end; gap: 3px; height: 100%; width: 100%; justify-content: center; }
+    .pbda-col-stack .pbda-col-bar { width: 38%; }
+    .pbda-col-x { font-size: 11px; color: #64748B; margin-top: 6px; white-space: nowrap; }
+
+    .pbda-legend { display: flex; gap: 16px; align-items: center; font-size: 12px; color: #64748B; margin-top: 14px;
+        span { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 5px; vertical-align: -1px; } }
+    .pbda-split { display: flex; flex-direction: column; gap: 12px;
+        > div { display: flex; justify-content: space-between; font-size: 13.5px; color: #334155;
+            b { font-variant-numeric: tabular-nums; } } }
+    .pbda-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+}

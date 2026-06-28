@@ -42,32 +42,72 @@ class PbPayslipReview(models.AbstractModel):
         return self._match(slip, self.GROSS_CODES, ('tổng thu nhập', 'gross'))
 
     @api.model
+    def _active_company_ids(self):
+        return self.env.companies.ids or [self.env.company.id]
+
+    @api.model
+    def _company_run_ids(self):
+        """Run ids that have at least one payslip in the ACTIVE companies — so the
+        cockpit never opens a run from a company the user isn't currently in
+        (hr.payslip.run has no company_id; we scope through the payslips)."""
+        self.env.cr.execute("""
+            SELECT DISTINCT payslip_run_id FROM hr_payslip
+            WHERE company_id IN %s AND payslip_run_id IS NOT NULL
+        """, (tuple(self._active_company_ids()),))
+        return [r[0] for r in self.env.cr.fetchall()]
+
+    @api.model
     def get_runs(self):
-        runs = self.env['hr.payslip.run'].search([], order='id desc', limit=20)
+        runs = self.env['hr.payslip.run'].search(
+            [('id', 'in', self._company_run_ids())], order='id desc', limit=20)
         return [{'id': r.id, 'name': r.name} for r in runs]
+
+    @api.model
+    def _slip_totals(self, slip_ids):
+        """{slip_id: {'net': x|None, 'gross': y|None}} via SQL — avoids loading
+        every slip's lines into Python (tens of thousands of rows per run)."""
+        res = {sid: {'net': None, 'gross': None} for sid in slip_ids}
+        if not slip_ids:
+            return res
+        self.env.cr.execute("""
+            SELECT pl.slip_id, c.code, COALESCE(SUM(pl.total), 0)
+            FROM hr_payslip_line pl
+            JOIN hr_salary_rule_category c ON c.id = pl.category_id
+            WHERE pl.slip_id IN %s AND c.code IN ('NET', 'GROSS')
+            GROUP BY pl.slip_id, c.code
+        """, (tuple(slip_ids),))
+        for sid, code, total in self.env.cr.fetchall():
+            res[sid]['net' if code == 'NET' else 'gross'] = total or 0.0
+        return res
+
+    @api.model
+    def _default_run(self):
+        """Most recent ACTIVE-company run with positive take-home — uses the stored,
+        indexed pb_total_net, scoped to runs that have payslips in active companies."""
+        Run = self.env['hr.payslip.run']
+        run_ids = self._company_run_ids()
+        if not run_ids:
+            return Run.browse()
+        run = Run.search([('id', 'in', run_ids), ('pb_total_net', '>', 0)],
+                         order='id desc', limit=1)
+        return run or Run.search([('id', 'in', run_ids)], order='id desc', limit=1)
 
     @api.model
     def get_review_data(self, run_id=None):
         Run = self.env['hr.payslip.run']
-        if run_id:
-            run = Run.browse(run_id)
-        else:
-            # Default to the most recent run that has real (positive) take-home,
-            # so the cockpit opens on a meaningful run rather than an empty/test one.
-            candidates = Run.search([], order='id desc', limit=12)
-            run = False
-            for c in candidates:
-                if sum((self._net(s) or 0) for s in c.slip_ids) > 0:
-                    run = c
-                    break
-            if not run:
-                run = candidates[:1]
+        run = Run.browse(run_id) if run_id else self._default_run()
         if not run:
             return {'run': None, 'runs': self.get_runs(), 'slips': [], 'totals': {}}
 
+        # Only payslips in the active companies — never touch a record the user's
+        # current company context can't read (avoids multi-company access errors).
+        cids = self._active_company_ids()
+        slip_recs = run.slip_ids.filtered(lambda s: s.company_id.id in cids)
+        totals = self._slip_totals(slip_recs.ids)
         slips, t_net, t_gross, n_net, n_gross = [], 0.0, 0.0, 0, 0
-        for i, s in enumerate(run.slip_ids):
-            net, gross = self._net(s), self._gross(s)
+        for i, s in enumerate(slip_recs):
+            tt = totals.get(s.id, {})
+            net, gross = tt.get('net'), tt.get('gross')
             if net is not None:
                 t_net += net
                 n_net += 1
@@ -97,7 +137,10 @@ class PbPayslipReview(models.AbstractModel):
         s = self.env['hr.payslip'].browse(slip_id)
         lines = []
         for l in s.line_ids:
-            lines.append({'name': l.name or l.code, 'code': l.code or '',
+            # Multilingual: prefer the translatable salary-rule label (resolves to the
+            # reader's language) over the frozen line snapshot.
+            label = (l.salary_rule_id.name if l.salary_rule_id else False) or l.name or l.code
+            lines.append({'name': label, 'code': l.code or '',
                           'total': l.total or 0.0})
         return {
             'id': s.id, 'emp': s.employee_id.name, 'state': s.state,

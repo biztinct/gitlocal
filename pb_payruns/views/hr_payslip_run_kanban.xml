@@ -55,6 +55,9 @@
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_open_payroll_report" class="pbk-btn primary">Report</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_download_payslip_xlsx" class="pbk-btn ghost">Excel</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_send_email_all" class="pbk-btn ghost">Email</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_bank_export" class="pbk-btn ghost">Bank file</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_journals" class="pbk-btn ghost">Journals</button>
+                                <button t-if="record.pb_is_done.raw_value" type="object" name="action_pb_payments" class="pbk-btn ghost">Payments</button>
                             </div>
                         </div>
                     </t>

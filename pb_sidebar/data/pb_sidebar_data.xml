@@ -21,6 +21,17 @@
     <record id="sec_admin" model="pb.sidebar.section">
         <field name="name">Admin</field><field name="technical_key">admin</field><field name="sequence">60</field>
     </record>
+    <!-- Sections surfacing functionality that previously lived only in the
+         legacy pb_hr_flow launcher (Workforce, Compliance, Planning). -->
+    <record id="sec_workforce" model="pb.sidebar.section">
+        <field name="name">Workforce</field><field name="technical_key">workforce</field><field name="sequence">35</field>
+    </record>
+    <record id="sec_compliance" model="pb.sidebar.section">
+        <field name="name">Compliance</field><field name="technical_key">compliance</field><field name="sequence">45</field>
+    </record>
+    <record id="sec_planning" model="pb.sidebar.section">
+        <field name="name">Planning</field><field name="technical_key">planning</field><field name="sequence">55</field>
+    </record>
 
     <!-- ============ Overview ============ -->
     <record id="item_dashboard" model="pb.sidebar.item">
@@ -179,6 +190,118 @@
         <field name="icon">compass</field><field name="sequence">30</field>
         <field name="action_xmlid">pb_sidebar.action_pb_sidebar_item</field>
         <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+
+    <!-- ============ Compliance (Government Reports) ============ -->
+    <record id="item_govt_reports" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_compliance"/><field name="name">Government Reports</field>
+        <field name="icon">file-text</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_govt_reports.action_pb_govt_reports</field>
+        <field name="action_tag">pb_govt_reports</field>
+    </record>
+
+    <!-- ============ Pay Run · Full &amp; Final + audit ============ -->
+    <record id="item_full_final" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Full &amp; Final</field>
+        <field name="icon">file</field><field name="sequence">60</field>
+        <field name="action_xmlid">pb_hr_fullandfinal.action_full_and_final_employees</field>
+    </record>
+    <record id="item_proration" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Proration Audit</field>
+        <field name="icon">calculator</field><field name="sequence">70</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_payroll_proration_line</field>
+    </record>
+    <record id="item_retro" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Retro Adjustments</field>
+        <field name="icon">percent</field><field name="sequence">80</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_payroll_retro_adjustment</field>
+    </record>
+
+    <!-- ============ Setup · payroll configuration extras ============ -->
+    <record id="item_payslip_config" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Payslip Configuration</field>
+        <field name="icon">settings</field><field name="sequence">60</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_payslip_config_wizard</field>
+    </record>
+    <record id="item_emp_mapping" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Employee/Contract Mapping</field>
+        <field name="icon">database</field><field name="sequence">70</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_payslip_import_mapping_wizard</field>
+    </record>
+    <record id="item_midcycle_mapping" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Mid-Cycle Mapping</field>
+        <field name="icon">compass</field><field name="sequence">80</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_payroll_cycle_component_mapping_wizard</field>
+    </record>
+
+    <!-- ============ Workforce (existing pb_hr_workforce cockpits) ============ -->
+    <record id="item_wf_dashboard" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Workforce Dashboard</field>
+        <field name="icon">trending-up</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_hr_workforce.action_workforce_dashboard_server</field>
+    </record>
+    <record id="item_wf_live" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Live Attendance</field>
+        <field name="icon">users</field><field name="sequence">20</field>
+        <field name="action_xmlid">pb_hr_workforce.action_attendance_live</field>
+    </record>
+    <record id="item_wf_timecards" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Timecards</field>
+        <field name="icon">calendar</field><field name="sequence">30</field>
+        <field name="action_xmlid">pb_hr_workforce.action_attendance_timecard</field>
+    </record>
+    <record id="item_wf_roster" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Shift Roster</field>
+        <field name="icon">calendar</field><field name="sequence">40</field>
+        <field name="action_xmlid">pb_hr_workforce.action_shift_planning_grid</field>
+    </record>
+    <record id="item_wf_templates" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Shift Templates</field>
+        <field name="icon">layers</field><field name="sequence">50</field>
+        <field name="action_xmlid">pb_hr_workforce.action_shift_template</field>
+    </record>
+    <record id="item_wf_overtime" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Overtime Rules</field>
+        <field name="icon">percent</field><field name="sequence">60</field>
+        <field name="action_xmlid">pb_hr_workforce.action_overtime_rules_dashboard</field>
+    </record>
+    <record id="item_wf_payroll_report" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Payroll Report</field>
+        <field name="icon">file-text</field><field name="sequence">70</field>
+        <field name="action_xmlid">pb_hr_workforce.action_payroll_report_dashboard</field>
+    </record>
+
+    <!-- ============ Planning (existing pb_hr_workforce_planning cockpits) ====== -->
+    <record id="item_wfp_scenarios" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Planning Scenarios</field>
+        <field name="icon">compass</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_scenario</field>
+    </record>
+    <record id="item_wfp_forecasts" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Employee Forecasts</field>
+        <field name="icon">trending-up</field><field name="sequence">20</field>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_forecast</field>
+    </record>
+    <record id="item_wfp_grades" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Pay Grades</field>
+        <field name="icon">layers</field><field name="sequence">30</field>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_grade</field>
+    </record>
+    <record id="item_wfp_merit" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Merit Matrix</field>
+        <field name="icon">calculator</field><field name="sequence">40</field>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_merit_matrix</field>
+    </record>
+    <record id="item_wfp_cycles" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Compensation Cycles</field>
+        <field name="icon">calendar</field><field name="sequence">50</field>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_cycle</field>
+    </record>
+    <record id="item_wfp_tags" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Tag Components</field>
+        <field name="icon">database</field><field name="sequence">60</field>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_tagging_wizard</field>
     </record>
 
 </odoo>

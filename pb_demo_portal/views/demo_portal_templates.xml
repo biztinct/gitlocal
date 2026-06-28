@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ Registration page ============ -->
+    <template id="register_page" name="Payobook Demo Registration">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div class="pbdemo-wrap">
+                <div class="pbdemo-grid">
+                    <!-- Left: pitch -->
+                    <aside class="pbdemo-pitch">
+                        <div class="pbdemo-brand">
+                            <span class="pbdemo-logo">P</span>
+                            <span>Payobook</span>
+                        </div>
+                        <h1>Experience enterprise payroll, live.</h1>
+                        <p class="pbdemo-lead">Get instant access to a fully-loaded Payobook
+                            environment — thousands of employees, real payroll history,
+                            multi-country schemes, analytics and integrations.</p>
+                        <ul class="pbdemo-points">
+                            <li><span class="pbdemo-tick"/>3,000+ employees across 6 divisions</li>
+                            <li><span class="pbdemo-tick"/>7 months of computed payroll &amp; analytics</li>
+                            <li><span class="pbdemo-tick"/>Multilingual payslips &amp; 25+ integrations</li>
+                            <li><span class="pbdemo-tick"/>Run payroll end-to-end in minutes</li>
+                        </ul>
+                    </aside>
+
+                    <!-- Right: form -->
+                    <main class="pbdemo-card">
+                        <h2>Start your demo</h2>
+                        <p class="pbdemo-sub">Tell us a little about you. We'll email a secure link to set your password.</p>
+                        <div t-if="error" class="pbdemo-error" role="alert" t-esc="error"/>
+                        <form action="/demo/register/submit" method="post" class="pbdemo-form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="pbdemo-row">
+                                <label>Full name
+                                    <input type="text" name="name" t-att-value="values.get('name', '')" required="required" placeholder="Jane Tran"/>
+                                </label>
+                                <label>Company
+                                    <input type="text" name="company" t-att-value="values.get('company', '')" required="required" placeholder="Acme Corp"/>
+                                </label>
+                            </div>
+                            <label>Business email
+                                <input type="email" name="email" t-att-value="values.get('email', '')" required="required" placeholder="jane@acme.com"/>
+                            </label>
+                            <div class="pbdemo-row">
+                                <label>Mobile number
+                                    <input type="text" name="mobile" t-att-value="values.get('mobile', '')" required="required" placeholder="+84 90 123 4567"/>
+                                </label>
+                                <label>Country
+                                    <select name="country_id" required="required">
+                                        <option value="">Select…</option>
+                                        <t t-foreach="countries" t-as="c">
+                                            <option t-att-value="c.id"
+                                                    t-att-selected="'selected' if values.get('country_id') == str(c.id) else None"
+                                                    t-esc="c.name"/>
+                                        </t>
+                                    </select>
+                                </label>
+                            </div>
+                            <div class="pbdemo-row">
+                                <label>Industry
+                                    <select name="industry" required="required">
+                                        <option value="">Select…</option>
+                                        <t t-foreach="industries" t-as="ind">
+                                            <option t-att-value="ind"
+                                                    t-att-selected="'selected' if values.get('industry') == ind else None"
+                                                    t-esc="ind"/>
+                                        </t>
+                                    </select>
+                                </label>
+                                <label>Company size
+                                    <select name="company_size" required="required">
+                                        <option value="">Select…</option>
+                                        <t t-foreach="company_sizes" t-as="sz">
+                                            <option t-att-value="sz"
+                                                    t-att-selected="'selected' if values.get('company_size') == sz else None"
+                                                    t-esc="sz"/>
+                                        </t>
+                                    </select>
+                                </label>
+                            </div>
+                            <button type="submit" class="pbdemo-submit">Get my demo access</button>
+                            <p class="pbdemo-fine">Already have access?
+                                <a href="/web/login">Sign in</a>.</p>
+                        </form>
+                    </main>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============ Confirmation page ============ -->
+    <template id="register_done" name="Payobook Demo Registration Done">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div class="pbdemo-wrap pbdemo-center">
+                <main class="pbdemo-card pbdemo-done">
+                    <div class="pbdemo-check"/>
+                    <h2 t-if="not already">Check your inbox</h2>
+                    <h2 t-if="already">You're already registered</h2>
+                    <p t-if="not already">We've sent a secure link to <strong t-esc="email"/>.
+                        Click it to set your password, then you'll be signed straight into your
+                        Payobook demo.</p>
+                    <p t-if="already">An account already exists for <strong t-esc="email"/>.
+                        You can sign in or reset your password.</p>
+                    <a class="pbdemo-submit" href="/web/login">Go to sign in</a>
+                </main>
+            </div>
+        </t>
+    </template>
+</odoo>

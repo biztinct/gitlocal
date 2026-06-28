@@ -42,6 +42,10 @@ class PbPayruns(models.AbstractModel):
             lambda: Run.search([], order='date_end desc, id desc', limit=BOARD_LIMIT),
             default=Run.browse())
 
+        # Batch-compute all run totals in ONE pass (single SQL) instead of letting
+        # each per-run field access trigger its own aggregation.
+        self._safe(lambda: runs.mapped('pb_total_net'))
+
         batches = []
         stage_counts = {s: 0 for s in STAGE_ORDER}
         stage_counts['cancel'] = 0

@@ -199,7 +199,7 @@ class HrSalaryRule(models.Model):
                 raise UserError(_('Wrong percentage base or quantity defined for salary rule %s (%s).') % (self.name, self.code))
         else:
             try:
-                safe_eval(self.amount_python_compute, localdict, mode='exec', nocopy=True)
+                safe_eval(self.amount_python_compute, localdict, mode='exec')
                 return float(localdict['result']), 'result_qty' in localdict and localdict['result_qty'] or 1.0, 'result_rate' in localdict and localdict['result_rate'] or 100.0
             except Exception as ex:
                 raise UserError(_(
@@ -227,7 +227,7 @@ class HrSalaryRule(models.Model):
                 raise UserError(_('Wrong range condition defined for salary rule %s (%s).') % (self.name, self.code))
         else:  # python code
             try:
-                safe_eval(self.condition_python, localdict, mode='exec', nocopy=True)
+                safe_eval(self.condition_python, localdict, mode='exec')
                 return 'result' in localdict and localdict['result'] or False
             except Exception as ex:
                 raise UserError(_(

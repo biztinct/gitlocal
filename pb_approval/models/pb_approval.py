@@ -19,24 +19,15 @@ class PbApproval(models.AbstractModel):
     _description = 'Payobook Approval cockpit data'
 
     @api.model
-    def _net(self, slip):
-        try:
-            hit = slip.line_ids.filtered(
-                lambda l: (l.code or '').upper() in NET_CODES
-                or any(n in (l.name or '').lower() for n in NET_NAMES))
-            return sum(hit.mapped('total')) if hit else 0.0
-        except Exception:
-            return 0.0
-
-    @api.model
     def _run_dict(self, run):
-        slips = run.slip_ids
-        net = sum(self._net(s) for s in slips)
+        # Reads the STORED totals on hr.payslip.run (instant) — no line aggregation.
         info = STAGE.get(run.state)
         return {
             'id': run.id, 'name': run.name,
             'period': '%s → %s' % (run.date_start, run.date_end) if run.date_start else '',
-            'count': len(slips), 'net': net, 'state': run.state,
+            'count': run.pb_employee_count if 'pb_employee_count' in run._fields else 0,
+            'net': run.pb_total_net if 'pb_total_net' in run._fields else 0.0,
+            'state': run.state,
             'stage': info[1] if info else ('Done' if run.state == 'done' else run.state),
             'role': info[2] if info else '',
             'pending': bool(info),

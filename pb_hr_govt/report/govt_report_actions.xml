@@ -7,9 +7,7 @@
         <field name="model">pb.govt.report.wizard</field>
         <field name="report_type">xlsx</field>
         <field name="report_name">pb_hr_govt.bhxh630_xlsx</field>
-        <field name="report_file">BHXH630</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
-        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="report_file">BHXH630</field>        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
         <field name="binding_type">report</field>
     </record>
     <record id="report_bhxhdstk01_xlsx" model="ir.actions.report">
@@ -17,9 +15,7 @@
         <field name="model">pb.govt.report.wizard</field>
         <field name="report_type">xlsx</field>
         <field name="report_name">pb_hr_govt.bhxhdstk01_xlsx</field>
-        <field name="report_file">BHXHDSTK01-DV_595</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
-        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="report_file">BHXHDSTK01-DV_595</field>        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
         <field name="binding_type">report</field>
     </record>
     <record id="report_bangke_d01_xlsx" model="ir.actions.report">
@@ -27,9 +23,7 @@
         <field name="model">pb.govt.report.wizard</field>
         <field name="report_type">xlsx</field>
         <field name="report_name">pb_hr_govt.bangke_d01_xlsx</field>
-        <field name="report_file">BangKeHS_D01</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
-        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="report_file">BangKeHS_D01</field>        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
         <field name="binding_type">report</field>
     </record>
     <record id="report_giam_ld_xlsx" model="ir.actions.report">
@@ -37,9 +31,7 @@
         <field name="model">pb.govt.report.wizard</field>
         <field name="report_type">xlsx</field>
         <field name="report_name">pb_hr_govt.giam_ld_xlsx</field>
-        <field name="report_file">GiamLaoDong</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
-        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="report_file">GiamLaoDong</field>        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
         <field name="binding_type">report</field>
     </record>
     <record id="report_tang_ld_xlsx" model="ir.actions.report">
@@ -47,9 +39,7 @@
         <field name="model">pb.govt.report.wizard</field>
         <field name="report_type">xlsx</field>
         <field name="report_name">pb_hr_govt.tang_ld_xlsx</field>
-        <field name="report_file">TangLaoDong</field>
-        <field name="groups_id" eval="[(4, ref('pb_hr_govt.group_pb_hr_govt_user'))]"/>
-        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
+        <field name="report_file">TangLaoDong</field>        <field name="binding_model_id" ref="model_pb_govt_report_wizard"/>
         <field name="binding_type">report</field>
     </record>
 

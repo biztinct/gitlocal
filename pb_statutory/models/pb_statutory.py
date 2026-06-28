@@ -9,6 +9,10 @@ CONTRIB_MAP = {
     'SI_EMP': ('SI', 'emp'), 'SI_COMP': ('SI', 'comp'),
     'HI_EMP': ('HI', 'emp'), 'HI_COMP': ('HI', 'comp'),
     'UI_EMP': ('UI', 'emp'), 'UI_COMP': ('UI', 'comp'),
+    # Payobook demo formula-config codes (underscore-free per converter contract).
+    'SIEMP': ('SI', 'emp'), 'SICOMP': ('SI', 'comp'),
+    'HIEMP': ('HI', 'emp'), 'HICOMP': ('HI', 'comp'),
+    'UIEMP': ('UI', 'emp'), 'UICOMP': ('UI', 'comp'),
 }
 INS_LABEL = {'SI': 'Social Insurance (BHXH)', 'HI': 'Health Insurance (BHYT)',
              'UI': 'Unemployment (BHTN)'}
@@ -103,9 +107,11 @@ class PbStatutory(models.AbstractModel):
         # ---------- contribution actuals (latest run) ----------
         actuals = None
         Run = self.env['hr.payslip.run']
+        # hr.payslip.run has no company_id column in this build — only scope by it
+        # when the field actually exists (else the latest run overall).
+        run_dom = [('company_id', 'in', co_ids)] if 'company_id' in Run._fields else []
         latest = self._safe(
-            lambda: Run.search([('company_id', 'in', co_ids)],
-                               order='date_end desc, id desc', limit=1),
+            lambda: Run.search(run_dom, order='date_end desc, id desc', limit=1),
             default=Run.browse())
         if latest:
             buckets = {k: {'emp': 0.0, 'comp': 0.0} for k in ('SI', 'HI', 'UI')}

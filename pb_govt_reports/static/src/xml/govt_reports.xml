@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_govt_reports.PbGovtReports">
+    <div class="pbim gov pbim-page gov-board">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading filings…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head">
+          <div>
+            <h1 class="pbim-h1">Government Reports</h1>
+            <p class="pbim-sub">Statutory filings for <b><t t-esc="state.data.company"/></b> · <t t-esc="state.data.country_label"/></p>
+          </div>
+          <div class="ppl-head-actions">
+            <label class="gov-period"><t t-out="ic('calendar',15)"/>
+              <input type="month" t-att-value="state.month" t-on-change="onMonth"/>
+            </label>
+          </div>
+        </div>
+
+        <div t-if="state.data.multi_country" class="gov-countries">
+          <span class="gov-clabel">Country</span>
+          <t t-foreach="state.data.countries" t-as="c" t-key="c.code">
+            <button class="pbim-chip" t-att-class="{'active': c.code === state.data.country_code}" t-on-click="() => this.selectCountry(c.code)">
+              <t t-esc="c.label"/>
+            </button>
+          </t>
+        </div>
+
+        <t t-if="state.data.available">
+          <div class="pbim-panel" t-foreach="state.data.groups" t-as="g" t-key="g.label">
+            <div class="pbim-panel-h"><h2 class="pbim-h2"><t t-out="ic(g.icon or 'fileText',18)"/> <t t-esc="g.label"/></h2></div>
+            <div class="gov-grid">
+              <div class="gov-tile" t-foreach="g.reports" t-as="r" t-key="r.key">
+                <span class="gov-tile-ic"><t t-out="ic('fileText',22)"/></span>
+                <div class="gov-tile-tx">
+                  <span class="nm" t-esc="r.en"/>
+                  <span class="jb" t-esc="r.vi"/>
+                </div>
+                <button class="pbim-btn primary gov-gen" t-on-click="() => this.generate(r.key)">
+                  <t t-out="ic('download',15)"/> Generate
+                </button>
+              </div>
+            </div>
+          </div>
+        </t>
+
+        <div t-else="" class="pbim-panel">
+          <div class="pbim-empty">
+            <t t-out="ic('file',30)"/>
+            <p>Government reports for <b><t t-esc="state.data.country_label"/></b> are coming soon.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

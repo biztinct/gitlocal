@@ -507,6 +507,29 @@ export class PbFormulaStudio extends Component {
     closeFlow() { this.state.flowOpen = false; }
     flowNodeClick(ev, n) { if (ev) ev.stopPropagation(); if (n && n.formula) this.flowDrill(n.ref); }
 
+    // ---- Grab-to-pan the flow canvas (drag empty space to move the diagram) ----
+    onPanStart(ev) {
+        // left button only; don't hijack clicks on nodes / buttons (drill-in must work)
+        if (ev.button !== 0 || ev.target.closest(".node-box, .node-diamond, button, a")) return;
+        const el = ev.currentTarget;
+        this._pan = { el, x: ev.clientX, y: ev.clientY, sl: el.scrollLeft, st: el.scrollTop, id: ev.pointerId };
+        try { el.setPointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
+        el.classList.add("grabbing");
+    }
+    onPanMove(ev) {
+        const p = this._pan;
+        if (!p) return;
+        p.el.scrollLeft = p.sl - (ev.clientX - p.x);
+        p.el.scrollTop = p.st - (ev.clientY - p.y);
+    }
+    onPanEnd() {
+        const p = this._pan;
+        if (!p) return;
+        try { p.el.releasePointerCapture(p.id); } catch (e) { /* ignore */ }
+        p.el.classList.remove("grabbing");
+        this._pan = null;
+    }
+
     // ---- expand-modal zoom (fit by default, +/- to blow up/down) ----
     _fitZoom() {
         const canvas = document.querySelector(".fc-modal .fc-canvas");
@@ -536,6 +559,23 @@ export class PbFormulaStudio extends Component {
     zoomIn() { this.state.flowZoom = (this._curZoom || this._fitZoom()) * 1.2; this.applyZoom(); }
     zoomOut() { this.state.flowZoom = Math.max(0.15, (this._curZoom || this._fitZoom()) / 1.2); this.applyZoom(); }
     zoomFit() { this.state.flowZoom = null; this.applyZoom(); }
+    // Mouse-wheel zoom, anchored on the cursor (point under the pointer stays put).
+    onWheel(ev) {
+        if (!this.state.flowOpen) return;
+        ev.preventDefault();
+        const canvas = ev.currentTarget;
+        const prev = this._curZoom || this._fitZoom();
+        const next = Math.max(0.15, Math.min(prev * (ev.deltaY < 0 ? 1.1 : 1 / 1.1), 4));
+        if (next === prev) return;
+        const rect = canvas.getBoundingClientRect();
+        const ox = canvas.scrollLeft + (ev.clientX - rect.left);
+        const oy = canvas.scrollTop + (ev.clientY - rect.top);
+        const ratio = next / prev;
+        this.state.flowZoom = next;
+        this.applyZoom();
+        canvas.scrollLeft = ox * ratio - (ev.clientX - rect.left);
+        canvas.scrollTop = oy * ratio - (ev.clientY - rect.top);
+    }
     // inline flow always fits its window (Expand to see complex ones bigger)
     applyInlineFit() {
         const container = document.querySelector(".pbfs-editor .fc-inline");
