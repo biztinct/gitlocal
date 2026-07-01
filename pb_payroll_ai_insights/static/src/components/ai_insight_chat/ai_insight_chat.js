@@ -108,7 +108,7 @@ export class AiInsightChat extends Component {
                 method: "rpc_send_message",
                 args: [text, this.state.sessionId],
                 kwargs: {},
-            });
+            }, { silent: true });  // suppress Odoo's global spinner — we show typing dots
 
             this.state.sessionId = result.session_id;
 
@@ -267,7 +267,7 @@ export class AiInsightChat extends Component {
                 method: "rpc_send_voice_message",
                 args: [base64, this.state.sessionId, true],
                 kwargs: {},
-            });
+            }, { silent: true });
 
             if (result.error) {
                 // Update the user message to show error
