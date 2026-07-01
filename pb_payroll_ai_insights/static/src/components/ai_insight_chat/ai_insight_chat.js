@@ -18,6 +18,7 @@ export class AiInsightChat extends Component {
     setup() {
         this.notification = useService("notification");
         this.coach = useService("pb_coach");
+        this.actionService = useService("action");
         this.chatBodyRef = useRef("chatBody");
         this.inputRef = useRef("chatInput");
 
@@ -106,7 +107,7 @@ export class AiInsightChat extends Component {
             const result = await rpc("/web/dataset/call_kw", {
                 model: "payroll.ai.conversation",
                 method: "rpc_send_message",
-                args: [text, this.state.sessionId],
+                args: [text, this.state.sessionId, this._currentScreen()],
                 kwargs: {},
             }, { silent: true });  // suppress Odoo's global spinner — we show typing dots
 
@@ -137,6 +138,16 @@ export class AiInsightChat extends Component {
 
         this.state.isLoading = false;
         this._scrollToBottom();
+    }
+
+    // Current cockpit, sent with each message so the AI can answer "how do I do
+    // THIS?" relative to where the user is standing.
+    _currentScreen() {
+        try {
+            const a = this.actionService.currentController && this.actionService.currentController.action;
+            if (!a) return null;
+            return { tag: a.tag || "", xml_id: a.xml_id || "", model: a.res_model || "", name: a.name || "" };
+        } catch (e) { return null; }
     }
 
     // --- Coach action (launch a guided tour the AI recommended) ---

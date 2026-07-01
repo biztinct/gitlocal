@@ -94,6 +94,11 @@
         <t t-if="ui.launcherOpen">
           <div class="pbc-launch-menu">
             <div class="pbc-launch-head"><t t-out="icon('compass', 15)"/> Guided tours</div>
+            <button class="pbc-launch-item pbc-launch-item--hero" t-if="screenTour"
+                    t-on-click="() => this.launch(screenTour.id)">
+              <span class="pbc-launch-nm"><t t-out="icon('play', 13)"/> Tour this screen</span>
+              <span class="pbc-launch-sm" t-esc="screenTour.name"/>
+            </button>
             <button class="pbc-launch-item" t-foreach="tourList" t-as="tr" t-key="tr.id"
                     t-on-click="() => this.launch(tr.id)">
               <span class="pbc-launch-nm" t-esc="tr.name"/>

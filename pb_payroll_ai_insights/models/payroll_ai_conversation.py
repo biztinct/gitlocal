@@ -102,7 +102,7 @@ class PayrollAIConversation(models.Model):
     # --- RPC methods called from frontend ---
 
     @api.model
-    def rpc_send_message(self, message, session_id=None):
+    def rpc_send_message(self, message, session_id=None, screen=None):
         """
         RPC endpoint for the chat widget.
 
@@ -132,7 +132,7 @@ class PayrollAIConversation(models.Model):
         result = engine.process_message(
             message,
             conversation_history=history[:-1],  # Exclude the message we just added
-            context={'user_id': self.env.user.id},
+            context={'user_id': self.env.user.id, 'screen': screen},
         )
 
         # Save assistant response

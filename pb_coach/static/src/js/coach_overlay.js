@@ -308,6 +308,12 @@ export class CoachOverlay extends Component {
         this.coach.start(tourId, { mode: "interactive" });
     }
     get tourList() { return this.coach.list(); }
+    get screenTour() {
+        const id = this.coach.screenTourId();
+        if (!id) return null;
+        const t = this.coach.tours.get(id, null);
+        return t ? { id, name: t.name } : null;
+    }
 
     // disclaimer chip
     dismissDisclaimer() { this._setFlag("disclaimer_off", true); this.ui.showDisclaimer = false; }

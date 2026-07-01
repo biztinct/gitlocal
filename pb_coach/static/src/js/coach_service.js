@@ -71,6 +71,22 @@ export const coachService = {
         function openWelcome() { state.welcome = true; }
         function closeWelcome() { state.welcome = false; }
 
+        // Map the currently-displayed cockpit to its most relevant tour, so the
+        // launcher can offer "Tour this screen".
+        function screenTourId() {
+            let a = null;
+            try { a = action.currentController && action.currentController.action; } catch (e) { /* */ }
+            if (!a) return null;
+            const tag = a.tag || "";
+            const xid = a.xml_id || "";
+            const model = a.res_model || "";
+            if (tag === "pb_payrun_wizard") return "tour_payrun";
+            if (tag === "pb_dashboard") return "hero_path";
+            if (tag.includes("formula") || xid.includes("formula")) return "tour_formula";
+            if (model === "hr.payslip.run" || model === "hr.payslip" || xid.includes("payslip_run")) return "tour_payslips";
+            return null;
+        }
+
         async function navigate(ref) {
             if (!ref) return;
             try {
@@ -83,7 +99,7 @@ export const coachService = {
         return {
             state, tours, action,
             list, start, stop, next, back, goTo, setMode, isLast, current,
-            openWelcome, closeWelcome, navigate,
+            openWelcome, closeWelcome, navigate, screenTourId,
         };
     },
 };
