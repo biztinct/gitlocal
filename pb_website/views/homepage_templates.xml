@@ -36,7 +36,7 @@
           </nav>
           <div class="pbw-nav__cta">
             <a href="/web/login" class="pbw-link-quiet">Sign in</a>
-            <a href="/web/login" class="pbw-btn pbw-btn--solid">Get started</a>
+            <a href="/demo/register" class="pbw-btn pbw-btn--solid">Get started</a>
           </div>
         </header>
 
@@ -65,7 +65,7 @@
               </p>
 
               <div class="pbw-hero__actions" data-pb="reveal">
-                <a href="/web/login" class="pbw-btn pbw-btn--solid pbw-btn--lg">
+                <a href="/demo/register" class="pbw-btn pbw-btn--solid pbw-btn--lg">
                   Get started
                   <svg viewBox="0 0 24 24" fill="none" class="pbw-ic"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
@@ -339,7 +339,7 @@
             <h2 class="pbw-cta__title">Effortless payroll solutions.</h2>
             <p class="pbw-cta__sub">Bring import, people, pay runs, approvals, statutory and PayAI together — for every country you operate in.</p>
             <div class="pbw-cta__actions">
-              <a href="/web/login" class="pbw-btn pbw-btn--solid pbw-btn--lg">Get started</a>
+              <a href="/demo/register" class="pbw-btn pbw-btn--solid pbw-btn--lg">Get started</a>
               <a href="mailto:hello@payobook.com" class="pbw-btn pbw-btn--outline pbw-btn--lg">Book a demo</a>
             </div>
           </div>

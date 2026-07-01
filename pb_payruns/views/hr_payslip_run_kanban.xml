@@ -35,6 +35,7 @@
                                 <span t-if="record.credit_note.raw_value" class="pbk-cn">refund</span>
                             </div>
                             <div class="pbk-period"><field name="date_start"/> – <field name="date_end"/></div>
+                            <span t-if="record.pb_division_label.raw_value" class="pbk-divtag"><field name="pb_division_label"/></span>
                             <div class="pbk-stats">
                                 <div class="pbk-st-tile">
                                     <span class="k">Employees</span>
@@ -45,7 +46,7 @@
                                     <span class="v"><field name="pb_total_net" widget="monetary"/></span>
                                 </div>
                             </div>
-                            <div class="pbk-jnl" t-if="record.journal_id.raw_value"><field name="journal_id"/></div>
+                            <div class="pbk-jnl" t-if="!record.pb_division_label.raw_value and record.journal_id.raw_value"><field name="journal_id"/></div>
                             <div class="pbk-foot">
                                 <button t-if="record.pb_can_submit.raw_value" type="object" name="done_payslip_run" class="pbk-btn primary">Submit for review</button>
                                 <button t-if="record.pb_can_approve_hr.raw_value" type="object" name="action_payslip_run_level1_done" class="pbk-btn primary">Approve (HR)</button>

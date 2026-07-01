@@ -45,6 +45,7 @@ Inspired by: Power BI Copilot, ThoughtSpot, Julius AI, Tableau Pulse, Zoho Zia
         'web',
         'om_hr_payroll',
         'pb_hr_payroll_base',
+        'pb_coach',
     ],
     'data': [
         # Security
