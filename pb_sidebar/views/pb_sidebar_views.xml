@@ -11,10 +11,8 @@
                 <field name="section_id"/>
                 <field name="parent_id"/>
                 <field name="name"/>
-                <field name="icon"/>
-                <field name="action_xmlid"/>
-                <field name="badge"/>
                 <field name="groups_id" widget="many2many_tags"/>
+                <field name="restricted" widget="boolean_toggle"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
         </field>
@@ -42,6 +40,15 @@
                             <field name="groups_id" widget="many2many_tags"/>
                         </group>
                     </group>
+                    <group string="Lock (upsell)">
+                        <field name="restricted"/>
+                        <field name="restriction_reason" placeholder="Message shown when a locked item is clicked (defaults to the standard upsell text)."
+                               invisible="not restricted"/>
+                        <div colspan="2" class="text-muted">
+                            A locked item shows a padlock + upsell dialog <b>only for users who lack its Allowed Groups</b>
+                            (admins and users with access still open it normally). Set Allowed Groups <b>and</b> tick Restricted to lock it.
+                        </div>
+                    </group>
                     <group string="Active-item matching (highlight rules)">
                         <field name="match_action_xmlids"/>
                         <field name="match_action_tags"/>
@@ -61,8 +68,47 @@
                 <field name="name"/>
                 <field name="technical_key"/>
                 <field name="show_label" widget="boolean_toggle"/>
+                <field name="restricted" widget="boolean_toggle"/>
                 <field name="active" widget="boolean_toggle"/>
             </list>
+        </field>
+    </record>
+
+    <record id="view_pb_sidebar_section_form" model="ir.ui.view">
+        <field name="name">pb.sidebar.section.form</field>
+        <field name="model">pb.sidebar.section</field>
+        <field name="arch" type="xml">
+            <form string="Sidebar Section">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="technical_key"/>
+                            <field name="sequence"/>
+                            <field name="show_label"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Lock (upsell)">
+                            <field name="restricted"/>
+                            <field name="restriction_reason" invisible="not restricted"
+                                   placeholder="Message shown when a locked section is clicked (defaults to the standard upsell text)."/>
+                            <div colspan="2" class="text-muted">
+                                When ticked, non-admin users see this section <b>locked</b> — its items stay collapsed
+                                and it can't be expanded (upsell dialog). Admins are unaffected and can still expand it.
+                            </div>
+                        </group>
+                    </group>
+                    <field name="item_ids">
+                        <list>
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="parent_id"/>
+                            <field name="restricted" widget="boolean_toggle"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
         </field>
     </record>
 

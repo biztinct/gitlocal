@@ -10,4 +10,76 @@
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
     </data>
+
+    <data>
+        <!-- Demo users browse the WHOLE demo AND drive the approval workflow
+             (Submit → HR review → GM review → Done). Without these they'd see no
+             payslips (pb_hr_payroll_base gives every internal user an "own payslips
+             only" rule, and the demo user isn't an employee) and couldn't advance a
+             run's state. Record rules across a user's groups are OR-combined, so
+             these all-access rules apply on top of the own-only rule. Scoped to the
+             demo group only — real production users are unaffected. No unlink. -->
+        <record id="rule_demo_payslip_read_all" model="ir.rule">
+            <field name="name">Demo: all payslips (read/write/create)</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip"/>
+            <field name="groups" eval="[(4, ref('pb_demo.group_payobook_demo'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="rule_demo_payslip_line_read_all" model="ir.rule">
+            <field name="name">Demo: all payslip lines (read/write/create)</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip_line"/>
+            <field name="groups" eval="[(4, ref('pb_demo.group_payobook_demo'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Write ACL so the demo user can advance run/payslip states (the demo
+             ACL otherwise grants read+create only). OR-combined with the hook's
+             access records. No unlink → demo users still can't delete payroll. -->
+        <record id="access_demo_payslip_rw" model="ir.model.access">
+            <field name="name">demo.payslip.rw</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip"/>
+            <field name="group_id" ref="pb_demo.group_payobook_demo"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="access_demo_payslip_run_rw" model="ir.model.access">
+            <field name="name">demo.payslip.run.rw</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip_run"/>
+            <field name="group_id" ref="pb_demo.group_payobook_demo"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <record id="access_demo_payslip_line_rw" model="ir.model.access">
+            <field name="name">demo.payslip.line.rw</field>
+            <field name="model_id" ref="om_hr_payroll.model_hr_payslip_line"/>
+            <field name="group_id" ref="pb_demo.group_payobook_demo"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+        <!-- Approval syncs the Payroll Analytics dashboard on Done — let the demo
+             user write it so the GM-approval step completes. -->
+        <record id="access_demo_payroll_analytics_rw" model="ir.model.access">
+            <field name="name">demo.payroll.analytics.rw</field>
+            <field name="model_id" ref="pb_hr_payroll_base.model_payroll_analytics"/>
+            <field name="group_id" ref="pb_demo.group_payobook_demo"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
 </odoo>

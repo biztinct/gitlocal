@@ -12,7 +12,7 @@ const IC = {
     alert:'<path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
     arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
 };
-const STEPS = ["Select period", "Compute", "Review exceptions", "Approve"];
+const STEPS = ["Select period", "Compute", "Review exceptions"];
 
 export class PayrunWizard extends Component {
     static template = "pb_payrun_wizard.PayrunWizard";
@@ -25,7 +25,7 @@ export class PayrunWizard extends Component {
         this.dialog = useService("dialog");
         this.state = useState({
             step: 1, loading: false, busyMsg: "",
-            defaults: null, form: { name: "", date_start: "", date_end: "", struct_id: null },
+            defaults: null, form: { name: "", date_start: "", date_end: "", struct_id: null, division: null },
             summary: null,
         });
         onWillStart(async () => {
@@ -34,6 +34,10 @@ export class PayrunWizard extends Component {
             this.state.form.name = d.name;
             this.state.form.date_start = d.date_start;
             this.state.form.date_end = d.date_end;
+            this.state.form.division = d.division || null;
+            // Demo batch name carries the selected configuration so runs for
+            // different divisions are distinguishable (e.g. "…June 2026 — Retail").
+            if (d.is_demo) this.state.form.name = this._demoName();
         });
     }
 
@@ -42,6 +46,37 @@ export class PayrunWizard extends Component {
     get steps() { return STEPS; }
 
     onField(f, ev) { this.state.form[f] = ev.target.value; }
+    onDivision(ev) {
+        this.state.form.division = ev.target.value;
+        const di = this.divInfo;
+        if (!di || !this.state.defaults) return;
+        // Keep the (read-only, for demo) batch name in step with the chosen
+        // configuration. Demo names keep the locked showcase period but append the
+        // division so each division's run is uniquely named.
+        if (this.state.defaults.is_demo) {
+            this.state.form.name = this._demoName();
+        } else {
+            this.state.form.name = `Payroll ${di.name} ${this._periodLabel()}`;
+        }
+    }
+    _demoName() {
+        const base = (this.state.defaults && this.state.defaults.name) || "Demo Payroll June 2026";
+        const di = this.divInfo;
+        return di ? `${base} — ${di.name}` : base;
+    }
+    _periodLabel() {
+        const d = this.state.form.date_start;
+        if (!d) return "";
+        const dt = new Date(d + "T00:00:00");
+        return dt.toLocaleString("en-US", { month: "long", year: "numeric" });
+    }
+    get divInfo() {
+        const ds = (this.state.defaults && this.state.defaults.divisions) || [];
+        return ds.find(x => x.key === this.state.form.division) || null;
+    }
+    get eligibleCount() {
+        return this.divInfo ? this.divInfo.eligible : (this.state.defaults ? this.state.defaults.eligible : 0);
+    }
 
     async toCompute() {
         // Step 1 -> 2: create + compute a (draft) run, guarding existing payroll.
@@ -76,7 +111,7 @@ export class PayrunWizard extends Component {
             body: res.message,
             confirmLabel: historical ? "Clean July & Run" : "Clean and Run",
             cancelLabel: "Cancel",
-            confirm: async () => {
+            confirm: () => {
                 if (historical && res.july) {
                     this.state.form.name = res.july.name;
                     this.state.form.date_start = res.july.date_start;
@@ -85,9 +120,16 @@ export class PayrunWizard extends Component {
                 this.state.step = 2;
                 this.state.loading = true;
                 this.state.busyMsg = "Cleaning previous data and re-running payroll…";
-                try { await this._compute(true); }
-                catch (e) { this.notif.add("Re-run failed. See server logs.", { type: "danger" }); this.state.step = 1; }
-                finally { this.state.loading = false; }
+                // Fire-and-forget (NOT awaited): returning synchronously lets the
+                // confirmation dialog close immediately, so its button spinner no
+                // longer stacks on top of the wizard's own compute spinner (the
+                // "two running circles"). The wizard's step-2 spinner covers the
+                // re-run on its own.
+                (async () => {
+                    try { await this._compute(true); }
+                    catch (e) { this.notif.add("Re-run failed. See server logs.", { type: "danger" }); this.state.step = 1; }
+                    finally { this.state.loading = false; }
+                })();
             },
             cancel: () => { this.state.step = 1; },
         });
@@ -95,19 +137,11 @@ export class PayrunWizard extends Component {
 
     goto(n) {
         if (n === 2 && !this.state.summary) { return this.toCompute(); }
-        if (n >= 1 && n <= 4) this.state.step = n;
+        if (n >= 1 && n <= 3) this.state.step = n;
     }
 
-    async submit() {
-        this.state.loading = true;
-        this.state.busyMsg = "Submitting for approval…";
-        try {
-            await this.orm.call("pb.payrun.wizard", "submit_for_approval", [this.state.summary.run_id]);
-        } catch (e) { /* guarded */ }
-        this.state.loading = false;
-        this.state.step = 4;
-    }
-
+    // "Open Payroll" — leaves the run in DRAFT and opens it so the user can
+    // review the payslips and submit for HR review themselves (no auto-approve).
     openRun() {
         if (this.state.summary?.run_id) {
             this.action.doAction({

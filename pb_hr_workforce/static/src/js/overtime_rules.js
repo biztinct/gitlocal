@@ -28,7 +28,7 @@ class OvertimeRulesDashboard extends Component {
         <div class="wf-breadcrumb">
             <span class="wf-bc-home" t-on-click="goHome"><i class="fa fa-home"/></span>
             <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
-            <span class="wf-bc-link" t-on-click="goFlowDashboard">Flow Dashboard</span>
+            <span class="wf-bc-link" t-on-click="goFlowDashboard">Dashboard</span>
             <span class="wf-bc-sep"><i class="fa fa-chevron-right"/></span>
             <span class="wf-bc-current">Overtime Rules</span>
         </div>
@@ -552,9 +552,9 @@ class OvertimeRulesDashboard extends Component {
         }
     }
 
-    goHome() { this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard'); }
+    goHome() { this.actionService.doAction('pb_dashboard.action_pb_dashboard'); }
     goFlowDashboard() {
-        this.actionService.doAction('pb_hr_flow.action_hr_flow_wizard');
+        this.actionService.doAction('pb_dashboard.action_pb_dashboard');
     }
 }
 

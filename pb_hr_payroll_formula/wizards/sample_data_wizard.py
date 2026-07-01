@@ -735,33 +735,56 @@ class SampleDataWizard(models.TransientModel):
         return current
 
     def _generate_random_value(self, rule):
-        """Generate random value for a rule based on its type."""
-        code_upper = rule.code.upper()
+        """Generate a *realistic* random value for an input rule.
 
-        # Basic salary
-        if 'BASIC' in code_upper or 'SALARY' in code_upper:
+        Drives off the rule's ``number_format`` (currency / percentage /
+        integer / number) first, then refines by keyword on the friendly
+        ``name`` AND ``code`` (the old version only scanned ``code``, so inputs
+        like "OT Weekend (hrs)" or "Dependents" matched nothing and fell to a
+        currency-sized default — producing nonsense like 34254 hours).
+        """
+        text = ('%s %s' % (rule.name or '', rule.code or '')).lower()
+        fmt = rule.number_format or 'currency'
+
+        def has(*words):
+            return any(w in text for w in words)
+
+        # Semantic keyword groups (checked across name + code).
+        is_hours = has('hour', 'hrs', 'hr ', ' ot', 'overtime', 'otwd', 'otwe', 'otho')
+        is_days = has('day')
+        is_count = has('depend', 'child', 'count', 'qty', 'quantity',
+                       'number of', 'no. of', 'headcount', 'persons')
+        is_basic = has('basic', 'salary', 'wage', 'gross', 'base pay')
+        is_allow = has('allowance', 'housing', 'hra', 'rent', 'transport',
+                       'travel', 'conveyance', 'meal', 'food', 'lunch',
+                       'medical', 'health', 'bonus', 'loan', 'advance',
+                       'commission', 'incentive', 'responsib')
+
+        # --- Percentage rates (0 - 0.30) ---
+        if fmt == 'percentage' or has('rate', 'percent', 'pct', ' %'):
+            return round(random.uniform(0.0, 0.30), 4)
+
+        # --- Whole-number counts / hours / days ---
+        if is_hours:
+            return random.randint(0, 40)
+        if is_days:
+            return random.randint(20, 26)
+        if is_count:
+            return random.randint(0, 4)
+        if fmt == 'integer':
+            return random.randint(0, 10)
+
+        # --- Monetary inputs ---
+        if is_basic:
             return round(random.uniform(self.min_salary, self.max_salary), 0)
+        if is_allow:
+            # A sensible fraction of a freshly-drawn basic (5% - 30%).
+            basic = random.uniform(self.min_salary, self.max_salary)
+            return round(basic * random.uniform(0.05, 0.30), 0)
 
-        # Allowances (typically 10-30% of basic)
-        if any(x in code_upper for x in ['HRA', 'HOUSING', 'RENT']):
-            return round(random.uniform(self.min_salary * 0.1, self.min_salary * 0.3), 0)
+        # --- Generic numbers: small hours/days/count by keyword, else small money ---
+        if fmt == 'number':
+            return round(random.uniform(0, self.min_salary * 0.05), 0)
 
-        if any(x in code_upper for x in ['TRANSPORT', 'TRAVEL', 'CONVEYANCE']):
-            return round(random.uniform(200000, 2000000), 0)
-
-        if any(x in code_upper for x in ['MEAL', 'FOOD', 'LUNCH']):
-            return round(random.uniform(500000, 1500000), 0)
-
-        if any(x in code_upper for x in ['MEDICAL', 'HEALTH']):
-            return round(random.uniform(300000, 1000000), 0)
-
-        # Percentage-based (like tax rates)
-        if any(x in code_upper for x in ['RATE', 'PERCENT', 'PCT']):
-            return round(random.uniform(0, 0.35), 4)
-
-        # Count/days
-        if any(x in code_upper for x in ['DAYS', 'COUNT', 'HOURS']):
-            return random.randint(1, 30)
-
-        # Default: small to medium value
-        return round(random.uniform(0, self.min_salary * 0.2), 0)
+        # Default monetary fallback: a small allowance-sized amount (never huge).
+        return round(random.uniform(0, self.min_salary * 0.10), 0)

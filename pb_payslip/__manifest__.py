@@ -7,9 +7,10 @@
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
-    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme'],
+    'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_hr_payroll_formula', 'pb_theme'],
     'data': [
         'views/hr_payslip_form_statement.xml',
+        'views/hr_payslip_hide_fields.xml',
     ],
     'assets': {
         'web.assets_backend': [

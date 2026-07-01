@@ -32,6 +32,7 @@
     .pw-sec label { display: block; font-size: 11.5px; color: var(--pw-muted); font-weight: 600; margin: 8px 0 4px; }
     .pw-in { width: 100%; border: 1px solid var(--pw-border); border-radius: 9px; padding: 8px 11px; font-size: 13.5px; font-family: inherit; background: #fff; }
     .pw-in:focus { outline: none; border-color: var(--pw-brand); box-shadow: 0 0 0 3px rgba(90,75,176,.15); }
+    .pw-in.pw-locked, .pw-in[readonly], .pw-in:disabled { background: #F4F5FB; color: #6B7280; cursor: not-allowed; box-shadow: none; opacity: 1; }
     .pw-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .pw-kv { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F0EFF7; font-size: 13px; }
     .pw-kv:last-of-type { border-bottom: none; }

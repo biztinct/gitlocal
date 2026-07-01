@@ -20,7 +20,7 @@
                         <div class="pw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',14)"/></t><t t-else=""><t t-esc="s_index+1"/></t></div>
                         <div class="pw-lab" t-esc="s"/>
                     </div>
-                    <div t-if="s_index &lt; 3" t-attf-class="pw-bar #{state.step > s_index+1 ? 'done' : ''}"/>
+                    <div t-if="s_index &lt; steps.length - 1" t-attf-class="pw-bar #{state.step > s_index+1 ? 'done' : ''}"/>
                 </t>
             </div>
 
@@ -34,19 +34,28 @@
                     <div class="pw-grid2">
                         <div class="pw-sec">
                             <h4>Period</h4>
+                            <t t-if="(state.defaults.divisions || []).length">
+                                <label>Configuration</label>
+                                <select class="pw-in" t-on-change="(ev)=>this.onDivision(ev)">
+                                    <t t-foreach="state.defaults.divisions" t-as="d" t-key="d.key">
+                                        <option t-att-value="d.key" t-att-selected="d.key === state.form.division" t-esc="d.name"/>
+                                    </t>
+                                </select>
+                            </t>
                             <label>Batch name</label>
-                            <input class="pw-in" t-att-value="state.form.name" t-on-change="(ev)=>this.onField('name',ev)"/>
+                            <input t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.name" t-att-readonly="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('name',ev)"/>
                             <div class="pw-row2">
-                                <div><label>From</label><input type="date" class="pw-in" t-att-value="state.form.date_start" t-on-change="(ev)=>this.onField('date_start',ev)"/></div>
-                                <div><label>To</label><input type="date" class="pw-in" t-att-value="state.form.date_end" t-on-change="(ev)=>this.onField('date_end',ev)"/></div>
+                                <div><label>From</label><input type="date" t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.date_start" t-att-disabled="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('date_start',ev)"/></div>
+                                <div><label>To</label><input type="date" t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.date_end" t-att-disabled="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('date_end',ev)"/></div>
                             </div>
                         </div>
                         <div class="pw-sec">
                             <h4>Scope</h4>
                             <div class="pw-kv"><span>Company</span><b t-esc="state.defaults.company"/></div>
                             <div class="pw-kv"><span>Currency</span><b t-esc="state.defaults.currency"/></div>
-                            <div class="pw-kv"><span>Eligible employees</span><b t-esc="state.defaults.eligible"/></div>
-                            <div class="pw-note">A draft run will be created and computed — fully reversible.</div>
+                            <div class="pw-kv" t-if="divInfo"><span>Configuration</span><b t-esc="divInfo.config"/></div>
+                            <div class="pw-kv"><span>Eligible employees</span><b t-esc="eligibleCount"/></div>
+                            <div class="pw-note">A draft run will be created and computed — fully reversible. Only the selected division is affected.</div>
                         </div>
                     </div>
                 </t>
@@ -83,26 +92,16 @@
                         <div class="pw-result"><div class="pw-result-ic ok"><t t-out="ic('check',30)"/></div><h3>No exceptions</h3><p class="pw-muted">All <t t-esc="state.summary.count"/> payslips look clean.</p></div>
                     </t>
                 </t>
-
-                <!-- Step 4 -->
-                <t t-elif="state.step === 4 and state.summary">
-                    <div class="pw-result">
-                        <div class="pw-result-ic ok"><t t-out="ic('check',32)"/></div>
-                        <h3>Run ready for approval</h3>
-                        <p class="pw-muted"><t t-esc="state.summary.name"/> · <t t-esc="state.summary.count"/> payslips · net <b t-esc="vnd(state.summary.total_net)"/></p>
-                        <button class="pw-btn primary mt" t-on-click="openRun">Open run <t t-out="ic('arrow',14)"/></button>
-                    </div>
-                </t>
             </div>
 
             <!-- Footer -->
             <div class="pw-foot" t-if="!state.loading">
-                <button class="pw-btn ghost" t-if="state.step > 1 and state.step &lt; 4" t-on-click="() => this.goto(state.step-1)">← Back</button>
+                <button class="pw-btn ghost" t-if="state.step > 1" t-on-click="() => this.goto(state.step-1)">← Back</button>
                 <button class="pw-btn ghost" t-if="state.step === 1" t-on-click="cancel">Cancel</button>
                 <div class="pw-spacer"></div>
                 <button class="pw-btn primary" t-if="state.step === 1" t-on-click="toCompute">Compute payslips <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="state.step === 2" t-on-click="() => this.goto(3)">Review exceptions <t t-out="ic('arrow',14)"/></button>
-                <button class="pw-btn primary" t-if="state.step === 3" t-on-click="submit">Submit for approval <t t-out="ic('arrow',14)"/></button>
+                <button class="pw-btn primary" t-if="state.step === 3" t-on-click="openRun">Open Payroll <t t-out="ic('arrow',14)"/></button>
             </div>
         </div>
     </div>

@@ -257,25 +257,36 @@
           <!-- left rail -->
           <div class="pbtest-rail">
             <div class="pbtest-rail-head">
-              <span class="t">Samples</span>
-              <div class="pbtest-gen">
-                <button class="pbfs-btn primary sm" t-on-click="toggleTestGen">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Generate
+              <div class="pbtest-rail-title">Test Samples</div>
+              <div class="pbtest-btnrow">
+                <button class="pbfs-btn soft sm" t-on-click="addManualSample" title="Enter input values by hand">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Manual
                 </button>
-                <div t-if="state.testGenOpen" class="pbtest-gen-menu">
-                  <button class="gm-item" t-on-click="addManualSample">Manual <small>blank, edit by hand</small></button>
-                  <div class="gm-rand">
-                    <div class="gm-rl">Random samples</div>
-                    <div class="gm-rrow">
-                      <label class="gm-f"><span>Count</span><input type="number" min="1" t-att-value="state.randomCount" t-on-change="(ev)=>this.setRandomField('randomCount',ev)"/></label>
-                      <label class="gm-f"><span>Min salary</span><input type="number" t-att-value="state.randomMin" t-on-change="(ev)=>this.setRandomField('randomMin',ev)"/></label>
-                      <label class="gm-f"><span>Max salary</span><input type="number" t-att-value="state.randomMax" t-on-change="(ev)=>this.setRandomField('randomMax',ev)"/></label>
+                <div class="pbtest-gen">
+                  <button class="pbfs-btn primary sm" t-on-click="toggleTestGen">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Generate
+                  </button>
+                  <div t-if="state.testGenOpen" class="pbtest-gen-menu">
+                    <div class="gm-rand">
+                      <div class="gm-rl">Random samples</div>
+                      <div class="gm-rrow">
+                        <label class="gm-f"><span>Count</span><input type="number" min="1" t-att-value="state.randomCount" t-on-change="(ev)=>this.setRandomField('randomCount',ev)"/></label>
+                        <label class="gm-f"><span>Min salary</span><input type="number" t-att-value="state.randomMin" t-on-change="(ev)=>this.setRandomField('randomMin',ev)"/></label>
+                        <label class="gm-f"><span>Max salary</span><input type="number" t-att-value="state.randomMax" t-on-change="(ev)=>this.setRandomField('randomMax',ev)"/></label>
+                      </div>
+                      <button class="pbfs-btn soft sm gm-go" t-on-click="generateRandom">Generate</button>
                     </div>
-                    <button class="pbfs-btn soft sm gm-go" t-on-click="generateRandom">Generate</button>
+                    <button class="gm-item" t-on-click="() => this.generateFromWizard('employees')">From employees <small>pull contract values</small></button>
+                    <button class="gm-item" t-on-click="() => this.generateFromWizard('payslips')">From payslips <small>inputs + expected (regression)</small></button>
                   </div>
-                  <button class="gm-item" t-on-click="() => this.generateFromWizard('employees')">From employees <small>pull contract values</small></button>
-                  <button class="gm-item" t-on-click="() => this.generateFromWizard('payslips')">From payslips <small>inputs + expected (regression)</small></button>
                 </div>
+                <button class="pbfs-btn soft sm" t-on-click="triggerImport" title="Import input values from an Excel file">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel
+                </button>
+                <button class="pbfs-btn soft sm" t-on-click="exportTestTemplate" title="Download a blank input template (.xlsx)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export Template
+                </button>
+                <input type="file" t-ref="testFile" accept=".xlsx" style="display:none" t-on-change="onImportFile"/>
               </div>
             </div>
             <button class="pbfs-btn soft sm pbtest-runall" t-on-click="runAllTests">Run all tests</button>
@@ -301,6 +312,10 @@
                 <span class="pbtest-src" t-esc="state.testDetail.source_type"/>
                 <span t-attf-class="pbcfg-vbadge big {{ state.testDetail.verdict }}" t-esc="state.testDetail.verdict"/>
                 <div class="pbtest-dact">
+                  <button class="pbfs-btn primary sm" t-on-click="openInFormulaView">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    <t t-esc="state.testDetail.source_type === 'manual' ? 'Calculate in Formula View' : 'Open in Formula View'"/>
+                  </button>
                   <button t-if="!state.testDetail.has_expected" class="pbfs-btn soft sm" t-on-click="snapshotExpected">Snapshot as expected</button>
                   <button t-if="state.testDetail.has_expected" class="pbfs-btn ghost sm" t-on-click="clearExpected">Clear expected</button>
                 </div>
@@ -314,7 +329,26 @@
               <div t-elif="state.testDetail.verdict === 'passed'" class="pbtest-banner passed"><b>Passed.</b> Every output matches its expected baseline.</div>
               <div t-else="" t-attf-class="pbtest-banner {{ state.testDetail.verdict }}"><b><t t-esc="state.testDetail.verdict === 'warning' ? 'Warning' : 'Failed'"/>.</b> <t t-esc="fails.length"/> output<t t-if="fails.length !== 1">s</t> differ from the expected baseline — flagged ✗ below.</div>
 
-              <!-- RESULTS first -->
+              <!-- INPUTS first (edit at the top, results recompute below) -->
+              <div class="ce-sec">
+                <button class="ce-sec-toggle" t-on-click="toggleTestInputs">
+                  <svg t-attf-class="chev {{ state.testInputsOpen ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                  Inputs (<t t-esc="state.testDetail.rows.filter(x => x.column_type === 'input').length"/>) <span class="pbtest-hint">edit to recompute live</span>
+                </button>
+                <t t-if="state.testInputsOpen">
+                  <div class="pbtest-inputs" style="margin-top:14px">
+                    <t t-foreach="state.testDetail.rows" t-as="r" t-key="r.code">
+                      <div t-if="r.column_type === 'input'" class="pbtest-inrow">
+                        <span class="lbl"><span class="c" t-esc="r.column_letter"/><t t-esc="r.name"/></span>
+                        <input class="ce-input" type="number" step="any" t-att-value="r.input" t-on-input="(ev) => this.onTestInput(r.code, ev)"/>
+                      </div>
+                    </t>
+                    <div t-if="!state.testDetail.rows.some(x => x.column_type === 'input')" class="pbtest-hint">This config has no input components.</div>
+                  </div>
+                </t>
+              </div>
+
+              <!-- RESULTS below inputs -->
               <div class="ce-sec">
                 <div class="ce-sec-h">Results<t t-if="state.testDetail.has_expected"> · expected vs computed</t></div>
                 <table class="pbcfg-table">
@@ -334,25 +368,6 @@
                     </t>
                   </tbody>
                 </table>
-              </div>
-
-              <!-- INPUTS collapsible -->
-              <div class="ce-sec">
-                <button class="ce-sec-toggle" t-on-click="toggleTestInputs">
-                  <svg t-attf-class="chev {{ state.testInputsOpen ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                  Inputs (<t t-esc="state.testDetail.rows.filter(x => x.column_type === 'input').length"/>) <span class="pbtest-hint">edit to recompute live</span>
-                </button>
-                <t t-if="state.testInputsOpen">
-                  <div class="pbtest-inputs" style="margin-top:14px">
-                    <t t-foreach="state.testDetail.rows" t-as="r" t-key="r.code">
-                      <div t-if="r.column_type === 'input'" class="pbtest-inrow">
-                        <span class="lbl"><span class="c" t-esc="r.column_letter"/><t t-esc="r.name"/></span>
-                        <input class="ce-input" type="number" step="any" t-att-value="r.input" t-on-input="(ev) => this.onTestInput(r.code, ev)"/>
-                      </div>
-                    </t>
-                    <div t-if="!state.testDetail.rows.some(x => x.column_type === 'input')" class="pbtest-hint">This config has no input components.</div>
-                  </div>
-                </t>
               </div>
             </t>
             <div t-else="" class="pbtest-noselect">Select or generate a sample to view its inputs &amp; results.</div>

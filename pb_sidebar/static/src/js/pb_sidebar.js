@@ -54,6 +54,7 @@ export class PbSidebar extends Component {
             sections: [],
             activeItemId: null,
             expandedItems: {},
+            collapsedSections: this._loadCollapsed(),
             loaded: false,
             visible: false,
         });
@@ -62,6 +63,7 @@ export class PbSidebar extends Component {
         this._tagIndex = {};
         this._modelIndex = {};
         this._childParent = {};
+        this._itemSection = {};
         this._homeAction = null;
 
         useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this._onUiUpdated());
@@ -104,7 +106,8 @@ export class PbSidebar extends Component {
     }
 
     _buildIndex() {
-        this._xmlidIndex = {}; this._tagIndex = {}; this._modelIndex = {}; this._childParent = {};
+        this._xmlidIndex = {}; this._tagIndex = {}; this._modelIndex = {};
+        this._childParent = {}; this._itemSection = {};
         const idx = (item) => {
             if (item.action_xmlid) this._xmlidIndex[item.action_xmlid] = item.id;
             if (item.action_tag) this._tagIndex[item.action_tag] = item.id;
@@ -115,10 +118,44 @@ export class PbSidebar extends Component {
         };
         for (const s of this.state.sections) {
             for (const item of s.items) {
-                idx(item);
-                for (const c of item.children || []) { idx(c); this._childParent[c.id] = item.id; }
+                idx(item); this._itemSection[item.id] = s.id;
+                for (const c of item.children || []) { idx(c); this._childParent[c.id] = item.id; this._itemSection[c.id] = s.id; }
             }
         }
+    }
+
+    // ---- Section collapse / expand ----
+    _loadCollapsed() {
+        try { return JSON.parse(window.localStorage.getItem("pb_sidebar_collapsed") || "{}") || {}; }
+        catch (e) { return {}; }
+    }
+    _persistCollapsed() {
+        try { window.localStorage.setItem("pb_sidebar_collapsed", JSON.stringify(this.state.collapsedSections)); }
+        catch (e) { /* ignore */ }
+    }
+    hasSectionHeader(section) { return section.show_label || section.restricted; }
+    isSectionCollapsed(section) {
+        if (section.restricted) return true;        // locked → forced collapsed
+        if (!section.show_label) return false;      // no header → always shown
+        return !!this.state.collapsedSections[section.id];
+    }
+    toggleSection(section) {
+        if (section.restricted) {
+            this.dialog.add(AlertDialog, {
+                title: "Available in the full platform",
+                body: section.restriction_reason ||
+                    "This functionality is available in the full Payobook platform. " +
+                    "Please contact Payobook to arrange a personalised demonstration.",
+                confirmLabel: "Got it",
+            });
+            return;
+        }
+        if (!section.show_label) return;
+        this.state.collapsedSections = {
+            ...this.state.collapsedSections,
+            [section.id]: !this.state.collapsedSections[section.id],
+        };
+        this._persistCollapsed();
     }
 
     _resolveActive() {
@@ -134,6 +171,12 @@ export class PbSidebar extends Component {
             const pid = this._childParent[found];
             if (pid !== undefined && !this.state.expandedItems[pid]) {
                 this.state.expandedItems = { ...this.state.expandedItems, [pid]: true };
+            }
+            // Reveal the section holding the active item (no-op for locked sections).
+            const secId = this._itemSection[found];
+            if (secId !== undefined && this.state.collapsedSections[secId]) {
+                this.state.collapsedSections = { ...this.state.collapsedSections, [secId]: false };
+                this._persistCollapsed();
             }
         }
     }

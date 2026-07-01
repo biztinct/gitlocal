@@ -24,11 +24,22 @@ export class PbPayrunsKanbanController extends KanbanController {
         this.pbState = useState({
             loaded: false, currency: "", kpis: {}, tabCounts: {},
             activeTab: "all", dateFilter: "all_dates", customFrom: "", customTo: "",
+            divisions: [], activeDivision: "all",
         });
         this._tabGroupId = null;
         this._dateGroupId = null;
+        this._divGroupId = null;
         onWillStart(async () => { await this.pbLoad(); });
-        onMounted(() => { this._applyStatus(); });   // hide cancelled by default via "All"
+        onMounted(() => {
+            this._applyStatus();   // hide cancelled by default via "All"
+            // Demo users: pre-filter the board to the live demo month (June 2026).
+            if (this._demoPeriod) {
+                this.pbState.customFrom = this._demoPeriod.from;
+                this.pbState.customTo = this._demoPeriod.to;
+                this.pbState.dateFilter = "custom";
+                this._applyDate();
+            }
+        });
     }
 
     async pbLoad() {
@@ -36,8 +47,10 @@ export class PbPayrunsKanbanController extends KanbanController {
             const d = await this.pbOrm.call("pb.payruns", "get_board_data", []);
             const col = {};
             (d.columns || []).forEach(c => { col[c.key] = c.count; });
+            this._demoPeriod = d.demo_period || null;
             Object.assign(this.pbState, {
                 loaded: true, currency: d.currency, kpis: d.kpis || {},
+                divisions: d.divisions || [],
                 tabCounts: {
                     draft: col.draft || 0,
                     pending: (col.level1 || 0) + (col.level2 || 0),
@@ -139,6 +152,26 @@ export class PbPayrunsKanbanController extends KanbanController {
         this.pbState[which === "from" ? "customFrom" : "customTo"] = ev.target.value;
         this.pbState.dateFilter = "custom";
         this._applyDate();
+    }
+
+    // -------- division chips --------
+    get pbDivisionTabs() {
+        return [{ key: "all", label: "All divisions" }, ...(this.pbState.divisions || [])];
+    }
+    _applyDivision() {
+        const sm = this.env.searchModel;
+        if (this._divGroupId !== null) { sm.deactivateGroup(this._divGroupId); this._divGroupId = null; }
+        const id = this.pbState.activeDivision;
+        if (id === "all") return;
+        const label = (this.pbState.divisions.find(d => d.key === id) || {}).label || id;
+        const pre = { description: "Division: " + label, domain: [["pb_division", "=", id]] };
+        sm.createNewFilters([pre]);
+        this._divGroupId = pre.groupId;
+    }
+    setDivision(id) {
+        if (this.pbState.activeDivision === id) return;
+        this.pbState.activeDivision = id;
+        this._applyDivision();
     }
 
     pbIc(n, s = 20) { return ic(n, s); }

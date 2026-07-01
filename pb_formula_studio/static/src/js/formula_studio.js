@@ -3,6 +3,7 @@
 import { Component, useState, useRef, useEffect, useExternalListener, onWillStart, onMounted, onPatched } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 
 const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
@@ -74,9 +75,11 @@ export class PbFormulaStudio extends Component {
         this.orm = useService("orm");
         this.notif = useService("notification");
         this.action = useService("action");
+        this.dialog = useService("dialog");
         this.state = useState({
             loaded: false,
             empty: false,
+            canEdit: true,
             view: "cards",
             config: {},
             configs: [],
@@ -113,7 +116,7 @@ export class PbFormulaStudio extends Component {
             testSampleId: null,
             testDetail: null,
             testGenOpen: false,
-            testInputsOpen: false,
+            testInputsOpen: true,
             randomCount: 3,
             randomMin: 5000000,
             randomMax: 50000000,
@@ -130,6 +133,7 @@ export class PbFormulaStudio extends Component {
             fieldMeta: {},
         });
         this.formulaRef = useRef("formulaInput");
+        this.testFileRef = useRef("testFile");
         this._liveTimer = null;
         onWillStart(async () => {
             await this.load();
@@ -159,6 +163,7 @@ export class PbFormulaStudio extends Component {
         const d = await this.orm.call("pb.formula.studio", "get_studio_data", [configId || false]);
         this.state.empty = d.empty;
         this.state.configs = d.configs || [];
+        this.state.canEdit = d.can_edit !== false;
         if (d.empty) { this.state.loaded = true; return; }
         this.state.config = d.config;
         this.state.components = d.components;
@@ -244,6 +249,7 @@ export class PbFormulaStudio extends Component {
     get draftType() { return this.state.draft.column_type || "formula"; }
 
     async enterEdit(id) {
+        if (this._lockedNotice()) return;
         const rid = id || this.state.selectedId;
         if (!rid) return;
         const d = await this.orm.call("pb.formula.studio", "get_component_edit", [rid]);
@@ -839,6 +845,44 @@ export class PbFormulaStudio extends Component {
         this.notif.add((r && r.notif) || "Tests run", { type: "success" });
         await this.loadTestData(true);
     }
+    // ---- jump from a test sample into the Cards (formula) view ----
+    async openInFormulaView() {
+        if (!this.state.testSampleId) return;
+        await this.load(this.state.config.id);  // refresh cards sample list so the preview header resolves
+        this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview",
+            [this.state.config.id, this.state.testSampleId]);
+        this.state.view = "cards";
+    }
+    // ---- Excel template export / import ----
+    async exportTestTemplate() {
+        const r = await this.orm.call("pb.formula.studio", "export_test_template", [this.state.config.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not export template", { type: "warning" }); return; }
+        const bin = atob(r.file_b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const url = URL.createObjectURL(new Blob([bytes], { type: r.mimetype }));
+        const a = document.createElement("a");
+        a.href = url; a.download = r.filename; a.click();
+        URL.revokeObjectURL(url);
+        this.notif.add("Template downloaded", { type: "success" });
+    }
+    triggerImport() { if (this.testFileRef.el) this.testFileRef.el.click(); }
+    async onImportFile(ev) {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const b64 = String(e.target.result).split(",")[1] || "";
+            const r = await this.orm.call("pb.formula.studio", "import_test_samples",
+                [this.state.config.id, b64, file.name]);
+            ev.target.value = "";  // allow re-importing the same file
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not import", { type: "warning" }); return; }
+            this.notif.add(`${r.count} sample${r.count === 1 ? "" : "s"} imported`, { type: "success" });
+            this.state.test.samples = r.samples;
+            if (r.first_id) await this.selectSample(r.first_id);
+        };
+        reader.readAsDataURL(file);
+    }
 
     get cfgState() { return (this.state.settings && this.state.settings.status.state) || "draft"; }
     cfgStageCls(stage) {
@@ -917,7 +961,19 @@ export class PbFormulaStudio extends Component {
     }
 
     // ---- PayAI ----
-    openAI() { this.state.aiOpen = true; }
+    // Read-only (Formula User) gate: buttons stay visible, but acting on them
+    // shows the upsell dialog instead of performing the write.
+    _lockedNotice() {
+        if (this.state.canEdit) return false;
+        this.dialog.add(AlertDialog, {
+            title: "Available in the full platform",
+            body: "This functionality is available in the full Payobook platform. " +
+                "Please contact Payobook to arrange a personalised demonstration.",
+            confirmLabel: "Got it",
+        });
+        return true;
+    }
+    openAI() { if (this._lockedNotice()) return; this.state.aiOpen = true; }
     closeAI() { this.state.aiOpen = false; }
     async aiAsk(text) {
         if (!text || !text.trim()) return;
@@ -1066,6 +1122,7 @@ export class PbFormulaStudio extends Component {
             { onClose: () => this.load(cid) });
     }
     async deleteComponent(id) {
+        if (this._lockedNotice()) return;
         const rid = id || this.state.selectedId;
         const cid = this.state.config.id;
         if (!rid) return;

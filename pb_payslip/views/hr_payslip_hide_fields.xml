@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Slim down the payslip form:
+         (1) Salary Computation list — hide the Sequence / Quantity / Rate /
+             Rule (salary_rule_id) / Amount columns (column_invisible, since a
+             plain invisible="1" only blanks the cells but keeps the header).
+             Kept: Name, Code, Category, Total.
+         (2) Hide the four debug JSON tabs added by pb_hr_payroll_formula.
+         High priority so this applies after the base + formula views. -->
+    <record id="view_hr_payslip_form_slim" model="ir.ui.view">
+        <field name="name">hr.payslip.form.slim</field>
+        <field name="model">hr.payslip</field>
+        <field name="inherit_id" ref="om_hr_payroll.view_hr_payslip_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <!-- Salary Computation list columns -->
+            <xpath expr="//field[@name='line_ids']/list/field[@name='sequence']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='quantity']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='rate']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='salary_rule_id']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='amount']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <!-- Worked Days & Inputs tab — the Formula Engine never populates the
+                 native worked_days_line_ids / input_line_ids (per-employee inputs
+                 arrive via the formula config from Excel/API imports), so this tab
+                 is structurally empty for formula payslips. Hide it ONLY for
+                 formula payroll; structure-based payslips still legitimately use it. -->
+            <xpath expr="//page[field[@name='worked_days_line_ids']]" position="attributes">
+                <attribute name="invisible">calculation_method == 'formula'</attribute>
+            </xpath>
+
+            <!-- Debug JSON tabs -->
+            <xpath expr="//page[@name='formula_input_json']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='formula_computed_json']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='payslip_identifier_json']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='report_visible_json']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

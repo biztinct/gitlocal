@@ -49,13 +49,32 @@
           </div>
           <div t-if="!data.deductions or !data.deductions.length" class="pbps-empty">No deductions</div>
           <div class="pbps-sub ded"><span>Total deductions</span><span>−<t t-esc="money(data.deductions_total)"/></span></div>
+          <t t-if="data.advance">
+            <div class="pbps-row pbps-advrow">
+              <span class="pbps-row-nm" t-esc="data.advance_label"/>
+              <span class="pbps-row-amt adv">−<t t-esc="money(data.advance)"/></span>
+            </div>
+            <div class="pbps-sub net"><span>Net pay</span><span t-esc="money(data.net)"/></div>
+          </t>
         </div>
+      </div>
+
+      <!-- employer contributions (informational — not deducted from pay) -->
+      <div t-if="data.employer and data.employer.length" class="pbps-card pbps-emp">
+        <div class="pbps-card-h"><span class="pbps-dotc emp"/>Employer contributions<span class="pbps-tag"><t t-esc="data.employer.length"/></span></div>
+        <div t-foreach="data.employer" t-as="c" t-key="c_index" class="pbps-row">
+          <span class="pbps-row-nm" t-esc="c.name"/>
+          <span class="pbps-row-amt" t-esc="money(c.amount)"/>
+        </div>
+        <div class="pbps-sub emp"><span>Total employer cost</span><span t-esc="money(data.employer_total)"/></div>
+        <div class="pbps-empnote">Paid by the employer — not deducted from your pay.</div>
       </div>
 
       <!-- waterfall -->
       <div class="pbps-water">
         <div class="pbps-seg gross"><span class="k">Gross</span><span class="v" t-esc="moneyShort(data.gross)"/></div>
         <div class="pbps-seg ded" t-attf-style="flex-basis:{{ segDed }}%"><span class="k">− Deductions</span><span class="v" t-esc="moneyShort(data.deductions_total)"/></div>
+        <div t-if="data.advance" class="pbps-seg adv"><span class="k">− Advance</span><span class="v" t-esc="moneyShort(data.advance)"/></div>
         <div class="pbps-seg net"><span class="k">Net pay</span><span class="v" t-esc="moneyShort(data.net)"/></div>
       </div>
 

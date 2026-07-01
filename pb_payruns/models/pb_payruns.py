@@ -32,10 +32,19 @@ class PbPayruns(models.AbstractModel):
         Run = self.env['hr.payslip.run']
         user = self.env.user
 
-        has_officer = user.has_group('pb_hr_payroll_base.group_payroll_base_officer') \
+        # Demo users drive the full approval workflow (showcase) — see note in
+        # hr.payslip.run._pb_user_roles. They keep the upsell sidebar locks.
+        try:
+            is_demo_role = user.has_group('pb_demo.group_payobook_demo')
+        except Exception:
+            is_demo_role = False
+        has_officer = is_demo_role \
+            or user.has_group('pb_hr_payroll_base.group_payroll_base_officer') \
             or user.has_group('pb_hr_payroll_base.group_payroll_base_manager')
-        has_manager = user.has_group('pb_hr_payroll_base.group_payroll_base_manager')
-        has_final = user.has_group('pb_hr_payroll_base.group_payroll_final_approver') \
+        has_manager = is_demo_role \
+            or user.has_group('pb_hr_payroll_base.group_payroll_base_manager')
+        has_final = is_demo_role \
+            or user.has_group('pb_hr_payroll_base.group_payroll_final_approver') \
             or user.has_group('pb_hr_payroll_base.group_payroll_super_admin')
 
         runs = self._safe(
@@ -92,9 +101,35 @@ class PbPayruns(models.AbstractModel):
         columns = [{'key': s, 'label': STAGE_LABEL[s], 'count': stage_counts.get(s, 0)}
                    for s in STAGE_ORDER]
 
+        # Division filter chips — derived from the formula configs that carry a
+        # division (the demo's 6; empty for plain structure-based payroll).
+        divisions = []
+        try:
+            seen = {}
+            for c in self.env['hr.formula.config'].sudo().search([]):
+                d = getattr(c, 'pb_division', '')
+                if d and d not in seen:
+                    nm = (c.name or '').replace('Payobook', '').split('—')[0].strip()
+                    seen[d] = nm or d.replace('_', ' ').title()
+            divisions = [{'key': k, 'label': v}
+                         for k, v in sorted(seen.items(), key=lambda x: x[1])]
+        except Exception:
+            divisions = []
+
+        # Demo users get the board pre-filtered to the live demo month (June 2026).
+        is_demo_user = False
+        try:
+            is_demo_user = user.has_group('pb_demo.group_payobook_demo')
+        except Exception:
+            is_demo_user = False
+        demo_period = {'from': '2026-06-01', 'to': '2026-06-30'} if is_demo_user else None
+
         return {
             'currency': cur.symbol or '',
             'company': company.name,
+            'divisions': divisions,
+            'is_demo_user': is_demo_user,
+            'demo_period': demo_period,
             'can_officer': has_officer,
             'can_manager': has_manager,
             'can_final': has_final,
