@@ -7,7 +7,12 @@ _logger = logging.getLogger(__name__)
 
 GROSS_CODES = ('GROSS',)
 NET_CODES = ('NET',)
-DED_CODES = ('DED', 'DEDUCTION', 'COMP', 'TAX')
+# Employee deductions (reduce take-home): insurance / tax / loan & advance.
+DED_CAT_CODES = ('DED', 'DEDUCTION', 'INS', 'TAX', 'LOANDED')
+DED_CAT_TYPES = ('deduction', 'social_security', 'tax')
+# Employer-side cost — NOT part of the employee's gross/deductions/net.
+EMPLOYER_CAT_CODES = ('COMP', 'INSCO')
+EMPLOYER_CAT_TYPE = 'employer_cost'
 
 STATE_LABEL = {
     'draft': 'Draft', 'verify': 'Waiting', 'level1': 'HR review',
@@ -44,13 +49,21 @@ class HrPayslip(models.Model):
         company = self.company_id or self.env.company
         cur = company.currency_id
 
-        # Line-level statement: list the real, shown components by name. Gross /
-        # Net are taken from their category subtotal lines when present. Lines
-        # are split into earnings vs deductions by category code / sign.
-        earnings, deductions = [], []
-        gross = net = ded_total = 0.0
+        # Line-level statement. Lines are bucketed by their salary-rule category
+        # (type/code), NOT just by sign, so:
+        #   * employee deductions (insurance / tax / loan) reduce take-home,
+        #   * EMPLOYER contributions (employer SI/HI/UI, trade-union fund) are kept
+        #     OUT of the employee's gross/deductions/net (shown separately),
+        #   * the mid-cycle advance is shown as a reduction so the figures
+        #     reconcile: Gross − Deductions − Advance = Net (on every cycle).
+        earnings, deductions, employer = [], [], []
+        gross = net = ded_total = emp_total = 0.0
+        has_end_adv = has_mid_adv = False
         for line in self.line_ids:
-            code = (line.category_id.code or '').upper()
+            cat = line.category_id
+            code = (line.code or '').upper()
+            ccode = (cat.code or '').upper()
+            ctype = (cat.category_type or '') if (cat and 'category_type' in cat._fields) else ''
             amt = line.total or 0.0
             if code in NET_CODES:
                 net = amt
@@ -58,16 +71,30 @@ class HrPayslip(models.Model):
             if code in GROSS_CODES:
                 gross = amt
                 continue
+            # Mid-cycle advance: a single ADVPAY line. On the MID slip it duplicates
+            # NET (skip); on the END slip it is the advance already paid (a reduction).
+            if code == 'ADVPAY':
+                if ctype == 'net' or ccode in NET_CODES:
+                    has_mid_adv = True
+                else:
+                    has_end_adv = True
+                continue
             if not amt:
                 continue
             # Multilingual: resolve the component label from the translatable salary
-            # rule in the reader's language (user preference), falling back to the
-            # frozen line snapshot. Adding a language needs no payroll-logic change.
+            # rule in the reader's language, falling back to the frozen line snapshot.
             label = (line.salary_rule_id.name if line.salary_rule_id else False) \
                 or line.name or line.code or '—'
-            row = {'name': label, 'code': line.code or '',
-                   'amount': abs(amt)}
-            if code in DED_CODES or amt < 0:
+            row = {'name': label, 'code': line.code or '', 'amount': abs(amt)}
+            # Employer cost — informational only, never in gross/deductions/net.
+            if ctype == EMPLOYER_CAT_TYPE or ccode in EMPLOYER_CAT_CODES:
+                employer.append(row)
+                emp_total += abs(amt)
+                continue
+            # Other net-category helpers (e.g. FULLPAY) are never an earning.
+            if ctype == 'net' or ccode in NET_CODES:
+                continue
+            if ctype in DED_CAT_TYPES or ccode in DED_CAT_CODES or amt < 0:
                 deductions.append(row)
                 ded_total += abs(amt)
             else:
@@ -76,6 +103,19 @@ class HrPayslip(models.Model):
             gross = sum(e['amount'] for e in earnings)
         if not net:
             net = gross - ded_total
+        # Bridge = whatever separates (gross − deductions) from net: the advance
+        # already paid (END) or the part held back for end-of-month (MID). Showing
+        # it as an explicit reduction makes the hero reconcile on every cycle.
+        bridge = round(gross - ded_total - net)
+        advance = abs(bridge) if abs(bridge) > 1 else 0.0
+        if not advance:
+            advance_label = ''
+        elif has_end_adv:
+            advance_label = 'Mid-month advance (paid in cycle 1)'
+        elif has_mid_adv:
+            advance_label = 'Held back for end of month'
+        else:
+            advance_label = 'Advance / adjustment'
 
         worked = []
         for wd in self.worked_days_line_ids:
@@ -104,7 +144,11 @@ class HrPayslip(models.Model):
             'gross': gross,
             'net': net,
             'deductions_total': ded_total,
+            'advance': advance,
+            'advance_label': advance_label,
             'earnings': earnings,
             'deductions': deductions,
+            'employer': employer,
+            'employer_total': emp_total,
             'worked': worked,
         }

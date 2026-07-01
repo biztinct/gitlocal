@@ -174,6 +174,12 @@ class PbDemoGenerator(models.TransientModel):
                     total += 2
                 mid_run.write({'state': run_state})
                 end_run.write({'state': run_state})
+                # Force the kanban roll-up (pb_total_net/gross) before commit —
+                # the @api.depends on formula-created lines doesn't fire reliably.
+                # Flush first: _compute_pb_totals reads pl.total via raw SQL.
+                if 'pb_total_net' in Run._fields:
+                    self.env.flush_all()
+                    (mid_run | end_run)._compute_pb_totals()
                 # commit per division (memory-safe; smaller transactions)
                 self.env.cr.commit()
                 self.env.invalidate_all()

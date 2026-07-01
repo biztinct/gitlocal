@@ -283,12 +283,6 @@
                             
                             <!-- Enhanced Action Buttons -->
                             <div class="country-card-actions-enhanced">
-                                <!-- New workflow button to open HR Flow dashboard -->
-                                <button type="object"
-                                        name="action_open_hr_flow_wizard"
-                                        class="btn btn-secondary dashboard-access-btn">
-                                    <i class="fa fa-sitemap"/> Dashboard
-                                </button>
                                 <button name="action_refresh_analytics" type="object" class="btn btn-outline-secondary btn-sm">
                                     <i class="fa fa-refresh"/> Refresh
                                 </button>

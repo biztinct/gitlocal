@@ -60,6 +60,18 @@
     .pbps-seg.gross { background: var(--i600); flex: 1; }
     .pbps-seg.ded { background: var(--rose); flex: 0 0 auto; }
     .pbps-seg.net { background: var(--green); flex: 0 0 38%; align-items: flex-end; text-align: right; }
+    .pbps-seg.adv { background: var(--amber); flex: 0 0 auto; }
+
+    /* mid-cycle advance reduction + net reconciliation inside the deductions card */
+    .pbps-row-amt.adv { color: var(--amber); }
+    .pbps-advrow { border-bottom: none; }
+    .pbps-sub.net { color: var(--green); border-top-style: dashed; }
+
+    /* employer contributions card (informational) */
+    .pbps-emp { margin-top: 14px; }
+    .pbps-dotc.emp { background: var(--amber); }
+    .pbps-sub.emp { color: var(--amber); }
+    .pbps-empnote { margin-top: 8px; font-size: 11.5px; color: var(--muted); font-style: italic; }
 
     /* worked days */
     .pbps-worked { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }

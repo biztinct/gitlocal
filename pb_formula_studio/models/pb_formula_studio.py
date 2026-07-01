@@ -233,7 +233,20 @@ class PbFormulaStudio(models.AbstractModel):
             'samples': samples,
             'preview': preview,
             'field_meta': self._field_meta(),
+            'can_edit': self._can_edit(),
         }
+
+    @api.model
+    def _can_edit(self):
+        """Edit/Delete/PayAI affordances are for Formula Managers/Admins (who hold
+        write access). A read-only 'Formula User' gets them hidden — the ACL would
+        block the write anyway. Fail open so a missing group never locks out admins."""
+        try:
+            u = self.env.user
+            return bool(u.has_group('base.group_system')
+                        or u.has_group('pb_hr_payroll_formula.group_formula_manager'))
+        except Exception:
+            return True
 
     @api.model
     def _field_meta(self):
@@ -710,18 +723,23 @@ class PbFormulaStudio(models.AbstractModel):
 
     @api.model
     def cfg_generate_sample_data(self, config_id):
-        """One-click synthetic sample: build inputs from the input components'
-        defaults, compute current outputs, store them as an expected baseline so
-        the Live Preview AND Run Tests are immediately meaningful (no wizard)."""
+        """One-click synthetic sample: build *realistic* random inputs (same
+        generator as the Test "Generate" button — NOT the rules' zero defaults),
+        compute current outputs, store them as an expected baseline so the Live
+        Preview AND Run Tests are immediately meaningful (no wizard dialog)."""
         from odoo.addons.pb_hr_payroll_formula.formula_engine import FormulaEvaluator
         c = self.env['hr.formula.config'].browse(int(config_id))
         if not c.exists():
             return {'ok': False, 'msg': 'Configuration not found'}
         rules = c.rule_ids.sorted(key=lambda r: r.sequence)
+        wiz = self.env['hr.formula.sample.data.wizard'].create({
+            'config_id': c.id, 'source': 'random',
+            'sample_count': 1, 'min_salary': 5000000.0, 'max_salary': 50000000.0,
+        })
         inputs = {}
         for r in rules:
             if r.column_type == 'input' and r.code:
-                inputs[r.code] = r.default_value or 0.0
+                inputs[r.code] = wiz._generate_random_value(r)
         try:
             computed = FormulaEvaluator().evaluate_all(rules, inputs)
             expected = {code: v for code, v in computed.items()}
@@ -857,6 +875,112 @@ class PbFormulaStudio(models.AbstractModel):
         except Exception as e:
             return {'ok': False, 'msg': str(e).splitlines()[0] if str(e) else 'Could not generate.'}
         return {'ok': True, 'samples': [self._sample_row(x) for x in c.sample_data_ids]}
+
+    @api.model
+    def export_test_template(self, config_id):
+        """Build a blank .xlsx whose header row is the config's input component
+        names (in column order). This is the exact format accepted by
+        import_test_samples — fill rows under the headers and re-import."""
+        import base64
+        import io
+        try:
+            import openpyxl
+        except Exception:
+            return {'ok': False, 'msg': 'openpyxl is not available on the server.'}
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': 'Configuration not found'}
+        inputs = [r for r in c.rule_ids.sorted(key=lambda r: r.sequence)
+                  if r.column_type == 'input']
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = 'Test Inputs'
+        headers = [(r.name or r.code or r.column_letter or '') for r in inputs]
+        ws.append(headers)
+        for col_idx, _h in enumerate(headers, start=1):
+            ws.column_dimensions[openpyxl.utils.get_column_letter(col_idx)].width = 22
+        out = io.BytesIO()
+        wb.save(out)
+        out.seek(0)
+        code = (c.code or c.name or 'config').strip().replace(' ', '_')
+        return {
+            'ok': True,
+            'file_b64': base64.b64encode(out.read()).decode(),
+            'filename': '%s_test_template.xlsx' % code,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }
+
+    @api.model
+    def import_test_samples(self, config_id, file_b64, filename=None):
+        """Read an uploaded .xlsx whose header row matches input component names
+        and create one sample per data row (added alongside existing samples).
+        Header→input is matched by name (case-insensitive) → code → letter."""
+        import base64
+        import io
+        try:
+            import openpyxl
+        except Exception:
+            return {'ok': False, 'msg': 'openpyxl is not available on the server.'}
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': 'Configuration not found'}
+        try:
+            raw = base64.b64decode(file_b64 or '')
+            wb = openpyxl.load_workbook(io.BytesIO(raw), data_only=True)
+        except Exception as e:
+            return {'ok': False, 'msg': 'Could not read the file: %s' % (str(e).splitlines()[0] if str(e) else 'invalid xlsx')}
+        ws = wb.active
+        rows = list(ws.iter_rows(values_only=True))
+        if not rows:
+            return {'ok': False, 'msg': 'The spreadsheet is empty.'}
+        header = [(str(h).strip() if h is not None else '') for h in rows[0]]
+
+        # Build lookup: lower(name) / lower(code) / lower(letter) -> code
+        inputs = [r for r in c.rule_ids.sorted(key=lambda r: r.sequence)
+                  if r.column_type == 'input']
+        lookup = {}
+        for r in inputs:
+            for key in (r.name, r.code, r.column_letter):
+                if key:
+                    lookup.setdefault(str(key).strip().lower(), r.code)
+        # Map each spreadsheet column index -> input code (skip unknown columns)
+        col_to_code = {}
+        for idx, h in enumerate(header):
+            code = lookup.get(h.lower())
+            if code:
+                col_to_code[idx] = code
+        if not col_to_code:
+            return {'ok': False, 'msg': 'No header matched an input component. Use the exported template.'}
+
+        base_n = len(c.sample_data_ids)
+        created = 0
+        for r_i, row in enumerate(rows[1:], start=1):
+            if row is None or all(v is None or v == '' for v in row):
+                continue
+            vals = {}
+            for idx, code in col_to_code.items():
+                v = row[idx] if idx < len(row) else None
+                if v is None or v == '':
+                    continue
+                try:
+                    vals[code] = float(v)
+                except (TypeError, ValueError):
+                    vals[code] = v
+            created += 1
+            self.env['hr.formula.sample.data'].create({
+                'config_id': c.id,
+                'name': 'Sample %s' % (base_n + created),
+                'source_type': 'manual',
+                'input_values_json': json.dumps(vals),
+            })
+        if not created:
+            return {'ok': False, 'msg': 'No data rows found under the header.'}
+        new_ids = c.sample_data_ids.sorted(key=lambda s: s.id)[-created:]
+        return {
+            'ok': True, 'count': created,
+            'first_id': new_ids[0].id if new_ids else False,
+            'samples': [self._sample_row(x) for x in c.sample_data_ids],
+        }
 
     @api.model
     def snapshot_expected(self, sample_id):

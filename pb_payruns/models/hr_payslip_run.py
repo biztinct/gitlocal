@@ -50,6 +50,22 @@ class HrPayslipRun(models.Model):
         currency_field='pb_currency_id', store=True)
     pb_currency_id = fields.Many2one(
         'res.currency', compute='_compute_pb_totals', store=True)
+    # Division key (from the run's payslips' formula config) — powers the board
+    # division filter. Empty for traditional structure-based payroll.
+    pb_division = fields.Char(
+        string='Division', compute='_compute_pb_division', store=True, index=True)
+
+    @api.depends('slip_ids.formula_config_id')
+    def _compute_pb_division(self):
+        for run in self:
+            div = ''
+            for s in run.slip_ids:
+                cfg = s.formula_config_id
+                d = getattr(cfg, 'pb_division', '') if cfg else ''
+                if d:
+                    div = d
+                    break
+            run.pb_division = div
 
     @api.depends('slip_ids', 'slip_ids.line_ids', 'slip_ids.line_ids.total',
                  'slip_ids.state')
@@ -104,12 +120,23 @@ class HrPayslipRun(models.Model):
 
     def _pb_user_roles(self):
         u = self.env.user
-        officer = (u.has_group('pb_hr_payroll_base.group_payroll_base_officer')
+        # Demo users drive the whole approval workflow for showcasing — granted the
+        # action flags here WITHOUT joining the real payroll groups, so the upsell
+        # sidebar locks (Admin / Import) stay intact for them.
+        demo = False
+        try:
+            demo = u.has_group('pb_demo.group_payobook_demo')
+        except Exception:
+            demo = False
+        officer = (demo
+                   or u.has_group('pb_hr_payroll_base.group_payroll_base_officer')
                    or u.has_group('pb_hr_payroll_base.group_payroll_base_manager')
                    or u.has_group('pb_hr_payroll_base.group_payroll_super_admin'))
-        manager = (u.has_group('pb_hr_payroll_base.group_payroll_base_manager')
+        manager = (demo
+                   or u.has_group('pb_hr_payroll_base.group_payroll_base_manager')
                    or u.has_group('pb_hr_payroll_base.group_payroll_super_admin'))
-        final = (u.has_group('pb_hr_payroll_base.group_payroll_final_approver')
+        final = (demo
+                 or u.has_group('pb_hr_payroll_base.group_payroll_final_approver')
                  or u.has_group('pb_hr_payroll_base.group_payroll_super_admin'))
         return officer, manager, final
 
@@ -143,6 +170,32 @@ class HrPayslipRun(models.Model):
         positive = (operator in ('=', '!=') and bool(value)) == (operator == '=')
         match = [('state', 'in', states)] if states else [('id', '=', 0)]
         return match if positive else (['!'] + match)
+
+    def done_payslip_run(self):
+        """Submit for HR review.
+
+        The base method calls action_payslip_done() on every payslip, which — via
+        the accounting bridge — posts journal entries (account.move). That path is
+        only valid for STRUCTURE-based payroll whose salary rules carry GL
+        accounts. A run computed by the Formula Engine (calculation_method =
+        'formula') or any demo run has NO per-rule accounts, so posting either
+        does nothing useful or raises a multi-company account.account access error
+        ("…doesn't have 'read' access to Account"). For those accountless runs we
+        advance the workflow state only (journals are produced in the dedicated
+        Pay Salary step); traditional structure-based payroll keeps the standard
+        accounting flow untouched via super().
+        """
+        def _accountless(run):
+            return getattr(run, 'is_demo', False) or bool(run.slip_ids) and all(
+                getattr(s, 'calculation_method', False) == 'formula' for s in run.slip_ids)
+        accountless = self.filtered(_accountless)
+        standard = self - accountless
+        if accountless:
+            accountless.slip_ids.filtered(lambda s: s.state == 'draft').write({'state': 'level1'})
+            accountless.write({'state': 'level1'})
+        if standard:
+            return super(HrPayslipRun, standard).done_payslip_run()
+        return True
 
     # ---- Pay Salary (post-approval disbursement) — surfaced on Done cards ----
     def _pb_toast(self, message):

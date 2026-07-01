@@ -13,8 +13,14 @@
 
         <nav class="pb-sidebar-nav" t-if="state.loaded">
             <t t-foreach="state.sections" t-as="section" t-key="section.id">
-                <div class="pb-sec-label" t-if="section.show_label" t-esc="section.name"/>
-                <div class="pb-nav-group">
+                <button t-if="hasSectionHeader(section)"
+                        t-attf-class="pb-sec-label pb-sec-toggle #{section.restricted ? 'pb-sec-locked' : ''}"
+                        t-on-click="() => this.toggleSection(section)">
+                    <span class="pb-sec-name" t-esc="section.name"/>
+                    <span t-if="section.restricted" class="pb-sec-lock" t-out="iconSvg('lock')"/>
+                    <span t-else="" t-attf-class="pb-sec-caret #{isSectionCollapsed(section) ? '' : 'open'}">›</span>
+                </button>
+                <div class="pb-nav-group" t-if="!isSectionCollapsed(section)">
                     <t t-foreach="section.items" t-as="item" t-key="item.id">
                         <button t-attf-class="pb-nav-item #{isActive(item.id) ? 'active' : ''} #{item.restricted ? 'pb-locked' : ''}"
                                 t-on-click="() => this.onItemClick(item)">

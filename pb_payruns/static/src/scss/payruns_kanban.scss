@@ -80,6 +80,7 @@
 .pbk-datechip { padding: 6px 14px; font-size: 12px; font-weight: 700; border-radius: 999px; border: 1px solid #E8E9F3; background: #fff; color: #475569; cursor: pointer; font-family: inherit; transition: .15s; }
 .pbk-datechip:hover { border-color: #5A4BB0; color: #4A3D96; }
 .pbk-datechip.active { background: var(--powder); border-color: #5A4BB0; color: #4A3D96; box-shadow: none; }
+.pbk-divchips { padding-top: 0; justify-content: flex-start; }
 .pbk-dateinput { padding: 5px 10px; font-size: 12px; border-radius: 8px; border: 1px solid #E8E9F3; font-family: inherit; color: #1E1B2E; }
 .pbk-dateinput:focus { outline: none; border-color: #5A4BB0; box-shadow: 0 0 0 3px rgba(90,75,176,.16); }
 .pbk-dash { color: #94A3B8; font-weight: 700; }

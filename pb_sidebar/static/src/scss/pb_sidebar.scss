@@ -64,6 +64,22 @@ body.has-pb-sidebar {
         color: var(--pb-side-muted); font-size: 10.5px; font-weight: 700;
         letter-spacing: .09em; text-transform: uppercase; padding: 14px 10px 6px;
     }
+    // Section header as a collapse/expand toggle
+    .pb-sec-toggle {
+        display: flex; align-items: center; gap: 8px; width: 100%;
+        background: none; border: none; font-family: inherit; cursor: pointer;
+        text-align: left; transition: color .12s;
+        .pb-sec-name { flex: 1; min-width: 0; }
+        .pb-sec-caret {
+            font-size: 14px; line-height: 1; opacity: .6; transition: transform .15s;
+            &.open { transform: rotate(90deg); }
+        }
+        .pb-sec-lock { display: inline-flex; align-items: center; opacity: .6;
+            svg { width: 13px; height: 13px; } }
+        &:hover { color: var(--pb-side-ink); }
+        &:hover .pb-sec-caret, &:hover .pb-sec-lock { opacity: .9; }
+        &.pb-sec-locked { cursor: pointer; }
+    }
     .pb-nav-group { display: flex; flex-direction: column; gap: 2px; }
 
     .pb-nav-item {

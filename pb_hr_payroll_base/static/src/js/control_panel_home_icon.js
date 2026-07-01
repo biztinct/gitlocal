@@ -6,7 +6,9 @@ import { patch } from "@web/core/utils/patch";
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { whenReady } from "@odoo/owl";
 
-const DEFAULT_ACTION_ID = "pb_hr_flow.action_hr_flow_wizard";
+// Home button now targets the current Payobook Dashboard (the legacy Flow
+// Dashboard has been retired from the left-menu flow; pb_hr_flow stays dormant).
+const DEFAULT_ACTION_ID = "pb_dashboard.action_pb_dashboard";
 const FLOW_MODEL = "hr.flow.wizard";
 
 /**
@@ -75,7 +77,7 @@ const ensureHomeIcon = (cp) => {
     const link = document.createElement('a');
     link.className = 'o_hr_flow_home_link';
     link.setAttribute('role', 'button');
-    link.setAttribute('aria-label', _t("Open HR Flow Dashboard"));
+    link.setAttribute('aria-label', _t("Open Dashboard"));
     link.setAttribute('title', 'Home');
     link.setAttribute('href', `/web#action=${DEFAULT_ACTION_ID}`);
     link.innerHTML = '<i class="fa fa-home"></i>';

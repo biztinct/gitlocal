@@ -13,6 +13,14 @@ class PbSidebarSection(models.Model):
     show_label = fields.Boolean(default=True, help='Render the section header label.')
     active = fields.Boolean(default=True)
     item_ids = fields.One2many('pb.sidebar.item', 'section_id', string='Menu Items')
+    restricted = fields.Boolean(
+        string='Restricted (upsell)', default=False,
+        help='If set, non-admin users see this section LOCKED — its items stay '
+             'collapsed and it cannot be expanded (shown with an upsell dialog). '
+             'Admins are unaffected and can still expand it.')
+    restriction_reason = fields.Text(
+        string='Restriction Message',
+        help='Message shown when a locked section is clicked.')
 
 
 class PbSidebarItem(models.Model):
@@ -114,13 +122,16 @@ class PbSidebarItem(models.Model):
                         kid_dicts.append(_item_dict(k, klocked))
                 d['children'] = kid_dicts
                 items.append(d)
-            if not items:
+            sec_locked = bool(section.restricted) and not is_admin
+            if not items and not sec_locked:
                 continue
             result.append({
                 'id': section.id,
                 'name': section.name,
                 'key': section.technical_key,
                 'show_label': section.show_label,
+                'restricted': sec_locked,
+                'restriction_reason': (section.restriction_reason or self._DEFAULT_UPSELL) if sec_locked else False,
                 'items': items,
             })
         return result

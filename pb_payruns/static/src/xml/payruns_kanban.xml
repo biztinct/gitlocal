@@ -41,6 +41,13 @@
           </t>
         </div>
       </div>
+      <div class="pbk-chipbar pbk-divchips" t-if="pbState.divisions.length">
+        <div class="pbk-datechips">
+          <button t-foreach="pbDivisionTabs" t-as="dv" t-key="dv.key"
+                  t-attf-class="pbk-datechip {{ pbState.activeDivision === dv.key ? 'active' : '' }}"
+                  t-on-click="() => this.setDivision(dv.key)" t-esc="dv.label"/>
+        </div>
+      </div>
     </xpath>
   </t>
 
