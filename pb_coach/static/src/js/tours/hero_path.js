@@ -49,9 +49,22 @@ registry.category("pb_coach.tours").add("hero_path", {
             action: "observe",
         },
         {
+            navigate: "pb_hr_payroll_base.action_hr_payslip_run_payroll",
+            title: "Review & approve",
+            body: "Every pay run lives here. A run moves Draft → Submit → HR review → GM approval → Done — each step gated to the right role, so nothing is paid without sign-off.",
+            action: "observe",
+        },
+        {
+            navigate: "pb_hr_payroll_analytics.action_open_hr_analytics_dashboard",
+            title: "See the whole picture",
+            body: "Workforce Analytics turns every run into live dashboards — cost by division, headcount, overtime and statutory trends.",
+            action: "observe",
+        },
+        {
             selector: '[data-coach="payai-pill"]',
+            navigate: "pb_dashboard.action_pb_dashboard",
             title: "Meet PayAI, your copilot",
-            body: "Ask “how do I run payroll?” anytime. PayAI answers step-by-step and can even replay this tour for you.",
+            body: "Ask “how do I run payroll?” anytime. PayAI answers step-by-step and can even replay any tour for you. That's it — you're ready to explore!",
             action: "observe",
             placement: "left",
         },

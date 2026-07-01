@@ -170,7 +170,7 @@ class PayrollAIEngine(models.Model):
             elif intent == 'payroll_knowledge':
                 return self._process_knowledge_query(provider, message, conversation_history)
             elif intent == 'onboarding':
-                return self._process_onboarding_query(provider, message, conversation_history)
+                return self._process_onboarding_query(provider, message, conversation_history, context)
             else:
                 return self._process_general_query(provider, message, conversation_history)
 
@@ -316,9 +316,39 @@ Remember to use the PayAI color palette and choose the best chart type for this 
             'label': (action.get('label') or 'Show me')[:40],
         }
 
-    def _process_onboarding_query(self, provider, message, conversation_history):
+    # Friendly names for the cockpits the user may be standing on.
+    _SCREEN_NAMES = {
+        'pb_dashboard': 'the Dashboard (command centre)',
+        'pb_payrun_wizard': 'the Run Payroll wizard',
+        'pb_payruns': 'the Pay Runs board',
+        'pb_payslip': 'the Payslips screen',
+        'pb_formula_studio': 'the Formula Studio',
+    }
+
+    def _describe_screen(self, screen):
+        if not isinstance(screen, dict):
+            return None
+        tag = screen.get('tag') or ''
+        xid = screen.get('xml_id') or ''
+        model = screen.get('model') or ''
+        if tag in self._SCREEN_NAMES:
+            return self._SCREEN_NAMES[tag]
+        if 'formula' in tag or 'formula' in xid:
+            return 'the Formula Engine'
+        if model in ('hr.payslip.run', 'hr.payslip') or 'payslip_run' in xid:
+            return 'the Pay Runs / Payslips area'
+        return screen.get('name') or None
+
+    def _process_onboarding_query(self, provider, message, conversation_history, context=None):
         """Answer a 'how do I use Payobook' question, optionally launching a tour."""
         messages = [{"role": "system", "content": ONBOARDING_SYSTEM_PROMPT}]
+        screen_desc = self._describe_screen((context or {}).get('screen'))
+        if screen_desc:
+            messages.append({
+                "role": "system",
+                "content": "The user is currently on %s. If they say 'this', 'here' or "
+                           "'this screen', interpret it relative to that." % screen_desc,
+            })
         for msg in conversation_history[-6:]:
             messages.append({"role": msg.get('role', 'user'), "content": msg.get('content', '')})
         messages.append({"role": "user", "content": message})

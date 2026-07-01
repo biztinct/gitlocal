@@ -204,8 +204,15 @@
     display: flex; flex-direction: column; gap: 1px; width: 100%; text-align: left;
     background: none; border: none; cursor: pointer; padding: 8px 10px; border-radius: 10px;
     &:hover { background: var(--pbc-soft); }
-    .pbc-launch-nm { font-size: 13px; font-weight: 650; color: var(--pbc-ink); }
+    .pbc-launch-nm { font-size: 13px; font-weight: 650; color: var(--pbc-ink); display: inline-flex; align-items: center; gap: 6px; }
     .pbc-launch-sm { font-size: 11.5px; color: var(--pbc-muted); }
+
+    &--hero {
+        background: var(--pbc-soft); margin-bottom: 4px;
+        .pbc-launch-nm { color: var(--pbc-primary); }
+        &:hover { background: #E2DCF4; }
+        svg { display: block; }
+    }
 }
 
 // -------------------------------------------------------------- disclaimer chip
