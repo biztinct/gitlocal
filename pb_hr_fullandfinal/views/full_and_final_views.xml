@@ -88,13 +88,38 @@
         <field name="model">hr.full.final.settlement</field>
         <field name="arch" type="xml">
             <search string="Full and Final">
-                <field name="employee_id"/>
-                <field name="formula_config_id"/>
+                <field name="employee_id" string="Employee"
+                       filter_domain="['|', ('employee_id', 'ilike', self), ('employee_code', 'ilike', self)]"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="formula_config_id" string="Salary Structure"/>
+                <field name="settlement_month"/>
+                <separator/>
+                <!-- Rich date picker (This/Last Month, Quarter, Year …) -->
+                <filter name="filter_settlement_date" string="Settlement Date" date="settlement_date"/>
                 <filter name="this_month"
                         string="This Month"
                         domain="[('settlement_date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')), ('settlement_date', '&lt;', (context_today() + relativedelta(day=1, months=1)).strftime('%Y-%m-%d'))]"/>
-                <filter name="source_auto" string="Auto" domain="[('source', '=', 'auto')]"/>
+                <filter name="last_month"
+                        string="Last Month"
+                        domain="[('settlement_date', '&gt;=', (context_today() + relativedelta(day=1, months=-1)).strftime('%Y-%m-%d')), ('settlement_date', '&lt;', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_year"
+                        string="This Year"
+                        domain="[('settlement_date', '&gt;=', (context_today() + relativedelta(day=1, month=1)).strftime('%Y-%m-%d')), ('settlement_date', '&lt;', (context_today() + relativedelta(day=1, month=1, years=1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
                 <filter name="source_manual" string="Manual" domain="[('source', '=', 'manual')]"/>
+                <filter name="source_auto" string="Auto" domain="[('source', '=', 'auto')]"/>
+                <separator/>
+                <filter name="high_value" string="Net ≥ ₫30M" domain="[('net_payable', '&gt;=', 30000000)]"/>
+                <group name="group_by">
+                    <filter name="group_department" string="Department" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_structure" string="Salary Structure" context="{'group_by': 'formula_config_id'}"/>
+                    <filter name="group_job" string="Job Position" context="{'group_by': 'job_id'}"/>
+                    <filter name="group_month" string="Settlement Month" context="{'group_by': 'settlement_month'}"/>
+                    <filter name="group_date" string="Settlement Date" context="{'group_by': 'settlement_date:month'}"/>
+                    <filter name="group_source" string="Source" context="{'group_by': 'source'}"/>
+                    <filter name="group_company" string="Company" context="{'group_by': 'company_id'}"/>
+                </group>
             </search>
         </field>
     </record>

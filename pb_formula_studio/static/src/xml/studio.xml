@@ -40,7 +40,7 @@
         <!-- top bar -->
         <header class="pbfs-top">
           <div class="pbfs-cfg">
-            <button class="pbfs-cfg-name" t-on-click="toggleConfigPicker">
+            <button class="pbfs-cfg-name" data-coach="fs-config" t-on-click="toggleConfigPicker">
               <span class="nm" t-esc="state.config.name"/>
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
             </button>
@@ -78,7 +78,7 @@
               </svg>
               <span class="val" t-esc="state.config.score"/>
             </div>
-            <div class="pbfs-seg">
+            <div class="pbfs-seg" data-coach="fs-views">
               <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Cards
               </button>
@@ -92,7 +92,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
               </button>
             </div>
-            <button class="pbfs-btn ai" t-on-click="openAI">
+            <button class="pbfs-btn ai" data-coach="fs-payai" t-on-click="openAI">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Ask PayAI
             </button>
             <button class="pbfs-btn primary" t-on-click="advance"><t t-esc="nextLabel()"/></button>
@@ -415,17 +415,17 @@
         <div class="pbfs-work">
           <svg id="pbfsArrows" class="pbfs-arrows"/>
           <!-- outline -->
-          <div class="pbfs-outline">
+          <div class="pbfs-outline" data-coach="fs-components">
             <div class="ol-head">
               <span class="t">Components</span>
               <div class="ol-actions">
-                <button class="ol-act" t-on-click="addComponentQuick" title="Add a component">
+                <button class="ol-act" data-coach="fs-add" t-on-click="addComponentQuick" title="Add a component">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </button>
                 <button class="ol-act" t-on-click="importExcelInto" title="Import from Excel">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 </button>
-                <button t-attf-class="ol-arrows {{ state.arrowsOn ? 'on' : '' }}" t-on-click="toggleArrows" title="Dependency arrows">
+                <button t-attf-class="ol-arrows {{ state.arrowsOn ? 'on' : '' }}" data-coach="fs-arrows" t-on-click="toggleArrows" title="Dependency arrows">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </button>
               </div>
@@ -449,7 +449,7 @@
           <div t-if="state.view === 'cards'" class="pbfs-editor">
             <div t-if="selected" t-attf-class="ed-card {{ editing ? 'is-editing' : '' }}">
               <t t-if="!editing">
-              <div class="ed-hero">
+              <div class="ed-hero" data-coach="fs-card">
                 <div class="col-badge" t-esc="selected.col"/>
                 <div style="flex:1; min-width:200px">
                   <h2><t t-esc="selected.name"/><span class="code-tag" t-esc="selected.code"/></h2>
@@ -459,7 +459,7 @@
                   <div t-if="selected.is_valid" class="valid-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Valid</div>
                   <div t-else="" class="valid-err"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Check</div>
                   <div class="ed-actions">
-                    <button class="pbfs-btn soft sm" t-on-click="openAI" title="Edit with PayAI">
+                    <button class="pbfs-btn soft sm" data-coach="fs-editai" t-on-click="openAI" title="Edit with PayAI">
                       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Edit with PayAI
                     </button>
                     <button class="pbfs-btn ghost sm" t-on-click="() => this.enterEdit(selected.id)" title="Edit this component">
@@ -474,12 +474,12 @@
               <div class="ed-body">
                 <div class="ed-label-row">
                   <span class="ed-label">Formula</span>
-                  <div t-if="selected.type === 'formula'" class="ff-seg" title="Toggle formula display">
+                  <div t-if="selected.type === 'formula'" class="ff-seg" data-coach="fs-namesletters" title="Toggle formula display">
                     <button t-att-class="!state.formulaShort ? 'on' : ''" t-on-click="() => this.setFormulaForm(false)">Names</button>
                     <button t-att-class="state.formulaShort ? 'on' : ''" t-on-click="() => this.setFormulaForm(true)">Letters</button>
                   </div>
                 </div>
-                <div class="formula-line">
+                <div class="formula-line" data-coach="fs-formula">
                   <t t-foreach="chips(selected.excel_formula)" t-as="tok" t-key="tok_index">
                     <span t-if="tok.kind === 'op'" class="fop" t-esc="tok.text"/>
                     <span t-elif="tok.kind === 'func'" class="fchip ffunc" t-esc="tok.text"/>
@@ -498,7 +498,7 @@
                     <span t-else="" class="fchip src" t-esc="tok.text"/>
                   </t>
                 </div>
-                <div class="dep-map">
+                <div class="dep-map" data-coach="fs-deps">
                   <div class="ed-label">Dependencies</div>
                   <div class="dep-row"><span class="lbl">Depends on</span>
                     <t t-if="selected.depends_on.length"><span t-foreach="selected.depends_on" t-as="d" t-key="d_index" class="dep-pill" t-esc="d"/></t>
@@ -511,7 +511,7 @@
                 </div>
                 <div t-if="!selected.is_valid and selected.validation_message" class="ed-errbox" t-esc="selected.validation_message"/>
 
-                <div t-if="selected.type === 'formula'" class="fc-section">
+                <div t-if="selected.type === 'formula'" class="fc-section" data-coach="fs-flow">
                   <div class="fc-head">
                     <span class="fc-head-t">Calculation flow</span>
                     <span class="fc-legend-inline">
@@ -520,7 +520,7 @@
                       <span class="lg"><span class="sw" style="background:#B45309"/>deduction</span>
                       <span class="lg"><span class="sw" style="background:#059669"/>total</span>
                     </span>
-                    <button class="fc-max" t-on-click="openExpand" title="Expand flowchart">
+                    <button class="fc-max" data-coach="fs-expand" t-on-click="openExpand" title="Expand flowchart">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>Expand
                     </button>
                   </div>
@@ -729,7 +729,7 @@
           </div>
 
           <!-- live preview -->
-          <div class="pbfs-test">
+          <div class="pbfs-test" data-coach="fs-preview">
             <div class="tp-head"><span class="t">Live preview</span></div>
             <button class="tp-sel" t-on-click="cycleSample"><t t-esc="sampleName"/>
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>

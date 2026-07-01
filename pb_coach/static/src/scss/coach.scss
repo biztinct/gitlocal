@@ -4,6 +4,18 @@
 //  surfaces). No gradients, no emoji glyph icons (Lucide SVG only).
 // =====================================================================
 
+// Demo/trial users stay inside Payroll — hide the apps-switcher "9 dots" and
+// the Discuss messaging systray so they can't jump to other Odoo modules
+// (body.pb-demo-user set in JS).
+body.pb-demo-user .o_navbar_apps_menu,
+body.pb-demo-user .o-mail-DiscussSystray-class { display: none !important; }
+
+// While a guided tour is running, suppress Odoo's global loading overlay/spinner
+// (the coach card shows its own spinner — avoid the double "top spinner" that
+// dims/blurs the whole screen). body.pb-coach-active set in JS.
+body.pb-coach-active .o_loading_indicator,
+body.pb-coach-active .o_loading { display: none !important; }
+
 .pbc {
     --pbc-primary: #5A4BB0;
     --pbc-primary-hover: #4A3D96;
@@ -183,18 +195,47 @@
 }
 
 // -------------------------------------------------------------- launcher FAB
-.pbc-launcher { position: fixed; z-index: 1990; left: 22px; bottom: 22px; }
+// Top-right, just below the control-panel row ("Active" button), so it's always
+// visible instead of buried at the bottom of the sidebar.
+.pbc-launcher { position: fixed; z-index: 1990; right: 188px; bottom: 26px; }
 .pbc-fab {
     display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
     background: var(--pbc-primary); color: #fff; border: none; cursor: pointer;
     box-shadow: 0 10px 26px rgba(90, 75, 176, .40);
     transition: transform .15s, background .15s;
+    // slow, gentle "I'm here" ring pulse — subtle enough not to distract
+    animation: pbc-fab-pulse 3.4s ease-in-out infinite;
     &:hover { transform: translateY(-2px); background: var(--pbc-primary-hover); }
 }
+@keyframes pbc-fab-pulse {
+    0%   { box-shadow: 0 10px 26px rgba(90, 75, 176, .40), 0 0 0 0 rgba(90, 75, 176, .40); }
+    70%  { box-shadow: 0 10px 26px rgba(90, 75, 176, .40), 0 0 0 13px rgba(90, 75, 176, 0); }
+    100% { box-shadow: 0 10px 26px rgba(90, 75, 176, .40), 0 0 0 0 rgba(90, 75, 176, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .pbc-fab { animation: none; } }
 .pbc-launch-menu {
-    position: absolute; bottom: 60px; left: 0; width: 268px;
+    // FAB sits at the bottom (left of the PayAI pill), so the menu opens upward
+    position: absolute; bottom: 60px; top: auto; right: 0; left: auto; width: 268px;
     background: #fff; border: 1px solid var(--pbc-line); border-radius: 14px;
     box-shadow: var(--pbc-sh); padding: 8px; animation: pbc-pop .2s ease;
+}
+
+// ----------------------------------------------- one-time "find tours" hint
+.pbc-help-hint {
+    position: fixed; z-index: 2015; bottom: 92px; right: 150px; width: 292px;
+    background: #fff; border: 1px solid var(--pbc-line); border-radius: 14px;
+    box-shadow: var(--pbc-sh); padding: 16px; animation: pbc-pop .2s ease;
+    &::before {
+        content: ""; position: absolute; bottom: -7px; right: 62px; width: 14px; height: 14px;
+        background: #fff; border-right: 1px solid var(--pbc-line); border-bottom: 1px solid var(--pbc-line);
+        transform: rotate(45deg);
+    }
+    .pbc-hh-badge {
+        display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
+        background: var(--pbc-soft); color: var(--pbc-primary); margin-bottom: 10px;
+    }
+    h4 { margin: 0 0 5px; font-size: 15px; font-weight: 750; color: var(--pbc-ink); }
+    p  { margin: 0 0 14px; font-size: 12.5px; line-height: 1.5; color: var(--pbc-muted); }
 }
 .pbc-launch-head {
     display: flex; align-items: center; gap: 7px; padding: 6px 8px 8px;

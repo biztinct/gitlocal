@@ -22,6 +22,7 @@ export class CoachOverlay extends Component {
 
     setup() {
         this.coach = useService("pb_coach");
+        this.orm = useService("orm");
         this.state = useState(this.coach.state);      // shared reactive tour state
         this.cardRef = useRef("card");
 
@@ -30,6 +31,7 @@ export class CoachOverlay extends Component {
             isDemo: false,
             showLauncher: false,
             launcherOpen: false,
+            showHelpHint: false,     // one-time "find tours via the ? icon" popup
             showDisclaimer: false,
             resolving: false,        // waiting for a target to appear
             hasTarget: false,
@@ -40,6 +42,7 @@ export class CoachOverlay extends Component {
 
         this._targetEl = null;
         this._stepKey = null;
+        this._onboardingActive = false;   // the auto-started first-run "Take the tour"
         this._raf = null;
         this._clickCleanup = null;
         this._autoplayT = null;
@@ -53,12 +56,31 @@ export class CoachOverlay extends Component {
             try { this.ui.isDemo = await user.hasGroup("pb_demo.group_payobook_demo"); }
             catch (e) { this.ui.isDemo = false; }
 
+            // Tag the body so demo/trial users get a locked-down chrome (e.g. the
+            // apps-switcher "9 dots" is hidden — they should stay inside Payroll).
+            try { document.body.classList.toggle("pb-demo-user", this.ui.isDemo); } catch (e) { /* */ }
+
             this.ui.showLauncher = true;
             this.ui.showDisclaimer = this.ui.isDemo && !this._flag("disclaimer_off");
 
-            // First-run welcome for demo/trial users.
-            if (this.ui.isDemo && !this._flag("welcomed")) {
-                this.coach.openWelcome();
+            // First-run onboarding for demo/trial users: auto-start the guided
+            // "Take the tour" journey on every fresh LOGIN (keyed to the user's
+            // login_date), so a logout→login re-greets — but a plain page refresh
+            // (same login_date) does not nag. If they skip it, the ? launcher
+            // (bottom-right, by PayAI) lets them replay it any time.
+            if (this.ui.isDemo) {
+                let loginKey = "";
+                try {
+                    const rows = await this.orm.read("res.users", [user.userId], ["login_date"]);
+                    loginKey = rows && rows[0] ? String(rows[0].login_date || "") : "";
+                } catch (e) { loginKey = ""; }
+                // Fallback to a per-tab-session key if login_date isn't readable.
+                const seen = loginKey ? this._get("login_seen") : (this._sess("welcomed") ? "s" : "");
+                if ((loginKey && loginKey !== seen) || (!loginKey && seen !== "s")) {
+                    if (loginKey) this._put("login_seen", loginKey); else this._setSess("welcomed", true);
+                    this._onboardingActive = true;
+                    this.coach.start("hero_path", { mode: "interactive" });
+                }
             }
             window.addEventListener("keydown", this._onKey);
             this._raf = requestAnimationFrame(this._loop);
@@ -73,9 +95,16 @@ export class CoachOverlay extends Component {
         });
     }
 
-    // ---- persistence flags (localStorage; read-only-safe) --------------------
+    // ---- persistence flags (read-only-safe) ---------------------------------
+    // localStorage = permanent (e.g. disclaimer dismissed); sessionStorage =
+    // per-login-session (e.g. first-run tour, so it greets each new session).
     _flag(k) { try { return localStorage.getItem("pb_coach_" + k) === "1"; } catch (e) { return false; } }
     _setFlag(k, v) { try { localStorage.setItem("pb_coach_" + k, v ? "1" : "0"); } catch (e) { /* ignore */ } }
+    _sess(k) { try { return sessionStorage.getItem("pb_coach_" + k) === "1"; } catch (e) { return false; } }
+    _setSess(k, v) { try { sessionStorage.setItem("pb_coach_" + k, v ? "1" : "0"); } catch (e) { /* ignore */ } }
+    // string-valued localStorage (e.g. remember the login_date we greeted for)
+    _get(k) { try { return localStorage.getItem("pb_coach_" + k) || ""; } catch (e) { return ""; } }
+    _put(k, v) { try { localStorage.setItem("pb_coach_" + k, v || ""); } catch (e) { /* ignore */ } }
 
     icon(name, size) { return coachIcon(name, size); }
 
@@ -108,6 +137,12 @@ export class CoachOverlay extends Component {
     // =========================================================================
     _loop() {
         if (this._destroyed) return;
+        // While a tour runs, mark the body so Odoo's global loading overlay is
+        // hidden (the coach card shows its own spinner — no double indicator).
+        if (this.state.active !== this._bodyActive) {
+            this._bodyActive = this.state.active;
+            try { document.body.classList.toggle("pb-coach-active", this.state.active); } catch (e) { /* */ }
+        }
         if (this.state.active) {
             const key = `${this.state.tourId}#${this.state.index}#${this.state.mode}`;
             if (key !== this._stepKey) {
@@ -282,10 +317,24 @@ export class CoachOverlay extends Component {
             this._detachClick();
             try { this._targetEl.click(); } catch (e) { /* ignore */ }
         }
+        // Reaching the final step = completed, not abandoned → no "find it later" hint.
+        if (this.isLast) this._onboardingActive = false;
         this.coach.next();
     }
     onBack() { this.coach.back(); }
-    onSkip() { this.coach.stop(); }
+    onSkip() {
+        const wasOnboarding = this._onboardingActive;
+        this._onboardingActive = false;
+        this.coach.stop();
+        // Skipping/closing the first-run tour → tell them where to find tours later.
+        if (wasOnboarding) this._maybeShowHelpHint();
+    }
+    _maybeShowHelpHint() {
+        if (this._flag("help_hinted")) return;
+        this._setFlag("help_hinted", true);
+        this.ui.showHelpHint = true;
+    }
+    dismissHelpHint() { this.ui.showHelpHint = false; }
     toggleMode() {
         this.coach.setMode(this.state.mode === "autoplay" ? "interactive" : "autoplay");
         this._stepKey = null; // force re-entry so listeners/timers reset for the mode
@@ -323,7 +372,7 @@ export class CoachOverlay extends Component {
 
     _onKey(ev) {
         if (!this.state.active) return;
-        if (ev.key === "Escape") { this.coach.stop(); }
+        if (ev.key === "Escape") { this.onSkip(); }
         else if (ev.key === "ArrowRight") { this.coach.next(); }
         else if (ev.key === "ArrowLeft") { this.coach.back(); }
     }

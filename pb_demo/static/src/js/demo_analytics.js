@@ -14,7 +14,9 @@ export class DemoAnalytics extends Component {
         this.orm = useService("orm");
         this.state = useState({ loading: true, data: null });
         onWillStart(async () => {
-            this.state.data = await this.orm.call("pb.demo.analytics", "get_analytics_data", []);
+            // silent: don't trigger Odoo's global loading overlay — the coach
+            // tour shows its own spinner and this cockpit has its own placeholder.
+            this.state.data = await this.orm.silent.call("pb.demo.analytics", "get_analytics_data", []);
             this.state.loading = false;
         });
     }

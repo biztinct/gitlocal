@@ -16,7 +16,7 @@
         <field name="name">Insights</field><field name="technical_key">insights</field><field name="sequence">40</field>
     </record>
     <record id="sec_setup" model="pb.sidebar.section">
-        <field name="name">Setup</field><field name="technical_key">setup</field><field name="sequence">50</field>
+        <field name="name">Setup</field><field name="technical_key">setup</field><field name="sequence">25</field>
     </record>
     <record id="sec_admin" model="pb.sidebar.section">
         <field name="name">Admin</field><field name="technical_key">admin</field><field name="sequence">60</field>

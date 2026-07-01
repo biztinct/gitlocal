@@ -19,6 +19,7 @@ A beautiful public landing where prospects register for the live demo:
     'depends': ['website', 'auth_signup', 'mail', 'pb_demo'],
     'data': [
         'views/demo_portal_templates.xml',
+        'views/reset_password_email.xml',
     ],
     'assets': {
         'web.assets_frontend': [

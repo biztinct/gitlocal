@@ -46,7 +46,7 @@
                         <div><div class="mv" t-esc="state.d.run.done"/><div class="ml">Approved</div></div>
                         <div><div class="mv" t-esc="state.d.run.pending"/><div class="ml">Pending</div></div>
                     </div>
-                    <button class="pbd-link" t-on-click="() => this.open('pb_hr_payroll_base.action_hr_payslip_run_payroll')">Open pay runs →</button>
+                    <button class="pbd-link" t-on-click="() => this.open('pb_payruns.action_pb_payruns_kanban')">Open pay runs →</button>
                 </div>
 
                 <div class="pbd-card">
