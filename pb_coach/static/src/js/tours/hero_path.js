@@ -2,11 +2,12 @@
 
 import { registry } from "@web/core/registry";
 
-// The flagship end-to-end tour. Steps target `data-coach="..."` anchors added
-// to the dashboard, the pay-run wizard and the PayAI pill.
+// The flagship end-to-end tour. Dashboard intro → a full Formula Studio
+// deep-dive (the WOW) → run a pay run → review on the kanban → PayAI.
+// (The stand-alone "Explore the formula engine" tour still exists separately.)
 registry.category("pb_coach.tours").add("hero_path", {
     name: "Take the tour",
-    summary: "The full Payobook journey, ~2 min",
+    summary: "The full Payobook journey",
     steps: [
         {
             selector: '[data-coach="dash-hero"]',
@@ -25,21 +26,78 @@ registry.category("pb_coach.tours").add("hero_path", {
         {
             selector: '[data-coach="dash-formula"]',
             title: "Formula-driven payroll",
-            body: "Payobook computes pay from Excel-style formula configs — not rigid salary structures. Twelve configs power this Vietnam demo.",
+            body: "Payobook computes pay from Excel-style formula configs — not rigid salary structures. Let's look under the hood.",
             action: "observe",
         },
+
+        // ---------- Formula Studio deep-dive ----------
         {
-            selector: '[data-coach="dash-runpayroll"]',
-            title: "Let's run payroll",
-            body: "Click Run Payroll to open the guided pay-run wizard.",
-            action: "click",
+            navigate: "pb_formula_studio.action_pb_formula_studio",
+            selector: '[data-coach="fs-config"]',
+            waitFor: '[data-coach="fs-config"]',
+            title: "Welcome to Formula Studio",
+            body: "A live, visual spreadsheet engine. Switch between your 12 division configs (Retail, IT, Construction…) right here.",
+            action: "observe",
             placement: "bottom",
         },
         {
+            selector: '[data-coach="fs-components"]',
+            title: "Every component, one list",
+            body: "Inputs, earnings, deductions and totals. Click any to open it — the coloured tag shows its type. Toggle the arrows to see live dependency lines.",
+            action: "observe",
+            placement: "right",
+        },
+        {
+            selector: '[data-coach="fs-formula"]',
+            waitFor: '[data-coach="fs-formula"]',
+            timeout: 4000,
+            title: "The formula, in plain English",
+            body: "No cryptic cell refs — components read by name, colour-coded by type. Click any chip to jump straight to that component.",
+            action: "observe",
+        },
+        {
+            selector: '[data-coach="fs-namesletters"]',
+            waitFor: '[data-coach="fs-namesletters"]',
+            timeout: 4000,
+            title: "Names or Letters",
+            body: "Prefer spreadsheet style? Flip to Letters (A, B, C…) and back to friendly Names — same formula, your choice.",
+            action: "observe",
+        },
+        {
+            selector: '[data-coach="fs-deps"]',
+            title: "Full traceability",
+            body: "“Depends on” and “Used by” map exactly how this number connects to the rest of payroll — nothing hidden.",
+            action: "observe",
+        },
+        {
+            selector: '[data-coach="fs-flow"]',
+            waitFor: '[data-coach="fs-flow"]',
+            timeout: 4000,
+            title: "Watch it calculate",
+            body: "The calculation flow shows how the result is built, step by step, down to the final output. Click it (or Expand) to go full-screen — scroll to zoom, drag to pan.",
+            action: "observe",
+        },
+        {
+            selector: '[data-coach="fs-preview"]',
+            title: "Live preview — real numbers",
+            body: "Every component computes in real time for a sample employee. Tap the sample name to cycle employees and watch the values recalculate instantly.",
+            action: "observe",
+            placement: "left",
+        },
+        {
+            selector: '[data-coach="fs-editai"]',
+            title: "Edit with PayAI",
+            body: "Change a formula just by describing it in plain English. Editing is off in this shared demo — ask the Payobook team for a private, fully-editable trial.",
+            action: "observe",
+        },
+
+        // ---------- Run a pay run ----------
+        {
+            navigate: "pb_payrun_wizard.action_pb_payrun_wizard",
             selector: '[data-coach="pw-division"]',
             waitFor: '[data-coach="pw-division"]',
-            title: "Pick a division",
-            body: "Choose which division to pay. The wizard automatically loads that division's formula config and eligible employees.",
+            title: "Now let's run payroll",
+            body: "Pick a division. The wizard automatically loads that division's formula config and eligible employees.",
             action: "observe",
         },
         {
@@ -49,17 +107,13 @@ registry.category("pb_coach.tours").add("hero_path", {
             action: "observe",
         },
         {
-            navigate: "pb_hr_payroll_base.action_hr_payslip_run_payroll",
+            navigate: "pb_payruns.action_pb_payruns_kanban",
             title: "Review & approve",
-            body: "Every pay run lives here. A run moves Draft → Submit → HR review → GM approval → Done — each step gated to the right role, so nothing is paid without sign-off.",
+            body: "Every pay run lives on this board. A run moves Draft → HR review → GM approval → Done across the columns — each step gated to the right role, so nothing is paid without sign-off.",
             action: "observe",
         },
-        {
-            navigate: "pb_hr_payroll_analytics.action_open_hr_analytics_dashboard",
-            title: "See the whole picture",
-            body: "Workforce Analytics turns every run into live dashboards — cost by division, headcount, overtime and statutory trends.",
-            action: "observe",
-        },
+
+        // ---------- PayAI ----------
         {
             selector: '[data-coach="payai-pill"]',
             navigate: "pb_dashboard.action_pb_dashboard",

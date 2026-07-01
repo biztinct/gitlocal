@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HrPayrollRetroAdjustment(models.Model):
     _name = 'hr.payroll.retro.adjustment'
     _description = 'Payroll Retro Adjustment'
     _order = 'period_from desc, employee_id'
+
+    @api.depends('employee_id', 'component_id', 'period_from')
+    def _compute_display_name(self):
+        for rec in self:
+            emp = rec.employee_id.name or 'Retro adjustment'
+            comp = rec.component_id.name or rec.component_code or ''
+            period = rec.period_from.strftime('%b %Y') if rec.period_from else ''
+            label = emp
+            if comp:
+                label += ' — ' + comp
+            if period:
+                label += ' · retro ' + period
+            rec.display_name = label
 
     formula_config_id = fields.Many2one(
         'hr.formula.config',

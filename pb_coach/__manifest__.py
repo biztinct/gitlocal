@@ -23,10 +23,11 @@ elements via ``data-coach="..."`` anchors so they survive re-styling.
             'pb_coach/static/src/js/coach_icons.js',
             'pb_coach/static/src/js/coach_overlay.js',
             'pb_coach/static/src/xml/coach_overlay.xml',
-            # tour definitions (self-register into pb_coach.tours)
+            # tour definitions (self-register into pb_coach.tours) — load order
+            # drives the launcher list order.
             'pb_coach/static/src/js/tours/hero_path.js',
-            'pb_coach/static/src/js/tours/tour_payrun.js',
             'pb_coach/static/src/js/tours/tour_formula.js',
+            'pb_coach/static/src/js/tours/tour_payrun.js',
             'pb_coach/static/src/js/tours/tour_payslips.js',
         ],
     },

@@ -8,14 +8,14 @@ registry.category("pb_coach.tours").add("tour_payslips", {
     summary: "Browse runs and approvals",
     steps: [
         {
-            navigate: "pb_hr_payroll_base.action_hr_payslip_run_payroll",
+            navigate: "pb_payruns.action_pb_payruns_kanban",
             title: "Every pay run in one place",
-            body: "April and May are finalised; June is live and draft. Each run holds one payslip per employee for that period and cycle.",
+            body: "A visual board of every run — June is live in Draft, earlier months are Done. Each run holds one payslip per employee for that period and cycle.",
             action: "observe",
         },
         {
             title: "The approval flow",
-            body: "A run moves Draft → Submit → HR review → GM approval → Done. Only the right role can advance each step — that's the built-in control.",
+            body: "Runs move across the columns Draft → HR review → GM approval → Done. Only the right role can advance each step — that's the built-in control.",
             action: "observe",
         },
         {

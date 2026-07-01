@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HrPayrollProrationLine(models.Model):
     _name = 'hr.payroll.proration.line'
     _description = 'Payroll Proration Line'
     _order = 'date_from desc, employee_id'
+
+    @api.depends('employee_id', 'component_id', 'date_from')
+    def _compute_display_name(self):
+        for rec in self:
+            emp = rec.employee_id.name or 'Proration'
+            comp = rec.component_id.name or rec.component_code or ''
+            period = rec.date_from.strftime('%b %Y') if rec.date_from else ''
+            label = emp
+            if comp:
+                label += ' — ' + comp
+            if period:
+                label += ' · prorated ' + period
+            rec.display_name = label
 
     formula_config_id = fields.Many2one(
         'hr.formula.config',

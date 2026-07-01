@@ -87,19 +87,29 @@ class DemoPortal(http.Controller):
             'company_ids': [(6, 0, [company.id])],
         }
         # Assign groups explicitly (this Odoo build does not flatten implied
-        # groups into membership at create-time): demo + internal user + PayAI so
-        # the copilot works for every new signup.
+        # groups into membership at create-time). This is the full set the demo
+        # experience needs — mirrors the reference demo@payobook.com user —
+        # otherwise cockpits that read formula/company data (e.g. the Dashboard)
+        # raise AccessError and render blank.
+        group_xmlids = [
+            'pb_demo.group_payobook_demo',            # demo role (read-only sandbox)
+            'base.group_user',                        # internal user (backend access)
+            'base.group_multi_company',               # company scope
+            'pb_hr_payroll_formula.group_formula_user',  # read formula configs/tests (Dashboard, Formula Studio)
+            'pb_payroll_ai_insights.group_payai_user',   # PayAI copilot
+        ]
         gids = []
-        if group:
-            gids.append(group.id)
-        internal = env.ref('base.group_user', raise_if_not_found=False)
-        if internal:
-            gids.append(internal.id)
-        payai = env.ref('pb_payroll_ai_insights.group_payai_user', raise_if_not_found=False)
-        if payai:
-            gids.append(payai.id)
+        for xmlid in group_xmlids:
+            g = env.ref(xmlid, raise_if_not_found=False)
+            if g:
+                gids.append(g.id)
         if gids:
             user_vals['group_ids'] = [(6, 0, gids)]
+        # Land on the Payroll dashboard right after login (not Discuss) so the
+        # guided tour starts instantly on the command centre.
+        dash = env.ref('pb_dashboard.action_pb_dashboard', raise_if_not_found=False)
+        if dash:
+            user_vals['action_id'] = dash.id
         user = Users.create(user_vals)
         # enrich the partner with the captured profile (Odoo 19 res.partner has no
         # 'mobile' field — use 'phone'; fold company/size into the comment).

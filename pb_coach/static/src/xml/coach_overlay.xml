@@ -112,6 +112,16 @@
       </div>
     </t>
 
+    <!-- ===== one-time hint: where to replay tours (points at the ? launcher) ===== -->
+    <t t-if="ui.showHelpHint and !state.active and !state.welcome">
+      <div class="pbc-help-hint">
+        <span class="pbc-hh-badge"><t t-out="icon('help', 20)"/></span>
+        <h4>Find tours anytime</h4>
+        <p>Tap the <b>?</b> button at the <b>bottom-right, next to PayAI</b> to replay this tour — or explore any feature — whenever you like.</p>
+        <button class="pbc-btn pbc-btn--primary" t-on-click="dismissHelpHint">Got it <t t-out="icon('check', 14)"/></button>
+      </div>
+    </t>
+
     <!-- ==================== EPHEMERAL-DATA DISCLAIMER ==================== -->
     <t t-if="ui.showDisclaimer and !state.active and !state.welcome">
       <div class="pbc-disclaimer">
