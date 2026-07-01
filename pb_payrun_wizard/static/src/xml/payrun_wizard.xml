@@ -36,7 +36,7 @@
                             <h4>Period</h4>
                             <t t-if="(state.defaults.divisions || []).length">
                                 <label>Configuration</label>
-                                <select class="pw-in" t-on-change="(ev)=>this.onDivision(ev)">
+                                <select class="pw-in" data-coach="pw-division" t-on-change="(ev)=>this.onDivision(ev)">
                                     <t t-foreach="state.defaults.divisions" t-as="d" t-key="d.key">
                                         <option t-att-value="d.key" t-att-selected="d.key === state.form.division" t-esc="d.name"/>
                                     </t>
@@ -99,7 +99,7 @@
                 <button class="pw-btn ghost" t-if="state.step > 1" t-on-click="() => this.goto(state.step-1)">← Back</button>
                 <button class="pw-btn ghost" t-if="state.step === 1" t-on-click="cancel">Cancel</button>
                 <div class="pw-spacer"></div>
-                <button class="pw-btn primary" t-if="state.step === 1" t-on-click="toCompute">Compute payslips <t t-out="ic('arrow',14)"/></button>
+                <button class="pw-btn primary" data-coach="pw-compute" t-if="state.step === 1" t-on-click="toCompute">Compute payslips <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="state.step === 2" t-on-click="() => this.goto(3)">Review exceptions <t t-out="ic('arrow',14)"/></button>
                 <button class="pw-btn primary" t-if="state.step === 3" t-on-click="openRun">Open Payroll <t t-out="ic('arrow',14)"/></button>
             </div>

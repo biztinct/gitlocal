@@ -73,11 +73,49 @@ INTENT_CLASSIFICATION_PROMPT = """Classify the following user message into one o
 
 1. "payroll_data" - User wants to see/analyze payroll data (salary, costs, headcount, overtime, deductions, comparisons, trends, forecasts). This requires querying the database.
 2. "payroll_knowledge" - User asks a conceptual question about payroll/HR (what does CTC mean, tax rules, compliance, etc.)
-3. "general" - Any other question (write an email, explain something, general help)
+3. "onboarding" - User asks HOW to USE the Payobook app or wants to be shown/guided (how do I run payroll, how to add an employee, where is X, how does the formula engine work, show me around, give me a tour, get started).
+4. "general" - Any other question (write an email, explain something, general help)
 
 User message: "{message}"
 
-Respond with ONLY the category name, nothing else. Just one word from: payroll_data, payroll_knowledge, general"""
+Respond with ONLY the category name, nothing else. Just one word from: payroll_data, payroll_knowledge, onboarding, general"""
+
+
+# Onboarding copilot — grounded in the real Payobook demo product so answers are
+# accurate, and able to launch a guided coach tour via an optional "action".
+ONBOARDING_SYSTEM_PROMPT = """You are PayAI, the in-app onboarding copilot for Payobook, an Odoo-based multi-country payroll platform. The user is exploring a shared, read-only Vietnam demo (company "Payobook Vietnam JSC": ~4,500 employees across 6 divisions; payroll is computed by Excel-style FORMULA CONFIGS, not traditional salary structures).
+
+Answer "how do I…" / "where is…" / "show me" questions about USING Payobook with clear, correct, numbered steps grounded ONLY in the real product facts below. Keep answers short and skimmable.
+
+NAVIGATION: a left sidebar has Dashboard, Pay Runs, Payslips and Workforce Analytics. The Formula Engine is in the top bar. Import, Setup and Admin are locked in the demo.
+
+HOW TO RUN PAYROLL (the core flow):
+1. On the Dashboard, click "Run Payroll" (top-right) to open the pay-run wizard.
+2. "Select period": pick a Division (e.g. Retail). Payobook auto-loads that division's formula config and eligible employees; the period is the demo month (June 2026).
+3. Click "Compute payslips" — the formula engine generates a draft payslip per employee (gross, allowances, overtime, statutory BHXH/BHYT/BHTN, PIT, net).
+4. "Review exceptions": check any flagged items, then "Open Payroll" to open the draft run.
+5. Approve through the states: Draft -> Submit -> HR review -> GM approval -> Done. Each transition is role-gated.
+
+FORMULA CONFIGS: payroll logic lives in Excel-like grids of components (inputs, constants, formulas) that reference each other by code (BASIC, GROSS, PIT…). The demo has 12 configs (6 divisions x mid/end cycle), viewable read-only in the Formula Engine.
+
+PAY RUNS & PAYSLIPS: Pay Runs lists every run (April/May are Done, June is live/Draft). Open any payslip to see its formula-driven components.
+
+DEMO NOTE: this is a shared, read-only demo — payslips you generate are temporary and may be reset by another demo user.
+
+You can OFFER TO SHOW the user by launching a guided tour via an optional "action". Available tours:
+- "hero_path"    : the full end-to-end product tour
+- "tour_payrun"  : run a pay run (division -> compute -> review)
+- "tour_formula" : explore the formula engine
+- "tour_payslips": pay runs & payslips / approvals
+
+ALWAYS respond with a SINGLE valid JSON object (no markdown fences):
+{
+  "response": "<concise step-by-step answer; newlines and numbered steps are fine>",
+  "insights": [],
+  "follow_up_questions": ["<2-3 helpful next questions>"],
+  "action": { "type": "start_tour", "tour": "<one tour id above>", "label": "Show me" }
+}
+Include "action" ONLY when a listed tour clearly matches the request; otherwise omit it or set it to null. Never invent menus, buttons or tour ids that are not listed above."""
 
 
 class PayrollAIEngine(models.Model):
@@ -131,6 +169,8 @@ class PayrollAIEngine(models.Model):
                 return self._process_data_query(provider, message, conversation_history, context)
             elif intent == 'payroll_knowledge':
                 return self._process_knowledge_query(provider, message, conversation_history)
+            elif intent == 'onboarding':
+                return self._process_onboarding_query(provider, message, conversation_history)
             else:
                 return self._process_general_query(provider, message, conversation_history)
 
@@ -158,6 +198,8 @@ class PayrollAIEngine(models.Model):
                 return 'payroll_data'
             elif 'payroll_knowledge' in intent or 'knowledge' in intent:
                 return 'payroll_knowledge'
+            elif 'onboard' in intent or 'guide' in intent or 'tour' in intent:
+                return 'onboarding'
             else:
                 return 'general'
         except Exception as e:
@@ -255,6 +297,45 @@ Remember to use the PayAI color palette and choose the best chart type for this 
         except Exception as e:
             _logger.error("Knowledge query error: %s", e)
             raise
+
+    # Tour ids the frontend coach knows about — used to validate the LLM's action.
+    _KNOWN_TOURS = ('hero_path', 'tour_payrun', 'tour_formula', 'tour_payslips')
+
+    def _sanitize_action(self, action):
+        """Only allow well-formed start_tour actions for tours we actually ship."""
+        if not isinstance(action, dict):
+            return None
+        if action.get('type') != 'start_tour':
+            return None
+        tour = action.get('tour')
+        if tour not in self._KNOWN_TOURS:
+            return None
+        return {
+            'type': 'start_tour',
+            'tour': tour,
+            'label': (action.get('label') or 'Show me')[:40],
+        }
+
+    def _process_onboarding_query(self, provider, message, conversation_history):
+        """Answer a 'how do I use Payobook' question, optionally launching a tour."""
+        messages = [{"role": "system", "content": ONBOARDING_SYSTEM_PROMPT}]
+        for msg in conversation_history[-6:]:
+            messages.append({"role": msg.get('role', 'user'), "content": msg.get('content', '')})
+        messages.append({"role": "user", "content": message})
+
+        raw_response = provider.generate_chat(messages, max_tokens=1200, temperature=0.4)
+        try:
+            result = provider._parse_json_response(raw_response)
+        except Exception:
+            result = {'response': raw_response}
+        return {
+            'response': result.get('response', raw_response),
+            'chart': None,
+            'insights': result.get('insights', []),
+            'follow_up_questions': result.get('follow_up_questions', []),
+            'intent': 'onboarding',
+            'action': self._sanitize_action(result.get('action')),
+        }
 
     def _process_general_query(self, provider, message, conversation_history):
         """Process a general (non-payroll) question."""

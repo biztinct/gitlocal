@@ -7,7 +7,8 @@
              sidebar 'restricted' mechanism (wired in the post-init hook). -->
         <record id="group_payobook_demo" model="res.groups">
             <field name="name">Payobook Demo User</field>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <!-- Internal-user access + the PayAI copilot (onboarding/guided tours). -->
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('pb_payroll_ai_insights.group_payai_user'))]"/>
         </record>
     </data>
 

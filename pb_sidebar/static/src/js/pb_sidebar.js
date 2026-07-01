@@ -84,11 +84,23 @@ export class PbSidebar extends Component {
         [0, 150, 400].forEach((ms) => setTimeout(() => this._resolveVisibility(), ms));
     }
 
-    // Show the sidebar only inside a payroll app; otherwise restore native menus.
+    // Show the sidebar inside a payroll app OR whenever a Payobook cockpit action
+    // is on screen. The latter matters when a screen is reached via doAction from
+    // another app (e.g. the coach tour opening the dashboard from Discuss) — the
+    // app menu isn't switched, so getCurrentApp() alone would wrongly hide us.
     _resolveVisibility() {
         let app = null;
         try { app = this.menuService.getCurrentApp(); } catch (e) { /* ignore */ }
-        const visible = !!(app && PAYROLL_APPS.has(app.xmlid));
+        let visible = !!(app && PAYROLL_APPS.has(app.xmlid));
+        if (!visible) {
+            const ctrl = this.actionService.currentController;
+            const a = ctrl && ctrl.action;
+            const isPb = (s) => typeof s === "string" &&
+                (s.startsWith("pb_") || s.includes("pb_hr_payroll") || s.includes("hr_payslip"));
+            if (a && (isPb(a.tag) || isPb(a.xml_id) || isPb(a.res_model))) {
+                visible = true;
+            }
+        }
         if (this.state.visible !== visible) this.state.visible = visible;
         document.body.classList.toggle("has-pb-sidebar", visible);
     }

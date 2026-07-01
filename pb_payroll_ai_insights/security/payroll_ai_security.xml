@@ -70,4 +70,13 @@
         </record>
 
     </data>
+
+    <!-- Updatable: PayAI is a global copilot — every internal user (incl. demo/
+         trial users) can chat with it. Kept out of the noupdate block above so
+         the implication is (re)applied on upgrade. -->
+    <data>
+        <record id="base.group_user" model="res.groups">
+            <field name="implied_ids" eval="[(4, ref('group_payai_user'))]"/>
+        </record>
+    </data>
 </odoo>

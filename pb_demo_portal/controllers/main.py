@@ -86,8 +86,20 @@ class DemoPortal(http.Controller):
             'company_id': company.id,
             'company_ids': [(6, 0, [company.id])],
         }
+        # Assign groups explicitly (this Odoo build does not flatten implied
+        # groups into membership at create-time): demo + internal user + PayAI so
+        # the copilot works for every new signup.
+        gids = []
         if group:
-            user_vals['group_ids'] = [(6, 0, [group.id])]
+            gids.append(group.id)
+        internal = env.ref('base.group_user', raise_if_not_found=False)
+        if internal:
+            gids.append(internal.id)
+        payai = env.ref('pb_payroll_ai_insights.group_payai_user', raise_if_not_found=False)
+        if payai:
+            gids.append(payai.id)
+        if gids:
+            user_vals['group_ids'] = [(6, 0, gids)]
         user = Users.create(user_vals)
         # enrich the partner with the captured profile (Odoo 19 res.partner has no
         # 'mobile' field — use 'phone'; fold company/size into the comment).

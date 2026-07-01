@@ -32,6 +32,7 @@ can be extended without changing payroll logic.
         'pb_contracts',
         'pb_sidebar',
         'pb_payrun_wizard',
+        'pb_payroll_ai_insights',
     ],
     'data': [
         'security/pb_demo_security.xml',

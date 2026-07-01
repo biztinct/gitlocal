@@ -17,6 +17,7 @@ export class AiInsightChat extends Component {
 
     setup() {
         this.notification = useService("notification");
+        this.coach = useService("pb_coach");
         this.chatBodyRef = useRef("chatBody");
         this.inputRef = useRef("chatInput");
 
@@ -38,11 +39,11 @@ export class AiInsightChat extends Component {
         this._recordingTimer = null;
 
         this.suggestions = [
+            "How do I run payroll?",
+            "What is a formula config?",
+            "Show me around Payobook",
             "Show me salary distribution by department",
             "What is the total headcount?",
-            "Attendance summary by department",
-            "Leave breakdown by type",
-            "Recruitment pipeline status",
             "Compare department payroll costs",
         ];
 
@@ -120,6 +121,7 @@ export class AiInsightChat extends Component {
                 followUpQuestions: result.follow_up_questions || [],
                 drillDownModel: result.drilldown_model || "",
                 intent: result.intent || "",
+                action: result.action || null,
                 timestamp: new Date().toISOString(),
             });
         } catch (error) {
@@ -135,6 +137,13 @@ export class AiInsightChat extends Component {
 
         this.state.isLoading = false;
         this._scrollToBottom();
+    }
+
+    // --- Coach action (launch a guided tour the AI recommended) ---
+    runAction(action) {
+        if (!action || action.type !== "start_tour" || !this.coach) return;
+        this.closePanel();
+        this.coach.start(action.tour, { mode: "interactive" });
     }
 
     async clearHistory() {
@@ -285,6 +294,7 @@ export class AiInsightChat extends Component {
                 followUpQuestions: result.follow_up_questions || [],
                 drillDownModel: result.drilldown_model || "",
                 intent: result.intent || "",
+                action: result.action || null,
                 hasTts: !!result.tts_audio,
                 ttsAudio: result.tts_audio || null,
                 timestamp: new Date().toISOString(),

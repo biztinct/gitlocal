@@ -54,6 +54,11 @@ class HrPayslipRun(models.Model):
     # division filter. Empty for traditional structure-based payroll.
     pb_division = fields.Char(
         string='Division', compute='_compute_pb_division', store=True, index=True)
+    # Human-readable division for the kanban card chip (e.g. "manufacturing" ->
+    # "Manufacturing", "corporate_office" -> "Corporate Office"). Empty for plain
+    # structure-based payroll, where the card falls back to the journal name.
+    pb_division_label = fields.Char(
+        string='Division (label)', compute='_compute_pb_division', store=True)
 
     @api.depends('slip_ids.formula_config_id')
     def _compute_pb_division(self):
@@ -66,6 +71,7 @@ class HrPayslipRun(models.Model):
                     div = d
                     break
             run.pb_division = div
+            run.pb_division_label = div.replace('_', ' ').title() if div else ''
 
     @api.depends('slip_ids', 'slip_ids.line_ids', 'slip_ids.line_ids.total',
                  'slip_ids.state')

@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
     <t t-name="pb_payroll_ai_insights.AiInsightChat">
         <!-- Floating Pill Button -->
-        <div class="payai-floating-pill" t-on-click="togglePanel"
+        <div class="payai-floating-pill" data-coach="payai-pill" t-on-click="togglePanel"
              t-att-class="{ 'payai-pill-active': state.isOpen }">
             <div class="payai-pill-avatar">
                 <t t-if="state.aiIconUrl">
@@ -132,6 +132,14 @@
                                         </div>
                                     </t>
                                 </div>
+                            </t>
+
+                            <!-- Coach action (AI offers to launch a guided tour) -->
+                            <t t-if="msg.action and msg.action.type === 'start_tour'">
+                                <button class="payai-coach-action"
+                                        t-on-click="() => this.runAction(msg.action)">
+                                    <i class="fa fa-magic"/> <t t-esc="msg.action.label || 'Show me'"/>
+                                </button>
                             </t>
 
                             <!-- Follow-up Questions -->
