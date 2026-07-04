@@ -345,11 +345,22 @@ class HrPayslipFormula(models.Model):
             # Find or create salary rule
             salary_rule = rule.salary_rule_id
             if not salary_rule:
-                # Try to find existing rule with same code
-                salary_rule = self.env['hr.salary.rule'].search([
-                    ('code', '=', rule.code),
-                    ('company_id', '=', self.company_id.id),
-                ], limit=1)
+                # Try to find existing rule with same code. When computing many
+                # payslips (the Run Payroll wizard) a shared cache is passed via
+                # context to avoid repeating this search per-rule per-payslip
+                # (an N+1 that was ~45k queries for a 900-slip run). Cache is
+                # keyed by (code, company) so results are identical either way.
+                cache = self.env.context.get('pb_salary_rule_cache')
+                key = (rule.code, self.company_id.id)
+                if cache is not None and key in cache:
+                    salary_rule = cache[key]
+                else:
+                    salary_rule = self.env['hr.salary.rule'].search([
+                        ('code', '=', rule.code),
+                        ('company_id', '=', self.company_id.id),
+                    ], limit=1)
+                    if cache is not None:
+                        cache[key] = salary_rule
 
             line_data = {
                 'slip_id': self.id,

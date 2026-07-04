@@ -11,7 +11,7 @@
         <field name="name">hr.formula.multisheet.import.wizard.form</field>
         <field name="model">hr.formula.multisheet.import.wizard</field>
         <field name="arch" type="xml">
-            <form string="Multi-Sheet Excel Import">
+            <form string="Multi-Sheet Excel Import" class="o_pb_fx_grid">
                 <header>
                     <field name="state" widget="statusbar"
                            statusbar_visible="upload,select_sheets,select_columns,configure_order,review_components,confirm"/>

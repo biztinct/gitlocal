@@ -143,6 +143,8 @@
     .fchip.frange .rng-cnt { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--i); color: #fff; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
     .fchip.src { color: var(--muted); font-weight: 600; }
     .fop { font-size: 17px; font-weight: 800; color: var(--i); padding: 0 2px; }
+    /* "+" flipped to "−" before a deduction chip — tint it so the subtraction reads clearly */
+    .fop.fop-ded { color: var(--danger); cursor: help; }
     .explain { display: flex; gap: 11px; margin-top: 16px; padding: 13px 16px; background: var(--cyan-soft); border-radius: 12px; align-items: flex-start; }
     .explain svg { width: 18px; height: 18px; stroke: #2563EB; flex-shrink: 0; margin-top: 1px; }
     .explain p { font-size: 13px; color: #1E3A8A; line-height: 1.5; }

@@ -367,7 +367,9 @@ export class CoachOverlay extends Component {
     // disclaimer chip
     dismissDisclaimer() { this._setFlag("disclaimer_off", true); this.ui.showDisclaimer = false; }
     requestCustomDemo() {
-        window.open("mailto:hello@payobook.com?subject=Request%20a%20personalised%20Payobook%20demo", "_blank");
+        // Open the branded private-demo request page (pb_demo_portal) instead of
+        // a raw mailto: — captures the lead in a WOW form and emails the team.
+        window.open("/demo/private", "_blank");
     }
 
     _onKey(ev) {

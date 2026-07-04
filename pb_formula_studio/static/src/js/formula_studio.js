@@ -221,6 +221,14 @@ export class PbFormulaStudio extends Component {
     stageLabel() { return { draft: "Draft", testing: "Testing", validated: "Validated", active: "Active", archived: "Archived" }[this.state.config.state] || this.state.config.state; }
     nextLabel() { return { draft: "Start testing", testing: "Validate", validated: "Activate", active: "Active" }[this.state.config.state] || "Advance"; }
     isDeduction(c) { return c.group === "Deductions"; }
+    // A component that reduces the total: grouped as a Deduction OR whose own
+    // formula is defined as a negative value (e.g. Loan Repayment = "=-F2", which
+    // the name/group heuristic misses). Used to render "+deduction" as "−".
+    isNegativeComponent(c) {
+        if (!c) return false;
+        if (this.isDeduction(c)) return true;
+        return (c.excel_formula || "").replace(/^=/, "").trim().startsWith("-");
+    }
     ring(score) { const C = 2 * Math.PI * 19; return { dash: C, offset: C * (1 - (score || 0) / 100) }; }
     catKey(group) { return { Inputs: "info", Earnings: "earn", Deductions: "ded", Totals: "total" }[group] || "earn"; }
     colOf(c) { return c ? CAT_COLOR[this.catKey(c.group)] : "#4F46E5"; }
@@ -366,6 +374,20 @@ export class PbFormulaStudio extends Component {
             else if (m[7]) out.push({ kind: "paren", text: m[7] });
             else if (m[8]) out.push({ kind: "comma", text: "," });
             else if (m[9]) out.push({ kind: "op", text: m[9] });
+        }
+        // Deduction components (Social/Health/Unemployment Insurance, PIT, Loan…)
+        // are stored as NEGATIVE values, so a "full net" formula adds them with a
+        // "+". Rendering that as a uniform "+" is misleading — it reads as if
+        // deductions are added. When a "+" operator sits directly before a
+        // deduction chip, display it as "−" (and flag it so we can tint it) so the
+        // line reads "Gross − SI − HI − … − PIT" — matching the real arithmetic.
+        // Display-only: the stored formula is untouched.
+        for (let i = 0; i < out.length - 1; i++) {
+            const t = out[i], nxt = out[i + 1];
+            if (t.kind === "op" && t.text === "+" && nxt.kind === "ref") {
+                const comp = this.byCol(nxt.col);
+                if (this.isNegativeComponent(comp)) { t.text = "−"; t.ded = true; }
+            }
         }
         return out;
     }

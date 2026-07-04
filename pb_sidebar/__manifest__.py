@@ -30,6 +30,7 @@ Payobook payroll suite. Native Odoo top menu sections are hidden; the systray
             'pb_sidebar/static/src/scss/pb_sidebar.scss',
             'pb_sidebar/static/src/js/pb_sidebar.js',
             'pb_sidebar/static/src/js/webclient_patch.js',
+            'pb_sidebar/static/src/js/hide_odoo_account.js',
             'pb_sidebar/static/src/xml/pb_sidebar.xml',
             'pb_sidebar/static/src/xml/webclient_patch.xml',
         ],

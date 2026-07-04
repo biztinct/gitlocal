@@ -8,7 +8,12 @@
  */
 
 function installTopScroll() {
-    const listRenderers = document.querySelectorAll('.o_field_one2many .o_list_renderer');
+    // Scope to `.o_pb_fx_grid` (the marker on formula-engine wizard / import /
+    // sample-data forms with genuinely wide grids). Without this scope the top
+    // scrollbar was injected onto EVERY one2many list app-wide — including the
+    // native payslip-lines dialog — which, together with the wide-grid CSS,
+    // clipped the first column's text on the left.
+    const listRenderers = document.querySelectorAll('.o_pb_fx_grid .o_field_one2many .o_list_renderer');
     if (!listRenderers.length) return false;
 
     let installed = false;
@@ -107,7 +112,7 @@ function startObserving() {
     // Watch for DOM changes (new views being loaded)
     const bodyObserver = new MutationObserver(function () {
         const fresh = document.querySelectorAll(
-            '.o_field_one2many .o_list_renderer:not([data-top-scroll-installed])'
+            '.o_pb_fx_grid .o_field_one2many .o_list_renderer:not([data-top-scroll-installed])'
         );
         if (fresh.length) {
             installTopScroll();

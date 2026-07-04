@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Part of biz_debrand — portable Odoo 19 white-label layer. License LGPL-3.
+     Removes the "Odoo S.A." + odoo.com copyright/LGPL attribution and the
+     "Odoo" word from the edition heading in Settings → General Settings.
+     Source-file license headers on disk are retained (LGPL requirement);
+     this only strips the *visible* UI attribution. -->
+<templates xml:space="preserve">
+    <t t-name="biz_debrand.res_config_edition" t-inherit="res_config_edition" t-inherit-mode="extension">
+        <xpath expr="//h3" position="replace">
+            <h3 class="px-0"><t t-esc="serverVersion"/> (Community Edition)</h3>
+        </xpath>
+        <xpath expr="//small" position="replace">
+            <small class="text-muted"/>
+        </xpath>
+    </t>
+</templates>

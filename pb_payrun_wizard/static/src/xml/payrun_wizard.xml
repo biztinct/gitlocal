@@ -26,7 +26,21 @@
 
             <div class="pw-body">
                 <t t-if="state.loading">
-                    <div class="pw-busy"><div class="pw-spin"></div><div t-esc="state.busyMsg"/></div>
+                    <div class="pw-busy">
+                        <t t-if="state.progress and state.progress.total">
+                            <div class="pw-prog">
+                                <div class="pw-prog__bar" t-attf-style="width: #{Math.round(100 * state.progress.done / state.progress.total)}%"></div>
+                            </div>
+                            <div class="pw-prog__meta">
+                                <span t-esc="state.busyMsg"/>
+                                <b><t t-esc="state.progress.done"/> / <t t-esc="state.progress.total"/> · <t t-esc="Math.round(100 * state.progress.done / state.progress.total)"/>%</b>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="pw-spin"></div>
+                            <div t-esc="state.busyMsg"/>
+                        </t>
+                    </div>
                 </t>
 
                 <!-- Step 1 -->
