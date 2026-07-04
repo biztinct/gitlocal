@@ -99,7 +99,9 @@ body:has(#wrap.pb_landing) {
                &:hover { background: rgba(255,255,255,.16); transform: translateY(-2px);} }
   .pbw-ic { width: 1.1em; height: 1.1em; }
 }
-.pbw-link-quiet { font-weight: 600; font-size: .94rem; color: $dark-mut; transition: color .2s;
+// "Sign in" — needs strong contrast on the dark, transparent header.
+// Scoped under .pbw-nav__cta so it out-specifies `.pb_landing a { color: inherit }`.
+.pbw-nav__cta .pbw-link-quiet { font-weight: 600; font-size: .94rem; color: rgba(255,255,255,.88); transition: color .2s;
   &:hover { color: #fff; } }
 
 .pbw-kicker {
@@ -129,8 +131,11 @@ body:has(#wrap.pb_landing) {
 .pbw-brand { display: inline-flex; align-items: center; gap: .6rem; color: #fff; font-weight: 800; letter-spacing: -.02em; font-size: 1.18rem; }
 .pbw-brand__mark { width: 32px; height: 32px; color: $z-imp;
   svg { width: 100%; height: 100%; } }
+// Company logo image (from Settings). Constrain height, let width scale.
+.pbw-brand__logo { height: 34px; width: auto; max-width: 190px; display: block;
+  object-fit: contain; }
 .pbw-nav__links { display: flex; gap: 1.6rem; margin-left: auto;
-  a { color: $dark-mut; font-weight: 600; font-size: .94rem; transition: color .2s;
+  a { color: rgba(255,255,255,.82); font-weight: 600; font-size: .94rem; transition: color .2s;
       &:hover { color: #fff; } } }
 .pbw-nav__cta { display: flex; align-items: center; gap: 1rem; }
 

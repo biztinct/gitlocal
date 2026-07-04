@@ -108,6 +108,165 @@ class PbPayrunWizardDemo(models.AbstractModel):
             d['date_end'] = '2026-06-30'
         return d
 
+    # ---- scoped-per-chunk variants of the helpers (bounded to a batch's ids) ----
+    def _contracts_for(self, key, m_end, emp_ids):
+        """eid -> running contract, restricted to the given employees (one query)."""
+        Con = self.env['hr.contract'].sudo()
+        dom = [('employee_id', 'in', list(emp_ids))]
+        if 'state' in Con._fields:
+            dom.append(('state', '=', 'open'))
+        cmap = {}
+        for c in Con.search(dom):
+            if c.employee_id.id in cmap:
+                continue
+            if c.date_start and m_end and c.date_start > m_end:
+                continue
+            cmap[c.employee_id.id] = c
+        return cmap
+
+    def _advance_for(self, mid_cfg, ds, de, emp_ids):
+        """eid -> ADVPAY from the Mid run, restricted to the given employees."""
+        if not mid_cfg:
+            return {}
+        ids = set(emp_ids)
+        out = {}
+        for r in self._period_config_runs(ds, de, mid_cfg):
+            for s in r.slip_ids:
+                if s.employee_id.id not in ids:
+                    continue
+                adv = s.line_ids.filtered(lambda l: (l.code or '') == 'ADVPAY')
+                if adv:
+                    out[s.employee_id.id] = sum(adv.mapped('total'))
+        return out
+
+    def _loans_for(self, emp_ids):
+        loanmap = {}
+        for ln in self.env['hr.loan'].sudo().search(
+                [('employee_id', 'in', list(emp_ids)), ('state', '=', 'running')]):
+            loanmap[ln.employee_id.id] = loanmap.get(ln.employee_id.id, 0.0) + (ln.installment_amount or 0.0)
+        return loanmap
+
+    # ------------------------------- chunked prepare + compute (division-scoped) --
+    # The single create_and_compute() below still works (unchanged). The wizard now
+    # prefers prepare_run() + compute_batch() so it can show a real % progress bar;
+    # both keep the SAME division-scoped, formula-config-native compute per slip.
+    @api.model
+    def prepare_run(self, vals):
+        key = vals.get('division')
+        if not key or not cat.DIVISIONS.get(key):
+            return super().prepare_run(vals)          # generic (non-demo) path
+        gen = self._gen()
+        end_cfg = gen.resolve_config(key, 'end')
+        if not end_cfg:
+            return super().prepare_run(vals)
+
+        ds = vals.get('date_start')
+        de = vals.get('date_end')
+        name = vals.get('name') or ('Payroll %s' % cat.DIVISIONS[key]['name_en'])
+        force_clean = vals.get('force_clean')
+        m_end = fields.Date.to_date(de)
+
+        # Same guard/clean as create_and_compute: only ever clears DEMO runs, and
+        # preserves the Mid-Cycle Advance run.
+        division_runs = self._period_config_runs(ds, de, end_cfg).filtered(
+            lambda r: getattr(r, 'is_demo', False))
+        if division_runs and not force_clean:
+            n = len(division_runs)
+            return {
+                'needs_confirmation': True, 'kind': 'exists',
+                'message': "%s already has %s end-month payroll run%s for this period "
+                           "(across draft, approval and done). Clear %s and run again? "
+                           "The Mid-Cycle Advance run is kept; other divisions are untouched."
+                           % (cat.DIVISIONS[key]['name_en'], n, '' if n == 1 else 's',
+                              'it' if n == 1 else 'them'),
+            }
+        if force_clean and division_runs:
+            self._clean_period(division_runs)
+
+        Run = self.env['hr.payslip.run'].sudo()
+        company_id = self.env.company.id
+        run_vals = {'name': name, 'date_start': ds, 'date_end': de}
+        if 'company_id' in Run._fields:
+            company_id = (gen.get_group_company().id or company_id)
+            run_vals['company_id'] = company_id
+        if 'is_demo' in Run._fields:
+            run_vals['is_demo'] = True
+        run = Run.create(run_vals)
+
+        cmap = self._division_contracts(key, m_end)
+        return {
+            'run_id': run.id, 'name': name,
+            'date_start': ds, 'date_end': de, 'division': key,
+            'emp_ids': list(cmap), 'total': len(cmap),
+        }
+
+    @api.model
+    def compute_batch(self, payload):
+        key = payload.get('division')
+        if not key or not cat.DIVISIONS.get(key):
+            return super().compute_batch(payload)
+        gen = self._gen()
+        end_cfg = gen.resolve_config(key, 'end')
+        mid_cfg = gen.resolve_config(key, 'mid')
+        if not end_cfg:
+            return super().compute_batch(payload)
+
+        ds = payload['date_start']
+        de = payload['date_end']
+        emp_ids = payload.get('emp_ids') or []
+        m_start = fields.Date.to_date(ds)
+        m_end = fields.Date.to_date(de)
+        mi = m_start.month if m_start else date.today().month
+
+        Run = self.env['hr.payslip.run'].sudo()
+        Slip = self.env['hr.payslip'].sudo()
+        run = Run.browse(payload['run_id'])
+        company_id = (run.company_id.id if ('company_id' in Run._fields and run.company_id)
+                      else self.env.company.id)
+
+        cmap = self._contracts_for(key, m_end, emp_ids)
+        adv = self._advance_for(mid_cfg, ds, de, emp_ids)
+        loanmap = self._loans_for(list(cmap))
+        end_rules = end_cfg.rule_ids
+        has_fiv = 'formula_input_values' in Slip._fields
+
+        rule_cache = {}
+        exceptions, computed = [], 0
+        for e in self.env['hr.employee'].sudo().browse(emp_ids).exists():
+            c = cmap.get(e.id)
+            if not c:
+                exceptions.append({'emp': e.name, 'why': 'No running contract'})
+                continue
+            try:
+                rating = int(getattr(e, 'pb_performance_rating', False) or '3')
+            except Exception:
+                rating = 3
+            iv = gen._month_inputs(e.id, c.wage or 0.0, rating, key, loanmap.get(e.id, 0.0), mi)
+            iv['DEPS'] = c.dependents or 0
+            iv['ADVPAY'] = float(adv.get(e.id, 0.0))
+            try:
+                slip = Slip.create({
+                    'employee_id': e.id, 'contract_id': c.id, 'struct_id': False,
+                    'date_from': ds, 'date_to': de, 'payslip_run_id': run.id,
+                    'company_id': company_id, 'calculation_method': 'formula',
+                    'formula_config_id': end_cfg.id,
+                    'name': '%s - %s' % (e.name, m_start.strftime('%b %Y') if m_start else payload.get('name')),
+                })
+                vc, _l = slip._evaluate_rules_with_dependencies(end_rules, dict(iv))
+                slip.with_context(pb_salary_rule_cache=rule_cache)._create_payslip_lines_from_formulas(end_rules, vc)
+                if has_fiv:
+                    slip.formula_input_values = json.dumps(iv)
+                computed += 1
+            except Exception as ex:  # pragma: no cover
+                _logger.warning('pb_demo run payroll: compute fail %s: %s', e.name, ex)
+                exceptions.append({'emp': e.name, 'why': 'Compute error'})
+
+        # Keep the kanban roll-up current as chunks land (cheap SQL aggregate).
+        if 'pb_total_net' in run._fields:
+            self.env.flush_all()
+            run._compute_pb_totals()
+        return {'computed': computed, 'exceptions': exceptions}
+
     # --------------------------------------------------------- step 2 create+compute
     @api.model
     def create_and_compute(self, vals):

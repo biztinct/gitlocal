@@ -481,7 +481,7 @@
                 </div>
                 <div class="formula-line" data-coach="fs-formula">
                   <t t-foreach="chips(selected.excel_formula)" t-as="tok" t-key="tok_index">
-                    <span t-if="tok.kind === 'op'" class="fop" t-esc="tok.text"/>
+                    <span t-if="tok.kind === 'op'" t-attf-class="fop #{tok.ded ? 'fop-ded' : ''}" t-att-title="tok.ded ? 'This component is a deduction (a negative value) — it is subtracted from the total' : ''" t-esc="tok.text"/>
                     <span t-elif="tok.kind === 'func'" class="fchip ffunc" t-esc="tok.text"/>
                     <span t-elif="tok.kind === 'ref'" class="fchip fref clickable" t-on-click="() => this.scrollToCol(tok.col)" t-att-title="'Go to ' + (byCol(tok.col) ? byCol(tok.col).name : tok.col)">
                       <span t-if="state.formulaShort" class="ref solo" t-esc="tok.col"/>
@@ -600,7 +600,7 @@
                     <div class="formula-line">
                       <span t-if="!draftChips.length" class="fchip src">empty</span>
                       <t t-foreach="draftChips" t-as="tok" t-key="tok_index">
-                        <span t-if="tok.kind === 'op'" class="fop" t-esc="tok.text"/>
+                        <span t-if="tok.kind === 'op'" t-attf-class="fop #{tok.ded ? 'fop-ded' : ''}" t-att-title="tok.ded ? 'This component is a deduction (a negative value) — it is subtracted from the total' : ''" t-esc="tok.text"/>
                         <span t-elif="tok.kind === 'func'" class="fchip ffunc" t-esc="tok.text"/>
                         <span t-elif="tok.kind === 'ref'" class="fchip fref"><span class="ref" t-esc="tok.col"/><t t-esc="tok.text"/></span>
                         <span t-elif="tok.kind === 'range'" class="fchip frange" t-att-title="'Range (' + tok.count + '): ' + tok.names.join(', ')"><span class="ref" t-esc="tok.start"/><span class="rng-sep">…</span><span class="ref" t-esc="tok.end"/><span class="rng-cnt" t-esc="tok.count"/></span>

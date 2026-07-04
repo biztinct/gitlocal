@@ -27,6 +27,7 @@ export class PayrunWizard extends Component {
             step: 1, loading: false, busyMsg: "",
             defaults: null, form: { name: "", date_start: "", date_end: "", struct_id: null, division: null },
             summary: null,
+            progress: null,   // { done, total } during chunked compute → determinate bar
         });
         onWillStart(async () => {
             const d = await this.orm.call("pb.payrun.wizard", "get_defaults", []);
@@ -90,18 +91,45 @@ export class PayrunWizard extends Component {
             this.state.step = 1;
         } finally {
             this.state.loading = false;
+            this.state.progress = null;
         }
     }
 
+    // Chunked compute: prepare the run once, then compute in batches so the modal
+    // shows a real % progress bar. All calls go through orm.silent so Odoo's
+    // global loading overlay stays hidden — the modal shows its own progress
+    // (no more "two spinners"). Each batch commits independently on the server.
     async _compute(force) {
         const payload = { ...this.state.form, force_clean: force };
-        const res = await this.orm.call("pb.payrun.wizard", "create_and_compute", [payload]);
-        if (res && res.needs_confirmation) {
+        const prep = await this.orm.silent.call("pb.payrun.wizard", "prepare_run", [payload]);
+        if (prep && prep.needs_confirmation) {
             this.state.step = 1;          // sit behind the dialog on step 1
-            this._confirmOverwrite(res);
+            this._confirmOverwrite(prep);
             return;
         }
-        this.state.summary = res;
+        const { run_id, name, date_start, date_end, division } = prep;
+        const empIds = prep.emp_ids || [];
+        const total = empIds.length;
+        const CHUNK = 40;
+        let computed = 0;
+        const exceptions = [];
+        this.state.progress = { done: 0, total };
+        this.state.busyMsg = "Computing payslips…";
+        for (let i = 0; i < total; i += CHUNK) {
+            const chunk = empIds.slice(i, i + CHUNK);
+            const r = await this.orm.silent.call(
+                "pb.payrun.wizard", "compute_batch",
+                [{ run_id, name, date_start, date_end, division, emp_ids: chunk }]);
+            computed += (r && r.computed) || 0;
+            if (r && r.exceptions) { exceptions.push(...r.exceptions); }
+            const done = Math.min(total, i + chunk.length);
+            this.state.progress = { done, total };
+        }
+        const summary = await this.orm.silent.call("pb.payrun.wizard", "get_summary", [run_id]);
+        summary.exceptions = exceptions;
+        summary.computed = computed;
+        this.state.progress = null;
+        this.state.summary = summary;
     }
 
     _confirmOverwrite(res) {
@@ -128,7 +156,7 @@ export class PayrunWizard extends Component {
                 (async () => {
                     try { await this._compute(true); }
                     catch (e) { this.notif.add("Re-run failed. See server logs.", { type: "danger" }); this.state.step = 1; }
-                    finally { this.state.loading = false; }
+                    finally { this.state.loading = false; this.state.progress = null; }
                 })();
             },
             cancel: () => { this.state.step = 1; },

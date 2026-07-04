@@ -110,4 +110,105 @@
             </div>
         </t>
     </template>
+
+    <!-- ============ Private-demo enquiry page ============ -->
+    <template id="private_demo_page" name="Payobook Private Demo Request">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div class="pbdemo-wrap">
+                <div class="pbdemo-grid">
+                    <!-- Left: pitch -->
+                    <aside class="pbdemo-pitch">
+                        <div class="pbdemo-brand">
+                            <span class="pbdemo-logo">P</span>
+                            <span>Payobook</span>
+                        </div>
+                        <span class="pbdemo-kicker">Private demo</span>
+                        <h1>Payroll, tailored to your business.</h1>
+                        <p class="pbdemo-lead">Book a one-on-one walkthrough with a Payobook
+                            specialist. We'll shape the session around your countries, headcount
+                            and pay rules — and answer anything on migration, compliance and cost.</p>
+                        <ul class="pbdemo-points">
+                            <li><span class="pbdemo-tick"/>A guided tour built around <b>your</b> payroll</li>
+                            <li><span class="pbdemo-tick"/>Multi-country statutory &amp; formula deep-dive</li>
+                            <li><span class="pbdemo-tick"/>Migration, integrations &amp; pricing Q&amp;A</li>
+                            <li><span class="pbdemo-tick"/>No obligation — just a real conversation</li>
+                        </ul>
+                    </aside>
+
+                    <!-- Right: form -->
+                    <main class="pbdemo-card">
+                        <h2>Request your private demo</h2>
+                        <p class="pbdemo-sub">Tell us a little about you and we'll be in touch to set up a time.</p>
+                        <div t-if="error" class="pbdemo-error" role="alert" t-esc="error"/>
+                        <form action="/demo/private/submit" method="post" class="pbdemo-form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="pbdemo-row">
+                                <label>Full name <span class="pbdemo-req">*</span>
+                                    <input type="text" name="name" t-att-value="values.get('name', '')" required="required" placeholder="Jane Tran"/>
+                                </label>
+                                <label>Company <span class="pbdemo-req">*</span>
+                                    <input type="text" name="company" t-att-value="values.get('company', '')" required="required" placeholder="Acme Corp"/>
+                                </label>
+                            </div>
+                            <div class="pbdemo-row">
+                                <label>Business email <span class="pbdemo-req">*</span>
+                                    <input type="email" name="email" t-att-value="values.get('email', '')" required="required" placeholder="jane@acme.com"/>
+                                </label>
+                                <label>Phone <span class="pbdemo-req">*</span>
+                                    <input type="text" name="mobile" t-att-value="values.get('mobile', '')" required="required" placeholder="+84 90 123 4567"/>
+                                </label>
+                            </div>
+                            <div class="pbdemo-row">
+                                <label>Country
+                                    <select name="country_id">
+                                        <option value="">Select…</option>
+                                        <t t-foreach="countries" t-as="c">
+                                            <option t-att-value="c.id"
+                                                    t-att-selected="'selected' if values.get('country_id') == str(c.id) else None"
+                                                    t-esc="c.name"/>
+                                        </t>
+                                    </select>
+                                </label>
+                                <label>Company size
+                                    <select name="company_size">
+                                        <option value="">Select…</option>
+                                        <t t-foreach="company_sizes" t-as="sz">
+                                            <option t-att-value="sz"
+                                                    t-att-selected="'selected' if values.get('company_size') == sz else None"
+                                                    t-esc="sz"/>
+                                        </t>
+                                    </select>
+                                </label>
+                            </div>
+                            <label>Anything you'd like us to focus on?
+                                <textarea name="message" rows="3" placeholder="e.g. We run payroll in Vietnam &amp; Singapore and want to see the migration path." t-esc="values.get('message', '')"/>
+                            </label>
+                            <button type="submit" class="pbdemo-submit">Request my private demo</button>
+                            <p class="pbdemo-fine">Prefer the instant shared demo?
+                                <a href="/demo">Start now</a>.</p>
+                        </form>
+                    </main>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============ Private-demo confirmation ============ -->
+    <template id="private_demo_done" name="Payobook Private Demo Request Done">
+        <t t-call="website.layout">
+            <t t-set="no_header" t-value="true"/>
+            <t t-set="no_footer" t-value="true"/>
+            <div class="pbdemo-wrap pbdemo-center">
+                <main class="pbdemo-card pbdemo-done">
+                    <div class="pbdemo-check"/>
+                    <h2>Request received</h2>
+                    <p>Thanks — we've sent a confirmation to <strong t-esc="email"/> and a
+                        Payobook specialist will reach out shortly to arrange your private demo.</p>
+                    <a class="pbdemo-submit" href="/demo">Explore the shared demo meanwhile</a>
+                </main>
+            </div>
+        </t>
+    </template>
 </odoo>

@@ -20,6 +20,7 @@ elements via ``data-coach="..."`` anchors so they survive re-styling.
         'web.assets_backend': [
             'pb_coach/static/src/scss/coach.scss',
             'pb_coach/static/src/js/coach_service.js',
+            'pb_coach/static/src/js/demo_missing_record.js',
             'pb_coach/static/src/js/coach_icons.js',
             'pb_coach/static/src/js/coach_overlay.js',
             'pb_coach/static/src/xml/coach_overlay.xml',

@@ -96,7 +96,10 @@ export class PbSidebar extends Component {
             const ctrl = this.actionService.currentController;
             const a = ctrl && ctrl.action;
             const isPb = (s) => typeof s === "string" &&
-                (s.startsWith("pb_") || s.includes("pb_hr_payroll") || s.includes("hr_payslip"));
+                (s.startsWith("pb_") || s.includes("pb_hr_payroll") ||
+                 // match both underscore (tag/xmlid) and dotted (res_model) forms,
+                 // e.g. res_model "hr.payslip.run" opened via doAction from the wizard.
+                 s.includes("hr_payslip") || s.includes("hr.payslip"));
             if (a && (isPb(a.tag) || isPb(a.xml_id) || isPb(a.res_model))) {
                 visible = true;
             }

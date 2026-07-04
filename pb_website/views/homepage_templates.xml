@@ -20,13 +20,9 @@
         <!-- ========================= NAV ========================= -->
         <header class="pbw-nav" data-pb="nav">
           <a href="#top" class="pbw-brand" aria-label="Payobook home">
-            <span class="pbw-brand__mark" data-pb="navmark">
-              <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                <path d="M7 35 L24 20 L41 35" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
-                <path d="M7 24 L24 9 L41 24" stroke="currentColor" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            <span class="pbw-brand__word">Payobook</span>
+            <!-- Company logo as configured in Settings (res.company.logo). -->
+            <img t-attf-src="/web/image/res.company/#{website.company_id.id}/logo"
+                 class="pbw-brand__logo" alt="Payobook"/>
           </a>
           <nav class="pbw-nav__links" aria-label="Primary">
             <a href="#countries">Countries</a>

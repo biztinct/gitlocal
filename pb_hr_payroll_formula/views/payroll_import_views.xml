@@ -41,7 +41,7 @@
         <field name="name">hr.payroll.import.batch.form</field>
         <field name="model">hr.payroll.import.batch</field>
         <field name="arch" type="xml">
-            <form string="Payroll Import Batch">
+            <form string="Payroll Import Batch" class="o_pb_fx_grid">
                 <header>
                     <!-- Action Buttons based on state -->
                     <button name="action_open_payslip_run" string="Payslip Run" type="object"

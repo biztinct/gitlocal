@@ -34,7 +34,7 @@
         <field name="name">hr.formula.sample.data.form</field>
         <field name="model">hr.formula.sample.data</field>
         <field name="arch" type="xml">
-            <form string="Sample Data">
+            <form string="Sample Data" class="o_pb_fx_grid">
                 <header>
                     <button name="action_recompute" string="Recompute" type="object"
                             class="btn-primary" icon="fa-refresh"/>
