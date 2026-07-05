@@ -22,6 +22,7 @@ only — asset/RPC/websocket endpoints (/web/*, /websocket) are untouched.
             'biz_deroute/static/src/js/deroute_router.js',
             'biz_deroute/static/src/js/deroute_click.js',
             'biz_deroute/static/src/js/deroute_sw.js',
+            'biz_deroute/static/src/js/deroute_dom.js',
         ],
     },
 }
