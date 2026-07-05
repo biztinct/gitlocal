@@ -14,6 +14,7 @@ natively (address bar, history, bookmarks, deep links). Companion of
 | Client router | `router.stateToUrl` / `router.urlToState` patched at the seam core documents as patchable; `startRouter()` re-run once at bundle eval |
 | Click interception | Replica of core's module-scope internal-anchor listener (which hardcodes `/odoo`), so backend links stay SPA navigations on `/bizapp` |
 | Service worker | Backend SW registration no-op'd + stale `/odoo`-scoped workers unregistered (scope-filtered: self-scoped PWAs like `/health_pwa/` are never touched) |
+| DOM guard | MutationObserver rewrites any inserted `a[href^="/odoo"]` to the branded prefix (covers unpatchable href builders like `menu_helpers.js`; hover previews / copy-link / middle-click all show `/bizapp`) |
 
 Untouched by design: `/web/*` (login, assets, RPC, session), `/websocket`,
 `/scoped_app`, portal `/my`, website. Address-bar debranding only.
@@ -23,9 +24,6 @@ Untouched by design: `/web/*` (login, assets, RPC, session), `/websocket`,
 - **Discuss browser push notifications are disabled** (they ride the backend
   service worker). Re-enabling requires serving a re-scoped SW +
   `Service-Worker-Allowed: /bizapp` + manifest override.
-- Hovering/middle-clicking navbar app links still shows `/odoo/...` hrefs
-  (`menu_helpers.js` builds them from a plain function export); normal clicks
-  are intercepted, middle-clicks resolve via the 301.
 - Mobile chat-window auto-fold on link click (mail `store_service` checks
   `location.pathname.startsWith("/odoo")`) doesn't trigger on `/bizapp`.
 - `odoo/http.py` registry-failure rerouting allowlist doesn't know `/bizapp`
