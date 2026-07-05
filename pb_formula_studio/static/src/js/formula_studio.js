@@ -86,6 +86,11 @@ export class PbFormulaStudio extends Component {
             components: [],
             samples: [],
             preview: { sample_id: false, values: {} },
+            // dependency-graph payload from get_intelligence (Feature 1); the
+            // grid-highlight primitives (Feature 2) walk state.graph.edges.
+            graph: { nodes: [], edges: [], execution_order: [], unused: [], cycles: [] },
+            insightsOpen: false,        // T1.4: downstream list expander
+            cycleHighlight: [],         // T1.6: cols to flash in the outline
             selectedId: null,
             arrowsOn: true,
             formulaShort: false,
@@ -174,8 +179,94 @@ export class PbFormulaStudio extends Component {
             const firstFormula = d.components.find(c => c.type === "formula") || d.components[0];
             this.state.selectedId = firstFormula ? firstFormula.id : null;
         }
+        // Dependency graph in a second call — keeps get_studio_data untouched and
+        // the client BFS helpers (upstreamOf/downstreamOf) run off state.graph.edges.
+        try {
+            this.state.graph = await this.orm.call("pb.formula.studio", "get_intelligence", [d.config.id]);
+        } catch (e) {
+            this.state.graph = { nodes: [], edges: [], execution_order: [], unused: [], cycles: [] };
+        }
+        this.state.cycleHighlight = [];
         this.state.loaded = true;
     }
+
+    // ---- dependency-graph BFS (pure; over state.graph.edges [fromCol,toCol]) ----
+    // edges point in data-flow direction (dependency -> consumer), so a column's
+    // upstream = follow edges backward, downstream = follow edges forward.
+    _bfsGraph(startCol, dir) {
+        const edges = (this.state.graph && this.state.graph.edges) || [];
+        const seen = new Set();
+        const queue = [startCol];
+        const out = [];
+        while (queue.length) {
+            const cur = queue.shift();
+            for (const e of edges) {
+                const from = e[0], to = e[1];
+                let next = null;
+                if (dir === "down" && from === cur) next = to;
+                else if (dir === "up" && to === cur) next = from;
+                if (next && next !== startCol && !seen.has(next)) {
+                    seen.add(next);
+                    out.push(next);
+                    queue.push(next);
+                }
+            }
+        }
+        return out;
+    }
+    // transitive inputs feeding `col`
+    upstreamOf(col) { return this._bfsGraph(col, "up"); }
+    // transitive dependents fed by `col`
+    downstreamOf(col) { return this._bfsGraph(col, "down"); }
+
+    // ---- Feature 1 intelligence: derived views over state.graph ----------
+    _colsToComps(cols) {
+        return cols.map(col => this.byCol(col)).filter(Boolean)
+            .sort((a, b) => this.colToNum(a.col) - this.colToNum(b.col));
+    }
+    // T1.4 — impact of the selected component (client BFS; instant, no RPC).
+    get selectedImpact() {
+        const c = this.selected;
+        if (!c) return { down: [], payvis: [], up: [] };
+        const down = this._colsToComps(this.downstreamOf(c.col));
+        return {
+            down,
+            payvis: down.filter(x => x.appears_on_payslip),
+            up: this._colsToComps(this.upstreamOf(c.col)),
+        };
+    }
+    toggleInsights() { this.state.insightsOpen = !this.state.insightsOpen; }
+
+    // T1.5 — execution order + unused panels (map graph cols -> live components).
+    get execOrderItems() {
+        return (this.state.graph.execution_order || []).map(col => {
+            const c = this.byCol(col);
+            return c ? { id: c.id, col, name: c.name, is_valid: c.is_valid }
+                     : { id: "x" + col, col, name: col, is_valid: true };
+        });
+    }
+    get unusedItems() {
+        return (this.state.graph.unused || [])
+            .map(col => { const c = this.byCol(col); return c ? { id: c.id, col, name: c.name, type: c.type } : null; })
+            .filter(Boolean);
+    }
+
+    // T1.6 — circular-reference explainer (cycles come from get_intelligence).
+    get graphCycles() { return this.state.graph.cycles || []; }
+    // the cycle the selected component participates in, or null
+    get selectedCycle() {
+        const c = this.selected;
+        if (!c) return null;
+        return this.graphCycles.find(cy => (cy.cols || []).includes(c.col)) || null;
+    }
+    isCycleMember(col) { return this.state.cycleHighlight.includes(col); }
+    showCyclePath(cycle) {
+        this.state.cycleHighlight = (cycle && cycle.cols) ? cycle.cols.slice() : [];
+        // reveal the first member in the outline
+        const first = this.state.cycleHighlight[0];
+        if (first) this.scrollToCol(first);
+    }
+    clearCycleHighlight() { this.state.cycleHighlight = []; }
 
     // ---- selectors ----
     get selected() { return this.state.components.find(c => c.id === this.state.selectedId) || null; }

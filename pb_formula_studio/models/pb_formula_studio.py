@@ -2,13 +2,14 @@
 import json
 import logging
 import re
+from collections import defaultdict
 
 try:
     import requests
 except Exception:  # pragma: no cover
     requests = None
 
-from odoo import api, models
+from odoo import _, api, models
 
 _logger = logging.getLogger(__name__)
 
@@ -206,6 +207,7 @@ class PbFormulaStudio(models.AbstractModel):
                 'number_format': r.number_format or 'number',
                 'is_valid': bool(r.is_valid) and not r.has_evaluation_error,
                 'validation_message': r.validation_message or r.last_evaluation_error or '',
+                'appears_on_payslip': bool(r.appears_on_payslip),
                 'depends_on': depends.get(r.id, []),
                 'used_by': used_by.get(r.id, []),
             })
@@ -234,6 +236,276 @@ class PbFormulaStudio(models.AbstractModel):
             'preview': preview,
             'field_meta': self._field_meta(),
             'can_edit': self._can_edit(),
+        }
+
+    # ------------------------------------------------------------------
+    # Formula Intelligence v1 (deterministic dependency graph)
+    # ------------------------------------------------------------------
+    @api.model
+    def _normalized_dep_cols(self, rules):
+        """Normalize each rule's ``formula_dependencies`` to the column letters
+        of real rules in the config.
+
+        ``formula_dependencies`` (see hr.formula.rule._compute_dependencies) is a
+        stored Char holding a comma-separated MIX of column letters (A, AA) AND
+        component codes (BASIC, GROSS) plus incidental noise. We resolve every
+        token exactly the way the engine's evaluator does — column_letter first,
+        then code — and keep only tokens that land on a rule that lives in this
+        config, so spurious tokens (function fragments, unknown codes) drop out.
+
+        Returns ``{rule.id: set(column_letter, ...)}`` — the columns each formula
+        rule depends on (data-flow *sources*).
+        """
+        by_col = {r.column_letter: r for r in rules if r.column_letter}
+        by_code = {r.code: r for r in rules if r.code}
+        deps = {}
+        for r in rules:
+            cols = set()
+            raw = r.formula_dependencies or ''
+            if r.column_type == 'formula' and raw:
+                for tok in raw.split(','):
+                    tok = tok.strip()
+                    if not tok:
+                        continue
+                    dep = by_col.get(tok) or by_code.get(tok)
+                    if dep and dep.column_letter:
+                        cols.add(dep.column_letter)
+            deps[r.id] = cols
+        return deps
+
+    @api.model
+    def get_intelligence(self, config_id=None):
+        """Deterministic dependency-graph payload for the Formula Intelligence
+        panels (and the grid-highlight primitives in Feature 2).
+
+        Shape::
+
+            {nodes: [{id, code, col, name, category, appears_on_payslip, is_valid}],
+             edges: [[from_col, to_col], ...],   # data-flow: source -> consumer
+             execution_order: [col, ...],        # formula rules, dependencies first
+             unused: [col, ...],
+             cycles: [{cols, codes, human_explanation}, ...]}
+        """
+        config = self._pick_config(config_id)
+        if not config:
+            return {'empty': True, 'nodes': [], 'edges': [],
+                    'execution_order': [], 'unused': [], 'cycles': []}
+
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        deps = self._normalized_dep_cols(rules)
+        col_to_code = {r.column_letter: (r.code or r.column_letter)
+                       for r in rules if r.column_letter}
+
+        nodes = [{
+            'id': r.id,
+            'code': r.code or '',
+            'col': r.column_letter or '',
+            'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or '(unnamed)',
+            'category': r.category_id.name if r.category_id else (r.column_type or '').title(),
+            'appears_on_payslip': bool(r.appears_on_payslip),
+            'is_valid': bool(r.is_valid) and not r.has_evaluation_error,
+        } for r in rules]
+
+        # Edges point in data-flow direction: [dependency_col, consumer_col], so an
+        # edge's source is evaluated before its target (matches execution_order).
+        edge_set = set()
+        for r in rules:
+            if not r.column_letter:
+                continue
+            for dep_col in deps[r.id]:
+                edge_set.add((dep_col, r.column_letter))
+        edges = [[a, b] for a, b in edge_set]
+
+        # ---- execution order: topological sort over formula rules only --------
+        # (dependencies on inputs/constants never constrain ordering — they are
+        # always ready — so we only count formula->formula edges, exactly the
+        # relation the evaluator's Kahn sort walks.)
+        formula_rules = [r for r in rules if r.column_type == 'formula' and r.column_letter]
+        fcols = {r.column_letter for r in formula_rules}
+        indeg = {}
+        succ = defaultdict(list)
+        for r in formula_rules:
+            fdeps = {d for d in deps[r.id] if d in fcols and d != r.column_letter}
+            indeg[r.column_letter] = len(fdeps)
+            for d in fdeps:
+                succ[d].append(r.column_letter)
+
+        # deterministic: process ready nodes in column order
+        queue = sorted((c for c, d in indeg.items() if d == 0), key=self._col_num)
+        execution_order = []
+        while queue:
+            col = queue.pop(0)
+            execution_order.append(col)
+            newly_ready = []
+            for nxt in succ.get(col, []):
+                indeg[nxt] -= 1
+                if indeg[nxt] == 0:
+                    newly_ready.append(nxt)
+            # keep the queue in column order so the result is stable
+            for c in sorted(newly_ready, key=self._col_num):
+                queue.append(c)
+            queue.sort(key=self._col_num)
+        # cycle members never reach in-degree 0 — append them so the order still
+        # accounts for every formula rule (AC1: len == number of formula rules).
+        if len(execution_order) != len(formula_rules):
+            emitted = set(execution_order)
+            for r in formula_rules:
+                if r.column_letter not in emitted:
+                    execution_order.append(r.column_letter)
+
+        # ---- unused: nothing downstream depends on it AND not on the payslip ---
+        # A column with dependents is "consumed" (this is what excludes an input
+        # that feeds a formula), so the two conditions together mean truly dead.
+        has_dependents = {src for src, _tgt in edge_set}
+        unused = [r.column_letter for r in rules
+                  if r.column_letter
+                  and r.column_letter not in has_dependents
+                  and not r.appears_on_payslip]
+
+        # ---- cycles: DFS back-edge detection with full path recovery ----------
+        adj = {r.column_letter: [d for d in deps[r.id] if d in fcols]
+               for r in formula_rules}
+        WHITE, GRAY, BLACK = 0, 1, 2
+        color = {c: WHITE for c in adj}
+        cycles = []
+        seen = set()
+
+        def _dfs(u, stack):
+            color[u] = GRAY
+            stack.append(u)
+            for v in adj.get(u, []):
+                if color.get(v) == GRAY:
+                    # back edge — the cycle is the stack slice from v to u
+                    cyc = stack[stack.index(v):]
+                    key = frozenset(cyc)
+                    if key not in seen:
+                        seen.add(key)
+                        codes = [col_to_code.get(c, c) for c in cyc]
+                        cycles.append({
+                            'cols': cyc[:],
+                            'codes': codes,
+                            'human_explanation': _(
+                                "Circular dependency: %s") % ' → '.join(codes + [codes[0]]),
+                        })
+                elif color.get(v) == WHITE:
+                    _dfs(v, stack)
+            stack.pop()
+            color[u] = BLACK
+
+        for c in sorted(adj, key=self._col_num):
+            if color[c] == WHITE:
+                _dfs(c, [])
+
+        return {
+            'empty': False,
+            'nodes': nodes,
+            'edges': edges,
+            'execution_order': execution_order,
+            'unused': unused,
+            'cycles': cycles,
+        }
+
+    @api.model
+    def _closure(self, start, adj):
+        """Transitive closure of ``start`` over adjacency map ``adj`` (col -> set
+        of neighbour cols), excluding ``start`` itself. Cycle-safe via seen-set."""
+        seen = set()
+        stack = list(adj.get(start, ()))
+        while stack:
+            c = stack.pop()
+            if c in seen or c == start:
+                continue
+            seen.add(c)
+            stack.extend(adj.get(c, ()))
+        return seen
+
+    @api.model
+    def _config_employee_count(self, config):
+        """Employees attached to this config's scheme: distinct employees on
+        payslips computed with it (the truest 'who does this affect' measure),
+        falling back to a division match so a not-yet-run config still reports."""
+        Payslip = self.env['hr.payslip']
+        if 'formula_config_id' in Payslip._fields:
+            emps = Payslip.search([('formula_config_id', '=', config.id)]).employee_id
+            if emps:
+                return len(emps)
+        Emp = self.env['hr.employee']
+        div = getattr(config, 'pb_division', False)
+        if div and 'pb_division' in Emp._fields:
+            return Emp.search_count([('pb_division', '=', div)])
+        if div and 'division' in Emp._fields:
+            return Emp.search_count([('division', '=', div)])
+        return 0
+
+    @api.model
+    def get_impact_analysis(self, rule_id):
+        """Impact of one component: its transitive upstream (what feeds it),
+        transitive downstream (what it feeds), the payslip-visible slice of that
+        downstream, and how many employees the config touches.
+
+        Shape::
+
+            {rule: {id, col, code, name},
+             upstream: [node, ...], downstream: [node, ...],
+             payslip_visible: [node, ...], employee_count: int}
+
+        where ``node = {id, col, code, name, appears_on_payslip}``.
+        """
+        Rule = self.env['hr.formula.rule']
+        rule = Rule.browse(int(rule_id))
+        empty = {'empty': True, 'rule': {}, 'upstream': [], 'downstream': [],
+                 'payslip_visible': [], 'employee_count': 0}
+        if not rule.exists() or not rule.column_letter:
+            return empty
+
+        config = rule.config_id
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        deps = self._normalized_dep_cols(rules)
+        by_col = {r.column_letter: r for r in rules if r.column_letter}
+
+        # depends_cols: col -> cols it consumes; dependents: col -> cols consuming it
+        depends_cols = {}
+        dependents = defaultdict(set)
+        for r in rules:
+            if not r.column_letter:
+                continue
+            dcols = deps.get(r.id, set())
+            depends_cols[r.column_letter] = set(dcols)
+            for d in dcols:
+                dependents[d].add(r.column_letter)
+
+        start = rule.column_letter
+        up_cols = self._closure(start, depends_cols)
+        down_cols = self._closure(start, dependents)
+
+        def _node(col):
+            r = by_col.get(col)
+            if not r:
+                return None
+            return {
+                'id': r.id,
+                'col': col,
+                'code': r.code or '',
+                'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or '(unnamed)',
+                'appears_on_payslip': bool(r.appears_on_payslip),
+            }
+
+        upstream = [n for n in (_node(c) for c in sorted(up_cols, key=self._col_num)) if n]
+        downstream = [n for n in (_node(c) for c in sorted(down_cols, key=self._col_num)) if n]
+        payslip_visible = [n for n in downstream if n['appears_on_payslip']]
+
+        return {
+            'empty': False,
+            'rule': {
+                'id': rule.id,
+                'col': start,
+                'code': rule.code or '',
+                'name': (rule.salary_rule_id.name if rule.salary_rule_id else False) or rule.name or '(unnamed)',
+            },
+            'upstream': upstream,
+            'downstream': downstream,
+            'payslip_visible': payslip_visible,
+            'employee_count': self._config_employee_count(config),
         }
 
     @api.model

@@ -138,11 +138,17 @@
           </div>
           <!-- alerts -->
           <div t-if="state.settings.status.has_errors and state.settings.status.error_details" class="ed-errbox" t-esc="state.settings.status.error_details"/>
-          <div t-if="state.settings.status.has_circular_refs and state.settings.status.circular_ref_details" class="ed-errbox" t-esc="state.settings.status.circular_ref_details"/>
+          <!-- T1.6: bare has_circular_ref flag replaced by the human cycle path(s) -->
+          <div t-if="graphCycles.length" class="ed-errbox pbfs-cyc-alert">
+            <div t-foreach="graphCycles" t-as="cy" t-key="cy_index" class="cyc-alert-row">
+              <span t-esc="cy.human_explanation"/>
+              <button class="pbfs-link" t-on-click="() => this.showCyclePath(cy)">Show path</button>
+            </div>
+          </div>
 
           <!-- tabs -->
           <div class="pbcfg-tabs">
-            <t t-foreach="[['setup','Setup'],['automation','Automation']]" t-as="tb" t-key="tb[0]">
+            <t t-foreach="[['setup','Setup'],['automation','Automation'],['intelligence','Intelligence']]" t-as="tb" t-key="tb[0]">
               <button t-attf-class="{{ state.settingsTab === tb[0] ? 'on' : '' }}" t-on-click="() => this.setSettingsTab(tb[0])" t-esc="tb[1]"/>
             </t>
           </div>
@@ -239,6 +245,60 @@
                   <label class="ce-tog"><input type="checkbox" t-att-checked="state.setDraft.use_auto_retro" t-on-change="(ev)=>this.setCfgField('use_auto_retro',ev)"/><span>Enable auto retro</span></label>
                   <div t-if="state.setDraft.use_auto_retro" class="ce-field" style="margin-top:14px"><label>Retro target component</label>
                     <CfgCombo options="cfgMeta('components')" value="state.setDraft.retro_component_id" placeholder="'— none —'" onSelect="(id) => this.pickCfgM2O('retro_component_id', id)"/></div>
+                </div>
+              </div>
+            </t>
+
+            <!-- INTELLIGENCE (T1.5 + T1.6) -->
+            <t t-elif="state.settingsTab === 'intelligence'">
+              <!-- circular references first — the loudest signal -->
+              <div t-if="graphCycles.length" class="ce-sec pbfs-intel-cyc">
+                <div class="ce-sec-h">Circular references</div>
+                <div class="ce-sec-sub">These components depend on each other in a loop — the engine cannot resolve them.</div>
+                <t t-foreach="graphCycles" t-as="cy" t-key="cy_index">
+                  <div class="intel-cyc-row">
+                    <span class="cyc-msg" t-esc="cy.human_explanation"/>
+                    <button class="pbfs-btn ghost sm" t-on-click="() => this.showCyclePath(cy)">Show path</button>
+                  </div>
+                </t>
+              </div>
+
+              <div class="pbcfg-grid pbfs-intel">
+                <div class="ce-sec">
+                  <div class="ce-sec-h">Execution order</div>
+                  <div class="ce-sec-sub">The order the engine evaluates formulas — every dependency is computed before the components that use it.</div>
+                  <div class="intel-order">
+                    <t t-foreach="execOrderItems" t-as="it" t-key="it.id">
+                      <div class="intel-ord-row" t-att-data-col="it.col">
+                        <span class="intel-step" t-esc="it_index + 1"/>
+                        <span class="intel-col" t-esc="it.col"/>
+                        <span class="intel-nm" t-esc="it.name"/>
+                        <span t-if="it.is_valid" class="intel-ok" title="Valid">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+                        </span>
+                        <span t-else="" class="intel-bad" title="Check this formula">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                        </span>
+                      </div>
+                    </t>
+                    <div t-if="!execOrderItems.length" class="intel-empty">No formula components yet.</div>
+                  </div>
+                </div>
+
+                <div class="ce-sec">
+                  <div class="ce-sec-h">Unused components</div>
+                  <div class="ce-sec-sub">Nothing depends on these and they don't appear on payslips — safe to archive.</div>
+                  <div class="intel-unused">
+                    <t t-foreach="unusedItems" t-as="u" t-key="u.id">
+                      <div class="intel-un-row" t-att-data-col="u.col">
+                        <span class="intel-col" t-esc="u.col"/>
+                        <span class="intel-nm" t-esc="u.name"/>
+                        <span class="intel-typ" t-esc="u.type"/>
+                        <button t-if="state.canEdit" class="pbfs-btn danger sm" t-on-click="() => this.deleteComponent(u.id)" title="Archive (delete) this component">Archive</button>
+                      </div>
+                    </t>
+                    <div t-if="!unusedItems.length" class="intel-empty">No unused components — every component is referenced or shown on a payslip.</div>
+                  </div>
                 </div>
               </div>
             </t>
@@ -434,7 +494,7 @@
               <div class="ol-grp" t-esc="grp"/>
               <div t-foreach="groupItems(grp)" t-as="c" t-key="c.id"
                    t-att-data-col="c.col"
-                   t-attf-class="ol-item {{ c.id === state.selectedId ? 'active' : '' }} {{ isDep(c.col) ? 'dep' : '' }}"
+                   t-attf-class="ol-item {{ c.id === state.selectedId ? 'active' : '' }} {{ isDep(c.col) ? 'dep' : '' }} {{ isCycleMember(c.col) ? 'cyc-hi' : '' }}"
                    t-attf-style="{{ depStyle(c) }}"
                    t-on-click="() => this.selectComponent(c.id)">
                 <span class="ol-col" t-esc="c.col"/>
@@ -510,6 +570,46 @@
                   </div>
                 </div>
                 <div t-if="!selected.is_valid and selected.validation_message" class="ed-errbox" t-esc="selected.validation_message"/>
+
+                <!-- T1.6 — circular-reference explainer (only when this component is in a cycle) -->
+                <div t-if="selectedCycle" class="pbfs-cycbox">
+                  <div class="cyc-row">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                    <span class="cyc-msg" t-esc="selectedCycle.human_explanation"/>
+                  </div>
+                  <button class="pbfs-btn ghost sm" t-on-click="() => this.showCyclePath(selectedCycle)">Show path</button>
+                </div>
+
+                <!-- T1.4 — Insights: impact of this component (client BFS, instant) -->
+                <t t-if="selected.type === 'formula'">
+                  <t t-set="imp" t-value="selectedImpact"/>
+                  <div class="pbfs-insights" data-coach="fs-insights">
+                    <div class="ins-head"><span class="ins-t">Impact</span></div>
+                    <div class="ins-sentence">
+                      <t t-if="imp.down.length">
+                        <b t-esc="imp.down.length"/> <t t-esc="imp.down.length === 1 ? 'component depends' : 'components depend'"/> on <b t-esc="selected.name"/><t t-if="imp.payvis.length">, <b t-esc="imp.payvis.length"/> shown on payslips</t>.
+                      </t>
+                      <t t-else="">Nothing depends on this yet.</t>
+                    </div>
+                    <div t-if="imp.up.length" class="ins-chips">
+                      <span class="ins-lbl">Draws from</span>
+                      <span class="pbfs-impact-chip" t-esc="imp.up.length + (imp.up.length === 1 ? ' component' : ' components')"/>
+                    </div>
+                    <t t-if="imp.down.length">
+                      <button class="ins-toggle" t-on-click="toggleInsights">
+                        <svg t-attf-class="chev {{ state.insightsOpen ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        <t t-esc="state.insightsOpen ? 'Hide downstream' : 'Show downstream (' + imp.down.length + ')'"/>
+                      </button>
+                      <div t-if="state.insightsOpen" class="ins-list">
+                        <button t-foreach="imp.down" t-as="d" t-key="d.id" class="ins-item" t-on-click="() => this.selectComponent(d.id)" t-att-title="'Go to ' + d.name">
+                          <span class="ins-col" t-esc="d.col"/>
+                          <span class="ins-nm" t-esc="d.name"/>
+                          <span t-if="d.appears_on_payslip" class="ins-badge">payslip</span>
+                        </button>
+                      </div>
+                    </t>
+                  </div>
+                </t>
 
                 <div t-if="selected.type === 'formula'" class="fc-section" data-coach="fs-flow">
                   <div class="fc-head">
