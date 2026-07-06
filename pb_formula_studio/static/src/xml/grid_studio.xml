@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- Grid Studio v1 (T2.2 — roving focus + keyboard nav + cell editing).
+       Components as columns; frozen header (letter + code) via sticky top,
+       frozen row-labels via sticky left. The scroller is the single tabbable
+       element; cells are inert divs driven by one keydown handler. -->
+  <t t-name="pb_formula_studio.GridStudio">
+    <div class="g2-root">
+    <FormulaBar focused="focused" canEdit="props.canEdit"
+                onSaveFormula="props.onSaveFormula" onValidateLive="props.onValidateLive"/>
+    <div class="g2-bulkbar" t-if="selectionCount >= 2">
+      <span class="g2-bulk-count"><b t-esc="selectionCount"/> columns selected</span>
+      <button t-if="props.canEdit and props.onBulkUpdate" class="pbfs-btn primary sm" t-on-click="openBulk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Bulk edit
+      </button>
+      <button class="g2-bulk-clear" t-on-click="clearSelection">Clear</button>
+    </div>
+    <div class="pbfs-grid2" t-ref="scroller" tabindex="0"
+         t-on-keydown="onKeydown" t-on-focus="onScrollerFocus" t-on-blur="onScrollerBlur">
+      <table class="g2-table">
+        <thead>
+          <tr class="g2-hrow">
+            <th class="g2-corner">Component</th>
+            <th t-foreach="ordered" t-as="c" t-key="c.id"
+                t-att-data-col-id="c.id"
+                t-att-class="headClass(c)"
+                t-on-click="(ev) => this.onCellClick(ev, c, 'formula')"
+                t-att-title="c.name">
+              <span class="g2-col" t-esc="c.col"/>
+              <span class="g2-code" t-esc="c.code"/>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Name</th>
+            <td t-foreach="ordered" t-as="c" t-key="c.id"
+                t-att-data-col-id="c.id" data-row="name"
+                t-att-class="cellClass(c, 'name')"
+                t-on-click="(ev) => this.onCellClick(ev, c, 'name')">
+              <span class="g2-name" t-esc="c.name"/>
+            </td>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Category</th>
+            <td t-foreach="ordered" t-as="c" t-key="c.id"
+                t-att-data-col-id="c.id" data-row="category"
+                t-att-class="cellClass(c, 'category')"
+                t-on-click="(ev) => this.onCellClick(ev, c, 'category')" t-esc="c.category"/>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Type</th>
+            <td t-foreach="ordered" t-as="c" t-key="c.id"
+                t-att-data-col-id="c.id" data-row="type"
+                t-att-class="cellClass(c, 'type')"
+                t-on-click="(ev) => this.onCellClick(ev, c, 'type')">
+              <span t-attf-class="g2-typ {{ c.type }}" t-esc="typeLabel(c)"/>
+            </td>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Formula</th>
+            <td t-foreach="ordered" t-as="c" t-key="c.id"
+                t-att-data-col-id="c.id" data-row="formula"
+                t-att-class="cellClass(c, 'formula')"
+                t-on-click="(ev) => this.onCellClick(ev, c, 'formula')"
+                t-on-dblclick="() => this.onCellDblClick(c, 'formula')"
+                t-att-title="formulaTitle(c)">
+              <input t-if="isEditingCell(c, 'formula')" class="g2-edit" t-ref="editor"
+                     t-on-input="onEditorInput" t-on-keydown="_onEditorKeydown"
+                     t-on-compositionstart="onCompositionStart" t-on-compositionend="onCompositionEnd"
+                     t-att-class="ui.editing.valid === false ? 'invalid' : ''"/>
+              <t t-elif="ghostFor(c)">
+                <span t-attf-class="g2-ghost {{ ghostFor(c).valid ? '' : 'invalid' }}" t-esc="ghostFor(c).proposed_formula"/>
+              </t>
+              <span t-else="" t-esc="formulaText(c)"/>
+              <span t-if="canFillFrom(c)" class="g2-fillhandle" title="Drag right to fill this formula" t-on-mousedown="onFillDown"/>
+            </td>
+          </tr>
+          <tr class="g2-prow g2-valrow">
+            <th class="g2-rlabel">Value</th>
+            <td t-foreach="ordered" t-as="c" t-key="c.id"
+                t-att-data-col-id="c.id" data-row="value"
+                t-att-class="cellClass(c, 'value')"
+                t-on-click="(ev) => this.onCellClick(ev, c, 'value')" t-esc="props.formatValue(c.col)"/>
+          </tr>
+          <tr class="g2-prow">
+            <th class="g2-rlabel">Status</th>
+            <td t-foreach="ordered" t-as="c" t-key="c.id"
+                t-att-data-col-id="c.id" data-row="status"
+                t-att-class="cellClass(c, 'status')"
+                t-on-click="(ev) => this.onCellClick(ev, c, 'status')">
+              <span t-if="statusOf(c).state === 'ok'" class="g2-badge ok" title="Valid">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+              </span>
+              <span t-else="" class="g2-badge bad" t-att-title="statusOf(c).message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="g2-editmsg" t-if="ui.editing and ui.editing.valid === false" t-esc="ui.editing.message || 'Invalid formula'"/>
+      <div class="g2-fillbar" t-if="ui.fill.pending">
+        <span>Fill <b t-esc="ui.fill.targets.length"/> column<t t-if="ui.fill.targets.length !== 1">s</t> with the translated formula?</span>
+        <button class="pbfs-btn primary sm" t-on-click="_commitFill">Enter to fill</button>
+        <button class="pbfs-btn ghost sm" t-on-click="_discardFill">Esc to cancel</button>
+      </div>
+      <div class="g2-statusmsg" t-if="focusedError">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span t-esc="focusedError"/>
+      </div>
+      <div class="g2-legend" t-if="ui.tintCol">
+        <span class="g2-lg"><span class="g2-sw up"/>Depends on <b t-esc="ui.tintCol"/> (upstream)</span>
+        <span class="g2-lg"><span class="g2-sw down"/>Used by <b t-esc="ui.tintCol"/> (downstream)</span>
+      </div>
+      <div class="g2-hint">
+        <t t-if="props.canEdit">Click a Formula cell and press <b>F2</b> or start typing to edit · <b>Enter</b> saves · <b>Esc</b> cancels · <b>Ctrl+Z</b> undo. Values for <b t-esc="props.sampleName || '—'"/>.</t>
+        <t t-else="">Showing computed values for <b t-esc="props.sampleName || '—'"/>.</t>
+      </div>
+    </div>
+    <CellAutocomplete t-if="ui.editing and ui.autocomplete.open"
+                      items="ui.autocomplete.items" active="ui.autocomplete.active"
+                      style="autocompleteStyle" onPick="(item) => this.onAutocompletePick(item)"
+                      onHover="(i) => this.onAutocompleteHover(i)"/>
+
+    <!-- T2.7 bulk edit popover -->
+    <div t-if="ui.bulkOpen" class="g2-bulkpop-scrim" t-on-click="closeBulk">
+      <div class="g2-bulkpop" t-on-click="(ev) => ev.stopPropagation()">
+        <div class="g2-bulkpop-h">Edit <b t-esc="selectionCount"/> columns</div>
+        <label class="g2-bulk-f"><span>Category</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('category_id',ev)">
+            <option value="">— leave unchanged —</option>
+            <option t-foreach="bulkCategories" t-as="c" t-key="c.id" t-att-value="c.id" t-esc="c.name"/>
+          </select></label>
+        <label class="g2-bulk-f"><span>Number format</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('number_format',ev)">
+            <option value="">— leave unchanged —</option>
+            <option t-foreach="bulkNumberFormats" t-as="o" t-key="o.value" t-att-value="o.value" t-esc="o.label"/>
+          </select></label>
+        <label class="g2-bulk-f"><span>Appears on payslip</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('appears_on_payslip',ev)">
+            <option value="">— leave unchanged —</option><option value="true">Yes</option><option value="false">No</option>
+          </select></label>
+        <label class="g2-bulk-f"><span>Visible in grid</span>
+          <select class="ce-input" t-on-change="(ev)=>this.setBulkField('is_visible_in_grid',ev)">
+            <option value="">— leave unchanged —</option><option value="true">Yes</option><option value="false">No</option>
+          </select></label>
+        <div class="g2-bulkpop-foot">
+          <button class="pbfs-btn ghost sm" t-on-click="closeBulk">Cancel</button>
+          <button class="pbfs-btn primary sm" t-on-click="applyBulk">Apply</button>
+        </div>
+      </div>
+    </div>
+    </div>
+  </t>
+
+  <!-- T2.6 — autocomplete dropdown (fixed position so the grid scroll can't clip it) -->
+  <t t-name="pb_formula_studio.CellAutocomplete">
+    <div class="g2-ac" t-attf-style="{{ props.style }}" t-on-mousedown="(ev) => ev.preventDefault()">
+      <div t-foreach="props.items" t-as="it" t-key="it.id"
+           t-attf-class="g2-ac-item {{ it_index === props.active ? 'active' : '' }}"
+           t-on-mouseenter="() => props.onHover(it_index)"
+           t-on-click="() => props.onPick(it)">
+        <span class="g2-ac-col" t-esc="it.col"/>
+        <span class="g2-ac-code" t-esc="it.code"/>
+        <span class="g2-ac-name" t-esc="it.name"/>
+        <span class="g2-ac-val" t-esc="it.value"/>
+      </div>
+    </div>
+  </t>
+
+  <!-- T2.3 — always-visible formula bar (same round-trip as the cell overlay) -->
+  <t t-name="pb_formula_studio.FormulaBar">
+    <div t-attf-class="g2-fbar {{ state.valid === false ? 'invalid' : '' }}">
+      <div class="g2-fbar-tag">
+        <t t-if="props.focused">
+          <span class="g2-fbar-col" t-esc="props.focused.col"/>
+          <span class="g2-fbar-code" t-esc="props.focused.code"/>
+        </t>
+        <span t-else="" class="g2-fbar-col ph">fx</span>
+      </div>
+      <input class="g2-fbar-input" t-ref="input" t-att-placeholder="placeholder"
+             t-att-disabled="!editable"
+             t-on-focus="onFocus" t-on-input="onInput" t-on-keydown="onKeydown" t-on-blur="onBlur"/>
+      <span t-if="state.valid === false" class="g2-fbar-err" t-esc="state.message || 'Invalid formula'"/>
+      <span t-elif="state.editing and state.valid === true" class="g2-fbar-ok">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+      </span>
+    </div>
+  </t>
+
+</templates>
