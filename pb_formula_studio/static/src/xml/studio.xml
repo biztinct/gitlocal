@@ -806,26 +806,18 @@
             </div>
           </div>
 
-          <!-- editor: grid -->
-          <div t-else="" class="pbfs-gridview">
-            <table class="pbfs-grid">
-              <thead>
-                <tr><th class="corner"/>
-                  <th t-foreach="state.components" t-as="c" t-key="c.id" t-att-class="c.id === state.selectedId ? 'sel' : ''">
-                    <t t-esc="c.col"/><span class="colcode" t-esc="c.code"/>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="rowhdr" t-esc="'1'"/>
-                  <td t-foreach="state.components" t-as="c" t-key="c.id"
-                      t-attf-class="{{ c.type === 'formula' ? 'formula' : '' }} {{ c.id === state.selectedId ? 'sel' : '' }}"
-                      t-on-click="() => this.selectComponent(c.id)" t-esc="previewVal(c.col)"/>
-                </tr>
-              </tbody>
-            </table>
-            <div class="grid-hint">Showing computed values for <b t-esc="sampleName"/>. Switch to <b>Cards</b> to edit a component, or use <b>Ask PayAI</b>.</div>
+          <!-- editor: grid (T2.1 — GridStudio component) -->
+          <div t-else="" class="pbfs-gridwrap">
+            <GridStudio components="state.components" preview="state.preview" graph="state.graph"
+                        canEdit="state.canEdit" selectedId="state.selectedId"
+                        onSelect="(id) => this.selectComponent(id)"
+                        formatValue="(col) => this.previewVal(col)"
+                        sampleName="sampleName" fieldMeta="state.fieldMeta"
+                        onSaveFormula="(id, f) => this.gridSaveFormula(id, f)"
+                        onValidateLive="(f, ex) => this.gridValidateLive(f, ex)"
+                        onBulkUpdate="(ids, vals) => this.gridBulkUpdate(ids, vals)"
+                        onTranslateFormula="(id, cols) => this.gridTranslateFormula(id, cols)"
+                        onBulkSaveFormulas="(items) => this.gridBulkSaveFormulas(items)"/>
           </div>
 
           <!-- live preview -->

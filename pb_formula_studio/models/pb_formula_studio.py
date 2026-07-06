@@ -10,6 +10,7 @@ except Exception:  # pragma: no cover
     requests = None
 
 from odoo import _, api, models
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -87,6 +88,15 @@ class PbFormulaStudio(models.AbstractModel):
                 return 0
             n = n * 26 + v
         return n
+
+    @api.model
+    def _num_to_col(self, n):
+        """Inverse of _col_num: 1 -> 'A', 27 -> 'AA'."""
+        s = ''
+        while n > 0:
+            n, r = divmod(n - 1, 26)
+            s = chr(65 + r) + s
+        return s
 
     @api.model
     def _expand_refs(self, formula, by_col):
@@ -585,6 +595,90 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     # edit operations
     # ------------------------------------------------------------------
+    # Fields the grid may bulk-edit across a column selection. Everything else is
+    # rejected so a stray key can never mass-mutate formulas/codes/types.
+    _BULK_FIELDS = {'category_id', 'number_format', 'appears_on_payslip', 'is_visible_in_grid'}
+
+    @api.model
+    def bulk_update_components(self, rule_ids, vals):
+        """Apply whitelisted field changes to many components in ONE write.
+        Non-whitelisted keys raise a UserError before anything is written, so a
+        rejected call never leaves a partial update."""
+        bad = set((vals or {}).keys()) - self._BULK_FIELDS
+        if bad:
+            raise UserError(_("These fields cannot be bulk-edited: %s") % ', '.join(sorted(bad)))
+        rules = self.env['hr.formula.rule'].browse([int(i) for i in (rule_ids or [])]).exists()
+        if not rules:
+            return {'ok': False, 'msg': _("No components selected")}
+        clean = {k: v for k, v in (vals or {}).items() if k in self._BULK_FIELDS}
+        if clean:
+            rules.write(clean)          # single write on the whole recordset
+        return {'ok': True, 'updated': len(rules)}
+
+    @api.model
+    def _translate_formula_horizontal(self, formula, offset):
+        """Shift every COLUMN-relative reference in ``formula`` by ``offset``
+        columns (fill-right). ``$``-column-absolute refs (e.g. $D2) are left
+        untouched; the row part (and any $ on it) is preserved verbatim."""
+        if not offset:
+            return formula
+
+        def repl(m):
+            col_dollar, col, rest = m.group(1), m.group(2), m.group(3)
+            if col_dollar == '$':
+                return m.group(0)                 # absolute column — unchanged
+            n = self._col_num(col) + offset
+            if n < 1:
+                return m.group(0)                 # would fall off the left edge
+            return col_dollar + self._num_to_col(n) + rest
+
+        # (col-$)(letters)(row-$? digits) — matches D2, $D2, D$2, $D$2, AA11 …
+        return re.sub(r'(\$?)([A-Za-z]+)(\$?\d+)', repl, formula)
+
+    @api.model
+    def translate_formula(self, rule_id, target_column_letters):
+        """Drag-fill preview: translate the source rule's formula to each target
+        column. Returns ``[{col, proposed_formula, valid}]`` — nothing is written."""
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists() or rule.column_type != 'formula':
+            return []
+        src_num = self._col_num(rule.column_letter)
+        formula = rule.excel_formula or ''
+        config = rule.config_id
+        by_col = {r.column_letter: r for r in config.rule_ids if r.column_letter}
+        out = []
+        for tgt in (target_column_letters or []):
+            tgt = (tgt or '').upper()
+            proposed = self._translate_formula_horizontal(formula, self._col_num(tgt) - src_num)
+            refs = self._expand_refs(proposed, by_col)
+            target_rule = by_col.get(tgt)
+            valid = (all(c in by_col for c in refs)
+                     and bool(target_rule) and target_rule.column_type == 'formula')
+            out.append({'col': tgt, 'proposed_formula': proposed, 'valid': valid})
+        return out
+
+    @api.model
+    def bulk_save_formulas(self, items):
+        """Persist several formulas at once (drag-fill commit). ``items`` =
+        ``[{rule_id, formula}, ...]``."""
+        Rule = self.env['hr.formula.rule']
+        saved = 0
+        for it in (items or []):
+            rule = Rule.browse(int(it.get('rule_id')))
+            if not rule.exists() or rule.column_type != 'formula':
+                continue
+            config = rule.config_id
+            column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
+            try:
+                rule.excel_formula = it.get('formula') or ''
+                rule.python_formula = rule._convert_excel_to_python(rule.excel_formula, column_map)
+                rule.is_valid = True
+                rule.validation_message = ''
+                saved += 1
+            except Exception as e:
+                _logger.debug("bulk_save_formulas skip %s: %s", rule.id, e)
+        return {'ok': True, 'saved': saved}
+
     @api.model
     def save_formula(self, rule_id, excel_formula):
         rule = self.env['hr.formula.rule'].browse(int(rule_id))

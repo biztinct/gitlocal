@@ -49,3 +49,5 @@ access_api_data_store_manager,hr.api.data.store.manager,model_hr_api_data_store,
 access_api_transformation_rule_user,hr.api.transformation.rule.user,model_hr_api_transformation_rule,pb_hr_payroll_formula.group_formula_user,1,0,0,0
 access_api_transformation_rule_manager,hr.api.transformation.rule.manager,model_hr_api_transformation_rule,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_api_transformation_rule_admin,hr.api.transformation.rule.admin,model_hr_api_transformation_rule,pb_hr_payroll_formula.group_formula_admin,1,1,1,1
+access_import_preview_line_user,hr.formula.import.preview.line.user,model_hr_formula_import_preview_line,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_import_preview_line_manager,hr.formula.import.preview.line.manager,model_hr_formula_import_preview_line,pb_hr_payroll_formula.group_formula_manager,1,1,1,1

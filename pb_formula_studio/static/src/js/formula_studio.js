@@ -4,6 +4,7 @@ import { Component, useState, useRef, useEffect, useExternalListener, onWillStar
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { GridStudio } from "./grid/grid_studio";
 
 const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
@@ -68,7 +69,7 @@ export class CfgCombo extends Component {
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo };
+    static components = { CfgCombo, GridStudio };
     static props = ["*"];
 
     setup() {
@@ -259,6 +260,54 @@ export class PbFormulaStudio extends Component {
         if (!c) return null;
         return this.graphCycles.find(cy => (cy.cols || []).includes(c.col)) || null;
     }
+    // ---- Grid Studio callbacks (T2.2/T2.3): save a formula and live-validate ----
+    // Mirrors the inline editor's round-trip: save_formula → reload → recompute
+    // the preview for the CURRENTLY selected sample (load() only computes sample[0]).
+    async gridSaveFormula(ruleId, formula) {
+        const cfgId = this.state.config.id;
+        const sampleId = this.state.preview.sample_id;
+        const r = await this.orm.call("pb.formula.studio", "save_formula", [ruleId, formula]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not save formula", { type: "warning" }); return; }
+        await this.load(cfgId);
+        if (sampleId) {
+            this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        }
+    }
+    async gridValidateLive(formula, excludeRuleId) {
+        try {
+            return await this.orm.call("pb.formula.studio", "validate_formula_live",
+                [this.state.config.id, formula, excludeRuleId]);
+        } catch (e) { return { valid: true, message: "" }; }
+    }
+    async gridBulkUpdate(ruleIds, vals) {
+        const cfgId = this.state.config.id;
+        const sampleId = this.state.preview.sample_id;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "bulk_update_components", [ruleIds, vals]);
+            if (r && r.ok === false) { this.notif.add(r.msg || "Bulk update failed", { type: "warning" }); return; }
+            this.notif.add(`Updated ${(r && r.updated) || ruleIds.length} components`, { type: "success" });
+        } catch (e) {
+            this.notif.add("Bulk update failed", { type: "warning" });
+            return;
+        }
+        await this.load(cfgId);
+        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+    }
+    async gridTranslateFormula(ruleId, targetCols) {
+        try { return await this.orm.call("pb.formula.studio", "translate_formula", [ruleId, targetCols]); }
+        catch (e) { return []; }
+    }
+    async gridBulkSaveFormulas(items) {
+        const cfgId = this.state.config.id;
+        const sampleId = this.state.preview.sample_id;
+        try {
+            await this.orm.call("pb.formula.studio", "bulk_save_formulas", [items]);
+        } catch (e) { this.notif.add("Fill failed", { type: "warning" }); return; }
+        this.notif.add(`Filled ${items.length} column${items.length === 1 ? "" : "s"}`, { type: "success" });
+        await this.load(cfgId);
+        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+    }
+
     isCycleMember(col) { return this.state.cycleHighlight.includes(col); }
     showCyclePath(cycle) {
         this.state.cycleHighlight = (cycle && cycle.cols) ? cycle.cols.slice() : [];
