@@ -82,6 +82,7 @@ License: LGPL-3
         'wizards/payslip_config_wizard_views.xml',
         'wizards/payslip_import_mapping_wizard_views.xml',
         'wizards/payroll_cycle_component_mapping_wizard_views.xml',
+        'wizards/mapping_test_wizard_views.xml',
         'views/sample_data_views.xml',
         'views/menu_views.xml',
         'views/hr_payslip_formula_views.xml',
@@ -102,6 +103,9 @@ License: LGPL-3
             'pb_hr_payroll_formula/static/src/css/formula_rule_list.css',
             'pb_hr_payroll_formula/static/src/js/multisheet_enhancements.js',
             'pb_hr_payroll_formula/static/src/js/formula_grid_top_scroll.js',
+            # T4.4 — source-field autocomplete widget (integration field mapping)
+            'pb_hr_payroll_formula/static/src/js/source_field_autocomplete.js',
+            'pb_hr_payroll_formula/static/src/xml/source_field_autocomplete.xml',
 
             # NOTE: Custom Excel grid widget JS disabled until proper implementation
             # The standard Odoo tree view is used instead for formula configuration

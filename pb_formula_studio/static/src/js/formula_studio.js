@@ -102,6 +102,12 @@ export class PbFormulaStudio extends Component {
             aiMsgs: [],
             aiProposal: null,
             aiLlm: false,
+            // T5.3 — Explain modal (progressive: deterministic floor first, LLM replaces)
+            explainOpen: false,
+            explainLang: "en",
+            explainText: "",
+            explainSource: "deterministic",
+            explainBusy: false,
             aiModel: "",
             wizardOpen: false,
             wizardStep: 1,
@@ -1137,6 +1143,42 @@ export class PbFormulaStudio extends Component {
     }
     openAI() { if (this._lockedNotice()) return; this.state.aiOpen = true; }
     closeAI() { this.state.aiOpen = false; }
+
+    // ---- Explain modal (T5.3) ----
+    openExplain() {
+        const c = this.selected;
+        if (!c) return;
+        this.state.explainOpen = true;
+        this.state.explainLang = "en";
+        // deterministic floor is already in the payload → shows instantly (<200ms)
+        this.state.explainText = c.explain || "";
+        this.state.explainSource = "deterministic";
+        this._fetchExplain();
+    }
+    closeExplain() { this.state.explainOpen = false; }
+    setExplainLang(lang) {
+        if (this.state.explainLang === lang) return;
+        this.state.explainLang = lang;
+        // keep the current floor visible while the new-language text loads
+        if (lang === "en" && this.selected) this.state.explainText = this.selected.explain || this.state.explainText;
+        this.state.explainSource = "deterministic";
+        this._fetchExplain();
+    }
+    async _fetchExplain() {
+        const c = this.selected;
+        if (!c) return;
+        const lang = this.state.explainLang, ruleId = c.id;
+        this.state.explainBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "explain_formula_ai", [ruleId, lang]);
+            // ignore stale responses (user switched lang / component / closed)
+            if (this.state.explainOpen && this.state.explainLang === lang && this.selected && this.selected.id === ruleId) {
+                this.state.explainText = (r && r.text) || this.state.explainText;
+                this.state.explainSource = (r && r.source) || "deterministic";
+            }
+        } catch (e) { /* keep the floor */ }
+        finally { if (this.state.explainLang === lang) this.state.explainBusy = false; }
+    }
     async aiAsk(text) {
         if (!text || !text.trim()) return;
         this.state.aiMsgs.push({ who: "you", text });

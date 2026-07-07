@@ -175,7 +175,7 @@
                             <field name="field_mapping_ids" nolabel="1">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="source_field"/>
+                                    <field name="source_field" widget="source_field_autocomplete"/>
                                     <field name="source_field_label"/>
                                     <field name="source_data_type"/>
                                     <field name="target_rule_id"/>
@@ -250,7 +250,7 @@
             <list string="Field Mappings" editable="bottom">
                 <field name="sequence" widget="handle"/>
                 <field name="connector_id"/>
-                <field name="source_field"/>
+                <field name="source_field" widget="source_field_autocomplete"/>
                 <field name="source_field_label"/>
                 <field name="source_data_type"/>
                 <field name="target_rule_id"/>
@@ -267,11 +267,15 @@
         <field name="model">hr.integration.field.mapping</field>
         <field name="arch" type="xml">
             <form string="Field Mapping">
+                <header>
+                    <button name="action_test_against_employee" type="object"
+                            string="Test against employee" class="btn-secondary"/>
+                </header>
                 <sheet>
                     <group>
                         <group string="Source">
                             <field name="connector_id"/>
-                            <field name="source_field"/>
+                            <field name="source_field" widget="source_field_autocomplete"/>
                             <field name="source_field_label"/>
                             <field name="source_data_type"/>
                             <field name="source_sample_value"/>

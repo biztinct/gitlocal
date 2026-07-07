@@ -23,6 +23,13 @@ LLM_MODEL = 'pb_formula_studio.llm_model'
 DEFAULT_BASE_URL = 'https://api.openai.com/v1'
 DEFAULT_MODEL = 'gpt-4o-mini'
 
+
+class LLMUnavailable(Exception):
+    """Raised by _llm_chat when the LLM cannot be reached — no API key, no
+    `requests`, timeout, non-200, or invalid JSON. Callers catch this to fall
+    back to deterministic behaviour."""
+
+
 # Map an Excel operator to a friendly chip glyph
 OP_GLYPH = {'+': '+', '-': '−', '*': '×', '/': '÷'}
 
@@ -1563,16 +1570,42 @@ class PbFormulaStudio(models.AbstractModel):
     # LLM-backed proposal (provider-agnostic, OpenAI-compatible)
     # ------------------------------------------------------------------
     @api.model
-    def _llm_propose(self, config, text, rules):
+    @api.model
+    def _llm_chat(self, messages, json_mode=False):
+        """One OpenAI-compatible chat call. Raises LLMUnavailable on a missing
+        key, missing `requests`, timeout, non-200 or bad JSON — callers catch it
+        for a deterministic fallback. Returns the assistant message text, or the
+        parsed JSON object when json_mode=True.
+
+        Missing key raises IMMEDIATELY, before any network call."""
         if requests is None:
-            return None
+            raise LLMUnavailable("HTTP client 'requests' is not available")
         ICP = self.env['ir.config_parameter'].sudo()
         api_key = (ICP.get_param(LLM_API_KEY) or '').strip()
         if not api_key:
-            return None  # not configured -> deterministic mapper
+            raise LLMUnavailable("No LLM API key configured")   # no network call
         base_url = (ICP.get_param(LLM_BASE_URL) or DEFAULT_BASE_URL).strip().rstrip('/')
         model = (ICP.get_param(LLM_MODEL) or DEFAULT_MODEL).strip()
+        payload = {'model': model, 'messages': messages, 'temperature': 0}
+        if json_mode:
+            payload['response_format'] = {'type': 'json_object'}
+        try:
+            resp = requests.post(
+                base_url + '/chat/completions',
+                headers={'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json'},
+                json=payload, timeout=25)
+            resp.raise_for_status()
+            content = resp.json()['choices'][0]['message']['content']
+        except Exception as e:
+            raise LLMUnavailable("LLM call failed: %s" % e)
+        if json_mode:
+            try:
+                return json.loads(content)
+            except Exception as e:
+                raise LLMUnavailable("LLM returned invalid JSON: %s" % e)
+        return content
 
+    def _llm_propose(self, config, text, rules):
         by_col = {r.column_letter: r for r in rules if r.column_letter}
         catalog = [{'col': r.column_letter, 'code': r.code, 'name': r.name,
                     'type': r.column_type} for r in rules if r.column_letter]
@@ -1592,23 +1625,12 @@ class PbFormulaStudio(models.AbstractModel):
         )
         user = "Components:\n" + json.dumps(catalog, ensure_ascii=False) + "\n\nRequest: " + (text or '')
         try:
-            resp = requests.post(
-                base_url + '/chat/completions',
-                headers={'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json'},
-                json={
-                    'model': model,
-                    'messages': [{'role': 'system', 'content': system},
-                                 {'role': 'user', 'content': user}],
-                    'temperature': 0,
-                    'response_format': {'type': 'json_object'},
-                },
-                timeout=25,
-            )
-            resp.raise_for_status()
-            content = resp.json()['choices'][0]['message']['content']
-            data = json.loads(content)
-        except Exception as e:
-            _logger.warning("PayAI LLM call failed, falling back: %s", e)
+            data = self._llm_chat(
+                [{'role': 'system', 'content': system},
+                 {'role': 'user', 'content': user}],
+                json_mode=True)
+        except LLMUnavailable as e:
+            _logger.info("PayAI LLM unavailable, falling back: %s", e)
             return None
 
         return self._validate_llm(data, by_col)
@@ -1670,6 +1692,69 @@ class PbFormulaStudio(models.AbstractModel):
         ICP = self.env['ir.config_parameter'].sudo()
         return {'llm': bool((ICP.get_param(LLM_API_KEY) or '').strip()),
                 'model': ICP.get_param(LLM_MODEL) or DEFAULT_MODEL}
+
+    # ------------------------------------------------------------------
+    # Explain a formula (T5.2) — LLM with deterministic floor, EN/VI
+    # ------------------------------------------------------------------
+    @api.model
+    def explain_formula_ai(self, rule_id, lang='en'):
+        """Plain-language explanation of one component. Tries the LLM; on ANY
+        failure returns the deterministic _explain output. Never raises to the
+        client. Returns {'text', 'source': 'ai'|'deterministic'}."""
+        lang = 'vi' if str(lang or '').lower().startswith('vi') else 'en'
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'text': '', 'source': 'deterministic'}
+        by_col = self._col_to_rule(rule.config_id.rule_ids)
+        floor = self._explain_localized(rule, by_col, lang)   # always computable
+        try:
+            text = (self._llm_chat(self._build_explain_prompt(rule, by_col, lang)) or '').strip()
+            if text:
+                return {'text': text, 'source': 'ai'}
+        except LLMUnavailable:
+            pass
+        except Exception as e:                                # never leak a traceback
+            _logger.info("explain_formula_ai fell back: %s", e)
+        return {'text': floor, 'source': 'deterministic'}
+
+    @api.model
+    def _build_explain_prompt(self, rule, by_col, lang):
+        toks = self._tokenize(rule, by_col)
+        deps = []
+        for t in toks:
+            if t.get('kind') == 'ref' and t['text'] not in deps:
+                deps.append(t['text'])
+        lang_name = 'Vietnamese' if lang == 'vi' else 'English'
+        system = ("You are PayAI, a payroll assistant. Explain what a salary component "
+                  "computes in plain %s — 1-2 short sentences for a non-technical payroll "
+                  "officer. No formulas, code or column letters." % lang_name)
+        facts = {
+            'component': rule.name or '',
+            'category': rule.category_id.name if rule.category_id else (rule.column_type or ''),
+            'excel_formula': rule.excel_formula or '',
+            'depends_on': deps,
+        }
+        user = "Explain this component in %s:\n%s" % (lang_name, json.dumps(facts, ensure_ascii=False))
+        return [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}]
+
+    @api.model
+    def _explain_localized(self, rule, by_col, lang):
+        return self._explain_vi(rule, by_col) if lang == 'vi' else self._explain(rule, by_col)
+
+    @api.model
+    def _explain_vi(self, rule, by_col):
+        if rule.column_type == 'input':
+            return "Lấy từ hợp đồng của mỗi nhân viên hoặc từ dữ liệu nhập hàng tháng."
+        if rule.column_type == 'constant':
+            return "Một giá trị cố định áp dụng cho tất cả nhân viên."
+        names = []
+        for t in self._tokenize(rule, by_col):
+            if t['kind'] == 'ref' and t['text'] not in names:
+                names.append(t['text'])
+        if names:
+            tail = " và các thành phần khác." if len(names) > 6 else "."
+            return "%s được tính từ %s%s" % (rule.name or '', ', '.join(names[:6]), tail)
+        return "%s là một thành phần được tính toán." % (rule.name or '')
 
     # ------------------------------------------------------------------
     # First-setup wizard
