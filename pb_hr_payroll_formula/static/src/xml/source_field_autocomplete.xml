@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_hr_payroll_formula.SourceFieldAutocomplete">
+    <div class="o_field_source_ac pbfs-combobox" style="position:relative;">
+      <input t-ref="input" type="text" class="o_input"
+             autocomplete="off"
+             t-att-placeholder="props.placeholder || 'e.g. employee.department.name'"
+             t-on-focus="onFocus" t-on-input="onInput"
+             t-on-keydown="onKeydown" t-on-blur="onBlur"/>
+      <div t-if="state.open and state.options.length" class="o_source_ac_menu"
+           style="position:absolute; z-index:1050; left:0; right:0; top:100%; margin-top:2px; max-height:280px; overflow-y:auto; background:#fff; border:1px solid #d1d5db; border-radius:8px; box-shadow:0 8px 24px rgba(16,24,40,.14); padding:4px;">
+        <div t-foreach="state.options" t-as="opt" t-key="opt.path"
+             t-attf-class="o_source_ac_item {{ opt_index === state.active ? 'active' : '' }}"
+             t-att-style="'display:flex; align-items:center; gap:8px; padding:6px 9px; border-radius:6px; cursor:pointer; ' + (opt_index === state.active ? 'background:#EEF2FF;' : '')"
+             t-on-mousedown="() => this.pick(opt)"
+             t-on-mouseenter="() => { state.active = opt_index; }">
+          <span class="o_sac_path" style="font-weight:700; font-size:12.5px; color:#1e1b2e;" t-esc="opt.path"/>
+          <span class="o_sac_type" style="font-size:10.5px; font-weight:700; text-transform:uppercase; color:#6b7280; background:#f1f5f9; padding:1px 6px; border-radius:999px;" t-esc="opt.type"/>
+          <span class="o_sac_sample" t-if="sampleText(opt)" style="margin-left:auto; font-size:11.5px; color:#475569; font-variant-numeric:tabular-nums;" t-esc="sampleText(opt)"/>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

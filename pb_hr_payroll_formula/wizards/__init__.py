@@ -9,3 +9,4 @@ from . import multisheet_import_preview
 from . import payslip_config_wizard
 from . import payslip_import_mapping_wizard
 from . import payroll_cycle_component_mapping_wizard
+from . import mapping_test_wizard

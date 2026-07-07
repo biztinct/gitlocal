@@ -633,4 +633,29 @@
     .intel-un-row .intel-typ { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
     .intel-un-row .pbfs-btn { margin-left: auto; }
     .intel-empty { font-size: 12.5px; color: var(--muted); padding: 14px 8px; }
+
+    /* ---- Explain modal (T5.3) ---- */
+    .pbfs-explain-scrim { position: fixed; inset: 0; z-index: 1200; background: rgba(20, 16, 50, .34); display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .pbfs-explain { width: 520px; max-width: 94vw; background: #fff; border-radius: 18px; box-shadow: 0 30px 70px rgba(20, 16, 50, .4); overflow: hidden; }
+    .pbfs-explain .ex-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+    .pbfs-explain .ex-title { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+    .pbfs-explain .ex-col { font-size: 11px; font-weight: 800; color: #fff; background: var(--i); border-radius: 6px; padding: 2px 8px; }
+    .pbfs-explain .ex-title b { font-size: 15px; color: var(--ink); font-weight: 800; }
+    .pbfs-explain .ex-lang { display: inline-flex; background: var(--i-soft); border-radius: 999px; padding: 2px; }
+    .pbfs-explain .ex-lang button { border: 0; background: transparent; font-family: inherit; font-size: 11.5px; font-weight: 800; color: var(--i600); padding: 4px 12px; border-radius: 999px; cursor: pointer; }
+    .pbfs-explain .ex-lang button.on { background: #fff; color: var(--i-deep); box-shadow: 0 1px 3px rgba(36, 31, 82, .18); }
+    .pbfs-explain .ex-x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 4px; }
+    .pbfs-explain .ex-x:hover { color: var(--ink); }
+    .pbfs-explain .ex-x svg { width: 18px; height: 18px; }
+    .pbfs-explain .ex-body { padding: 20px 18px; min-height: 86px; }
+    .pbfs-explain .ex-text { font-size: 14px; line-height: 1.6; color: var(--ink); margin: 0; }
+    .pbfs-explain .ex-foot { display: flex; align-items: center; gap: 12px; padding: 12px 18px 16px; }
+    .pbfs-explain .ex-badge { font-size: 10.5px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+    .pbfs-explain .ex-badge.ai { background: var(--i-soft); color: var(--i600); }
+    .pbfs-explain .ex-badge.deterministic { background: #F1F5F9; color: #64748B; }
+    .pbfs-explain .ex-loading { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .pbfs-explain .ex-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--i); animation: pbfs-exdot 1s infinite ease-in-out; }
+    .pbfs-explain .ex-dot:nth-child(2) { animation-delay: .16s; }
+    .pbfs-explain .ex-dot:nth-child(3) { animation-delay: .32s; }
+    @keyframes pbfs-exdot { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
 }

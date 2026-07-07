@@ -519,6 +519,9 @@
                   <div t-if="selected.is_valid" class="valid-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Valid</div>
                   <div t-else="" class="valid-err"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Check</div>
                   <div class="ed-actions">
+                    <button class="pbfs-btn soft sm" t-on-click="openExplain" title="Explain in plain language">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Explain
+                    </button>
                     <button class="pbfs-btn soft sm" data-coach="fs-editai" t-on-click="openAI" title="Edit with PayAI">
                       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Edit with PayAI
                     </button>
@@ -862,6 +865,35 @@
           <div class="cf-actions">
             <button class="pbfs-btn ghost" t-on-click="cancelDeleteConfig">Cancel</button>
             <button class="pbfs-btn danger-solid" t-on-click="confirmDeleteConfig">Delete configuration</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explain modal (T5.3) -->
+      <div t-if="state.explainOpen" class="pbfs-explain-scrim" t-on-click="closeExplain">
+        <div class="pbfs-explain" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="ex-head">
+            <div class="ex-title">
+              <span class="ex-col" t-esc="selected.col"/>
+              <b t-esc="selected.name"/>
+            </div>
+            <div class="ex-lang">
+              <button t-att-class="state.explainLang === 'en' ? 'on' : ''" t-on-click="() => this.setExplainLang('en')">EN</button>
+              <button t-att-class="state.explainLang === 'vi' ? 'on' : ''" t-on-click="() => this.setExplainLang('vi')">VI</button>
+            </div>
+            <button class="ex-x" t-on-click="closeExplain"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+          <div class="ex-body">
+            <p class="ex-text" t-esc="state.explainText"/>
+          </div>
+          <div class="ex-foot">
+            <span t-attf-class="ex-badge {{ state.explainSource }}">
+              <t t-if="state.explainSource === 'ai'">PayAI</t>
+              <t t-else="">Built-in</t>
+            </span>
+            <span t-if="state.explainBusy" class="ex-loading">
+              <span class="ex-dot"/><span class="ex-dot"/><span class="ex-dot"/> PayAI is thinking…
+            </span>
           </div>
         </div>
       </div>

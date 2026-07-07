@@ -212,6 +212,49 @@
                             <field name="merge_duplicates"/>
                             <field name="update_existing"/>
                         </group>
+
+                        <!-- Import Confidence — Resolution Preview (Feature 3) -->
+                        <notebook class="o_pb_resolution_preview">
+                            <page string="Resolution Preview" name="resolution_preview">
+                                <group>
+                                    <group>
+                                        <field name="confidence_score" widget="percentage"
+                                               string="Import Confidence" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <div class="text-muted">
+                                            How cleanly your formulas converted. Rows in
+                                            <span class="text-danger">red</span> reference something
+                                            that could not be mapped and became 0 — pick a
+                                            <strong>Fix</strong> below, then Apply.
+                                        </div>
+                                        <button name="action_apply_preview_fixes" type="object"
+                                                string="Apply Fixes" class="btn-primary mt-2"/>
+                                    </group>
+                                </group>
+                                <separator string="Formulas — original → resolved"/>
+                                <field name="preview_line_ids" nolabel="1">
+                                    <list limit="500" editable="bottom" create="false" delete="false"
+                                          decoration-danger="status == 'broken'"
+                                          decoration-warning="status == 'warning'">
+                                        <field name="status" widget="badge"
+                                               decoration-danger="status == 'broken'"
+                                               decoration-warning="status == 'warning'"
+                                               decoration-success="status == 'ok'"/>
+                                        <field name="sheet_name" string="Sheet"/>
+                                        <field name="component_code" string="Code"/>
+                                        <field name="component_name" string="Name" optional="hide"/>
+                                        <field name="original_excel_formula" string="Original"/>
+                                        <field name="resolved_formula" string="Resolved"/>
+                                        <field name="issue_type" string="Issue" readonly="1"/>
+                                        <field name="issue_detail" string="Detail" optional="show" readonly="1"/>
+                                        <field name="fix_action" string="Fix"/>
+                                        <field name="fix_target_rule_code" string="Map to"
+                                               invisible="fix_action != 'map_component'"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
                     </div>
 
                     <!-- Step 6: Map Missing Fields -->
