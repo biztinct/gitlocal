@@ -138,10 +138,13 @@ export class PbFormulaStudio extends Component {
             rateErr: "",
             ratePreviewIncome: 40000000,
             ratePreview: null,       // {value, result, compiled}
-            // F10 — mapping canvas (cycle adapter)
+            // F10 — mapping canvas (multi-adapter)
             mapOpen: false,
             mapBusy: false,
-            mapData: null,           // {ok, mid, end, left, right, wires, can_edit} | {ok:false, reason}
+            mapMode: "cycle",        // cycle | api
+            mapContextId: null,      // adapter context (e.g. connector id for api)
+            mapDismissed: [],        // client-side-dismissed suggestion wire ids
+            mapData: null,           // {ok, left, right, wires, left_title, right_title, supports_suggest, contexts, ...}
             // F9 — payslip studio
             psOpen: false,
             psBusy: false,
@@ -151,6 +154,25 @@ export class PbFormulaStudio extends Component {
             psOverComp: null,        // rule id being hovered during a drag (insert-before)
             psOverZone: null,        // section id or 'tray' currently hovered
             psEditSec: null,         // section id whose title is inline-editing
+            // F12 — raw-Excel mode on the card (per-user preference)
+            rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
+            rawBuffer: "",
+            rawFor: null,            // component id the current buffer belongs to
+            rawValid: null,          // {valid, message} from validate_formula_live
+            rawDirty: false,
+            rawBusy: false,
+            // B1 — execution replay
+            replayOpen: false,
+            replayBusy: false,
+            replayData: null,        // {seeded, steps, config, samples, sample_id}
+            replayStep: -1,          // -1 = only inputs seeded; k = steps[0..k] computed
+            replayPlaying: false,
+            // F15 — comments & annotations
+            notesOpen: false,
+            notesBusy: false,
+            notesData: null,         // {ok, notes:[], open_reviews}
+            noteDraft: "",
+            noteReview: false,
             aiModel: "",
             wizardOpen: false,
             wizardStep: 1,
@@ -189,6 +211,8 @@ export class PbFormulaStudio extends Component {
         });
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
+        this.rawEditorRef = useRef("rawEditor");
+        this._rawNeedsSeed = false;
         this._liveTimer = null;
         onWillStart(async () => {
             await this.load();
@@ -211,7 +235,16 @@ export class PbFormulaStudio extends Component {
             }
         });
         onMounted(() => { this._bindArrowEvents(); this.redrawArrows(); });
-        onPatched(() => { this.redrawArrows(); requestAnimationFrame(() => { this.applyZoom(); this.applyInlineFit(); }); });
+        onPatched(() => {
+            this.redrawArrows();
+            // F12 — seed the raw textarea imperatively (uncontrolled, so the caret
+            // never jumps mid-edit); only when a re-seed was requested.
+            if (this._rawNeedsSeed && this.rawEditorRef.el) {
+                this.rawEditorRef.el.value = this.state.rawBuffer;
+                this._rawNeedsSeed = false;
+            }
+            requestAnimationFrame(() => { this.applyZoom(); this.applyInlineFit(); });
+        });
     }
 
     async load(configId) {
@@ -435,6 +468,7 @@ export class PbFormulaStudio extends Component {
     }
     selectComponent(id) {
         this.state.selectedId = id;
+        if (this.state.rawMode) this._seedRaw();   // F12 — re-seed the text editor
         // reveal the outcome row in the live preview so the output arrow latches to it
         requestAnimationFrame(() => {
             const comp = this.state.components.find(x => x.id === id);
@@ -498,6 +532,189 @@ export class PbFormulaStudio extends Component {
 
     // ---- formula chips (IF / function aware) ----
     setFormulaForm(short) { this.state.formulaShort = short; }
+
+    // ---- raw-Excel mode on the card (F12) ----
+    // Same excel_formula + validate_formula_live + save_formula path the grid
+    // uses, so both the chip editor and raw text write identical formulas.
+    get rawActive() {
+        return this.state.rawMode && this.selected && this.selected.type === "formula" && this.state.canEdit;
+    }
+    setRawMode(on) {
+        if (this.state.rawMode === on) return;
+        this.state.rawMode = on;
+        try { localStorage.setItem("pbfs_raw_mode", on ? "1" : "0"); } catch (e) { /* private mode */ }
+        if (on) {
+            // preserve an in-progress edit for the SAME component across a
+            // Chips↔Text round-trip; only seed fresh for a different component.
+            const cid = this.selected ? this.selected.id : null;
+            if (this.state.rawFor !== cid) this._seedRaw();
+            else this._rawNeedsSeed = true;   // just re-push the buffer into the remounted textarea
+        }
+    }
+    _seedRaw() {
+        const c = this.selected;
+        this.state.rawBuffer = (c && c.excel_formula) || "";
+        this.state.rawFor = c ? c.id : null;
+        this.state.rawValid = null;
+        this.state.rawDirty = false;
+        this._rawNeedsSeed = true;   // onPatched pushes it into the textarea
+    }
+    onRawInput(ev) {
+        this.state.rawBuffer = ev.target.value;
+        this.state.rawDirty = this.selected ? (ev.target.value !== (this.selected.excel_formula || "")) : false;
+        if (this._rawTimer) clearTimeout(this._rawTimer);
+        this._rawTimer = setTimeout(() => this._rawValidate(), 260);
+    }
+    async _rawValidate() {
+        if (!this.selected) return;
+        this.state.rawValid = await this.gridValidateLive(this.state.rawBuffer, this.selected.id);
+    }
+    onRawKeydown(ev) {
+        // Ctrl/Cmd+Enter saves; plain Enter inserts a newline (formulas can be long)
+        if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); this.saveRaw(); }
+    }
+    async saveRaw() {
+        const c = this.selected;
+        if (!c || this.state.rawBusy || !this.state.rawDirty) return;
+        if (this._lockedNotice()) return;
+        this.state.rawBusy = true;
+        try {
+            await this.gridSaveFormula(c.id, this.state.rawBuffer);   // save + full reload + recompute
+            this.state.rawDirty = false;
+            this.state.rawValid = { valid: true, message: "" };
+            this._seedRaw();   // re-seed from the refreshed component
+        } finally {
+            this.state.rawBusy = false;
+        }
+    }
+    revertRaw() { this._seedRaw(); }
+
+    // ---- comments & annotations (F15) ----
+    openNotes() {
+        const c = this.selected;
+        if (!c) return;
+        this.state.notesOpen = true;
+        this.state.notesData = null;
+        this.state.noteDraft = "";
+        this.state.noteReview = false;
+        this._loadNotes(c.id);
+    }
+    closeNotes() { this.state.notesOpen = false; }
+    async _loadNotes(ruleId) {
+        this.state.notesBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "list_notes", [ruleId]);
+            if (this.state.notesOpen && this.selected && this.selected.id === ruleId) {
+                this.state.notesData = r;
+            }
+        } catch (e) { this.state.notesData = { ok: false, notes: [] }; }
+        finally { this.state.notesBusy = false; }
+    }
+    onNoteInput(ev) { this.state.noteDraft = ev.target.value; }
+    toggleNoteReview() { this.state.noteReview = !this.state.noteReview; }
+    onNoteKeydown(ev) {
+        if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); this.postNote(); }
+    }
+    async postNote() {
+        const c = this.selected;
+        const body = (this.state.noteDraft || "").trim();
+        if (!c || !body) return;
+        const r = await this.orm.call("pb.formula.studio", "post_note", [c.id, body, this.state.noteReview]);
+        if (r && r.ok) {
+            this.state.notesData = r;
+            this.state.noteDraft = "";
+            this.state.noteReview = false;
+            await this.load(this.state.config.id);   // refresh card badge + problems tally
+            this.state.notesOpen = true;              // keep the rail open after reload
+        }
+    }
+    async resolveNote(n) {
+        await this.orm.call("pb.formula.studio", n.resolved ? "reopen_note" : "resolve_note", [n.id]);
+        await this._loadNotes(this.selected.id);
+        await this.load(this.state.config.id);
+        this.state.notesOpen = true;
+    }
+    async deleteNote(n) {
+        await this.orm.call("pb.formula.studio", "delete_note", [n.id]);
+        await this._loadNotes(this.selected.id);
+        await this.load(this.state.config.id);
+        this.state.notesOpen = true;
+    }
+    // resolve a review note directly from the Problems rail
+    async resolveProblemNote(p) {
+        if (!p.note_id) return;
+        await this.orm.call("pb.formula.studio", "resolve_note", [p.note_id]);
+        await this._loadProblems();
+        await this.load(this.state.config.id);
+        this.state.probOpen = true;
+    }
+
+    // ---- Execution replay (B1) ----
+    openReplay() {
+        this.state.replayOpen = true;
+        this.state.replayData = null;
+        this.state.replayStep = -1;
+        this.state.replayPlaying = false;
+        this._loadReplay(this.state.preview.sample_id);
+    }
+    closeReplay() {
+        this.state.replayPlaying = false;
+        if (this._replayTimer) { clearTimeout(this._replayTimer); this._replayTimer = null; }
+        this.state.replayOpen = false;
+    }
+    async _loadReplay(sampleId) {
+        this.state.replayBusy = true;
+        try {
+            this.state.replayData = await this.orm.call("pb.formula.studio", "replay_trace",
+                [this.state.config.id, sampleId || false]);
+            this.state.replayStep = -1;
+        } catch (e) {
+            this.state.replayData = { ok: false };
+        } finally {
+            this.state.replayBusy = false;
+        }
+    }
+    replaySetSample(ev) {
+        this.state.replayPlaying = false;
+        this._loadReplay(parseInt(ev.target.value, 10));
+    }
+    get replaySteps() { return (this.state.replayData && this.state.replayData.steps) || []; }
+    get replayCurrent() {
+        const k = this.state.replayStep;
+        return (k >= 0 && k < this.replaySteps.length) ? this.replaySteps[k] : null;
+    }
+    get replayDone() { return this.state.replayStep >= this.replaySteps.length - 1; }
+    // value computed for a step index (visible once we've stepped past it)
+    replayStepComputed(idx) { return idx <= this.state.replayStep; }
+    replayFmt(item) { return this.fmtTyped({ number_format: item.number_format }, item.value); }
+    replayProgressPct() {
+        const n = this.replaySteps.length;
+        return n ? Math.round(100 * (this.state.replayStep + 1) / n) : 0;
+    }
+    replayNext() {
+        if (this.state.replayStep < this.replaySteps.length - 1) this.state.replayStep++;
+        else this.state.replayPlaying = false;
+    }
+    replayPrev() { if (this.state.replayStep >= 0) this.state.replayStep--; }
+    replayReset() { this.state.replayPlaying = false; this.state.replayStep = -1; }
+    replayPlayPause() {
+        if (this.state.replayPlaying) { this.state.replayPlaying = false; return; }
+        if (this.replayDone) this.state.replayStep = -1;   // restart from the top
+        this.state.replayPlaying = true;
+        this._replayTick();
+    }
+    _replayTick() {
+        if (!this.state.replayPlaying || !this.state.replayOpen) return;
+        if (this.state.replayStep >= this.replaySteps.length - 1) { this.state.replayPlaying = false; return; }
+        this.state.replayStep++;
+        this._replayTimer = setTimeout(() => this._replayTick(), 650);
+    }
+    replaySeekPct(ev) {
+        const n = this.replaySteps.length;
+        if (!n) return;
+        const pct = parseInt(ev.target.value, 10) / 100;
+        this.state.replayStep = Math.min(n - 1, Math.max(-1, Math.round(pct * n) - 1));
+    }
 
     // ---- inline component editor ----
     get editing() { return this.state.editMode && this.selected && this.selected.id === this.state.editId; }
@@ -1629,47 +1846,92 @@ export class PbFormulaStudio extends Component {
         return u.length ? u.join(", ") : "";
     }
 
-    // ---- Mapping canvas (F10, cycle adapter) ----
-    openMapping() {
+    // ---- Mapping canvas (F10, multi-adapter) ----
+    get mapTabs() {
+        return [
+            { key: "cycle", label: "Cycle carryover" },
+            { key: "api", label: "API fields" },
+            { key: "import", label: "Import columns" },
+            { key: "scheme", label: "Schemes" },
+        ];
+    }
+    // adapters that share the generic create/delete/draw dispatch; cycle is bespoke
+    get _mapPrefix() { return { api: "api", import: "import", scheme: "scheme" }[this.state.mapMode] || null; }
+    openMapping(mode) {
+        this.state.mapMode = mode || this.state.mapMode || "cycle";
         this.state.mapOpen = true;
         this.state.mapData = null;
+        this.state.mapContextId = null;
+        this.state.mapDismissed = [];
+        this._loadMapping();
+    }
+    setMapMode(mode) {
+        if (this.state.mapMode === mode) return;
+        this.state.mapMode = mode;
+        this.state.mapData = null;
+        this.state.mapContextId = null;
+        this.state.mapDismissed = [];
+        this._loadMapping();
+    }
+    setMapContext(ev) {
+        this.state.mapContextId = parseInt(ev.target.value, 10);
+        this.state.mapDismissed = [];
         this._loadMapping();
     }
     closeMapping() { this.state.mapOpen = false; }
     async _loadMapping() {
         this.state.mapBusy = true;
+        const cfg = this.state.config.id, ctx = this.state.mapContextId, p = this._mapPrefix;
         try {
-            this.state.mapData = await this.orm.call("pb.formula.studio", "mapping_canvas_data",
-                [this.state.config.id]);
+            const r = p
+                ? await this.orm.call("pb.formula.studio", `${p}_mapping_data`, [cfg, ctx || false])
+                : await this.orm.call("pb.formula.studio", "mapping_canvas_data", [cfg]);
+            this.state.mapData = r;
+            if (r && r.context_id) this.state.mapContextId = r.context_id;
         } catch (e) {
             this.state.mapData = { ok: false, reason: "error" };
         } finally {
             this.state.mapBusy = false;
         }
     }
-    get mapAcceptedCount() {
-        const w = this.state.mapData && this.state.mapData.wires;
-        return w ? w.filter(x => x.state === "accepted").length : 0;
+    // wires passed to the canvas (drop client-side-dismissed api suggestions)
+    get mapWires() {
+        const w = (this.state.mapData && this.state.mapData.wires) || [];
+        const d = this.state.mapDismissed || [];
+        return d.length ? w.filter(x => !d.includes(x.id)) : w;
     }
-    get mapSuggestedCount() {
-        const w = this.state.mapData && this.state.mapData.wires;
-        return w ? w.filter(x => x.state === "suggested").length : 0;
-    }
+    get mapAcceptedCount() { return this.mapWires.filter(x => x.state === "accepted").length; }
+    get mapSuggestedCount() { return this.mapWires.filter(x => x.state === "suggested").length; }
     async mapAccept(wire) {
-        await this.orm.call("pb.formula.studio", "mapping_accept", [wire.ref]);
+        const p = this._mapPrefix;
+        if (p) {
+            await this.orm.call("pb.formula.studio", `${p}_mapping_create`,
+                [this.state.config.id, this.state.mapContextId, wire.source || wire.leftId, wire.rightId]);
+        } else {
+            await this.orm.call("pb.formula.studio", "mapping_accept", [wire.ref]);
+        }
         await this._loadMapping();
     }
     async mapReject(wire) {
+        if (this._mapPrefix) {
+            // api/import suggestions are computed live, not persisted — dismiss client-side
+            this.state.mapDismissed = [...(this.state.mapDismissed || []), wire.id];
+            return;
+        }
         await this.orm.call("pb.formula.studio", "mapping_reject", [wire.ref]);
         await this._loadMapping();
     }
     async mapDelete(wire) {
-        await this.orm.call("pb.formula.studio", "mapping_delete", [wire.ref]);
+        const p = this._mapPrefix;
+        await this.orm.call("pb.formula.studio", p ? `${p}_mapping_delete` : "mapping_delete", [wire.ref]);
         await this._loadMapping();
     }
     async mapDraw(leftId, rightId) {
-        const r = await this.orm.call("pb.formula.studio", "mapping_create",
-            [this.state.config.id, leftId, rightId]);
+        const p = this._mapPrefix;
+        const r = p
+            ? await this.orm.call("pb.formula.studio", `${p}_mapping_create`,
+                [this.state.config.id, this.state.mapContextId, leftId, rightId])
+            : await this.orm.call("pb.formula.studio", "mapping_create", [this.state.config.id, leftId, rightId]);
         if (r && r.ok === false) { this.notif.add(r.msg || "Could not connect", { type: "warning" }); return; }
         await this._loadMapping();
     }
@@ -1687,10 +1949,8 @@ export class PbFormulaStudio extends Component {
         }
     }
     async mapAcceptAll() {
-        const sugs = (this.state.mapData.wires || []).filter(w => w.state === "suggested" && w.confidence >= 0.9);
-        for (const w of sugs) {
-            await this.orm.call("pb.formula.studio", "mapping_accept", [w.ref]);
-        }
+        const sugs = this.mapWires.filter(w => w.state === "suggested" && w.confidence >= 0.9);
+        for (const w of sugs) await this.mapAccept(w);
         await this._loadMapping();
         this.notif.add(`Accepted ${sugs.length} high-confidence mapping${sugs.length === 1 ? "" : "s"}`, { type: "success" });
     }
