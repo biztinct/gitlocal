@@ -49,6 +49,7 @@ class HrFormulaRuleVersion(models.Model):
         ('fill', 'Drag-fill'),
         ('restore', 'Restored'),
         ('lifecycle', 'Lifecycle'),
+        ('rename', 'Renamed'),
     ], string='Reason', default='edit', required=True, index=True)
     note = fields.Char(string='Note')
 

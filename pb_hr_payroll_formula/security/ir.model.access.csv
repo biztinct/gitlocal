@@ -70,3 +70,11 @@ access_shadow_discrepancy_manager,hr.formula.shadow.discrepancy.manager,model_hr
 access_shadow_cluster_user,hr.formula.shadow.cluster.user,model_hr_formula_shadow_cluster,pb_hr_payroll_formula.group_formula_user,1,1,1,1
 access_shadow_cluster_manager,hr.formula.shadow.cluster.manager,model_hr_formula_shadow_cluster,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_shadow_import_wizard_user,hr.formula.shadow.import.wizard.user,model_hr_formula_shadow_import_wizard,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_formula_simulation_user,hr.formula.simulation.user,model_hr_formula_simulation,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_formula_simulation_manager,hr.formula.simulation.manager,model_hr_formula_simulation,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_scenario_user,hr.formula.scenario.user,model_hr_formula_scenario,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_formula_scenario_manager,hr.formula.scenario.manager,model_hr_formula_scenario,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_rate_table_user,hr.formula.rate.table.user,model_hr_formula_rate_table,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_formula_rate_table_manager,hr.formula.rate.table.manager,model_hr_formula_rate_table,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_rate_bracket_user,hr.formula.rate.bracket.user,model_hr_formula_rate_bracket,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_formula_rate_bracket_manager,hr.formula.rate.bracket.manager,model_hr_formula_rate_bracket,pb_hr_payroll_formula.group_formula_manager,1,1,1,1

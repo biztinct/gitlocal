@@ -174,6 +174,14 @@ class HrFormulaConfig(models.Model):
         copy=True
     )
 
+    # F11 — progressive rate/bracket tables referenced by BRACKET(code, value)
+    rate_table_ids = fields.One2many(
+        'hr.formula.rate.table',
+        'config_id',
+        string='Rate Tables',
+        copy=True
+    )
+
     rule_count = fields.Integer(
         string='Rules Count',
         compute='_compute_rule_count'

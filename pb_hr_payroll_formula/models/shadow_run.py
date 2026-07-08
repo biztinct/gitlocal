@@ -25,57 +25,15 @@ _logger = logging.getLogger(__name__)
 
 
 def _evaluate_config_inputs(config, input_values):
-    """Evaluate a config's rule set against an input dict → {code: value}.
+    """Evaluate a config's rule set against an input dict → {code/letter: value}.
 
-    Mirrors hr.formula.sample.data._evaluate_rules_with_dependencies (same
-    engine, same two-pass forward-ref resolution) but off any payslip/sample —
-    exactly what a shadow line needs. Never raises: a bad rule yields 0 for that
-    code so the *comparison* surfaces it as a discrepancy, not a crash."""
-    rules = config.rule_ids
-    if not rules:
-        return dict(input_values)
-    rules._compute_dependencies()
-    try:
-        from ..formula_engine import FormulaEvaluator
-        sorted_rules = FormulaEvaluator()._topological_sort(rules)
-    except Exception:
-        sorted_rules = rules.sorted(key=lambda r: r.sequence)
-
-    results = dict(input_values)
-    for rule in sorted_rules:
-        if rule.column_type == 'input':
-            results.setdefault(rule.code, rule.default_value or 0.0)
-        elif rule.column_type == 'constant':
-            results[rule.code] = rule.constant_value or 0.0
-        elif rule.column_type == 'formula':
-            try:
-                results[rule.code] = rule.evaluate(results)
-            except Exception as e:
-                _logger.debug("shadow eval %s: %s", rule.code, e)
-                results[rule.code] = 0.0
-        # mirror the payslip evaluator: expose the value under its column letter
-        # too, so downstream refs AND the expected side (which stores both keys)
-        # line up.
-        if rule.column_letter:
-            results[rule.column_letter] = results.get(rule.code, 0.0)
-    # second pass for forward refs the dependency parse missed
-    for _pass in range(2):
-        changed = False
-        for rule in sorted_rules:
-            if rule.column_type != 'formula':
-                continue
-            try:
-                v = rule.evaluate(results)
-            except Exception:
-                v = 0.0
-            if results.get(rule.code) != v:
-                results[rule.code] = v
-                if rule.column_letter:
-                    results[rule.column_letter] = v
-                changed = True
-        if not changed:
-            break
-    return results
+    Thin wrapper over the shared overlay evaluator (F8's ``_evaluate_config_overlay``
+    with no overrides) — same engine, same two-pass forward-ref resolution, off any
+    payslip/sample, and crucially it never writes to a rule record. Never raises: a
+    bad rule yields 0 for that code so the *comparison* surfaces it as a discrepancy,
+    not a crash."""
+    from .formula_simulation import _evaluate_config_overlay
+    return _evaluate_config_overlay(config, input_values, None)
 
 
 class HrFormulaShadowRun(models.Model):
