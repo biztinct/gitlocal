@@ -5,6 +5,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { GridStudio } from "./grid/grid_studio";
+import { MappingCanvas } from "./mapping/mapping_canvas";
 
 const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
@@ -69,7 +70,7 @@ export class CfgCombo extends Component {
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo, GridStudio };
+    static components = { CfgCombo, GridStudio, MappingCanvas };
     static props = ["*"];
 
     setup() {
@@ -137,6 +138,19 @@ export class PbFormulaStudio extends Component {
             rateErr: "",
             ratePreviewIncome: 40000000,
             ratePreview: null,       // {value, result, compiled}
+            // F10 — mapping canvas (cycle adapter)
+            mapOpen: false,
+            mapBusy: false,
+            mapData: null,           // {ok, mid, end, left, right, wires, can_edit} | {ok:false, reason}
+            // F9 — payslip studio
+            psOpen: false,
+            psBusy: false,
+            psData: null,            // {ok, config, sections, tray, samples, sample_id, colors, can_edit}
+            psLang: "en",            // en | vi label lens
+            psDragId: null,          // rule id currently dragged
+            psOverComp: null,        // rule id being hovered during a drag (insert-before)
+            psOverZone: null,        // section id or 'tray' currently hovered
+            psEditSec: null,         // section id whose title is inline-editing
             aiModel: "",
             wizardOpen: false,
             wizardStep: 1,
@@ -1614,6 +1628,192 @@ export class PbFormulaStudio extends Component {
         const u = (t.used_by || []);
         return u.length ? u.join(", ") : "";
     }
+
+    // ---- Mapping canvas (F10, cycle adapter) ----
+    openMapping() {
+        this.state.mapOpen = true;
+        this.state.mapData = null;
+        this._loadMapping();
+    }
+    closeMapping() { this.state.mapOpen = false; }
+    async _loadMapping() {
+        this.state.mapBusy = true;
+        try {
+            this.state.mapData = await this.orm.call("pb.formula.studio", "mapping_canvas_data",
+                [this.state.config.id]);
+        } catch (e) {
+            this.state.mapData = { ok: false, reason: "error" };
+        } finally {
+            this.state.mapBusy = false;
+        }
+    }
+    get mapAcceptedCount() {
+        const w = this.state.mapData && this.state.mapData.wires;
+        return w ? w.filter(x => x.state === "accepted").length : 0;
+    }
+    get mapSuggestedCount() {
+        const w = this.state.mapData && this.state.mapData.wires;
+        return w ? w.filter(x => x.state === "suggested").length : 0;
+    }
+    async mapAccept(wire) {
+        await this.orm.call("pb.formula.studio", "mapping_accept", [wire.ref]);
+        await this._loadMapping();
+    }
+    async mapReject(wire) {
+        await this.orm.call("pb.formula.studio", "mapping_reject", [wire.ref]);
+        await this._loadMapping();
+    }
+    async mapDelete(wire) {
+        await this.orm.call("pb.formula.studio", "mapping_delete", [wire.ref]);
+        await this._loadMapping();
+    }
+    async mapDraw(leftId, rightId) {
+        const r = await this.orm.call("pb.formula.studio", "mapping_create",
+            [this.state.config.id, leftId, rightId]);
+        if (r && r.ok === false) { this.notif.add(r.msg || "Could not connect", { type: "warning" }); return; }
+        await this._loadMapping();
+    }
+    async mapSuggest() {
+        this.state.mapBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "mapping_suggest", [this.state.config.id]);
+            if (r && r.ok) this.state.mapData = r;
+            const n = this.mapSuggestedCount;
+            this.notif.add(n ? `${n} suggestion${n === 1 ? "" : "s"} found` : "No new suggestions", { type: "success" });
+        } catch (e) {
+            this.notif.add("Suggest failed", { type: "danger" });
+        } finally {
+            this.state.mapBusy = false;
+        }
+    }
+    async mapAcceptAll() {
+        const sugs = (this.state.mapData.wires || []).filter(w => w.state === "suggested" && w.confidence >= 0.9);
+        for (const w of sugs) {
+            await this.orm.call("pb.formula.studio", "mapping_accept", [w.ref]);
+        }
+        await this._loadMapping();
+        this.notif.add(`Accepted ${sugs.length} high-confidence mapping${sugs.length === 1 ? "" : "s"}`, { type: "success" });
+    }
+
+    // ---- Payslip Studio (F9) ----
+    openPayslip() {
+        this.state.psOpen = true;
+        this.state.psData = null;
+        this.state.psEditSec = null;
+        this._loadPayslip();
+    }
+    closePayslip() { this.state.psOpen = false; }
+    async _loadPayslip(sampleId) {
+        this.state.psBusy = true;
+        try {
+            this.state.psData = await this.orm.call("pb.formula.studio", "payslip_studio_data",
+                [this.state.config.id, sampleId || false]);
+        } catch (e) {
+            this.state.psData = { ok: false };
+        } finally {
+            this.state.psBusy = false;
+        }
+    }
+    psSetSample(ev) { this._loadPayslip(parseInt(ev.target.value, 10)); }
+    psToggleLang() { this.state.psLang = this.state.psLang === "en" ? "vi" : "en"; }
+    psSectionTitle(s) {
+        return (this.state.psLang === "vi" && s.label_vi) ? s.label_vi : (s.label || s.identifier);
+    }
+
+    // component value formatting (typed, reusing fmtTyped)
+    psVal(c) { return this.fmtTyped(c, c.value); }
+    // is a line visible on the printed slip?
+    psVisible(c) {
+        if (c.visibility === "never") return false;
+        if (c.visibility === "when_nonzero") return Math.abs(c.value || 0) > 0.0001;
+        return true;
+    }
+    psSectionVisibleComps(s) { return s.components.filter(c => this.psVisible(c)); }
+    psSectionShown(s) {
+        if (!s.collapse_when_empty) return true;
+        return this.psSectionVisibleComps(s).length > 0;
+    }
+    psSectionTotal(s) {
+        let t = 0;
+        for (const c of this.psSectionVisibleComps(s)) t += (c.is_deduction ? -1 : 1) * (c.value || 0);
+        return t;
+    }
+    get psNet() {
+        if (!this.state.psData) return 0;
+        let net = 0;
+        for (const s of this.state.psData.sections) net += this.psSectionTotal(s);
+        return net;
+    }
+
+    // ---- drag & drop (native HTML5) ----
+    psDragStart(comp, ev) {
+        if (!this.state.psData.can_edit) { ev.preventDefault(); return; }
+        this.state.psDragId = comp.id;
+        ev.dataTransfer.effectAllowed = "move";
+        try { ev.dataTransfer.setData("text/plain", String(comp.id)); } catch (e) { /* firefox */ }
+    }
+    psDragEnd() { this.state.psDragId = null; this.state.psOverComp = null; this.state.psOverZone = null; }
+    psDragOverComp(comp, ev) {
+        if (this.state.psDragId == null) return;
+        ev.preventDefault(); ev.stopPropagation();
+        this.state.psOverComp = comp.id;
+    }
+    psDragOverZone(zone, ev) {
+        if (this.state.psDragId == null) return;
+        ev.preventDefault();
+        this.state.psOverZone = zone;
+    }
+    async psDrop(sectionId, ev) {
+        if (ev) ev.preventDefault();
+        const dragId = this.state.psDragId;
+        this.state.psOverZone = null;
+        if (dragId == null) return;
+        const target = sectionId ? this.state.psData.sections.find(s => s.id === sectionId) : null;
+        const list = (target ? target.components : this.state.psData.tray)
+            .map(c => c.id).filter(id => id !== dragId);
+        let idx = list.indexOf(this.state.psOverComp);
+        if (idx === -1) idx = list.length;
+        list.splice(idx, 0, dragId);
+        this.state.psDragId = null; this.state.psOverComp = null;
+        await this.orm.call("pb.formula.studio", "move_component", [dragId, sectionId || false, list]);
+        await this._loadPayslip(this.state.psData.sample_id);
+    }
+
+    // ---- section ops ----
+    async psCreateSection() {
+        if (this._lockedNotice()) return;
+        const r = await this.orm.call("pb.formula.studio", "create_section", [this.state.config.id, "New section"]);
+        if (r && r.ok) { await this._loadPayslip(this.state.psData.sample_id); this.state.psEditSec = r.section_id; }
+    }
+    startSectionEdit(s) { if (this.state.psData.can_edit) this.state.psEditSec = s.id; }
+    async psRenameSection(s, ev) {
+        const label = (ev.target.value || "").trim();
+        this.state.psEditSec = null;
+        if (label && label !== s.label) {
+            await this.orm.call("pb.formula.studio", "update_section", [s.id, { label }]);
+            await this._loadPayslip(this.state.psData.sample_id);
+        }
+    }
+    psRenameKey(s, ev) { if (ev.key === "Enter") ev.target.blur(); else if (ev.key === "Escape") this.state.psEditSec = null; }
+    async psSetSectionColor(s, color) {
+        await this.orm.call("pb.formula.studio", "update_section", [s.id, { color_key: color }]);
+        await this._loadPayslip(this.state.psData.sample_id);
+    }
+    async psToggleCollapse(s) {
+        await this.orm.call("pb.formula.studio", "update_section", [s.id, { collapse_when_empty: !s.collapse_when_empty }]);
+        await this._loadPayslip(this.state.psData.sample_id);
+    }
+    async psDeleteSection(s) {
+        await this.orm.call("pb.formula.studio", "delete_section", [s.id]);
+        await this._loadPayslip(this.state.psData.sample_id);
+    }
+    async psCycleVisibility(c) {
+        if (!this.state.psData.can_edit) return;
+        const next = { always: "when_nonzero", when_nonzero: "never", never: "always" }[c.visibility] || "always";
+        await this.orm.call("pb.formula.studio", "set_component_visibility", [c.id, next]);
+        await this._loadPayslip(this.state.psData.sample_id);
+    }
+    psVisIcon(c) { return c.visibility; }   // used for CSS class
 
     async aiAsk(text) {
         if (!text || !text.trim()) return;

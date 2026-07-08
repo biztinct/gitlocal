@@ -1422,6 +1422,304 @@ class PbFormulaStudio(models.AbstractModel):
                 'migrated_samples': migrated_samples}
 
     # ------------------------------------------------------------------
+    # F10 — Unified Mapping Canvas (adapter 1: mid→end cycle mapping)
+    # ------------------------------------------------------------------
+    def _cycle_pair(self, config):
+        """Given any config, resolve its (mid_cycle, end_cycle) sibling pair.
+        Pairs by pb_division (the pb_* demo world) else structure_id, within the
+        same company. Returns (mid, end) records or (empty, empty)."""
+        Config = self.env['hr.formula.config']
+        empty = Config.browse()
+        ct = config.cycle_type
+        if ct not in ('mid_cycle', 'end_cycle'):
+            return empty, empty
+        want = 'end_cycle' if ct == 'mid_cycle' else 'mid_cycle'
+        dom = [('cycle_type', '=', want), ('id', '!=', config.id)]
+        if config.company_id:
+            dom.append(('company_id', '=', config.company_id.id))
+        cands = Config.search(dom)
+        sibling = empty
+        div = getattr(config, 'pb_division', False)
+        if div:
+            sibling = cands.filtered(lambda c: getattr(c, 'pb_division', False) == div)[:1]
+        if not sibling and config.structure_id:
+            sibling = cands.filtered(lambda c: c.structure_id.id == config.structure_id.id)[:1]
+        if not sibling and cands:
+            # name-prefix heuristic: everything before the em/en dash
+            def prefix(n):
+                return re.split(r'[—–-]', n or '', 1)[0].strip().lower()
+            p = prefix(config.name)
+            sibling = cands.filtered(lambda c: prefix(c.name) == p)[:1]
+        if not sibling:
+            return empty, empty
+        return (config, sibling) if ct == 'mid_cycle' else (sibling, config)
+
+    def _mc_item(self, rule):
+        """One MappingCanvas item — payroll-agnostic {id, label, sublabel, meta}."""
+        return {
+            'id': rule.id,
+            'label': (rule.salary_rule_id.name if rule.salary_rule_id else False) or rule.name or rule.code or '(unnamed)',
+            'sublabel': rule.code or '',
+            'meta': {'col': rule.column_letter or '', 'type': rule.column_type or '',
+                     'group': _group_for(rule)},
+        }
+
+    @api.model
+    def mapping_canvas_data(self, config_id=None):
+        """Feed the cycle-mapping surface: left = mid-cycle components, right =
+        end-cycle components, wires = accepted mappings + proposed suggestions."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'reason': 'no_config'}
+        mid, end = self._cycle_pair(config)
+        if not (mid and end):
+            return {'ok': False, 'reason': 'no_pair',
+                    'config': {'id': config.id, 'name': config.name,
+                               'cycle_type': config.cycle_type}}
+        left = [self._mc_item(r) for r in mid.rule_ids.sorted(key=lambda r: r.sequence)]
+        right = [self._mc_item(r) for r in end.rule_ids.sorted(key=lambda r: r.sequence)]
+        Mapping = self.env['hr.payroll.cycle.component.mapping']
+        Sug = self.env['hr.payroll.cycle.mapping.suggestion']
+        base = [('mid_cycle_config_id', '=', mid.id), ('end_cycle_config_id', '=', end.id)]
+        wires = []
+        for m in Mapping.search(base):
+            wires.append({'id': 'm%s' % m.id, 'kind': 'mapping', 'ref': m.id,
+                          'leftId': m.mid_component_id.id, 'rightId': m.end_component_id.id,
+                          'state': 'accepted'})
+        for s in Sug.search(base + [('state', '=', 'proposed')]):
+            wires.append({'id': 's%s' % s.id, 'kind': 'suggestion', 'ref': s.id,
+                          'leftId': s.mid_component_id.id, 'rightId': s.end_component_id.id,
+                          'state': 'suggested',
+                          'confidence': round(s.confidence or 0.0, 4),
+                          'reason': s.match_reason or ''})
+        return {
+            'ok': True,
+            'mid': {'id': mid.id, 'name': mid.name},
+            'end': {'id': end.id, 'name': end.name},
+            'left': left, 'right': right, 'wires': wires,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def mapping_suggest(self, config_id=None):
+        """(Re)generate proposed suggestions for the config's cycle pair."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        mid, end = self._cycle_pair(config)
+        if not (mid and end):
+            return {'ok': False, 'reason': 'no_pair'}
+        wiz = self.env['hr.payroll.cycle.component.mapping.wizard'].create({
+            'mid_cycle_config_id': mid.id, 'end_cycle_config_id': end.id})
+        wiz.action_suggest_mappings()
+        return self.mapping_canvas_data(config.id)
+
+    @api.model
+    def mapping_accept(self, suggestion_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        s = self.env['hr.payroll.cycle.mapping.suggestion'].browse(int(suggestion_id))
+        if not s.exists():
+            return {'ok': False}
+        s.action_accept()
+        return {'ok': True}
+
+    @api.model
+    def mapping_reject(self, suggestion_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        s = self.env['hr.payroll.cycle.mapping.suggestion'].browse(int(suggestion_id))
+        if s.exists():
+            s.action_reject()
+        return {'ok': True}
+
+    @api.model
+    def mapping_create(self, config_id, mid_component_id, end_component_id):
+        """Draw a wire = create a mapping between a mid and an end component."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        config = self._pick_config(config_id)
+        mid, end = self._cycle_pair(config) if config else (None, None)
+        if not (mid and end):
+            return {'ok': False, 'reason': 'no_pair'}
+        Mapping = self.env['hr.payroll.cycle.component.mapping']
+        midc = self.env['hr.formula.rule'].browse(int(mid_component_id))
+        endc = self.env['hr.formula.rule'].browse(int(end_component_id))
+        if midc.config_id != mid or endc.config_id != end:
+            return {'ok': False, 'msg': _("Components must belong to the paired configs.")}
+        # respect the one-mid-one-end uniqueness: drop any existing wire on either side
+        Mapping.search([('mid_cycle_config_id', '=', mid.id), ('end_cycle_config_id', '=', end.id),
+                        '|', ('mid_component_id', '=', midc.id),
+                        ('end_component_id', '=', endc.id)]).unlink()
+        Mapping.create({'mid_cycle_config_id': mid.id, 'end_cycle_config_id': end.id,
+                        'mid_component_id': midc.id, 'end_component_id': endc.id})
+        return {'ok': True}
+
+    @api.model
+    def mapping_delete(self, mapping_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        m = self.env['hr.payroll.cycle.component.mapping'].browse(int(mapping_id))
+        if m.exists():
+            m.unlink()
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # F9 — Payslip Studio
+    # ------------------------------------------------------------------
+    _SECTION_COLORS = ['slate', 'indigo', 'emerald', 'amber', 'rose', 'sky', 'violet']
+
+    def _payslip_comp(self, r, values):
+        """One payslip line payload (value comes from the live preview)."""
+        return {
+            'id': r.id,
+            'col': r.column_letter or '',
+            'code': r.code or '',
+            'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code or '(unnamed)',
+            'group': _group_for(r),
+            'type': r.column_type or '',
+            'number_format': r.number_format or 'currency',
+            'visibility': r.visibility_rule or 'always',
+            'payslip_sequence': r.payslip_sequence or 0,
+            'is_deduction': _group_for(r) == 'Deductions',
+            'value': values.get(r.column_letter),
+        }
+
+    @api.model
+    def payslip_studio_data(self, config_id=None, sample_id=None):
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        Section = self.env['hr.payslip.config']
+        sections = Section.search([('salary_structure_id', '=', config.id)], order='sequence, id')
+        samples = [{'id': s.id, 'name': s.name} for s in config.sample_data_ids]
+        sid = int(sample_id) if sample_id else (samples[0]['id'] if samples else False)
+        values = self._compute(config, sid).get('values', {}) if sid else {}
+
+        payslip_rules = [r for r in rules if r.appears_on_payslip]
+        by_sec = defaultdict(list)
+        tray = []
+        for r in payslip_rules:
+            if r.payslip_identifier:
+                by_sec[r.payslip_identifier.id].append(r)
+            else:
+                tray.append(r)
+        sec_payload = []
+        for s in sections:
+            comps = sorted(by_sec.get(s.id, []),
+                           key=lambda r: (r.payslip_sequence or 0, r.sequence))
+            sec_payload.append({
+                'id': s.id, 'identifier': s.identifier or '',
+                'label': s.label or s.identifier or '', 'label_vi': s.label_vi or '',
+                'sequence': s.sequence, 'color_key': s.color_key or 'slate',
+                'collapse_when_empty': bool(s.collapse_when_empty),
+                'components': [self._payslip_comp(r, values) for r in comps],
+            })
+        tray_sorted = sorted(tray, key=lambda r: r.sequence)
+        return {
+            'ok': True,
+            'config': {'id': config.id, 'name': config.name,
+                       'currency': config.currency_id.symbol if config.currency_id else '₫'},
+            'sections': sec_payload,
+            'tray': [self._payslip_comp(r, values) for r in tray_sorted],
+            'samples': samples, 'sample_id': sid,
+            'colors': self._SECTION_COLORS,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def move_component(self, rule_id, section_id, ordered_ids):
+        """Place a component into a section (or the tray when section_id is falsy)
+        and renumber that target's lines from ordered_ids — one RPC covers both a
+        cross-section move and a within-section reorder."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        Rule = self.env['hr.formula.rule']
+        rule = Rule.browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False}
+        sec = int(section_id) if section_id else False
+        vals = {'payslip_identifier': sec, 'appears_on_payslip': True}
+        rule.write(vals)
+        # renumber the whole target list so drag order persists deterministically
+        for i, rid in enumerate(ordered_ids or []):
+            r = Rule.browse(int(rid))
+            if r.exists():
+                r.write({'payslip_identifier': sec, 'payslip_sequence': (i + 1) * 10})
+        return {'ok': True}
+
+    @api.model
+    def create_section(self, config_id, label=None):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        Section = self.env['hr.payslip.config']
+        existing = Section.search([('salary_structure_id', '=', config.id)])
+        base = (label or 'Section').strip()
+        ident = re.sub(r'[^A-Za-z0-9]', '', base).upper()[:16] or 'SECTION'
+        codes = set(existing.mapped('identifier'))
+        code, n = ident, 1
+        while code in codes:
+            n += 1
+            code = '%s%s' % (ident, n)
+        seq = (max(existing.mapped('sequence') or [0]) + 10) if existing else 10
+        color = self._SECTION_COLORS[len(existing) % len(self._SECTION_COLORS)]
+        s = Section.create({'salary_structure_id': config.id, 'identifier': code,
+                            'label': base, 'sequence': seq, 'color_key': color})
+        return {'ok': True, 'section_id': s.id}
+
+    @api.model
+    def update_section(self, section_id, vals):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        s = self.env['hr.payslip.config'].browse(int(section_id))
+        if not s.exists():
+            return {'ok': False}
+        allowed = {k: v for k, v in (vals or {}).items()
+                   if k in ('label', 'label_vi', 'color_key', 'collapse_when_empty')}
+        if allowed:
+            s.write(allowed)
+        return {'ok': True}
+
+    @api.model
+    def delete_section(self, section_id):
+        """Delete a section; its components fall back to the tray (unassigned)."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        s = self.env['hr.payslip.config'].browse(int(section_id))
+        if not s.exists():
+            return {'ok': False}
+        self.env['hr.formula.rule'].search([('payslip_identifier', '=', s.id)]).write(
+            {'payslip_identifier': False})
+        s.unlink()
+        return {'ok': True}
+
+    @api.model
+    def reorder_sections(self, config_id, ordered_ids):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        Section = self.env['hr.payslip.config']
+        for i, sid in enumerate(ordered_ids or []):
+            s = Section.browse(int(sid))
+            if s.exists():
+                s.write({'sequence': (i + 1) * 10})
+        return {'ok': True}
+
+    @api.model
+    def set_component_visibility(self, rule_id, visibility_rule):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        if visibility_rule not in ('always', 'when_nonzero', 'never'):
+            return {'ok': False}
+        r = self.env['hr.formula.rule'].browse(int(rule_id))
+        if r.exists():
+            r.write({'visibility_rule': visibility_rule})
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
     # F11 — Rate (bracket) tables
     # ------------------------------------------------------------------
     def _rate_table_payload(self, t):

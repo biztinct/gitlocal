@@ -1,0 +1,101 @@
+/* F10 — Unified Mapping Canvas */
+
+/* ---- overlay shell (inherits --i* palette vars from the .pbfs ancestor) ---- */
+.pbfs-map-scrim {
+    position: fixed; inset: 0; z-index: 1200;
+    background: rgba(20, 16, 50, .38);
+    display: flex; align-items: center; justify-content: center;
+    padding: 3vh 3vw;
+}
+.pbfs-map {
+    width: 100%; max-width: 1240px; height: 90vh;
+    background: #fff; border-radius: 18px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(20, 16, 50, .4);
+    display: flex; flex-direction: column;
+    animation: pbfs-map-in .2s ease;
+}
+@keyframes pbfs-map-in { from { transform: translateY(12px) scale(.99); opacity: .6; } to { transform: none; opacity: 1; } }
+
+.pbfs-map .pm-head { display: flex; align-items: center; gap: 14px; padding: 15px 20px; border-bottom: 1px solid var(--line, #E8E9F3); }
+.pbfs-map .pm-title { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.pbfs-map .pm-title > svg { width: 24px; height: 24px; color: var(--i, #5A4BB0); flex: none; }
+.pbfs-map .pm-title b { font-size: 15px; font-weight: 800; color: var(--ink, #1E1B2E); display: block; }
+.pbfs-map .pm-title small { font-size: 12px; color: var(--muted, #6B7280); }
+.pbfs-map .pm-head-actions { display: flex; align-items: center; gap: 10px; }
+.pbfs-map .pm-stat { font-size: 12.5px; color: var(--muted, #6B7280); }
+.pbfs-map .pm-stat b { color: var(--ink, #1E1B2E); }
+.pbfs-map .hs-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 5px; border-radius: 7px; }
+.pbfs-map .hs-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
+.pbfs-map .hs-x svg { width: 18px; height: 18px; }
+.pbfs-map .pm-body { flex: 1; position: relative; overflow: hidden; background: #FAFAFE; }
+.pbfs-map .pm-loading { padding: 40px; text-align: center; color: var(--muted, #6B7280); font-size: 13px; }
+
+.pbfs-map .pm-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 9px; padding: 60px 30px; color: var(--muted, #6B7280); }
+.pbfs-map .pm-empty svg { width: 54px; height: 54px; color: var(--i-soft2, #DDD6F2); margin-bottom: 4px; }
+.pbfs-map .pm-empty b { font-size: 16px; color: var(--ink, #1E1B2E); }
+.pbfs-map .pm-empty span { font-size: 13px; line-height: 1.55; max-width: 460px; }
+
+/* ---- the canvas ---- */
+.mapping-canvas { position: absolute; inset: 0; outline: none; }
+.mapping-canvas .mc-wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+.mapping-canvas .mc-wire { fill: none; stroke-width: 2; }
+.mapping-canvas .mc-wire.accepted { stroke: var(--i, #5A4BB0); stroke-width: 2.4; }
+.mapping-canvas .mc-wire.suggested { stroke: #D97706; stroke-width: 2; stroke-dasharray: 6 5; opacity: .85; }
+.mapping-canvas .mc-wire.error { stroke: #DC2626; stroke-width: 2.4; }
+.mapping-canvas .mc-wire.hot { stroke-width: 3.4; opacity: 1; }
+
+.mapping-canvas .mc-cols { position: absolute; inset: 0; display: flex; z-index: 2; pointer-events: none; }
+.mapping-canvas .mc-col { width: 340px; display: flex; flex-direction: column; pointer-events: auto; }
+.mapping-canvas .mc-col.left { margin-right: auto; }
+.mapping-canvas .mc-col.right { margin-left: auto; }
+.mapping-canvas .mc-col-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 18px 8px; }
+.mapping-canvas .mc-col.right .mc-col-head { flex-direction: row-reverse; }
+.mapping-canvas .mc-col-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--i600, #4A3D96); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mapping-canvas .mc-col-count { font-size: 11px; font-weight: 800; color: var(--muted, #6B7280); background: #EEF1F5; border-radius: 999px; padding: 1px 8px; flex: none; }
+.mapping-canvas .mc-col-body { flex: 1; overflow-y: auto; padding: 4px 14px 20px; display: flex; flex-direction: column; gap: 7px; }
+
+.mapping-canvas .mc-item { display: flex; align-items: center; gap: 10px; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 11px; padding: 9px 12px; cursor: pointer; position: relative; box-shadow: 0 1px 2px rgba(15, 12, 40, .05); transition: border-color .13s, box-shadow .13s, transform .1s; }
+.mapping-canvas .mc-col.right .mc-item { flex-direction: row-reverse; text-align: right; }
+.mapping-canvas .mc-item:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(90, 75, 176, .12); }
+.mapping-canvas .mc-item-main { flex: 1; min-width: 0; }
+.mapping-canvas .mc-item-label { font-size: 13px; font-weight: 700; color: var(--ink, #1E1B2E); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mapping-canvas .mc-item-sub { font-size: 11px; color: var(--muted, #6B7280); display: flex; align-items: center; gap: 5px; margin-top: 1px; }
+.mapping-canvas .mc-col.right .mc-item-sub { flex-direction: row-reverse; }
+.mapping-canvas .mc-col-tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9.5px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 1px 5px; border-radius: 5px; }
+
+.mapping-canvas .mc-plug { width: 9px; height: 9px; border-radius: 50%; background: #CBD5E1; border: 2px solid #fff; box-shadow: 0 0 0 1px #CBD5E1; flex: none; }
+.mapping-canvas .mc-item.wired .mc-plug { background: #D97706; box-shadow: 0 0 0 1px #D97706; }
+.mapping-canvas .mc-item.accepted .mc-plug { background: var(--i, #5A4BB0); box-shadow: 0 0 0 1px var(--i, #5A4BB0); }
+
+.mapping-canvas .mc-item.accepted { border-color: var(--i-border, #CBC2EE); background: var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item.focus { border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-item.armed { border-color: var(--i, #5A4BB0); background: var(--i, #5A4BB0); }
+.mapping-canvas .mc-item.armed .mc-item-label, .mapping-canvas .mc-item.armed .mc-item-sub { color: #fff; }
+.mapping-canvas .mc-item.armed .mc-col-tag { background: rgba(255, 255, 255, .25); color: #fff; }
+.mapping-canvas .mc-item.armed .mc-plug { background: #fff; box-shadow: 0 0 0 1px #fff; }
+.mapping-canvas .mc-item.drophint { border-style: dashed; border-color: var(--i-border, #CBC2EE); }
+.mapping-canvas .mc-item.drophint:hover { background: var(--i-soft, #EDEAF8); border-color: var(--i, #5A4BB0); }
+
+/* ---- wire midpoint badges ---- */
+.mapping-canvas .mc-badges { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.mapping-canvas .mc-badge { position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 3px; pointer-events: auto; }
+.mapping-canvas .mc-badge.sug { background: #fff; border: 1px solid #FCD34D; border-radius: 999px; padding: 2px 3px 2px 8px; box-shadow: 0 3px 10px rgba(217, 119, 6, .2); }
+.mapping-canvas .mc-conf { font-size: 11px; font-weight: 800; color: #B45309; }
+.mapping-canvas .mc-badge button { width: 20px; height: 20px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.mapping-canvas .mc-badge .mc-b-ok { background: var(--i, #5A4BB0); color: #fff; }
+.mapping-canvas .mc-badge .mc-b-ok:hover { background: var(--i600, #4A3D96); }
+.mapping-canvas .mc-badge .mc-b-x { background: #F1F5F9; color: #64748B; }
+.mapping-canvas .mc-badge .mc-b-x:hover { background: #FEE2E2; color: #B91C1C; }
+.mapping-canvas .mc-badge button svg { width: 12px; height: 12px; }
+.mapping-canvas .mc-badge.acc { opacity: 0; transition: opacity .13s; }
+.mapping-canvas .mc-badge.acc:hover, .mapping-canvas .mc-wire.accepted.hot + .mc-badge.acc { opacity: 1; }
+.mapping-canvas .mc-badge .mc-b-del { background: #fff; border: 1px solid var(--line, #E8E9F3); color: #94A3B8; box-shadow: 0 2px 6px rgba(15, 12, 40, .12); }
+.mapping-canvas .mc-badge .mc-b-del:hover { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }
+/* reveal delete badges on wire hover via a wide invisible hit area is overkill;
+   the accepted badge stays subtly visible so it is discoverable */
+.mapping-canvas .mc-badge.acc { opacity: .35; }
+.mapping-canvas .mc-badge.acc:hover { opacity: 1; }
+
+.mapping-canvas .mc-drawhint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 8px; background: var(--i-deep, #241F52); color: #fff; font-size: 12.5px; font-weight: 600; padding: 8px 15px; border-radius: 999px; box-shadow: 0 8px 24px rgba(36, 31, 82, .35); }
+.mapping-canvas .mc-drawhint svg { width: 15px; height: 15px; }
+.mapping-canvas .mc-drawhint b { font-weight: 800; }
