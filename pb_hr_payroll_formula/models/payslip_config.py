@@ -29,6 +29,21 @@ class HrPayslipConfig(models.Model):
         string='Label',
         help="Display label for the identifier (optional)."
     )
+    # F9 — Payslip Studio: this model doubles as the payslip SECTION.
+    label_vi = fields.Char(
+        string='Label (VI)',
+        help="Vietnamese section title shown on the payslip when the reader's language is Vietnamese."
+    )
+    color_key = fields.Char(
+        string='Colour',
+        default='slate',
+        help="Section accent colour key used by the Payslip Studio."
+    )
+    collapse_when_empty = fields.Boolean(
+        string='Hide when empty',
+        default=False,
+        help="Omit this section from the printed payslip when it has no visible lines."
+    )
 
     def name_get(self):
         result = []

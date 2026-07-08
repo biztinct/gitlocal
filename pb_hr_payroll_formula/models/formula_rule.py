@@ -321,6 +321,19 @@ class HrFormulaRule(models.Model):
         help="Show this component on payslip document"
     )
 
+    # F9 — Payslip Studio: order within the payslip section + per-line visibility
+    payslip_sequence = fields.Integer(
+        string='Payslip Order',
+        default=10,
+        help="Order of this line within its payslip section."
+    )
+    visibility_rule = fields.Selection([
+        ('always', 'Always show'),
+        ('when_nonzero', 'Only when non-zero'),
+        ('never', 'Never (hidden)'),
+    ], string='Payslip Visibility', default='always',
+        help="Controls whether this line prints on the payslip.")
+
     report_visible = fields.Boolean(
         string='Visible in Reports',
         default=False,

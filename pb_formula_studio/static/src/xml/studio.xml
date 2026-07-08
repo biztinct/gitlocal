@@ -92,6 +92,14 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
               </button>
             </div>
+            <button class="pbfs-btn soft pbfs-psbtn" data-coach="fs-payslip" t-on-click="openPayslip" title="Payslip Studio — design the payslip layout">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
+              <span>Payslip</span>
+            </button>
+            <button class="pbfs-btn soft pbfs-mapbtn" data-coach="fs-mapping" t-on-click="openMapping" title="Mapping canvas — wire mid-cycle components to end-cycle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></svg>
+              <span>Mapping</span>
+            </button>
             <button class="pbfs-btn soft pbfs-ratebtn" data-coach="fs-rates" t-on-click="openRates" title="Rate &amp; bracket tables (PIT, etc.)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
               <span>Tables</span>
@@ -1143,6 +1151,174 @@
               </div>
             </t>
           </div>
+        </div>
+      </div>
+
+      <!-- Mapping canvas overlay (F10) -->
+      <div t-if="state.mapOpen" class="pbfs-map-scrim" t-on-click="closeMapping">
+        <div class="pbfs-map" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="pm-head">
+            <div class="pm-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></svg>
+              <div>
+                <b>Mid-cycle → End-cycle mapping</b>
+                <small t-if="state.mapData and state.mapData.ok">Carry values from <t t-esc="state.mapData.mid.name"/> into <t t-esc="state.mapData.end.name"/></small>
+                <small t-else="">Wire the components that carry over between payroll cycles</small>
+              </div>
+            </div>
+            <div class="pm-head-actions">
+              <t t-if="state.mapData and state.mapData.ok and state.mapData.can_edit">
+                <span class="pm-stat"><b t-esc="mapAcceptedCount"/> mapped<t t-if="mapSuggestedCount"> · <b t-esc="mapSuggestedCount"/> suggested</t></span>
+                <button class="pbfs-btn ghost sm" t-att-disabled="state.mapBusy" t-on-click="mapSuggest">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3.2"/></svg>Auto-suggest
+                </button>
+                <button t-if="mapSuggestedCount" class="pbfs-btn primary sm" t-on-click="mapAcceptAll">Accept all ≥90%</button>
+              </t>
+              <button class="hs-x" t-on-click="closeMapping"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            </div>
+          </div>
+
+          <div class="pm-body">
+            <div t-if="state.mapBusy and !state.mapData" class="pm-loading">Loading…</div>
+
+            <!-- no cycle pair -->
+            <div t-if="state.mapData and !state.mapData.ok" class="pm-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></svg>
+              <b t-if="state.mapData.reason === 'no_pair'">No paired cycle configuration</b>
+              <b t-else="">Nothing to map</b>
+              <span t-if="state.mapData.reason === 'no_pair'">This mapping wires a <b>Mid-Cycle</b> config to its <b>End-Cycle</b> counterpart. The current configuration has no sibling of the opposite cycle type in the same division.</span>
+              <span t-else="">Open a mid-cycle or end-cycle configuration to wire its carryover components.</span>
+            </div>
+
+            <!-- the canvas -->
+            <MappingCanvas t-if="state.mapData and state.mapData.ok"
+                           leftItems="state.mapData.left" rightItems="state.mapData.right"
+                           wires="state.mapData.wires"
+                           leftTitle="state.mapData.mid.name" rightTitle="state.mapData.end.name"
+                           canEdit="state.mapData.can_edit" busy="state.mapBusy"
+                           onAccept="(w) => this.mapAccept(w)"
+                           onReject="(w) => this.mapReject(w)"
+                           onDelete="(w) => this.mapDelete(w)"
+                           onDraw="(l, r) => this.mapDraw(l, r)"
+                           onSuggest="() => this.mapSuggest()"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payslip Studio overlay (F9) -->
+      <div t-if="state.psOpen" class="pbfs-ps-scrim" t-on-click="closePayslip">
+        <div class="pbfs-ps" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="ps-head">
+            <div class="ps-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
+              <div>
+                <b>Payslip Studio</b>
+                <small>Drag components into sections — the preview is what prints</small>
+              </div>
+            </div>
+            <div class="ps-head-actions">
+              <select t-if="state.psData and state.psData.samples.length" class="ps-sample" t-on-change="psSetSample">
+                <option t-foreach="state.psData.samples" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="s.id === state.psData.sample_id" t-esc="s.name"/>
+              </select>
+              <div class="ps-lang" t-on-click="psToggleLang" t-att-title="'Preview labels: ' + (state.psLang === 'vi' ? 'Vietnamese' : 'English')">
+                <span t-att-class="state.psLang === 'en' ? 'on' : ''">EN</span><span t-att-class="state.psLang === 'vi' ? 'on' : ''">VI</span>
+              </div>
+              <button class="hs-x" t-on-click="closePayslip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            </div>
+          </div>
+
+          <div class="ps-body" t-if="state.psData and state.psData.ok">
+            <!-- LEFT: layout canvas -->
+            <div class="ps-canvas">
+              <!-- tray of unplaced components -->
+              <div t-attf-class="ps-tray {{ state.psOverZone === 'tray' ? 'over' : '' }}"
+                   t-on-dragover="(ev) => this.psDragOverZone('tray', ev)" t-on-drop="(ev) => this.psDrop(false, ev)">
+                <div class="ps-tray-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>Unplaced · <t t-esc="state.psData.tray.length"/></div>
+                <div class="ps-chips">
+                  <t t-foreach="state.psData.tray" t-as="c" t-key="c.id">
+                    <div t-attf-class="ps-chip {{ c.group.toLowerCase() }} {{ state.psDragId === c.id ? 'dragging' : '' }}"
+                         draggable="true" t-on-dragstart="(ev) => this.psDragStart(c, ev)" t-on-dragend="psDragEnd"
+                         t-on-dragover="(ev) => this.psDragOverComp(c, ev)">
+                      <span class="ps-chip-col" t-esc="c.col"/><span class="ps-chip-name" t-esc="c.name"/>
+                    </div>
+                  </t>
+                  <div t-if="!state.psData.tray.length" class="ps-tray-empty">Every payslip component is placed in a section</div>
+                </div>
+              </div>
+
+              <!-- sections -->
+              <div class="ps-sections">
+                <t t-foreach="state.psData.sections" t-as="s" t-key="s.id">
+                  <div t-attf-class="ps-section sc-{{ s.color_key }} {{ state.psOverZone === s.id ? 'over' : '' }}"
+                       t-on-dragover="(ev) => this.psDragOverZone(s.id, ev)" t-on-drop="(ev) => this.psDrop(s.id, ev)">
+                    <div class="ps-sec-head">
+                      <span class="ps-sec-dot"/>
+                      <t t-if="state.psEditSec === s.id">
+                        <input class="ps-sec-rename" t-att-value="s.label" t-on-blur="(ev) => this.psRenameSection(s, ev)" t-on-keydown="(ev) => this.psRenameKey(s, ev)" autofocus="autofocus"/>
+                      </t>
+                      <span t-else="" class="ps-sec-title" t-on-click="() => this.startSectionEdit(s)" t-esc="psSectionTitle(s)"/>
+                      <span class="ps-sec-count" t-esc="s.components.length"/>
+                      <div class="ps-sec-tools">
+                        <div class="ps-colors">
+                          <t t-foreach="state.psData.colors" t-as="ck" t-key="ck">
+                            <button t-attf-class="ps-color sc-{{ ck }} {{ s.color_key === ck ? 'on' : '' }}" t-on-click="() => this.psSetSectionColor(s, ck)"/>
+                          </t>
+                        </div>
+                        <button t-attf-class="ps-sec-btn {{ s.collapse_when_empty ? 'on' : '' }}" t-on-click="() => this.psToggleCollapse(s)" title="Hide this section when it has no visible lines">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10 10 0 0 1 12 20C5 20 1 12 1 12a18 18 0 0 1 5.06-5.94M9.9 4.24A9 9 0 0 1 12 4c7 0 11 8 11 8a18 18 0 0 1-2.16 3.19M1 1l22 22"/></svg>
+                        </button>
+                        <button class="ps-sec-btn danger" t-on-click="() => this.psDeleteSection(s)" title="Delete section (components return to the tray)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="ps-sec-body">
+                      <t t-foreach="s.components" t-as="c" t-key="c.id">
+                        <div t-attf-class="ps-line vis-{{ c.visibility }} {{ psVisible(c) ? '' : 'hidden' }} {{ state.psDragId === c.id ? 'dragging' : '' }} {{ state.psOverComp === c.id ? 'over' : '' }}"
+                             draggable="true" t-on-dragstart="(ev) => this.psDragStart(c, ev)" t-on-dragend="psDragEnd"
+                             t-on-dragover="(ev) => this.psDragOverComp(c, ev)">
+                          <svg class="ps-grip" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>
+                          <span class="ps-line-name" t-esc="c.name"/>
+                          <span class="ps-line-val" t-esc="psVal(c)"/>
+                          <button class="ps-vis" t-attf-title="Visibility: {{ c.visibility }}" t-on-click="() => this.psCycleVisibility(c)">
+                            <svg t-if="c.visibility === 'always'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg t-elif="c.visibility === 'when_nonzero'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke-dasharray="3 3"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg t-else="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10 10 0 0 1 12 20C5 20 1 12 1 12a18 18 0 0 1 5.06-5.94M9.9 4.24A9 9 0 0 1 12 4c7 0 11 8 11 8a18 18 0 0 1-2.16 3.19M1 1l22 22"/></svg>
+                          </button>
+                        </div>
+                      </t>
+                      <div t-if="!s.components.length" class="ps-sec-empty">Drop components here</div>
+                    </div>
+                  </div>
+                </t>
+                <button class="ps-add-sec" t-on-click="psCreateSection">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add section
+                </button>
+              </div>
+            </div>
+
+            <!-- RIGHT: live payslip preview -->
+            <div class="ps-preview">
+              <div class="ps-slip">
+                <div class="ps-slip-head">
+                  <div class="ps-slip-title">Payslip preview</div>
+                  <div class="ps-slip-sub" t-esc="state.psData.config.name"/>
+                </div>
+                <t t-foreach="state.psData.sections" t-as="s" t-key="s.id">
+                  <div t-if="psSectionShown(s)" t-attf-class="ps-slip-sec sc-{{ s.color_key }}">
+                    <div class="ps-slip-sec-title" t-esc="psSectionTitle(s)"/>
+                    <t t-foreach="psSectionVisibleComps(s)" t-as="c" t-key="c.id">
+                      <div class="ps-slip-line"><span t-esc="c.name"/><span t-attf-class="ps-slip-amt {{ c.is_deduction ? 'ded' : '' }}"><t t-if="c.is_deduction">−</t><t t-esc="psVal(c)"/></span></div>
+                    </t>
+                    <div class="ps-slip-subtotal"><span>Subtotal</span><span t-esc="vnd(psSectionTotal(s))"/></div>
+                  </div>
+                </t>
+                <div class="ps-slip-net"><span>Net pay</span><span t-esc="vnd(psNet)"/></div>
+              </div>
+            </div>
+          </div>
+
+          <div t-elif="state.psBusy" class="ps-loading">Loading…</div>
         </div>
       </div>
 

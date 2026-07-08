@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_formula_studio.MappingCanvas">
+    <div class="mapping-canvas" t-ref="root" tabindex="0" t-on-keydown="onKeydown">
+
+      <!-- wire layer (SVG bezier paths, pixel coords relative to root) -->
+      <svg class="mc-wires" preserveAspectRatio="none">
+        <t t-foreach="ui.geom" t-as="g" t-key="g.id">
+          <path t-att-d="g.path"
+                t-attf-class="mc-wire {{ g.state }} {{ ui.hoverWire === g.id ? 'hot' : '' }}"/>
+        </t>
+      </svg>
+
+      <div class="mc-cols">
+        <!-- LEFT column (source) -->
+        <div class="mc-col left" t-on-scroll="onColScroll">
+          <div class="mc-col-head">
+            <span class="mc-col-title" t-esc="props.leftTitle or 'Source'"/>
+            <span class="mc-col-count" t-esc="props.leftItems.length"/>
+          </div>
+          <div class="mc-col-body">
+            <t t-foreach="props.leftItems" t-as="it" t-key="it.id">
+              <div data-side="left" t-att-data-id="it.id"
+                   t-attf-class="mc-item {{ isArmed('left', it.id) ? 'armed' : '' }} {{ leftHasAccepted(it.id) ? 'accepted' : (isLeftWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='left' and ui.focusId===it.id ? 'focus' : '' }}"
+                   t-on-click="() => this.clickLeft(it.id)">
+                <div class="mc-item-main">
+                  <div class="mc-item-label" t-esc="it.label"/>
+                  <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                </div>
+                <span class="mc-plug right"/>
+              </div>
+            </t>
+          </div>
+        </div>
+
+        <!-- RIGHT column (target) -->
+        <div class="mc-col right" t-on-scroll="onColScroll">
+          <div class="mc-col-head">
+            <span class="mc-col-title" t-esc="props.rightTitle or 'Target'"/>
+            <span class="mc-col-count" t-esc="props.rightItems.length"/>
+          </div>
+          <div class="mc-col-body">
+            <t t-foreach="props.rightItems" t-as="it" t-key="it.id">
+              <div data-side="right" t-att-data-id="it.id"
+                   t-attf-class="mc-item {{ ui.armedLeft != null and props.canEdit ? 'drophint' : '' }} {{ rightHasAccepted(it.id) ? 'accepted' : (isRightWired(it.id) ? 'wired' : '') }} {{ ui.focusSide==='right' and ui.focusId===it.id ? 'focus' : '' }}"
+                   t-on-click="() => this.clickRight(it.id)">
+                <span class="mc-plug left"/>
+                <div class="mc-item-main">
+                  <div class="mc-item-label" t-esc="it.label"/>
+                  <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
+                </div>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- wire action badges (accept/reject on suggested, delete on accepted) -->
+      <div class="mc-badges">
+        <t t-foreach="ui.geom" t-as="g" t-key="'b'+g.id">
+          <div t-if="g.state==='suggested'" class="mc-badge sug"
+               t-attf-style="left:{{g.mx}}px;top:{{g.my}}px"
+               t-on-mouseenter="() => { ui.hoverWire = g.id; }" t-on-mouseleave="() => { ui.hoverWire = null; }">
+            <span class="mc-conf" t-att-title="g.reason" t-esc="confidencePct(g)+'%'"/>
+            <button t-if="props.canEdit" class="mc-b-ok" title="Accept" t-on-click="() => this.accept(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></button>
+            <button t-if="props.canEdit" class="mc-b-x" title="Reject" t-on-click="() => this.reject(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+          <div t-elif="g.state==='accepted' and props.canEdit" class="mc-badge acc"
+               t-attf-style="left:{{g.mx}}px;top:{{g.my}}px"
+               t-on-mouseenter="() => { ui.hoverWire = g.id; }" t-on-mouseleave="() => { ui.hoverWire = null; }">
+            <button class="mc-b-del" title="Remove mapping" t-on-click="() => this.del(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+        </t>
+      </div>
+
+      <!-- draw-mode hint -->
+      <div t-if="ui.armedLeft != null and props.canEdit" class="mc-drawhint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        Click a target component to connect · <b>Esc</b> to cancel
+      </div>
+    </div>
+  </t>
+
+</templates>
