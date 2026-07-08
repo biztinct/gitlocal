@@ -108,6 +108,12 @@ export class PbFormulaStudio extends Component {
             explainText: "",
             explainSource: "deterministic",
             explainBusy: false,
+            // F7 — version history rail
+            historyOpen: false,
+            historyBusy: false,
+            historyData: null,       // {code, name, config_name, current, versions:[]}
+            historyDiffSeq: null,    // which version's diff-vs-current is expanded
+            historyDiffRuns: null,
             aiModel: "",
             wizardOpen: false,
             wizardStep: 1,
@@ -1179,6 +1185,67 @@ export class PbFormulaStudio extends Component {
         } catch (e) { /* keep the floor */ }
         finally { if (this.state.explainLang === lang) this.state.explainBusy = false; }
     }
+
+    // ---- Version history rail (F7) ----
+    openHistory() {
+        const c = this.selected;
+        if (!c) return;
+        this.state.historyOpen = true;
+        this.state.historyData = null;
+        this.state.historyDiffSeq = null;
+        this.state.historyDiffRuns = null;
+        this._loadHistory(c.id);
+    }
+    closeHistory() { this.state.historyOpen = false; }
+    async _loadHistory(ruleId) {
+        this.state.historyBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "get_rule_history", [ruleId]);
+            // ignore if the user closed or switched component meanwhile
+            if (this.state.historyOpen && this.selected && this.selected.id === ruleId) {
+                this.state.historyData = r && r.ok ? r : null;
+            }
+        } catch (e) { this.state.historyData = null; }
+        finally { this.state.historyBusy = false; }
+    }
+    async toggleDiff(seq) {
+        if (this.state.historyDiffSeq === seq) {
+            this.state.historyDiffSeq = null;
+            this.state.historyDiffRuns = null;
+            return;
+        }
+        const ruleId = this.selected && this.selected.id;
+        if (!ruleId) return;
+        this.state.historyDiffSeq = seq;
+        this.state.historyDiffRuns = null;
+        try {
+            // diff this version (older, A) against the live head (newer, B)
+            const r = await this.orm.call("pb.formula.studio", "diff_versions", [ruleId, seq, null]);
+            if (this.state.historyDiffSeq === seq) this.state.historyDiffRuns = (r && r.runs) || [];
+        } catch (e) { this.state.historyDiffRuns = []; }
+    }
+    async restoreVersion(seq) {
+        const ruleId = this.selected && this.selected.id;
+        if (!ruleId) return;
+        if (this._lockedNotice()) return;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "restore_version", [ruleId, seq]);
+            if (!r || !r.ok) {
+                this.notif.add((r && r.msg) || "Restore failed", { type: "danger" });
+                return;
+            }
+            this.notif.add("Restored v" + seq, { type: "success" });
+            // reflect the new formula everywhere, then refresh the rail (the
+            // restore itself is a new 'restore' version — history never rewrites)
+            await this.load(this.state.config.id);
+            this.state.historyDiffSeq = null;
+            this.state.historyDiffRuns = null;
+            await this._loadHistory(ruleId);
+        } catch (e) {
+            this.notif.add("Restore failed", { type: "danger" });
+        }
+    }
+
     async aiAsk(text) {
         if (!text || !text.trim()) return;
         this.state.aiMsgs.push({ who: "you", text });

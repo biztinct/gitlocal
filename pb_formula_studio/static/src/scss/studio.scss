@@ -658,4 +658,44 @@
     .pbfs-explain .ex-dot:nth-child(2) { animation-delay: .16s; }
     .pbfs-explain .ex-dot:nth-child(3) { animation-delay: .32s; }
     @keyframes pbfs-exdot { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
+
+    /* ---- F7 version history rail ---- */
+    .pbfs-btn.xs { padding: 4px 9px; font-size: 11.5px; font-weight: 700; border-radius: 8px; }
+    .pbfs-btn.xs svg { width: 13px; height: 13px; }
+    .pbfs-hist-scrim { position: fixed; inset: 0; z-index: 1200; background: rgba(20, 16, 50, .34); display: flex; align-items: stretch; justify-content: flex-end; }
+    .pbfs-hist { width: 560px; max-width: 96vw; background: #fff; box-shadow: -24px 0 60px rgba(20, 16, 50, .32); display: flex; flex-direction: column; animation: pbfs-hist-in .22s ease; }
+    @keyframes pbfs-hist-in { from { transform: translateX(24px); opacity: .6; } to { transform: translateX(0); opacity: 1; } }
+    .pbfs-hist .hs-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+    .pbfs-hist .hs-title { display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0; }
+    .pbfs-hist .hs-title svg { width: 22px; height: 22px; color: var(--i); flex: none; }
+    .pbfs-hist .hs-title b { font-size: 15px; color: var(--ink); font-weight: 800; display: block; }
+    .pbfs-hist .hs-title small { font-size: 12px; color: var(--muted); }
+    .pbfs-hist .hs-x { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 4px; }
+    .pbfs-hist .hs-x:hover { color: var(--ink); }
+    .pbfs-hist .hs-x svg { width: 18px; height: 18px; }
+    .pbfs-hist .hs-body { padding: 14px 18px 24px; overflow-y: auto; flex: 1; }
+    .pbfs-hist .hs-loading, .pbfs-hist .hs-empty { color: var(--muted); font-size: 13px; padding: 18px 4px; text-align: center; }
+    .pbfs-hist .hs-row { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+    .pbfs-hist .hs-row.current { border-color: var(--i-border); background: var(--i-soft); }
+    .pbfs-hist .hs-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
+    .pbfs-hist .hs-badge { font-size: 10px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; background: #F1F5F9; color: #64748B; }
+    .pbfs-hist .hs-badge.current { background: var(--i); color: #fff; }
+    .pbfs-hist .hs-badge.edit { background: #EEF2FF; color: var(--i600); }
+    .pbfs-hist .hs-badge.bulk { background: #FEF3C7; color: #92400E; }
+    .pbfs-hist .hs-badge.fill { background: #DBEAFE; color: #1E40AF; }
+    .pbfs-hist .hs-badge.import { background: #DCFCE7; color: #166534; }
+    .pbfs-hist .hs-badge.restore { background: #F3E8FF; color: #6B21A8; }
+    .pbfs-hist .hs-seq { font-size: 11.5px; font-weight: 800; color: var(--ink); }
+    .pbfs-hist .hs-who { font-size: 12px; color: var(--ink); font-weight: 600; }
+    .pbfs-hist .hs-when { font-size: 11.5px; color: var(--muted); margin-left: auto; }
+    .pbfs-hist .hs-formula { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--ink); background: #F8FAFC; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; overflow-x: auto; white-space: nowrap; }
+    .pbfs-hist .hs-row.current .hs-formula { background: #fff; }
+    .pbfs-hist .hs-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .pbfs-hist .hs-diff { margin-top: 9px; padding: 9px 10px; background: #FbFcFe; border: 1px dashed var(--line); border-radius: 8px; line-height: 2; }
+    .pbfs-hist .hs-tok { display: inline-block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; padding: 1px 5px; border-radius: 5px; margin: 0 1px; }
+    .pbfs-hist .hs-tok.eq { color: #475569; }
+    .pbfs-hist .hs-tok.ins { background: #DCFCE7; color: #166534; }
+    .pbfs-hist .hs-tok.del { background: #FEE2E2; color: #991B1B; text-decoration: line-through; }
+    .pbfs-hist .hs-arrow { color: var(--muted); margin: 0 3px; font-weight: 700; }
+    .pbfs-hist .hs-diff-none, .pbfs-hist .hs-diff-load { font-size: 12px; color: var(--muted); }
 }

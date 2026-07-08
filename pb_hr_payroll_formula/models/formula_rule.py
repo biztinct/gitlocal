@@ -2,10 +2,20 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+import json
 import re
 import logging
 
 _logger = logging.getLogger(__name__)
+
+# F7 — fields whose change is worth a version snapshot. A write touching none of
+# these (e.g. a pure `sequence` reorder, or engine-set is_valid/python_formula)
+# produces no version row.
+VERSIONED_FIELDS = {
+    'excel_formula', 'code', 'name', 'category_id',
+    'column_type', 'number_format', 'appears_on_payslip',
+}
+_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle'}
 
 
 class HrFormulaRule(models.Model):
@@ -1032,6 +1042,73 @@ class HrFormulaRule(models.Model):
             # If no existing rules, leave sequence as default (10)
         
         return super(HrFormulaRule, self).create(vals)
+
+    def write(self, vals):
+        """F7 capture funnel. Snapshot the OUTGOING state of any rule whose
+        versioned fields are about to change, BEFORE the write lands. One row
+        per rule per write call; no-op writes and non-versioned-only writes are
+        skipped. Callers set `formula_version_reason` in context (edit/bulk/
+        fill/import); `skip_formula_version` opts a write out entirely; a mutable
+        `formula_version_seen` set in context dedupes multiple writes to the same
+        rule within one logical operation (see save_component)."""
+        tracked = VERSIONED_FIELDS & set(vals or {})
+        if (tracked
+                and not self.env.context.get('skip_formula_version')
+                and 'hr.formula.rule.version' in self.env):
+            reason = self.env.context.get('formula_version_reason', 'edit')
+            if reason not in _VALID_VERSION_REASONS:
+                reason = 'edit'
+            note = self.env.context.get('formula_version_note') or False
+            seen = self.env.context.get('formula_version_seen')
+            Version = self.env['hr.formula.rule.version'].sudo()
+            rows = []
+            for rule in self:
+                if seen is not None and rule.id in seen:
+                    continue
+                # skip when the write changes nothing on the tracked fields
+                if all(rule._version_field_matches(f, vals) for f in tracked):
+                    continue
+                rows.append({
+                    'rule_id': rule.id,
+                    'seq': rule._next_version_seq(),
+                    'excel_formula': rule.excel_formula or '',
+                    'snapshot_json': json.dumps(rule._version_snapshot()),
+                    'reason': reason,
+                    'note': note,
+                })
+                if seen is not None:
+                    seen.add(rule.id)
+            if rows:
+                Version.create(rows)
+        return super().write(vals)
+
+    def _version_field_matches(self, fname, vals):
+        """True when `fname`'s stored value already equals what the write sets
+        (so the write is a no-op for that field)."""
+        self.ensure_one()
+        field = self._fields[fname]
+        return field.convert_to_write(self[fname], self) == vals.get(fname)
+
+    def _next_version_seq(self):
+        self.ensure_one()
+        last = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', self.id)], order='seq desc', limit=1)
+        return (last.seq + 1) if last else 1
+
+    def _version_snapshot(self):
+        """Full picture of the versioned + display fields at snapshot time."""
+        self.ensure_one()
+        return {
+            'name': self.name or '',
+            'code': self.code or '',
+            'category_id': self.category_id.id or False,
+            'category_name': self.category_id.name or '',
+            'column_type': self.column_type or '',
+            'number_format': self.number_format or '',
+            'appears_on_payslip': bool(self.appears_on_payslip),
+            'column_letter': self.column_letter or '',
+            'constant_value': self.constant_value or 0.0,
+        }
 
     # ==========================================
     # VALIDATION

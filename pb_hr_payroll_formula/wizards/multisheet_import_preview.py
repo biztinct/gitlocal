@@ -12,9 +12,13 @@
 #    before preview records are created. Only these wrappers ever see it.
 
 import json
+import logging
 import re
 
 from odoo import _, fields, models
+from odoo.tools import html_escape
+
+_logger = logging.getLogger(__name__)
 
 # Any remaining sheet-qualified ref (e.g. 'TimeTB 2'!A1 or Sheet!A1) that survived
 # resolution — the Excel→Python converter would choke on or zero it.
@@ -32,6 +36,7 @@ class MultisheetImportPreview(models.TransientModel):
     resolution_preview_json = fields.Text(string='Resolution Preview (JSON)')
     confidence_score = fields.Float(string='Confidence', readonly=True)
     confidence_breakdown_json = fields.Text(string='Confidence Breakdown', readonly=True)
+    ai_review_html = fields.Html(string='AI Review', readonly=True, sanitize=False)
 
     # ---- resolution capture (T3.2, skeleton S2 adapted) -----------------------
     # The capture list is carried in the CONTEXT, not as an instance attribute:
@@ -144,6 +149,113 @@ class MultisheetImportPreview(models.TransientModel):
             'confidence_score': round(score, 3),
             'confidence_breakdown_json': json.dumps(breakdown),
         })
+
+    # ---- AI review (T5.4) — deterministic flags, optional LLM ranking --------
+    _ISSUE_REASON = {
+        'becomes_zero': "A reference could not be mapped and became 0 — this component will compute wrong.",
+        'unresolved_xref': "An unresolved cross-sheet reference survived — the converter will choke on it.",
+        'unknown_column': "References a column that isn't in the import.",
+        'circular': "Part of a circular reference — the engine cannot resolve it.",
+        'primary_key_miss': "The sheet's primary key wasn't matched.",
+    }
+
+    def _review_flags(self):
+        """Deterministic, LLM-free suspicion flags: broken/warning preview lines
+        plus sample-value magnitude outliers."""
+        flags = []
+        for line in self.preview_line_ids.filtered(lambda l: l.status in ('broken', 'warning')):
+            flags.append({
+                'code': line.component_code or '',
+                'sheet': line.sheet_name or '',
+                'reason': line.issue_detail or self._ISSUE_REASON.get(line.issue_type, "Needs review."),
+                'severity': 'high' if line.status == 'broken' else 'medium',
+            })
+        # magnitude outliers among importable components' sample values
+        vals = []
+        for c in self.component_preview_ids.filtered('include_in_import'):
+            try:
+                v = abs(float(c.sample_value)) if c.sample_value not in (False, None, '') else 0.0
+            except (ValueError, TypeError):
+                v = 0.0
+            if v > 0:
+                vals.append((c, v))
+        if len(vals) >= 4:
+            nums = sorted(v for _c, v in vals)
+            median = nums[len(nums) // 2] or 0
+            for c, v in vals:
+                if median and (v > median * 200 or v < median / 200):
+                    flags.append({
+                        'code': c.generated_code or '', 'sheet': c.source_sheet or '',
+                        'reason': "Sample value %s is far from the typical range." % ('{:,.0f}'.format(v)),
+                        'severity': 'low',
+                    })
+        return flags
+
+    def ai_review_import(self):
+        """Return {'source', 'html'}. Deterministic flags always; if the studio
+        (pb.formula.studio) is installed and an LLM is configured, ask it to rank
+        the suspicious components — any failure silently keeps the deterministic
+        result (no hard dependency on pb_formula_studio)."""
+        self.ensure_one()
+        flags = self._review_flags()
+        breakdown = {}
+        try:
+            breakdown = json.loads(self.confidence_breakdown_json or '{}')
+        except Exception:
+            pass
+        if flags and 'pb.formula.studio' in self.env:
+            try:
+                html = self._ai_review_via_llm(flags, breakdown)
+                if html:
+                    return {'source': 'ai', 'html': html}
+            except Exception as e:
+                _logger.info("ai_review_import LLM fell back: %s", e)
+        return {'source': 'deterministic', 'html': self._review_html(flags)}
+
+    def _ai_review_via_llm(self, flags, breakdown):
+        Studio = self.env['pb.formula.studio']
+        facts = {
+            'confidence': round(self.confidence_score, 3),
+            'breakdown': breakdown,
+            'flagged': flags[:20],
+            'total_components': len(self.preview_line_ids),
+        }
+        system = ("You are PayAI reviewing a payroll formula import. From the flagged "
+                  "components and the confidence breakdown, list the TOP components a "
+                  "payroll officer should check before importing, most important first, "
+                  "each with a one-line plain reason. Reply STRICT JSON only: "
+                  '{"items":[{"code":"","reason":"","severity":"high|medium|low"}]}')
+        data = Studio._llm_chat(
+            [{'role': 'system', 'content': system},
+             {'role': 'user', 'content': json.dumps(facts, ensure_ascii=False)}],
+            json_mode=True)
+        items = data.get('items') if isinstance(data, dict) else None
+        return self._review_html(items or []) if items else None
+
+    def _review_html(self, items):
+        if not items:
+            return "<div class='text-success'>No issues flagged — the import looks clean.</div>"
+        order = {'high': 0, 'medium': 1, 'low': 2}
+        badge = {'high': 'danger', 'medium': 'warning', 'low': 'secondary'}
+        rows = []
+        for f in sorted(items, key=lambda x: order.get(x.get('severity'), 3)):
+            sev = f.get('severity') or 'low'
+            rows.append(
+                "<li class='mb-1'><span class='badge text-bg-%s me-2'>%s</span>"
+                "<strong>%s</strong> — %s</li>" % (
+                    badge.get(sev, 'secondary'), html_escape(sev),
+                    html_escape(f.get('code') or '—'), html_escape(f.get('reason') or '')))
+        return "<ul class='list-unstyled mb-0'>" + ''.join(rows) + "</ul>"
+
+    def action_ai_review(self):
+        self.ensure_one()
+        res = self.ai_review_import()
+        label = "PayAI review" if res['source'] == 'ai' else "Built-in review"
+        self.ai_review_html = "<div class='text-muted small mb-2'>%s</div>%s" % (label, res['html'])
+        return {
+            'type': 'ir.actions.act_window', 'res_model': self._name, 'res_id': self.id,
+            'view_mode': 'form', 'target': 'new', 'context': self.env.context,
+        }
 
     # ---- fix actions (T3.5) ---------------------------------------------------
     def _fix_target_col(self, code):

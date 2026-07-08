@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Shadow Parallel Run cockpit (F6) -->
+    <record id="action_pb_shadow_run" model="ir.actions.client">
+        <field name="name">Shadow Parallel Run</field>
+        <field name="tag">pb_shadow_run</field>
+    </record>
+
+    <menuitem id="menu_pb_shadow_run"
+              name="Shadow Parallel Run"
+              parent="pb_hr_payroll_formula.menu_formula_root"
+              action="action_pb_shadow_run"
+              sequence="15"/>
+</odoo>

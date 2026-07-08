@@ -9,7 +9,7 @@ try:
 except Exception:  # pragma: no cover
     requests = None
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -619,7 +619,8 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': _("No components selected")}
         clean = {k: v for k, v in (vals or {}).items() if k in self._BULK_FIELDS}
         if clean:
-            rules.write(clean)          # single write on the whole recordset
+            # F7: one 'bulk' version row per changed rule (write override loops self)
+            rules.with_context(formula_version_reason='bulk').write(clean)
         return {'ok': True, 'updated': len(rules)}
 
     @api.model
@@ -676,6 +677,8 @@ class PbFormulaStudio(models.AbstractModel):
                 continue
             config = rule.config_id
             column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
+            # F7: drag-fill commits N formulas — each its own 'fill' version row
+            rule = rule.with_context(formula_version_reason='fill')
             try:
                 rule.excel_formula = it.get('formula') or ''
                 rule.python_formula = rule._convert_excel_to_python(rule.excel_formula, column_map)
@@ -795,6 +798,10 @@ class PbFormulaStudio(models.AbstractModel):
                                % (write_vals['code'], dup[0].column_letter or '?')}
         # excel_formula handled separately so we can convert + validate
         new_formula = vals.get('excel_formula')
+        # F7: this method may write metadata AND the formula in two steps — a
+        # shared 'seen' set collapses both into ONE version row for the rule.
+        rule = rule.with_context(formula_version_reason='edit',
+                                 formula_version_seen=set())
         try:
             if write_vals:
                 rule.write(write_vals)
@@ -812,6 +819,216 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False, 'msg': str(e)}
         return {'ok': True, 'is_valid': bool(rule.is_valid),
                 'validation_message': rule.validation_message or ''}
+
+    # =====================================================================
+    #  F7 — Formula version history (rail + token diff + restore)
+    # =====================================================================
+    @api.model
+    def _tokenize_text(self, formula):
+        """Lex a raw Excel formula string into a flat token list for diffing.
+        Broader than `_tokenize` (which builds chips for a live rule): this also
+        captures bare function names (ROUND/VLOOKUP), commas and comparison
+        operators, so a diff reads sensibly across structural rewrites."""
+        formula = (formula or '').lstrip('=').strip()
+        if not formula:
+            return []
+        return re.findall(r'[A-Za-z_]+\$?\d*|\$?\d+\.?\d*|[+\-*/()%,^&<>=!:]', formula)
+
+    def _version_row_payload(self, ver):
+        try:
+            snap = json.loads(ver.snapshot_json or '{}')
+        except Exception:
+            snap = {}
+        return {
+            'seq': ver.seq,
+            'reason': ver.reason,
+            'reason_label': dict(ver._fields['reason']._description_selection(self.env)).get(ver.reason, ver.reason),
+            'note': ver.note or '',
+            'user': ver.user_id.name or '',
+            'date': fields.Datetime.to_string(ver.create_date) if ver.create_date else '',
+            'excel_formula': ver.excel_formula or '',
+            'snapshot': snap,
+        }
+
+    @api.model
+    def get_rule_history(self, rule_id):
+        """Full history for one rule: the live state as a synthetic 'current'
+        node plus every stored version (newest first). Versions hold OUTGOING
+        pre-edit states, so `current` is the head and each version is a past."""
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'versions': []}
+        versions = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', rule.id)], order='seq desc')
+        return {
+            'ok': True,
+            'rule_id': rule.id,
+            'code': rule.code or '',
+            'name': rule.name or '',
+            'config_name': rule.config_id.display_name or rule.config_id.name or '',
+            'current': {
+                'seq': None,           # None == the live head
+                'excel_formula': rule.excel_formula or '',
+                'user': (rule.write_uid.name if rule.write_uid else ''),
+                'date': fields.Datetime.to_string(rule.write_date) if rule.write_date else '',
+                'snapshot': rule._version_snapshot(),
+            },
+            'versions': [self._version_row_payload(v) for v in versions],
+        }
+
+    def _version_formula(self, rule, seq):
+        """Resolve a seq (int) or None (=live head) to its Excel formula text."""
+        if seq in (None, False, 'current'):
+            return rule.excel_formula or '', _('Current')
+        ver = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', rule.id), ('seq', '=', int(seq))], limit=1)
+        if not ver:
+            return '', _('v%s') % seq
+        return ver.excel_formula or '', _('v%s') % seq
+
+    @api.model
+    def diff_versions(self, rule_id, seq_a, seq_b):
+        """Token-level diff between two versions (or a version and 'current').
+        Returns runs of equal/insert/delete/replace for chip rendering. `seq_*`
+        may be an int seq or null/'current' for the live head. A precedes B in
+        reading order (A = older, B = newer)."""
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'runs': []}
+        fa, la = self._version_formula(rule, seq_a)
+        fb, lb = self._version_formula(rule, seq_b)
+        runs = self._token_diff_runs(self._tokenize_text(fa), self._tokenize_text(fb))
+        return {'ok': True, 'runs': runs, 'a_label': la, 'b_label': lb,
+                'a_formula': fa, 'b_formula': fb}
+
+    def _token_diff_runs(self, a, b):
+        """LCS diff over two token lists → merged runs. Adjacent delete+insert
+        collapse into a single 'replace' so `0.10 → 0.12` reads as one change."""
+        n, m = len(a), len(b)
+        # LCS length table
+        dp = [[0] * (m + 1) for _ in range(n + 1)]
+        for i in range(n - 1, -1, -1):
+            for j in range(m - 1, -1, -1):
+                dp[i][j] = (dp[i + 1][j + 1] + 1) if a[i] == b[j] \
+                    else max(dp[i + 1][j], dp[i][j + 1])
+        # walk to emit ops
+        ops = []
+        i = j = 0
+        while i < n and j < m:
+            if a[i] == b[j]:
+                ops.append(('equal', a[i])); i += 1; j += 1
+            elif dp[i + 1][j] >= dp[i][j + 1]:
+                ops.append(('delete', a[i])); i += 1
+            else:
+                ops.append(('insert', b[j])); j += 1
+        while i < n:
+            ops.append(('delete', a[i])); i += 1
+        while j < m:
+            ops.append(('insert', b[j])); j += 1
+        # coalesce consecutive ops of the same kind, then fuse delete+insert
+        merged = []
+        for op, tok in ops:
+            if merged and merged[-1]['op'] == op and 'tokens' in merged[-1]:
+                merged[-1]['tokens'].append(tok)
+            else:
+                merged.append({'op': op, 'tokens': [tok]})
+        runs = []
+        k = 0
+        while k < len(merged):
+            cur = merged[k]
+            nxt = merged[k + 1] if k + 1 < len(merged) else None
+            if cur['op'] == 'delete' and nxt and nxt['op'] == 'insert':
+                runs.append({'op': 'replace', 'old': cur['tokens'], 'new': nxt['tokens']})
+                k += 2
+            elif cur['op'] == 'insert' and nxt and nxt['op'] == 'delete':
+                runs.append({'op': 'replace', 'old': nxt['tokens'], 'new': cur['tokens']})
+                k += 2
+            else:
+                runs.append(cur)
+                k += 1
+        return runs
+
+    @api.model
+    def restore_version(self, rule_id, seq):
+        """Write a past version's formula back onto the live rule. This is itself
+        a versioned event (reason='restore'), so history is never rewritten —
+        the current head is snapshotted before being overwritten."""
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'msg': _('Component not found')}
+        ver = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', rule.id), ('seq', '=', int(seq))], limit=1)
+        if not ver:
+            return {'ok': False, 'msg': _('Version not found')}
+        target = ver.excel_formula or ''
+        rule = rule.with_context(formula_version_reason='restore',
+                                 formula_version_note=_('Restored v%s') % seq)
+        try:
+            rule.excel_formula = target
+            if rule.column_type == 'formula':
+                column_map = {r.column_letter: r.code
+                              for r in rule.config_id.rule_ids if r.column_letter}
+                rule.python_formula = rule._convert_excel_to_python(target, column_map)
+                ok, msg = self._check_formula(rule.config_id, target, exclude_id=rule.id)
+                rule.is_valid = ok
+                rule.validation_message = '' if ok else msg
+        except Exception as e:
+            return {'ok': False, 'msg': str(e)}
+        return {'ok': True, 'excel_formula': target,
+                'is_valid': bool(rule.is_valid)}
+
+    @api.model
+    def get_config_milestones(self, config_id):
+        """Milestones for a config, newest first, for the compare picker."""
+        ms = self.env['hr.formula.config.milestone'].sudo().search(
+            [('config_id', '=', int(config_id))], order='milestone_date desc')
+        return [{
+            'id': m.id, 'name': m.name,
+            'date': fields.Datetime.to_string(m.milestone_date),
+            'user': m.user_id.name or '',
+        } for m in ms]
+
+    def _formula_at(self, rule, when):
+        """The rule's Excel formula in effect at datetime `when`. Version rows
+        store OUTGOING states, so the value live at T is the earliest version
+        captured at-or-after T; if none, nothing changed since T → current."""
+        ver = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', rule.id), ('create_date', '>=', when)],
+            order='create_date asc, seq asc', limit=1)
+        return (ver.excel_formula if ver else rule.excel_formula) or ''
+
+    @api.model
+    def compare_to_milestone(self, config_id, milestone_id):
+        """Diff a whole config against a milestone: only rules whose formula
+        changed since the milestone, each with its token diff."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        milestone = self.env['hr.formula.config.milestone'].sudo().browse(int(milestone_id))
+        if not config.exists() or not milestone.exists():
+            return {'ok': False, 'changed': []}
+        when = milestone.milestone_date
+        changed = []
+        for rule in config.rule_ids:
+            old = self._formula_at(rule, when)
+            cur = rule.excel_formula or ''
+            if (old or '') == (cur or ''):
+                continue
+            changed.append({
+                'rule_id': rule.id,
+                'code': rule.code or '',
+                'name': rule.name or '',
+                'col': rule.column_letter or '',
+                'old_formula': old,
+                'cur_formula': cur,
+                'runs': self._token_diff_runs(
+                    self._tokenize_text(old), self._tokenize_text(cur)),
+            })
+        return {
+            'ok': True,
+            'milestone_name': milestone.name,
+            'milestone_date': fields.Datetime.to_string(when),
+            'changed_count': len(changed),
+            'changed': changed,
+        }
 
     @api.model
     def _check_formula(self, config, formula, exclude_id=None):

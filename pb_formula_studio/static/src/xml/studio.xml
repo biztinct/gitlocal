@@ -82,7 +82,7 @@
               <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Cards
               </button>
-              <button t-att-class="state.view === 'grid' ? 'active' : ''" t-on-click="() => this.setView('grid')">
+              <button data-coach="fs-view-grid" t-att-class="state.view === 'grid' ? 'active' : ''" t-on-click="() => this.setView('grid')">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Grid
               </button>
               <button t-att-class="state.view === 'test' ? 'active' : ''" t-on-click="openTest" title="Test &amp; validate">
@@ -522,6 +522,9 @@
                     <button class="pbfs-btn soft sm" t-on-click="openExplain" title="Explain in plain language">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Explain
                     </button>
+                    <button class="pbfs-btn soft sm" data-coach="fs-history" t-on-click="openHistory" title="Version history">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>History
+                    </button>
                     <button class="pbfs-btn soft sm" data-coach="fs-editai" t-on-click="openAI" title="Edit with PayAI">
                       <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Edit with PayAI
                     </button>
@@ -894,6 +897,83 @@
             <span t-if="state.explainBusy" class="ex-loading">
               <span class="ex-dot"/><span class="ex-dot"/><span class="ex-dot"/> PayAI is thinking…
             </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Version history rail (F7) -->
+      <div t-if="state.historyOpen" class="pbfs-hist-scrim" t-on-click="closeHistory">
+        <div class="pbfs-hist" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="hs-head">
+            <div class="hs-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+              <div>
+                <b>Version history</b>
+                <small t-if="state.historyData"><t t-esc="state.historyData.code"/> · <t t-esc="state.historyData.name"/></small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeHistory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="hs-body">
+            <div t-if="state.historyBusy and !state.historyData" class="hs-loading">Loading history…</div>
+
+            <t t-if="state.historyData">
+              <!-- current (live head) -->
+              <div class="hs-row current">
+                <div class="hs-meta">
+                  <span class="hs-badge current">Current</span>
+                  <span class="hs-who" t-esc="state.historyData.current.user"/>
+                  <span class="hs-when" t-esc="state.historyData.current.date"/>
+                </div>
+                <div class="hs-formula" t-esc="state.historyData.current.excel_formula or '—'"/>
+              </div>
+
+              <div t-if="!state.historyData.versions.length" class="hs-empty">
+                No earlier versions yet. Edits to this component will appear here.
+              </div>
+
+              <!-- past versions, newest first -->
+              <div t-foreach="state.historyData.versions" t-as="v" t-key="v.seq" class="hs-row">
+                <div class="hs-meta">
+                  <span t-attf-class="hs-badge {{ v.reason }}" t-esc="v.reason_label"/>
+                  <span class="hs-seq">v<t t-esc="v.seq"/></span>
+                  <span class="hs-who" t-esc="v.user"/>
+                  <span class="hs-when" t-esc="v.date"/>
+                </div>
+                <div class="hs-formula" t-esc="v.excel_formula or '—'"/>
+                <div class="hs-actions">
+                  <button class="pbfs-btn ghost xs" t-on-click="() => this.toggleDiff(v.seq)">
+                    <t t-if="state.historyDiffSeq === v.seq">Hide diff</t>
+                    <t t-else="">Diff vs current</t>
+                  </button>
+                  <button class="pbfs-btn soft xs" t-on-click="() => this.restoreVersion(v.seq)">Restore</button>
+                </div>
+                <!-- inline chip diff (this version → current) -->
+                <div t-if="state.historyDiffSeq === v.seq" class="hs-diff">
+                  <t t-if="state.historyDiffRuns === null"><span class="hs-diff-load">…</span></t>
+                  <t t-elif="!state.historyDiffRuns.length"><span class="hs-diff-none">No formula change</span></t>
+                  <t t-else="">
+                    <t t-foreach="state.historyDiffRuns" t-as="run" t-key="run_index">
+                      <t t-if="run.op === 'equal'">
+                        <span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/>
+                      </t>
+                      <t t-elif="run.op === 'insert'">
+                        <span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
+                      </t>
+                      <t t-elif="run.op === 'delete'">
+                        <span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/>
+                      </t>
+                      <t t-elif="run.op === 'replace'">
+                        <span t-foreach="run.old" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/>
+                        <span class="hs-arrow">→</span>
+                        <span t-foreach="run.new" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
+                      </t>
+                    </t>
+                  </t>
+                </div>
+              </div>
+            </t>
           </div>
         </div>
       </div>

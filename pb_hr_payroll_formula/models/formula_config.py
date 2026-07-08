@@ -646,6 +646,11 @@ class HrFormulaConfig(models.Model):
                 "Please validate and fix all issues first."
             ))
         self.write({'state': 'active'})
+        # F7: anchor a milestone so "compare to activation" has a reference point.
+        n = self.env['hr.formula.config.milestone'].sudo().search_count(
+            [('config_id', '=', self.id)]) + 1
+        self.env['hr.formula.config.milestone'].sudo().record(
+            self, _("Activated v%s") % n)
 
     def action_archive(self):
         self.write({'state': 'archived', 'active': False})
