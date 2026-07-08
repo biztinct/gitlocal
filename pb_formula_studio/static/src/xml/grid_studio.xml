@@ -16,7 +16,7 @@
       </button>
       <button class="g2-bulk-clear" t-on-click="clearSelection">Clear</button>
     </div>
-    <div class="pbfs-grid2" t-ref="scroller" tabindex="0"
+    <div class="pbfs-grid2" data-coach="grid-canvas" t-ref="scroller" tabindex="0"
          t-on-keydown="onKeydown" t-on-focus="onScrollerFocus" t-on-blur="onScrollerBlur">
       <table class="g2-table">
         <thead>
@@ -114,7 +114,7 @@
         <span class="g2-lg"><span class="g2-sw up"/>Depends on <b t-esc="ui.tintCol"/> (upstream)</span>
         <span class="g2-lg"><span class="g2-sw down"/>Used by <b t-esc="ui.tintCol"/> (downstream)</span>
       </div>
-      <div class="g2-hint">
+      <div class="g2-hint" data-coach="grid-hint">
         <t t-if="props.canEdit">Click a Formula cell and press <b>F2</b> or start typing to edit · <b>Enter</b> saves · <b>Esc</b> cancels · <b>Ctrl+Z</b> undo. Values for <b t-esc="props.sampleName || '—'"/>.</t>
         <t t-else="">Showing computed values for <b t-esc="props.sampleName || '—'"/>.</t>
       </div>
@@ -172,7 +172,7 @@
 
   <!-- T2.3 — always-visible formula bar (same round-trip as the cell overlay) -->
   <t t-name="pb_formula_studio.FormulaBar">
-    <div t-attf-class="g2-fbar {{ state.valid === false ? 'invalid' : '' }}">
+    <div t-attf-class="g2-fbar {{ state.valid === false ? 'invalid' : '' }}" data-coach="grid-fbar">
       <div class="g2-fbar-tag">
         <t t-if="props.focused">
           <span class="g2-fbar-col" t-esc="props.focused.col"/>

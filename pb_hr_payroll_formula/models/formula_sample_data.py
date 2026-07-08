@@ -197,11 +197,10 @@ class HrFormulaSampleData(models.Model):
 
                 discrepancies = 0
                 max_disc = 0
-                def _coerce_number(value):
-                    try:
-                        return float(value)
-                    except (TypeError, ValueError):
-                        return None
+                # F6: shared coercion (superset of the old plain float() — any
+                # value that used to coerce still coerces to the same number, so
+                # verdicts are unchanged; regression-checked on the VN demo).
+                from ..formula_engine.comparison import coerce_number as _coerce_number
 
                 for code, exp_value in expected.items():
                     if exp_value is None:

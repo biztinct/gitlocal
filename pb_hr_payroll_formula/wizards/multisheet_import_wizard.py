@@ -2763,7 +2763,10 @@ class MultiSheetImportWizard(models.TransientModel):
                     rule_vals['source_field_mapping'] = comp.integration_field_name
 
                 if existing_rule and self.update_existing:
-                    existing_rule.write(rule_vals)
+                    # F7: overwriting an existing rule via import is a versioned
+                    # 'import' event (fresh creates are version-0 / unversioned).
+                    existing_rule.with_context(
+                        formula_version_reason='import').write(rule_vals)
                     updated_rules.append(existing_rule)
                 elif not existing_rule:
                     new_rule = self.env['hr.formula.rule'].create(rule_vals)

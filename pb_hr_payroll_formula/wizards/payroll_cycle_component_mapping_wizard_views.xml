@@ -10,12 +10,12 @@
                     <field name="mid_cycle_config_id"/>
                     <field name="end_cycle_config_id"/>
                 </group>
-                <div class="text-muted mb-2"
+                <div class="text-muted mb-2" data-coach="map-intro"
                      invisible="not mid_cycle_config_id or not end_cycle_config_id">
                     Auto-suggest matches components by code, then by name similarity.
                     Already-mapped components are skipped.
                 </div>
-                <div class="d-flex gap-2 mb-3"
+                <div class="d-flex gap-2 mb-3" data-coach="map-actions"
                      invisible="not mid_cycle_config_id or not end_cycle_config_id">
                     <button name="action_suggest_mappings" type="object" string="Suggest Mappings"
                             class="btn-secondary"/>

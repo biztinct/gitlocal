@@ -222,16 +222,23 @@
                                                string="Import Confidence" readonly="1"/>
                                     </group>
                                     <group>
-                                        <div class="text-muted">
+                                        <div class="text-muted" data-coach="imp-confidence">
                                             How cleanly your formulas converted. Rows in
                                             <span class="text-danger">red</span> reference something
                                             that could not be mapped and became 0 — pick a
                                             <strong>Fix</strong> below, then Apply.
                                         </div>
-                                        <button name="action_apply_preview_fixes" type="object"
-                                                string="Apply Fixes" class="btn-primary mt-2"/>
+                                        <div class="d-flex gap-2 mt-2" data-coach="imp-actions">
+                                            <button name="action_apply_preview_fixes" type="object"
+                                                    string="Apply Fixes" class="btn-primary"/>
+                                            <button name="action_ai_review" type="object"
+                                                    string="AI review" class="btn-secondary"/>
+                                        </div>
                                     </group>
                                 </group>
+                                <field name="ai_review_html" nolabel="1" readonly="1"
+                                       invisible="not ai_review_html"
+                                       class="alert alert-light border"/>
                                 <separator string="Formulas — original → resolved"/>
                                 <field name="preview_line_ids" nolabel="1">
                                     <list limit="500" editable="bottom" create="false" delete="false"

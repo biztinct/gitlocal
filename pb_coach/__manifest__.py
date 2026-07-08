@@ -1,6 +1,6 @@
 {
     'name': 'Payobook Coach',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Animated guided tours (spotlight + pointer) and first-run onboarding for Payobook',
     'description': """
@@ -28,6 +28,7 @@ elements via ``data-coach="..."`` anchors so they survive re-styling.
             # drives the launcher list order.
             'pb_coach/static/src/js/tours/hero_path.js',
             'pb_coach/static/src/js/tours/tour_formula.js',
+            'pb_coach/static/src/js/tours/tour_engine_tools.js',
             'pb_coach/static/src/js/tours/tour_payrun.js',
             'pb_coach/static/src/js/tours/tour_payslips.js',
         ],
