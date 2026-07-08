@@ -15,7 +15,7 @@ VERSIONED_FIELDS = {
     'excel_formula', 'code', 'name', 'category_id',
     'column_type', 'number_format', 'appears_on_payslip',
 }
-_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle'}
+_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle', 'rename'}
 
 
 class HrFormulaRule(models.Model):
@@ -508,6 +508,13 @@ class HrFormulaRule(models.Model):
 
         result = re.sub(r'"([^"]|"")*"', _mask_string, result)
 
+        # F11 — expand BRACKET(table_code, value) into a nested-IF Excel string
+        # BEFORE any further conversion, so the value expression's cell refs and
+        # the emitted IF/MAX convert through the normal pipeline. The evaluator
+        # never sees a bracket table (D-F11.1).
+        if 'BRACKET' in result.upper() and self.config_id:
+            result = self.env['hr.formula.rate.table'].expand_brackets(result, self.config_id)
+
         # Normalize redundant parentheses around cell references like "(B15)".
         result = re.sub(r'\(\s*(\$?[A-Z]+\$?\d+)\s*\)', r'\1', result, flags=re.IGNORECASE)
 
@@ -951,9 +958,18 @@ class HrFormulaRule(models.Model):
                 record.formula_dependencies = ''
                 continue
 
+            # F11 — expand BRACKET(table_code, value) FIRST so dependencies come
+            # from the compiled formula's real column refs (the value expression),
+            # not the pseudo-function name or the table code (which would otherwise
+            # be mistaken for column codes and poison the topological order).
+            formula_src = record.excel_formula
+            if 'BRACKET' in formula_src.upper() and record.config_id:
+                formula_src = record.env['hr.formula.rate.table'].expand_brackets(
+                    formula_src, record.config_id)
+
             # Extract column references - both with row numbers (A1, B2) and without (A, B, C)
             # Also extract CODE references (BASIC, GROSS, etc.)
-            formula = record.excel_formula.upper()
+            formula = formula_src.upper()
             formula_no_strings = record._strip_string_literals(formula)
 
             range_refs = []
@@ -1295,7 +1311,23 @@ class HrFormulaRule(models.Model):
             return values.get(self.code, self.default_value or 0.0)
 
         if self.column_type == 'formula':
-            if not self.excel_formula:
+            return self._run_formula(values, self.excel_formula, write_diagnostics=True)
+
+        return 0.0
+
+    def _run_formula(self, values, excel_formula, write_diagnostics=True):
+        """Core formula evaluation, factored out of ``evaluate`` so the F8
+        simulation overlay can evaluate a *draft* formula for a rule without
+        persisting it (D8.2 — draft evaluation is an overlay, never a write).
+
+        ``excel_formula`` is the formula text to run (``self.excel_formula`` for
+        a normal evaluation, or a candidate draft for a simulation). When
+        ``write_diagnostics`` is False the ``excel_formula_converted`` /
+        ``has_evaluation_error`` side-effect writes are suppressed so overlay
+        evaluation never mutates the rule record."""
+        self.ensure_one()
+        if self.column_type == 'formula':
+            if not excel_formula:
                 _logger.warning(f"No Excel formula defined for {self.code}, returning 0")
                 return 0.0
 
@@ -1306,10 +1338,11 @@ class HrFormulaRule(models.Model):
                 for rule in self.config_id.rule_ids:
                     if rule.column_letter and rule.code:
                         column_map[rule.column_letter] = rule.code
-                python_code = self._convert_excel_to_python(self.excel_formula, column_map)
+                python_code = self._convert_excel_to_python(excel_formula, column_map)
 
                 # Store the converted Python code for debugging
-                self.excel_formula_converted = python_code
+                if write_diagnostics:
+                    self.excel_formula_converted = python_code
 
                 # Enhanced logging for debugging IFERROR and other formula issues
                 _logger.debug(f"=== Formula Evaluation for {self.code} ===")
@@ -1317,15 +1350,16 @@ class HrFormulaRule(models.Model):
                 _logger.debug(f"  Python code: {python_code}")
                 _logger.debug(f"  Column map: {column_map}")
             except Exception as e:
-                error_msg = f"Error converting formula: {str(e)}\nExcel formula: {self.excel_formula}"
+                error_msg = f"Error converting formula: {str(e)}\nExcel formula: {excel_formula}"
                 _logger.error(f"Error converting formula for {self.code}: {e}")
 
                 # Store the error information
-                self.write({
-                    'has_evaluation_error': True,
-                    'last_evaluation_error': error_msg,
-                    'last_evaluation_date': fields.Datetime.now()
-                })
+                if write_diagnostics:
+                    self.write({
+                        'has_evaluation_error': True,
+                        'last_evaluation_error': error_msg,
+                        'last_evaluation_date': fields.Datetime.now()
+                    })
                 return 0.0
 
             if not python_code:
@@ -1406,7 +1440,7 @@ class HrFormulaRule(models.Model):
                     if ref_code in python_code or f"'{ref_code}'" in python_code:
                         _logger.debug(f"  {ref_code} = {safe_context['values'].get(ref_code, 'NOT FOUND')}")
 
-                if '"' in (self.excel_formula or '') or "raw_values" in python_code:
+                if '"' in (excel_formula or '') or "raw_values" in python_code:
                     try:
                         ref_codes = re.findall(r"(?:values|raw_values)\.get\('([^']+)'", python_code)
                         ref_values = {
@@ -1422,7 +1456,7 @@ class HrFormulaRule(models.Model):
                     _logger.debug(
                         "Formula eval debug: code=%s excel=%s python=%s refs=%s",
                         self.code,
-                        self.excel_formula,
+                        excel_formula,
                         python_code,
                         ref_values,
                     )
@@ -1431,7 +1465,7 @@ class HrFormulaRule(models.Model):
                 _logger.debug(f"  Result: {result}")
 
                 # Clear any previous errors on successful evaluation
-                if self.has_evaluation_error:
+                if write_diagnostics and self.has_evaluation_error:
                     self.write({
                         'has_evaluation_error': False,
                         'last_evaluation_error': False,
@@ -1450,7 +1484,7 @@ class HrFormulaRule(models.Model):
                 # Build detailed error message
                 error_details = []
                 error_details.append(f"Error evaluating formula for {self.code}")
-                error_details.append(f"\nExcel formula: {self.excel_formula}")
+                error_details.append(f"\nExcel formula: {excel_formula}")
                 error_details.append(f"\nPython code: {python_code}")
                 error_details.append(f"\nError type: {type(e).__name__}")
                 error_details.append(f"\nError message: {str(e)}")
@@ -1461,17 +1495,18 @@ class HrFormulaRule(models.Model):
                 error_msg = '\n'.join(error_details)
 
                 _logger.error(f"Formula evaluation error for {self.code}")
-                _logger.error(f"  Excel formula: {self.excel_formula}")
+                _logger.error(f"  Excel formula: {excel_formula}")
                 _logger.error(f"  Python code: {python_code}")
                 _logger.error(f"  Error: {e}")
                 _logger.error(f"  Available values: {list(values.keys())}")
 
                 # Store the error information
-                self.write({
-                    'has_evaluation_error': True,
-                    'last_evaluation_error': error_msg,
-                    'last_evaluation_date': fields.Datetime.now()
-                })
+                if write_diagnostics:
+                    self.write({
+                        'has_evaluation_error': True,
+                        'last_evaluation_error': error_msg,
+                        'last_evaluation_date': fields.Datetime.now()
+                    })
 
                 return 0.0
 

@@ -193,4 +193,51 @@
     .g2-sw { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
     .g2-sw.up { background: var(--amber-soft); box-shadow: inset 0 0 0 1.5px var(--amber); }
     .g2-sw.down { background: var(--cyan-soft); box-shadow: inset 0 0 0 1.5px var(--cyan); }
+
+    /* ---- F14 scenario columns (ghost overlays next to their base) ---- */
+    /* "branch a scenario" button — reveals on base-header hover */
+    .g2-chead { position: relative; }
+    .g2-addsc { position: absolute; top: 6px; right: 6px; width: 20px; height: 20px; border: 0; border-radius: 6px;
+        background: transparent; color: var(--i600); cursor: pointer; display: grid; place-items: center;
+        opacity: 0; transition: opacity .12s, background .12s; }
+    .g2-addsc svg { width: 13px; height: 13px; }
+    .g2-chead:hover .g2-addsc { opacity: .55; }
+    .g2-addsc:hover { opacity: 1 !important; background: #fff; }
+
+    /* scenario header — ghost, dashed, colour-coded per scenario */
+    .g2-shead { position: relative; background: repeating-linear-gradient(135deg, #FBFAFF, #FBFAFF 7px, #F4F1FC 7px, #F4F1FC 14px);
+        border-bottom: 2px dashed var(--sc); border-right: 1px solid var(--line-soft);
+        white-space: nowrap; --sc: #7C6BD6; --sc-soft: #EFEAFB; }
+    .g2-shead.sc-violet { --sc: #7C6BD6; --sc-soft: #EFEAFB; }
+    .g2-shead.sc-teal   { --sc: #0E8C7F; --sc-soft: #DDF3F0; }
+    .g2-shead.sc-amber  { --sc: #C08327; --sc-soft: #FBEFD9; }
+    .g2-shead.sc-rose   { --sc: #C24A6B; --sc-soft: #FBE4EA; }
+    .g2-shead.sc-cyan   { --sc: #0E7490; --sc-soft: #E0F4F9; }
+    .g2-smark { display: inline-flex; vertical-align: middle; margin-right: 5px; color: var(--sc); }
+    .g2-smark svg { width: 11px; height: 11px; }
+    .g2-scode { font-weight: 800; font-size: 11.5px; color: var(--sc); }
+    .g2-sacts { display: inline-flex; gap: 3px; margin-left: 8px; vertical-align: middle; }
+    .g2-sact { width: 19px; height: 19px; border: 0; border-radius: 6px; cursor: pointer; display: grid; place-items: center; }
+    .g2-sact svg { width: 12px; height: 12px; }
+    .g2-sact.ok { background: var(--green-soft); color: var(--green); }
+    .g2-sact.ok:hover { background: var(--green); color: #fff; }
+    .g2-sact.ok:disabled { opacity: .4; cursor: not-allowed; }
+    .g2-sact.no { background: #FCE7E7; color: var(--danger); }
+    .g2-sact.no:hover { background: var(--danger); color: #fff; }
+
+    /* scenario body cells — tinted band pairing them to their base */
+    .g2-scell { padding: 0 12px; border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+        background: #FBFAFF; box-shadow: inset 2px 0 0 0 #7C6BD6; font-size: 12.5px; color: var(--ink); white-space: nowrap; }
+    .g2-scell.muted { color: var(--muted); }
+    .g2-sname b { color: var(--i-deep); font-weight: 800; }
+    .g2-typ.scenario { background: #EFEAFB; color: #6A57C8; }
+    .g2-sformula { font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; font-size: 12px; color: var(--i-deep); cursor: text; }
+    .g2-sformula.has-error { color: var(--danger); }
+    .g2-svalue { text-align: right; font-variant-numeric: tabular-nums; }
+    .g2-svalue .sv-num { font-weight: 800; color: var(--ink); }
+    .g2-svalue .sv-delta { display: inline-block; margin-left: 7px; font-weight: 800; font-size: 11.5px; }
+    .g2-svalue .sv-delta.up { color: var(--green); }
+    .g2-svalue .sv-delta.dn { color: var(--danger); }
+    .g2-svalue .sv-net { display: block; font-size: 10.5px; font-weight: 700; color: var(--muted); margin-top: 1px; }
+    .g2-valrow .g2-scell { background: #F6F3FE; }
 }

@@ -253,6 +253,10 @@ class PbFormulaStudio(models.AbstractModel):
             'preview': preview,
             'field_meta': self._field_meta(),
             'can_edit': self._can_edit(),
+            'scenarios': [self._scenario_payload(s) for s in self.env['hr.formula.scenario']
+                          .search([('config_id', '=', config.id)])],
+            'rate_tables': [self._rate_table_payload(t) for t in
+                            self.env['hr.formula.rate.table'].search([('config_id', '=', config.id)])],
         }
 
     # ------------------------------------------------------------------
@@ -573,17 +577,21 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     @api.model
     def _compute(self, config, sample_id):
-        from odoo.addons.pb_hr_payroll_formula.formula_engine import FormulaEvaluator
         rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        by_code = {r.code: r.column_letter for r in rules}
         values = {}
         try:
             sample = self.env['hr.formula.sample.data'].browse(int(sample_id))
-            input_values = json.loads(sample.input_values_json or '{}') if sample.exists() else {}
-            values = FormulaEvaluator().evaluate_all(rules, input_values)
+            if sample.exists():
+                input_values = json.loads(sample.input_values_json or '{}')
+                # Use the rule.evaluate() path (same evaluator real payslips and the
+                # test workbench use) so IF / BRACKET / self._if formulas compute
+                # correctly — the FormulaEvaluator fast path cannot handle those and
+                # silently returns 0 (F11).
+                values = sample._evaluate_rules_with_dependencies(input_values)
         except Exception as e:
             _logger.warning("Studio compute failed: %s", e)
         # key by column letter for the UI
-        by_code = {r.code: r.column_letter for r in rules}
         out = {}
         for code, v in values.items():
             col = by_code.get(code)
@@ -1030,6 +1038,490 @@ class PbFormulaStudio(models.AbstractModel):
             'changed': changed,
         }
 
+    # ==================================================================
+    # F8 — Simulate-before-activate (thin facade over hr.formula.simulation)
+    # ==================================================================
+    @api.model
+    def simulate_prepare(self, config_id, overrides=None, limit=None):
+        """Create a simulation and return the payslip work-list to drive through
+        it in chunks. ``overrides`` = {code: draft_excel_formula} previews a
+        specific edit (baseline = current rules); no overrides = whole config vs
+        the last actual payrun (D8.1)."""
+        Sim = self.env['hr.formula.simulation']
+        created = Sim.sim_create(config_id, overrides=overrides or {})
+        if not created.get('ok'):
+            return created
+        prep = Sim.sim_prepare(created['sim_id'], limit=limit)
+        prep.update({'ok': True, 'headline': created.get('headline'),
+                     'overrides': created.get('overrides', 0)})
+        return prep
+
+    @api.model
+    def simulate_batch(self, payload):
+        """One chunk (~50 payslips). Idempotent-free (accumulates) — the client
+        sends each slice of the prepare payslip_ids exactly once."""
+        return self.env['hr.formula.simulation'].sim_batch(payload or {})
+
+    @api.model
+    def simulate_result(self, sim_id):
+        """Finalize (mark done) and return the folded distribution."""
+        return self.env['hr.formula.simulation'].sim_finalize(sim_id)
+
+    @api.model
+    def simulate_drop(self, sim_id):
+        """Discard a simulation — leaves no residue (transient + no rule writes)."""
+        sim = self.env['hr.formula.simulation'].browse(int(sim_id))
+        sim.sim_drop()
+        return {'ok': True}
+
+    # ==================================================================
+    # F14 — Scenario columns (what-if overlays on one component)
+    # ==================================================================
+    def _scenario_payload(self, sc):
+        """One scenario as the grid consumes it (with live validity)."""
+        ok, msg = self._check_formula(sc.config_id, sc.override_formula or '',
+                                      exclude_id=sc.rule_id.id)
+        return {
+            'id': sc.id, 'rule_id': sc.rule_id.id,
+            'code': sc.rule_id.code or '', 'col': sc.rule_id.column_letter or '',
+            'name': sc.name or '', 'override_formula': sc.override_formula or '',
+            'color': sc.color_key or 'violet',
+            'valid': bool(ok), 'message': msg or '',
+        }
+
+    @api.model
+    def list_scenarios(self, config_id):
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'scenarios': []}
+        scs = self.env['hr.formula.scenario'].search([('config_id', '=', config.id)])
+        return {'scenarios': [self._scenario_payload(s) for s in scs]}
+
+    @api.model
+    def create_scenario(self, rule_id, name=None):
+        """Duplicate a component as a scenario overlay, seeded with its current
+        formula. NEVER touches the base rule (D14.1)."""
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'msg': _('Component not found')}
+        if rule.column_type != 'formula':
+            return {'ok': False, 'msg': _('Only formula components can be scenarioed')}
+        Scenario = self.env['hr.formula.scenario']
+        n = Scenario.search_count([('rule_id', '=', rule.id)])
+        label = name or (_('Scenario %s') % chr(ord('A') + n))
+        sc = Scenario.create({
+            'config_id': rule.config_id.id, 'rule_id': rule.id,
+            'name': label, 'override_formula': rule.excel_formula or '',
+            'sequence': 10 + n, 'color_key': Scenario.next_color(rule.id),
+        })
+        return {'ok': True, 'scenario': self._scenario_payload(sc)}
+
+    @api.model
+    def save_scenario_formula(self, scenario_id, formula):
+        sc = self.env['hr.formula.scenario'].browse(int(scenario_id))
+        if not sc.exists():
+            return {'ok': False}
+        sc.override_formula = formula or ''
+        ok, msg = self._check_formula(sc.config_id, formula or '', exclude_id=sc.rule_id.id)
+        return {'ok': True, 'valid': bool(ok), 'message': msg or ''}
+
+    @api.model
+    def eval_scenario(self, scenario_id, sample_id):
+        """Overlay-evaluate the scenario against a sample's inputs (F8 engine).
+        Returns the base and scenario value for the component + the take-home
+        (net) ripple, all for that one sample. No rule is written (D14.1)."""
+        from odoo.addons.pb_hr_payroll_formula.models.formula_simulation import (
+            _evaluate_config_overlay)
+        sc = self.env['hr.formula.scenario'].browse(int(scenario_id))
+        if not sc.exists():
+            return {'ok': False}
+        config, rule = sc.config_id, sc.rule_id
+        try:
+            sample = self.env['hr.formula.sample.data'].browse(int(sample_id))
+            inputs = json.loads(sample.input_values_json or '{}') if sample.exists() else {}
+        except Exception:
+            inputs = {}
+        base = _evaluate_config_overlay(config, inputs, None)
+        cand = _evaluate_config_overlay(config, inputs, {rule.code: sc.override_formula or ''})
+        # net/take-home ripple, if the config exposes one
+        net_code = None
+        for r in config.rule_ids:
+            if (r.code or '').upper().replace(' ', '') in (
+                    'NET', 'NETPAY', 'NET_PAY', 'NETSALARY', 'TAKEHOME', 'TAKE_HOME'):
+                net_code = r.code
+                break
+
+        def _num(d, k):
+            try:
+                return float(d.get(k) or 0.0)
+            except (TypeError, ValueError):
+                return 0.0
+        out = {
+            'ok': True, 'col': rule.column_letter or '', 'code': rule.code or '',
+            'base_value': _num(base, rule.code),
+            'scenario_value': _num(cand, rule.code),
+        }
+        if net_code:
+            out.update({
+                'net_code': net_code,
+                'net_base': _num(base, net_code),
+                'net_scenario': _num(cand, net_code),
+            })
+        return out
+
+    @api.model
+    def promote_scenario(self, scenario_id):
+        """Write the scenario's draft into the base rule (versioned, reason=edit)
+        then delete the scenario. This is the ONLY path that mutates the rule."""
+        sc = self.env['hr.formula.scenario'].browse(int(scenario_id))
+        if not sc.exists():
+            return {'ok': False}
+        rule, config = sc.rule_id, sc.config_id
+        formula = sc.override_formula or ''
+        ok, msg = self._check_formula(config, formula, exclude_id=rule.id)
+        if not ok:
+            return {'ok': False, 'msg': msg or _('Scenario formula is invalid')}
+        column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
+        rule.with_context(formula_version_reason='edit').write({
+            'excel_formula': formula,
+            'python_formula': rule._convert_excel_to_python(formula, column_map)
+                if rule.column_type == 'formula' else rule.python_formula,
+            'is_valid': True, 'validation_message': '',
+        })
+        sc.unlink()
+        return {'ok': True, 'rule_id': rule.id, 'code': rule.code or '', 'formula': formula}
+
+    @api.model
+    def discard_scenario(self, scenario_id):
+        sc = self.env['hr.formula.scenario'].browse(int(scenario_id))
+        if sc.exists():
+            sc.unlink()
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # F13 — Problems rail + lint + rename-refactor
+    # ------------------------------------------------------------------
+    # Numeric literals worth flagging: big enough to be a "magic amount"
+    # (row numbers, small multipliers like 2/12 are noise) and repeated across
+    # formulas so extracting a constant actually removes duplication.
+    _MAGIC_MIN = 1000.0
+    _MAGIC_MIN_COUNT = 2
+
+    @api.model
+    def _strip_for_lint(self, formula):
+        """Blank out string literals and cell references so only bare numeric
+        literals (and operators/functions) remain — the row digits of A2/X2
+        must never be mistaken for magic numbers."""
+        f = formula or ''
+        f = re.sub(r'"[^"]*"', ' ', f)              # string literals
+        f = re.sub(r"'[^']*'", ' ', f)
+        f = re.sub(r'\$?[A-Za-z]+\$?\d+', ' ', f)   # cell refs A2, $X$2, AA10
+        f = re.sub(r'[A-Za-z_][A-Za-z0-9_]*', ' ', f)  # function names / bare codes
+        return f
+
+    @api.model
+    def get_problems(self, config_id=None):
+        """Aggregate everything wrong (or smelly) about a config into one ranked
+        list for the Problems rail. Pure metadata + regex — never computes a
+        payslip.
+
+        Shape::
+
+            {ok, count, counts: {error, warning, hint},
+             problems: [{key, kind, severity, title, detail, rule_id, col, code}]}
+        """
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'count': 0,
+                    'counts': {'error': 0, 'warning': 0, 'hint': 0}, 'problems': []}
+
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        by_col = self._col_to_rule(rules)
+        problems = []
+
+        def _add(kind, severity, title, detail, rule=None, col=None):
+            problems.append({
+                'key': '%s:%s' % (kind, rule.id if rule else (col or len(problems))),
+                'kind': kind,
+                'severity': severity,
+                'title': title,
+                'detail': detail,
+                'rule_id': rule.id if rule else False,
+                'col': (rule.column_letter if rule else col) or '',
+                'code': (rule.code if rule else '') or '',
+            })
+
+        # 1) invalid / empty formulas -------------------------------------
+        for r in rules:
+            if r.column_type != 'formula':
+                continue
+            if not (r.excel_formula or '').strip():
+                _add('empty', 'warning',
+                     _("%s has no formula") % (r.name or r.column_letter),
+                     _("This calculated component is blank — it evaluates to nothing."),
+                     rule=r)
+            elif (not r.is_valid) or r.has_evaluation_error:
+                msg = r.validation_message or r.last_evaluation_error or _("Formula does not evaluate.")
+                _add('invalid', 'error',
+                     _("%s (%s) is invalid") % (r.name or '', r.column_letter),
+                     msg, rule=r)
+
+        # 2) cycles + unused (reuse the deterministic dependency graph) -----
+        intel = self.get_intelligence(config.id)
+        for cy in intel.get('cycles', []):
+            first = by_col.get((cy.get('cols') or [None])[0])
+            _add('cycle', 'error', _("Circular dependency"),
+                 cy.get('human_explanation') or '', rule=first,
+                 col=(cy.get('cols') or [''])[0])
+        for col in intel.get('unused', []):
+            rr = by_col.get(col)
+            if not rr:
+                continue
+            if rr.column_type == 'input':
+                _add('unused', 'hint',
+                     _("%s (%s) is never used") % (rr.name or '', col),
+                     _("This input feeds no formula and is not shown on the payslip."),
+                     rule=rr)
+            else:
+                _add('unused', 'warning',
+                     _("%s (%s) is never used") % (rr.name or '', col),
+                     _("Nothing depends on this component and it does not appear on the payslip."),
+                     rule=rr)
+
+        # 3) magic-number lint --------------------------------------------
+        from collections import Counter
+        counter = Counter()
+        rules_for_lit = {}
+        for r in rules:
+            if r.column_type != 'formula' or not r.excel_formula:
+                continue
+            seen_here = set()
+            for tok in re.findall(r'(?<![A-Za-z0-9._])\d+(?:\.\d+)?', self._strip_for_lint(r.excel_formula)):
+                try:
+                    val = float(tok)
+                except ValueError:
+                    continue
+                if val >= self._MAGIC_MIN and tok not in seen_here:
+                    seen_here.add(tok)
+                    counter[tok] += 1
+                    rules_for_lit.setdefault(tok, []).append(r)
+        for tok, cnt in counter.items():
+            if cnt >= self._MAGIC_MIN_COUNT:
+                where = rules_for_lit[tok]
+                cols = ', '.join(rr.column_letter for rr in where if rr.column_letter)
+                _add('magic', 'hint',
+                     _("Repeated number %s") % '{:,.0f}'.format(float(tok)),
+                     _("Appears in %s formulas (%s) — consider extracting a named "
+                       "constant so a rate change is a one-line edit.") % (cnt, cols),
+                     rule=where[0])
+
+        # 4) totals that are not shown on the payslip ----------------------
+        for r in rules:
+            if (r.column_type == 'formula' and _group_for(r) == 'Totals'
+                    and not r.appears_on_payslip):
+                _add('offpayslip', 'warning',
+                     _("%s (%s) is a total but hidden") % (r.name or '', r.column_letter),
+                     _("This looks like a total or net figure yet it is not shown on "
+                       "the payslip. Employees will not see it."),
+                     rule=r)
+
+        order = {'error': 0, 'warning': 1, 'hint': 2}
+        problems.sort(key=lambda p: (order.get(p['severity'], 9),
+                                     self._col_num(p.get('col') or 'ZZ')))
+        counts = {'error': 0, 'warning': 0, 'hint': 0}
+        for p in problems:
+            counts[p['severity']] = counts.get(p['severity'], 0) + 1
+        return {'ok': True, 'count': len(problems), 'counts': counts,
+                'problems': problems}
+
+    @api.model
+    def rename_component(self, rule_id, new_code):
+        """Rename a component's CODE, rewriting any formula that references the
+        old code as a bare token — in one transaction.
+
+        Asymmetry (surfaced in the UI): formulas reference other components by
+        their COLUMN LETTER, not their code, so renaming a code is normally
+        metadata-only and every formula keeps evaluating identically. We still
+        scan for the old code appearing as a whole-word token (some imported
+        formulas carry code refs that the converter resolves) and rewrite those
+        too, so the rename is safe in every case. Renaming column *letters* is
+        deliberately not offered — letters are positional identity.
+        """
+        Rule = self.env['hr.formula.rule']
+        rule = Rule.browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'msg': _("Component not found.")}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+
+        old = (rule.code or '').strip()
+        new = (new_code or '').strip().upper()
+        if not new:
+            return {'ok': False, 'msg': _("The code cannot be empty.")}
+        # Formula-converter contract: codes must be plain identifiers, no
+        # underscores/spaces (they mangle the Excel→Python conversion).
+        if not re.match(r'^[A-Z][A-Z0-9]*$', new):
+            return {'ok': False, 'msg': _("Use letters and digits only, starting with a letter "
+                                          "(no spaces or underscores).")}
+        if new == old:
+            return {'ok': False, 'msg': _("That is already the code.")}
+        config = rule.config_id
+        clash = config.rule_ids.filtered(lambda x: x.id != rule.id and (x.code or '').upper() == new)
+        if clash:
+            return {'ok': False, 'msg': _("Another component (%s) already uses that code.") % clash[0].column_letter}
+
+        # Rewrite formulas that mention the old code as a whole word. In
+        # practice formulas reference components by COLUMN LETTER, never by
+        # code (verified across real configs), so this is normally a no-op —
+        # a metadata-only rename. It is a safety net for imported formulas that
+        # carry genuine code refs. We deliberately skip it when the old code
+        # coincides with a column letter used in the config: a bare token like
+        # `=GM` is then a letter reference, not a code reference, and rewriting
+        # it would corrupt the formula. In that (rare) case the rename stays
+        # metadata-only — formulas keep evaluating identically either way.
+        rewritten = []
+        config_letters = {r.column_letter for r in config.rule_ids if r.column_letter}
+        if old and old not in config_letters:
+            pat = re.compile(r'(?<![A-Za-z0-9_])%s(?![A-Za-z0-9_])' % re.escape(old))
+            for r in config.rule_ids:
+                if r.id == rule.id or r.column_type != 'formula' or not r.excel_formula:
+                    continue
+                if pat.search(r.excel_formula):
+                    r.with_context(formula_version_reason='rename').write(
+                        {'excel_formula': pat.sub(new, r.excel_formula)})
+                    rewritten.append(r.column_letter or r.code)
+
+        # Migrate code-keyed data so the rename is behaviour-preserving. Sample
+        # test data stores input/expected/computed vectors keyed by CODE — for an
+        # INPUT component the code is the dictionary key the engine reads, so
+        # without this the renamed input would read as missing (→ 0) and cascade.
+        migrated_samples = 0
+        if old:
+            for s in config.sample_data_ids:
+                touched = False
+                svals = {}
+                for fname in ('input_values_json', 'expected_values_json', 'computed_values_json'):
+                    raw = getattr(s, fname, False)
+                    if not raw:
+                        continue
+                    try:
+                        d = json.loads(raw)
+                    except Exception:
+                        continue
+                    if isinstance(d, dict) and old in d and new not in d:
+                        d[new] = d.pop(old)
+                        svals[fname] = json.dumps(d)
+                        touched = True
+                if touched:
+                    s.write(svals)
+                    migrated_samples += 1
+
+        rule.with_context(formula_version_reason='rename').write({'code': new})
+        return {'ok': True, 'msg': _("Renamed %s → %s") % (old or '(blank)', new),
+                'rewritten': rewritten, 'new_code': new,
+                'migrated_samples': migrated_samples}
+
+    # ------------------------------------------------------------------
+    # F11 — Rate (bracket) tables
+    # ------------------------------------------------------------------
+    def _rate_table_payload(self, t):
+        return {
+            'id': t.id,
+            'code': t.code or '',
+            'name': t.name or '',
+            'kind': t.kind or 'progressive',
+            'note': t.note or '',
+            'brackets': [{'id': b.id, 'lower': b.lower, 'rate': b.rate}
+                         for b in t.line_ids.sorted(key=lambda b: b.lower)],
+            'used_by': t._dependent_rules().mapped('column_letter'),
+        }
+
+    @api.model
+    def list_rate_tables(self, config_id):
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'tables': []}
+        tables = self.env['hr.formula.rate.table'].search([('config_id', '=', config.id)])
+        return {'ok': True, 'tables': [self._rate_table_payload(t) for t in tables]}
+
+    @api.model
+    def save_rate_table(self, config_id, payload):
+        """Create or update a rate table + its brackets in one call. Brackets are
+        replaced wholesale from payload['brackets'] (list of {lower, rate})."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("No configuration loaded.")}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+        payload = payload or {}
+        code = (payload.get('code') or '').strip().upper()
+        if not re.match(r'^[A-Z][A-Z0-9]*$', code):
+            return {'ok': False, 'msg': _("Table code must be letters and digits only, "
+                                          "starting with a letter (no spaces or underscores).")}
+        Table = self.env['hr.formula.rate.table']
+        tid = payload.get('id')
+        table = Table.browse(int(tid)) if tid else Table
+        # uniqueness of code within config
+        clash = Table.search([('config_id', '=', config.id), ('code', '=', code),
+                              ('id', '!=', table.id or 0)], limit=1)
+        if clash:
+            return {'ok': False, 'msg': _("Another table already uses the code %s.") % code}
+        vals = {'code': code, 'name': (payload.get('name') or code).strip(),
+                'note': (payload.get('note') or '').strip(), 'config_id': config.id}
+        if table:
+            table.write(vals)
+        else:
+            table = Table.create(vals)
+        # rebuild brackets
+        rows = [b for b in (payload.get('brackets') or [])
+                if b.get('rate') not in (None, '') or b.get('lower') not in (None, '')]
+        table.line_ids.unlink()
+        self.env['hr.formula.rate.bracket'].create([{
+            'table_id': table.id,
+            'lower': float(b.get('lower') or 0.0),
+            'rate': float(b.get('rate') or 0.0),
+        } for b in rows])
+        return {'ok': True, 'table': self._rate_table_payload(table)}
+
+    @api.model
+    def delete_rate_table(self, table_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+        t = self.env['hr.formula.rate.table'].browse(int(table_id))
+        used = t._dependent_rules() if t.exists() else self.env['hr.formula.rule']
+        if used:
+            return {'ok': False, 'msg': _("This table is used by %s formula(s): %s. "
+                                          "Remove the BRACKET references first.")
+                    % (len(used), ', '.join(used.mapped('column_letter')))}
+        if t.exists():
+            t.unlink()
+        return {'ok': True}
+
+    @api.model
+    def eval_bracket(self, table_id, value):
+        """Compute this table's progressive value at a sample income, plus the
+        compiled Excel — for the editor's live preview."""
+        t = self.env['hr.formula.rate.table'].browse(int(table_id))
+        if not t.exists():
+            return {'ok': False}
+        try:
+            v = float(value or 0.0)
+        except (TypeError, ValueError):
+            v = 0.0
+        brackets = t.line_ids.sorted(key=lambda b: b.lower)
+        result = 0.0
+        lowers = [b.lower for b in brackets]
+        rates = [b.rate for b in brackets]
+        base = 0.0
+        for i, b in enumerate(brackets):
+            upper = lowers[i + 1] if i + 1 < len(brackets) else None
+            if v > b.lower:
+                top = v if upper is None else min(v, upper)
+                result = base + rates[i] * (top - b.lower)
+            base += rates[i] * ((upper - b.lower) if upper is not None else 0.0)
+        return {'ok': True, 'value': v, 'result': max(0.0, result),
+                'compiled': t.compile_excel('x')}
+
     @api.model
     def _check_formula(self, config, formula, exclude_id=None):
         """Validate a formula string against a config's columns. -> (ok, message)."""
@@ -1037,7 +1529,10 @@ class PbFormulaStudio(models.AbstractModel):
         cols = {r.column_letter: r.code for r in config.rule_ids
                 if r.column_letter and r.id != exclude_id}
         try:
-            return FormulaValidator().validate_formula(formula or '', cols)
+            # F11 — expand BRACKET(code, value) first so the validator sees the
+            # compiled nested-IF (BRACKET is not one of its known functions).
+            expanded = self.env['hr.formula.rate.table'].expand_brackets(formula or '', config)
+            return FormulaValidator().validate_formula(expanded, cols)
         except Exception as e:  # pragma: no cover
             return False, str(e)
 

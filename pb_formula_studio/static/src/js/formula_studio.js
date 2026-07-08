@@ -86,6 +86,7 @@ export class PbFormulaStudio extends Component {
             configs: [],
             components: [],
             samples: [],
+            scenarios: [],              // F14 — what-if overlays per component
             preview: { sample_id: false, values: {} },
             // dependency-graph payload from get_intelligence (Feature 1); the
             // grid-highlight primitives (Feature 2) walk state.graph.edges.
@@ -114,6 +115,28 @@ export class PbFormulaStudio extends Component {
             historyData: null,       // {code, name, config_name, current, versions:[]}
             historyDiffSeq: null,    // which version's diff-vs-current is expanded
             historyDiffRuns: null,
+            // F8 — simulate-before-activate
+            simOpen: false,
+            simBusy: false,
+            simProgress: 0,          // 0..100 during the chunked drive
+            simResult: null,         // folded distribution payload
+            simId: null,
+            // F13 — Problems rail + lint + rename-refactor
+            probOpen: false,
+            probData: null,          // {ok, count, counts, problems:[]}
+            probBusy: false,
+            renameId: null,          // rule being renamed inline on the card
+            renameVal: "",
+            renameBusy: false,
+            renameErr: "",
+            // F11 — rate (bracket) tables
+            rateTables: [],
+            ratesOpen: false,
+            rateEdit: null,          // {id, code, name, note, brackets:[{lower, rate}]}
+            rateBusy: false,
+            rateErr: "",
+            ratePreviewIncome: 40000000,
+            ratePreview: null,       // {value, result, compiled}
             aiModel: "",
             wizardOpen: false,
             wizardStep: 1,
@@ -186,6 +209,8 @@ export class PbFormulaStudio extends Component {
         this.state.config = d.config;
         this.state.components = d.components;
         this.state.samples = d.samples;
+        this.state.scenarios = d.scenarios || [];
+        this.state.rateTables = d.rate_tables || [];
         this.state.preview = d.preview || { sample_id: false, values: {} };
         if (d.field_meta) this.state.fieldMeta = d.field_meta;
         if (!this.state.selectedId || !d.components.some(c => c.id === this.state.selectedId)) {
@@ -200,6 +225,13 @@ export class PbFormulaStudio extends Component {
             this.state.graph = { nodes: [], edges: [], execution_order: [], unused: [], cycles: [] };
         }
         this.state.cycleHighlight = [];
+        // F13 — problems tally in a third call (pure metadata; feeds the
+        // toolbar badge and the Problems rail). Non-fatal if it fails.
+        try {
+            this.state.probData = await this.orm.call("pb.formula.studio", "get_problems", [d.config.id]);
+        } catch (e) {
+            this.state.probData = null;
+        }
         this.state.loaded = true;
     }
 
@@ -320,6 +352,45 @@ export class PbFormulaStudio extends Component {
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
     }
 
+    // ---- F14 scenario columns (what-if overlays) ----
+    async reloadScenarios() {
+        const r = await this.orm.call("pb.formula.studio", "list_scenarios", [this.state.config.id]);
+        this.state.scenarios = (r && r.scenarios) || [];
+    }
+    async gridScenarioCreate(ruleId) {
+        if (this._lockedNotice()) return null;
+        const r = await this.orm.call("pb.formula.studio", "create_scenario", [ruleId]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create scenario", { type: "warning" }); return null; }
+        await this.reloadScenarios();
+        return r.scenario;
+    }
+    async gridScenarioSave(sid, formula) {
+        const r = await this.orm.call("pb.formula.studio", "save_scenario_formula", [sid, formula]);
+        const sc = this.state.scenarios.find(s => s.id === sid);
+        if (sc) { sc.override_formula = formula; if (r) { sc.valid = r.valid; sc.message = r.message; } }
+        return r || { ok: true };
+    }
+    async gridScenarioEval(sid, sampleId) {
+        try { return await this.orm.call("pb.formula.studio", "eval_scenario", [sid, sampleId]); }
+        catch (e) { return { ok: false }; }
+    }
+    async gridScenarioPromote(sid) {
+        if (this._lockedNotice()) return { ok: false };
+        const cfgId = this.state.config.id;
+        const sampleId = this.state.preview.sample_id;
+        const r = await this.orm.call("pb.formula.studio", "promote_scenario", [sid]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Promote failed", { type: "warning" }); return { ok: false }; }
+        this.notif.add(`Promoted into ${r.code}`, { type: "success" });
+        await this.load(cfgId);   // the rule changed → refresh grid + scenarios + version history
+        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        return r;
+    }
+    async gridScenarioDiscard(sid) {
+        await this.orm.call("pb.formula.studio", "discard_scenario", [sid]);
+        this.state.scenarios = this.state.scenarios.filter(s => s.id !== sid);
+        return { ok: true };
+    }
+
     isCycleMember(col) { return this.state.cycleHighlight.includes(col); }
     showCyclePath(cycle) {
         this.state.cycleHighlight = (cycle && cycle.cols) ? cycle.cols.slice() : [];
@@ -365,9 +436,19 @@ export class PbFormulaStudio extends Component {
         const cur = this.state.config.currency || "₫";
         return cur + Math.round(n).toLocaleString("en-US");
     }
+    // F11 — typed cell display: format a value by its component's number_format
+    // (percentage shows ×100 with %, integer/number drop the currency symbol).
+    fmtTyped(comp, v) {
+        if (v === null || v === undefined || isNaN(v)) return "—";
+        const nf = comp && comp.number_format;
+        if (nf === "percentage") return (Math.round(v * 10000) / 100).toLocaleString("en-US") + "%";
+        if (nf === "integer") return Math.round(v).toLocaleString("en-US");
+        if (nf === "number") return (Math.round(v * 100) / 100).toLocaleString("en-US");
+        return this.vnd(v);   // currency (default)
+    }
     previewVal(col) {
         const v = this.state.preview.values[col];
-        return (v === undefined) ? "—" : this.vnd(v);
+        return (v === undefined) ? "—" : this.fmtTyped(this.byCol(col), v);
     }
     stageCls() { return { draft: "draft", testing: "testing", validated: "validated", active: "active", archived: "muted" }[this.state.config.state] || "muted"; }
     stageLabel() { return { draft: "Draft", testing: "Testing", validated: "Validated", active: "Active", archived: "Archived" }[this.state.config.state] || this.state.config.state; }
@@ -1244,6 +1325,294 @@ export class PbFormulaStudio extends Component {
         } catch (e) {
             this.notif.add("Restore failed", { type: "danger" });
         }
+    }
+
+    // ---- Simulate-before-activate (F8) ----
+    // Drives the chunked simulation over SILENT RPC so the global loading
+    // indicator stays hidden and the modal's own progress bar is the only
+    // signal (same cadence as the Shadow cockpit).
+    openSimulate() {
+        if (this._lockedNotice()) return;
+        if (!this.state.config || !this.state.config.id) return;
+        this.state.simOpen = true;
+        this.state.simResult = null;
+        this.state.simProgress = 0;
+        this.state.simId = null;
+        this._runSimulate({});   // whole draft config vs the last actual payrun
+    }
+    closeSimulate() {
+        this.state.simOpen = false;
+        // discard the transient run — no residue (D8.2)
+        const id = this.state.simId;
+        this.state.simId = null;
+        this.state.simResult = null;
+        if (id) this.orm.call("pb.formula.studio", "simulate_drop", [id], {}, { silent: true }).catch(() => {});
+    }
+    async _runSimulate(overrides) {
+        const SIM_CHUNK = 100;
+        this.state.simBusy = true;
+        this.state.simProgress = 0;
+        try {
+            const prep = await this.orm.call("pb.formula.studio", "simulate_prepare",
+                [this.state.config.id, overrides || {}, null], {}, { silent: true });
+            if (!prep || prep.ok === false || !prep.sim_id) {
+                this.notif.add((prep && prep.msg) || "No historical payslips to simulate against", { type: "warning" });
+                this.state.simOpen = false;
+                return;
+            }
+            this.state.simId = prep.sim_id;
+            const ids = prep.payslip_ids || [];
+            if (!ids.length) {
+                this.notif.add("No historical payslips to simulate against", { type: "warning" });
+                this.state.simResult = { empty: true };
+                return;
+            }
+            for (let i = 0; i < ids.length; i += SIM_CHUNK) {
+                await this.orm.call("pb.formula.studio", "simulate_batch",
+                    [{ sim_id: prep.sim_id, payslip_ids: ids.slice(i, i + SIM_CHUNK) }], {}, { silent: true });
+                this.state.simProgress = Math.round(100 * Math.min(i + SIM_CHUNK, ids.length) / ids.length);
+                if (!this.state.simOpen) return;   // user closed → abandon
+            }
+            const res = await this.orm.call("pb.formula.studio", "simulate_result",
+                [prep.sim_id], {}, { silent: true });
+            if (this.state.simOpen) this.state.simResult = (res && res.result) || null;
+        } catch (e) {
+            this.notif.add("Simulation failed", { type: "danger" });
+            this.state.simOpen = false;
+        } finally {
+            this.state.simBusy = false;
+        }
+    }
+    // histogram bar geometry: share of the tallest bucket, 0..100 (%)
+    simBarPct(n) {
+        const r = this.state.simResult;
+        if (!r || !r.histogram) return 0;
+        let mx = 0;
+        for (const b of r.histogram) mx = Math.max(mx, b.neg, b.pos);
+        return mx ? Math.round(100 * n / mx) : 0;
+    }
+    get simHistLabels() {
+        return { lt10k: "< ₫10k", lt100k: "< ₫100k", lt1m: "< ₫1M", lt10m: "< ₫10M", ge10m: "≥ ₫10M" };
+    }
+    fmtSigned(v) {
+        const n = Math.round(v || 0);
+        const s = Math.abs(n).toLocaleString("en-US");
+        return (n > 0 ? "+" : n < 0 ? "−" : "") + s;
+    }
+
+    // ---- Problems rail + lint + rename-refactor (F13) ----
+    get problemCount() { return (this.state.probData && this.state.probData.count) || 0; }
+    // worst severity present -> drives the toolbar badge colour ('' when clean)
+    get problemLevel() {
+        const c = (this.state.probData && this.state.probData.counts) || {};
+        if (c.error) return "error";
+        if (c.warning) return "warning";
+        if (c.hint) return "hint";
+        return "";
+    }
+    get problems() { return (this.state.probData && this.state.probData.problems) || []; }
+    problemsOf(sev) { return this.problems.filter(p => p.severity === sev); }
+    openProblems() {
+        this.state.probOpen = true;
+        this._loadProblems();
+    }
+    closeProblems() { this.state.probOpen = false; }
+    async _loadProblems() {
+        if (!this.state.config || !this.state.config.id) return;
+        this.state.probBusy = true;
+        try {
+            this.state.probData = await this.orm.call("pb.formula.studio", "get_problems", [this.state.config.id]);
+        } catch (e) { /* keep last */ }
+        finally { this.state.probBusy = false; }
+    }
+    // jump to the component a problem points at (switch to Cards, select, scroll)
+    gotoProblem(p) {
+        if (!p || !p.rule_id) return;
+        this.state.probOpen = false;
+        if (this.state.view !== "cards" && this.state.view !== "grid") this.state.view = "cards";
+        this.selectComponent(p.rule_id);
+        if (p.col) requestAnimationFrame(() => this.scrollToCol(p.col));
+    }
+    probIcon(kind) {
+        return {
+            invalid: "alert", empty: "alert", cycle: "cycle", unused: "unplug",
+            magic: "hash", offpayslip: "eye",
+        }[kind] || "dot";
+    }
+
+    // inline code rename on the component card
+    tryRename() {
+        if (!this.state.canEdit) return;
+        this.startRename();
+    }
+    startRename() {
+        if (this._lockedNotice()) return;
+        const c = this.selected;
+        if (!c) return;
+        this.state.renameId = c.id;
+        this.state.renameVal = c.code || "";
+        this.state.renameErr = "";
+    }
+    cancelRename() {
+        this.state.renameId = null;
+        this.state.renameVal = "";
+        this.state.renameErr = "";
+    }
+    onRenameInput(ev) {
+        // keep the input to plain identifier characters, uppercased
+        this.state.renameVal = (ev.target.value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+        this.state.renameErr = "";
+    }
+    onRenameKey(ev) {
+        if (ev.key === "Enter") { ev.preventDefault(); this.commitRename(); }
+        else if (ev.key === "Escape") { ev.preventDefault(); this.cancelRename(); }
+    }
+    async commitRename() {
+        const id = this.state.renameId;
+        if (!id) return;
+        const code = (this.state.renameVal || "").trim();
+        if (this.state.renameBusy) return;
+        this.state.renameBusy = true;
+        this.state.renameErr = "";
+        try {
+            const r = await this.orm.call("pb.formula.studio", "rename_component", [id, code]);
+            if (!r || !r.ok) { this.state.renameErr = (r && r.msg) || "Rename failed"; return; }
+            const n = (r.rewritten || []).length;
+            this.notif.add(
+                r.msg + (n ? " · " + n + (n === 1 ? " formula" : " formulas") + " updated" : ""),
+                { type: "success" });
+            this.cancelRename();
+            await this.load(this.state.config.id);   // reflect new code + rewritten refs + fresh problems
+        } catch (e) {
+            this.state.renameErr = "Rename failed";
+        } finally {
+            this.state.renameBusy = false;
+        }
+    }
+
+    // ---- Rate (bracket) tables (F11) ----
+    openRates() {
+        this.state.ratesOpen = true;
+        this.state.rateEdit = null;
+        this.state.rateErr = "";
+        this.reloadRates();
+    }
+    closeRates() { this.state.ratesOpen = false; this.state.rateEdit = null; }
+    cancelRateEdit() { this.state.rateEdit = null; this.state.rateErr = ""; }
+    async reloadRates() {
+        const r = await this.orm.call("pb.formula.studio", "list_rate_tables", [this.state.config.id]);
+        this.state.rateTables = (r && r.tables) || [];
+    }
+    newRateTable() {
+        if (this._lockedNotice()) return;
+        this.state.rateEdit = { id: null, code: "", name: "", note: "",
+            brackets: [{ lower: 0, rate: 0.05 }] };
+        this.state.rateErr = "";
+        this.state.ratePreview = null;
+    }
+    editRateTable(t) {
+        if (this._lockedNotice()) return;
+        this.state.rateEdit = {
+            id: t.id, code: t.code, name: t.name, note: t.note,
+            brackets: (t.brackets || []).map(b => ({ lower: b.lower, rate: b.rate })),
+        };
+        this.state.rateErr = "";
+        this.state.ratePreview = null;
+        this._previewBracketLater();
+    }
+    addBracket() {
+        if (!this.state.rateEdit) return;
+        const bs = this.state.rateEdit.brackets;
+        const last = bs[bs.length - 1];
+        bs.push({ lower: last ? Number(last.lower) + 5000000 : 0, rate: last ? last.rate : 0.05 });
+    }
+    removeBracket(i) {
+        if (!this.state.rateEdit) return;
+        this.state.rateEdit.brackets.splice(i, 1);
+    }
+    onBracketLower(i, ev) {
+        const v = parseFloat((ev.target.value || "").replace(/[^0-9.\-]/g, ""));
+        this.state.rateEdit.brackets[i].lower = isNaN(v) ? 0 : v;
+        this._previewBracketLater();
+    }
+    // percent-typed: the input shows rate×100 with a %, we store the fraction
+    onBracketRate(i, ev) {
+        const v = parseFloat((ev.target.value || "").replace(/[^0-9.\-]/g, ""));
+        this.state.rateEdit.brackets[i].rate = isNaN(v) ? 0 : v / 100;
+        this._previewBracketLater();
+    }
+    ratePct(rate) {
+        const n = (rate || 0) * 100;
+        return (Math.round(n * 100) / 100);
+    }
+    setRateField(field, ev) {
+        this.state.rateEdit[field] = field === "code"
+            ? (ev.target.value || "").toUpperCase().replace(/[^A-Z0-9]/g, "")
+            : ev.target.value;
+        this.state.rateErr = "";
+    }
+    async saveRateTable() {
+        if (this.state.rateBusy || !this.state.rateEdit) return;
+        this.state.rateBusy = true;
+        this.state.rateErr = "";
+        try {
+            const r = await this.orm.call("pb.formula.studio", "save_rate_table",
+                [this.state.config.id, this.state.rateEdit]);
+            if (!r || !r.ok) { this.state.rateErr = (r && r.msg) || "Save failed"; return; }
+            this.notif.add("Rate table saved", { type: "success" });
+            await this.reloadRates();
+            this.state.rateEdit = null;
+            // BRACKET recompiles at compute — refresh preview so the grid/card reflect it
+            await this.load(this.state.config.id);
+        } catch (e) {
+            this.state.rateErr = "Save failed";
+        } finally {
+            this.state.rateBusy = false;
+        }
+    }
+    async deleteRateTable(t) {
+        if (this._lockedNotice()) return;
+        const r = await this.orm.call("pb.formula.studio", "delete_rate_table", [t.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Delete failed", { type: "warning" }); return; }
+        this.notif.add("Rate table deleted", { type: "success" });
+        await this.reloadRates();
+    }
+    setPreviewIncome(ev) {
+        const v = parseFloat((ev.target.value || "").replace(/[^0-9.\-]/g, ""));
+        this.state.ratePreviewIncome = isNaN(v) ? 0 : v;
+        this._previewBracketLater();
+    }
+    _previewBracketLater() {
+        if (this._rateTimer) clearTimeout(this._rateTimer);
+        this._rateTimer = setTimeout(() => this._previewBracket(), 220);
+    }
+    async _previewBracket() {
+        const e = this.state.rateEdit;
+        if (!e || !e.id) { this.state.ratePreview = this._localBracketEval(); return; }
+        // saved table → server truth; unsaved edits → local eval for instant feedback
+        this.state.ratePreview = this._localBracketEval();
+    }
+    // client-side progressive eval mirroring the server (instant, no round-trip)
+    _localBracketEval() {
+        const e = this.state.rateEdit;
+        if (!e) return null;
+        const bs = [...e.brackets].map(b => ({ lower: Number(b.lower) || 0, rate: Number(b.rate) || 0 }))
+            .sort((a, b) => a.lower - b.lower);
+        const x = Number(this.state.ratePreviewIncome) || 0;
+        let base = 0, result = 0;
+        for (let i = 0; i < bs.length; i++) {
+            const upper = i + 1 < bs.length ? bs[i + 1].lower : null;
+            if (x > bs[i].lower) {
+                const top = upper === null ? x : Math.min(x, upper);
+                result = base + bs[i].rate * (top - bs[i].lower);
+            }
+            base += bs[i].rate * (upper === null ? 0 : (upper - bs[i].lower));
+        }
+        return { value: x, result: Math.max(0, result) };
+    }
+    rateTableUsage(t) {
+        const u = (t.used_by || []);
+        return u.length ? u.join(", ") : "";
     }
 
     async aiAsk(text) {

@@ -31,6 +31,13 @@ export class GridStudio extends Component {
         onBulkUpdate: { type: Function, optional: true },   // (ruleIds, vals) => bulk RPC + refresh
         onTranslateFormula: { type: Function, optional: true }, // (ruleId, cols) => [{col,proposed_formula,valid}]
         onBulkSaveFormulas: { type: Function, optional: true }, // (items) => save + refresh
+        // F14 — scenario columns (what-if overlays; ghost columns next to their base)
+        scenarios: { type: Array, optional: true },
+        onScenarioCreate: { type: Function, optional: true },   // (ruleId) => new scenario payload
+        onScenarioSave: { type: Function, optional: true },     // (sid, formula) => {ok,valid,message}
+        onScenarioEval: { type: Function, optional: true },     // (sid, sampleId) => {base_value,scenario_value,net_*}
+        onScenarioPromote: { type: Function, optional: true },  // (sid) => write into base rule (versioned)
+        onScenarioDiscard: { type: Function, optional: true },  // (sid) => delete
     };
 
     setup() {
@@ -51,10 +58,19 @@ export class GridStudio extends Component {
             bulkDraft: { category_id: "", number_format: "", appears_on_payslip: "", is_visible_in_grid: "" },
             // T2.8 drag-fill: {active, pending, srcId, hoverCol, targets:[{col,id,proposed_formula,valid}]}
             fill: { active: false, pending: false, srcId: null, hoverCol: null, targets: [] },
+            // F14 scenario editing: {id, buffer, valid, message} | null (one at a time)
+            scenarioEdit: null,
         });
+        // F14 scenario overlay values, keyed by scenario id → {base_value, scenario_value,
+        // net_base, net_scenario, forSample, loading}. Separate reactive store so a value
+        // refresh doesn't churn the main ui state.
+        this.scenarioValues = useState({});
+        this._scSeq = 0;             // scenario-validate supersede token
+        this._scEditorSeeded = false;
         onWillUnmount(() => this._teardownFill());
         this.scrollerRef = useRef("scroller");
         this.editorRef = useRef("editor");
+        this.scEditorRef = useRef("scEditor");
         this._liveTimer = null;      // same debounce pattern as formula_studio.js
         this._vseq = 0;              // monotonic validation token (supersede guard)
         this._lastCommit = null;     // { ruleId, previousFormula } — single-level undo (T2.9)
@@ -219,6 +235,7 @@ export class GridStudio extends Component {
     // ---- keyboard: ONE handler on the scroller (roving focus; cells are inert) ----
     onKeydown(ev) {
         if (this.ui.editing) return this._onEditorKeydown(ev); // editor has its own path
+        if (this.ui.scenarioEdit) return;                      // a scenario editor owns the keyboard
         if ((ev.ctrlKey || ev.metaKey) && (ev.key === "z" || ev.key === "Z")) {
             ev.preventDefault(); ev.stopPropagation(); this._undo(); return;   // single-level undo (T2.9)
         }
@@ -500,6 +517,132 @@ export class GridStudio extends Component {
         this.scrollerRef.el?.focus();
     }
 
+    // ---- F14 scenario columns (ghost overlays next to their base) ----
+    // Display units interleave each base column with its scenario ghost(s), so a
+    // scenario renders immediately to the RIGHT of the component it overlays.
+    // The roving keyboard/focus/drag-fill model still keys strictly on base
+    // columns (this.ordered) — scenarios are mouse-interactive ghosts only.
+    scenariosFor(ruleId) { return (this.props.scenarios || []).filter(s => s.rule_id === ruleId); }
+    get hasScenarios() { return (this.props.scenarios || []).length > 0; }
+    get displayColumns() {
+        const units = [];
+        for (const c of this.ordered) {
+            units.push({ kind: "base", comp: c, key: "b" + c.id });
+            for (const s of this.scenariosFor(c.id)) units.push({ kind: "scenario", scenario: s, comp: c, key: "s" + s.id });
+        }
+        return units;
+    }
+    canScenario(c) {
+        return this.props.canEdit && !!this.props.onScenarioCreate && c && c.type === "formula";
+    }
+    async addScenario(ev, comp) {
+        if (ev) ev.stopPropagation();
+        if (!this.canScenario(comp)) return;
+        await this.props.onScenarioCreate(comp.id);   // parent reloads props.scenarios; _sync evals it
+    }
+    _scenarioRuleId(sid) {
+        const s = (this.props.scenarios || []).find(x => x.id === sid);
+        return s ? s.rule_id : null;
+    }
+    isScenarioEditing(s) { return !!this.ui.scenarioEdit && this.ui.scenarioEdit.id === s.id; }
+    startScenarioEdit(s) {
+        if (!this.props.canEdit || !this.props.onScenarioSave) return;
+        this._scEditorSeeded = false;
+        this.ui.scenarioEdit = { id: s.id, buffer: s.override_formula || "", valid: null, message: "" };
+    }
+    onScenarioInput(ev) {
+        if (!this.ui.scenarioEdit) return;
+        this.ui.scenarioEdit.buffer = ev.target.value;
+        this._scheduleScenarioValidate();
+    }
+    _scheduleScenarioValidate() {
+        clearTimeout(this._scTimer);
+        const mine = this.ui.scenarioEdit;
+        if (!mine) return;
+        const seq = ++this._scSeq;
+        this._scTimer = setTimeout(async () => {
+            const res = await this.props.onValidateLive(mine.buffer, this._scenarioRuleId(mine.id));
+            if (this.ui.scenarioEdit === mine && seq === this._scSeq && res) {
+                Object.assign(mine, { valid: res.valid, message: res.message || "" });
+            }
+        }, 260);
+    }
+    onScenarioEditorKeydown(ev) {
+        if (ev.key === "Enter") { ev.preventDefault(); this._commitScenario(); }
+        else if (ev.key === "Escape") { ev.preventDefault(); this.ui.scenarioEdit = null; }
+        ev.stopPropagation();   // NEVER let scenario-editor keys reach the grid navigator
+    }
+    async _commitScenario() {
+        const e = this.ui.scenarioEdit;
+        if (!e) return;
+        const res = await this.props.onValidateLive(e.buffer, this._scenarioRuleId(e.id));
+        if (res && res.valid === false) { Object.assign(e, { valid: false, message: res.message || "Invalid formula" }); return; }
+        this.ui.scenarioEdit = null;
+        await this.props.onScenarioSave(e.id, e.buffer);
+        const s = (this.props.scenarios || []).find(x => x.id === e.id);
+        if (s) this._evalScenario(s);   // re-eval the value row with the new draft
+        this.scrollerRef.el?.focus();
+    }
+    async promoteScenario(ev, s) {
+        if (ev) ev.stopPropagation();
+        if (!this.props.onScenarioPromote) return;
+        if (s.valid === false) return;
+        await this.props.onScenarioPromote(s.id);   // parent writes the rule (versioned) + refreshes
+    }
+    async discardScenario(ev, s) {
+        if (ev) ev.stopPropagation();
+        if (!this.props.onScenarioDiscard) return;
+        delete this.scenarioValues[s.id];
+        await this.props.onScenarioDiscard(s.id);
+    }
+    // value-row eval via the F8 overlay (guarded so onPatched can't loop)
+    async _evalScenario(s) {
+        if (!this.props.onScenarioEval) return;
+        const sid = this.props.preview && this.props.preview.sample_id;
+        this.scenarioValues[s.id] = { loading: true, forSample: sid };
+        const r = await this.props.onScenarioEval(s.id, sid);
+        if ((this.props.preview && this.props.preview.sample_id) === sid) {
+            this.scenarioValues[s.id] = r && r.ok ? { ...r, forSample: sid } : { forSample: sid, ok: false };
+        }
+    }
+    _syncScenarioValues() {
+        if (!this.props.onScenarioEval) return;
+        const sid = this.props.preview && this.props.preview.sample_id;
+        const scenarios = this.props.scenarios || [];
+        const ids = new Set(scenarios.map(s => s.id));
+        for (const k of Object.keys(this.scenarioValues)) { if (!ids.has(+k)) delete this.scenarioValues[+k]; }
+        for (const s of scenarios) {
+            const cur = this.scenarioValues[s.id];
+            if (!cur || cur.forSample !== sid) this._evalScenario(s);   // fires once per (scenario, sample)
+        }
+    }
+    _fmtNum(v) { return Math.round(v || 0).toLocaleString("en-US"); }
+    fmtSignedNum(v) {
+        const n = Math.round(v || 0);
+        return (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n).toLocaleString("en-US");
+    }
+    scenarioValue(s) {
+        const v = this.scenarioValues[s.id];
+        if (!v || v.loading) return "…";
+        if (v.ok === false) return "—";
+        return this._fmtNum(v.scenario_value);
+    }
+    scenarioDelta(s) {
+        const v = this.scenarioValues[s.id];
+        if (!v || v.loading || v.ok === false) return null;
+        const d = (v.scenario_value || 0) - (v.base_value || 0);
+        return Math.abs(d) < 0.5 ? null : d;
+    }
+    scenarioNetDelta(s) {
+        const v = this.scenarioValues[s.id];
+        if (!v || v.loading || v.ok === false || v.net_scenario === undefined) return null;
+        const d = (v.net_scenario || 0) - (v.net_base || 0);
+        return Math.abs(d) < 0.5 ? null : d;
+    }
+    scenarioStatus(s) {
+        return s.valid === false ? { state: "error", message: s.message || "Invalid formula" } : { state: "ok", message: "Valid" };
+    }
+
     // ---- post-render: seed the overlay input once, keep focus in view ----
     _afterPatch() {
         if (this.ui.editing && this.editorRef.el && !this._editorSeeded) {
@@ -515,6 +658,18 @@ export class GridStudio extends Component {
             this._editorSeeded = false;
             this._scrollFocusIntoView();
         }
+        // seed the scenario editor overlay exactly once (mirrors the base editor)
+        if (this.ui.scenarioEdit && this.scEditorRef.el && !this._scEditorSeeded) {
+            this._scEditorSeeded = true;
+            const el = this.scEditorRef.el;
+            el.value = this.ui.scenarioEdit.buffer || "";
+            el.focus();
+            const n = el.value.length;
+            try { el.setSelectionRange(n, n); } catch (e) { /* non-text */ }
+        }
+        if (!this.ui.scenarioEdit) this._scEditorSeeded = false;
+        // keep scenario overlay values in sync with the current sample / scenario set
+        this._syncScenarioValues();
     }
     _scrollFocusIntoView() {
         const root = this.scrollerRef.el;

@@ -92,6 +92,17 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
               </button>
             </div>
+            <button class="pbfs-btn soft pbfs-ratebtn" data-coach="fs-rates" t-on-click="openRates" title="Rate &amp; bracket tables (PIT, etc.)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+              <span>Tables</span>
+              <span t-if="state.rateTables.length" class="pbfs-ratecount" t-esc="state.rateTables.length"/>
+            </button>
+            <button t-attf-class="pbfs-btn soft pbfs-probbtn {{ problemLevel }}" data-coach="fs-problems" t-on-click="openProblems" title="Problems, lint &amp; rename-refactor">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+              <span>Problems</span>
+              <span t-if="problemCount" class="pbfs-probcount" t-esc="problemCount"/>
+              <svg t-else="" class="pbfs-probok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+            </button>
             <button class="pbfs-btn ai" data-coach="fs-payai" t-on-click="openAI">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Ask PayAI
             </button>
@@ -131,6 +142,9 @@
             <button t-if="cfgState === 'draft'" class="pbfs-btn primary" t-on-click="startTesting">Start Testing</button>
             <button t-if="cfgState === 'testing'" class="pbfs-btn primary" t-on-click="validateCfg">Validate</button>
             <button t-if="cfgState === 'validated'" class="pbfs-btn primary" t-on-click="activateCfg">Activate</button>
+            <button t-if="state.settings.status.rule_count" class="pbfs-btn soft" data-coach="fs-simulate" t-on-click="openSimulate" title="Preview this config against last period's real payslips before activating">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Simulate
+            </button>
             <button t-if="cfgState !== 'draft'" class="pbfs-btn ghost" t-on-click="setDraftCfg">Set to Draft</button>
             <button t-if="!state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="importExcelCfg">Import from Excel</button>
             <button t-if="state.settings.status.rule_count" class="pbfs-btn ghost" t-on-click="regenerateFormulas">Regenerate Formulas</button>
@@ -512,7 +526,17 @@
               <div class="ed-hero" data-coach="fs-card">
                 <div class="col-badge" t-esc="selected.col"/>
                 <div style="flex:1; min-width:200px">
-                  <h2><t t-esc="selected.name"/><span class="code-tag" t-esc="selected.code"/></h2>
+                  <h2><t t-esc="selected.name"/>
+                    <t t-if="state.renameId === selected.id">
+                      <span class="pbfs-rename">
+                        <input class="pbfs-rename-in" t-att-value="state.renameVal" t-on-input="onRenameInput" t-on-keydown="onRenameKey" placeholder="CODE" autocomplete="off" spellcheck="false"/>
+                        <button class="pbfs-rn-ok" t-att-disabled="state.renameBusy" t-on-click="commitRename" title="Rename (Enter)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></button>
+                        <button class="pbfs-rn-x" t-on-click="cancelRename" title="Cancel (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+                        <span t-if="state.renameErr" class="pbfs-rn-err" t-esc="state.renameErr"/>
+                      </span>
+                    </t>
+                    <span t-else="" class="code-tag pbfs-code-edit" t-att-title="state.canEdit ? 'Rename code — references stay intact automatically' : ''" t-on-click="tryRename"><t t-esc="selected.code"/></span>
+                  </h2>
                   <div class="sub" t-esc="'Column ' + selected.col + ' · ' + (selected.type === 'input' ? 'Input value' : selected.type === 'constant' ? 'Fixed constant' : 'Calculated formula') + (selected.category ? ' · ' + selected.category : '')"/>
                 </div>
                 <div class="ed-hero-side">
@@ -819,11 +843,17 @@
                         onSelect="(id) => this.selectComponent(id)"
                         formatValue="(col) => this.previewVal(col)"
                         sampleName="sampleName" fieldMeta="state.fieldMeta"
+                        scenarios="state.scenarios"
                         onSaveFormula="(id, f) => this.gridSaveFormula(id, f)"
                         onValidateLive="(f, ex) => this.gridValidateLive(f, ex)"
                         onBulkUpdate="(ids, vals) => this.gridBulkUpdate(ids, vals)"
                         onTranslateFormula="(id, cols) => this.gridTranslateFormula(id, cols)"
-                        onBulkSaveFormulas="(items) => this.gridBulkSaveFormulas(items)"/>
+                        onBulkSaveFormulas="(items) => this.gridBulkSaveFormulas(items)"
+                        onScenarioCreate="(ruleId) => this.gridScenarioCreate(ruleId)"
+                        onScenarioSave="(sid, f) => this.gridScenarioSave(sid, f)"
+                        onScenarioEval="(sid, sampleId) => this.gridScenarioEval(sid, sampleId)"
+                        onScenarioPromote="(sid) => this.gridScenarioPromote(sid)"
+                        onScenarioDiscard="(sid) => this.gridScenarioDiscard(sid)"/>
           </div>
 
           <!-- live preview -->
@@ -972,6 +1002,240 @@
                     </t>
                   </t>
                 </div>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problems rail (F13) -->
+      <div t-if="state.probOpen" class="pbfs-prob-scrim" t-on-click="closeProblems">
+        <div class="pbfs-prob" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="pp-head">
+            <div class="pp-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+              <div>
+                <b>Problems</b>
+                <small t-if="state.probData"><t t-esc="problemCount"/> found · <t t-esc="state.config.name"/></small>
+              </div>
+            </div>
+            <div class="pp-head-side">
+              <button class="pp-refresh" t-on-click="_loadProblems" title="Re-scan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/></svg></button>
+              <button class="hs-x" t-on-click="closeProblems"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+            </div>
+          </div>
+
+          <!-- severity summary chips -->
+          <div t-if="state.probData" class="pp-summary">
+            <span t-attf-class="pp-chip error {{ (state.probData.counts.error||0) ? '' : 'off' }}"><i/><t t-esc="state.probData.counts.error||0"/> errors</span>
+            <span t-attf-class="pp-chip warning {{ (state.probData.counts.warning||0) ? '' : 'off' }}"><i/><t t-esc="state.probData.counts.warning||0"/> warnings</span>
+            <span t-attf-class="pp-chip hint {{ (state.probData.counts.hint||0) ? '' : 'off' }}"><i/><t t-esc="state.probData.counts.hint||0"/> hints</span>
+          </div>
+
+          <div class="pp-body">
+            <div t-if="state.probBusy and !state.probData" class="hs-loading">Scanning…</div>
+
+            <t t-if="state.probData">
+              <div t-if="!problemCount" class="pp-clean">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                <b>No problems found</b>
+                <span>This configuration is valid, cycle-free and lint-clean.</span>
+              </div>
+
+              <t t-foreach="['error','warning','hint']" t-as="sev" t-key="sev">
+                <t t-if="problemsOf(sev).length">
+                  <div t-foreach="problemsOf(sev)" t-as="p" t-key="p.key" t-attf-class="pp-row {{ sev }}">
+                    <span class="pp-dot"/>
+                    <div class="pp-main">
+                      <div class="pp-t"><t t-esc="p.title"/></div>
+                      <div class="pp-d"><t t-esc="p.detail"/></div>
+                    </div>
+                    <button t-if="p.rule_id" class="pp-go" t-on-click="() => this.gotoProblem(p)" title="Go to component"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></button>
+                  </div>
+                </t>
+              </t>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rate (bracket) tables editor (F11) -->
+      <div t-if="state.ratesOpen" class="pbfs-rates-scrim" t-on-click="closeRates">
+        <div class="pbfs-rates" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="pr-head">
+            <div class="pr-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+              <div>
+                <b>Rate &amp; bracket tables</b>
+                <small>Reference in any formula as <code>BRACKET(code, income)</code></small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeRates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="pr-body">
+            <!-- LIST view -->
+            <t t-if="!state.rateEdit">
+              <div t-if="!state.rateTables.length" class="pr-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+                <b>No rate tables yet</b>
+                <span>Create a progressive table (e.g. a PIT schedule) and call it from a formula with <code>BRACKET(PIT, ASSESS2)</code> — the ugly nested-IF is generated for you.</span>
+              </div>
+              <div t-foreach="state.rateTables" t-as="t" t-key="t.id" class="pr-card" t-on-click="() => this.editRateTable(t)">
+                <div class="pr-card-main">
+                  <div class="pr-card-t"><span class="pr-code" t-esc="t.code"/><span t-esc="t.name"/></div>
+                  <div class="pr-card-sub"><t t-esc="t.brackets.length"/> bracket<t t-if="t.brackets.length !== 1">s</t><t t-if="rateTableUsage(t)"> · used by <t t-esc="rateTableUsage(t)"/></t></div>
+                </div>
+                <svg class="pr-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+              <button class="pbfs-btn primary pr-new" t-on-click="newRateTable">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New rate table
+              </button>
+            </t>
+
+            <!-- EDIT view -->
+            <t t-else="">
+              <div class="pr-form">
+                <div class="pr-frow">
+                  <label class="pr-fld pr-fld-code"><span>Code</span>
+                    <input t-att-value="state.rateEdit.code" t-on-input="(ev) => this.setRateField('code', ev)" placeholder="PIT" spellcheck="false"/>
+                  </label>
+                  <label class="pr-fld pr-fld-name"><span>Name</span>
+                    <input t-att-value="state.rateEdit.name" t-on-input="(ev) => this.setRateField('name', ev)" placeholder="Personal Income Tax"/>
+                  </label>
+                </div>
+
+                <div class="pr-brackets">
+                  <div class="pr-bhead"><span class="pr-bh-from">Income from</span><span class="pr-bh-rate">Marginal rate</span><span class="pr-bh-x"/></div>
+                  <div t-foreach="state.rateEdit.brackets" t-as="b" t-key="b_index" class="pr-brow">
+                    <div class="pr-bnum">
+                      <input class="pr-in-lower" t-att-value="b.lower" t-on-input="(ev) => this.onBracketLower(b_index, ev)" inputmode="decimal"/>
+                    </div>
+                    <div class="pr-bpct">
+                      <input class="pr-in-rate" t-att-value="ratePct(b.rate)" t-on-input="(ev) => this.onBracketRate(b_index, ev)" inputmode="decimal"/>
+                      <span class="pr-pctsign">%</span>
+                    </div>
+                    <button class="pr-brm" t-on-click="() => this.removeBracket(b_index)" title="Remove bracket"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+                  </div>
+                  <button class="pr-badd" t-on-click="addBracket"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Add bracket</button>
+                </div>
+
+                <!-- live preview -->
+                <div class="pr-preview">
+                  <div class="pr-pv-row">
+                    <label><span>At income</span>
+                      <input t-att-value="state.ratePreviewIncome" t-on-input="setPreviewIncome" inputmode="decimal"/>
+                    </label>
+                    <div class="pr-pv-out">
+                      <span class="pr-pv-lbl">computes</span>
+                      <span class="pr-pv-val" t-esc="state.ratePreview ? vnd(state.ratePreview.result) : '—'"/>
+                    </div>
+                  </div>
+                </div>
+
+                <div t-if="state.rateErr" class="pr-err" t-esc="state.rateErr"/>
+
+                <div class="pr-actions">
+                  <button class="pbfs-btn ghost" t-on-click="cancelRateEdit">Cancel</button>
+                  <button t-if="state.rateEdit.id" class="pbfs-btn danger" t-on-click="() => this.deleteRateTable(state.rateEdit)">Delete</button>
+                  <button class="pbfs-btn primary" t-att-disabled="state.rateBusy" t-on-click="saveRateTable">Save table</button>
+                </div>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulate-before-activate modal (F8) -->
+      <div t-if="state.simOpen" class="pbfs-sim-scrim" t-on-click="closeSimulate">
+        <div class="pbfs-sim" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="sm-head">
+            <div class="sm-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              <div>
+                <b>Simulate before activate</b>
+                <small>This configuration vs the last actual payrun · every employee, real inputs</small>
+              </div>
+            </div>
+            <button class="sm-x" t-on-click="closeSimulate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="sm-body">
+            <!-- progress while the chunked drive runs -->
+            <div t-if="!state.simResult" class="sm-progress">
+              <div class="sm-spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg></div>
+              <div class="sm-plabel">Recomputing every employee through the engine…</div>
+              <div class="sm-pbar"><span t-attf-style="width:{{ state.simProgress }}%"/></div>
+              <div class="sm-ppct"><t t-esc="state.simProgress"/>%</div>
+            </div>
+
+            <t t-if="state.simResult and state.simResult.empty">
+              <div class="sm-empty">No historical payslips to simulate against for this configuration.</div>
+            </t>
+
+            <t t-if="state.simResult and !state.simResult.empty">
+              <!-- headline banner: how many payslips change -->
+              <div class="sm-banner" t-att-class="state.simResult.employees_changed ? 'changed' : 'clean'">
+                <div class="sm-bignum"><t t-esc="state.simResult.employees_unchanged.toLocaleString()"/></div>
+                <div class="sm-bantext">
+                  <b>of <t t-esc="state.simResult.employees_total.toLocaleString()"/> payslips unchanged</b>
+                  <small><t t-esc="state.simResult.pct_unchanged"/>% identical ·
+                    <t t-esc="state.simResult.employees_changed.toLocaleString()"/> would change</small>
+                </div>
+                <div class="sm-headchip" t-if="state.simResult.headline">Take-home: <b t-esc="state.simResult.headline"/></div>
+              </div>
+
+              <!-- histogram of take-home deltas -->
+              <div t-if="state.simResult.employees_changed" class="sm-hist">
+                <div class="sm-sec">Distribution of take-home change</div>
+                <div class="sm-hrows">
+                  <div t-foreach="state.simResult.histogram" t-as="b" t-key="b.bucket" class="sm-hrow">
+                    <div class="sm-hlabel" t-esc="simHistLabels[b.bucket]"/>
+                    <div class="sm-hbar">
+                      <span class="neg" t-attf-style="width:{{ simBarPct(b.neg) }}%" t-att-title="b.neg + ' lower'"/>
+                      <span class="pos" t-attf-style="width:{{ simBarPct(b.pos) }}%" t-att-title="b.pos + ' higher'"/>
+                    </div>
+                    <div class="sm-hcount"><t t-if="b.neg" t-esc="'−' + b.neg"/><t t-if="b.neg and b.pos">/</t><t t-if="b.pos" t-esc="'+' + b.pos"/></div>
+                  </div>
+                </div>
+                <div class="sm-legend"><span class="dot neg"/>lower<span class="dot pos"/>higher</div>
+              </div>
+
+              <!-- components that moved -->
+              <div t-if="state.simResult.components.length" class="sm-comp">
+                <div class="sm-sec">Components affected</div>
+                <table class="sm-ctab">
+                  <thead><tr><th>Component</th><th class="num">Employees</th><th class="num">Avg change</th><th class="num">Largest</th></tr></thead>
+                  <tbody>
+                    <tr t-foreach="state.simResult.components" t-as="c" t-key="c.code">
+                      <td><b t-esc="c.code"/></td>
+                      <td class="num" t-esc="c.employees.toLocaleString()"/>
+                      <td t-attf-class="num {{ c.avg_delta >= 0 ? 'up' : 'dn' }}" t-esc="fmtSigned(c.avg_delta)"/>
+                      <td class="num muted" t-esc="fmtSigned(c.max_abs)"/>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- biggest movers -->
+              <div t-if="state.simResult.movers.length" class="sm-mov">
+                <div class="sm-sec">Biggest movers <small>(top <t t-esc="state.simResult.movers.length"/> by take-home change)</small></div>
+                <table class="sm-mtab">
+                  <thead><tr><th>Employee</th><th class="num">Before</th><th class="num">After</th><th class="num">Change</th></tr></thead>
+                  <tbody>
+                    <tr t-foreach="state.simResult.movers" t-as="m" t-key="m_index">
+                      <td><b t-esc="m.emp"/> <span class="sm-ref" t-esc="m.ref"/></td>
+                      <td class="num muted" t-esc="Math.round(m.baseline).toLocaleString()"/>
+                      <td class="num" t-esc="Math.round(m.candidate).toLocaleString()"/>
+                      <td t-attf-class="num {{ m.delta >= 0 ? 'up' : 'dn' }}" t-esc="fmtSigned(m.delta)"/>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="sm-foot">
+                <span class="sm-note">Nothing was written — this is a preview. Activate when you're confident.</span>
+                <button class="pbfs-btn ghost" t-on-click="closeSimulate">Close</button>
               </div>
             </t>
           </div>

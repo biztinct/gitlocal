@@ -22,81 +22,145 @@
         <thead>
           <tr class="g2-hrow">
             <th class="g2-corner">Component</th>
-            <th t-foreach="ordered" t-as="c" t-key="c.id"
-                t-att-data-col-id="c.id"
-                t-att-class="headClass(c)"
-                t-on-click="(ev) => this.onCellClick(ev, c, 'formula')"
-                t-att-title="c.name">
-              <span class="g2-col" t-esc="c.col"/>
-              <span class="g2-code" t-esc="c.code"/>
-            </th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'">
+                <t t-set="c" t-value="u.comp"/>
+                <th t-att-data-col-id="c.id" t-att-class="headClass(c)"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'formula')" t-att-title="c.name">
+                  <span class="g2-col" t-esc="c.col"/>
+                  <span class="g2-code" t-esc="c.code"/>
+                  <button t-if="canScenario(c)" class="g2-addsc" title="Branch a what-if scenario"
+                          t-on-click="(ev) => this.addScenario(ev, c)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                  </button>
+                </th>
+              </t>
+              <t t-else="">
+                <t t-set="s" t-value="u.scenario"/>
+                <th t-attf-class="g2-chead g2-shead sc-{{ s.color }}" t-att-title="'Scenario: ' + s.name">
+                  <span class="g2-smark"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 22 12 12 22 2 12z"/></svg></span>
+                  <span class="g2-scode" t-esc="s.name"/>
+                  <span class="g2-sacts">
+                    <button class="g2-sact ok" title="Promote into the real component" t-att-disabled="s.valid === false"
+                            t-on-click="(ev) => this.promoteScenario(ev, s)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+                    </button>
+                    <button class="g2-sact no" title="Discard scenario" t-on-click="(ev) => this.discardScenario(ev, s)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
+                  </span>
+                </th>
+              </t>
+            </t>
           </tr>
         </thead>
         <tbody>
           <tr class="g2-prow">
             <th class="g2-rlabel">Name</th>
-            <td t-foreach="ordered" t-as="c" t-key="c.id"
-                t-att-data-col-id="c.id" data-row="name"
-                t-att-class="cellClass(c, 'name')"
-                t-on-click="(ev) => this.onCellClick(ev, c, 'name')">
-              <span class="g2-name" t-esc="c.name"/>
-            </td>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="name" t-att-class="cellClass(c, 'name')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'name')">
+                  <span class="g2-name" t-esc="c.name"/>
+                </td>
+              </t>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td class="g2-scell g2-sname muted">vs <b t-esc="u.comp.code"/></td>
+              </t>
+            </t>
           </tr>
           <tr class="g2-prow">
             <th class="g2-rlabel">Category</th>
-            <td t-foreach="ordered" t-as="c" t-key="c.id"
-                t-att-data-col-id="c.id" data-row="category"
-                t-att-class="cellClass(c, 'category')"
-                t-on-click="(ev) => this.onCellClick(ev, c, 'category')" t-esc="c.category"/>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="category" t-att-class="cellClass(c, 'category')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'category')" t-esc="c.category"/>
+              </t>
+              <t t-else=""><td class="g2-scell muted">—</td></t>
+            </t>
           </tr>
           <tr class="g2-prow">
             <th class="g2-rlabel">Type</th>
-            <td t-foreach="ordered" t-as="c" t-key="c.id"
-                t-att-data-col-id="c.id" data-row="type"
-                t-att-class="cellClass(c, 'type')"
-                t-on-click="(ev) => this.onCellClick(ev, c, 'type')">
-              <span t-attf-class="g2-typ {{ c.type }}" t-esc="typeLabel(c)"/>
-            </td>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="type" t-att-class="cellClass(c, 'type')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'type')">
+                  <span t-attf-class="g2-typ {{ c.type }}" t-esc="typeLabel(c)"/>
+                </td>
+              </t>
+              <t t-else=""><td class="g2-scell"><span class="g2-typ scenario">what-if</span></td></t>
+            </t>
           </tr>
           <tr class="g2-prow">
             <th class="g2-rlabel">Formula</th>
-            <td t-foreach="ordered" t-as="c" t-key="c.id"
-                t-att-data-col-id="c.id" data-row="formula"
-                t-att-class="cellClass(c, 'formula')"
-                t-on-click="(ev) => this.onCellClick(ev, c, 'formula')"
-                t-on-dblclick="() => this.onCellDblClick(c, 'formula')"
-                t-att-title="formulaTitle(c)">
-              <input t-if="isEditingCell(c, 'formula')" class="g2-edit" t-ref="editor"
-                     t-on-input="onEditorInput" t-on-keydown="_onEditorKeydown"
-                     t-on-compositionstart="onCompositionStart" t-on-compositionend="onCompositionEnd"
-                     t-att-class="ui.editing.valid === false ? 'invalid' : ''"/>
-              <t t-elif="ghostFor(c)">
-                <span t-attf-class="g2-ghost {{ ghostFor(c).valid ? '' : 'invalid' }}" t-esc="ghostFor(c).proposed_formula"/>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="formula" t-att-class="cellClass(c, 'formula')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'formula')"
+                    t-on-dblclick="() => this.onCellDblClick(c, 'formula')" t-att-title="formulaTitle(c)">
+                  <input t-if="isEditingCell(c, 'formula')" class="g2-edit" t-ref="editor"
+                         t-on-input="onEditorInput" t-on-keydown="_onEditorKeydown"
+                         t-on-compositionstart="onCompositionStart" t-on-compositionend="onCompositionEnd"
+                         t-att-class="ui.editing.valid === false ? 'invalid' : ''"/>
+                  <t t-elif="ghostFor(c)">
+                    <span t-attf-class="g2-ghost {{ ghostFor(c).valid ? '' : 'invalid' }}" t-esc="ghostFor(c).proposed_formula"/>
+                  </t>
+                  <span t-else="" t-esc="formulaText(c)"/>
+                  <span t-if="canFillFrom(c)" class="g2-fillhandle" title="Drag right to fill this formula" t-on-mousedown="onFillDown"/>
+                </td>
               </t>
-              <span t-else="" t-esc="formulaText(c)"/>
-              <span t-if="canFillFrom(c)" class="g2-fillhandle" title="Drag right to fill this formula" t-on-mousedown="onFillDown"/>
-            </td>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td t-attf-class="g2-scell g2-sformula {{ scenarioStatus(s).state === 'error' ? 'has-error' : '' }}"
+                    t-on-click="() => this.startScenarioEdit(s)" t-att-title="s.override_formula">
+                  <input t-if="isScenarioEditing(s)" class="g2-edit" t-ref="scEditor"
+                         t-on-input="onScenarioInput" t-on-keydown="onScenarioEditorKeydown"
+                         t-att-class="ui.scenarioEdit.valid === false ? 'invalid' : ''"/>
+                  <span t-else="" t-esc="s.override_formula || '—'"/>
+                </td>
+              </t>
+            </t>
           </tr>
           <tr class="g2-prow g2-valrow">
             <th class="g2-rlabel">Value</th>
-            <td t-foreach="ordered" t-as="c" t-key="c.id"
-                t-att-data-col-id="c.id" data-row="value"
-                t-att-class="cellClass(c, 'value')"
-                t-on-click="(ev) => this.onCellClick(ev, c, 'value')" t-esc="props.formatValue(c.col)"/>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="value" t-att-class="cellClass(c, 'value')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'value')" t-esc="props.formatValue(c.col)"/>
+              </t>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td class="g2-scell g2-svalue">
+                  <span class="sv-num" t-esc="scenarioValue(s)"/>
+                  <span t-if="scenarioDelta(s) !== null" t-attf-class="sv-delta {{ scenarioDelta(s) >= 0 ? 'up' : 'dn' }}" t-esc="fmtSignedNum(scenarioDelta(s))"/>
+                  <span t-if="scenarioNetDelta(s) !== null" class="sv-net" title="Take-home ripple">net&#160;<t t-esc="fmtSignedNum(scenarioNetDelta(s))"/></span>
+                </td>
+              </t>
+            </t>
           </tr>
           <tr class="g2-prow">
             <th class="g2-rlabel">Status</th>
-            <td t-foreach="ordered" t-as="c" t-key="c.id"
-                t-att-data-col-id="c.id" data-row="status"
-                t-att-class="cellClass(c, 'status')"
-                t-on-click="(ev) => this.onCellClick(ev, c, 'status')">
-              <span t-if="statusOf(c).state === 'ok'" class="g2-badge ok" title="Valid">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
-              </span>
-              <span t-else="" class="g2-badge bad" t-att-title="statusOf(c).message">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
-              </span>
-            </td>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td t-att-data-col-id="c.id" data-row="status" t-att-class="cellClass(c, 'status')"
+                    t-on-click="(ev) => this.onCellClick(ev, c, 'status')">
+                  <span t-if="statusOf(c).state === 'ok'" class="g2-badge ok" title="Valid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+                  </span>
+                  <span t-else="" class="g2-badge bad" t-att-title="statusOf(c).message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                  </span>
+                </td>
+              </t>
+              <t t-else=""><t t-set="s" t-value="u.scenario"/>
+                <td class="g2-scell">
+                  <span t-if="scenarioStatus(s).state === 'ok'" class="g2-badge ok" title="Valid">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+                  </span>
+                  <span t-else="" class="g2-badge bad" t-att-title="scenarioStatus(s).message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                  </span>
+                </td>
+              </t>
+            </t>
           </tr>
         </tbody>
       </table>
