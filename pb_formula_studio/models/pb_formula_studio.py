@@ -205,12 +205,22 @@ class PbFormulaStudio(models.AbstractModel):
                 if rr:
                     used_by.setdefault(rr.id, []).append(r.name)
 
+        # F15 — note badges per component (one query, tallied in Python)
+        note_by_rule = defaultdict(lambda: {'count': 0, 'review_open': 0})
+        for n in self.env['hr.formula.rule.note'].search([('config_id', '=', config.id)]):
+            d = note_by_rule[n.rule_id.id]
+            d['count'] += 1
+            if n.is_review and not n.resolved:
+                d['review_open'] += 1
+
         components = []
         for r in rules:
             components.append({
                 'id': r.id,
                 'col': r.column_letter or '?',
                 'code': r.code or '',
+                'note_count': note_by_rule[r.id]['count'],
+                'review_open': note_by_rule[r.id]['review_open'],
                 # Multilingual: prefer the translatable linked salary rule's label
                 # (resolves to the reader's language); fall back to the rule name.
                 'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or '(unnamed)',
@@ -1239,9 +1249,9 @@ class PbFormulaStudio(models.AbstractModel):
         by_col = self._col_to_rule(rules)
         problems = []
 
-        def _add(kind, severity, title, detail, rule=None, col=None):
+        def _add(kind, severity, title, detail, rule=None, col=None, note_id=None):
             problems.append({
-                'key': '%s:%s' % (kind, rule.id if rule else (col or len(problems))),
+                'key': '%s:%s' % (kind, note_id or (rule.id if rule else (col or len(problems)))),
                 'kind': kind,
                 'severity': severity,
                 'title': title,
@@ -1249,6 +1259,7 @@ class PbFormulaStudio(models.AbstractModel):
                 'rule_id': rule.id if rule else False,
                 'col': (rule.column_letter if rule else col) or '',
                 'code': (rule.code if rule else '') or '',
+                'note_id': note_id or False,
             })
 
         # 1) invalid / empty formulas -------------------------------------
@@ -1324,6 +1335,19 @@ class PbFormulaStudio(models.AbstractModel):
                      _("This looks like a total or net figure yet it is not shown on "
                        "the payslip. Employees will not see it."),
                      rule=r)
+
+        # 5) open review notes (F15) — a note flagged for review stays in the
+        # rail until someone resolves it (resolving keeps it in history).
+        rule_by_id = {r.id: r for r in rules}
+        for n in self.env['hr.formula.rule.note'].search(
+                [('config_id', '=', config.id), ('is_review', '=', True),
+                 ('resolved', '=', False)]):
+            rr = rule_by_id.get(n.rule_id.id)
+            if not rr:
+                continue
+            _add('note', 'warning',
+                 _("Review note · %s (%s)") % (rr.name or '', rr.column_letter),
+                 (n.body or '').strip()[:180], rule=rr, note_id=n.id)
 
         order = {'error': 0, 'warning': 1, 'hint': 2}
         problems.sort(key=lambda p: (order.get(p['severity'], 9),
@@ -1497,6 +1521,9 @@ class PbFormulaStudio(models.AbstractModel):
             'mid': {'id': mid.id, 'name': mid.name},
             'end': {'id': end.id, 'name': end.name},
             'left': left, 'right': right, 'wires': wires,
+            'left_title': mid.name, 'right_title': end.name,
+            'subtitle': _("Carry values from %s into %s") % (mid.name, end.name),
+            'supports_suggest': True,
             'can_edit': self._can_edit(),
         }
 
@@ -1563,6 +1590,394 @@ class PbFormulaStudio(models.AbstractModel):
         if m.exists():
             m.unlink()
         return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # F10 adapter 2 — API/integration field mapping (source fields → inputs)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _norm(s):
+        return re.sub(r'[^a-z0-9]', '', (s or '').lower())
+
+    def _api_active_connector(self, config, connector_id=None):
+        Conn = self.env['hr.integration.connector']
+        if connector_id:
+            c = Conn.browse(int(connector_id))
+            return c if c.exists() else Conn.browse()
+        input_ids = config.rule_ids.filtered(lambda r: r.column_type == 'input').ids
+        FM = self.env['hr.integration.field.mapping']
+        # the connector with the most mappings already targeting this config's inputs
+        maps = FM.search([('target_rule_id', 'in', input_ids)])
+        if maps:
+            counts = defaultdict(int)
+            for m in maps:
+                counts[m.connector_id.id] += 1
+            best = max(counts, key=counts.get)
+            return Conn.browse(best)
+        # else a connector referenced by an input rule, else the first connector
+        for r in config.rule_ids:
+            if getattr(r, 'integration_connector_id', False):
+                return r.integration_connector_id
+        return Conn.search([], limit=1)
+
+    @api.model
+    def api_mapping_data(self, config_id=None, connector_id=None):
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'reason': 'no_config'}
+        Conn = self.env['hr.integration.connector']
+        conn = self._api_active_connector(config, connector_id)
+        contexts = [{'id': c.id, 'name': c.name} for c in Conn.search([], order='name')]
+        if not conn:
+            return {'ok': False, 'reason': 'no_connector', 'contexts': contexts}
+        FM = self.env['hr.integration.field.mapping']
+        try:
+            fields_ = FM.get_available_source_fields(conn.id) or []
+        except Exception:
+            fields_ = []
+        left = [{'id': 'f:' + f['path'], 'label': f.get('label') or f['path'],
+                 'sublabel': f['path'],
+                 'meta': {'type': f.get('type') or '', 'sample': f.get('sample')}}
+                for f in fields_]
+        input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
+            .sorted(key=lambda r: r.sequence)
+        right = [{'id': r.id, 'label': (r.name or r.code), 'sublabel': r.code or '',
+                  'meta': {'col': r.column_letter or '', 'type': 'input'}}
+                 for r in input_rules]
+        # accepted wires = persisted field mappings on this connector → these inputs
+        wires = []
+        mapped_paths, mapped_rules = set(), set()
+        for m in FM.search([('connector_id', '=', conn.id),
+                            ('target_rule_id', 'in', input_rules.ids)]):
+            wires.append({'id': 'm%s' % m.id, 'kind': 'mapping', 'ref': m.id,
+                          'leftId': 'f:' + (m.source_field or ''), 'rightId': m.target_rule_id.id,
+                          'state': 'accepted'})
+            mapped_paths.add(m.source_field or '')
+            mapped_rules.add(m.target_rule_id.id)
+        # suggested wires = best name match between an unmapped source field and an
+        # unmapped input rule (computed live, not persisted)
+        rule_norms = [(r, self._norm(r.code), self._norm(r.name)) for r in input_rules
+                      if r.id not in mapped_rules]
+        for f in fields_:
+            path = f['path']
+            if path in mapped_paths:
+                continue
+            fn = self._norm(path)
+            fl = self._norm(f.get('label'))
+            best, conf = None, 0.0
+            for r, rc, rn in rule_norms:
+                if not rc:
+                    continue
+                if fn == rc or fl == rc:
+                    c = 1.0
+                elif rc and (rc in fn or fn in rc):
+                    c = 0.85
+                elif rn and (rn == fn or rn in fn or fn in rn):
+                    c = 0.8
+                else:
+                    c = 0.0
+                if c > conf:
+                    best, conf = r, c
+            if best and conf >= 0.8 and best.id not in mapped_rules:
+                wires.append({'id': 'sug:%s>%s' % (path, best.id), 'kind': 'suggestion',
+                              'ref': None, 'source': path,
+                              'leftId': 'f:' + path, 'rightId': best.id,
+                              'state': 'suggested', 'confidence': round(conf, 2),
+                              'reason': _('Name match')})
+                mapped_rules.add(best.id)   # one suggestion per input rule
+        return {
+            'ok': True, 'left': left, 'right': right, 'wires': wires,
+            'left_title': '%s · source fields' % conn.name,
+            'right_title': '%s · inputs' % config.name,
+            'subtitle': _("Map %s fields onto this scheme's input components") % conn.name,
+            'supports_suggest': False,
+            'contexts': contexts, 'context_id': conn.id,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def api_mapping_create(self, config_id, connector_id, source_field, target_rule_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        src = source_field[2:] if (source_field or '').startswith('f:') else source_field
+        FM = self.env['hr.integration.field.mapping']
+        rule = self.env['hr.formula.rule'].browse(int(target_rule_id))
+        conn = self.env['hr.integration.connector'].browse(int(connector_id))
+        if not (rule.exists() and conn.exists()):
+            return {'ok': False}
+        # one source→one input per connector: drop existing on either side
+        FM.search(['&', ('connector_id', '=', conn.id),
+                   '|', ('source_field', '=', src), ('target_rule_id', '=', rule.id)]).unlink()
+        FM.create({'connector_id': conn.id, 'source_field': src,
+                   'target_rule_id': rule.id,
+                   'source_field_label': (src or '').replace('_', ' ').title()})
+        return {'ok': True}
+
+    @api.model
+    def api_mapping_delete(self, mapping_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        m = self.env['hr.integration.field.mapping'].browse(int(mapping_id))
+        if m.exists():
+            m.unlink()
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # F10 adapter 3 — import column mapping (Excel columns → inputs)
+    # ------------------------------------------------------------------
+    def _import_batch_columns(self, batch):
+        """Distinct column keys from the batch's first import line (the parsed
+        header→value dict), preserving order."""
+        line = self.env['hr.payroll.import.line'].search([('batch_id', '=', batch.id)], limit=1)
+        if line and line.raw_data_json:
+            try:
+                return list(json.loads(line.raw_data_json).keys())
+            except Exception:
+                pass
+        return []
+
+    @api.model
+    def import_mapping_data(self, config_id=None, batch_id=None):
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'reason': 'no_config'}
+        Batch = self.env['hr.payroll.import.batch']
+        batches = Batch.search([], order='id desc')
+        contexts = [{'id': b.id, 'name': b.name} for b in batches]
+        batch = Batch.browse(int(batch_id)) if batch_id else Batch.browse()
+        if not batch:
+            batch = (batches.filtered(lambda b: b.formula_config_id.id == config.id and b.import_line_ids)[:1]
+                     or batches.filtered(lambda b: b.import_line_ids)[:1] or batches[:1])
+        if not batch:
+            return {'ok': False, 'reason': 'no_batch', 'contexts': contexts}
+        cols = self._import_batch_columns(batch)
+        left = [{'id': 'c:' + c, 'label': c, 'sublabel': '', 'meta': {}} for c in cols]
+        input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input') \
+            .sorted(key=lambda r: r.sequence)
+        right = [{'id': r.id, 'label': (r.name or r.code), 'sublabel': r.code or '',
+                  'meta': {'col': r.column_letter or '', 'type': 'input'}} for r in input_rules]
+        col_set = set(cols)
+        wires, mapped_rules = [], set()
+        for r in input_rules:
+            dsf = r.data_source_field
+            if dsf and dsf in col_set:
+                wires.append({'id': 'im%s' % r.id, 'kind': 'mapping', 'ref': r.id,
+                              'leftId': 'c:' + dsf, 'rightId': r.id, 'state': 'accepted'})
+                mapped_rules.add(r.id)
+        # suggestions: best name/code match between an unmapped column and input
+        rule_norms = [(r, self._norm(r.code), self._norm(r.name)) for r in input_rules
+                      if r.id not in mapped_rules]
+        used = set(mapped_rules)
+        for c in cols:
+            cn = self._norm(c)
+            best, conf = None, 0.0
+            for r, rc, rn in rule_norms:
+                if r.id in used:
+                    continue
+                if rc and (cn == rc):
+                    x = 1.0
+                elif rc and (rc in cn or cn in rc):
+                    x = 0.85
+                elif rn and (cn == rn or rn in cn or cn in rn):
+                    x = 0.8
+                else:
+                    x = 0.0
+                if x > conf:
+                    best, conf = r, x
+            if best and conf >= 0.8:
+                wires.append({'id': 'sug:%s>%s' % (c, best.id), 'kind': 'suggestion',
+                              'ref': None, 'source': c, 'leftId': 'c:' + c, 'rightId': best.id,
+                              'state': 'suggested', 'confidence': round(conf, 2), 'reason': _('Name match')})
+                used.add(best.id)
+        return {
+            'ok': True, 'left': left, 'right': right, 'wires': wires,
+            'left_title': '%s · columns' % batch.name,
+            'right_title': '%s · inputs' % config.name,
+            'subtitle': _("Map imported columns from %s onto this scheme's inputs") % batch.name,
+            'supports_suggest': False,
+            'contexts': contexts, 'context_id': batch.id,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def import_mapping_create(self, config_id, batch_id, column, target_rule_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        col = column[2:] if (column or '').startswith('c:') else column
+        rule = self.env['hr.formula.rule'].browse(int(target_rule_id))
+        if not rule.exists():
+            return {'ok': False}
+        rule.write({'data_source_field': col})
+        return {'ok': True}
+
+    @api.model
+    def import_mapping_delete(self, rule_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if rule.exists():
+            rule.write({'data_source_field': False})
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # F10 adapter 4 — Employee → scheme assignment (departments → schemes)
+    # ------------------------------------------------------------------
+    @api.model
+    def scheme_mapping_data(self, config_id=None, context_id=None):
+        config = self._pick_config(config_id)
+        Emp = self.env['hr.employee']
+        Dept = self.env['hr.department']
+        Config = self.env['hr.formula.config']
+        Assign = self.env['hr.formula.scheme.assignment']
+        # LEFT = departments that actually have employees (with coverage counts)
+        counts = {}
+        for d in Dept.search([]):
+            n = Emp.search_count([('department_id', '=', d.id)])
+            if n:
+                counts[d.id] = n
+        depts = Dept.browse(sorted(counts, key=lambda i: -counts[i]))
+        left = [{'id': d.id, 'label': d.name or '(dept)',
+                 'sublabel': '%s employees' % '{:,}'.format(counts[d.id]),
+                 'meta': {'count': counts[d.id]}} for d in depts]
+        # RIGHT = the primary payroll schemes (active, not the mid-cycle advance)
+        schemes = Config.search([('state', '=', 'active'),
+                                 ('cycle_type', '!=', 'mid_cycle')], order='name')
+        scheme_ids = set(schemes.ids)
+        assigns = Assign.search([('config_id', 'in', schemes.ids)])
+        cov = defaultdict(int)
+        wires = []
+        for a in assigns:
+            if a.department_id and a.config_id.id in scheme_ids:
+                wires.append({'id': 'sa%s' % a.id, 'kind': 'mapping', 'ref': a.id,
+                              'leftId': a.department_id.id, 'rightId': a.config_id.id,
+                              'state': 'accepted'})
+                cov[a.config_id.id] += counts.get(a.department_id.id, 0)
+        right = [{'id': c.id, 'label': c.name,
+                  'sublabel': (('%s covered' % '{:,}'.format(cov[c.id])) if cov[c.id]
+                               else (c.country_code or 'scheme')),
+                  'meta': {'coverage': cov[c.id]}} for c in schemes]
+        return {
+            'ok': True, 'left': left, 'right': right, 'wires': wires,
+            'left_title': 'Employee segments (departments)',
+            'right_title': 'Payroll schemes',
+            'subtitle': _("Assign employee segments to the payroll scheme that pays them"),
+            'supports_suggest': False,
+            'contexts': [], 'context_id': False,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def scheme_mapping_create(self, config_id, context_id, department_id, target_config_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        Assign = self.env['hr.formula.scheme.assignment']
+        dept = self.env['hr.department'].browse(int(department_id))
+        cfg = self.env['hr.formula.config'].browse(int(target_config_id))
+        if not (dept.exists() and cfg.exists()):
+            return {'ok': False}
+        # one scheme per department: drop this department's other assignments
+        Assign.search([('department_id', '=', dept.id)]).unlink()
+        Assign.create({'department_id': dept.id, 'config_id': cfg.id})
+        return {'ok': True}
+
+    @api.model
+    def scheme_mapping_delete(self, assignment_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        a = self.env['hr.formula.scheme.assignment'].browse(int(assignment_id))
+        if a.exists():
+            a.unlink()
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # B1 — Execution replay (step through a payslip's computation)
+    # ------------------------------------------------------------------
+    @api.model
+    def replay_trace(self, config_id=None, sample_id=None):
+        """Re-evaluate one sample's inputs and emit an ORDERED trace — one entry
+        per formula component in dependency order, each recording the input
+        values it read and the value it produced. Generated on demand, never
+        persisted (D-B1)."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        by_col = self._col_to_rule(rules)
+        by_code = {r.code: r for r in rules if r.code}
+        samples = [{'id': s.id, 'name': s.name} for s in config.sample_data_ids]
+        sid = int(sample_id) if sample_id else (samples[0]['id'] if samples else False)
+        if not sid:
+            return {'ok': False, 'reason': 'no_sample', 'samples': samples}
+        sample = self.env['hr.formula.sample.data'].browse(sid)
+        try:
+            inputs = json.loads(sample.input_values_json or '{}')
+        except Exception:
+            inputs = {}
+
+        # seed results (code-keyed, like the engine) with inputs + constants
+        results = dict(inputs)
+        seeded = []
+        for r in rules:
+            if r.column_type == 'constant':
+                results[r.code] = r.constant_value or 0.0
+            elif r.column_type == 'input' and r.code not in results:
+                results[r.code] = r.default_value or 0.0
+        for r in rules:
+            if r.column_type in ('input', 'constant') and r.column_letter:
+                seeded.append({'col': r.column_letter, 'code': r.code or '',
+                               'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
+                               'type': r.column_type,
+                               'value': self._as_num(results.get(r.code)),
+                               'number_format': r.number_format or 'currency'})
+
+        # formula rules in execution order (dependencies first)
+        intel = self.get_intelligence(config.id)
+        order_cols = [c for c in intel.get('execution_order', []) if c in by_col]
+
+        steps = []
+        for col in order_cols:
+            r = by_col.get(col)
+            if not r or r.column_type != 'formula':
+                continue
+            refs = self._expand_refs(r.excel_formula, by_col)
+            in_vals = []
+            for c in sorted(refs, key=self._col_num):
+                rr = by_col.get(c)
+                if rr:
+                    in_vals.append({'col': c, 'code': rr.code or '',
+                                    'name': (rr.salary_rule_id.name if rr.salary_rule_id else False) or rr.name or rr.code,
+                                    'value': self._as_num(results.get(rr.code)),
+                                    'number_format': rr.number_format or 'currency'})
+            try:
+                val = r.evaluate(results)
+            except Exception:
+                val = 0.0
+            results[r.code] = val
+            steps.append({
+                'col': r.column_letter, 'code': r.code or '',
+                'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
+                'group': _group_for(r),
+                'excel_formula': r.excel_formula or '',
+                'tokens': self._tokenize(r, by_col),
+                'inputs': in_vals,
+                'result': self._as_num(val),
+                'is_deduction': _group_for(r) == 'Deductions',
+                'number_format': r.number_format or 'currency',
+            })
+        return {
+            'ok': True,
+            'config': {'id': config.id, 'name': config.name,
+                       'currency': config.currency_id.symbol if config.currency_id else '₫'},
+            'samples': samples, 'sample_id': sid,
+            'seeded': seeded, 'steps': steps,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def _as_num(self, v):
+        try:
+            return round(float(v or 0.0), 4)
+        except (TypeError, ValueError):
+            return 0.0
 
     # ------------------------------------------------------------------
     # F9 — Payslip Studio
@@ -1717,6 +2132,60 @@ class PbFormulaStudio(models.AbstractModel):
         r = self.env['hr.formula.rule'].browse(int(rule_id))
         if r.exists():
             r.write({'visibility_rule': visibility_rule})
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # F15 — Comments & annotations
+    # ------------------------------------------------------------------
+    def _note_payload(self, n):
+        return {
+            'id': n.id,
+            'body': n.body or '',
+            'author': n.author_id.name or '',
+            'is_review': bool(n.is_review),
+            'resolved': bool(n.resolved),
+            'date': fields.Datetime.to_string(n.create_date) if n.create_date else '',
+            'resolved_by': n.resolved_by_id.name or '',
+            'is_mine': n.author_id.id == self.env.user.id,
+        }
+
+    @api.model
+    def list_notes(self, rule_id):
+        notes = self.env['hr.formula.rule.note'].search([('rule_id', '=', int(rule_id))])
+        return {'ok': True,
+                'notes': [self._note_payload(n) for n in notes],
+                'open_reviews': sum(1 for n in notes if n.is_review and not n.resolved)}
+
+    @api.model
+    def post_note(self, rule_id, body, is_review=False):
+        if not (body or '').strip():
+            return {'ok': False}
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False}
+        self.env['hr.formula.rule.note'].create({
+            'rule_id': rule.id, 'body': body.strip(), 'is_review': bool(is_review)})
+        return self.list_notes(rule.id)
+
+    @api.model
+    def resolve_note(self, note_id):
+        n = self.env['hr.formula.rule.note'].browse(int(note_id))
+        if n.exists():
+            n.action_resolve()
+        return {'ok': True}
+
+    @api.model
+    def reopen_note(self, note_id):
+        n = self.env['hr.formula.rule.note'].browse(int(note_id))
+        if n.exists():
+            n.action_reopen()
+        return {'ok': True}
+
+    @api.model
+    def delete_note(self, note_id):
+        n = self.env['hr.formula.rule.note'].browse(int(note_id))
+        if n.exists() and (n.author_id.id == self.env.user.id or self._can_edit()):
+            n.unlink()
         return {'ok': True}
 
     # ------------------------------------------------------------------

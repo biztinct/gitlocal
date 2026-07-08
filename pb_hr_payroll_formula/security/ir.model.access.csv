@@ -78,3 +78,7 @@ access_formula_rate_table_user,hr.formula.rate.table.user,model_hr_formula_rate_
 access_formula_rate_table_manager,hr.formula.rate.table.manager,model_hr_formula_rate_table,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_formula_rate_bracket_user,hr.formula.rate.bracket.user,model_hr_formula_rate_bracket,pb_hr_payroll_formula.group_formula_user,1,1,1,1
 access_formula_rate_bracket_manager,hr.formula.rate.bracket.manager,model_hr_formula_rate_bracket,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_rule_note_user,hr.formula.rule.note.user,model_hr_formula_rule_note,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_formula_rule_note_manager,hr.formula.rule.note.manager,model_hr_formula_rule_note,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_scheme_assignment_user,hr.formula.scheme.assignment.user,model_hr_formula_scheme_assignment,pb_hr_payroll_formula.group_formula_user,1,1,1,1
+access_formula_scheme_assignment_manager,hr.formula.scheme.assignment.manager,model_hr_formula_scheme_assignment,pb_hr_payroll_formula.group_formula_manager,1,1,1,1

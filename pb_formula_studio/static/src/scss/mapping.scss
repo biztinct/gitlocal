@@ -27,6 +27,11 @@
 .pbfs-map .hs-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 5px; border-radius: 7px; }
 .pbfs-map .hs-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
 .pbfs-map .hs-x svg { width: 18px; height: 18px; }
+.pbfs-map .pm-ctx { border: 1px solid var(--line, #E8E9F3); border-radius: 8px; padding: 6px 9px; font-family: inherit; font-size: 12.5px; color: var(--ink, #1E1B2E); background: #fff; cursor: pointer; max-width: 200px; }
+.pbfs-map .pm-tabs { display: flex; gap: 4px; padding: 8px 18px 0; border-bottom: 1px solid var(--line, #E8E9F3); background: #fff; }
+.pbfs-map .pm-tab { border: 0; background: transparent; font-family: inherit; font-size: 12.5px; font-weight: 700; color: var(--muted, #6B7280); padding: 8px 14px 10px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.pbfs-map .pm-tab:hover { color: var(--i, #5A4BB0); }
+.pbfs-map .pm-tab.on { color: var(--i, #5A4BB0); border-bottom-color: var(--i, #5A4BB0); }
 .pbfs-map .pm-body { flex: 1; position: relative; overflow: hidden; background: #FAFAFE; }
 .pbfs-map .pm-loading { padding: 40px; text-align: center; color: var(--muted, #6B7280); font-size: 13px; }
 
