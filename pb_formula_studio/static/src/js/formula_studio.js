@@ -502,7 +502,8 @@ export class PbFormulaStudio extends Component {
         // reveal the outcome row in the live preview so the output arrow latches to it
         requestAnimationFrame(() => {
             const comp = this.state.components.find(x => x.id === id);
-            if (comp) { const row = document.querySelector(`.pbfs-test .tp-row[data-col="${comp.col}"]`); if (row) row.scrollIntoView({ block: "nearest" }); }
+            const pv = comp && this._panelOnCanvas(".pbfs-test");
+            if (pv) { const row = pv.querySelector(`.tp-row[data-col="${comp.col}"]`); if (row) row.scrollIntoView({ block: "nearest" }); }
             this.drawArrows();
             // grid workbench: jump the spreadsheet to the picked column + flash it
             if (this.state.view === "grid") {
@@ -1240,8 +1241,18 @@ export class PbFormulaStudio extends Component {
         if (pv) pv.addEventListener("scroll", () => this.redrawArrows());
         window.addEventListener("resize", () => this.redrawArrows());
     }
+    // scrollIntoView on an element inside a closed drawer scrolls the action
+    // container horizontally to "reveal" the off-canvas panel, displacing the
+    // whole workspace — only ever scroll to rows inside an on-canvas panel.
+    _panelOnCanvas(sel) {
+        const el = document.querySelector(sel);
+        if (!el) return null;
+        const st = getComputedStyle(el);
+        return st.display !== "none" && st.visibility !== "hidden" ? el : null;
+    }
     scrollToCol(col) {
-        const row = document.querySelector(`.pbfs-outline .ol-item[data-col="${col}"]`);
+        const panel = this._panelOnCanvas(".pbfs-outline");
+        const row = panel && panel.querySelector(`.ol-item[data-col="${col}"]`);
         if (!row) return;
         row.scrollIntoView({ behavior: "smooth", block: "center" });
         row.classList.add("pulse"); setTimeout(() => row.classList.remove("pulse"), 950);
@@ -1334,7 +1345,8 @@ export class PbFormulaStudio extends Component {
         }
     }
     scrollToPreviewCol(col) {
-        const row = document.querySelector(`.pbfs-test .tp-row[data-col="${col}"]`);
+        const panel = this._panelOnCanvas(".pbfs-test");
+        const row = panel && panel.querySelector(`.tp-row[data-col="${col}"]`);
         if (!row) return;
         row.scrollIntoView({ behavior: "smooth", block: "center" });
         row.classList.add("pulse"); setTimeout(() => row.classList.remove("pulse"), 950);
