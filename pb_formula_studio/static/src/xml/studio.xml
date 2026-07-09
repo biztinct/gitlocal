@@ -96,6 +96,10 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               <span>Replay</span>
             </button>
+            <button class="pbfs-btn soft pbfs-whatifbtn" data-coach="fs-whatif" t-on-click="openWhatif" title="What-if — slide a rate and project the payroll cost">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+              <span>What-if</span>
+            </button>
             <button class="pbfs-btn soft pbfs-psbtn" data-coach="fs-payslip" t-on-click="openPayslip" title="Payslip Studio — design the payslip layout">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
               <span>Payslip</span>
@@ -1504,6 +1508,108 @@
           </t>
           <div t-elif="state.replayBusy" class="rp-loading">Tracing…</div>
           <div t-else="" class="rp-loading">No sample to replay. Add a test sample first.</div>
+        </div>
+      </div>
+
+      <!-- What-if simulator overlay (B8) -->
+      <div t-if="state.whatifOpen" class="pbfs-whatif-scrim" t-on-click="closeWhatif">
+        <div class="pbfs-whatif" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="wi-head">
+            <div class="wi-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+              <div>
+                <b>What-if simulator</b>
+                <small>Slide a rate and project the payroll cost across everyone</small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeWhatif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="wi-body" t-if="state.whatifData and state.whatifData.components.length">
+            <!-- controls -->
+            <div class="wi-controls">
+              <label class="wi-pick"><span>Vary this rate / constant</span>
+                <select t-on-change="onWhatifTargetChange">
+                  <option t-foreach="state.whatifData.components" t-as="c" t-key="c.code" t-att-value="c.code" t-att-selected="c.code === state.whatifTarget"><t t-esc="c.name"/> (<t t-esc="c.col"/>)</option>
+                </select>
+              </label>
+              <div class="wi-slider-block" t-if="whatifComp">
+                <div class="wi-slider-vals">
+                  <span class="wi-from">now <b t-esc="whatifFmtVal(state.whatifBase)"/></span>
+                  <span t-attf-class="wi-to {{ state.whatifMult > 1 ? 'up' : (state.whatifMult &lt; 1 ? 'dn' : '') }}"><b t-esc="whatifFmtVal(whatifCandidate)"/> <span class="wi-pct" t-esc="(whatifPctChange() >= 0 ? '+' : '') + whatifPctChange() + '%'"/></span>
+                </div>
+                <input class="wi-slider" type="range" min="0" max="200" step="5" t-att-value="Math.round(state.whatifMult * 100)" t-on-input="onWhatifSlide"/>
+                <div class="wi-slider-scale"><span>0×</span><span>1×</span><span>2×</span></div>
+              </div>
+            </div>
+
+            <!-- results -->
+            <t t-if="state.whatifResult and !state.whatifResult.empty">
+              <div class="wi-cards">
+                <div class="wi-card">
+                  <span class="wi-card-lbl">Current <t t-esc="state.whatifHeadlineName"/> total</span>
+                  <span class="wi-card-val" t-esc="vnd(state.whatifResult.baseline_total)"/>
+                </div>
+                <div class="wi-card accent">
+                  <span class="wi-card-lbl">Projected total</span>
+                  <span class="wi-card-val" t-esc="vnd(state.whatifResult.candidate_total)"/>
+                  <span t-attf-class="wi-card-delta {{ state.whatifResult.delta_total > 0 ? 'up' : (state.whatifResult.delta_total &lt; 0 ? 'dn' : '') }}" t-esc="fmtSigned(state.whatifResult.delta_total)"/>
+                </div>
+                <div class="wi-card">
+                  <span class="wi-card-lbl">Annualized impact (×12)</span>
+                  <span t-attf-class="wi-card-val {{ state.whatifResult.annualized_delta > 0 ? 'up' : (state.whatifResult.annualized_delta &lt; 0 ? 'dn' : '') }}" t-esc="fmtSigned(state.whatifResult.annualized_delta)"/>
+                </div>
+                <div class="wi-card">
+                  <span class="wi-card-lbl">Employees affected</span>
+                  <span class="wi-card-val" t-esc="state.whatifResult.employees_changed + ' / ' + state.whatifResult.employees_total"/>
+                </div>
+              </div>
+
+              <div t-attf-class="wi-scope {{ state.whatifResult.sampled ? 'sampled' : 'exact' }}">
+                <t t-if="state.whatifResult.sampled">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                  Sampled preview (<t t-esc="state.whatifResult.employees_total"/> employees) — press <b>Run on everyone</b> for the exact figure.
+                  <button class="pbfs-btn primary sm" t-att-disabled="state.whatifBusy" t-on-click="whatifRunFull">Run on everyone</button>
+                </t>
+                <t t-else="">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                  Exact — computed across all <t t-esc="state.whatifResult.employees_total"/> employees.
+                </t>
+              </div>
+
+              <!-- take-home delta histogram -->
+              <div t-if="state.whatifResult.histogram" class="wi-hist">
+                <div class="wi-hist-title">Distribution of the change</div>
+                <div class="wi-hist-bars">
+                  <t t-foreach="state.whatifResult.histogram" t-as="b" t-key="b.bucket">
+                    <div class="wi-hist-col">
+                      <div class="wi-hist-stack">
+                        <div class="wi-hb pos" t-attf-style="height:{{ whatifBarPct(b.pos) }}%" t-att-title="b.pos + ' up'"/>
+                        <div class="wi-hb neg" t-attf-style="height:{{ whatifBarPct(b.neg) }}%" t-att-title="b.neg + ' down'"/>
+                      </div>
+                      <span class="wi-hb-lbl" t-esc="whatifHistLabels[b.bucket]"/>
+                    </div>
+                  </t>
+                </div>
+              </div>
+
+              <!-- biggest movers -->
+              <div t-if="state.whatifResult.movers and state.whatifResult.movers.length" class="wi-movers">
+                <div class="wi-movers-title">Biggest movers</div>
+                <div t-foreach="state.whatifResult.movers.slice(0, 8)" t-as="m" t-key="m_index" class="wi-mover">
+                  <span class="wi-mover-nm" t-esc="m.emp"/>
+                  <span class="wi-mover-b" t-esc="vnd(m.baseline)"/>
+                  <span class="wi-mover-arrow">→</span>
+                  <span class="wi-mover-c" t-esc="vnd(m.candidate)"/>
+                  <span t-attf-class="wi-mover-d {{ m.delta > 0 ? 'up' : 'dn' }}" t-esc="fmtSigned(m.delta)"/>
+                </div>
+              </div>
+            </t>
+            <div t-elif="state.whatifBusy" class="wi-loading">Simulating…</div>
+            <div t-else="" class="wi-loading">Move the slider to project the impact.</div>
+          </div>
+          <div t-elif="state.whatifData" class="wi-loading">This configuration has no rate/constant components to vary.</div>
+          <div t-else="" class="wi-loading">Loading…</div>
         </div>
       </div>
 

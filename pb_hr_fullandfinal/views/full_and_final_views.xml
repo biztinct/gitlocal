@@ -67,17 +67,6 @@
                         <field name="total_deductions"/>
                         <field name="net_payable"/>
                     </group>
-                    <notebook>
-                        <page string="Input Values">
-                            <field name="input_values_json" widget="text"/>
-                        </page>
-                        <page string="Computed Values">
-                            <field name="computed_values_json" widget="text"/>
-                        </page>
-                        <page string="Source Data">
-                            <field name="raw_data_json" widget="text"/>
-                        </page>
-                    </notebook>
                 </sheet>
             </form>
         </field>

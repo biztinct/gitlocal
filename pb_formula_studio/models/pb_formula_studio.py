@@ -1085,6 +1085,63 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True}
 
     # ==================================================================
+    # B8 — What-if sliders + cost projection (thin UI over F8's overlay sim)
+    # ==================================================================
+    @api.model
+    def whatif_components(self, config_id=None):
+        """The constant components a slider can vary (rates / multipliers / caps)."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        consts = [r for r in config.rule_ids.sorted(key=lambda r: r.sequence)
+                  if r.column_type == 'constant' and r.code]
+        items = [{
+            'code': r.code,
+            'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
+            'col': r.column_letter or '',
+            'value': r.constant_value or 0.0,
+            'number_format': r.number_format or 'number',
+            'group': _group_for(r),
+        } for r in consts]
+        return {'ok': True, 'components': items,
+                'currency': config.currency_id.symbol if config.currency_id else '₫',
+                'can_edit': self._can_edit()}
+
+    @api.model
+    def whatif_prepare(self, config_id, target_code, new_value, limit=None):
+        """Create a what-if sim (a constant swapped to new_value) and return the
+        payslip work-list. Pass a small ``limit`` for the interactive sampled
+        feel; omit it for the exhaustive commit run (D-B8)."""
+        Sim = self.env['hr.formula.simulation']
+        created = Sim.sim_create(config_id, value_overrides={target_code: float(new_value)})
+        if not created.get('ok'):
+            return created
+        prep = Sim.sim_prepare(created['sim_id'], limit=limit)
+        config = self._pick_config(config_id)
+        hr = config.rule_ids.filtered(lambda r: r.code == created.get('headline'))[:1]
+        prep.update({
+            'ok': True, 'headline': created.get('headline'),
+            'headline_name': (hr.salary_rule_id.name if hr and hr.salary_rule_id else False)
+                             or (hr.name if hr else '') or created.get('headline'),
+            'sampled': bool(limit),
+        })
+        return prep
+
+    @api.model
+    def whatif_batch(self, payload):
+        return self.env['hr.formula.simulation'].sim_batch(payload or {})
+
+    @api.model
+    def whatif_result(self, sim_id):
+        return self.env['hr.formula.simulation'].sim_finalize(sim_id)
+
+    @api.model
+    def whatif_drop(self, sim_id):
+        sim = self.env['hr.formula.simulation'].browse(int(sim_id))
+        sim.sim_drop()
+        return {'ok': True}
+
+    # ==================================================================
     # F14 — Scenario columns (what-if overlays on one component)
     # ==================================================================
     def _scenario_payload(self, sc):

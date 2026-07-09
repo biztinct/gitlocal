@@ -13,6 +13,14 @@
                         class="oe_highlight"
                         invisible="calculation_method != 'formula'"/>
             </xpath>
+            <!-- Formula-computed payslips carry no salary structure (they compute
+                 via the formula engine), yet the native form marks struct_id
+                 required whenever a contract is set — and readonly here — so Confirm
+                 would fail "Missing required fields" with no way to fix it. Only
+                 require a structure for non-formula payslips. -->
+            <xpath expr="//field[@name='struct_id']" position="attributes">
+                <attribute name="required">contract_id and calculation_method != 'formula'</attribute>
+            </xpath>
             <xpath expr="//form/sheet/notebook" position="inside">
                 <page string="Formula Input JSON" name="formula_input_json">
 
