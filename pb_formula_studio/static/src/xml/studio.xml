@@ -176,6 +176,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                 <span>Releases</span>
               </button>
+              <button class="pbfs-btn soft pbfs-sharebtn biz-icon-only-lg biz-hide-lg" data-coach="fs-share" t-on-click="openShare" title="Share for review — a read-only link for your client">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
+                <span>Share</span>
+              </button>
               <button class="pbfs-btn ai" data-coach="fs-payai" t-on-click="openAI">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Ask PayAI
               </button>
@@ -2282,6 +2286,81 @@
                         <button t-if="state.variantData.can_edit" class="pbfs-btn ghost sm danger" t-on-click="() => this.detachVariant(v)">Detach</button>
                       </div>
                     </t>
+                  </div>
+                </div>
+                </t>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CLIENT REVIEW SHARES (B7) ============ -->
+      <div t-if="state.shareOpen" class="pbfs-share-scrim" t-on-click="closeShare">
+        <div class="pbfs-share" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="sh-head">
+            <div class="sh-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
+              <div>
+                <b>Client review links</b>
+                <small>Share a read-only trust surface — no login, revocable, with optional release sign-off</small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeShare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="sh-body">
+            <div t-if="state.shareBusy and !state.shareData" class="sh-loading">Loading links…</div>
+
+            <t t-if="state.shareData and state.shareData.ok">
+              <!-- create -->
+              <div t-if="state.shareData.can_edit" class="sh-new">
+                <div class="sh-new-row">
+                  <input type="text" class="sh-input" placeholder="Client name (who is this link for?)" t-att-value="state.shareNewClient" t-on-input="onShareClient"/>
+                  <select class="sh-input sh-sel" t-on-change="onShareRelease">
+                    <option value="">No release to sign off</option>
+                    <t t-foreach="state.shareData.releases" t-as="r" t-key="r.id">
+                      <option t-att-value="r.id" t-esc="'Sign off: ' + r.name"/>
+                    </t>
+                  </select>
+                  <button class="pbfs-btn primary" t-att-disabled="state.shareCreating" t-on-click="createShare">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>
+                    Create link
+                  </button>
+                </div>
+              </div>
+
+              <div t-if="!state.shareData.shares.length" class="sh-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
+                No review links yet. Create one to give your client a read-only view of this configuration.
+              </div>
+
+              <div class="sh-list">
+                <t t-foreach="state.shareData.shares" t-as="s" t-key="s.id">
+                <div t-attf-class="sh-item {{ s.status }}">
+                  <div class="sh-item-top">
+                    <div class="sh-item-nm">
+                      <b t-esc="s.client_name || 'Untitled link'"/>
+                      <span t-attf-class="sh-pill {{ s.status }}" t-esc="shareStatusLabel(s.status)"/>
+                    </div>
+                    <div class="sh-item-meta">
+                      <span t-if="s.release" class="sh-rel"><t t-esc="s.release"/></span>
+                      <span t-if="s.view_count"><t t-esc="s.view_count"/> view<t t-if="s.view_count !== 1">s</t></span>
+                      <span t-if="s.comment_count"><t t-esc="s.comment_count"/> comment<t t-if="s.comment_count !== 1">s</t></span>
+                    </div>
+                  </div>
+                  <div t-if="s.signed_off_name" class="sh-signed">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                    Signed off by <b t-esc="s.signed_off_name"/> · <t t-esc="s.signed_off_date"/>
+                  </div>
+                  <div class="sh-url-row">
+                    <input class="sh-url" type="text" readonly="readonly" t-att-value="s.url"/>
+                    <button class="pbfs-btn soft sm" t-on-click="() => this.copyShare(s)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                      <t t-if="state.shareCopied === s.token">Copied</t><t t-else="">Copy</t>
+                    </button>
+                    <a class="pbfs-btn ghost sm" t-att-href="s.url" target="_blank">Open</a>
+                    <button t-if="state.shareData.can_edit and s.status !== 'revoked'" class="pbfs-btn ghost sm danger" t-on-click="() => this.revokeShare(s)">Revoke</button>
                   </div>
                 </div>
                 </t>
