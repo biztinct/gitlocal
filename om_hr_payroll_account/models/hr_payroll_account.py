@@ -63,6 +63,15 @@ class HrPayslip(models.Model):
     def action_payslip_done(self):
         res = super(HrPayslip, self).action_payslip_done()
 
+        # Payobook: Confirm is a payroll-approval step (Draft → done), NOT an
+        # accounting posting. Payroll users hold no accounting rights, and the
+        # salary-rule → GL account mapping is not maintained for this workflow
+        # (BASIC/GROSS/NET all point at the same accounts, which would multi-count).
+        # Skip journal-entry creation by default; pass context `post_payslip_gl`
+        # to re-enable the legacy auto-posting below.
+        if not self.env.context.get('post_payslip_gl'):
+            return res
+
         # Process payslips in journal entry creation to avoid conflicts
         for slip in self.sorted(lambda s: s.id):
             line_ids = []

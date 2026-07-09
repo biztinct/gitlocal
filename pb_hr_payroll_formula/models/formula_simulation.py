@@ -38,7 +38,7 @@ _HIST_KEYS = ['lt10k', 'lt100k', 'lt1m', 'lt10m', 'ge10m']
 _MOVERS_KEEP = 50
 
 
-def _evaluate_config_overlay(config, input_values, overrides=None):
+def _evaluate_config_overlay(config, input_values, overrides=None, value_overrides=None):
     """Evaluate a config's rule set against an input dict → {code/letter: value},
     optionally substituting a DRAFT excel_formula for selected rules.
 
@@ -50,6 +50,7 @@ def _evaluate_config_overlay(config, input_values, overrides=None):
     Never raises: a bad rule yields 0 for its code so the *comparison* surfaces it
     as a discrepancy, not a crash."""
     overrides = overrides or {}
+    value_overrides = value_overrides or {}   # B8 — {constant_code: new_value}
     rules = config.rule_ids
     if not rules:
         return dict(input_values)
@@ -72,7 +73,7 @@ def _evaluate_config_overlay(config, input_values, overrides=None):
         if rule.column_type == 'input':
             results.setdefault(rule.code, rule.default_value or 0.0)
         elif rule.column_type == 'constant':
-            results[rule.code] = rule.constant_value or 0.0
+            results[rule.code] = value_overrides.get(rule.code, rule.constant_value or 0.0)
         elif rule.column_type == 'formula':
             try:
                 results[rule.code] = rule._run_formula(
@@ -114,6 +115,7 @@ class HrFormulaSimulation(models.TransientModel):
         ('draft', 'Draft'), ('computing', 'Computing'), ('done', 'Done'),
     ], default='draft')
     overrides_json = fields.Text(help="{code: draft_excel_formula} — the edit(s) being previewed.")
+    value_overrides_json = fields.Text(help="{constant_code: new_value} — B8 what-if slider(s).")
     baseline_source = fields.Selection([
         ('last_payrun', 'Last payrun'), ('current_rules', 'Current rules'),
     ], default='last_payrun',
@@ -169,7 +171,7 @@ class HrFormulaSimulation(models.TransientModel):
 
     # ------------------------------------------------------------ chunked drive
     @api.model
-    def sim_create(self, config_id, overrides=None, name=None):
+    def sim_create(self, config_id, overrides=None, name=None, value_overrides=None):
         config = self.env['hr.formula.config'].browse(int(config_id))
         if not config.exists():
             return {'ok': False, 'msg': _('Configuration not found')}
@@ -178,11 +180,17 @@ class HrFormulaSimulation(models.TransientModel):
         codes = set(config.rule_ids.filtered(
             lambda r: r.column_type == 'formula').mapped('code'))
         overrides = {k: v for k, v in overrides.items() if k in codes}
+        # B8 — value overrides target CONSTANT components (rates/multipliers/caps)
+        const_codes = set(config.rule_ids.filtered(
+            lambda r: r.column_type == 'constant').mapped('code'))
+        value_overrides = {k: float(v) for k, v in (value_overrides or {}).items()
+                           if k in const_codes}
         sim = self.create({
             'name': name or (_('Simulation · %s') % config.display_name),
             'config_id': config.id,
             'overrides_json': json.dumps(overrides),
-            'baseline_source': 'current_rules' if overrides else 'last_payrun',
+            'value_overrides_json': json.dumps(value_overrides),
+            'baseline_source': 'current_rules' if (overrides or value_overrides) else 'last_payrun',
             'tolerance_json': False,
             'state': 'draft',
         })
@@ -222,6 +230,7 @@ class HrFormulaSimulation(models.TransientModel):
         from ..formula_engine.comparison import coerce_number, compare_values
         config = sim.config_id
         overrides = json.loads(sim.overrides_json or '{}')
+        value_overrides = json.loads(sim.value_overrides_json or '{}')
         tol = sim._tolerance()
         head = sim.headline_code or ''
         agg = json.loads(sim.agg_json or '{}')
@@ -242,7 +251,7 @@ class HrFormulaSimulation(models.TransientModel):
                 inputs = json.loads(slip.formula_input_values or '{}')
             except Exception:
                 inputs = {}
-            candidate = _evaluate_config_overlay(config, inputs, overrides)
+            candidate = _evaluate_config_overlay(config, inputs, overrides, value_overrides)
             if sim.baseline_source == 'last_payrun':
                 try:
                     baseline = json.loads(slip.formula_computed_values or '{}')
@@ -276,6 +285,10 @@ class HrFormulaSimulation(models.TransientModel):
             # value for the headline component to be meaningful)
             hv = coerce_number(candidate.get(head)) if head else None
             hb = coerce_number(baseline.get(head)) if head else None
+            # B8 — running headline sums for the cost projection
+            if head:
+                agg['head_base'] = agg.get('head_base', 0.0) + (hb if hb is not None else 0.0)
+                agg['head_cand'] = agg.get('head_cand', 0.0) + (hv if hv is not None else 0.0)
             hdelta = ((hv if hv is not None else 0.0) - hb) if (head and hb is not None) else 0.0
             if abs(hdelta) <= _tol_for(head):
                 zero_hist += 1
@@ -352,6 +365,12 @@ class HrFormulaSimulation(models.TransientModel):
             'histogram': histogram,
             'movers': agg.get('movers', []),
             'tolerance': self._tolerance(),
+            # B8 — headline cost projection (sampled unless the whole population ran)
+            'value_overrides': json.loads(self.value_overrides_json or '{}'),
+            'baseline_total': round(agg.get('head_base', 0.0), 2),
+            'candidate_total': round(agg.get('head_cand', 0.0), 2),
+            'delta_total': round(agg.get('head_cand', 0.0) - agg.get('head_base', 0.0), 2),
+            'annualized_delta': round((agg.get('head_cand', 0.0) - agg.get('head_base', 0.0)) * 12, 2),
         }
 
     def sim_drop(self):

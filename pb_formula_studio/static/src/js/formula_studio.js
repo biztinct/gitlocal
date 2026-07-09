@@ -161,6 +161,15 @@ export class PbFormulaStudio extends Component {
             rawValid: null,          // {valid, message} from validate_formula_live
             rawDirty: false,
             rawBusy: false,
+            // B8 — what-if sliders + cost projection
+            whatifOpen: false,
+            whatifBusy: false,
+            whatifData: null,        // {components, currency}
+            whatifTarget: null,      // selected constant code
+            whatifBase: 0,           // its current value
+            whatifMult: 1,           // slider 0..2 (×)
+            whatifResult: null,      // sim result (sampled or full)
+            whatifHeadlineName: "",
             // B1 — execution replay
             replayOpen: false,
             replayBusy: false,
@@ -714,6 +723,88 @@ export class PbFormulaStudio extends Component {
         if (!n) return;
         const pct = parseInt(ev.target.value, 10) / 100;
         this.state.replayStep = Math.min(n - 1, Math.max(-1, Math.round(pct * n) - 1));
+    }
+
+    // ---- What-if sliders + cost projection (B8) ----
+    async openWhatif() {
+        this.state.whatifOpen = true;
+        this.state.whatifResult = null;
+        this.state.whatifTarget = null;
+        this.state.whatifData = await this.orm.call("pb.formula.studio", "whatif_components", [this.state.config.id]);
+        // default to the first slidable constant with a non-zero value
+        const first = (this.state.whatifData.components || []).find(c => c.value) || (this.state.whatifData.components || [])[0];
+        if (first) this.whatifSelectTarget(first.code);
+    }
+    closeWhatif() {
+        this._whatifToken = (this._whatifToken || 0) + 1;   // cancel any in-flight run
+        this.state.whatifOpen = false;
+    }
+    get whatifComp() {
+        return (this.state.whatifData && this.state.whatifData.components || []).find(c => c.code === this.state.whatifTarget) || null;
+    }
+    get whatifCandidate() { return (this.state.whatifBase || 0) * this.state.whatifMult; }
+    whatifSelectTarget(code) {
+        const c = (this.state.whatifData.components || []).find(x => x.code === code);
+        if (!c) return;
+        this.state.whatifTarget = code;
+        this.state.whatifBase = c.value || 0;
+        this.state.whatifMult = 1;
+        this.state.whatifResult = null;
+        this._runWhatif(200);
+    }
+    onWhatifTargetChange(ev) { this.whatifSelectTarget(ev.target.value); }
+    onWhatifSlide(ev) {
+        this.state.whatifMult = parseInt(ev.target.value, 10) / 100;   // 0..200 → 0..2×
+        if (this._whatifTimer) clearTimeout(this._whatifTimer);
+        this._whatifTimer = setTimeout(() => this._runWhatif(200), 300);   // sampled, debounced
+    }
+    whatifRunFull() { this._runWhatif(null); }   // exhaustive commit run
+    whatifFmtVal(v) {
+        const c = this.whatifComp;
+        return this.fmtTyped({ number_format: c ? c.number_format : "number" }, v);
+    }
+    whatifPctChange() {
+        const b = this.state.whatifBase;
+        return b ? Math.round((this.state.whatifMult - 1) * 1000) / 10 : 0;
+    }
+    async _runWhatif(limit) {
+        if (!this.state.whatifTarget) return;
+        const code = this.state.whatifTarget, val = this.whatifCandidate;
+        this.state.whatifBusy = true;
+        const token = this._whatifToken = (this._whatifToken || 0) + 1;
+        try {
+            const prep = await this.orm.call("pb.formula.studio", "whatif_prepare",
+                [this.state.config.id, code, val, limit || false], {}, { silent: true });
+            if (token !== this._whatifToken) { if (prep && prep.sim_id) this.orm.call("pb.formula.studio", "whatif_drop", [prep.sim_id], {}, { silent: true }); return; }
+            if (!prep || prep.ok === false || !prep.sim_id) { this.state.whatifResult = { empty: true }; return; }
+            this.state.whatifHeadlineName = prep.headline_name || "";
+            const ids = prep.payslip_ids || [];
+            const CH = 120;
+            for (let i = 0; i < ids.length; i += CH) {
+                await this.orm.call("pb.formula.studio", "whatif_batch",
+                    [{ sim_id: prep.sim_id, payslip_ids: ids.slice(i, i + CH) }], {}, { silent: true });
+                if (token !== this._whatifToken) { this.orm.call("pb.formula.studio", "whatif_drop", [prep.sim_id], {}, { silent: true }); return; }
+            }
+            const res = await this.orm.call("pb.formula.studio", "whatif_result", [prep.sim_id], {}, { silent: true });
+            if (token === this._whatifToken) {
+                const r = (res && res.result) || null;
+                if (r) r.sampled = !!limit;
+                this.state.whatifResult = r;
+            }
+            this.orm.call("pb.formula.studio", "whatif_drop", [prep.sim_id], {}, { silent: true }).catch(() => {});
+        } catch (e) { /* transient — keep last result */ }
+        finally { if (token === this._whatifToken) this.state.whatifBusy = false; }
+    }
+    // histogram bar geometry (reuse the F8 idea)
+    whatifBarPct(n) {
+        const r = this.state.whatifResult;
+        if (!r || !r.histogram) return 0;
+        let mx = 0;
+        for (const b of r.histogram) mx = Math.max(mx, b.neg, b.pos);
+        return mx ? Math.round(100 * n / mx) : 0;
+    }
+    get whatifHistLabels() {
+        return { lt10k: "< ₫10k", lt100k: "< ₫100k", lt1m: "< ₫1M", lt10m: "< ₫10M", ge10m: "≥ ₫10M" };
     }
 
     // ---- inline component editor ----
