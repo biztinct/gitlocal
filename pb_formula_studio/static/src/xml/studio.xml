@@ -527,12 +527,12 @@
         <t t-else="">
         <div t-attf-class="pbfs-work {{ state.view === 'grid' ? 'pbfs-work--full' : '' }}">
           <svg id="pbfsArrows" class="pbfs-arrows"/>
-          <!-- outline (grid mode: slide-in drawer over the spreadsheet) -->
-          <div t-attf-class="pbfs-outline {{ state.view === 'grid' ? 'as-drawer' : '' }} {{ state.outlineDrawer ? 'open' : '' }}" data-coach="fs-components">
+          <!-- outline (grid: always a drawer · cards: drawer below the md breakpoint) -->
+          <div t-attf-class="pbfs-outline {{ state.view === 'grid' ? 'as-drawer' : 'md-drawer' }} {{ state.outlineDrawer ? 'open' : '' }}" data-coach="fs-components">
             <div class="ol-head">
               <span class="t">Components</span>
               <div class="ol-actions">
-                <button t-if="state.view === 'grid'" class="ol-act" t-on-click="() => this.toggleDrawer('outline')" title="Close panel">
+                <button class="ol-act ol-close" t-on-click="() => this.toggleDrawer('outline')" title="Close panel">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
                 </button>
                 <button class="ol-act" data-coach="fs-add" t-on-click="addComponentQuick" title="Add a component">
@@ -556,6 +556,7 @@
                 <span class="ol-col" t-esc="c.col"/>
                 <span class="ol-nm" t-esc="c.name"/>
                 <span t-if="!c.is_valid" class="ol-err" title="Has errors"/>
+                <span class="ol-val" t-esc="previewVal(c.col)"/>
                 <span t-attf-class="ol-typ {{ c.type }}" t-esc="c.type"/>
               </div>
             </t>
@@ -563,6 +564,20 @@
 
           <!-- editor: cards -->
           <div t-if="state.view === 'cards'" class="pbfs-editor">
+            <!-- small-screen toolbar: opens the two drawers (visible below md via CSS) -->
+            <div class="pbfs-gridbar pbfs-cardbar">
+              <button t-attf-class="pbfs-btn ghost sm {{ state.outlineDrawer ? 'active' : '' }}"
+                      t-on-click="() => this.toggleDrawer('outline')" title="Components panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                Components
+              </button>
+              <span class="pbfs-gridbar-spacer"/>
+              <button t-attf-class="pbfs-btn ghost sm {{ state.previewDrawer ? 'active' : '' }}"
+                      t-on-click="() => this.toggleDrawer('preview')" title="Live preview panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                Preview · <t t-esc="sampleName"/>
+              </button>
+            </div>
             <div t-if="selected" t-attf-class="ed-card {{ editing ? 'is-editing' : '' }}">
               <t t-if="!editing">
               <div class="ed-hero" data-coach="fs-card">
@@ -935,11 +950,11 @@
                         onScenarioDiscard="(sid) => this.gridScenarioDiscard(sid)"/>
           </div>
 
-          <!-- live preview (grid mode: slide-in drawer over the spreadsheet) -->
-          <div t-attf-class="pbfs-test {{ state.view === 'grid' ? 'as-drawer' : '' }} {{ state.previewDrawer ? 'open' : '' }}" data-coach="fs-preview">
+          <!-- live preview (grid: always a drawer · cards: drawer below the md breakpoint) -->
+          <div t-attf-class="pbfs-test {{ state.view === 'grid' ? 'as-drawer' : 'md-drawer' }} {{ state.previewDrawer ? 'open' : '' }}" data-coach="fs-preview">
             <div class="tp-head">
               <span class="t">Live preview</span>
-              <button t-if="state.view === 'grid'" class="ol-act tp-close" t-on-click="() => this.toggleDrawer('preview')" title="Close panel">
+              <button class="ol-act tp-close" t-on-click="() => this.toggleDrawer('preview')" title="Close panel">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
               </button>
             </div>
