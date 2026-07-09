@@ -1,0 +1,341 @@
+// ============================================================================
+// BIZ THEME — BASE VARIABLES (brand-agnostic)
+// ============================================================================
+// Generic base theme variables for any Odoo 19 CE app.
+//
+// CONTRACT: every palette scalar here is `!default`. A brand overlay module
+// (e.g. pb_theme) prepends its own palette file BEFORE this one using the
+// deterministic asset directive:
+//   ('before', 'biz_theme/static/src/scss/biz_variables.scss', '<brand>/.../primary_variables.scss')
+// Brand files assign the same $vu-* names WITHOUT !default, so they win.
+// Derivations below ($primary: $vu-deep-blue, maps, :root emission) are NOT
+// !default-guarded — they always recompute from the winning palette.
+//
+// The $vu-* variable NAMES are kept for compatibility with the VU Form Engine
+// and all downstream kit modules; only ownership of the file changed.
+// ============================================================================
+
+// ===== ACCENT / HIGHLIGHT FAMILY =====
+$vu-hibiscus-red: #EF4444 !default;
+$vu-hibiscus-red-dark: #DC2626 !default;
+$vu-hibiscus-red-darker: #B91C1C !default;
+$vu-hibiscus-red-light: #F87171 !default;
+$vu-hibiscus-red-lightest: #FDECEC !default;
+
+$vu-hibiscus-orange: #0891B2 !default;
+$vu-hibiscus-orange-dark: #0E7490 !default;
+$vu-hibiscus-orange-darker: #155E75 !default;
+$vu-hibiscus-orange-light: #67E8F9 !default;
+$vu-hibiscus-orange-lightest: #E0F4F9 !default;
+
+$vu-leaf-green: #10B981 !default;
+$vu-leaf-green-dark: #059669 !default;
+$vu-leaf-green-darker: #047857 !default;
+$vu-leaf-green-light: #6EE7B7 !default;
+$vu-leaf-green-lightest: #E7F8F1 !default;
+
+// ===== PRIMARY UI COLOURS (neutral default: slate-violet) =====
+$vu-deep-blue: #5A4BB0 !default;
+$vu-deep-blue-darkest: #241F52 !default;
+$vu-deep-blue-darker: #4A3D96 !default;
+$vu-deep-blue-base: #5A4BB0 !default;
+$vu-deep-blue-light: #CBC2EE !default;
+$vu-deep-blue-lightest: #EDEAF8 !default;
+
+$vu-accent-blue: #0891B2 !default;
+$vu-accent-blue-darkest: #155E75 !default;
+$vu-accent-blue-darker: #0E7490 !default;
+$vu-accent-blue-base: #0891B2 !default;
+$vu-accent-blue-light: #67E8F9 !default;
+$vu-accent-blue-lightest: #E0F4F9 !default;
+
+// ===== NEUTRAL TONES =====
+$vu-black: #121212 !default;
+$vu-text-primary: #212121 !default;
+$vu-text-secondary: #424242 !default;
+$vu-gray-light: #F5F5F5 !default;
+$vu-gray-lighter: #FAFAFA !default;
+$vu-white: #FFFFFF !default;
+
+// ===== STATE COLORS =====
+$vu-success: #0F8A63 !default;
+$vu-info: #0891B2 !default;
+$vu-warning: #B7791F !default;
+$vu-danger: #C0332A !default;
+
+// ===== WORKFLOW STATE COLORS =====
+$vu-state-draft: #64748b !default;
+$vu-state-confirmed: #5A4BB0 !default;
+$vu-state-assigned: #6E72B0 !default;
+$vu-state-active: #B7791F !default;
+$vu-state-completed: #0F8A63 !default;
+$vu-state-cancelled: #C0332A !default;
+$vu-state-closed: #475569 !default;
+
+// ===== TYPOGRAPHY (brand overlay may pre-set these) =====
+$font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !default;
+$font-family-headings: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !default;
+
+// ===== ODOO BRAND VARIABLE OVERRIDES (derivations — never !default) =====
+$o-community-color: $vu-deep-blue;
+$o-enterprise-color: $vu-deep-blue;
+$o-enterprise-action-color: $vu-deep-blue;
+
+$o-brand-odoo: $vu-deep-blue;
+$o-brand-primary: $vu-deep-blue;
+$o-brand-secondary: $vu-accent-blue;
+
+// ===== BOOTSTRAP VARIABLE OVERRIDES =====
+$primary: $vu-deep-blue;
+$secondary: $vu-accent-blue;
+
+$success: $vu-success;
+$info: $vu-info;
+$warning: $vu-warning;
+$danger: $vu-danger;
+
+$body-color: $vu-text-primary;
+$headings-color: $vu-text-primary;
+$text-muted: $vu-text-secondary;
+
+$body-bg: $vu-white;
+$light: $vu-gray-light;
+
+// ===== ODOO STATE COLOR OVERRIDES =====
+$o-success: $vu-success;
+$o-info: $vu-info;
+$o-warning: $vu-warning;
+$o-danger: $vu-danger;
+
+// ===== ODOO COMPONENT OVERRIDES =====
+$link-color: $vu-deep-blue;
+$link-hover-color: $vu-deep-blue-darker;
+
+$border-color: #E0E0E0 !default;
+$border-radius: 6px !default;
+$border-radius-sm: 4px !default;
+$border-radius-lg: 8px !default;
+
+$focus-ring-color: rgba($vu-deep-blue, 0.25);
+$input-focus-border-color: $vu-deep-blue;
+
+$btn-border-radius: $border-radius;
+$btn-border-radius-sm: $border-radius-sm;
+$btn-border-radius-lg: $border-radius-lg;
+
+// ===== COMPACT FONT & SPACING OVERRIDES =====
+$font-size-base: 0.8125rem !default;         // 13px – compact yet readable
+$o-font-size-base: 0.8125rem !default;
+$o-form-spacing-unit: 3px !default;
+
+// ===== THEME COLOR MAPS =====
+$o-theme-text-colors: (
+    "primary": $vu-deep-blue,
+    "secondary": $vu-accent-blue,
+    "success": $o-success,
+    "info": $o-info,
+    "warning": $o-warning,
+    "danger": $o-danger,
+);
+
+$theme-colors: (
+    "primary": $vu-deep-blue,
+    "secondary": $vu-accent-blue,
+    "success": $vu-success,
+    "info": $vu-info,
+    "warning": $vu-warning,
+    "danger": $vu-danger,
+    "light": $vu-gray-light,
+    "dark": $vu-text-primary,
+);
+
+// ===== EXTENDED THEMING VARIABLES (derivations) =====
+$vu-navbar-bg: $vu-deep-blue;
+$vu-navbar-text: $vu-white;
+$vu-navbar-hover: $vu-deep-blue-light;
+
+$vu-sidebar-bg: $vu-gray-lighter;
+$vu-sidebar-text: $vu-text-primary;
+$vu-sidebar-hover: $vu-deep-blue-lightest;
+
+$vu-card-bg: $vu-white;
+$vu-card-border: #E0E0E0 !default;
+$vu-panel-bg: $vu-gray-light;
+
+$vu-control-panel-bg: $vu-gray-light;
+$vu-control-panel-border: #E0E0E0 !default;
+
+$vu-shadow-sm: 0 1px 3px rgba($vu-text-primary, 0.1);
+$vu-shadow-md: 0 2px 8px rgba($vu-text-primary, 0.12);
+$vu-shadow-lg: 0 4px 16px rgba($vu-text-primary, 0.15);
+
+$headings-font-family: $font-family-headings;
+$headings-font-weight: 600 !default;
+
+$font-weight-normal: 400 !default;
+$font-weight-semibold: 600 !default;
+$font-weight-bold: 700 !default;
+$font-weight-extrabold: 800 !default;
+
+// ===== DESIGN TOKENS / CSS VARIABLES =====
+
+:root {
+    /* Core Palette */
+    --vu-surface-app: #{$vu-white};
+    --vu-surface-panel: #{$vu-gray-lighter};
+    --vu-surface-card: #{$vu-card-bg};
+    --vu-surface-muted: #{$vu-gray-light};
+    --vu-surface-hover: #{$vu-deep-blue-lightest};
+
+    --vu-text-primary: #{$vu-text-primary};
+    --vu-text-secondary: #{$vu-text-secondary};
+    --vu-text-inverse: #{$vu-white};
+
+    --vu-border-soft: #{$vu-card-border};
+    --vu-border-strong: #{darken($vu-card-border, 10%)};
+
+    --vu-brand-primary: #{$vu-deep-blue};
+    --vu-brand-primary-dark: #{$vu-deep-blue-darker};
+    --vu-brand-secondary: #{$vu-accent-blue};
+    --vu-brand-accent: #{$vu-hibiscus-orange};
+
+    --vu-status-success: #{$vu-success};
+    --vu-status-info: #{$vu-info};
+    --vu-status-warning: #{$vu-warning};
+    --vu-status-danger: #{$vu-danger};
+
+    /* Typography Scale */
+    --vu-font-family-base: #{$font-family-sans-serif};
+    --vu-font-family-headings: #{$font-family-headings};
+    --vu-font-size-xs: 0.75rem;
+    --vu-font-size-sm: 0.875rem;
+    --vu-font-size-md: 1rem;
+    --vu-font-size-lg: 1.125rem;
+    --vu-font-size-xl: 1.5rem;
+    --vu-font-size-hero: 2rem;
+
+    --vu-line-height-tight: 1.2;
+    --vu-line-height-normal: 1.5;
+    --vu-line-height-relaxed: 1.75;
+
+    /* Spacing Scale – tightened for compact forms */
+    --vu-space-xxs: 2px;
+    --vu-space-xs: 4px;
+    --vu-space-sm: 8px;
+    --vu-space-md: 12px;
+    --vu-space-lg: 16px;
+    --vu-space-xl: 24px;
+    --vu-space-xxl: 36px;
+
+    /* Workflow State Colors */
+    --vu-state-draft: #{$vu-state-draft};
+    --vu-state-confirmed: #{$vu-state-confirmed};
+    --vu-state-assigned: #{$vu-state-assigned};
+    --vu-state-active: #{$vu-state-active};
+    --vu-state-completed: #{$vu-state-completed};
+    --vu-state-cancelled: #{$vu-state-cancelled};
+    --vu-state-closed: #{$vu-state-closed};
+
+    --vu-state-draft-bg: #{rgba($vu-state-draft, 0.08)};
+    --vu-state-confirmed-bg: #{rgba($vu-state-confirmed, 0.08)};
+    --vu-state-assigned-bg: #{rgba($vu-state-assigned, 0.08)};
+    --vu-state-active-bg: #{rgba($vu-state-active, 0.08)};
+    --vu-state-completed-bg: #{rgba($vu-state-completed, 0.08)};
+    --vu-state-cancelled-bg: #{rgba($vu-state-cancelled, 0.08)};
+    --vu-state-closed-bg: #{rgba($vu-state-closed, 0.08)};
+
+    /* Field indicator tokens */
+    --vu-field-editable-border: #{$vu-card-border};
+    --vu-field-editable-bg: #{rgba($vu-deep-blue, 0.03)};
+    --vu-field-required-accent: #{$vu-warning};
+
+    /* Side sheet */
+    --vu-sheet-width: 480px;
+    --vu-sheet-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+
+    /* Elevation */
+    --vu-shadow-sm: #{$vu-shadow-sm};
+    --vu-shadow-md: #{$vu-shadow-md};
+    --vu-shadow-lg: #{$vu-shadow-lg};
+
+    /* Radii */
+    --vu-radius-sm: 4px;
+    --vu-radius-md: 8px;
+    --vu-radius-lg: 12px;
+
+    /* Transitions */
+    --vu-transition-fast: 120ms ease;
+    --vu-transition-base: 200ms ease;
+
+    /* Icon defaults */
+    --vu-icon-size: 20px;
+}
+
+// ===== DARK THEME =====
+// Activated by setting data-theme="dark" on <html>/<body>.
+[data-theme='dark'] {
+    --vu-surface-app: #0E1626;
+    --vu-surface-panel: #131D31;
+    --vu-surface-card: #16213A;
+    --vu-surface-muted: #0E1626;
+    --vu-surface-hover: #{rgba($vu-accent-blue, 0.14)};
+
+    --vu-text-primary: #{$vu-white};
+    --vu-text-secondary: #{rgba($vu-white, 0.72)};
+    --vu-text-inverse: #0E1626;
+
+    --vu-border-soft: #243049;
+    --vu-border-strong: #324063;
+
+    --vu-brand-primary: #{$vu-accent-blue};
+    --vu-brand-primary-dark: #{$vu-deep-blue};
+    --vu-brand-secondary: #{$vu-deep-blue-light};
+    --vu-brand-accent: #FCB24D;
+
+    --vu-status-success: #7BC685;
+    --vu-status-info: #83C5FA;
+    --vu-status-warning: #FCB24D;
+    --vu-status-danger: #F07C75;
+
+    --vu-field-required-accent: #FCB24D;
+    --vu-field-editable-bg: #{rgba($vu-accent-blue, 0.06)};
+
+    --vu-shadow-sm: 0 2px 6px rgba(0,0,0,0.4);
+    --vu-shadow-md: 0 6px 20px rgba(0,0,0,0.45);
+    --vu-shadow-lg: 0 10px 30px rgba(0,0,0,0.55);
+}
+
+// ===== MIXINS =====
+
+@mixin vu-card($padding: var(--vu-space-lg)) {
+    background: var(--vu-surface-card);
+    border-radius: var(--vu-radius-md);
+    box-shadow: var(--vu-shadow-sm);
+    padding: $padding;
+    border: 1px solid var(--vu-border-soft);
+}
+
+@mixin vu-section-title($icon-color: var(--vu-brand-primary)) {
+    font-family: var(--vu-font-family-headings);
+    font-size: var(--vu-font-size-lg);
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--vu-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-sm);
+
+    &::before {
+        content: '';
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba($icon-color, .12);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        mask-size: contain;
+        mask-repeat: no-repeat;
+    }
+}

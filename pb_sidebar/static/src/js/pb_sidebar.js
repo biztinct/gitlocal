@@ -2,7 +2,14 @@
 
 import { Component, useState, onMounted, onWillUnmount, markup } from "@odoo/owl";
 import { useService, useBus } from "@web/core/utils/hooks";
+import { user } from "@web/core/user";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import {
+    applySidebarMode,
+    clearSidebarMode,
+    getSidebarMode,
+    toggleSidebarMode,
+} from "@biz_theme/js/biz_sidebar_state";
 
 // ---- Lucide icon set (inline SVG paths; matches the Payobook POC) ----
 const ICONS = {
@@ -45,7 +52,7 @@ export class PbSidebar extends Component {
         this.menuService = useService("menu");
         this.dialog = useService("dialog");
 
-        const name = window.odoo?.session_info?.name || "User";
+        const name = user.name || window.odoo?.session_info?.name || "User";
         this.userName = name;
         this.userInitials = name.split(" ").filter(Boolean).map(p => p[0]).join("")
             .substring(0, 2).toUpperCase() || "U";
@@ -68,11 +75,22 @@ export class PbSidebar extends Component {
 
         useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this._onUiUpdated());
 
+        this.uid = user.userId;
+
         onMounted(async () => {
+            applySidebarMode(getSidebarMode(this.uid));
             await this._load();
             this._onUiUpdated();
         });
-        onWillUnmount(() => document.body.classList.remove("has-pb-sidebar"));
+        onWillUnmount(() => {
+            document.body.classList.remove("has-pb-sidebar");
+            clearSidebarMode();
+        });
+    }
+
+    // Pin/unpin the icon rail (biz_theme behavior layer; persisted per user)
+    toggleCollapse() {
+        toggleSidebarMode(this.uid);
     }
 
     _onUiUpdated() {

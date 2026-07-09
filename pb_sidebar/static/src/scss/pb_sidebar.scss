@@ -57,6 +57,18 @@ body.has-pb-sidebar {
     }
     .pb-brand-nm { font-weight: 800; font-size: 15px; letter-spacing: .01em; }
     .pb-brand-sub { font-size: 11px; color: var(--pb-side-muted); margin-top: 1px; }
+    .pb-brand-tx { flex: 1; min-width: 0; }
+
+    // Pin/collapse toggle (rail behavior comes from biz_theme/biz_sidebar.scss)
+    .pb-side-toggle {
+        width: 26px; height: 26px; flex: none;
+        border: none; border-radius: 8px; background: none;
+        color: var(--pb-side-muted); cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+
+        svg { width: 15px; height: 15px; }
+        &:hover { color: var(--pb-side-ink); background: var(--pb-side-hover); }
+    }
 
     // ---- Nav ----
     .pb-sidebar-nav { padding: 10px 10px 16px; flex: 1; }

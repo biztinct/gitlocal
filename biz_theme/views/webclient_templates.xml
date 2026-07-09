@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Theme Engine: published token overrides. Anchored after the last
+         asset call inside the head_web block, so the :root overrides load
+         AFTER the compiled bundles and win the cascade. If the route fails,
+         compiled brand defaults apply — tint-only, never breaking. -->
+    <template id="webclient_bootstrap" inherit_id="web.webclient_bootstrap">
+        <xpath expr="//t[@t-call='web.conditional_assets_tests']" position="after">
+            <link rel="stylesheet" type="text/css" href="/biz_theme/tokens.css"/>
+        </xpath>
+    </template>
+
+</odoo>

@@ -1,0 +1,123 @@
+/* ============================================================
+   Formula Studio — responsive behavior (biz_theme breakpoints)
+
+   Header ladder (two-tier header lives in studio.scss):
+     ≤1440  secondary toolbar buttons go icon-only (.biz-icon-only-lg)
+     ≤1280  Replay/What-if/Payslip/Mapping/Tables fold into Tools ▾
+            (.biz-hide-lg on the buttons, .biz-only-lg on .pbfs-more)
+     ≤1100  view tabs go icon-only, identity chips hide (.biz-hide-md)
+     ≤768   toolbar row scrolls horizontally
+
+   Grid workbench: .pbfs-work--full drops both side panels; the outline and
+   live-preview DOM nodes become slide-in drawers (same nodes → selection,
+   dependency highlighting and sample cycling keep working untouched).
+   ============================================================ */
+
+.pbfs {
+
+    /* ---- grid workbench: full-width spreadsheet ---- */
+    .pbfs-work--full {
+        grid-template-columns: 1fr;
+
+        // arrows overlay only makes sense in cards view
+        .pbfs-arrows { display: none; }
+
+        .pbfs-outline.as-drawer,
+        .pbfs-test.as-drawer {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            z-index: 30;
+            width: 340px;
+            max-width: 86vw;
+            background: #fff;
+            transition: transform 200ms cubic-bezier(.16, 1, .3, 1);
+            box-shadow: 0 18px 50px rgba(16, 12, 40, .18);
+            visibility: hidden;
+        }
+
+        .pbfs-outline.as-drawer {
+            left: 0;
+            border-right: 1px solid var(--line);
+            transform: translateX(-100%);
+        }
+
+        .pbfs-test.as-drawer {
+            right: 0;
+            border-left: 1px solid var(--line);
+            transform: translateX(100%);
+            display: flex;            // wins over the ≤1100 cards-mode hide
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .pbfs-outline.as-drawer.open,
+        .pbfs-test.as-drawer.open {
+            transform: none;
+            visibility: visible;
+        }
+    }
+
+    /* slim toolbar above the grid */
+    .pbfs-gridbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 0;
+
+        .pbfs-gridbar-spacer { flex: 1; }
+
+        .pbfs-btn.sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            gap: 6px;
+
+            svg { width: 14px; height: 14px; }
+
+            &.active {
+                background: var(--i-soft);
+                color: var(--i);
+                border-color: var(--i-border);
+            }
+        }
+    }
+
+    .tp-close { float: right; }
+
+    /* column-jump flash when a component is picked from the drawer */
+    .g2-table th.g2-jump {
+        animation: pbfs-jump-flash 1.2s ease;
+    }
+
+    /* ---- header ladder ---- */
+    @include biz-down($biz-bp-md) {
+        .pbfs-top { padding: 8px 14px; }
+
+        // view tabs: icon-only
+        .pbfs-seg button .tx { display: none; }
+        .pbfs-seg button { padding: 7px 10px; }
+    }
+
+    @include biz-down($biz-bp-sm) {
+        .pbfs-top-row2 {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+
+        .pbfs-id-right .pbfs-ring { display: none; }
+    }
+}
+
+@keyframes pbfs-jump-flash {
+    0%, 55% { box-shadow: inset 0 0 0 2px var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); }
+    100% { box-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pbfs .pbfs-work--full .pbfs-outline.as-drawer,
+    .pbfs .pbfs-work--full .pbfs-test.as-drawer {
+        transition: none;
+    }
+}

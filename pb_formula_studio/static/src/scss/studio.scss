@@ -37,11 +37,15 @@
 
     svg { width: 16px; height: 16px; stroke: currentColor; }
 
-    /* top bar */
-    .pbfs-top { background: #fff; border-bottom: 1px solid var(--line); padding: 12px 22px; display: flex; align-items: center; gap: 16px; }
-    .pbfs-cfg { display: flex; align-items: center; gap: 11px; min-width: 0; position: relative; }
-    .pbfs-cfg-name { display: inline-flex; align-items: center; gap: 7px; background: none; border: none; padding: 0; font-family: inherit; }
-    .pbfs-cfg-name .nm { font-size: 17px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); }
+    /* top bar — two tiers (identity row + toolbar row) */
+    .pbfs-top { background: #fff; border-bottom: 1px solid var(--line); padding: 10px 22px; display: flex; flex-direction: column; gap: 8px; }
+    .pbfs-top-row1, .pbfs-top-row2 { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .pbfs-id-right, .pbfs-top-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .pbfs-cfg { display: flex; align-items: center; gap: 11px; flex: 1; min-width: 0; position: relative; }
+    .pbfs-cfg-name { display: inline-flex; align-items: center; gap: 7px; background: none; border: none; padding: 0; font-family: inherit; min-width: 0; max-width: 100%; }
+    .pbfs-cfg-name .nm { font-size: 17px; font-weight: 800; letter-spacing: -.01em; color: var(--ink); display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbfs-cfg-name svg { flex-shrink: 0; }
+    .pbfs-chip, .pbfs-state { flex-shrink: 0; }
     .pbfs-cfg-name svg { width: 16px; height: 16px; stroke: var(--muted); }
     .pbfs-chip { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--i-soft); color: var(--i600); }
     .pbfs-chip.cur { background: #EEF1F5; color: #64748B; }
@@ -465,9 +469,11 @@
     .wz-foot { padding: 16px 38px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
     .pbfs-picker-row.new { border-top: 1px solid var(--line); } .pbfs-picker-row.new .nm { color: var(--i); }
 
+    // Cards view only — the grid workbench (.pbfs-work--full) manages its own
+    // panels as drawers (see studio_responsive.scss).
     @media (max-width: 1100px) {
-        .pbfs-work { grid-template-columns: 240px 1fr; }
-        .pbfs-test { display: none; }
+        .pbfs-work:not(.pbfs-work--full) { grid-template-columns: 240px 1fr; }
+        .pbfs-work:not(.pbfs-work--full) .pbfs-test { display: none; }
     }
 }
 

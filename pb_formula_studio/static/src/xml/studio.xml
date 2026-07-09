@@ -37,92 +37,115 @@
 
       <!-- main -->
       <div t-else="" class="pbfs-main">
-        <!-- top bar -->
+        <!-- top bar — two tiers: identity row + toolbar row (biz responsive) -->
         <header class="pbfs-top">
-          <div class="pbfs-cfg">
-            <button class="pbfs-cfg-name" data-coach="fs-config" t-on-click="toggleConfigPicker">
-              <span class="nm" t-esc="state.config.name"/>
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-            </button>
-            <span t-if="state.config.country" class="pbfs-chip" t-esc="state.config.country"/>
-            <span class="pbfs-chip cur" t-esc="'Currency ' + (state.config.currency || '')"/>
-            <span t-attf-class="pbfs-state {{ stageCls() }}"><span class="d"/><t t-esc="stageLabel()"/></span>
-            <!-- config picker dropdown -->
-            <div t-if="state.configPickerOpen" class="pbfs-picker">
-              <div t-foreach="state.configs" t-as="cfg" t-key="cfg.id" class="pbfs-picker-row" t-on-click="() => this.pickConfig(cfg.id)">
-                <div class="pp-main">
-                  <span class="nm" t-esc="cfg.name"/>
-                  <span class="meta" t-esc="cfg.rule_count + ' components · ' + cfg.state"/>
+          <div class="pbfs-top-row1">
+            <div class="pbfs-cfg">
+              <button class="pbfs-cfg-name" data-coach="fs-config" t-on-click="toggleConfigPicker">
+                <span class="nm" t-esc="state.config.name"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <span t-if="state.config.country" class="pbfs-chip biz-hide-md" t-esc="state.config.country"/>
+              <span class="pbfs-chip cur biz-hide-md" t-esc="'Currency ' + (state.config.currency || '')"/>
+              <span t-attf-class="pbfs-state {{ stageCls() }}"><span class="d"/><t t-esc="stageLabel()"/></span>
+              <!-- config picker dropdown -->
+              <div t-if="state.configPickerOpen" class="pbfs-picker">
+                <div t-foreach="state.configs" t-as="cfg" t-key="cfg.id" class="pbfs-picker-row" t-on-click="() => this.pickConfig(cfg.id)">
+                  <div class="pp-main">
+                    <span class="nm" t-esc="cfg.name"/>
+                    <span class="meta" t-esc="cfg.rule_count + ' components · ' + cfg.state"/>
+                  </div>
+                  <button class="pbfs-picker-gear" t-on-click="(ev) => this.openConfigSettings(cfg.id, ev)" title="Configuration settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  </button>
+                  <button class="pbfs-picker-del" t-on-click="(ev) => this.askDeleteConfig(cfg, ev)" title="Delete configuration">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
                 </div>
-                <button class="pbfs-picker-gear" t-on-click="(ev) => this.openConfigSettings(cfg.id, ev)" title="Configuration settings">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                </button>
-                <button class="pbfs-picker-del" t-on-click="(ev) => this.askDeleteConfig(cfg, ev)" title="Delete configuration">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                </button>
+                <div class="pbfs-picker-row new" t-on-click="openWizard">
+                  <span class="nm">＋ New configuration</span>
+                  <span class="meta">Guided setup</span>
+                </div>
               </div>
-              <div class="pbfs-picker-row new" t-on-click="openWizard">
-                <span class="nm">＋ New configuration</span>
-                <span class="meta">Guided setup</span>
+            </div>
+            <div class="pbfs-id-right">
+              <div class="pbfs-ring" title="Validation health">
+                <svg width="46" height="46">
+                  <circle cx="23" cy="23" r="19" stroke="#EEF1F5" stroke-width="5" fill="none"/>
+                  <circle cx="23" cy="23" r="19" stroke="#0F8A63" stroke-width="5" fill="none" stroke-linecap="round"
+                          t-att-stroke-dasharray="ring(state.config.score).dash"
+                          t-att-stroke-dashoffset="ring(state.config.score).offset"
+                          transform="rotate(-90 23 23)"/>
+                </svg>
+                <span class="val" t-esc="state.config.score"/>
               </div>
+              <button class="pbfs-btn primary" t-on-click="advance"><t t-esc="nextLabel()"/></button>
             </div>
           </div>
-          <div class="pbfs-top-right">
-            <div class="pbfs-ring" title="Validation health">
-              <svg width="46" height="46">
-                <circle cx="23" cy="23" r="19" stroke="#EEF1F5" stroke-width="5" fill="none"/>
-                <circle cx="23" cy="23" r="19" stroke="#0F8A63" stroke-width="5" fill="none" stroke-linecap="round"
-                        t-att-stroke-dasharray="ring(state.config.score).dash"
-                        t-att-stroke-dashoffset="ring(state.config.score).offset"
-                        transform="rotate(-90 23 23)"/>
-              </svg>
-              <span class="val" t-esc="state.config.score"/>
-            </div>
+          <div class="pbfs-top-row2">
             <div class="pbfs-seg" data-coach="fs-views">
-              <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Cards
+              <button t-att-class="state.view === 'cards' ? 'active' : ''" t-on-click="() => this.setView('cards')" title="Cards view">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="tx">Cards</span>
               </button>
-              <button data-coach="fs-view-grid" t-att-class="state.view === 'grid' ? 'active' : ''" t-on-click="() => this.setView('grid')">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Grid
+              <button data-coach="fs-view-grid" t-att-class="state.view === 'grid' ? 'active' : ''" t-on-click="() => this.setView('grid')" title="Grid view">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg><span class="tx">Grid</span>
               </button>
               <button t-att-class="state.view === 'test' ? 'active' : ''" t-on-click="openTest" title="Test &amp; validate">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M9 2v6.5L4.5 18a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 8.5V2"/><path d="M7 14h10"/></svg>Test
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M9 2v6.5L4.5 18a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 8.5V2"/><path d="M7 14h10"/></svg><span class="tx">Test</span>
               </button>
               <button t-att-class="state.view === 'settings' ? 'active' : ''" t-on-click="openSettings" title="Configuration settings">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="tx">Settings</span>
               </button>
             </div>
-            <button class="pbfs-btn soft pbfs-replaybtn" data-coach="fs-replay" t-on-click="openReplay" title="Execution replay — watch a payslip compute step by step">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span>Replay</span>
-            </button>
-            <button class="pbfs-btn soft pbfs-whatifbtn" data-coach="fs-whatif" t-on-click="openWhatif" title="What-if — slide a rate and project the payroll cost">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-              <span>What-if</span>
-            </button>
-            <button class="pbfs-btn soft pbfs-psbtn" data-coach="fs-payslip" t-on-click="openPayslip" title="Payslip Studio — design the payslip layout">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
-              <span>Payslip</span>
-            </button>
-            <button class="pbfs-btn soft pbfs-mapbtn" data-coach="fs-mapping" t-on-click="openMapping" title="Mapping canvas — wire mid-cycle components to end-cycle">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></svg>
-              <span>Mapping</span>
-            </button>
-            <button class="pbfs-btn soft pbfs-ratebtn" data-coach="fs-rates" t-on-click="openRates" title="Rate &amp; bracket tables (PIT, etc.)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
-              <span>Tables</span>
-              <span t-if="state.rateTables.length" class="pbfs-ratecount" t-esc="state.rateTables.length"/>
-            </button>
-            <button t-attf-class="pbfs-btn soft pbfs-probbtn {{ problemLevel }}" data-coach="fs-problems" t-on-click="openProblems" title="Problems, lint &amp; rename-refactor">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-              <span>Problems</span>
-              <span t-if="problemCount" class="pbfs-probcount" t-esc="problemCount"/>
-              <svg t-else="" class="pbfs-probok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
-            </button>
-            <button class="pbfs-btn ai" data-coach="fs-payai" t-on-click="openAI">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Ask PayAI
-            </button>
-            <button class="pbfs-btn primary" t-on-click="advance"><t t-esc="nextLabel()"/></button>
+            <div class="pbfs-top-actions">
+              <button class="pbfs-btn soft pbfs-replaybtn biz-icon-only-lg biz-hide-lg" data-coach="fs-replay" t-on-click="openReplay" title="Execution replay — watch a payslip compute step by step">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>Replay</span>
+              </button>
+              <button class="pbfs-btn soft pbfs-whatifbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-whatif" t-on-click="openWhatif" title="What-if — slide a rate and project the payroll cost">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                <span>What-if</span>
+              </button>
+              <button class="pbfs-btn soft pbfs-psbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-payslip" t-on-click="openPayslip" title="Payslip Studio — design the payslip layout">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
+                <span>Payslip</span>
+              </button>
+              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-mapping" t-on-click="openMapping" title="Mapping canvas — wire mid-cycle components to end-cycle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></svg>
+                <span>Mapping</span>
+              </button>
+              <button class="pbfs-btn soft pbfs-ratebtn biz-icon-only-lg biz-hide-lg" data-coach="fs-rates" t-on-click="openRates" title="Rate &amp; bracket tables (PIT, etc.)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+                <span>Tables</span>
+                <span t-if="state.rateTables.length" class="pbfs-ratecount biz-keep" t-esc="state.rateTables.length"/>
+              </button>
+              <!-- Tools ▾ overflow — absorbs the five buttons above below 1280px (CSS-gated, no resize JS) -->
+              <div class="pbfs-more biz-more-menu biz-only-lg">
+                <button class="pbfs-btn soft" t-on-click="toggleMore" title="More tools">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                  <span class="biz-keep">Tools</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                <div t-if="state.moreOpen" class="biz-more-menu__panel">
+                  <button t-on-click="() => this.pickTool('replay')">Replay</button>
+                  <button t-on-click="() => this.pickTool('whatif')">What-if</button>
+                  <button t-on-click="() => this.pickTool('payslip')">Payslip</button>
+                  <button t-on-click="() => this.pickTool('mapping')">Mapping</button>
+                  <button t-on-click="() => this.pickTool('rates')">
+                    Tables<t t-if="state.rateTables.length"> (<t t-esc="state.rateTables.length"/>)</t>
+                  </button>
+                </div>
+              </div>
+              <button t-attf-class="pbfs-btn soft pbfs-probbtn biz-icon-only-lg {{ problemLevel }}" data-coach="fs-problems" t-on-click="openProblems" title="Problems, lint &amp; rename-refactor">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+                <span>Problems</span>
+                <span t-if="problemCount" class="pbfs-probcount biz-keep" t-esc="problemCount"/>
+                <svg t-else="" class="pbfs-probok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+              </button>
+              <button class="pbfs-btn ai" data-coach="fs-payai" t-on-click="openAI">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Ask PayAI
+              </button>
+            </div>
           </div>
         </header>
 
@@ -500,15 +523,18 @@
         </div>
         </t>
 
-        <!-- 3-pane -->
+        <!-- 3-pane (cards) / full-width workbench with drawers (grid) -->
         <t t-else="">
-        <div class="pbfs-work">
+        <div t-attf-class="pbfs-work {{ state.view === 'grid' ? 'pbfs-work--full' : '' }}">
           <svg id="pbfsArrows" class="pbfs-arrows"/>
-          <!-- outline -->
-          <div class="pbfs-outline" data-coach="fs-components">
+          <!-- outline (grid mode: slide-in drawer over the spreadsheet) -->
+          <div t-attf-class="pbfs-outline {{ state.view === 'grid' ? 'as-drawer' : '' }} {{ state.outlineDrawer ? 'open' : '' }}" data-coach="fs-components">
             <div class="ol-head">
               <span class="t">Components</span>
               <div class="ol-actions">
+                <button t-if="state.view === 'grid'" class="ol-act" t-on-click="() => this.toggleDrawer('outline')" title="Close panel">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
                 <button class="ol-act" data-coach="fs-add" t-on-click="addComponentQuick" title="Add a component">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </button>
@@ -876,8 +902,21 @@
             </div>
           </div>
 
-          <!-- editor: grid (T2.1 — GridStudio component) -->
+          <!-- editor: grid (T2.1 — GridStudio component, full-width workbench) -->
           <div t-else="" class="pbfs-gridwrap">
+            <div class="pbfs-gridbar">
+              <button t-attf-class="pbfs-btn ghost sm {{ state.outlineDrawer ? 'active' : '' }}"
+                      t-on-click="() => this.toggleDrawer('outline')" title="Components panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                Components
+              </button>
+              <span class="pbfs-gridbar-spacer"/>
+              <button t-attf-class="pbfs-btn ghost sm {{ state.previewDrawer ? 'active' : '' }}"
+                      t-on-click="() => this.toggleDrawer('preview')" title="Live preview panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                Preview · <t t-esc="sampleName"/>
+              </button>
+            </div>
             <GridStudio components="state.components" preview="state.preview" graph="state.graph"
                         canEdit="state.canEdit" selectedId="state.selectedId"
                         onSelect="(id) => this.selectComponent(id)"
@@ -896,9 +935,14 @@
                         onScenarioDiscard="(sid) => this.gridScenarioDiscard(sid)"/>
           </div>
 
-          <!-- live preview -->
-          <div class="pbfs-test" data-coach="fs-preview">
-            <div class="tp-head"><span class="t">Live preview</span></div>
+          <!-- live preview (grid mode: slide-in drawer over the spreadsheet) -->
+          <div t-attf-class="pbfs-test {{ state.view === 'grid' ? 'as-drawer' : '' }} {{ state.previewDrawer ? 'open' : '' }}" data-coach="fs-preview">
+            <div class="tp-head">
+              <span class="t">Live preview</span>
+              <button t-if="state.view === 'grid'" class="ol-act tp-close" t-on-click="() => this.toggleDrawer('preview')" title="Close panel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
             <button class="tp-sel" t-on-click="cycleSample"><t t-esc="sampleName"/>
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
             <t t-if="!state.samples.length">

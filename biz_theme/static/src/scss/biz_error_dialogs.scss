@@ -1,0 +1,199 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   BIZ THEME — FRIENDLY ERROR DIALOGS
+   Calm, non-alarming replacements for the stock error pop-ups, plus a
+   restyle of the remaining stock traceback dialog (web.ErrorDialog).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.biz-err-modal {
+    border-radius: 18px !important;
+    overflow: hidden;
+    animation: biz-err-in 240ms cubic-bezier(.16, 1, .3, 1);
+}
+
+@keyframes biz-err-in {
+    from { opacity: 0; transform: translateY(10px) scale(.985); }
+    to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .biz-err-modal { animation: none; }
+}
+
+.biz-err {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 26px 26px 6px;
+    gap: 4px;
+
+    // Variant accent (icon tile) — calm palettes, never alarm-red
+    --biz-err-accent: #5A4BB0;
+    --biz-err-accent-bg: #EDEAF8;
+
+    &.biz-err--access   { --biz-err-accent: #4A5A78; --biz-err-accent-bg: #ECF0F7; }
+    &.biz-err--attention{ --biz-err-accent: #B7791F; --biz-err-accent-bg: #FAF1E2; }
+    &.biz-err--missing  { --biz-err-accent: #64748B; --biz-err-accent-bg: #EEF1F5; }
+    &.biz-err--timeout  { --biz-err-accent: #0E7490; --biz-err-accent-bg: #E0F4F9; }
+    &.biz-err--session  { --biz-err-accent: #5A4BB0; --biz-err-accent-bg: #EDEAF8; }
+    &.biz-err--crash    { --biz-err-accent: #4A5568; --biz-err-accent-bg: #EDF0F4; }
+
+    &__icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--biz-err-accent-bg);
+        color: var(--biz-err-accent);
+        margin-bottom: 12px;
+
+        svg { width: 30px; height: 30px; }
+    }
+
+    &__title {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+        color: var(--vu-text-primary, #212121);
+        margin: 0;
+    }
+
+    &__message {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--vu-text-primary, #212121);
+        white-space: pre-wrap;
+        margin: 8px 0 0;
+        max-width: 460px;
+    }
+
+    &__hint {
+        font-size: 12.5px;
+        color: var(--vu-text-secondary, #424242);
+        line-height: 1.55;
+        margin: 6px 0 0;
+        max-width: 440px;
+    }
+
+    &__groups {
+        margin-top: 16px;
+        width: 100%;
+    }
+
+    &__groups-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: var(--vu-text-secondary, #424242);
+        margin-bottom: 8px;
+    }
+
+    &__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+    }
+
+    &__chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: var(--biz-err-accent-bg);
+        color: var(--biz-err-accent);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    &__details {
+        margin-top: 18px;
+        width: 100%;
+        text-align: left;
+    }
+
+    &__details-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: none;
+        background: none;
+        padding: 4px 0;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--vu-text-secondary, #424242);
+        cursor: pointer;
+        font-family: inherit;
+
+        svg { width: 12px; height: 12px; transition: transform 140ms ease; }
+        &:hover { color: var(--vu-text-primary, #212121); }
+    }
+
+    &__details-body {
+        margin: 8px 0 0;
+        max-height: 200px;
+        overflow: auto;
+        background: var(--vu-surface-muted, #F5F5F5);
+        border: 1px solid var(--vu-border-soft, #E0E0E0);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 11px;
+        line-height: 1.5;
+        color: var(--vu-text-secondary, #424242);
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+}
+
+.biz-err__copy {
+    border: 1px solid var(--vu-border-soft, #E0E0E0);
+    background: #fff;
+    color: var(--vu-text-secondary, #424242);
+    font-weight: 700;
+    border-radius: 10px;
+
+    &:hover { background: var(--vu-surface-muted, #F5F5F5); }
+}
+
+.biz-err__primary {
+    border-radius: 10px;
+    font-weight: 700;
+    padding-left: 22px;
+    padding-right: 22px;
+}
+
+/* ── Restyle the remaining stock traceback dialog (uncaught errors) ────── */
+.o_error_dialog.modal-content {
+    border-radius: 18px;
+    border: none;
+
+    .modal-header {
+        border-bottom: none;
+        padding-bottom: 0;
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--vu-text-primary, #212121);
+        }
+    }
+
+    .modal-body p.text-prewrap {
+        color: var(--vu-text-secondary, #424242);
+        font-size: 13px;
+    }
+
+    .o_error_detail {
+        border-radius: 10px;
+        border: 1px solid var(--vu-border-soft, #E0E0E0);
+        max-height: 240px;
+        overflow: auto;
+
+        pre { font-size: 11px; }
+    }
+
+    .modal-footer { border-top: none; }
+}

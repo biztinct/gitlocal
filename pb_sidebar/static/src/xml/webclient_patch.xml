@@ -3,7 +3,7 @@
 
     <t t-name="web.WebClient" t-inherit="web.WebClient" t-inherit-mode="extension">
         <xpath expr="//ActionContainer" position="replace">
-            <div class="pb-layout-wrapper">
+            <div class="pb-layout-wrapper biz-layout-wrapper">
                 <PbSidebar/>
                 <ActionContainer/>
             </div>

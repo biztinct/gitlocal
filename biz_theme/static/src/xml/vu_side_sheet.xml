@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="biz_theme.VuSideSheet">
+        <!-- Backdrop -->
+        <div t-attf-class="vu-side-sheet-backdrop #{isOpen ? 'vu-side-sheet-backdrop--visible' : ''}"
+             t-on-click="onBackdropClick"/>
+
+        <!-- Sheet panel -->
+        <div t-attf-class="vu-side-sheet #{isOpen ? 'vu-side-sheet--open' : ''}">
+            <!-- Header -->
+            <div class="vu-side-sheet__header">
+                <div>
+                    <div class="vu-side-sheet__title" t-esc="props.title"/>
+                    <div t-if="props.subtitle"
+                         class="vu-side-sheet__subtitle"
+                         t-esc="props.subtitle"/>
+                </div>
+                <div class="vu-side-sheet__close" t-on-click="close">
+                    <i class="fa fa-times"/>
+                </div>
+            </div>
+
+            <!-- Body (slot) -->
+            <div class="vu-side-sheet__body">
+                <t t-slot="default"/>
+            </div>
+
+            <!-- Footer (optional slot) -->
+            <t t-if="props.slots and props.slots.footer">
+                <div class="vu-side-sheet__footer">
+                    <t t-slot="footer"/>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -3,6 +3,7 @@
 import { Component, useState, useRef, useEffect, useExternalListener, onWillStart, onMounted, onPatched } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { GridStudio } from "./grid/grid_studio";
 import { MappingCanvas } from "./mapping/mapping_canvas";
@@ -190,6 +191,11 @@ export class PbFormulaStudio extends Component {
             wizardBusy: false,
             configPickerOpen: false,
             confirmDel: null,
+            // responsive header: Tools ▾ overflow (visible ≤1280 via CSS)
+            moreOpen: false,
+            // grid workbench: slide-in drawers over the full-width spreadsheet
+            outlineDrawer: false,
+            previewDrawer: false,
             // config settings surface
             settings: null,
             setDraft: {},
@@ -223,6 +229,21 @@ export class PbFormulaStudio extends Component {
         this.rawEditorRef = useRef("rawEditor");
         this._rawNeedsSeed = false;
         this._liveTimer = null;
+        // Tools ▾ closes on any outside click; Esc closes the grid drawers.
+        // Esc goes through the hotkey service — a plain window keydown listener
+        // never fires because the service intercepts Escape at capture phase.
+        useExternalListener(window, "mousedown", (ev) => {
+            if (this.state.moreOpen && !ev.target.closest(".pbfs-more")) {
+                this.state.moreOpen = false;
+            }
+        });
+        useHotkey("escape", () => {
+            if (this.state.outlineDrawer || this.state.previewDrawer) {
+                this.closeDrawers();
+            } else if (this.state.moreOpen) {
+                this.state.moreOpen = false;
+            }
+        }, { global: true, bypassEditableProtection: false });
         onWillStart(async () => {
             await this.load();
             try {
@@ -483,9 +504,42 @@ export class PbFormulaStudio extends Component {
             const comp = this.state.components.find(x => x.id === id);
             if (comp) { const row = document.querySelector(`.pbfs-test .tp-row[data-col="${comp.col}"]`); if (row) row.scrollIntoView({ block: "nearest" }); }
             this.drawArrows();
+            // grid workbench: jump the spreadsheet to the picked column + flash it
+            if (this.state.view === "grid") {
+                const th = document.querySelector(`.g2-table th[data-col-id="${id}"]`);
+                if (th) {
+                    th.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+                    th.classList.add("g2-jump");
+                    setTimeout(() => th.classList.remove("g2-jump"), 1200);
+                }
+            }
         });
     }
-    setView(v) { this.state.view = v; }
+    setView(v) {
+        this.state.view = v;
+        // grid = full-width workbench; drawers start closed on every switch
+        this.state.outlineDrawer = false;
+        this.state.previewDrawer = false;
+        this.state.moreOpen = false;
+    }
+
+    // ---- responsive header: Tools ▾ overflow ----
+    toggleMore() { this.state.moreOpen = !this.state.moreOpen; }
+    pickTool(tool) {
+        this.state.moreOpen = false;
+        if (tool === "replay") this.openReplay();
+        else if (tool === "whatif") this.openWhatif();
+        else if (tool === "payslip") this.openPayslip();
+        else if (tool === "mapping") this.openMapping();
+        else if (tool === "rates") this.openRates();
+    }
+
+    // ---- grid workbench drawers ----
+    toggleDrawer(which) {
+        if (which === "outline") this.state.outlineDrawer = !this.state.outlineDrawer;
+        else this.state.previewDrawer = !this.state.previewDrawer;
+    }
+    closeDrawers() { this.state.outlineDrawer = false; this.state.previewDrawer = false; }
 
     // ---- formatting ----
     vnd(n) {
