@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Payobook Formula Engine — consolidated tour of everything shipped: 22 features across 6 pillars and 3 tiers, all live on production.">
+<title>Formula Engine — What We Shipped</title>
+<style>
+  :root{
+    --ink:#1E1B2E; --ink-deep:#14102E; --paper:#FAFAFE; --panel:#ffffff;
+    --i:#5A4BB0; --i600:#4A3D96; --i-soft:#EDEAF8; --i-border:#CBC2EE;
+    --line:#E8E9F3; --muted:#6B7280; --muted-2:#9AA0AE;
+    --good:#059669; --good-soft:#ECFDF5; --amber:#B45309; --amber-soft:#FEF3C7; --sky:#0369A1; --sky-soft:#E0F2FE;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{text-wrap:balance;margin:0}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--i);}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* ---------- HERO ---------- */
+  .hero{background:var(--ink-deep);color:#fff;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0);background-size:26px 26px;opacity:.6}
+  .hero .wrap{position:relative;padding:78px 24px 68px;display:grid;grid-template-columns:1.35fr .9fr;gap:48px;align-items:center}
+  .hero .eyebrow{color:#B9AEEF}
+  .hero h1{font-size:clamp(2.3rem,5.4vw,4rem);font-weight:800;letter-spacing:-.032em;line-height:1.02;margin:18px 0 0}
+  .hero h1 em{font-style:normal;color:#B9AEEF}
+  .hero p.lede{font-size:clamp(1.02rem,1.5vw,1.22rem);color:#D8D4EC;max-width:46ch;margin:20px 0 0}
+  .hero-stats{display:flex;gap:34px;margin-top:34px;flex-wrap:wrap}
+  .hero-stat b{display:block;font-family:var(--mono);font-size:2rem;font-weight:700;letter-spacing:-.02em}
+  .hero-stat span{font-size:.78rem;color:#9C93C8;text-transform:uppercase;letter-spacing:.08em}
+  .live-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:#8FE9C0;background:rgba(5,150,105,.14);border:1px solid rgba(5,150,105,.4);padding:6px 12px;border-radius:999px}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:#34D399;box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}70%{box-shadow:0 0 0 9px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+
+  /* confidence ring */
+  .ring-card{justify-self:center;text-align:center}
+  .ring{position:relative;width:230px;height:230px;margin:0 auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring-track{fill:none;stroke:rgba(255,255,255,.10);stroke-width:12}
+  .ring-fill{fill:none;stroke:#8B7BE0;stroke-width:12;stroke-linecap:round;stroke-dasharray:616;stroke-dashoffset:616;transition:stroke-dashoffset 1.9s cubic-bezier(.16,1,.3,1)}
+  .ring.go .ring-fill{stroke-dashoffset:0}
+  .ring-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring-val b{font-family:var(--mono);font-size:2.9rem;font-weight:700;letter-spacing:-.03em}
+  .ring-val small{font-size:.72rem;color:#B9AEEF;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+  .ring-cap{margin-top:18px;font-size:.86rem;color:#C9C4E4;max-width:26ch;margin-left:auto;margin-right:auto}
+  .ring-cap b{color:#fff;font-weight:600}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:74px 0}
+  .sec-head{max-width:60ch;margin-bottom:40px}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;letter-spacing:-.025em;margin-top:10px}
+  .sec-head p{color:var(--muted);font-size:1.05rem;margin:12px 0 0}
+
+  /* ---------- PILLARS ---------- */
+  .pillars{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .pillar{background:var(--panel);padding:26px 24px;display:flex;flex-direction:column;gap:12px;transition:background .18s}
+  .pillar:hover{background:var(--i-soft)}
+  .pillar .pn{font-family:var(--mono);font-size:.72rem;color:var(--muted-2);letter-spacing:.05em}
+  .pillar .ic{width:40px;height:40px;border-radius:11px;background:var(--i-soft);display:grid;place-items:center;color:var(--i)}
+  .pillar .ic svg{width:21px;height:21px}
+  .pillar h3{font-size:1.08rem;font-weight:800;letter-spacing:-.01em}
+  .pillar p{margin:0;font-size:.92rem;color:var(--muted);line-height:1.5}
+  .pillar .hero-tag{align-self:flex-start;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--i600);background:var(--i-soft);border:1px solid var(--i-border);padding:2px 8px;border-radius:999px}
+
+  /* ---------- FEATURE TIERS ---------- */
+  .tier{margin-bottom:14px}
+  .tier-label{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding-bottom:18px;margin-bottom:26px;border-bottom:1px solid var(--line)}
+  .tier-label h3{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+  .tier-label .tl-meta{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.03em}
+  .tier-label .tl-count{margin-left:auto;font-family:var(--mono);font-size:.76rem;color:var(--i600);background:var(--i-soft);padding:3px 11px;border-radius:999px}
+  .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .fcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 20px;display:flex;flex-direction:column;gap:9px;position:relative;transition:transform .14s,box-shadow .14s,border-color .14s}
+  .fcard:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(30,27,46,.09);border-color:var(--i-border)}
+  .fcard.hero{border-color:var(--i-border);box-shadow:inset 0 0 0 1px var(--i-border)}
+  .fcard-top{display:flex;align-items:center;gap:9px}
+  .fcode{font-family:var(--mono);font-size:.74rem;font-weight:700;color:var(--i600);background:var(--i-soft);padding:2px 8px;border-radius:6px;letter-spacing:.02em}
+  .fstar{margin-left:auto;font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--i);padding:2px 8px;border-radius:999px}
+  .fcard h4{margin:0;font-size:1.04rem;font-weight:800;letter-spacing:-.01em;line-height:1.25}
+  .fcard p{margin:0;font-size:.9rem;color:var(--muted);line-height:1.5}
+  .fpay{margin-top:auto;padding-top:8px;font-family:var(--mono);font-size:.72rem;color:var(--i600);letter-spacing:.01em}
+  .fpay::before{content:"→ ";color:var(--muted-2)}
+
+  /* ---------- PROOF ---------- */
+  .proof{background:var(--ink-deep);color:#fff}
+  .proof .sec-head h2{color:#fff}
+  .proof .eyebrow{color:#B9AEEF}
+  .proof .sec-head p{color:#C9C4E4}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden}
+  .metric{background:var(--ink-deep);padding:26px 22px}
+  .metric b{display:block;font-family:var(--mono);font-size:1.95rem;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .metric .mlbl{font-size:.82rem;color:#B9AEEF;margin-top:9px;line-height:1.35}
+  .metric .msub{font-size:.72rem;color:#7E77A6;margin-top:3px}
+  .proof-note{margin-top:22px;font-size:.84rem;color:#9C93C8;display:flex;align-items:center;gap:9px}
+  .proof-note svg{width:16px;height:16px;color:#34D399;flex:none}
+
+  /* ---------- ROADMAP / FOOTER ---------- */
+  .foot{background:var(--panel);border-top:1px solid var(--line)}
+  .foot .wrap{padding:64px 24px 56px}
+  .foot-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start}
+  .next-list{list-style:none;padding:0;margin:18px 0 0;display:flex;flex-direction:column;gap:12px}
+  .next-list li{display:flex;gap:12px;align-items:flex-start;font-size:.95rem}
+  .next-tag{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--amber);background:var(--amber-soft);padding:2px 8px;border-radius:6px;flex:none;margin-top:1px}
+  .ship-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 22px}
+  .ship-box h4{margin:0 0 14px;font-family:var(--mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .ship-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-size:.9rem}
+  .ship-row:first-of-type{border-top:0}
+  .ship-row code{font-family:var(--mono);font-size:.82rem;color:var(--i600);font-weight:600}
+  .ship-row .ok{color:var(--good);font-family:var(--mono);font-size:.78rem;display:inline-flex;align-items:center;gap:5px}
+  .ship-row .ok svg{width:13px;height:13px}
+  .footline{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted-2);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+  /* reveal */
+  .rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s cubic-bezier(.16,1,.3,1)}
+  .rv.in{opacity:1;transform:none}
+
+  @media (max-width:880px){
+    .hero .wrap{grid-template-columns:1fr;gap:36px;padding:56px 24px 52px}
+    .ring-card{order:-1}
+    .pillar-grid{grid-template-columns:1fr 1fr}
+    .fgrid{grid-template-columns:1fr 1fr}
+    .metrics{grid-template-columns:1fr 1fr}
+    .foot-grid{grid-template-columns:1fr;gap:34px}
+  }
+  @media (max-width:560px){
+    .pillar-grid,.fgrid,.metrics{grid-template-columns:1fr}
+    .hero-stats{gap:24px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important}
+    .rv{opacity:1;transform:none;transition:none}
+    .ring-fill{transition:none;stroke-dashoffset:0}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Payobook · Formula Engine</span>
+      <h1>The payroll engine that <em>proves itself</em> before it runs a single payslip.</h1>
+      <p class="lede">An Excel-first, formula-driven rewrite of payroll — built and shipped across three tiers, validated cell-by-cell against real production data.</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><b class="num">22</b><span>features shipped</span></div>
+        <div class="hero-stat"><b class="num">6</b><span>product pillars</span></div>
+        <div class="hero-stat"><b class="num">3</b><span>delivery tiers</span></div>
+        <div class="hero-stat" style="align-self:center"><span class="live-badge"><span class="live-dot"></span>Live on production</span></div>
+      </div>
+    </div>
+    <div class="ring-card">
+      <div class="ring" id="ring">
+        <svg width="230" height="230" viewBox="0 0 230 230">
+          <circle class="ring-track" cx="115" cy="115" r="98"></circle>
+          <circle class="ring-fill" cx="115" cy="115" r="98"></circle>
+        </svg>
+        <div class="ring-val"><b class="num">100%</b><small>verified</small></div>
+      </div>
+      <p class="ring-cap"><b>Shadow Parallel Run</b> — recompute a client's historical payroll, verify every cell, then issue a confidence certificate.</p>
+    </div>
+  </div>
+</header>
+
+<!-- ============ PILLARS ============ -->
+<section class="pillars">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The architecture</span>
+      <h2>Six pillars hold the engine up</h2>
+      <p>Everything shipped maps back to one of these. No salary structures, no black boxes — the client's own Excel logic becomes the source of truth, made trustworthy.</p>
+    </div>
+    <div class="pillar-grid rv">
+      <div class="pillar">
+        <span class="pn">Pillar 01</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg></div>
+        <h3>Grid Studio</h3>
+        <p>An Excel-superset configuration grid — type formulas, drag-fill, bulk-edit, all in the browser.</p>
+      </div>
+      <div class="pillar">
+        <span class="pn">Pillar 02</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.4"/><circle cx="19" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M6.7 7.4 11 15.6M17.3 7.4 13 15.6"/></svg></div>
+        <h3>Formula Intelligence</h3>
+        <p>A deterministic dependency X-ray: trace every reference, see a change's blast radius before you make it.</p>
+      </div>
+      <div class="pillar">
+        <span class="pn">Pillar 03</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v5c0 5 3.4 8 8 10 4.6-2 8-5 8-10V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <h3>Migration Confidence</h3>
+        <span class="hero-tag">Hero feature</span>
+        <p>Shadow Parallel Run recomputes historical payroll and verifies it cell-by-cell — proof, not promises.</p>
+      </div>
+      <div class="pillar">
+        <span class="pn">Pillar 04</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3.4"/><path d="m6.7 6.7 1.6 1.6M15.7 15.7l1.6 1.6M17.3 6.7l-1.6 1.6M8.3 15.7l-1.6 1.6"/></svg></div>
+        <h3>PayAI Everywhere</h3>
+        <p>Plain-language help in English &amp; Vietnamese, on a cloud→local→deterministic fallback ladder that never invents a number.</p>
+      </div>
+      <div class="pillar">
+        <span class="pn">Pillar 05</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 6h5a5 5 0 0 1 5 5M7 18h5a5 5 0 0 0 5-5"/></svg></div>
+        <h3>Mapping Canvas</h3>
+        <p>One wire-the-plugs surface for four jobs: mid→end cycles, API fields, import columns, employee→scheme.</p>
+      </div>
+      <div class="pillar">
+        <span class="pn">Pillar 06</span>
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v5c0 5 3.4 8 8 10 4.6-2 8-5 8-10V6l-8-3z"/><path d="M12 8v4M12 15.5h.01"/></svg></div>
+        <h3>Trust Layer</h3>
+        <p>Versioning, simulate-before-activate, branches, releases and sign-off — every change is reviewable and reversible.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The catalog</span>
+      <h2>Twenty-two features, three tiers</h2>
+      <p>Each shipped to production and validated live against the Vietnam demo world — ~4,500 employees, 30,500 formula-computed payslips.</p>
+    </div>
+
+    <!-- Tier 1 -->
+    <div class="tier rv">
+      <div class="tier-label">
+        <h3>Foundation</h3>
+        <span class="tl-meta">Phase 1 · the grid, the intelligence, the confidence to migrate</span>
+        <span class="tl-count">5 shipped</span>
+      </div>
+      <div class="fgrid">
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F1</span></div><h4>Formula Intelligence</h4><p>Trace every dependency and see the blast radius of a change before you commit it.</p><span class="fpay">Impact counts match a hand-traced graph</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F2</span></div><h4>Grid Studio</h4><p>An Excel-superset grid: type formulas, drag-fill references, bulk-edit components.</p><span class="fpay">85 columns, console-clean</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F3</span></div><h4>Import Confidence</h4><p>Preview an Excel import with per-cell confidence, flag broken references, apply fixes.</p><span class="fpay">Fix raised confidence 0.65 → 0.87</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F4</span></div><h4>Smart Mapping</h4><p>Auto-suggest cycle mappings, accept in one click, batch-test with explicit path errors.</p><span class="fpay">52 exact pairs, accept-all</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F5</span></div><h4>PayAI Assist</h4><p>Plain-language formula explanations in EN &amp; VI, with a deterministic floor when offline.</p><span class="fpay">Never emits a fabricated number</span></div>
+      </div>
+    </div>
+
+    <!-- Tier 2 -->
+    <div class="tier rv" style="margin-top:52px">
+      <div class="tier-label">
+        <h3>Trust &amp; Power</h3>
+        <span class="tl-meta">Tier 2 · the tools that make an engine safe to run a business on</span>
+        <span class="tl-count">10 shipped</span>
+      </div>
+      <div class="fgrid">
+        <div class="fcard hero"><div class="fcard-top"><span class="fcode">F6</span><span class="fstar">Hero</span></div><h4>Shadow Parallel Run</h4><p>Recompute a client's historical payroll through the engine, verify cell-by-cell, cluster any discrepancies, issue a confidence certificate.</p><span class="fpay">100% on 7,800/7,800 cells</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F7</span></div><h4>Version History</h4><p>Every formula edit versioned with a token-level diff and one-click restore; activation milestones anchor the timeline.</p><span class="fpay">Snapshot-before-write, never lossy</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F8</span></div><h4>Simulate Before Activate</h4><p>Run a draft change against last period's real inputs and see exactly who moves, and by how much.</p><span class="fpay">2,949 payslips in ~1.7 min</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F9</span></div><h4>Payslip Studio</h4><p>Drag-and-drop what the payslip prints, sectioned and colour-coded, with a live preview through the real engine.</p><span class="fpay">EN / VI print lens</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F10</span></div><h4>Mapping Canvas</h4><p>One bezier-wired board for four mapping surfaces — cycle, API fields, import columns, employee→scheme.</p><span class="fpay">4 of 4 adapters live</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F11</span></div><h4>Bracket Tables</h4><p>Progressive tax schedules as <code style="font-family:var(--mono);font-size:.85em">BRACKET(table, income)</code>; typed cells render %/₫ correctly.</p><span class="fpay">Matches hand-written PIT to the cent</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F12</span></div><h4>Raw-Excel Mode</h4><p>Flip any formula to an editable text view — same live validation, saved verbatim.</p><span class="fpay">Zero-transformation write</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F13</span></div><h4>Problems Rail</h4><p>One ranked list of everything wrong or smelly — cycles, dead code, magic numbers — plus safe component rename.</p><span class="fpay">Lint runs without computing a payslip</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F14</span></div><h4>Scenario Columns</h4><p>What-if overlays as ghost columns beside a component — value them live, then promote or discard.</p><span class="fpay">Rule untouched until promote</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">F15</span></div><h4>Comments &amp; Reviews</h4><p>Per-component notes; a note flagged for review surfaces in Problems until it's resolved.</p><span class="fpay">Resolved, never deleted</span></div>
+      </div>
+    </div>
+
+    <!-- Tier 3 -->
+    <div class="tier rv" style="margin-top:52px">
+      <div class="tier-label">
+        <h3>Advanced</h3>
+        <span class="tl-meta">Tier 3 · change management &amp; multi-configuration operations for bureaus</span>
+        <span class="tl-count">7 shipped</span>
+      </div>
+      <div class="fgrid">
+        <div class="fcard"><div class="fcard-top"><span class="fcode">B1</span></div><h4>Execution Replay</h4><p>Step through a payslip's computation in dependency order, watching each component light up with its value.</p><span class="fpay">0 dependency-order violations</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">B2</span></div><h4>Config Branches</h4><p>Fork a live config, trial a risky change in isolation, then merge back as a release — with conflict detection.</p><span class="fpay">Merge seals a signed-off release</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">B3</span></div><h4>Release Bundles</h4><p>Group every change since the last milestone into a reviewable, signed-off release with a drafted changelog.</p><span class="fpay">Diffs re-derived, never duplicated</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">B4</span></div><h4>Legislation Packs</h4><p>Roll a statutory change — tax relief, insurance caps — across every configuration in one review.</p><span class="fpay">8,956 employees, one rollout</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">B5</span></div><h4>Scheme Variants</h4><p>One master scheme, many synced variants: edit once, push everywhere, keep protected local overrides.</p><span class="fpay">Overrides survive every sync</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">B6</span></div><h4>Bureau Cockpit</h4><p>Every configuration's health at a glance — scores, open problems, pending changes, employee coverage.</p><span class="fpay">Attention-first across 12 configs</span></div>
+        <div class="fcard"><div class="fcard-top"><span class="fcode">B8</span></div><h4>What-if Sliders</h4><p>Slide a rate or cap and project the payroll cost across everyone, annualized in real time.</p><span class="fpay">Sampled preview → run on everyone</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROOF ============ -->
+<section class="proof">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="eyebrow">The evidence</span>
+      <h2>Every feature validated live</h2>
+      <p>Not a staging mock — measured against real production data on the Payobook Vietnam ledger, with every test cleaned up to zero residue.</p>
+    </div>
+    <div class="metrics rv">
+      <div class="metric"><b class="num">999/1000</b><div class="mlbl">sampled payslips recompute cent-perfect</div><div class="msub">the lone miss is a pre-existing data anomaly</div></div>
+      <div class="metric"><b class="num">₫2.28T</b><div class="mlbl">reconciled, unchanged after rollback</div><div class="msub">across 673,173 payslip lines</div></div>
+      <div class="metric"><b class="num">100%</b><div class="mlbl">Shadow-Run confidence on unmodified payroll</div><div class="msub">7,800 of 7,800 cells verified</div></div>
+      <div class="metric"><b class="num">30,500</b><div class="mlbl">formula-computed payslips in the demo world</div><div class="msub">~4,500 employees · EN / VI</div></div>
+    </div>
+    <p class="proof-note rv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg> Write-path features proven end-to-end, then rolled back — the demo world is left byte-identical every time.</p>
+  </div>
+</section>
+
+<!-- ============ ROADMAP / FOOTER ============ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="rv">
+        <span class="eyebrow">What's next</span>
+        <h2 style="font-size:clamp(1.5rem,2.6vw,2rem);font-weight:800;letter-spacing:-.02em;margin-top:10px">Tier 3 is 7 of 9. Then the moonshots.</h2>
+        <ul class="next-list">
+          <li><span class="next-tag">B7</span><span><b>Client portal</b> — a read-only trust surface for the client whose payroll you migrated.</span></li>
+          <li><span class="next-tag">B9</span><span><b>Reserved</b> — the final Tier-3 capability, scoped next.</span></li>
+          <li><span class="next-tag">M1–M7</span><span><b>Phase-4 moonshots</b> — pay-change explainer and probabilistic payroll, designed at implementation grade.</span></li>
+        </ul>
+      </div>
+      <div class="ship-box rv">
+        <h4>Shipped &amp; deployed</h4>
+        <div class="ship-row"><code>pb_hr_payroll_formula</code><span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>19.0.1.17.0</span></div>
+        <div class="ship-row"><code>pb_formula_studio</code><span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>19.0.1.32.0</span></div>
+        <div class="ship-row"><code>pb_coach</code><span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>19.0.1.1.0</span></div>
+      </div>
+    </div>
+    <div class="footline">
+      <span>Payobook · Formula Engine — Odoo 19 · built Excel-first</span>
+      <span>Foundation → Trust &amp; Power → Advanced</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var ring = document.getElementById("ring");
+    if(ring){ if(reduce){ ring.classList.add("go"); } else { setTimeout(function(){ ring.classList.add("go"); }, 250); } }
+    var items = document.querySelectorAll(".rv");
+    if(reduce || !("IntersectionObserver" in window)){ items.forEach(function(el){ el.classList.add("in"); }); return; }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, {threshold:.12, rootMargin:"0px 0px -8% 0px"});
+    items.forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</body>
+</html>
