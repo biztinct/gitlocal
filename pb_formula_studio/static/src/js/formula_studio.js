@@ -1284,6 +1284,15 @@ export class PbFormulaStudio extends Component {
         layer.style.width = wr.width + "px"; layer.style.height = wr.height + "px";
         const c = this.selected;
         if (!this.state.arrowsOn || !card || !outline || !editor || !c || c.type !== "formula") return;
+        // a hidden or off-canvas panel (display:none, drawer mode) has a useless
+        // rect — drawing to it produces a line sweeping across the screen
+        const anchorable = (el) => {
+            if (!el) return false;
+            const r = el.getBoundingClientRect();
+            const st = getComputedStyle(el);
+            return r.width > 5 && st.visibility !== "hidden" && st.position !== "absolute";
+        };
+        if (!anchorable(outline)) return;
         const deps = this.depColsOf(c);
         const cardR = card.getBoundingClientRect(), olR = outline.getBoundingClientRect(), edR = editor.getBoundingClientRect();
         // anchor arrowheads near the editor's vertical centre so they stay visible while scrolling
@@ -1307,7 +1316,7 @@ export class PbFormulaStudio extends Component {
             this._arrow(layer, sx, sy, tipx, ty, color, () => this.scrollToCol(col), (7.5 + i * 0.7), clamped ? [sx, sy] : null);
         });
         // ---- output arrow: right edge of the card -> outcome row in the live preview ----
-        if (preview) {
+        if (preview && anchorable(preview)) {
             const outRow = preview.querySelector(`.tp-row[data-col="${c.col}"]`);
             const pvR = preview.getBoundingClientRect();
             const sx = cardR.right - wr.left + 4;
