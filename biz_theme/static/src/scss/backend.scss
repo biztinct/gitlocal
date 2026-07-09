@@ -1,0 +1,1562 @@
+// Việt Úc Clinic Theme - Backend Styles
+// Additional styling for healthcare-specific UI elements
+
+// Light, clean healthcare backgrounds
+body {
+    font-family: var(--vu-font-family-base);
+    background: var(--vu-surface-app);
+    color: var(--vu-text-primary);
+    font-size: var(--vu-font-size-sm);
+    line-height: var(--vu-line-height-normal);
+}
+
+.o_action_manager .o_view_controller .o_content {
+    background-color: var(--vu-surface-panel);
+    padding: var(--vu-space-md);
+}
+
+.o_control_panel {
+    background-color: var(--vu-surface-muted);
+    border-bottom: 1px solid var(--vu-border-soft);
+    box-shadow: var(--vu-shadow-sm);
+    padding-top: var(--vu-space-sm);
+    padding-bottom: var(--vu-space-sm);
+}
+
+// Ensure proper link colors
+a {
+    color: var(--vu-brand-primary);
+    transition: color var(--vu-transition-fast);
+
+    &:hover {
+        color: var(--vu-brand-primary-dark);
+    }
+}
+
+// Clean card styling for healthcare forms.
+// NOTE: scoped to :not(.vu-form) — the VU Form Engine owns all styling inside
+// vu-forms (vu_form_engine.scss). These legacy rules remain for the contexts
+// the engine deliberately skips: dialogs, Settings, and excluded views.
+// This removes the old !important tug-of-war (single owner per context).
+.o_form_renderer:not(.vu-form) .o_form_sheet_bg {
+    background: var(--vu-surface-panel);
+    padding: var(--vu-space-sm) var(--vu-space-lg) var(--vu-space-lg);
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.o_form_renderer:not(.vu-form) .o_form_sheet {
+    @include vu-card(var(--vu-space-lg));
+    font-family: var(--vu-font-family-base);
+    border: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --formView-sheet-border-width: 0;
+    --formView-sheet-margin-x: 0;
+    border-width: 0 !important;
+}
+
+.o_form_renderer:not(.vu-form) .o_form_sheet::after,
+.o_form_renderer:not(.vu-form) .o_form_sheet_bg::after {
+    display: none !important;
+}
+
+// Keep the Access Rights tab using the native table layout
+.o_form_view [data-name="access_rights"] .o_group,
+.o_form_view [data-name="access_rights"] .o_group.row,
+.o_form_view [data-name="access_rights"] .o_group.o_group_no_card,
+.o_form_view [data-name="access_rights"] .kept-for-backward-compat {
+    display: table !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 var(--vu-space-md) !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+// Legacy form-group card system — scoped to non-vu forms (engine owns vu-forms)
+.o_form_renderer:not(.vu-form) .o_group:not(.o_inner_group):not(:has(.o_field_widget[name="groups_id"])),
+.o_form_renderer:not(.vu-form) .kept-for-backward-compat:not(:has(.o_field_widget[name="groups_id"])) {
+    display: block;
+    width: 100%;
+    padding: var(--vu-space-md);
+    margin-bottom: var(--vu-space-sm);
+    background: var(--vu-surface-card);
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.o_form_renderer:not(.vu-form) .o_group:not(.o_inner_group):has(>.o_group.row:not(.o_inner_group)):not(:has(.o_field_widget[name="groups_id"])),
+.o_form_renderer:not(.vu-form) .o_group:not(.o_inner_group):has(>.o_inner_group):not(:has(.o_field_widget[name="groups_id"])) {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.o_form_renderer:not(.vu-form) .o_group:not(.o_inner_group)>table {
+    width: 100%;
+}
+
+.o_form_renderer:not(.vu-form) .o_group.row:not(.o_inner_group):not(:has(.o_field_widget[name="groups_id"])) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--vu-space-lg);
+    justify-content: flex-start;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: var(--vu-space-md);
+    padding-right: var(--vu-space-md);
+    align-items: stretch !important;
+}
+
+.o_form_renderer:not(.vu-form) .o_group.row:not(.o_inner_group):not(:has(.o_field_widget[name="groups_id"]))>.o_inner_group {
+    flex: 1 1 420px;
+    min-width: 320px;
+    width: 100% !important;
+    max-width: none !important;
+    --bs-rows: auto;
+    grid-template-rows: auto;
+    grid-auto-rows: max-content;
+    align-content: flex-start !important;
+    justify-content: flex-start;
+    padding: var(--vu-space-sm);
+    background: var(--vu-surface-card);
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-md);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+// Tighter row gap inside inner groups for compact form fields (non-vu)
+.o_form_renderer:not(.vu-form) .o_inner_group {
+    gap: 2px var(--vu-space-sm) !important;
+    margin-bottom: var(--vu-space-xs) !important;
+}
+
+// =============================================================================
+// CHATTER — Match compact body font
+// =============================================================================
+.oe_chatter,
+.o-mail-Chatter {
+    font-size: 0.8125rem !important;   // Match body 13px
+    line-height: var(--vu-line-height-normal);
+}
+
+.oe_chatter .o-mail-Thread .o-mail-Message-body,
+.oe_chatter .o-mail-Composer,
+.oe_chatter .o_chatter_button_icon,
+.oe_chatter .o_chatter_button_text,
+.o-mail-Chatter .o-mail-Thread,
+.o-mail-Chatter .o-mail-Message-body,
+.o-mail-Chatter .o-mail-Chatter-topbar,
+.o-mail-Chatter .o-mail-Chatter-content,
+.o-mail-Chatter .o-mail-Chatter-sendMessage,
+.o-mail-Chatter .o-mail-Chatter-logNote,
+.o-mail-Chatter .o-mail-Chatter-activity,
+.o-mail-Chatter .o-mail-Message-textContent {
+    font-size: inherit !important;
+    line-height: inherit;
+}
+
+// Chatter topbar buttons (Send message, Log note, Activity)
+.o-mail-Chatter .o-mail-Chatter-topbar .btn,
+.o-mail-Chatter .o-mail-Chatter-topbar button {
+    font-size: 0.75rem !important;
+    padding: 3px 10px !important;
+}
+
+// Activity items
+.o-mail-Activity {
+    font-size: 0.8125rem !important;
+}
+
+// Composer text area
+.o-mail-Composer .o-mail-Composer-input,
+.o-mail-Composer textarea {
+    font-size: 0.8125rem !important;
+}
+
+// Message author name / date
+.o-mail-Message-header,
+.o-mail-Message-author,
+.o-mail-Message-date {
+    font-size: 0.75rem !important;
+}
+
+// Planned Activities heading
+.o-mail-Chatter .o-mail-Activity-summary,
+.o-mail-Chatter h4,
+.o-mail-Chatter h5 {
+    font-size: 0.8125rem !important;
+}
+
+.o_form_view .o_group.o_group_no_card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--vu-space-lg);
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.o_form_view .o_horizontal_separator {
+    box-shadow: none !important;
+    border: 0 !important;
+    background: transparent !important;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: .05em;
+    color: var(--vu-text-secondary);
+    padding-bottom: var(--vu-space-xs);
+    padding-left: var(--vu-space-lg);
+    padding-right: var(--vu-space-lg);
+    margin: var(--vu-space-xs) 0 !important;
+}
+
+.o_form_view .o_horizontal_separator::after,
+.o_form_view .o_horizontal_separator::before {
+    display: none !important;
+}
+
+// Fix padding for standalone elements outside of groups (separators, radio buttons, etc.)
+// These elements appear directly on the form sheet without a containing <group> tag
+.o_form_sheet>.o_field_widget,
+.o_form_sheet>.o_wrap_field,
+.o_form_sheet>div:not(.o_group):not(.vu-section):not(.vu-card):not(.oe_title):not(.o_notebook):not(.alert):not(.vu-section-grid)>.o_field_widget,
+.o_dialog .modal-body>.o_field_widget,
+.o_dialog .modal-body>.o_wrap_field {
+    padding-left: var(--vu-space-lg);
+    padding-right: var(--vu-space-lg);
+    margin-bottom: var(--vu-space-md);
+}
+
+// Radio widget horizontal layout with proper padding
+.o_form_view .o_field_widget.o_field_radio,
+.o_dialog .o_field_widget.o_field_radio {
+    padding-left: var(--vu-space-lg);
+    padding-right: var(--vu-space-lg);
+
+    .o_radio_item {
+        margin-right: var(--vu-space-md);
+    }
+}
+
+// Ensure groups that follow separators have consistent left padding
+.o_form_sheet>.o_group:not(:first-child) {
+    padding-left: var(--vu-space-md);
+    padding-right: var(--vu-space-md);
+}
+
+.o_form_view .o_notebook {
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.o_form_view .o_notebook .nav-tabs {
+    border-bottom: 0 !important;
+}
+
+.vu-section .o_group,
+.vu-card .o_group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--vu-space-lg);
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.vu-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vu-space-sm);
+    padding: var(--vu-space-sm) var(--vu-space-md);
+    background: var(--vu-surface-card);
+    border-radius: var(--vu-radius-md);
+    border: 1px solid var(--vu-border-soft);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.vu-section:has(>.vu-section-grid) {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.vu-section:not(:has(.vu-card:has(.o_wrap_field:not(.o_invisible_modifier), .o_row:not(.o_invisible_modifier), .o_col:not(.o_invisible_modifier), .o_field_widget:not(.o_invisible_modifier), .o_address_map_widget, field))) {
+    display: none;
+}
+
+.vu-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vu-space-md);
+}
+
+.vu-card:not(:has(.o_wrap_field:not(.o_invisible_modifier), .o_row:not(.o_invisible_modifier), .o_col:not(.o_invisible_modifier), .o_field_widget:not(.o_invisible_modifier), .o_address_map_widget, field)) {
+    display: none;
+}
+
+.vu-section-grid:not(:has(.vu-card:has(.o_wrap_field:not(.o_invisible_modifier), .o_row:not(.o_invisible_modifier), .o_col:not(.o_invisible_modifier), .o_field_widget:not(.o_invisible_modifier), .o_address_map_widget, field))) {
+    display: none;
+}
+
+.vu-section__title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--vu-text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-xs);
+}
+
+// Subtitle text under section title
+.vu-section__title + div,
+.vu-section__title + span,
+.vu-section__title + p {
+    font-size: 0.75rem;
+    color: var(--vu-text-secondary);
+    margin-top: -2px;
+    margin-bottom: 2px;
+}
+
+.vu-section__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--vu-surface-hover);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: var(--vu-brand-primary);
+
+    &::after {
+        content: '';
+        width: 16px;
+        height: 16px;
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        -webkit-mask-size: contain;
+        background-color: currentColor;
+    }
+}
+
+.vu-section__icon[data-icon="map-pin"] {
+    background: rgba(8, 145, 178, 0.15);
+    color: #155E75;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/map-pin.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/map-pin.svg');
+    }
+}
+
+.vu-section__icon[data-icon="heart-pulse"] {
+    background: rgba(23, 107, 71, 0.15);
+    color: #176B47;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/heart-pulse.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/heart-pulse.svg');
+    }
+}
+
+.vu-section__icon[data-icon="stethoscope"] {
+    background: rgba(106, 27, 154, 0.15);
+    color: #6A1B9A;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/stethoscope.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/stethoscope.svg');
+    }
+}
+
+.vu-section__icon[data-icon="id-card"] {
+    background: rgba(251, 140, 0, 0.15);
+    color: #D46E00;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/id-card.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/id-card.svg');
+    }
+}
+
+.vu-section__icon[data-icon="life-ring"] {
+    background: rgba(63, 81, 181, 0.15);
+    color: #3F51B5;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/life-ring.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/life-ring.svg');
+    }
+}
+
+.vu-section__icon[data-icon="users-group"] {
+    background: rgba(0, 150, 136, 0.15);
+    color: #009688;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/users-group.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/users-group.svg');
+    }
+}
+
+.vu-section__icon[data-icon="file-text"] {
+    background: rgba(96, 125, 139, 0.15);
+    color: #607D8B;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/file-text.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/file-text.svg');
+    }
+}
+
+.vu-section__icon[data-icon="clipboard-list"] {
+    background: rgba(0, 150, 136, 0.12);
+    color: #00796B;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/clipboard-list.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/clipboard-list.svg');
+    }
+}
+
+.vu-section__icon[data-icon="credit-card"] {
+    background: rgba(25, 118, 210, 0.12);
+    color: #1E5FAF;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/credit-card.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/credit-card.svg');
+    }
+}
+
+.vu-section__icon[data-icon="shield-check"] {
+    background: rgba(56, 142, 60, 0.12);
+    color: #2E7D32;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/shield-check.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/shield-check.svg');
+    }
+}
+
+.vu-section__icon[data-icon="history"] {
+    background: rgba(251, 192, 45, 0.2);
+    color: #F9A825;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/history.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/history.svg');
+    }
+}
+
+.vu-section__icon[data-icon="package"] {
+    background: rgba(255, 152, 0, 0.15);
+    color: #EF6C00;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/package.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/package.svg');
+    }
+}
+
+.vu-section__icon[data-icon="timeline"] {
+    background: rgba(84, 110, 122, 0.15);
+    color: #455A64;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/timeline.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/timeline.svg');
+    }
+}
+
+.vu-section__icon[data-icon="building"] {
+    background: rgba(90, 75, 176, 0.12);
+    color: #1B4F91;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/building-2.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/building-2.svg');
+    }
+}
+
+.vu-section__icon[data-icon="book-open"] {
+    background: rgba(106, 27, 154, 0.12);
+    color: #6A1B9A;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/book-open.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/book-open.svg');
+    }
+}
+
+.vu-section__icon[data-icon="globe"] {
+    background: rgba(2, 119, 189, 0.12);
+    color: #0E5C88;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/globe.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/globe.svg');
+    }
+}
+
+.vu-section__icon[data-icon="pill"] {
+    background: rgba(236, 64, 122, 0.15);
+    color: #C2185B;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/pill.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/pill.svg');
+    }
+}
+
+.vu-section__icon[data-icon="alert-triangle"] {
+    background: rgba(251, 140, 0, 0.15);
+    color: #BF5B04;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/alert-triangle.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/alert-triangle.svg');
+    }
+}
+
+.vu-section__icon[data-icon="activity"] {
+    background: rgba(0, 150, 136, 0.12);
+    color: #00695C;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/activity.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/activity.svg');
+    }
+}
+
+.vu-section__icon[data-icon="tag"] {
+    background: rgba(158, 158, 158, 0.18);
+    color: #424242;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/tag.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/tag.svg');
+    }
+}
+
+.vu-section__icon[data-icon="calendar"] {
+    background: rgba(33, 150, 243, 0.15);
+    color: #1E88E5;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/calendar.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/calendar.svg');
+    }
+}
+
+.vu-section__icon[data-icon="syringe"] {
+    background: rgba(0, 137, 123, 0.15);
+    color: #00796B;
+
+    &::after {
+        mask-image: url('/biz_theme/static/src/img/lucide/syringe.svg');
+        -webkit-mask-image: url('/biz_theme/static/src/img/lucide/syringe.svg');
+    }
+}
+
+.vu-section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--vu-space-lg);
+    width: 100%;
+}
+
+.vu-card {
+    @include vu-card(var(--vu-space-md));
+    display: flex;
+    flex-direction: column;
+    gap: var(--vu-space-sm);
+    box-shadow: 0 1px 4px rgba(15, 35, 75, 0.06);
+}
+
+.vu-card__title {
+    display: flex;
+    align-items: center;
+    gap: var(--vu-space-sm);
+    font-size: var(--vu-font-size-md);
+    font-weight: 600;
+    color: var(--vu-text-secondary);
+}
+
+.vu-field-label {
+    font-size: var(--vu-font-size-sm);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--vu-text-secondary);
+    margin-bottom: var(--vu-space-xxs);
+}
+
+.vu-field-value {
+    font-size: var(--vu-font-size-lg);
+    color: var(--vu-text-primary);
+    font-weight: 500;
+}
+
+.vu-action-bar {
+    position: sticky;
+    bottom: 0;
+    background: rgba(var(--vu-surface-card), 0.95);
+    padding: var(--vu-space-md) var(--vu-space-lg);
+    border-top: 1px solid var(--vu-border-soft);
+    box-shadow: var(--vu-shadow-sm);
+    display: flex;
+    gap: var(--vu-space-sm);
+    justify-content: flex-end;
+    z-index: 5;
+}
+
+// Solid indigo primary buttons (design system: one solid brand colour).
+.btn-primary,
+.o_form_button_save {
+    background: #5A4BB0;
+    color: #fff;
+    border: 1px solid #5A4BB0;
+    border-radius: var(--vu-radius-sm);
+    box-shadow: none;
+    padding: 6px 16px;
+    font-weight: 600;
+    font-size: var(--vu-font-size-sm);
+    transition: background var(--vu-transition-fast), color var(--vu-transition-fast), border-color var(--vu-transition-fast);
+
+    &:hover {
+        background: #4A3D96;
+        color: #fff;
+        border-color: #4A3D96;
+    }
+}
+
+.btn-secondary,
+.o_form_button_cancel {
+    background: var(--vu-surface-muted);
+    border: 1px solid var(--vu-border-soft);
+    border-radius: var(--vu-radius-sm);
+    color: var(--vu-text-secondary);
+    padding: 6px 16px;
+    font-size: var(--vu-font-size-sm);
+    transition: background var(--vu-transition-fast), color var(--vu-transition-fast);
+
+    &:hover {
+        background: var(--vu-surface-hover);
+    }
+}
+
+// Professional selection highlighting
+.o_list_view .o_data_row.o_selected_row,
+.o_list_view .o_data_row:focus {
+    background-color: rgba(90, 75, 176, 0.08); // Deep Blue highlight
+}
+
+// Healthcare Badge Colors (ID, Age, etc.) - Professional pill-shaped badges
+.badge.bg-info {
+    background: #EDEAF8 !important;
+    color: #241F52 !important;
+    border: 1.5px solid #0891B2 !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 3px 10px !important;
+    box-shadow: 0 1px 3px rgba(8, 145, 178, 0.12) !important;
+    transition: all 0.2s ease !important;
+
+    strong {
+        color: #5A4BB0 !important;
+        font-weight: 700 !important;
+        margin-right: 3px;
+    }
+
+    .o_field_widget {
+        display: inline-block !important;
+        background: transparent !important;
+        border: none !important;
+        color: #241F52 !important;
+        padding: 0 !important;
+        margin: 0 0 0 3px !important;
+        width: 100px !important;
+        min-width: 80px !important;
+        max-width: 160px !important;
+        font-size: 13px !important;
+
+        input,
+        span {
+            background: transparent !important;
+            border: none !important;
+            color: #241F52 !important;
+            padding: 0 !important;
+            width: 100px !important;
+            min-width: 80px !important;
+            box-shadow: none !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+        }
+    }
+
+    &:hover {
+        box-shadow: 0 2px 6px rgba(8, 145, 178, 0.2) !important;
+        transform: translateY(-1px);
+    }
+}
+
+.badge.bg-secondary {
+    background: #EDEAF8 !important;
+    color: #155E75 !important;
+    border: 1.5px solid #5A4BB0 !important;
+    border-radius: 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    padding: 3px 10px !important;
+    box-shadow: 0 1px 3px rgba(90, 75, 176, 0.12) !important;
+    transition: all 0.2s ease !important;
+
+    strong {
+        color: #5A4BB0 !important;
+        font-weight: 700 !important;
+        margin-right: 3px;
+    }
+
+    .o_field_widget {
+        display: inline-block !important;
+        background: transparent !important;
+        border: none !important;
+        color: #155E75 !important;
+        padding: 0 !important;
+        margin: 0 0 0 3px !important;
+        width: 100px !important;
+        min-width: 80px !important;
+        max-width: 160px !important;
+        font-size: 13px !important;
+
+        input,
+        span {
+            background: transparent !important;
+            border: none !important;
+            color: #155E75 !important;
+            padding: 0 !important;
+            width: 100px !important;
+            min-width: 80px !important;
+            box-shadow: none !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+        }
+    }
+
+    &:hover {
+        box-shadow: 0 2px 6px rgba(90, 75, 176, 0.2) !important;
+        transform: translateY(-1px);
+    }
+}
+
+// Modern tabs
+.o_notebook {
+    border-bottom: 1px solid var(--vu-border-soft);
+    margin-bottom: var(--vu-space-md);
+
+    >ul {
+        display: flex;
+        gap: var(--vu-space-md);
+        border: none;
+        padding-bottom: var(--vu-space-xs);
+
+        >li>a {
+            font-weight: 600;
+            letter-spacing: .04em;
+            color: var(--vu-text-secondary);
+            padding: var(--vu-space-xs) 0;
+            position: relative;
+            transition: color var(--vu-transition-fast);
+
+            &::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: -6px;
+                height: 3px;
+                background: transparent;
+                border-radius: 99px;
+                transition: background var(--vu-transition-fast), transform var(--vu-transition-fast);
+                transform: scaleX(0);
+            }
+        }
+
+        >li.ui-tabs-active>a {
+            color: var(--vu-brand-primary);
+
+            &::after {
+                background: var(--vu-brand-primary);
+                transform: scaleX(1);
+            }
+        }
+    }
+}
+
+// Native focus: brand border, no harsh ring (underline-style)
+.o_form_view .o_field_widget input:focus,
+.o_form_view .o_field_widget textarea:focus,
+.o_form_view .o_field_widget select:focus {
+    box-shadow: none !important;
+    outline: none !important;
+    border-color: var(--vu-brand-primary) !important;
+}
+
+// Patient badges smaller/right aligned
+.o_form_patient_record .patient-badges {
+    display: inline-flex;
+    gap: var(--vu-space-sm);
+    margin-left: auto;
+}
+
+.o_form_patient_record .patient-badge {
+    background-color: var(--vu-surface-muted) !important;
+    color: var(--vu-brand-primary) !important;
+    border: 2px solid var(--vu-brand-primary) !important;
+    border-radius: 999px;
+    padding: 6px 16px !important;
+    font-size: var(--vu-font-size-md) !important;
+    font-weight: 600 !important;
+}
+
+.o_form_patient_record .patient-badge.badge-age {
+    color: #BF5B04 !important;
+    border-color: #BF5B04 !important;
+}
+
+// Icon utilities
+.vu-icon {
+    width: var(--vu-icon-size);
+    height: var(--vu-icon-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vu-brand-primary);
+
+    &--success {
+        color: var(--vu-status-success);
+    }
+
+    &--info {
+        color: var(--vu-status-info);
+    }
+
+    &--warning {
+        color: var(--vu-status-warning);
+    }
+
+    &--danger {
+        color: var(--vu-status-danger);
+    }
+}
+
+// Fix for User Roles form layout text wrapping
+.o_user_role_groups {
+    // Ensure the group takes full width
+    width: 100% !important;
+
+    // Target the inner groups (columns) to ensure they have enough width
+    .o_inner_group {
+        min-width: 450px !important;
+        flex: 1 1 auto !important;
+    }
+
+    // Prevent premature wrapping on checkbox labels
+    .form-check {
+        width: 100%;
+        padding-right: var(--vu-space-md);
+
+        .form-check-label {
+            white-space: nowrap !important;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+        }
+    }
+}
+
+// =============================================================================
+// MODERN FORM HEADER BUTTONS - Universal Styling
+// =============================================================================
+// Applies to all form header buttons across health_crm, health_fieldservice, etc.
+// Design: Pill-shaped with light backgrounds, dark/colored borders, bold text
+
+.o_form_view .o_form_statusbar>.o_statusbar_buttons,
+.o_form_view header .o_statusbar_buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 4px 0;
+
+    // Base button style - light background with dark border
+    button {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(255, 255, 255, 0.95);
+        color: #495057;
+        border: 2px solid #dee2e6;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transition: left 0.4s ease;
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+
+            &::before {
+                left: 100%;
+            }
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    // Primary action buttons (oe_highlight, btn-primary) - solid indigo
+    button.oe_highlight,
+    button.btn-primary {
+        background: #5A4BB0;
+        color: #fff;
+        border-color: #5A4BB0;
+
+        &:hover {
+            background: #4A3D96;
+            color: #fff;
+            border-color: #4A3D96;
+        }
+    }
+
+    // Success buttons - Green tinted
+    button.btn-success {
+        background: #d1f5e0;
+        color: #146c43;
+        border-color: #198754;
+
+        &:hover {
+            background: #198754;
+            color: #fff;
+        }
+    }
+
+    // Warning/Caution buttons - Orange/Amber tinted
+    button.btn-warning {
+        background: #fff3cd;
+        color: #856404;
+        border-color: #ffc107;
+
+        &:hover {
+            background: #ffc107;
+            color: #212529;
+        }
+    }
+
+    // Danger/Cancel buttons - Red outlined
+    button.btn-danger,
+    button[name*="cancel"],
+    button[name*="reject"] {
+        background: rgba(248, 215, 218, 0.6);
+        color: #dc3545;
+        border-color: #dc3545;
+
+        &:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+    }
+
+    // Secondary/Info buttons - Light gray outlined
+    button.btn-secondary,
+    button.btn-info {
+        background: rgba(248, 249, 250, 0.9);
+        color: #6c757d;
+        border-color: #adb5bd;
+
+        &:hover {
+            background: #e9ecef;
+            color: #495057;
+            border-color: #6c757d;
+        }
+    }
+}
+
+// =============================================================================
+// COLORED ICONS FOR FORM HEADER BUTTONS
+// =============================================================================
+// Each button type gets a distinct, colorful icon to improve visual recognition
+
+.o_form_view .o_form_statusbar>.o_statusbar_buttons,
+.o_form_view header .o_statusbar_buttons,
+.o_form_view header.o_form_statusbar {
+
+    button {
+
+        // Default icon styling - contrasting color
+        .fa,
+        i.fa,
+        i[class*="fa-"] {
+            font-size: 14px !important;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        &:hover .fa,
+        &:hover i.fa,
+        &:hover i[class*="fa-"] {
+            transform: scale(1.1);
+        }
+    }
+
+    // Home button - gray icon
+    button[name*="home"] .fa,
+    button[name*="home"] i.fa,
+    button[name*="spam"] .fa,
+    button[name*="spam"] i.fa {
+        color: #6c757d !important;
+    }
+
+    // Primary buttons - indigo icon (soft style); white on hover when filled
+    button.btn-primary .fa,
+    button.btn-primary i.fa,
+    button.oe_highlight .fa,
+    button.oe_highlight i.fa {
+        color: #5A4BB0 !important;
+    }
+    button.btn-primary:hover .fa,
+    button.btn-primary:hover i.fa,
+    button.oe_highlight:hover .fa,
+    button.oe_highlight:hover i.fa {
+        color: #fff !important;
+    }
+
+    // Cancellation button - red icon
+    button[name*="cancellation"] .fa,
+    button[name*="cancellation"] i.fa,
+    button[name*="open_cancellation"] .fa,
+    button[name*="open_cancellation"] i.fa {
+        color: #dc3545 !important;
+    }
+
+    // Cancel/Danger buttons - red icon
+    button.btn-danger .fa,
+    button.btn-danger i.fa,
+    button[name*="cancel_booking"] .fa,
+    button[name*="cancel_booking"] i.fa {
+        color: #dc3545 !important;
+    }
+
+    button.btn-danger:hover .fa,
+    button.btn-danger:hover i.fa {
+        color: #fff !important;
+    }
+
+    // Success/Confirm buttons - green icon
+    button.btn-success .fa,
+    button.btn-success i.fa {
+        color: #198754 !important;
+    }
+
+    button.btn-success:hover .fa,
+    button.btn-success:hover i.fa {
+        color: #fff !important;
+    }
+
+    // Dashboard button - purple/indigo icon
+    button[name*="dashboard"] .fa,
+    button[name*="dashboard"] i.fa {
+        color: #6f42c1 !important;
+    }
+
+    // Calendar/Reschedule - orange icon
+    button[name*="reschedule"] .fa,
+    button[name*="reschedule"] i.fa,
+    button[name="action_reschedule_booking"] .fa,
+    button[name="action_reschedule_booking"] i.fa {
+        color: #fd7e14 !important;
+    }
+
+    // Consultation - purple icon
+    button[name*="consultation"] .fa,
+    button[name*="consultation"] i.fa,
+    button[name*="escalate_consultation"] .fa,
+    button[name*="escalate_consultation"] i.fa {
+        color: #6f42c1 !important;
+    }
+
+    // Escalate - red-orange icon
+    button[name="action_escalate_contact"] .fa,
+    button[name="action_escalate_contact"] i.fa {
+        color: #e74c3c !important;
+    }
+
+    // Message - teal icon
+    button[name*="message"] .fa,
+    button[name*="message"] i.fa {
+        color: #20c997 !important;
+    }
+
+    // Log Lead/User - blue icon
+    button[name*="log_lead"] .fa,
+    button[name*="log_lead"] i.fa,
+    button[name*="log_as_lead"] .fa,
+    button[name*="log_as_lead"] i.fa {
+        color: #5A4BB0 !important;
+    }
+
+    // Log Activity/Clock - orange icon
+    button[name*="activity"] .fa,
+    button[name*="activity"] i.fa,
+    button[name*="schedule"] .fa,
+    button[name*="schedule"] i.fa {
+        color: #fd7e14 !important;
+    }
+
+    // Log Note - amber icon
+    button[name*="note"] .fa,
+    button[name*="note"] i.fa {
+        color: #ffc107 !important;
+    }
+
+    // Quote/Invoice - purple icon
+    button[name*="quote"] .fa,
+    button[name*="quote"] i.fa,
+    button.btn-info .fa,
+    button.btn-info i.fa {
+        color: #6f42c1 !important;
+    }
+
+    // Warning buttons - dark amber text
+    button.btn-warning .fa,
+    button.btn-warning i.fa {
+        color: #664d03 !important;
+    }
+
+    // Start Service - white on blue/green
+    button[name*="start"] .fa,
+    button[name*="start"] i.fa {
+        color: #fff !important;
+    }
+
+    // Staff Assignment - white on blue
+    button[name*="assign"] .fa,
+    button[name*="assign"] i.fa {
+        color: #fff !important;
+    }
+}
+
+// =============================================================================
+// COMPACT TITLE AREA
+// =============================================================================
+.o_form_view .oe_title > h1 {
+    min-height: 28px !important;
+    font-size: 1.15rem;
+    line-height: 1.2;
+    margin-bottom: 2px !important;
+}
+
+.o_form_view .oe_title > h2 {
+    min-height: 24px !important;
+    font-size: 1rem;
+    margin-bottom: 2px !important;
+}
+
+.o_form_view .oe_title {
+    max-width: 80%;
+    margin-bottom: 4px !important;
+}
+
+// Compact avatar size
+.o_form_view .oe_avatar .img,
+.o_form_view .oe_avatar > img {
+    width: 64px !important;
+    height: 64px !important;
+}
+
+// Compact status bar area
+.o_form_view .o_form_statusbar {
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    min-height: auto !important;
+}
+
+// Compact status widget (New Client > Active > Inactive arrows)
+.o_form_view .o_statusbar_status {
+    font-size: 0.75rem;
+
+    .o_arrow_button {
+        padding: 3px 12px !important;
+        font-size: 0.75rem;
+    }
+}
+
+// Compact stat buttons (Bookings, Packages, Payments)
+.o_form_view .oe_button_box .oe_stat_button {
+    padding: 2px 8px !important;
+    min-height: auto !important;
+    font-size: 0.75rem;
+
+    .o_stat_info {
+        .o_stat_value {
+            font-size: 0.875rem;
+            line-height: 1.2;
+        }
+        .o_stat_text {
+            font-size: 0.7rem;
+        }
+    }
+}
+
+// Tighter badge row spacing
+.o_form_view .oe_title + div,
+.o_form_view .oe_title ~ .d-flex,
+.o_form_view .oe_title ~ div:has(.badge) {
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
+}
+
+// Compact card titles inside vu-cards
+.vu-card__title {
+    font-size: 0.78rem !important;
+    gap: var(--vu-space-xs);
+    margin-bottom: 0 !important;
+}
+
+// =============================================================================
+// SMOOTHER INPUT FIELDS
+// =============================================================================
+// Record-form inputs use Odoo's clean native style (borderless until
+// hover/focus, dropdown carets for m2o/selection). Boxed inputs are reserved
+// for wizards/dialogs, which use their own input classes (.nc-input, etc.).
+.o_form_view .o_field_widget .o_input,
+.o_form_view .o_field_widget input.o_input,
+.o_form_view .o_field_widget textarea.o_input,
+.o_form_view .o_field_widget select.o_input {
+    border-width: 1px;
+    padding: 4px 8px;
+    font-size: inherit;
+    transition: border-color var(--vu-transition-fast), background var(--vu-transition-fast);
+
+    &:hover:not(:focus) {
+        background: var(--vu-surface-panel);
+    }
+}
+
+// Native underline: a visible bottom border at rest (the other three sides stay
+// transparent via --o-input-border-color). Matches Odoo's standard form fields.
+.o_form_view .o_field_widget .o_input:not(:hover):not(:focus) {
+    border-bottom-color: var(--vu-border-soft, #E0E0E0) !important;
+}
+// Keep inputs inside embedded list/grid tables flat (no underline at rest).
+.o_form_view .o_list_renderer .o_field_widget .o_input:not(:hover):not(:focus),
+.o_form_view .o_list_table .o_field_widget .o_input:not(:hover):not(:focus) {
+    border-bottom-color: transparent !important;
+}
+
+// Show the dropdown caret at rest on many2one / selection fields (Odoo hides it
+// until hover; native settings show it always — that's what we want here).
+.o_form_view .o_field_many2one .o_dropdown_button,
+.o_form_view .o_field_widget .o_select_menu_caret {
+    visibility: visible !important;
+}
+
+// Compact form labels — slightly smaller, tighter
+.o_form_view .o_form_label {
+    font-size: 0.8125rem;
+    margin-bottom: 1px;
+}
+
+// =============================================================================
+// COMPACT NOTEBOOK / TABS
+// =============================================================================
+.o_form_view .o_notebook {
+    margin-top: var(--vu-space-sm);
+}
+
+.o_form_view .o_notebook > ul > li > a,
+.o_form_view .o_notebook > .nav-tabs > li > a,
+.o_form_view .o_notebook .nav-link {
+    font-size: 0.8125rem;
+    padding: var(--vu-space-xs) var(--vu-space-sm);
+}
+
+// =============================================================================
+// RESPONSIVE FONT SCALING
+// =============================================================================
+// Slightly smaller on ≤1400px screens
+@media (max-width: 1400px) {
+    body {
+        font-size: 0.8125rem; // 13px
+    }
+
+    .o_form_view .o_form_label {
+        font-size: 0.78rem;
+    }
+
+    .o_form_view .o_form_sheet {
+        padding: var(--vu-space-md);
+    }
+}
+
+// Even more compact on ≤1200px screens
+@media (max-width: 1200px) {
+    body {
+        font-size: 0.78rem; // ~12.5px
+    }
+
+    .o_form_view .o_form_label {
+        font-size: 0.75rem;
+    }
+
+    .o_form_view .oe_title > h1 {
+        font-size: 1.25rem;
+        min-height: 34px !important;
+    }
+
+    .o_form_view .o_form_sheet {
+        padding: var(--vu-space-sm);
+    }
+
+    .badge.bg-info,
+    .badge.bg-secondary {
+        font-size: 12px !important;
+        padding: 2px 8px !important;
+    }
+}
+
+// =============================================================================
+// LIST VIEW COMPACTNESS
+// =============================================================================
+.o_list_view .o_data_row > .o_data_cell {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    font-size: 0.8125rem;
+}
+
+.o_list_view thead th {
+    font-size: 0.78rem;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--vu-text-secondary);
+}
+
+// =============================================================================
+// GLOBAL PROPORTIONAL FONT OVERRIDES — All remaining components
+// =============================================================================
+// Root web client — ensure 13px cascades everywhere
+.o_web_client {
+    font-size: 0.8125rem;
+}
+
+// Navbar — dark chrome (matches the sidebar). Indigo is reserved for action
+// buttons/links so the header no longer competes with them.
+.o_main_navbar {
+    font-size: 0.8125rem !important;
+    background-color: var(--biz-chrome-bg, #0E1430) !important;
+    border-bottom: 1px solid var(--biz-chrome-border, rgba(255, 255, 255, .06)) !important;
+
+    .o_menu_brand,
+    .o_menu_entry,
+    .dropdown-item {
+        font-size: 0.8125rem !important;
+    }
+
+    .o_navbar_apps_menu .dropdown-item {
+        font-size: 0.8125rem !important;
+    }
+
+    // Navbar badge counters
+    .badge {
+        font-size: 0.65rem !important;
+    }
+}
+
+// Control panel — breadcrumbs, search, pager
+.o_control_panel {
+    font-size: 0.8125rem;
+
+    .breadcrumb-item {
+        font-size: 0.8125rem;
+    }
+
+    .o_cp_searchbar input {
+        font-size: 0.8125rem;
+    }
+
+    // Pager
+    .o_pager {
+        font-size: 0.78rem;
+    }
+
+    // Action buttons in control panel
+    .o_cp_action_menus .dropdown-toggle,
+    .o_cp_buttons .btn {
+        font-size: 0.8125rem;
+    }
+}
+
+// Dropdowns globally
+.dropdown-menu {
+    font-size: 0.8125rem !important;
+
+    .dropdown-item {
+        font-size: 0.8125rem !important;
+        padding: 4px 12px;
+    }
+}
+
+// Modals / Dialogs
+.modal .modal-content {
+    font-size: 0.8125rem;
+
+    .modal-title {
+        font-size: 1rem;
+    }
+
+    .modal-body {
+        font-size: 0.8125rem;
+    }
+
+    .modal-footer .btn {
+        font-size: 0.8125rem;
+    }
+}
+
+// Kanban view
+.o_kanban_view .o_kanban_record {
+    font-size: 0.8125rem;
+}
+
+.o_kanban_view .o_kanban_group_header {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+// Search panel (left sidebar)
+.o_search_panel {
+    font-size: 0.8125rem;
+
+    .o_search_panel_label {
+        font-size: 0.78rem;
+    }
+
+    .o_search_panel_category_value,
+    .o_search_panel_filter_value {
+        font-size: 0.78rem;
+    }
+
+    .o_search_panel_section_header {
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+}
+
+// Many2many tags
+.o_field_many2many_tags .badge {
+    font-size: 0.75rem !important;
+    padding: 2px 6px !important;
+}
+
+// Wizard dialogs (inline forms in modals)
+.o_dialog .o_form_view {
+    font-size: 0.8125rem;
+
+    .o_form_label {
+        font-size: 0.78rem;
+    }
+}
+
+// Breadcrumb
+.o_breadcrumb .active {
+    font-size: 0.9rem;
+}
+
+// Status bar inside forms
+.o_form_view .o_form_statusbar .o_statusbar_buttons button {
+    font-size: 12px;
+}
+
+// Tooltip
+.o_tooltip {
+    font-size: 0.75rem !important;
+}
+
+// Many2one dropdown results
+.o_field_many2one_selection .dropdown-menu,
+.ui-autocomplete {
+    font-size: 0.8125rem !important;
+}
+
+// Sidebar attachments link count
+.o-mail-Chatter .o-mail-Chatter-topbar .btn .badge,
+.o-mail-Chatter .o-mail-Chatter-topbar .fa {
+    font-size: 0.75rem !important;
+}
+
+// =============================================================================
+// CONTROL PANEL — Breadcrumb / Search overlap fix
+// =============================================================================
+.o_control_panel .o_control_panel_main {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+}
+
+.o_control_panel .o_control_panel_breadcrumbs {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+
+    .breadcrumb {
+        flex-wrap: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.o_control_panel .o_cp_searchbar {
+    flex: 0 1 auto;
+    min-width: 200px;
+    max-width: 350px;
+}

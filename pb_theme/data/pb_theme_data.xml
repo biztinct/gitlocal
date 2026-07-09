@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Brand lock: Payobook ships a fixed compiled brand. The biz_theme
+             runtime token endpoint serves empty CSS while this is "off", so
+             published biz.theme records can never repaint this app. -->
+        <record id="param_biz_runtime_tokens_off" model="ir.config_parameter">
+            <field name="key">biz_theme.runtime_tokens</field>
+            <field name="value">off</field>
+        </record>
+    </data>
+</odoo>

@@ -1,104 +1,52 @@
 {
     'name': 'Payobook Theme (Indigo Enterprise)',
-    'summary': 'Payobook backend theme for Odoo 19 CE — Indigo Enterprise, solid colours, VU Form Engine + Lucide icons',
+    'summary': 'Payobook brand overlay over biz_theme — Indigo Enterprise palette, '
+               'payroll form heroes, Vietnamese terms',
     'description': '''
-        Payobook Theme — Indigo Enterprise
+        Payobook Theme — thin brand overlay
         ===================================
 
-        Modern, "smashing" backend theme for the Payobook payroll suite, built on the
-        proven VU Form Engine (ported from health19). Re-skins ALL native Odoo form
-        views with hero headers, card sections, field-edit indicators and a
-        status-driven design system — fail-closed behind a kill switch.
+        All generic machinery (VU Form Engine, design tokens, responsive
+        framework, Theme Studio, error dialogs, loading UX) lives in
+        biz_theme. This module only contributes:
 
-        Palette: Indigo #4F46E5 primary · Cyan #0891B2 accent · Emerald money/positive.
+        - The Payobook Indigo Enterprise palette (compiled SCSS, wins over
+          biz_theme's !default neutrals via a deterministic 'before' asset
+          directive)
+        - Runtime chrome overrides (pb_overrides.scss)
+        - Brand lock: biz_theme.runtime_tokens = off (fixed compiled brand)
+        - Payroll-specific native-form hero activations + Vietnamese terms
+
+        Palette: Indigo #5A4BB0 primary · Cyan #0891B2 accent · Emerald money.
         SOLID colours only (no gradients). Inter typography. Lucide iconography.
-
-        Brand Essence
-        -------------
-        - Trustworthy, Professional, Compassionate, Modern & Clean
-
-        Official Color Palette (Based on Brandingcompressed.pdf)
-        ---------------------------------------------------------
-
-        Primary Logo Colors (Brand Identity):
-        - Hibiscus Red: #E53935 (Logo flower - passion, trust, responsibility)
-        - Hibiscus Orange: #FB8C00 (Logo flower gradient)
-        - Leaf Green: #43A047 (Logo leaf - natural, health-related)
-
-        Secondary UI Colors (Application Theme):
-        - Deep Blue: #1565C0 (Primary actions, buttons, navbar - calm & professional)
-        - Accent Blue: #42A5F5 (Interactive elements, hover states - modern & engaging)
-
-        State Colors (Healthcare Compliance):
-        - Success: #176B47 (Medical green - positive outcomes)
-        - Info: #2A7ABF (Information blue - system messages)
-        - Warning: #946200 (Caution amber - important notices)
-        - Danger: #C0332A (Alert red - critical actions)
-
-        Typography System
-        -----------------
-        - Primary Headings: Montserrat (Semi Bold 600, Extra Bold 800)
-        - Body Text: Segoe UI (Regular 400, Semi Bold 600, Bold 700)
-        - Fallback: Arial
-
-        Features
-        --------
-        - Overrides all Odoo core SCSS variables before compilation
-        - Bootstrap-compatible color system
-        - Professional shadows and borders for depth
-        - Accessible color contrasts (WCAG AA compliant)
-        - Modern pill-shaped badges for healthcare workflows
-        - Custom navbar and control panel styling
     ''',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Themes/Backend',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': [
-        'web',
-        'base',
+        'biz_theme',
         'hr',
         'hr_contract',
     ],
     'data': [
+        'data/pb_theme_data.xml',
         'views/webclient_templates.xml',
         'views/res_users_views.xml',
         'views/vu_native_forms.xml',
     ],
     'assets': {
         'web._assets_primary_variables': [
-            ('prepend', 'pb_theme/static/src/scss/primary_variables.scss'),
+            # Deterministic ordering: the Payobook palette lands immediately
+            # BEFORE biz_theme's !default neutrals, whatever the module
+            # processing order — plain assignments here win.
+            ('before', 'biz_theme/static/src/scss/biz_variables.scss',
+                       'pb_theme/static/src/scss/primary_variables.scss'),
         ],
         'web.assets_backend': [
-            # Core theme
-            'pb_theme/static/src/scss/backend.scss',
-            'pb_theme/static/src/scss/loading_spinner.scss',
-            # VU Form Engine — rich UI for ALL native form views
-            'pb_theme/static/src/scss/vu_tokens.scss',
-            'pb_theme/static/src/scss/vu_icons.scss',
-            'pb_theme/static/src/scss/vu_form_engine.scss',
-            'pb_theme/static/src/js/vu_dialog_title.js',
-            'pb_theme/static/src/js/vu_form_hero_registry.js',
-            'pb_theme/static/src/js/vu_form_compiler.js',
-            'pb_theme/static/src/js/vu_form_renderer.js',
-            # VU Design System — Adaptive Form Framework
-            'pb_theme/static/src/scss/state_system.scss',
-            # three_column.scss removed: the VU Form Engine owns the
-            # three-column workspace layout now (vu_form_engine.scss §10)
-            'pb_theme/static/src/scss/progress_rail.scss',
-            'pb_theme/static/src/scss/action_card.scss',
-            'pb_theme/static/src/scss/inline_edit.scss',
-            'pb_theme/static/src/scss/field_indicators.scss',
-            'pb_theme/static/src/scss/side_sheet.scss',
-            # OWL components — JS
-            'pb_theme/static/src/js/vu_form_state.js',
-            'pb_theme/static/src/js/vu_progress_rail.js',
-            'pb_theme/static/src/js/vu_side_sheet.js',
+            'pb_theme/static/src/scss/pb_overrides.scss',
             'pb_theme/static/src/js/vi_translation_terms.js',
-            # OWL components — Templates
-            'pb_theme/static/src/xml/vu_progress_rail.xml',
-            'pb_theme/static/src/xml/vu_side_sheet.xml',
         ],
     },
     'installable': True,

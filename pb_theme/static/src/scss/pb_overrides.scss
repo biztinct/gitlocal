@@ -1,0 +1,11 @@
+// ============================================================================
+// PAYOBOOK — RUNTIME BRAND OVERRIDES (loads after biz_theme bundles)
+// ============================================================================
+// Small CSS-custom-property layer for values biz_theme exposes as runtime
+// hooks. Compile-time palette lives in primary_variables.scss.
+
+:root {
+    // Backend chrome (navbar strip) — deep navy-charcoal, matches pb_sidebar
+    --biz-chrome-bg: #0E1430;
+    --biz-chrome-border: rgba(255, 255, 255, .06);
+}

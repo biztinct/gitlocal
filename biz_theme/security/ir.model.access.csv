@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_biz_theme_user,biz.theme user,model_biz_theme,base.group_user,1,0,0,0
+access_biz_theme_admin,biz.theme admin,model_biz_theme,base.group_system,1,1,1,1
+access_biz_theme_preset_user,biz.theme.preset user,model_biz_theme_preset,base.group_user,1,0,0,0
+access_biz_theme_preset_admin,biz.theme.preset admin,model_biz_theme_preset,base.group_system,1,1,1,1
