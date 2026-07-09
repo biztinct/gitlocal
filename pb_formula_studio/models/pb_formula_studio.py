@@ -257,6 +257,20 @@ class PbFormulaStudio(models.AbstractModel):
                 'validation_message': config.validation_message or '',
                 'rule_count': len(rules),
                 'sample_count': len(config.sample_data_ids),
+                # B2 — branch lineage (drives the header chip + Branches overlay)
+                'is_branch': bool(config.parent_branch_id),
+                'parent_id': config.parent_branch_id.id or False,
+                'parent_name': config.parent_branch_id.name or '',
+                'branch_state': config.branch_state or 'open',
+                'branch_count': len(config.child_branch_ids.filtered(
+                    lambda b: b.branch_state == 'open')),
+                # B5 — scheme-variant lineage (header chip + Variants overlay)
+                'is_master': bool(config.variant_ids),
+                'is_variant': bool(config.master_config_id),
+                'master_id': config.master_config_id.id or False,
+                'master_name': config.master_config_id.name or '',
+                'variant_count': len(config.variant_ids),
+                'override_count': len([c for c in (config.variant_override_codes or '').split(',') if c.strip()]),
             },
             'components': components,
             'samples': samples,
@@ -1047,6 +1061,793 @@ class PbFormulaStudio(models.AbstractModel):
             'changed_count': len(changed),
             'changed': changed,
         }
+
+    # ==================================================================
+    # B3 — Release bundles + sign-off (a query over F7 versions)
+    # ==================================================================
+    def _last_milestone(self, config):
+        return self.env['hr.formula.config.milestone'].sudo().search(
+            [('config_id', '=', config.id)], order='milestone_date desc, id desc', limit=1)
+
+    def _formula_original(self, rule):
+        """The rule's formula at the very start of its history — the earliest
+        version's OUTGOING snapshot (each row is pre-edit), else the current if
+        it was never edited. Used when there is no prior milestone to anchor to."""
+        first = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', rule.id)], order='create_date asc, seq asc', limit=1)
+        return (first.excel_formula if first else rule.excel_formula) or ''
+
+    def _changes_between(self, config, from_when, to_when):
+        """Rules whose formula differs between two instants (each read from the
+        F7 version snapshots via _formula_at). ``from_when`` None = the start of
+        history (original formula); ``to_when`` None = the live current formula."""
+        changed = []
+        for rule in config.rule_ids:
+            old = self._formula_at(rule, from_when) if from_when else self._formula_original(rule)
+            cur = self._formula_at(rule, to_when) if to_when else (rule.excel_formula or '')
+            if (old or '') == (cur or ''):
+                continue
+            # most recent version reason for this rule inside the window (why it changed)
+            dom = [('rule_id', '=', rule.id)]
+            if from_when:
+                dom.append(('create_date', '>=', from_when))
+            if to_when:
+                dom.append(('create_date', '<', to_when))
+            v = self.env['hr.formula.rule.version'].sudo().search(
+                dom, order='create_date desc, seq desc', limit=1)
+            changed.append({
+                'rule_id': rule.id, 'code': rule.code or '',
+                'name': (rule.salary_rule_id.name if rule.salary_rule_id else False) or rule.name or '',
+                'col': rule.column_letter or '', 'group': _group_for(rule),
+                'old_formula': old, 'cur_formula': cur,
+                'reason': v.reason if v else 'edit',
+                'runs': self._token_diff_runs(self._tokenize_text(old), self._tokenize_text(cur)),
+            })
+        return changed
+
+    def _draft_release_narrative(self, config, changes):
+        """A prose changelog — LLM if available, else a deterministic template."""
+        if not changes:
+            return _("No formula changes since the last milestone.")
+        # deterministic fallback (also the LLM's structured source)
+        reason_label = {'edit': 'edited', 'bulk': 'bulk-edited', 'fill': 'drag-filled',
+                        'import': 'imported', 'restore': 'restored', 'rename': 'renamed',
+                        'lifecycle': 'lifecycle', 'legislation': 'legislation pack'}
+        lines = ['- %s (%s): %s' % (c['name'], c['col'], reason_label.get(c['reason'], 'edited'))
+                 for c in changes]
+        fallback = _("This release updates %s component(s):\n%s") % (len(changes), '\n'.join(lines))
+        try:
+            summary = '\n'.join('%s [%s] %s → %s' % (c['col'], c['reason'],
+                                                     (c['old_formula'] or '(none)'),
+                                                     (c['cur_formula'] or '(none)'))
+                                for c in changes)
+            msgs = [
+                {'role': 'system', 'content':
+                 "You are a payroll release manager. Write a concise, professional changelog "
+                 "(3-6 short bullet points, plain business language, no code) summarising these "
+                 "payroll formula changes for a sign-off reviewer. Do not invent numbers."},
+                {'role': 'user', 'content': "Config: %s\nChanges:\n%s" % (config.name, summary)},
+            ]
+            out = self._llm_chat(msgs)
+            return (out or '').strip() or fallback
+        except Exception:
+            return fallback
+
+    @api.model
+    def release_preview(self, config_id=None):
+        """The pending release: everything changed since the last milestone, with
+        diffs and a drafted changelog. Nothing is written."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        last = self._last_milestone(config)
+        when = last.milestone_date if last else False
+        changes = self._changes_between(config, when, None)
+        return {
+            'ok': True,
+            'config': {'id': config.id, 'name': config.name, 'state': config.state},
+            'from_milestone': ({'id': last.id, 'name': last.name,
+                                'date': fields.Datetime.to_string(last.milestone_date)}
+                               if last else None),
+            'change_count': len(changes),
+            'changes': changes,
+            'narrative': self._draft_release_narrative(config, changes),
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def release_approve(self, config_id, narrative=None):
+        """Sign off the pending release: seal an immutable milestone and record
+        the release (with its F7 version rows for provenance)."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to sign off releases.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        last = self._last_milestone(config)
+        when = last.milestone_date if last else False
+        changes = self._changes_between(config, when, None)
+        if not changes:
+            return {'ok': False, 'reason': 'no_changes',
+                    'msg': _("There are no changes to release since the last milestone.")}
+        Release = self.env['hr.formula.release']
+        n = Release.search_count([('config_id', '=', config.id)]) + 1
+        Milestone = self.env['hr.formula.config.milestone'].sudo()
+        to_ms = Milestone.record(config, _("Release v%s") % n)
+        vdom = [('config_id', '=', config.id)]
+        if when:
+            vdom.append(('create_date', '>=', when))
+        versions = self.env['hr.formula.rule.version'].sudo().search(vdom)
+        rel = Release.create({
+            'name': _("Release v%s") % n,
+            'config_id': config.id,
+            'from_milestone_id': last.id if last else False,
+            'to_milestone_id': to_ms.id,
+            'narrative': (narrative or '').strip() or self._draft_release_narrative(config, changes),
+            'change_count': len(changes),
+            'version_ids': [(6, 0, versions.ids)],
+        })
+        return {'ok': True, 'release_id': rel.id, 'change_count': len(changes)}
+
+    @api.model
+    def list_releases(self, config_id=None):
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'releases': []}
+        rels = self.env['hr.formula.release'].search([('config_id', '=', config.id)])
+        return {'ok': True, 'releases': [{
+            'id': r.id, 'name': r.name,
+            'approved_by': r.approved_by_id.name or '',
+            'approved_date': fields.Datetime.to_string(r.approved_date) if r.approved_date else '',
+            'change_count': r.change_count,
+            'narrative': r.narrative or '',
+            'from': r.from_milestone_id.name or '(start)',
+            'to': r.to_milestone_id.name or '',
+        } for r in rels]}
+
+    @api.model
+    def release_detail(self, release_id):
+        """Re-derive a past release's diffs from its two milestone timestamps."""
+        rel = self.env['hr.formula.release'].browse(int(release_id))
+        if not rel.exists():
+            return {'ok': False}
+        from_when = rel.from_milestone_id.milestone_date if rel.from_milestone_id else False
+        to_when = rel.to_milestone_id.milestone_date if rel.to_milestone_id else False
+        changes = self._changes_between(rel.config_id, from_when, to_when)
+        return {'ok': True, 'name': rel.name, 'narrative': rel.narrative or '',
+                'approved_by': rel.approved_by_id.name or '',
+                'approved_date': fields.Datetime.to_string(rel.approved_date) if rel.approved_date else '',
+                'change_count': len(changes), 'changes': changes}
+
+    # ==================================================================
+    # B6 — Bureau cockpit (read-only multi-config health board)
+    # ==================================================================
+    @api.model
+    def bureau_board(self):
+        """One health card per configuration the user can see: Phase-1 score,
+        F13 open problems, B3 pending changes, employee coverage, lifecycle
+        state. Read-only aggregation — nothing is written."""
+        Config = self.env['hr.formula.config']
+        configs = Config.search([], order='company_id, name')
+        Rel = self.env['hr.formula.release']
+        cards = []
+        for c in configs:
+            try:
+                prob = self.get_problems(c.id)
+            except Exception:
+                prob = {'count': 0, 'counts': {'error': 0, 'warning': 0, 'hint': 0}}
+            last = self._last_milestone(c)
+            when = last.milestone_date if last else False
+            try:
+                pending = len(self._changes_between(c, when, None))
+            except Exception:
+                pending = 0
+            cards.append({
+                'id': c.id, 'name': c.name,
+                'company': c.company_id.name if c.company_id else '',
+                'division': getattr(c, 'pb_division', False) or '',
+                'cycle_type': c.cycle_type or 'regular', 'state': c.state,
+                'score': self._score(c),
+                'rule_count': len(c.rule_ids),
+                'problem_counts': prob.get('counts', {'error': 0, 'warning': 0, 'hint': 0}),
+                'problem_count': prob.get('count', 0),
+                'pending_changes': pending,
+                'release_count': Rel.search_count([('config_id', '=', c.id)]),
+                'employees': self._config_employee_count(c),
+            })
+        # rank so the boards needing attention (errors, pending, low score) float up
+        cards.sort(key=lambda k: (
+            -(k['problem_counts'].get('error', 0)),
+            -k['pending_changes'],
+            k['score'],
+        ))
+        return {'ok': True, 'cards': cards, 'can_edit': self._can_edit(),
+                'company': self.env.company.name}
+
+    @api.model
+    def bureau_clone(self, config_id, name=None):
+        """Template-clone a configuration (rules + rate tables + samples) as a new
+        draft — the B6 'roll out a validated scheme' primitive."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to clone configurations.")}
+        src = self.env['hr.formula.config'].browse(int(config_id))
+        if not src.exists():
+            return {'ok': False}
+        base_code = (src.code or 'CFG')
+        existing = set(self.env['hr.formula.config'].search([]).mapped('code'))
+        code, i = base_code + '_COPY', 1
+        while code in existing:
+            i += 1
+            code = '%s_COPY%s' % (base_code, i)
+        new = src.copy({
+            'name': (name or '').strip() or (_("%s (copy)") % src.name),
+            'code': code, 'state': 'draft',
+        })
+        return {'ok': True, 'config_id': new.id, 'name': new.name}
+
+    # ==================================================================
+    # B4 — Legislation packs (roll a statutory change across every config)
+    # ==================================================================
+    def _legis_constant(self, config, code):
+        """The constant rule in `config` matching `code` (case-insensitive)."""
+        if not code:
+            return self.env['hr.formula.rule']
+        cu = code.strip().upper()
+        return config.rule_ids.filtered(
+            lambda r: r.column_type == 'constant' and (r.code or '').upper() == cu)[:1]
+
+    @staticmethod
+    def _legis_eq(a, b):
+        # constant_value is stored at 6 decimals — compare at that precision.
+        return round(a or 0.0, 6) == round(b or 0.0, 6)
+
+    def _legis_pack_payload(self, pack):
+        sel = dict(pack._fields['country_code'].selection)
+        return {
+            'id': pack.id, 'name': pack.name,
+            'country_code': pack.country_code, 'country': sel.get(pack.country_code, ''),
+            'version': pack.version, 'authority': pack.authority or '',
+            'effective_date': fields.Date.to_string(pack.effective_date) if pack.effective_date else '',
+            'state': pack.state, 'description': pack.description or '',
+            'item_count': len(pack.item_ids),
+        }
+
+    def _legis_eval(self, pack, config):
+        """Per-item comparison of a pack against one config: what each statutory
+        value is now vs what the pack sets it to. Unmatched codes (constants the
+        config doesn't have) are surfaced as matched=False, never mutated."""
+        rows = []
+        for it in pack.item_ids.sorted(key=lambda i: i.sequence):
+            rule = self._legis_constant(config, it.code)
+            row = {'code': it.code, 'label': it.label, 'target': it.value,
+                   'number_format': it.number_format or 'currency',
+                   'note': it.note or '', 'matched': bool(rule)}
+            if rule:
+                cur = rule.constant_value or 0.0
+                row.update({'rule_id': rule.id, 'current': cur,
+                            'changed': not self._legis_eq(cur, it.value),
+                            'delta': (it.value or 0.0) - cur})
+            else:
+                row.update({'rule_id': False, 'current': None, 'changed': False, 'delta': 0.0})
+            rows.append(row)
+        return rows
+
+    def _legis_status(self, rows):
+        matched = [r for r in rows if r['matched']]
+        if not matched:
+            return 'na'
+        return 'drift' if any(r['changed'] for r in matched) else 'aligned'
+
+    @api.model
+    def legislation_packs(self):
+        """Every pack the user can see, with a coverage roll-up over the configs
+        in scope (aligned / needs-update / not-applicable). Read-only."""
+        packs = self.env['hr.formula.legislation.pack'].search([])
+        configs = self.env['hr.formula.config'].search([])
+        out = []
+        for p in packs:
+            aligned = drift = na = 0
+            for c in configs:
+                st = self._legis_status(self._legis_eval(p, c))
+                aligned += st == 'aligned'
+                drift += st == 'drift'
+                na += st == 'na'
+            d = self._legis_pack_payload(p)
+            d.update({'aligned': aligned, 'drift': drift, 'na': na})
+            out.append(d)
+        # newest-effective first, drafts (pending rollouts) surfaced above published
+        out.sort(key=lambda k: (0 if k['state'] == 'draft' else 1, k['country'],
+                                k['effective_date']), reverse=False)
+        return {'ok': True, 'packs': out, 'can_edit': self._can_edit(),
+                'company': self.env.company.name, 'config_count': len(configs)}
+
+    @api.model
+    def legislation_detail(self, pack_id):
+        pack = self.env['hr.formula.legislation.pack'].browse(int(pack_id))
+        if not pack.exists():
+            return {'ok': False}
+        items = [{
+            'code': it.code, 'label': it.label, 'value': it.value,
+            'number_format': it.number_format or 'currency', 'note': it.note or '',
+        } for it in pack.item_ids.sorted(key=lambda i: i.sequence)]
+        apps = self.env['hr.formula.legislation.application'].search(
+            [('pack_id', '=', pack.id)], limit=50)
+        return {'ok': True, 'pack': self._legis_pack_payload(pack), 'items': items,
+                'applications': [{
+                    'config': a.config_id.name or '', 'by': a.applied_by_id.name or '',
+                    'date': fields.Datetime.to_string(a.applied_date) if a.applied_date else '',
+                    'item_count': a.item_count,
+                } for a in apps],
+                'can_edit': self._can_edit()}
+
+    @api.model
+    def legislation_coverage(self, pack_id):
+        """Per-config board for one pack: which configs are aligned, which need
+        the update (and by how many values), which don't carry these codes."""
+        pack = self.env['hr.formula.legislation.pack'].browse(int(pack_id))
+        if not pack.exists():
+            return {'ok': False}
+        configs = self.env['hr.formula.config'].search([])
+        board = []
+        for c in configs:
+            rows = self._legis_eval(pack, c)
+            matched = [r for r in rows if r['matched']]
+            changed = [r for r in matched if r['changed']]
+            board.append({
+                'config_id': c.id, 'name': c.name, 'state': c.state,
+                'status': self._legis_status(rows),
+                'matched': len(matched), 'changed': len(changed),
+                'employees': self._config_employee_count(c),
+                'diffs': changed,
+            })
+        rank = {'drift': 0, 'aligned': 1, 'na': 2}
+        board.sort(key=lambda b: (rank[b['status']], -b['changed'], b['name']))
+        summary = {
+            'aligned': sum(b['status'] == 'aligned' for b in board),
+            'drift': sum(b['status'] == 'drift' for b in board),
+            'na': sum(b['status'] == 'na' for b in board),
+            'employees_affected': sum(b['employees'] for b in board if b['status'] == 'drift'),
+        }
+        return {'ok': True, 'pack': self._legis_pack_payload(pack),
+                'board': board, 'summary': summary, 'can_edit': self._can_edit()}
+
+    @api.model
+    def legislation_diff(self, pack_id, config_id):
+        """Full per-item diff of a pack against one config (matched + unmatched)."""
+        pack = self.env['hr.formula.legislation.pack'].browse(int(pack_id))
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not pack.exists() or not config.exists():
+            return {'ok': False}
+        rows = self._legis_eval(pack, config)
+        return {'ok': True, 'config': {'id': config.id, 'name': config.name},
+                'rows': rows, 'changed': sum(1 for r in rows if r['changed']),
+                'can_edit': self._can_edit()}
+
+    @api.model
+    def legislation_apply(self, pack_id, config_id=None, config_ids=None):
+        """Apply a pack to one config or a set: write each drifted statutory
+        constant (F7-versioned, reason='legislation'), seal a B3 milestone, and
+        log the application. Configs already aligned are skipped, not touched."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to apply legislation packs.")}
+        pack = self.env['hr.formula.legislation.pack'].browse(int(pack_id))
+        if not pack.exists():
+            return {'ok': False}
+        if config_ids:
+            targets = self.env['hr.formula.config'].browse([int(i) for i in config_ids])
+        elif config_id:
+            targets = self.env['hr.formula.config'].browse(int(config_id))
+        else:
+            return {'ok': False, 'msg': _("No target configuration given.")}
+        targets = targets.exists()
+        Milestone = self.env['hr.formula.config.milestone'].sudo()
+        App = self.env['hr.formula.legislation.application']
+        results = []
+        for c in targets:
+            rows = self._legis_eval(pack, c)
+            changed = [r for r in rows if r['matched'] and r['changed']]
+            if not changed:
+                results.append({'config_id': c.id, 'name': c.name, 'changed': 0, 'skipped': True})
+                continue
+            seen = set()
+            for r in changed:
+                rule = self.env['hr.formula.rule'].browse(r['rule_id'])
+                rule.with_context(formula_version_reason='legislation',
+                                  formula_version_note='%s %s' % (pack.name, pack.version),
+                                  formula_version_seen=seen).constant_value = r['target']
+            ms = Milestone.record(c, _("Applied %s %s") % (pack.name, pack.version))
+            App.create({'pack_id': pack.id, 'config_id': c.id,
+                        'item_count': len(changed), 'milestone_id': ms.id})
+            results.append({'config_id': c.id, 'name': c.name,
+                            'changed': len(changed), 'skipped': False})
+        return {'ok': True, 'results': results,
+                'total_changed': sum(r['changed'] for r in results),
+                'configs_touched': sum(1 for r in results if not r['skipped'])}
+
+    # ==================================================================
+    # B2 — Config branches (fork a live config, edit safely, merge back)
+    # ==================================================================
+    def _branch_value_map(self, config):
+        """The mergeable rules of a config keyed by code — formula rules carry a
+        formula, constants carry a value. Inputs/others are not merged."""
+        out = {}
+        for r in config.rule_ids:
+            if r.column_type in ('formula', 'constant') and r.code:
+                out[r.code.upper()] = r
+        return out
+
+    def _branch_row(self, code, brule, prule, fork_when):
+        """One diff row between a branch rule (brule) and its parent rule (prule);
+        either may be None for add/remove. Carries a token diff for formulas and
+        a conflict flag when the parent moved on this rule since the fork."""
+        rule = brule or prule
+        kind = 'constant' if rule.column_type == 'constant' else 'formula'
+        row = {
+            'code': code,
+            'name': (rule.salary_rule_id.name if rule.salary_rule_id else False) or rule.name or code,
+            'col': (brule or prule).column_letter or '',
+            'kind': kind, 'group': _group_for(rule), 'conflict': False,
+        }
+        if kind == 'formula':
+            old = (prule.excel_formula or '') if prule else ''
+            new = (brule.excel_formula or '') if brule else ''
+            row.update({'old_formula': old, 'cur_formula': new,
+                        'runs': self._token_diff_runs(self._tokenize_text(old),
+                                                      self._tokenize_text(new))})
+            if brule and prule and fork_when:
+                at_fork = self._formula_at(prule, fork_when)
+                row['conflict'] = (at_fork or '') != (prule.excel_formula or '')
+        else:
+            row.update({'old_value': (prule.constant_value if prule else None),
+                        'new_value': (brule.constant_value if brule else None),
+                        'number_format': (brule or prule).number_format or 'currency'})
+        return row
+
+    def _branch_diff_rows(self, branch):
+        """changed / added / removed rows for a branch vs its parent (by code)."""
+        parent = branch.parent_branch_id
+        if not parent:
+            return {'changed': [], 'added': [], 'removed': []}
+        fork_when = branch.fork_milestone_id.milestone_date if branch.fork_milestone_id else False
+        pmap = self._branch_value_map(parent)
+        bmap = self._branch_value_map(branch)
+        changed, added = [], []
+        for code, brule in bmap.items():
+            prule = pmap.get(code)
+            if not prule:
+                added.append(self._branch_row(code, brule, None, fork_when))
+                continue
+            same = (brule.column_type == 'constant'
+                    and round(brule.constant_value or 0.0, 6) == round(prule.constant_value or 0.0, 6)) \
+                or (brule.column_type != 'constant'
+                    and (brule.excel_formula or '') == (prule.excel_formula or ''))
+            if not same:
+                changed.append(self._branch_row(code, brule, prule, fork_when))
+        removed = [self._branch_row(code, None, prule, fork_when)
+                   for code, prule in pmap.items() if code not in bmap]
+        return {'changed': changed, 'added': added, 'removed': removed}
+
+    def _branch_payload(self, b):
+        d = self._branch_diff_rows(b)
+        return {
+            'id': b.id, 'name': b.name, 'state': b.state,
+            'branch_state': b.branch_state or 'open',
+            'note': b.branch_note or '',
+            'created': fields.Datetime.to_string(b.create_date) if b.create_date else '',
+            'created_by': b.create_uid.name or '',
+            'employees': self._config_employee_count(b),
+            'changed': len(d['changed']), 'added': len(d['added']),
+            'removed': len(d['removed']),
+            'conflicts': sum(1 for r in d['changed'] if r['conflict']),
+        }
+
+    @api.model
+    def list_branches(self, config_id=None):
+        """Branches of the current config (and, if it IS a branch, its parent)."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'branches': []}
+        branches = config.child_branch_ids.filtered(lambda b: b.branch_state != 'discarded')
+        return {
+            'ok': True,
+            'config': {'id': config.id, 'name': config.name,
+                       'is_branch': bool(config.parent_branch_id),
+                       'parent_id': config.parent_branch_id.id or False,
+                       'parent_name': config.parent_branch_id.name or '',
+                       'branch_state': config.branch_state or 'open'},
+            'branches': [self._branch_payload(b) for b in branches.sorted(key=lambda x: x.id, reverse=True)],
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def branch_create(self, config_id, name=None, note=None):
+        """Fork a config into a draft branch and anchor a fork milestone on the
+        parent (the reference point for later conflict detection)."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to create branches.")}
+        parent = self.env['hr.formula.config'].browse(int(config_id))
+        if not parent.exists():
+            return {'ok': False}
+        if parent.parent_branch_id:
+            return {'ok': False, 'msg': _("You can only branch a mainline configuration, not a branch.")}
+        base_code = parent.code or 'CFG'
+        existing = set(self.env['hr.formula.config'].with_context(active_test=False)
+                       .search([]).mapped('code'))
+        code, i = base_code + '_BR', 1
+        while code in existing:
+            i += 1
+            code = '%s_BR%s' % (base_code, i)
+        fork = self.env['hr.formula.config.milestone'].sudo().record(
+            parent, _("Branched: %s") % ((name or '').strip() or _("branch")))
+        branch = parent.copy({
+            'name': (name or '').strip() or (_("%s — branch") % parent.name),
+            'code': code, 'state': 'draft',
+            'parent_branch_id': parent.id, 'branch_state': 'open',
+            'branch_note': (note or '').strip() or False,
+            'fork_milestone_id': fork.id,
+        })
+        return {'ok': True, 'branch_id': branch.id, 'name': branch.name}
+
+    @api.model
+    def branch_diff(self, branch_id):
+        branch = self.env['hr.formula.config'].browse(int(branch_id))
+        if not branch.exists() or not branch.parent_branch_id:
+            return {'ok': False}
+        d = self._branch_diff_rows(branch)
+        return {'ok': True,
+                'branch': {'id': branch.id, 'name': branch.name,
+                           'branch_state': branch.branch_state or 'open'},
+                'parent': {'id': branch.parent_branch_id.id, 'name': branch.parent_branch_id.name},
+                'changed': d['changed'], 'added': d['added'], 'removed': d['removed'],
+                'conflicts': sum(1 for r in d['changed'] if r['conflict']),
+                'can_edit': self._can_edit()}
+
+    @api.model
+    def branch_merge(self, branch_id, narrative=None):
+        """Write the branch's changed formulas/values back onto the parent
+        (F7 reason='merge'), then seal a release. Added/removed components are
+        reported but not auto-applied (a formula change is the safe 90% case)."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to merge branches.")}
+        branch = self.env['hr.formula.config'].browse(int(branch_id))
+        if not branch.exists() or not branch.parent_branch_id:
+            return {'ok': False}
+        if branch.branch_state == 'merged':
+            return {'ok': False, 'msg': _("This branch has already been merged.")}
+        parent = branch.parent_branch_id
+        d = self._branch_diff_rows(branch)
+        if not d['changed']:
+            return {'ok': False, 'reason': 'no_changes',
+                    'msg': _("This branch has no formula changes to merge.")}
+        pmap = self._branch_value_map(parent)
+        column_map = {r.column_letter: r.code for r in parent.rule_ids if r.column_letter}
+        seen = set()
+        merged = 0
+        for row in d['changed']:
+            prule = pmap.get(row['code'])
+            if not prule:
+                continue
+            prule = prule.with_context(formula_version_reason='merge',
+                                       formula_version_note=_("Merged from %s") % branch.name,
+                                       formula_version_seen=seen)
+            if row['kind'] == 'constant':
+                prule.constant_value = row.get('new_value') or 0.0
+            else:
+                prule.excel_formula = row.get('cur_formula') or ''
+                prule.python_formula = prule._convert_excel_to_python(prule.excel_formula, column_map)
+            merged += 1
+        branch.branch_state = 'merged'
+        rel = self.release_approve(parent.id, (narrative or '').strip()
+                                   or _("Merged branch “%s” — %s component(s)") % (branch.name, merged))
+        return {'ok': True, 'merged': merged,
+                'skipped_added': len(d['added']), 'skipped_removed': len(d['removed']),
+                'conflicts': sum(1 for r in d['changed'] if r['conflict']),
+                'release_id': rel.get('release_id') if isinstance(rel, dict) else False,
+                'parent_id': parent.id, 'parent_name': parent.name}
+
+    @api.model
+    def branch_discard(self, branch_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to discard branches.")}
+        branch = self.env['hr.formula.config'].browse(int(branch_id))
+        if not branch.exists() or not branch.parent_branch_id:
+            return {'ok': False}
+        branch.write({'branch_state': 'discarded', 'state': 'archived', 'active': False})
+        return {'ok': True}
+
+    # ==================================================================
+    # B5 — Scheme variants (one master → many synced variants)
+    # ==================================================================
+    def _variant_overrides(self, variant):
+        return set(c.strip().upper() for c in (variant.variant_override_codes or '').split(',') if c.strip())
+
+    def _variant_same(self, vrule, mrule):
+        if vrule.column_type == 'constant':
+            return round(vrule.constant_value or 0.0, 6) == round(mrule.constant_value or 0.0, 6)
+        return (vrule.excel_formula or '') == (mrule.excel_formula or '')
+
+    def _variant_rows(self, variant):
+        """Rows where a variant differs from its master OR is locally overridden.
+        old = master value, new = variant value (so the diff reads master→variant)."""
+        master = variant.master_config_id
+        if not master:
+            return {'changed': [], 'added': [], 'removed': []}
+        ov = self._variant_overrides(variant)
+        mmap = self._branch_value_map(master)
+        vmap = self._branch_value_map(variant)
+        changed = []
+        for code, vrule in vmap.items():
+            mrule = mmap.get(code)
+            if not mrule:
+                continue  # variant-only components surface under 'added'
+            same = self._variant_same(vrule, mrule)
+            overridden = code in ov
+            if same and not overridden:
+                continue  # in sync, nothing to show
+            row = self._branch_row(code, vrule, mrule, False)  # brule=variant, prule=master
+            row['overridden'] = overridden
+            row['drift'] = (not same) and (not overridden)
+            changed.append(row)
+        added = [self._branch_row(c, vmap[c], None, False) for c in vmap if c not in mmap]
+        removed = [self._branch_row(c, None, mmap[c], False) for c in mmap if c not in vmap]
+        return {'changed': changed, 'added': added, 'removed': removed}
+
+    def _variant_payload(self, v):
+        rows = self._variant_rows(v)
+        drift = sum(1 for r in rows['changed'] if r.get('drift'))
+        return {
+            'id': v.id, 'name': v.name, 'state': v.state,
+            'employees': self._config_employee_count(v),
+            'overrides': len(self._variant_overrides(v)), 'drift': drift,
+            'added': len(rows['added']), 'removed': len(rows['removed']),
+            'in_sync': drift == 0 and not rows['added'] and not rows['removed'],
+        }
+
+    @api.model
+    def list_variants(self, config_id=None):
+        """The variant relationships around the current config — its variants if
+        it's a master, or its master + siblings if it's a variant."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        role = 'variant' if config.master_config_id else 'master'
+        if role == 'variant':
+            master = config.master_config_id
+            variants = master.variant_ids
+        else:
+            master = config
+            variants = config.variant_ids
+        return {
+            'ok': True, 'role': role,
+            'current_id': config.id,
+            'master': {'id': master.id, 'name': master.name, 'state': master.state},
+            'variants': [self._variant_payload(v) for v in variants.sorted(key=lambda x: x.id)],
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def variant_create(self, master_id, name=None, note=None):
+        """Materialize a new variant of a master scheme (a draft copy that will
+        be kept in sync). You cannot make a variant of a variant."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to create variants.")}
+        master = self.env['hr.formula.config'].browse(int(master_id))
+        if not master.exists():
+            return {'ok': False}
+        if master.master_config_id:
+            return {'ok': False, 'msg': _("You can only create a variant of a master scheme, not of another variant.")}
+        base_code = master.code or 'CFG'
+        existing = set(self.env['hr.formula.config'].with_context(active_test=False)
+                       .search([]).mapped('code'))
+        code, i = base_code + '_V', 1
+        while code in existing:
+            i += 1
+            code = '%s_V%s' % (base_code, i)
+        variant = master.copy({
+            'name': (name or '').strip() or (_("%s — variant") % master.name),
+            'code': code, 'state': 'draft',
+            'master_config_id': master.id, 'variant_override_codes': False,
+        })
+        return {'ok': True, 'variant_id': variant.id, 'name': variant.name}
+
+    @api.model
+    def variant_diff(self, variant_id):
+        variant = self.env['hr.formula.config'].browse(int(variant_id))
+        if not variant.exists() or not variant.master_config_id:
+            return {'ok': False}
+        rows = self._variant_rows(variant)
+        return {'ok': True,
+                'variant': {'id': variant.id, 'name': variant.name},
+                'master': {'id': variant.master_config_id.id, 'name': variant.master_config_id.name},
+                'changed': rows['changed'], 'added': rows['added'], 'removed': rows['removed'],
+                'drift': sum(1 for r in rows['changed'] if r.get('drift')),
+                'overrides': sum(1 for r in rows['changed'] if r.get('overridden')),
+                'can_edit': self._can_edit()}
+
+    def _variant_sync_one(self, variant):
+        """Pull every non-overridden master component into the variant (only when
+        it actually differs, to avoid version noise). Overrides are preserved."""
+        master = variant.master_config_id
+        if not master:
+            return {'synced': 0, 'preserved': 0}
+        ov = self._variant_overrides(variant)
+        mmap = self._branch_value_map(master)
+        vmap = self._branch_value_map(variant)
+        column_map = {r.column_letter: r.code for r in variant.rule_ids if r.column_letter}
+        seen = set()
+        synced = 0
+        for code, vrule in vmap.items():
+            mrule = mmap.get(code)
+            if not mrule or code in ov or self._variant_same(vrule, mrule):
+                continue
+            v = vrule.with_context(formula_version_reason='sync',
+                                   formula_version_note=_("Synced from master %s") % master.name,
+                                   formula_version_seen=seen)
+            if vrule.column_type == 'constant':
+                v.constant_value = mrule.constant_value or 0.0
+            else:
+                v.excel_formula = mrule.excel_formula or ''
+                v.python_formula = v._convert_excel_to_python(v.excel_formula, column_map)
+            synced += 1
+        return {'synced': synced, 'preserved': len(ov & set(vmap.keys()))}
+
+    @api.model
+    def variant_sync(self, variant_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to sync variants.")}
+        variant = self.env['hr.formula.config'].browse(int(variant_id))
+        if not variant.exists() or not variant.master_config_id:
+            return {'ok': False}
+        r = self._variant_sync_one(variant)
+        r.update({'ok': True, 'name': variant.name})
+        return r
+
+    @api.model
+    def variant_push(self, master_id=None):
+        """Push the master to every variant at once — the 'edit once, roll to all'
+        primitive. Each variant keeps its own overrides."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to push to variants.")}
+        config = self._pick_config(master_id)
+        master = config.master_config_id or config
+        if not master.variant_ids:
+            return {'ok': False, 'msg': _("This scheme has no variants to push to.")}
+        results = [dict(self._variant_sync_one(v), variant_id=v.id, name=v.name)
+                   for v in master.variant_ids]
+        return {'ok': True, 'results': results,
+                'total_synced': sum(r['synced'] for r in results),
+                'variants': len(results)}
+
+    @api.model
+    def variant_toggle_override(self, variant_id, code, on):
+        """Protect (on) or release (off) a component from master sync."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to change overrides.")}
+        variant = self.env['hr.formula.config'].browse(int(variant_id))
+        if not variant.exists() or not variant.master_config_id:
+            return {'ok': False}
+        ov = self._variant_overrides(variant)
+        cu = (code or '').strip().upper()
+        if not cu:
+            return {'ok': False}
+        if on:
+            ov.add(cu)
+        else:
+            ov.discard(cu)
+        variant.variant_override_codes = ','.join(sorted(ov)) or False
+        return {'ok': True, 'overrides': sorted(ov)}
+
+    @api.model
+    def variant_detach(self, variant_id):
+        """Sever a variant from its master (it becomes a standalone mainline
+        config; its current components are frozen as-is)."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to detach variants.")}
+        variant = self.env['hr.formula.config'].browse(int(variant_id))
+        if not variant.exists() or not variant.master_config_id:
+            return {'ok': False}
+        variant.write({'master_config_id': False, 'variant_override_codes': False})
+        return {'ok': True}
 
     # ==================================================================
     # F8 — Simulate-before-activate (thin facade over hr.formula.simulation)

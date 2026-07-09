@@ -45,9 +45,25 @@
                 <span class="nm" t-esc="state.config.name"/>
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
               </button>
+              <button class="pbfs-bureaubtn" data-coach="fs-bureau" t-on-click="openBureau" title="Bureau cockpit — all configurations at a glance">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+              </button>
               <span t-if="state.config.country" class="pbfs-chip biz-hide-md" t-esc="state.config.country"/>
               <span class="pbfs-chip cur biz-hide-md" t-esc="'Currency ' + (state.config.currency || '')"/>
               <span t-attf-class="pbfs-state {{ stageCls() }}"><span class="d"/><t t-esc="stageLabel()"/></span>
+              <span t-if="state.config.is_branch" t-attf-class="pbfs-branchchip {{ state.config.branch_state === 'merged' ? 'merged' : '' }}" t-on-click="openBranches" title="This configuration is a branch — open Branches">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                <t t-if="state.config.branch_state === 'merged'">Merged branch</t>
+                <t t-else="">Branch of <t t-esc="state.config.parent_name"/></t>
+              </span>
+              <span t-if="state.config.is_variant" class="pbfs-branchchip variant" t-on-click="openVariants" title="This configuration is a variant — open Variants">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Variant of <t t-esc="state.config.master_name"/>
+              </span>
+              <span t-if="state.config.is_master" class="pbfs-branchchip master" t-on-click="openVariants" title="This is a master scheme — open Variants">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Master · <t t-esc="state.config.variant_count"/> variant<t t-if="state.config.variant_count !== 1">s</t>
+              </span>
               <!-- config picker dropdown -->
               <div t-if="state.configPickerOpen" class="pbfs-picker">
                 <div t-foreach="state.configs" t-as="cfg" t-key="cfg.id" class="pbfs-picker-row" t-on-click="() => this.pickConfig(cfg.id)">
@@ -141,6 +157,24 @@
                 <span>Problems</span>
                 <span t-if="problemCount" class="pbfs-probcount biz-keep" t-esc="problemCount"/>
                 <svg t-else="" class="pbfs-probok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+              </button>
+              <button class="pbfs-btn soft pbfs-branchbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-branches" t-on-click="openBranches" title="Branches — fork this config, trial a change safely, merge back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                <span>Branches</span>
+                <span t-if="state.config.branch_count" class="pbfs-branchn" t-esc="state.config.branch_count"/>
+              </button>
+              <button class="pbfs-btn soft pbfs-variantbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-variants" t-on-click="openVariants" title="Variants — one master scheme, many synced variants">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <span>Variants</span>
+                <span t-if="state.config.variant_count" class="pbfs-branchn" t-esc="state.config.variant_count"/>
+              </button>
+              <button class="pbfs-btn soft pbfs-legisbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-legislation" t-on-click="openLegislation" title="Legislation — roll a statutory change across every configuration">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M4 7l8-4 8 4M6 21h12M5 7l-2 6a4 4 0 0 0 8 0L9 7M19 7l-2 6a4 4 0 0 0 8 0l-2-6"/></svg>
+                <span>Legislation</span>
+              </button>
+              <button class="pbfs-btn soft pbfs-releasebtn" data-coach="fs-releases" t-on-click="openReleases" title="Releases — review and sign off formula changes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                <span>Releases</span>
               </button>
               <button class="pbfs-btn ai" data-coach="fs-payai" t-on-click="openAI">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Ask PayAI
@@ -1669,6 +1703,591 @@
           </div>
           <div t-elif="state.whatifData" class="wi-loading">This configuration has no rate/constant components to vary.</div>
           <div t-else="" class="wi-loading">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Release bundles + sign-off overlay (B3) -->
+      <div t-if="state.releaseOpen" class="pbfs-release-scrim" t-on-click="closeReleases">
+        <div class="pbfs-release" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="rl-head">
+            <div class="rl-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              <div>
+                <b>Releases</b>
+                <small>Review and sign off the formula changes since the last milestone</small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeReleases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="rl-tabs">
+            <button t-attf-class="rl-tab {{ state.releaseTab === 'pending' ? 'on' : '' }}" t-on-click="() => this.setReleaseTab('pending')">
+              Pending<span t-if="state.releaseData and state.releaseData.change_count" class="rl-tab-badge" t-esc="state.releaseData.change_count"/>
+            </button>
+            <button t-attf-class="rl-tab {{ state.releaseTab === 'history' ? 'on' : '' }}" t-on-click="() => this.setReleaseTab('history')">
+              History<span t-if="state.releaseList.length" class="rl-tab-badge muted" t-esc="state.releaseList.length"/>
+            </button>
+          </div>
+
+          <div class="rl-body">
+            <!-- ===== PENDING ===== -->
+            <t t-if="state.releaseTab === 'pending'">
+              <div t-if="state.releaseBusy and !state.releaseData" class="rl-loading">Building release…</div>
+              <t t-if="state.releaseData and state.releaseData.ok">
+                <t t-if="state.releaseData.change_count">
+                  <div class="rl-since">
+                    <t t-if="state.releaseData.from_milestone">Since <b t-esc="state.releaseData.from_milestone.name"/> · <t t-esc="state.releaseData.from_milestone.date"/></t>
+                    <t t-else="">Since the configuration was created</t>
+                    <span class="rl-since-count"><t t-esc="state.releaseData.change_count"/> component<t t-if="state.releaseData.change_count !== 1">s</t> changed</span>
+                  </div>
+
+                  <div class="rl-narrative">
+                    <div class="rl-narrative-head"><span>Changelog</span><span class="rl-ai-tag">auto-drafted · editable</span></div>
+                    <textarea class="rl-narrative-ta" t-att-value="state.releaseNarrative" t-on-input="onReleaseNarrative"/>
+                  </div>
+
+                  <div class="rl-changes">
+                    <div t-foreach="state.releaseData.changes" t-as="c" t-key="c.rule_id" class="rl-change">
+                      <div class="rl-change-head">
+                        <span class="rl-change-col" t-esc="c.col"/>
+                        <span class="rl-change-nm" t-esc="c.name"/>
+                        <span t-attf-class="rl-reason {{ c.reason }}" t-esc="reasonLabel(c.reason)"/>
+                      </div>
+                      <div class="rl-diff">
+                        <t t-foreach="c.runs" t-as="run" t-key="run_index">
+                          <t t-if="run.op === 'equal'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/></t>
+                          <t t-elif="run.op === 'insert'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/></t>
+                          <t t-elif="run.op === 'delete'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/></t>
+                          <t t-elif="run.op === 'replace'">
+                            <span t-foreach="run.old" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/>
+                            <span class="hs-arrow">→</span>
+                            <span t-foreach="run.new" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
+                          </t>
+                        </t>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="rl-actions" t-if="state.releaseData.can_edit">
+                    <button class="pbfs-btn primary" t-att-disabled="state.releaseBusy" t-on-click="approveRelease">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><path d="m9 12 2 2 4-4"/></svg>Sign off &amp; seal release
+                    </button>
+                  </div>
+                </t>
+                <div t-else="" class="rl-empty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                  <b>Nothing to release</b>
+                  <span>No formula changes since the last milestone. Every edit is already sealed.</span>
+                </div>
+              </t>
+            </t>
+
+            <!-- ===== HISTORY ===== -->
+            <t t-else="">
+              <div t-if="!state.releaseList.length" class="rl-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg>
+                <b>No releases yet</b>
+                <span>Sign off the pending changes to seal your first release.</span>
+              </div>
+              <div t-foreach="state.releaseList" t-as="rel" t-key="rel.id" class="rl-rel">
+                <div class="rl-rel-head" t-on-click="() => this.toggleReleaseDetail(rel)">
+                  <div class="rl-rel-main">
+                    <div class="rl-rel-nm"><b t-esc="rel.name"/><span class="rl-rel-cnt" t-esc="rel.change_count + (rel.change_count === 1 ? ' change' : ' changes')"/></div>
+                    <div class="rl-rel-meta">signed off by <t t-esc="rel.approved_by"/> · <t t-esc="rel.approved_date"/></div>
+                  </div>
+                  <svg t-attf-class="rl-rel-chev {{ state.releaseExpandId === rel.id ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div t-if="rel.narrative" class="rl-rel-narr" t-esc="rel.narrative"/>
+                <div t-if="state.releaseExpandId === rel.id" class="rl-rel-detail">
+                  <t t-if="state.releaseDetail and state.releaseDetail.changes">
+                    <div t-foreach="state.releaseDetail.changes" t-as="c" t-key="c.rule_id" class="rl-change">
+                      <div class="rl-change-head"><span class="rl-change-col" t-esc="c.col"/><span class="rl-change-nm" t-esc="c.name"/><span t-attf-class="rl-reason {{ c.reason }}" t-esc="reasonLabel(c.reason)"/></div>
+                      <div class="rl-diff">
+                        <t t-foreach="c.runs" t-as="run" t-key="run_index">
+                          <t t-if="run.op === 'equal'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/></t>
+                          <t t-elif="run.op === 'insert'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/></t>
+                          <t t-elif="run.op === 'delete'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/></t>
+                          <t t-elif="run.op === 'replace'">
+                            <span t-foreach="run.old" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/><span class="hs-arrow">→</span><span t-foreach="run.new" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
+                          </t>
+                        </t>
+                      </div>
+                    </div>
+                  </t>
+                  <div t-else="" class="rl-rel-loading">…</div>
+                </div>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bureau cockpit overlay (B6) -->
+      <div t-if="state.bureauOpen" class="pbfs-bureau-scrim" t-on-click="closeBureau">
+        <div class="pbfs-bureau" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="bu-head">
+            <div class="bu-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+              <div>
+                <b>Bureau cockpit</b>
+                <small t-if="state.bureauData"><t t-esc="state.bureauData.company"/> · every configuration at a glance</small>
+              </div>
+            </div>
+            <div class="bu-summary" t-if="state.bureauData and state.bureauData.cards.length">
+              <div class="bu-stat"><b t-esc="bureauSummary.configs"/><span>configs</span></div>
+              <div class="bu-stat"><b t-esc="bureauSummary.active"/><span>active</span></div>
+              <div t-attf-class="bu-stat {{ bureauSummary.withErrors ? 'err' : '' }}"><b t-esc="bureauSummary.withErrors"/><span>with errors</span></div>
+              <div t-attf-class="bu-stat {{ bureauSummary.withPending ? 'warn' : '' }}"><b t-esc="bureauSummary.withPending"/><span>unreleased</span></div>
+              <div class="bu-stat"><b t-esc="bureauSummary.employees.toLocaleString('en-US')"/><span>employees</span></div>
+            </div>
+            <button class="hs-x" t-on-click="closeBureau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="bu-body">
+            <div t-if="state.bureauBusy and !state.bureauData" class="bu-loading">Gathering health across all configurations…</div>
+            <div t-elif="state.bureauData and state.bureauData.cards.length" class="bu-grid">
+              <t t-foreach="state.bureauData.cards" t-as="c" t-key="c.id">
+              <div t-attf-class="bu-card {{ (c.problem_counts.error || 0) ? 'attn-err' : (c.pending_changes ? 'attn-warn' : '') }}">
+                <div class="bu-card-top">
+                  <div class="bu-card-nm" t-esc="c.name"/>
+                  <span t-attf-class="bu-state {{ c.state }}" t-esc="bureauStateLabel(c.state)"/>
+                </div>
+                <div class="bu-card-chips">
+                  <span t-if="c.division" class="bu-chip" t-esc="c.division"/>
+                  <span class="bu-chip cyc" t-esc="bureauCycleLabel(c.cycle_type)"/>
+                </div>
+                <div class="bu-card-mid">
+                  <div class="bu-ring">
+                    <svg width="60" height="60" viewBox="0 0 42 42">
+                      <circle cx="21" cy="21" r="19" fill="none" stroke="#EEF1F5" stroke-width="4"/>
+                      <circle cx="21" cy="21" r="19" fill="none" t-attf-stroke="{{ c.score >= 80 ? '#059669' : (c.score >= 50 ? '#D97706' : '#DC2626') }}" stroke-width="4" stroke-linecap="round"
+                              t-att-stroke-dasharray="ring(c.score).dash" t-att-stroke-dashoffset="ring(c.score).offset" transform="rotate(-90 21 21)"/>
+                    </svg>
+                    <span class="bu-ring-val" t-esc="c.score"/>
+                  </div>
+                  <div class="bu-metrics">
+                    <div class="bu-metric"><span class="bu-m-val" t-esc="c.rule_count"/><span class="bu-m-lbl">components</span></div>
+                    <div class="bu-metric"><span class="bu-m-val" t-esc="c.employees.toLocaleString('en-US')"/><span class="bu-m-lbl">employees</span></div>
+                  </div>
+                </div>
+                <div class="bu-flags">
+                  <span t-if="(c.problem_counts.error || 0)" class="bu-flag err"><t t-esc="c.problem_counts.error"/> error<t t-if="c.problem_counts.error !== 1">s</t></span>
+                  <span t-if="(c.problem_counts.warning || 0)" class="bu-flag warn"><t t-esc="c.problem_counts.warning"/> warning<t t-if="c.problem_counts.warning !== 1">s</t></span>
+                  <span t-if="(c.problem_counts.hint || 0)" class="bu-flag hint"><t t-esc="c.problem_counts.hint"/> hint<t t-if="c.problem_counts.hint !== 1">s</t></span>
+                  <span t-if="c.pending_changes" class="bu-flag pending"><t t-esc="c.pending_changes"/> unreleased</span>
+                  <span t-if="c.release_count" class="bu-flag rel"><t t-esc="c.release_count"/> release<t t-if="c.release_count !== 1">s</t></span>
+                  <span t-if="!(c.problem_counts.error || 0) and !c.pending_changes" class="bu-flag ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>clean</span>
+                </div>
+                <div class="bu-card-actions">
+                  <button class="pbfs-btn soft sm" t-on-click="() => this.bureauOpenConfig(c)">Open</button>
+                  <button t-if="state.bureauData.can_edit" class="pbfs-btn ghost sm" t-on-click="() => this.bureauClone(c)">Clone</button>
+                </div>
+              </div>
+              </t>
+            </div>
+            <div t-else="" class="bu-loading">No configurations found.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ LEGISLATION PACKS (B4) ============ -->
+      <div t-if="state.legisOpen" class="pbfs-legis-scrim" t-on-click="closeLegislation">
+        <div class="pbfs-legis" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="lg-head">
+            <div class="lg-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M4 7l8-4 8 4M6 21h12M5 7l-2 6a4 4 0 0 0 8 0L9 7M19 7l-2 6a4 4 0 0 0 8 0l-2-6"/></svg>
+              <div>
+                <b>Legislation packs</b>
+                <small t-if="state.legisCoverage and state.legisCoverage.pack">Roll a statutory change across every configuration — reviewed, versioned, signed off</small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeLegislation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="lg-body">
+            <div t-if="state.legisBusy and !state.legisPacks.length" class="lg-loading">Loading legislation packs…</div>
+
+            <t t-if="state.legisPacks.length">
+            <!-- LEFT: pack list -->
+            <div class="lg-rail">
+              <t t-foreach="state.legisPacks" t-as="p" t-key="p.id">
+              <div t-attf-class="lg-pack {{ p.id === state.legisSel ? 'sel' : '' }} {{ p.drift ? 'has-drift' : '' }}" t-on-click="() => this.legisSelect(p.id)">
+                <div class="lg-pack-top">
+                  <span class="lg-pack-nm" t-esc="p.name"/>
+                  <span t-attf-class="lg-ver">v<t t-esc="p.version"/></span>
+                </div>
+                <div class="lg-pack-meta">
+                  <span t-attf-class="lg-pill {{ p.state }}" t-esc="legisStateLabel(p.state)"/>
+                  <span class="lg-country" t-esc="p.country"/>
+                  <span t-if="p.effective_date" class="lg-eff" t-esc="p.effective_date"/>
+                </div>
+                <div class="lg-pack-cov">
+                  <span t-if="p.drift" class="lg-cov drift"><t t-esc="p.drift"/> to update</span>
+                  <span t-if="p.aligned" class="lg-cov ok"><t t-esc="p.aligned"/> aligned</span>
+                  <span t-if="p.na and !p.drift and !p.aligned" class="lg-cov na">not applicable</span>
+                </div>
+              </div>
+              </t>
+            </div>
+
+            <!-- RIGHT: selected pack detail + coverage -->
+            <div class="lg-main">
+              <div t-if="!state.legisDetail" class="lg-loading">Loading pack…</div>
+              <t t-if="state.legisDetail and state.legisDetail.ok">
+                <!-- pack header -->
+                <div class="lg-detail-head">
+                  <div class="lg-dh-title">
+                    <b t-esc="state.legisDetail.pack.name"/>
+                    <span t-attf-class="lg-pill {{ state.legisDetail.pack.state }}" t-esc="legisStateLabel(state.legisDetail.pack.state)"/>
+                    <span class="lg-ver big">v<t t-esc="state.legisDetail.pack.version"/></span>
+                  </div>
+                  <div class="lg-dh-sub">
+                    <span t-if="state.legisDetail.pack.effective_date"><b>Effective</b> <t t-esc="state.legisDetail.pack.effective_date"/></span>
+                    <span t-if="state.legisDetail.pack.authority" class="lg-auth" t-esc="state.legisDetail.pack.authority"/>
+                  </div>
+                  <div t-if="state.legisDetail.pack.description" class="lg-desc" t-esc="state.legisDetail.pack.description"/>
+                </div>
+
+                <!-- coverage summary strip -->
+                <div t-if="state.legisCoverage and state.legisCoverage.ok" class="lg-summary">
+                  <div class="lg-sum-stats">
+                    <div t-attf-class="lg-sum {{ state.legisCoverage.summary.drift ? 'drift' : '' }}"><b t-esc="state.legisCoverage.summary.drift"/><span>need update</span></div>
+                    <div class="lg-sum ok"><b t-esc="state.legisCoverage.summary.aligned"/><span>aligned</span></div>
+                    <div class="lg-sum muted"><b t-esc="state.legisCoverage.summary.na"/><span>n/a</span></div>
+                    <div t-if="state.legisCoverage.summary.drift" class="lg-sum"><b t-esc="state.legisCoverage.summary.employees_affected.toLocaleString('en-US')"/><span>employees affected</span></div>
+                  </div>
+                  <button t-if="state.legisCanEdit and state.legisCoverage.summary.drift" class="pbfs-btn primary lg-applyall" t-att-disabled="state.legisApplying" t-on-click="legisApplyAll">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    Roll out to all <t t-esc="state.legisCoverage.summary.drift"/>
+                  </button>
+                  <div t-elif="!state.legisCoverage.summary.drift" class="lg-allgood">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                    All configurations aligned
+                  </div>
+                </div>
+
+                <!-- statutory values in the pack -->
+                <div class="lg-sec">Statutory values <span class="lg-secn" t-esc="state.legisDetail.items.length"/></div>
+                <div class="lg-values">
+                  <t t-foreach="state.legisDetail.items" t-as="it" t-key="it.code">
+                  <div class="lg-val">
+                    <div class="lg-val-lbl"><b t-esc="it.label"/><code t-esc="it.code"/></div>
+                    <div class="lg-val-amt" t-esc="legisVal(it.number_format, it.value)"/>
+                    <div t-if="it.note" class="lg-val-note" t-esc="it.note"/>
+                  </div>
+                  </t>
+                </div>
+
+                <!-- per-config coverage board -->
+                <div class="lg-sec">Configurations</div>
+                <div t-if="state.legisCoverage and state.legisCoverage.ok" class="lg-board">
+                  <t t-foreach="state.legisCoverage.board" t-as="cf" t-key="cf.config_id">
+                  <div t-attf-class="lg-row {{ cf.status }}">
+                    <div class="lg-row-main">
+                      <div class="lg-row-nm">
+                        <span t-attf-class="lg-dot {{ cf.status }}"/>
+                        <b t-esc="cf.name"/>
+                        <span class="lg-emp"><t t-esc="cf.employees.toLocaleString('en-US')"/> emp</span>
+                      </div>
+                      <div class="lg-row-status">
+                        <span t-if="cf.status === 'aligned'" class="lg-badge ok">Aligned</span>
+                        <span t-elif="cf.status === 'drift'" class="lg-badge drift"><t t-esc="cf.changed"/> to update</span>
+                        <span t-else="" class="lg-badge na">Not applicable</span>
+                        <button t-if="cf.status === 'drift' and state.legisCanEdit" class="pbfs-btn soft sm" t-att-disabled="state.legisApplying" t-on-click="() => this.legisApplyOne(cf.config_id)">Apply</button>
+                      </div>
+                    </div>
+                    <div t-if="cf.status === 'drift' and cf.diffs.length" class="lg-diffs">
+                      <t t-foreach="cf.diffs" t-as="d" t-key="d.code">
+                      <div class="lg-diff">
+                        <span class="lg-diff-lbl" t-esc="d.label"/>
+                        <span class="lg-diff-old" t-esc="legisVal(d.number_format, d.current)"/>
+                        <svg class="lg-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        <span class="lg-diff-new" t-esc="legisVal(d.number_format, d.target)"/>
+                      </div>
+                      </t>
+                    </div>
+                  </div>
+                  </t>
+                </div>
+              </t>
+            </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CONFIG BRANCHES (B2) ============ -->
+      <div t-if="state.branchOpen" class="pbfs-branch-scrim" t-on-click="closeBranches">
+        <div class="pbfs-branch" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="br-head">
+            <div class="br-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+              <div>
+                <b>Branches</b>
+                <small>Fork a live configuration, trial a change in isolation, merge it back as a release</small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeBranches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="br-body">
+            <div t-if="state.branchBusy and !state.branchData" class="br-loading">Loading branches…</div>
+
+            <t t-if="state.branchData and state.branchData.ok">
+              <!-- viewing-a-branch banner -->
+              <div t-if="state.branchData.config.is_branch" class="br-banner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                <div class="br-banner-txt">
+                  You are viewing a branch of <b t-esc="state.branchData.config.parent_name"/>.
+                  <span t-if="state.branchData.config.branch_state === 'merged'"> This branch has been merged.</span>
+                </div>
+                <button class="pbfs-btn ghost sm" t-on-click="openParentConfig">Open parent</button>
+              </div>
+
+              <!-- create a new branch (off the mainline) -->
+              <div t-if="!state.branchData.config.is_branch and state.branchData.can_edit" class="br-new">
+                <div class="br-new-title">New branch of <b t-esc="state.branchData.config.name"/></div>
+                <div class="br-new-row">
+                  <input type="text" class="br-input" placeholder="Branch name (e.g. Trial 2026 tax relief)" t-att-value="state.branchNewName" t-on-input="onBranchName"/>
+                  <button class="pbfs-btn primary" t-att-disabled="state.branchCreating" t-on-click="createBranch">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Create branch
+                  </button>
+                </div>
+                <input type="text" class="br-input note" placeholder="Why this branch exists (optional)" t-att-value="state.branchNewNote" t-on-input="onBranchNote"/>
+              </div>
+
+              <!-- branch list -->
+              <div class="br-sec" t-if="state.branchData.branches.length">
+                Branches of <t t-esc="state.branchData.config.is_branch ? state.branchData.config.parent_name : state.branchData.config.name"/>
+                <span class="br-secn" t-esc="state.branchData.branches.length"/>
+              </div>
+              <div t-if="!state.branchData.branches.length and !state.branchData.config.is_branch" class="br-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                No branches yet. Create one above to trial a change without touching the live configuration.
+              </div>
+
+              <div class="br-list">
+                <t t-foreach="state.branchData.branches" t-as="b" t-key="b.id">
+                <div t-attf-class="br-item {{ b.id === state.branchExpandId ? 'open' : '' }} {{ b.branch_state }}">
+                  <div class="br-item-head" t-on-click="() => this.toggleBranchDiff(b)">
+                    <svg t-attf-class="br-caret {{ b.id === state.branchExpandId ? 'down' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <div class="br-item-main">
+                      <div class="br-item-nm">
+                        <b t-esc="b.name"/>
+                        <span t-attf-class="br-pill {{ b.branch_state }}" t-esc="b.branch_state"/>
+                      </div>
+                      <div class="br-item-sub">
+                        <span t-if="b.note" class="br-note" t-esc="b.note"/>
+                        <span class="br-emp"><t t-esc="b.employees.toLocaleString('en-US')"/> emp</span>
+                        <span t-if="b.created_by">· <t t-esc="b.created_by"/></span>
+                      </div>
+                    </div>
+                    <div class="br-item-chips">
+                      <span t-if="b.conflicts" class="br-chip conflict"><t t-esc="b.conflicts"/> conflict<t t-if="b.conflicts !== 1">s</t></span>
+                      <span t-if="b.changed" class="br-chip changed"><t t-esc="b.changed"/> changed</span>
+                      <span t-if="b.added" class="br-chip added"><t t-esc="b.added"/> added</span>
+                      <span t-if="b.removed" class="br-chip removed"><t t-esc="b.removed"/> removed</span>
+                      <span t-if="!b.changed and !b.added and !b.removed" class="br-chip nochg">no changes</span>
+                    </div>
+                  </div>
+
+                  <!-- expanded diff -->
+                  <div t-if="b.id === state.branchExpandId" class="br-diff">
+                    <div t-if="!state.branchDiff" class="br-loading sm">Computing diff…</div>
+                    <t t-if="state.branchDiff and state.branchDiff.ok">
+                      <div t-if="!state.branchDiff.changed.length and !state.branchDiff.added.length and !state.branchDiff.removed.length" class="br-nodiff">This branch is identical to its parent.</div>
+
+                      <!-- changed components -->
+                      <t t-foreach="state.branchDiff.changed" t-as="ch" t-key="ch.code">
+                      <div t-attf-class="br-drow {{ ch.conflict ? 'conflict' : '' }}">
+                        <div class="br-drow-top">
+                          <span class="br-col" t-esc="ch.col"/>
+                          <b class="br-dname" t-esc="ch.name"/>
+                          <span t-if="ch.conflict" class="br-conflict-tag" title="The parent changed this component after the branch was cut">parent moved</span>
+                        </div>
+                        <div t-if="ch.kind === 'formula'" class="br-tokens">
+                          <t t-foreach="ch.runs" t-as="run" t-key="run_index">
+                            <t t-if="run.op === 'equal'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/></t>
+                            <t t-elif="run.op === 'insert'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/></t>
+                            <t t-elif="run.op === 'delete'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/></t>
+                            <t t-elif="run.op === 'replace'">
+                              <span t-foreach="run.old" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/><span class="hs-arrow">→</span><span t-foreach="run.new" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
+                            </t>
+                          </t>
+                        </div>
+                        <div t-else="" class="br-valchg">
+                          <span class="br-old" t-esc="legisVal(ch.number_format, ch.old_value)"/>
+                          <svg class="br-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                          <span class="br-new" t-esc="legisVal(ch.number_format, ch.new_value)"/>
+                        </div>
+                      </div>
+                      </t>
+
+                      <!-- added / removed (informational — not auto-merged) -->
+                      <div t-if="state.branchDiff.added.length" class="br-addrem">
+                        <span class="br-ar-lbl added">Added in branch:</span>
+                        <t t-foreach="state.branchDiff.added" t-as="ad" t-key="ad.code"><span class="br-ar-chip added" t-esc="ad.name"/></t>
+                      </div>
+                      <div t-if="state.branchDiff.removed.length" class="br-addrem">
+                        <span class="br-ar-lbl removed">Removed in branch:</span>
+                        <t t-foreach="state.branchDiff.removed" t-as="rm" t-key="rm.code"><span class="br-ar-chip removed" t-esc="rm.name"/></t>
+                      </div>
+                      <div t-if="state.branchDiff.added.length or state.branchDiff.removed.length" class="br-note-merge">Only changed components merge back; added/removed are shown for review.</div>
+
+                      <!-- actions -->
+                      <div class="br-actions">
+                        <button class="pbfs-btn soft sm" t-on-click="() => this.openBranchConfig(b)">Open branch</button>
+                        <button t-if="state.branchData.can_edit and b.branch_state === 'open' and state.branchDiff.changed.length" class="pbfs-btn primary sm" t-att-disabled="state.branchBusy" t-on-click="() => this.mergeBranch(b)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
+                          Merge into <t t-esc="state.branchDiff.parent.name"/>
+                        </button>
+                        <button t-if="state.branchData.can_edit and b.branch_state === 'open'" class="pbfs-btn ghost sm danger" t-on-click="() => this.discardBranch(b)">Discard</button>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+                </t>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ SCHEME VARIANTS (B5) ============ -->
+      <div t-if="state.variantOpen" class="pbfs-variant-scrim" t-on-click="closeVariants">
+        <div class="pbfs-variant" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="vr-head">
+            <div class="vr-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <div>
+                <b>Scheme variants</b>
+                <small>One master scheme, many variants — edit once, push everywhere, keep local overrides</small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeVariants"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="vr-body">
+            <div t-if="state.variantBusy and !state.variantData" class="vr-loading">Loading variants…</div>
+
+            <t t-if="state.variantData and state.variantData.ok">
+              <!-- master strip -->
+              <div class="vr-master">
+                <div class="vr-master-info">
+                  <span class="vr-master-tag">Master</span>
+                  <b t-esc="state.variantData.master.name"/>
+                  <span t-if="state.variantData.role === 'variant'" class="vr-master-note">· you are viewing one of its variants</span>
+                </div>
+                <div class="vr-master-actions">
+                  <button t-if="state.variantData.role === 'variant'" class="pbfs-btn ghost sm" t-on-click="openMasterConfig">Open master</button>
+                  <button t-if="state.variantData.can_edit and state.variantData.variants.length" class="pbfs-btn primary sm" t-att-disabled="state.variantSyncing" t-on-click="pushToVariants">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                    Push to all <t t-esc="state.variantData.variants.length"/>
+                  </button>
+                </div>
+              </div>
+
+              <!-- new variant -->
+              <div t-if="state.variantData.can_edit" class="vr-new">
+                <input type="text" class="vr-input" placeholder="New variant name (e.g. Hanoi branch, Night-shift plant)" t-att-value="state.variantNewName" t-on-input="onVariantName"/>
+                <button class="pbfs-btn soft" t-att-disabled="state.variantCreating" t-on-click="createVariant">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  New variant
+                </button>
+              </div>
+
+              <div t-if="!state.variantData.variants.length" class="vr-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                No variants yet. Create one to spin off a synced copy of this master for a site, entity, or worker group.
+              </div>
+
+              <div class="vr-sec" t-if="state.variantData.variants.length">Variants <span class="vr-secn" t-esc="state.variantData.variants.length"/></div>
+              <div class="vr-list">
+                <t t-foreach="state.variantData.variants" t-as="v" t-key="v.id">
+                <div t-attf-class="vr-item {{ v.id === state.variantExpandId ? 'open' : '' }} {{ v.id === state.variantData.current_id ? 'current' : '' }}">
+                  <div class="vr-item-head" t-on-click="() => this.toggleVariantDiff(v)">
+                    <svg t-attf-class="vr-caret {{ v.id === state.variantExpandId ? 'down' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    <div class="vr-item-main">
+                      <div class="vr-item-nm">
+                        <b t-esc="v.name"/>
+                        <span t-if="v.id === state.variantData.current_id" class="vr-here">viewing</span>
+                      </div>
+                      <div class="vr-item-sub"><t t-esc="v.employees.toLocaleString('en-US')"/> emp</div>
+                    </div>
+                    <div class="vr-item-chips">
+                      <span t-if="v.in_sync and !v.overrides" class="vr-chip sync"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>in sync</span>
+                      <span t-if="v.drift" class="vr-chip drift"><t t-esc="v.drift"/> to sync</span>
+                      <span t-if="v.overrides" class="vr-chip override"><t t-esc="v.overrides"/> override<t t-if="v.overrides !== 1">s</t></span>
+                      <span t-if="v.added" class="vr-chip added"><t t-esc="v.added"/> added</span>
+                      <span t-if="v.removed" class="vr-chip removed"><t t-esc="v.removed"/> removed</span>
+                    </div>
+                  </div>
+
+                  <div t-if="v.id === state.variantExpandId" class="vr-diff">
+                    <div t-if="!state.variantDiff" class="vr-loading sm">Comparing to master…</div>
+                    <t t-if="state.variantDiff and state.variantDiff.ok">
+                      <div t-if="!state.variantDiff.changed.length and !state.variantDiff.added.length and !state.variantDiff.removed.length" class="vr-nodiff">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                        Fully in sync with the master.
+                      </div>
+
+                      <t t-foreach="state.variantDiff.changed" t-as="ch" t-key="ch.code">
+                      <div t-attf-class="vr-drow {{ ch.overridden ? 'ov' : (ch.drift ? 'drift' : '') }}">
+                        <div class="vr-drow-top">
+                          <span class="vr-col" t-esc="ch.col"/>
+                          <b class="vr-dname" t-esc="ch.name"/>
+                          <span t-if="ch.drift" class="vr-tag drift">will sync from master</span>
+                          <button t-if="state.variantData.can_edit" t-attf-class="vr-ovbtn {{ ch.overridden ? 'on' : '' }}" t-on-click="() => this.toggleOverride(v, ch)">
+                            <svg t-if="ch.overridden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                            <svg t-else="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8-1"/></svg>
+                            <t t-if="ch.overridden">Protected</t><t t-else="">Inherits</t>
+                          </button>
+                        </div>
+                        <div t-if="ch.kind === 'formula'" class="vr-tokens">
+                          <t t-foreach="ch.runs" t-as="run" t-key="run_index">
+                            <t t-if="run.op === 'equal'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/></t>
+                            <t t-elif="run.op === 'insert'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/></t>
+                            <t t-elif="run.op === 'delete'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/></t>
+                            <t t-elif="run.op === 'replace'">
+                              <span t-foreach="run.old" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/><span class="hs-arrow">→</span><span t-foreach="run.new" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
+                            </t>
+                          </t>
+                        </div>
+                        <div t-else="" class="vr-valchg">
+                          <span class="vr-mtag">master</span>
+                          <span class="vr-old" t-esc="legisVal(ch.number_format, ch.old_value)"/>
+                          <svg class="vr-arw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                          <span class="vr-new" t-esc="legisVal(ch.number_format, ch.new_value)"/>
+                          <span class="vr-vtag">this variant</span>
+                        </div>
+                      </div>
+                      </t>
+
+                      <div t-if="state.variantDiff.added.length" class="vr-addrem">
+                        <span class="vr-ar-lbl added">Variant-only:</span>
+                        <t t-foreach="state.variantDiff.added" t-as="ad" t-key="ad.code"><span class="vr-ar-chip added" t-esc="ad.name"/></t>
+                      </div>
+                      <div t-if="state.variantDiff.removed.length" class="vr-addrem">
+                        <span class="vr-ar-lbl removed">Missing vs master:</span>
+                        <t t-foreach="state.variantDiff.removed" t-as="rm" t-key="rm.code"><span class="vr-ar-chip removed" t-esc="rm.name"/></t>
+                      </div>
+
+                      <div class="vr-actions">
+                        <button class="pbfs-btn soft sm" t-on-click="() => this.openVariantConfig(v)">Open variant</button>
+                        <button t-if="state.variantData.can_edit and v.drift" class="pbfs-btn primary sm" t-att-disabled="state.variantSyncing" t-on-click="() => this.syncVariant(v)">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                          Sync from master
+                        </button>
+                        <button t-if="state.variantData.can_edit" class="pbfs-btn ghost sm danger" t-on-click="() => this.detachVariant(v)">Detach</button>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+                </t>
+              </div>
+            </t>
+          </div>
         </div>
       </div>
 

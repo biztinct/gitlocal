@@ -14,8 +14,11 @@ _logger = logging.getLogger(__name__)
 VERSIONED_FIELDS = {
     'excel_formula', 'code', 'name', 'category_id',
     'column_type', 'number_format', 'appears_on_payslip',
+    # B4: statutory constant values are versioned too, so applying a
+    # legislation pack (or any rate/cap edit) leaves an F7 audit trail.
+    'constant_value',
 }
-_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle', 'rename'}
+_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle', 'rename', 'legislation', 'merge', 'sync'}
 
 
 class HrFormulaRule(models.Model):

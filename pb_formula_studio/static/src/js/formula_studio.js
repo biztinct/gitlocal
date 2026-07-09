@@ -162,6 +162,46 @@ export class PbFormulaStudio extends Component {
             rawValid: null,          // {valid, message} from validate_formula_live
             rawDirty: false,
             rawBusy: false,
+            // B3 — release bundles + sign-off
+            releaseOpen: false,
+            releaseBusy: false,
+            releaseTab: "pending",
+            releaseData: null,
+            releaseNarrative: "",
+            releaseList: [],
+            releaseDetail: null,
+            releaseExpandId: null,
+            // B6 — bureau cockpit
+            bureauOpen: false,
+            bureauBusy: false,
+            bureauData: null,
+            // B4 — legislation packs
+            legisOpen: false,
+            legisBusy: false,
+            legisPacks: [],
+            legisCanEdit: false,
+            legisSel: null,
+            legisDetail: null,
+            legisCoverage: null,
+            legisApplying: false,
+            // B2 — config branches
+            branchOpen: false,
+            branchBusy: false,
+            branchData: null,
+            branchDiff: null,
+            branchExpandId: null,
+            branchNewName: "",
+            branchNewNote: "",
+            branchCreating: false,
+            // B5 — scheme variants
+            variantOpen: false,
+            variantBusy: false,
+            variantData: null,
+            variantDiff: null,
+            variantExpandId: null,
+            variantNewName: "",
+            variantCreating: false,
+            variantSyncing: false,
             // B8 — what-if sliders + cost projection
             whatifOpen: false,
             whatifBusy: false,
@@ -860,6 +900,396 @@ export class PbFormulaStudio extends Component {
     }
     get whatifHistLabels() {
         return { lt10k: "< ₫10k", lt100k: "< ₫100k", lt1m: "< ₫1M", lt10m: "< ₫10M", ge10m: "≥ ₫10M" };
+    }
+
+    // ---- Release bundles + sign-off (B3) ----
+    openReleases() {
+        this.state.releaseOpen = true;
+        this.state.releaseTab = "pending";
+        this.state.releaseData = null;
+        this.state.releaseDetail = null;
+        this.state.releaseExpandId = null;
+        this._loadReleasePreview();
+        this._loadReleaseList();
+    }
+    closeReleases() { this.state.releaseOpen = false; }
+    setReleaseTab(t) { this.state.releaseTab = t; }
+    async _loadReleasePreview() {
+        this.state.releaseBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "release_preview", [this.state.config.id]);
+            this.state.releaseData = r;
+            this.state.releaseNarrative = (r && r.narrative) || "";
+        } catch (e) { this.state.releaseData = { ok: false }; }
+        finally { this.state.releaseBusy = false; }
+    }
+    async _loadReleaseList() {
+        try {
+            const r = await this.orm.call("pb.formula.studio", "list_releases", [this.state.config.id]);
+            this.state.releaseList = (r && r.releases) || [];
+        } catch (e) { this.state.releaseList = []; }
+    }
+    onReleaseNarrative(ev) { this.state.releaseNarrative = ev.target.value; }
+    reasonLabel(reason) {
+        return { edit: "edited", bulk: "bulk edit", fill: "drag-fill", import: "import",
+                 restore: "restored", rename: "renamed", lifecycle: "lifecycle" }[reason] || reason;
+    }
+    async approveRelease() {
+        if (this._lockedNotice()) return;
+        if (this.state.releaseBusy) return;
+        this.state.releaseBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "release_approve",
+                [this.state.config.id, this.state.releaseNarrative]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not sign off the release", { type: "warning" }); return; }
+            this.notif.add(`Release sealed · ${r.change_count} component${r.change_count === 1 ? "" : "s"}`, { type: "success" });
+            await this._loadReleasePreview();
+            await this._loadReleaseList();
+            this.state.releaseTab = "history";
+        } catch (e) {
+            this.notif.add("Sign-off failed", { type: "danger" });
+        } finally {
+            this.state.releaseBusy = false;
+        }
+    }
+    async toggleReleaseDetail(rel) {
+        if (this.state.releaseExpandId === rel.id) {
+            this.state.releaseExpandId = null;
+            this.state.releaseDetail = null;
+            return;
+        }
+        this.state.releaseExpandId = rel.id;
+        this.state.releaseDetail = null;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "release_detail", [rel.id]);
+            if (this.state.releaseExpandId === rel.id) this.state.releaseDetail = r;
+        } catch (e) { this.state.releaseDetail = { changes: [] }; }
+    }
+
+    // ---- Bureau cockpit (B6) ----
+    openBureau() {
+        this.state.bureauOpen = true;
+        this.state.bureauData = null;
+        this._loadBureau();
+    }
+    closeBureau() { this.state.bureauOpen = false; }
+    async _loadBureau() {
+        this.state.bureauBusy = true;
+        try {
+            this.state.bureauData = await this.orm.call("pb.formula.studio", "bureau_board", []);
+        } catch (e) { this.state.bureauData = { ok: false, cards: [] }; }
+        finally { this.state.bureauBusy = false; }
+    }
+    async bureauOpenConfig(card) {
+        this.state.bureauOpen = false;
+        await this.load(card.id);
+        this.state.view = "cards";
+    }
+    async bureauClone(card) {
+        if (this._lockedNotice()) return;
+        const r = await this.orm.call("pb.formula.studio", "bureau_clone", [card.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Clone failed", { type: "warning" }); return; }
+        this.notif.add(`Cloned as “${r.name}”`, { type: "success" });
+        await this._loadBureau();
+    }
+    bureauCycleLabel(ct) {
+        return { mid_cycle: "Mid-cycle", end_cycle: "End-cycle", full_final: "Full & Final", regular: "Regular" }[ct] || ct;
+    }
+    bureauStateLabel(s) {
+        return { draft: "Draft", testing: "Testing", validated: "Validated", active: "Active", archived: "Archived" }[s] || s;
+    }
+    get bureauSummary() {
+        const cards = (this.state.bureauData && this.state.bureauData.cards) || [];
+        return {
+            configs: cards.length,
+            active: cards.filter(c => c.state === "active").length,
+            withErrors: cards.filter(c => (c.problem_counts.error || 0) > 0).length,
+            withPending: cards.filter(c => c.pending_changes > 0).length,
+            employees: cards.reduce((a, c) => a + (c.employees || 0), 0),
+        };
+    }
+
+    // ---- Legislation packs (B4) ----
+    openLegislation() {
+        this.state.legisOpen = true;
+        this.state.legisSel = null;
+        this.state.legisDetail = null;
+        this.state.legisCoverage = null;
+        this._loadLegisPacks();
+    }
+    closeLegislation() { this.state.legisOpen = false; }
+    async _loadLegisPacks() {
+        this.state.legisBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "legislation_packs", []);
+            this.state.legisPacks = (r && r.packs) || [];
+            this.state.legisCanEdit = !!(r && r.can_edit);
+            // keep the current selection on refresh; on first open land on the
+            // pack that needs a rollout, else the first one
+            const cur = this.state.legisSel;
+            const pick = (cur && this.state.legisPacks.find(p => p.id === cur))
+                || this.state.legisPacks.find(p => p.drift > 0)
+                || this.state.legisPacks[0];
+            if (pick) await this.legisSelect(pick.id);
+        } catch (e) { this.state.legisPacks = []; }
+        finally { this.state.legisBusy = false; }
+    }
+    async legisSelect(packId) {
+        this.state.legisSel = packId;
+        this.state.legisDetail = null;
+        this.state.legisCoverage = null;
+        try {
+            const [detail, cov] = await Promise.all([
+                this.orm.call("pb.formula.studio", "legislation_detail", [packId]),
+                this.orm.call("pb.formula.studio", "legislation_coverage", [packId]),
+            ]);
+            if (this.state.legisSel !== packId) return;   // superseded by a newer click
+            this.state.legisDetail = detail;
+            this.state.legisCoverage = cov;
+        } catch (e) { /* keep the panes empty */ }
+    }
+    legisStateLabel(s) { return { draft: "Draft", published: "Published", superseded: "Superseded" }[s] || s; }
+    // format a statutory value by its number_format (percentage ×100, else ₫)
+    legisVal(fmt, v) {
+        if (v === null || v === undefined || isNaN(v)) return "—";
+        if (fmt === "percentage") return (Math.round(v * 10000) / 100).toLocaleString("en-US") + "%";
+        if (fmt === "integer") return Math.round(v).toLocaleString("en-US");
+        if (fmt === "number") return (Math.round(v * 100) / 100).toLocaleString("en-US");
+        return "₫" + Math.round(v).toLocaleString("en-US");
+    }
+    get legisSelPack() {
+        return (this.state.legisPacks || []).find(p => p.id === this.state.legisSel) || null;
+    }
+    get legisDriftConfigs() {
+        const b = this.state.legisCoverage && this.state.legisCoverage.board;
+        return (b || []).filter(x => x.status === "drift");
+    }
+    async legisApplyOne(configId) {
+        if (this._lockedNotice()) return;
+        if (this.state.legisApplying) return;
+        this.state.legisApplying = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "legislation_apply",
+                [this.state.legisSel, configId]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Apply failed", { type: "warning" }); return; }
+            this.notif.add(`Applied · ${r.total_changed} value${r.total_changed === 1 ? "" : "s"} updated`, { type: "success" });
+            await this.legisSelect(this.state.legisSel);
+            await this._afterLegisApply(configId);
+        } catch (e) { this.notif.add("Apply failed", { type: "danger" }); }
+        finally { this.state.legisApplying = false; }
+    }
+    async legisApplyAll() {
+        if (this._lockedNotice()) return;
+        if (this.state.legisApplying) return;
+        const ids = this.legisDriftConfigs.map(x => x.config_id);
+        if (!ids.length) return;
+        this.state.legisApplying = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "legislation_apply",
+                [this.state.legisSel, false, ids]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Roll-out failed", { type: "warning" }); return; }
+            this.notif.add(`Rolled out to ${r.configs_touched} config${r.configs_touched === 1 ? "" : "s"} · ${r.total_changed} values updated`, { type: "success" });
+            await this.legisSelect(this.state.legisSel);
+            await this._afterLegisApply(null);
+        } catch (e) { this.notif.add("Roll-out failed", { type: "danger" }); }
+        finally { this.state.legisApplying = false; }
+    }
+    async _afterLegisApply(configId) {
+        // refresh the pack coverage roll-ups; reload the open config if it changed
+        await this._loadLegisPacks();
+        if (configId && this.state.config && this.state.config.id === configId) {
+            await this.load(configId);
+        }
+    }
+
+    // ---- Config branches (B2) ----
+    openBranches() {
+        this.state.branchOpen = true;
+        this.state.branchDiff = null;
+        this.state.branchExpandId = null;
+        this.state.branchNewName = "";
+        this.state.branchNewNote = "";
+        this._loadBranches();
+    }
+    closeBranches() { this.state.branchOpen = false; }
+    async _loadBranches() {
+        this.state.branchBusy = true;
+        try {
+            this.state.branchData = await this.orm.call("pb.formula.studio", "list_branches", [this.state.config.id]);
+        } catch (e) { this.state.branchData = { ok: false, branches: [] }; }
+        finally { this.state.branchBusy = false; }
+    }
+    onBranchName(ev) { this.state.branchNewName = ev.target.value; }
+    onBranchNote(ev) { this.state.branchNewNote = ev.target.value; }
+    get branchParentId() {
+        // branch the mainline: if we're viewing a branch, its parent is the target
+        const cfg = this.state.branchData && this.state.branchData.config;
+        return (cfg && cfg.is_branch) ? cfg.parent_id : (cfg ? cfg.id : this.state.config.id);
+    }
+    async createBranch() {
+        if (this._lockedNotice()) return;
+        if (this.state.branchCreating) return;
+        this.state.branchCreating = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "branch_create",
+                [this.branchParentId, this.state.branchNewName, this.state.branchNewNote]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create branch", { type: "warning" }); return; }
+            this.notif.add(`Branch “${r.name}” created`, { type: "success" });
+            this.state.branchNewName = ""; this.state.branchNewNote = "";
+            await this._loadBranches();
+        } catch (e) { this.notif.add("Branch creation failed", { type: "danger" }); }
+        finally { this.state.branchCreating = false; }
+    }
+    async toggleBranchDiff(b) {
+        if (this.state.branchExpandId === b.id) {
+            this.state.branchExpandId = null; this.state.branchDiff = null; return;
+        }
+        this.state.branchExpandId = b.id;
+        this.state.branchDiff = null;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "branch_diff", [b.id]);
+            if (this.state.branchExpandId === b.id) this.state.branchDiff = r;
+        } catch (e) { this.state.branchDiff = { ok: false }; }
+    }
+    async openBranchConfig(b) {
+        this.state.branchOpen = false;
+        await this.load(b.id);
+        this.state.view = "cards";
+    }
+    async openParentConfig() {
+        const cfg = this.state.branchData && this.state.branchData.config;
+        if (!cfg || !cfg.parent_id) return;
+        this.state.branchOpen = false;
+        await this.load(cfg.parent_id);
+        this.state.view = "cards";
+    }
+    async mergeBranch(b) {
+        if (this._lockedNotice()) return;
+        if (this.state.branchBusy) return;
+        this.state.branchBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "branch_merge", [b.id]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Merge failed", { type: "warning" }); return; }
+            let msg = `Merged ${r.merged} change${r.merged === 1 ? "" : "s"} into ${r.parent_name}`;
+            if (r.conflicts) msg += ` · ${r.conflicts} conflict${r.conflicts === 1 ? "" : "s"} (branch won)`;
+            this.notif.add(msg, { type: "success" });
+            this.state.branchExpandId = null; this.state.branchDiff = null;
+            await this._loadBranches();
+        } catch (e) { this.notif.add("Merge failed", { type: "danger" }); }
+        finally { this.state.branchBusy = false; }
+    }
+    async discardBranch(b) {
+        if (this._lockedNotice()) return;
+        const r = await this.orm.call("pb.formula.studio", "branch_discard", [b.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Discard failed", { type: "warning" }); return; }
+        this.notif.add(`Branch “${b.name}” discarded`, { type: "info" });
+        if (this.state.branchExpandId === b.id) { this.state.branchExpandId = null; this.state.branchDiff = null; }
+        await this._loadBranches();
+    }
+
+    // ---- Scheme variants (B5) ----
+    openVariants() {
+        this.state.variantOpen = true;
+        this.state.variantDiff = null;
+        this.state.variantExpandId = null;
+        this.state.variantNewName = "";
+        this._loadVariants();
+    }
+    closeVariants() { this.state.variantOpen = false; }
+    async _loadVariants() {
+        this.state.variantBusy = true;
+        try {
+            this.state.variantData = await this.orm.call("pb.formula.studio", "list_variants", [this.state.config.id]);
+        } catch (e) { this.state.variantData = { ok: false, variants: [] }; }
+        finally { this.state.variantBusy = false; }
+    }
+    onVariantName(ev) { this.state.variantNewName = ev.target.value; }
+    get variantMasterId() {
+        const d = this.state.variantData;
+        return (d && d.master) ? d.master.id : this.state.config.id;
+    }
+    async createVariant() {
+        if (this._lockedNotice()) return;
+        if (this.state.variantCreating) return;
+        this.state.variantCreating = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "variant_create",
+                [this.variantMasterId, this.state.variantNewName]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create variant", { type: "warning" }); return; }
+            this.notif.add(`Variant “${r.name}” created`, { type: "success" });
+            this.state.variantNewName = "";
+            await this._loadVariants();
+        } catch (e) { this.notif.add("Variant creation failed", { type: "danger" }); }
+        finally { this.state.variantCreating = false; }
+    }
+    async toggleVariantDiff(v) {
+        if (this.state.variantExpandId === v.id) { this.state.variantExpandId = null; this.state.variantDiff = null; return; }
+        this.state.variantExpandId = v.id;
+        this.state.variantDiff = null;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "variant_diff", [v.id]);
+            if (this.state.variantExpandId === v.id) this.state.variantDiff = r;
+        } catch (e) { this.state.variantDiff = { ok: false }; }
+    }
+    async _refreshVariantDiff(v) {
+        if (this.state.variantExpandId === v.id) {
+            this.state.variantDiff = await this.orm.call("pb.formula.studio", "variant_diff", [v.id]);
+        }
+    }
+    async openVariantConfig(v) {
+        this.state.variantOpen = false;
+        await this.load(v.id);
+        this.state.view = "cards";
+    }
+    async openMasterConfig() {
+        const d = this.state.variantData;
+        if (!d || !d.master) return;
+        this.state.variantOpen = false;
+        await this.load(d.master.id);
+        this.state.view = "cards";
+    }
+    async syncVariant(v) {
+        if (this._lockedNotice()) return;
+        if (this.state.variantSyncing) return;
+        this.state.variantSyncing = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "variant_sync", [v.id]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Sync failed", { type: "warning" }); return; }
+            this.notif.add(`Synced ${r.synced} component${r.synced === 1 ? "" : "s"} · ${r.preserved} override${r.preserved === 1 ? "" : "s"} kept`, { type: "success" });
+            await this._refreshVariantDiff(v);
+            await this._loadVariants();
+        } catch (e) { this.notif.add("Sync failed", { type: "danger" }); }
+        finally { this.state.variantSyncing = false; }
+    }
+    async pushToVariants() {
+        if (this._lockedNotice()) return;
+        if (this.state.variantSyncing) return;
+        this.state.variantSyncing = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "variant_push", [this.variantMasterId]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Push failed", { type: "warning" }); return; }
+            this.notif.add(`Pushed to ${r.variants} variant${r.variants === 1 ? "" : "s"} · ${r.total_synced} update${r.total_synced === 1 ? "" : "s"}`, { type: "success" });
+            this.state.variantExpandId = null; this.state.variantDiff = null;
+            await this._loadVariants();
+        } catch (e) { this.notif.add("Push failed", { type: "danger" }); }
+        finally { this.state.variantSyncing = false; }
+    }
+    async toggleOverride(v, row) {
+        if (this._lockedNotice()) return;
+        const turnOn = !row.overridden;
+        const r = await this.orm.call("pb.formula.studio", "variant_toggle_override", [v.id, row.code, turnOn]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not change override", { type: "warning" }); return; }
+        this.notif.add(turnOn ? `“${row.name}” protected from sync` : `“${row.name}” now inherits from master`, { type: "info" });
+        await this._refreshVariantDiff(v);
+        await this._loadVariants();
+    }
+    async detachVariant(v) {
+        if (this._lockedNotice()) return;
+        const r = await this.orm.call("pb.formula.studio", "variant_detach", [v.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Detach failed", { type: "warning" }); return; }
+        this.notif.add(`“${v.name}” detached — now a standalone config`, { type: "info" });
+        if (this.state.variantExpandId === v.id) { this.state.variantExpandId = null; this.state.variantDiff = null; }
+        await this._loadVariants();
     }
 
     // ---- inline component editor ----
