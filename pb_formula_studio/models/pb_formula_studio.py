@@ -1850,6 +1850,214 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True}
 
     # ==================================================================
+    # B7 — Client review portal (read-only trust surface via a token link)
+    # ==================================================================
+    def _review_url(self, token):
+        base = (self.env['ir.config_parameter'].sudo().get_param('web.base.url') or '').rstrip('/')
+        return '%s/formula/review/%s' % (base, token)
+
+    def _review_fmt(self, v, nf, cur):
+        """Format a value by its number_format for the read-only page."""
+        if v is None:
+            return ''
+        try:
+            v = float(v)
+        except (TypeError, ValueError):
+            return str(v)
+        if nf == 'percentage':
+            return ('%g%%' % round(v * 100, 4))
+        if nf == 'integer':
+            return '{:,.0f}'.format(v)
+        if nf == 'number':
+            return '{:,.2f}'.format(v)
+        return '%s%s' % (cur, '{:,.0f}'.format(v))
+
+    def _review_preview(self, config):
+        """A sample payslip preview for the review page — every appears-on-payslip
+        component with its computed value, grouped Earnings / Deductions / Totals."""
+        sample = config.sample_data_ids[:1]
+        cur = config.currency_id.symbol if config.currency_id else '₫'
+        if not sample:
+            return {'ok': False, 'currency': cur, 'earnings': [], 'deductions': [], 'totals': [], 'sample_name': ''}
+        try:
+            inputs = json.loads(sample.input_values_json or '{}')
+            vals = sample._evaluate_rules_with_dependencies(inputs)
+        except Exception:
+            inputs, vals = {}, {}
+        earnings, deductions, totals = [], [], []
+        for r in config.rule_ids.sorted(key=lambda x: x.sequence):
+            if not r.appears_on_payslip:
+                continue
+            code = r.code
+            v = vals.get(code)
+            if v is None and r.column_type == 'constant':
+                v = r.constant_value
+            if v is None and r.column_type == 'input':
+                v = inputs.get(code)
+            try:
+                v = float(v or 0)
+            except (TypeError, ValueError):
+                v = 0.0
+            grp = _group_for(r)
+            nf = r.number_format or 'currency'
+            line = {'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or code,
+                    'value': v, 'display': self._review_fmt(v, nf, cur)}
+            if grp == 'Deductions':
+                deductions.append(line)
+            elif grp == 'Totals':
+                totals.append(line)
+            else:
+                earnings.append(line)
+        return {'ok': True, 'currency': cur, 'sample_name': sample.name or '',
+                'earnings': earnings, 'deductions': deductions, 'totals': totals}
+
+    def _review_components(self, config):
+        """Read-only component catalogue grouped for the client."""
+        out = []
+        cur = config.currency_id.symbol if config.currency_id else '₫'
+        for r in config.rule_ids.sorted(key=lambda x: x.sequence):
+            if r.column_type not in ('formula', 'constant', 'input'):
+                continue
+            nf = r.number_format or 'currency'
+            out.append({
+                'col': r.column_letter or '', 'code': r.code or '',
+                'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
+                'type': r.column_type, 'group': _group_for(r),
+                'formula': (r.excel_formula or '') if r.column_type == 'formula' else '',
+                'value_display': self._review_fmt(r.constant_value, nf, cur) if r.column_type == 'constant' else '',
+            })
+        return out
+
+    def _review_payload(self, share):
+        """Everything the read-only review page renders — computed server-side."""
+        config = share.config_id
+        release = None
+        if share.release_id and share.release_id.exists():
+            rel = share.release_id
+            release = {
+                'id': rel.id, 'name': rel.name,
+                'narrative': rel.narrative or '',
+                'change_count': rel.change_count,
+                'approved_by': rel.approved_by_id.name or '',
+                'date': fields.Datetime.to_string(rel.approved_date) if rel.approved_date else '',
+            }
+        comments = [{
+            'author_name': c.author_name, 'side': c.author_side,
+            'body': c.body or '',
+            'date': fields.Datetime.to_string(c.create_date) if c.create_date else '',
+        } for c in share.comment_ids]
+        country = dict(config._fields['country_code'].selection).get(config.country_code, '')
+        return {
+            'token': share.token,
+            'config': {
+                'name': config.name, 'country': country,
+                'state': config.state, 'code': config.code or '',
+                'component_count': len(config.rule_ids),
+                'employees': self._config_employee_count(config),
+                'score': self._score(config),
+            },
+            'client_name': share.client_name or '',
+            'components': self._review_components(config),
+            'preview': self._review_preview(config),
+            'release': release,
+            'signed_off': share.signed_off,
+            'signed_off_name': share.signed_off_name or '',
+            'signed_off_date': fields.Datetime.to_string(share.signed_off_date) if share.signed_off_date else '',
+            'comments': comments,
+            'company': (config.company_id.name if config.company_id else '') or 'Payobook',
+        }
+
+    # ---- share management (cockpit side) ----
+    def _share_payload(self, s):
+        if s.signed_off:
+            status = 'signed'
+        elif not s.active:
+            status = 'revoked'
+        elif s.expiry and s.expiry < fields.Datetime.now():
+            status = 'expired'
+        elif s.view_count:
+            status = 'viewed'
+        else:
+            status = 'active'
+        return {
+            'id': s.id, 'token': s.token, 'url': self._review_url(s.token),
+            'client_name': s.client_name or '', 'note': s.note or '',
+            'release': s.release_id.name or '', 'release_id': s.release_id.id or False,
+            'status': status, 'view_count': s.view_count or 0,
+            'last_viewed': fields.Datetime.to_string(s.last_viewed) if s.last_viewed else '',
+            'signed_off_name': s.signed_off_name or '',
+            'signed_off_date': fields.Datetime.to_string(s.signed_off_date) if s.signed_off_date else '',
+            'comment_count': len(s.comment_ids),
+            'created': fields.Datetime.to_string(s.create_date) if s.create_date else '',
+        }
+
+    @api.model
+    def create_review_share(self, config_id, release_id=None, client_name='', note=''):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to share configurations.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        vals = {'config_id': config.id, 'client_name': (client_name or '').strip(),
+                'note': (note or '').strip()}
+        if release_id:
+            vals['release_id'] = int(release_id)
+        share = self.env['hr.formula.review.share'].create(vals)
+        return {'ok': True, 'share': self._share_payload(share)}
+
+    @api.model
+    def list_review_shares(self, config_id=None):
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'shares': []}
+        shares = self.env['hr.formula.review.share'].with_context(active_test=False).search(
+            [('config_id', '=', config.id)])
+        releases = self.env['hr.formula.release'].search([('config_id', '=', config.id)])
+        return {'ok': True, 'shares': [self._share_payload(s) for s in shares],
+                'releases': [{'id': r.id, 'name': r.name} for r in releases],
+                'can_edit': self._can_edit()}
+
+    @api.model
+    def revoke_review_share(self, share_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to revoke shares.")}
+        share = self.env['hr.formula.review.share'].browse(int(share_id))
+        if not share.exists():
+            return {'ok': False}
+        share.active = False
+        return {'ok': True}
+
+    # ---- portal actions (called by the public controller, token-validated) ----
+    def _review_share_for(self, token):
+        share = self.env['hr.formula.review.share'].sudo().search([('token', '=', token)], limit=1)
+        return share if (share and share._is_live()) else self.env['hr.formula.review.share']
+
+    @api.model
+    def review_signoff(self, token, name):
+        share = self._review_share_for(token)
+        if not share or not share.release_id:
+            return {'ok': False}
+        share._record_signoff(name)
+        self.env['hr.formula.review.comment'].sudo().create({
+            'share_id': share.id, 'author_name': (name or '').strip() or _('Client'),
+            'author_side': 'client',
+            'body': _("✔ Signed off release “%s”.") % (share.release_id.name or ''),
+        })
+        return {'ok': True}
+
+    @api.model
+    def review_comment(self, token, name, body, side='client'):
+        share = self._review_share_for(token)
+        body = (body or '').strip()
+        if not share or not body:
+            return {'ok': False}
+        self.env['hr.formula.review.comment'].sudo().create({
+            'share_id': share.id, 'author_name': (name or '').strip() or _('Client'),
+            'author_side': 'bureau' if side == 'bureau' else 'client', 'body': body,
+        })
+        return {'ok': True}
+
+    # ==================================================================
     # F8 — Simulate-before-activate (thin facade over hr.formula.simulation)
     # ==================================================================
     @api.model

@@ -202,6 +202,14 @@ export class PbFormulaStudio extends Component {
             variantNewName: "",
             variantCreating: false,
             variantSyncing: false,
+            // B7 — client review shares
+            shareOpen: false,
+            shareBusy: false,
+            shareData: null,
+            shareNewClient: "",
+            shareNewRelease: false,
+            shareCreating: false,
+            shareCopied: null,
             // B8 — what-if sliders + cost projection
             whatifOpen: false,
             whatifBusy: false,
@@ -1290,6 +1298,58 @@ export class PbFormulaStudio extends Component {
         this.notif.add(`“${v.name}” detached — now a standalone config`, { type: "info" });
         if (this.state.variantExpandId === v.id) { this.state.variantExpandId = null; this.state.variantDiff = null; }
         await this._loadVariants();
+    }
+
+    // ---- Client review shares (B7) ----
+    openShare() {
+        this.state.shareOpen = true;
+        this.state.shareNewClient = "";
+        this.state.shareNewRelease = false;
+        this.state.shareCopied = null;
+        this._loadShares();
+    }
+    closeShare() { this.state.shareOpen = false; }
+    async _loadShares() {
+        this.state.shareBusy = true;
+        try {
+            this.state.shareData = await this.orm.call("pb.formula.studio", "list_review_shares", [this.state.config.id]);
+        } catch (e) { this.state.shareData = { ok: false, shares: [] }; }
+        finally { this.state.shareBusy = false; }
+    }
+    onShareClient(ev) { this.state.shareNewClient = ev.target.value; }
+    onShareRelease(ev) { this.state.shareNewRelease = ev.target.value ? parseInt(ev.target.value) : false; }
+    async createShare() {
+        if (this._lockedNotice()) return;
+        if (this.state.shareCreating) return;
+        this.state.shareCreating = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "create_review_share",
+                [this.state.config.id, this.state.shareNewRelease, this.state.shareNewClient, ""]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not create link", { type: "warning" }); return; }
+            this.notif.add("Review link created", { type: "success" });
+            this.state.shareNewClient = "";
+            await this._loadShares();
+            this._copyShare(r.share);
+        } catch (e) { this.notif.add("Failed to create link", { type: "danger" }); }
+        finally { this.state.shareCreating = false; }
+    }
+    async _copyShare(s) {
+        try {
+            await navigator.clipboard.writeText(s.url);
+            this.state.shareCopied = s.token;
+            this.notif.add("Link copied to clipboard", { type: "info" });
+        } catch (e) { /* clipboard unavailable — the field is selectable */ }
+    }
+    copyShare(s) { this._copyShare(s); }
+    async revokeShare(s) {
+        if (this._lockedNotice()) return;
+        const r = await this.orm.call("pb.formula.studio", "revoke_review_share", [s.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Revoke failed", { type: "warning" }); return; }
+        this.notif.add("Link revoked", { type: "info" });
+        await this._loadShares();
+    }
+    shareStatusLabel(st) {
+        return { active: "Active", viewed: "Viewed", signed: "Signed off", revoked: "Revoked", expired: "Expired" }[st] || st;
     }
 
     // ---- inline component editor ----
