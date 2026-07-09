@@ -182,6 +182,59 @@ class HrFormulaConfig(models.Model):
         copy=True
     )
 
+    # ==========================================
+    # B2 — CONFIG BRANCHES (safe fork / merge)
+    # ==========================================
+    # A branch is a full config copy tagged with the config it was forked from.
+    # Edits happen in the branch in isolation; a merge writes the branch's
+    # changed formulas back onto the parent and seals a release. None of these
+    # copy into a clone (a clone starts life as its own mainline).
+    parent_branch_id = fields.Many2one(
+        'hr.formula.config', string='Branched from',
+        ondelete='set null', index=True, copy=False,
+        help="The configuration this one was forked from (empty for mainline configs)."
+    )
+    child_branch_ids = fields.One2many(
+        'hr.formula.config', 'parent_branch_id',
+        string='Branches', copy=False
+    )
+    branch_note = fields.Char(string='Branch note', copy=False)
+    fork_milestone_id = fields.Many2one(
+        'hr.formula.config.milestone', string='Fork point',
+        ondelete='set null', copy=False,
+        help="Milestone recorded on the parent when this branch was cut — the "
+             "reference point for detecting parent drift (merge conflicts)."
+    )
+    branch_state = fields.Selection([
+        ('open', 'Open'),
+        ('merged', 'Merged'),
+        ('discarded', 'Discarded'),
+    ], string='Branch Status', default='open', copy=False,
+        help="Lifecycle of a branch after it is cut.")
+
+    # ==========================================
+    # B5 — SCHEME VARIANTS (master → variants)
+    # ==========================================
+    # A variant is a materialized config that inherits its components from a
+    # master scheme. Editing the master and pushing propagates every component
+    # EXCEPT those the variant has locally overridden. Variants are real configs
+    # (no compute-path change) kept in sync — the cure for "N near-identical
+    # configurations" a bureau otherwise maintains by hand.
+    master_config_id = fields.Many2one(
+        'hr.formula.config', string='Master scheme',
+        ondelete='set null', index=True, copy=False,
+        help="The master scheme this variant inherits its components from."
+    )
+    variant_ids = fields.One2many(
+        'hr.formula.config', 'master_config_id',
+        string='Variants', copy=False
+    )
+    variant_override_codes = fields.Char(
+        string='Overridden components', copy=False,
+        help="Comma-separated component codes that are locally overridden in "
+             "this variant and therefore protected from a master push/sync."
+    )
+
     rule_count = fields.Integer(
         string='Rules Count',
         compute='_compute_rule_count'

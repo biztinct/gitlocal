@@ -50,6 +50,9 @@ class HrFormulaRuleVersion(models.Model):
         ('restore', 'Restored'),
         ('lifecycle', 'Lifecycle'),
         ('rename', 'Renamed'),
+        ('legislation', 'Legislation pack'),
+        ('merge', 'Branch merge'),
+        ('sync', 'Master sync'),
     ], string='Reason', default='edit', required=True, index=True)
     note = fields.Char(string='Note')
 
