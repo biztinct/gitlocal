@@ -219,6 +219,10 @@ class PbFormulaStudio(models.AbstractModel):
                 'id': r.id,
                 'col': r.column_letter or '?',
                 'code': r.code or '',
+                # F111: sequence = display order (letters are frozen identities);
+                # category_id drives the grid's category band strip + grouping.
+                'sequence': r.sequence or 0,
+                'category_id': r.category_id.id or False,
                 'note_count': note_by_rule[r.id]['count'],
                 'review_open': note_by_rule[r.id]['review_open'],
                 # Multilingual: prefer the translatable linked salary rule's label
@@ -3392,21 +3396,83 @@ class PbFormulaStudio(models.AbstractModel):
         while code in existing_codes:
             n += 1
             code = '%s_%s' % (base, n)
-        existing_letters = set(config.rule_ids.mapped('column_letter'))
-        i = 0
-        while self._idx_letter(i) in existing_letters:
-            i += 1
-        rule = self.env['hr.formula.rule'].create({
+        # F111: no explicit letter — create() freezes the next permanent letter
+        # (max+1, never reused). sequence lands at the end of the grid...
+        Rule = self.env['hr.formula.rule']
+        rule = Rule.create({
             'config_id': config.id,
             'name': vals.get('name') or 'New Component',
             'code': code,
             'column_type': vals.get('column_type') or 'formula',
             'excel_formula': vals.get('excel_formula') or '',
             'constant_value': vals.get('constant_value') or 0.0,
-            'sequence': max(config.rule_ids.mapped('sequence') or [0]) + 1,
-            'column_letter': self._idx_letter(i),
+            'sequence': (max(config.rule_ids.mapped('sequence') or [0]) + 10),
         })
+        # ...then, if the grid is grouped by category, slot it at the end of its
+        # own category band rather than the far right (T111.5 / D111.4).
+        cat = rule.category_id.id or 0
+        siblings = [r for r in config.rule_ids.sorted(key=lambda r: r.sequence) if r.id != rule.id]
+        if cat and any((r.category_id.id or 0) == cat for r in siblings):
+            last = max(i for i, r in enumerate(siblings) if (r.category_id.id or 0) == cat)
+            ordered = siblings[:]
+            ordered.insert(last + 1, rule)
+            before = {r.id: r.column_letter for r in config.rule_ids}
+            for i, r in enumerate(ordered):
+                target = (i + 1) * 10
+                if r.sequence != target:
+                    r.with_context(skip_formula_version=True).sequence = target
+            Rule._assert_letters_frozen(config, before)
         return {'ok': True, 'rule_id': rule.id}
+
+    @api.model
+    def group_columns_by_category(self, config_id):
+        """F111/T111.4 — one batched sequence rewrite that groups every column
+        by category. Category order = first appearance (stable); within a
+        category the current manual order is preserved (stable sort). Letters
+        are frozen, so nothing about computation changes — display only."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'ok': False}
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        ordered = config.rule_ids.sorted(key=lambda r: r.sequence)
+        cat_order, seen = {}, 0
+        for r in ordered:
+            key = r.category_id.id or 0
+            if key not in cat_order:
+                cat_order[key] = seen
+                seen += 1
+        grouped = sorted(ordered, key=lambda r: (cat_order[r.category_id.id or 0], r.sequence))
+        for i, rule in enumerate(grouped):
+            target = (i + 1) * 10
+            if rule.sequence != target:
+                rule.with_context(skip_formula_version=True).sequence = target
+        self.env['hr.formula.rule']._assert_letters_frozen(config, before)
+        return self.get_studio_data(config_id)
+
+    @api.model
+    def reorder_component(self, config_id, drag_id, before_id=None):
+        """F111/T111.3 — move a column so it sits just before `before_id` (or to
+        the end when None). Display-only: renumber `sequence`; letters stay
+        frozen, so no formula reference is ever re-pointed."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'ok': False}
+        drag_id = int(drag_id)
+        drag = config.rule_ids.filtered(lambda r: r.id == drag_id)
+        if not drag:
+            return {'ok': False}
+        order = [r for r in config.rule_ids.sorted(key=lambda r: r.sequence) if r.id != drag_id]
+        idx = len(order)
+        if before_id:
+            idx = next((i for i, r in enumerate(order) if r.id == int(before_id)), len(order))
+        order.insert(idx, drag)
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        for i, r in enumerate(order):
+            target = (i + 1) * 10
+            if r.sequence != target:
+                r.with_context(skip_formula_version=True).sequence = target
+        self.env['hr.formula.rule']._assert_letters_frozen(config, before)
+        return {'ok': True}
 
     @api.model
     def delete_component(self, rule_id):
@@ -3416,7 +3482,7 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True}
 
     @api.model
-    def delete_component(self, rule_id):
+    def _dupe_delete_component(self, rule_id):
         rule = self.env['hr.formula.rule'].browse(int(rule_id))
         if rule.exists():
             rule.unlink()

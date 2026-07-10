@@ -9,6 +9,13 @@
     <div class="g2-root">
     <FormulaBar focused="focused" canEdit="props.canEdit"
                 onSaveFormula="props.onSaveFormula" onValidateLive="props.onValidateLive"/>
+    <div class="g2-toolbar" t-if="props.canEdit and props.onGroupByCategory">
+      <button class="pbfs-btn soft sm" t-on-click="groupByCategory" title="Reorder columns so every component of a category sits together">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="6" height="16" rx="1"/><rect x="10.5" y="4" width="4" height="16" rx="1"/><rect x="16" y="4" width="5" height="16" rx="1"/></svg>
+        Group by category
+      </button>
+      <span class="g2-toolbar-hint">Drag a column header to reorder — letters stay fixed</span>
+    </div>
     <div class="g2-bulkbar" t-if="selectionCount >= 2">
       <span class="g2-bulk-count"><b t-esc="selectionCount"/> columns selected</span>
       <button t-if="props.canEdit and props.onBulkUpdate" class="pbfs-btn primary sm" t-on-click="openBulk">
@@ -25,7 +32,14 @@
             <t t-foreach="displayColumns" t-as="u" t-key="u.key">
               <t t-if="u.kind === 'base'">
                 <t t-set="c" t-value="u.comp"/>
-                <th t-att-data-col-id="c.id" t-att-class="headClass(c)"
+                <th t-att-data-col-id="c.id"
+                    t-attf-class="{{ headClass(c) }} {{ bandBoundaryClass(c) }} {{ ui.dragOverId === c.id ? 'g2-dragover' : '' }} {{ ui.dragId === c.id ? 'g2-dragging' : '' }}"
+                    t-attf-style="{{ bandStyle(c) }}"
+                    t-att-draggable="(props.canEdit and props.onReorder) ? 'true' : 'false'"
+                    t-on-dragstart="(ev) => this.onColDragStart(ev, c)"
+                    t-on-dragover="(ev) => this.onColDragOver(ev, c)"
+                    t-on-drop="(ev) => this.onColDrop(ev, c)"
+                    t-on-dragend="() => this.onColDragEnd()"
                     t-on-click="(ev) => this.onCellClick(ev, c, 'formula')" t-att-title="c.name">
                   <span class="g2-col" t-esc="c.col"/>
                   <span class="g2-code" t-esc="c.code"/>

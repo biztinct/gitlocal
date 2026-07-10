@@ -478,6 +478,27 @@ export class PbFormulaStudio extends Component {
         try { return await this.orm.call("pb.formula.studio", "translate_formula", [ruleId, targetCols]); }
         catch (e) { return []; }
     }
+    // F111 — display-only reorder (letters frozen); refresh from the server so
+    // the grid re-sorts by the new sequence.
+    async gridReorder(dragId, beforeId) {
+        if (this._lockedNotice()) return;
+        const cfgId = this.state.config.id;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "reorder_component", [cfgId, dragId, beforeId || false]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Reorder failed", { type: "warning" }); return; }
+        } catch (e) { this.notif.add("Reorder failed", { type: "danger" }); return; }
+        await this.load(cfgId);
+    }
+    async gridGroupByCategory() {
+        if (this._lockedNotice()) return;
+        const cfgId = this.state.config.id;
+        try {
+            const d = await this.orm.call("pb.formula.studio", "group_columns_by_category", [cfgId]);
+            if (d && d.ok === false) { this.notif.add("Grouping failed", { type: "warning" }); return; }
+            this.notif.add("Columns grouped by category", { type: "success" });
+        } catch (e) { this.notif.add("Grouping failed", { type: "danger" }); return; }
+        await this.load(cfgId);
+    }
     async gridBulkSaveFormulas(items) {
         const cfgId = this.state.config.id;
         const sampleId = this.state.preview.sample_id;
