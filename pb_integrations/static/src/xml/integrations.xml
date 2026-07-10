@@ -12,6 +12,9 @@
             <h1 class="pbim-h1">Integrations</h1>
             <p class="pbim-sub">External HR / payroll connectors, their sync status and mappings.</p>
           </div>
+          <button class="pbim-btn primary itg-connect" style="margin-left:auto;align-self:center" t-on-click="connectSystem">
+            <t t-out="ic('plug',16)"/> Connect a system
+          </button>
         </div>
 
         <div class="ppl-kpis">

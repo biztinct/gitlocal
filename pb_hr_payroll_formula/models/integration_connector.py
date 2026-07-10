@@ -279,6 +279,67 @@ class HrIntegrationConnector(models.Model):
     # ==========================================
     # CONNECTION ACTIONS
     # ==========================================
+    def action_apply_mapping_template(self, config_id=None):
+        """F114 — seed field mappings from this vendor's ready-made template.
+        Matched by canonical code → 'active'; unmatched or verify/derive rows →
+        'suggested' (never load-bearing). Idempotent: an existing mapping for a
+        source path is never overwritten."""
+        self.ensure_one()
+        Tmpl = self.env['hr.integration.mapping.template']
+        Map = self.env['hr.integration.field.mapping']
+        rows = Tmpl.search([('connector_type', '=', self.connector_type)])
+        # sudo the config read — configs are company-scoped/record-rule-gated
+        # (same pattern the studio uses); the mapping setup is a trusted action.
+        config = False
+        if config_id:
+            config = self.env['hr.formula.config'].sudo().browse(int(config_id))
+            if not config.exists():
+                config = False
+        if not config:
+            config = self.env['hr.formula.config'].sudo().search([('connector_id', '=', self.id)], limit=1)
+        existing_src = set((self.field_mapping_ids.mapped('source_field')) or [])
+        applied = suggested = 0
+        for t in rows:
+            if t.source_path in existing_src:
+                continue
+            rule = self.env['hr.formula.rule']
+            if config:
+                rule = config.rule_ids.filtered(
+                    lambda r: r.column_type == 'input'
+                    and (r.code or '').upper() == (t.target_code or '').upper())[:1]
+            state = 'active' if (rule and not t.verify) else 'suggested'
+            Map.create({
+                'connector_id': self.id,
+                'connector_type': self.connector_type,
+                'source_field': t.source_path,
+                'source_field_label': t.target_label or t.target_code,
+                'target_rule_id': rule.id if rule else False,
+                'transformation_type': t.transformation_type or 'direct',
+                'transformation_value': t.transformation_value or 0.0,
+                'transformation_code': t.transformation_code or False,
+                'is_required': t.is_required,
+                'default_value': t.default_value or 0.0,
+                'notes': t.note or False,
+                'active_state': state,
+            })
+            existing_src.add(t.source_path)
+            if state == 'active':
+                applied += 1
+            else:
+                suggested += 1
+        return {'applied': applied, 'suggested': suggested, 'total': applied + suggested}
+
+    @api.model
+    def action_open_onboarding(self):
+        """Launch the 4-step connect-your-HR-system wizard."""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Connect an HR / Timesheet System'),
+            'res_model': 'hr.integration.onboarding.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
     def action_test_connection(self):
         """Test the connection to the external system"""
         self.ensure_one()
