@@ -85,6 +85,13 @@ export class PbIntegrations extends Component {
         });
     }
     launch(xmlid) { if (xmlid) this.action.doAction(xmlid, { clearBreadcrumbs: true }); }
+    // F114 — open the "Connect an HR system" onboarding wizard; refresh the
+    // board when it closes so a newly-created connector shows up.
+    connectSystem() {
+        this.action.doAction("pb_hr_payroll_formula.action_hr_integration_onboarding", {
+            onClose: () => this.load(),
+        });
+    }
 }
 
 registry.category("actions").add("pb_integrations", PbIntegrations);

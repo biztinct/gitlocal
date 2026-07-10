@@ -169,6 +169,15 @@ Example: value * 1.1 if value > 1000 else value
         default=True
     )
 
+    # F114 — provenance/confidence of a mapping row. 'suggested' rows came from a
+    # vendor template but are NOT confirmed against the real payload, so they are
+    # excluded from sync until promoted to 'active' (via the onboarding batch test).
+    active_state = fields.Selection([
+        ('active', 'Active'),
+        ('suggested', 'Suggested'),
+        ('ignored', 'Ignored'),
+    ], string='Mapping State', default='active', index=True)
+
     notes = fields.Text(
         string='Notes'
     )
