@@ -152,6 +152,10 @@
                   </button>
                 </div>
               </div>
+              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-depmap" t-on-click="openDepMap" title="Dependency map — the whole configuration as a graph">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="12" r="2.4"/><path d="M7.3 6.6 16.7 11M7.3 17.4 16.7 13"/></svg>
+                <span>Map</span>
+              </button>
               <button t-attf-class="pbfs-btn soft pbfs-probbtn biz-icon-only-lg {{ problemLevel }}" data-coach="fs-problems" t-on-click="openProblems" title="Problems, lint &amp; rename-refactor">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
                 <span>Problems</span>
@@ -2366,6 +2370,75 @@
                 </t>
               </div>
             </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ DEPENDENCY MAP (B9) ============ -->
+      <div t-if="state.depOpen" class="pbfs-dep-scrim" t-on-click="closeDepMap">
+        <div class="pbfs-dep" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="dp-head">
+            <div class="dp-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="12" r="2.4"/><path d="M7.3 6.6 16.7 11M7.3 17.4 16.7 13"/></svg>
+              <div>
+                <b>Dependency map</b>
+                <small><t t-esc="state.config.name"/> · every component, in computation order</small>
+              </div>
+            </div>
+            <div class="dp-stats">
+              <div class="dp-stat"><b t-esc="depStats.nodes"/><span>components</span></div>
+              <div class="dp-stat"><b t-esc="depStats.depth"/><span>layers deep</span></div>
+              <div class="dp-stat"><b t-esc="depStats.critical"/><span>longest chain</span></div>
+              <div t-attf-class="dp-stat {{ depStats.cycles ? 'err' : '' }}"><b t-esc="depStats.cycles"/><span>cycles</span></div>
+            </div>
+            <button class="hs-x" t-on-click="closeDepMap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <div class="dp-toolbar">
+            <span class="dp-tb-lbl">Show</span>
+            <t t-foreach="depGroupsPresent" t-as="g" t-key="g">
+              <button t-attf-class="dp-chip dg-{{ catKey(g) }} {{ depHiddenGroup(g) ? 'off' : '' }}" t-on-click="() => this.toggleDepGroup(g)">
+                <span class="dp-dot"/><t t-esc="g"/><b t-esc="depGroupCount(g)"/>
+              </button>
+            </t>
+            <button t-attf-class="dp-chip dp-crit {{ state.depCriticalOn ? 'on' : '' }}" t-on-click="toggleDepCritical">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-9 12h7l-1 8 9-12h-7z"/></svg>
+              Critical path
+            </button>
+            <div class="dp-zoom">
+              <button t-on-click="depZoomOut" title="Zoom out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+              <button class="dp-fit" t-on-click="fitDepMap">Fit</button>
+              <button t-on-click="depZoomIn" title="Zoom in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            </div>
+          </div>
+
+          <div t-attf-class="dp-canvas {{ state.depDragging ? 'dragging' : '' }}" t-ref="depCanvas"
+               t-on-mousedown="onDepDown" t-on-mousemove="onDepMove" t-on-mouseup="onDepUp" t-on-mouseleave="onDepUp" t-on-wheel="onDepWheel">
+            <svg class="dp-svg" width="100%" height="100%">
+              <defs>
+                <marker id="dep-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+                  <path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/>
+                </marker>
+              </defs>
+              <g t-attf-transform="{{ depTransform }}">
+                <path t-foreach="state.depEdges" t-as="e" t-key="e_index" t-att-d="depEdgePath(e)" t-attf-class="{{ depEdgeCls(e) }}" marker-end="url(#dep-arrow)"/>
+                <g t-foreach="state.depNodes" t-as="n" t-key="n.col" t-attf-class="{{ depNodeCls(n) }}"
+                   t-attf-transform="translate({{ n.x }},{{ n.y }})"
+                   t-on-click="() => this.setDepFocus(n)" t-on-dblclick="() => this.openFromMap(n)">
+                  <rect class="dn-box" t-att-width="n.w" t-att-height="n.h" rx="10"/>
+                  <rect class="dn-accent" width="4" t-att-height="n.h" rx="2"/>
+                  <text class="dn-col" x="15" y="20" t-esc="n.col"/>
+                  <text class="dn-type" t-att-x="n.w - 12" y="20" text-anchor="end" t-esc="n.type"/>
+                  <text class="dn-name" x="15" y="35" t-esc="depClip(n.name)"/>
+                </g>
+              </g>
+            </svg>
+            <div t-if="!state.depNodes.length" class="dp-empty">No components to map yet.</div>
+            <div class="dp-legend">
+              <span><i class="lg-crit"/>Critical path</span>
+              <span><i class="lg-cycle"/>Circular</span>
+              <span class="dp-legend-hint">Click to trace · double-click to open · drag to pan</span>
+            </div>
           </div>
         </div>
       </div>

@@ -210,6 +210,17 @@ export class PbFormulaStudio extends Component {
             shareNewRelease: false,
             shareCreating: false,
             shareCopied: null,
+            // B9 — dependency map (full-screen graph navigation)
+            depOpen: false,
+            depNodes: [],
+            depEdges: [],
+            depFocus: null,
+            depHidden: [],
+            depCritical: [],
+            depCriticalOn: false,
+            depZoom: 1,
+            depPan: { x: 0, y: 0 },
+            depDragging: false,
             // B8 — what-if sliders + cost projection
             whatifOpen: false,
             whatifBusy: false,
@@ -275,6 +286,7 @@ export class PbFormulaStudio extends Component {
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
         this.rawEditorRef = useRef("rawEditor");
+        this.depCanvasRef = useRef("depCanvas");
         this._rawNeedsSeed = false;
         this._liveTimer = null;
         // Tools ▾ closes on any outside click; Esc closes the grid drawers.
@@ -1351,6 +1363,217 @@ export class PbFormulaStudio extends Component {
     shareStatusLabel(st) {
         return { active: "Active", viewed: "Viewed", signed: "Signed off", revoked: "Revoked", expired: "Expired" }[st] || st;
     }
+
+    // ---- Dependency map (B9) — full-screen graph navigation ----
+    openDepMap() {
+        this.state.depFocus = null;
+        this.state.depHidden = [];
+        this.state.depCriticalOn = false;
+        this.state.depZoom = 1;
+        this.state.depPan = { x: 0, y: 0 };
+        this._depFocusSet = null;
+        this._buildDepMap();
+        this.state.depOpen = true;
+        requestAnimationFrame(() => this.fitDepMap());
+    }
+    closeDepMap() { this.state.depOpen = false; }
+
+    _buildDepMap() {
+        const g = this.state.graph || {};
+        const raw = g.nodes || [];
+        const nodes = raw.map((n) => {
+            const c = this.byCol(n.col);
+            return {
+                id: n.id, col: n.col, code: n.code, name: n.name,
+                type: c ? c.type : "formula", group: c ? c.group : "Earnings",
+                valid: n.is_valid, onslip: n.appears_on_payslip,
+                x: 0, y: 0, w: 160, h: 46, layer: 0,
+            };
+        });
+        const byCol = {};
+        nodes.forEach((n) => (byCol[n.col] = n));
+        const edges = (g.edges || []).filter((e) => byCol[e[0]] && byCol[e[1]]);
+        const incoming = {};
+        nodes.forEach((n) => (incoming[n.col] = []));
+        edges.forEach(([a, b]) => incoming[b].push(a));
+        // longest-path layering: inputs/constants at 0, formulas walk execution order
+        const layer = {};
+        nodes.forEach((n) => (layer[n.col] = 0));
+        const order = (g.execution_order || []).filter((c) => byCol[c]);
+        order.forEach((col) => {
+            let mx = -1;
+            incoming[col].forEach((dep) => (mx = Math.max(mx, layer[dep] || 0)));
+            layer[col] = mx + 1;
+        });
+        // any formula left out of the topo order (cycle remnant) still gets placed
+        nodes.forEach((n) => {
+            if (n.type === "formula" && !order.includes(n.col)) {
+                let mx = 0;
+                incoming[n.col].forEach((dep) => (mx = Math.max(mx, (layer[dep] || 0) + 1)));
+                layer[n.col] = Math.max(layer[n.col], mx);
+            }
+        });
+        const NW = 160, NH = 46, GX = 78, GY = 16;
+        const layerMap = {};
+        nodes.forEach((n) => {
+            n.layer = layer[n.col];
+            (layerMap[n.layer] = layerMap[n.layer] || []).push(n);
+        });
+        const keys = Object.keys(layerMap).map(Number).sort((a, b) => a - b);
+        let maxRows = 1;
+        keys.forEach((k) => (maxRows = Math.max(maxRows, layerMap[k].length)));
+        const fullH = maxRows * (NH + GY);
+        keys.forEach((k, li) => {
+            const col = layerMap[k].sort((a, b) => {
+                const go = GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group);
+                return go !== 0 ? go : this.colToNum(a.col) - this.colToNum(b.col);
+            });
+            const h = col.length * (NH + GY);
+            const oy = (fullH - h) / 2;
+            col.forEach((n, ri) => {
+                n.x = 32 + li * (NW + GX);
+                n.y = 32 + oy + ri * (NH + GY);
+                n.w = NW; n.h = NH;
+            });
+        });
+        this._depW = 64 + Math.max(1, keys.length) * (NW + GX) - GX;
+        this._depH = 64 + fullH;
+        this._depByCol = byCol;
+        this._depCycleCols = new Set((g.cycles || []).flatMap((cy) => cy.cols || []));
+        this.state.depNodes = nodes;
+        this.state.depEdges = edges;
+        this.state.depCritical = this._criticalPath(nodes, incoming, layer);
+    }
+
+    _criticalPath(nodes, incoming, layer) {
+        const ordered = [...nodes].sort((a, b) => layer[a.col] - layer[b.col]);
+        const best = {}, prev = {};
+        ordered.forEach((n) => {
+            best[n.col] = 1; prev[n.col] = null;
+            (incoming[n.col] || []).forEach((dep) => {
+                if ((best[dep] || 0) + 1 > best[n.col]) { best[n.col] = best[dep] + 1; prev[n.col] = dep; }
+            });
+        });
+        let end = null, mx = -1;
+        // prefer a payslip output as the endpoint when tied
+        nodes.forEach((n) => {
+            const b = best[n.col] + (n.onslip ? 0.5 : 0);
+            if (b > mx) { mx = b; end = n.col; }
+        });
+        const path = [];
+        let cur = end;
+        while (cur) { path.unshift(cur); cur = prev[cur]; }
+        return path;
+    }
+
+    // ---- dep-map derived getters + classes ----
+    get depStats() {
+        const layers = new Set(this.state.depNodes.map((n) => n.layer));
+        return {
+            nodes: this.state.depNodes.length,
+            edges: this.state.depEdges.length,
+            depth: layers.size,
+            critical: this.state.depCritical.length,
+            cycles: (this.state.graph.cycles || []).length,
+        };
+    }
+    get depGroupsPresent() {
+        const seen = new Set(this.state.depNodes.map((n) => n.group));
+        return GROUPS.filter((gname) => seen.has(gname));
+    }
+    depGroupCount(gname) { return this.state.depNodes.filter((n) => n.group === gname).length; }
+    _depCritSet() { return new Set(this.state.depCritical); }
+    _depCritEdge(a, b) {
+        const p = this.state.depCritical;
+        for (let i = 0; i < p.length - 1; i++) if (p[i] === a && p[i + 1] === b) return true;
+        return false;
+    }
+    depHiddenGroup(gname) { return this.state.depHidden.includes(gname); }
+    toggleDepGroup(gname) {
+        const h = this.state.depHidden;
+        this.state.depHidden = h.includes(gname) ? h.filter((x) => x !== gname) : [...h, gname];
+    }
+    toggleDepCritical() { this.state.depCriticalOn = !this.state.depCriticalOn; }
+    setDepFocus(n) {
+        if (this.state.depFocus === n.col) { this.state.depFocus = null; this._depFocusSet = null; return; }
+        this.state.depFocus = n.col;
+        this._depFocusSet = new Set([n.col, ...this.upstreamOf(n.col), ...this.downstreamOf(n.col)]);
+    }
+    clearDepFocus() { this.state.depFocus = null; this._depFocusSet = null; }
+    openFromMap(n) {
+        this.state.depOpen = false;
+        if (this.byCol(n.col)) { this.state.view = "cards"; this.selectComponent(n.id); }
+    }
+    depNodeCls(n) {
+        const cls = ["dep-node", "dg-" + this.catKey(n.group)];
+        if (!n.valid) cls.push("invalid");
+        if (this._depCycleCols && this._depCycleCols.has(n.col)) cls.push("cycle");
+        if (this.state.depCriticalOn && this._depCritSet().has(n.col)) cls.push("crit");
+        if (this.state.depHidden.includes(n.group)) cls.push("ghost");
+        if (this.state.depFocus) {
+            if (n.col === this.state.depFocus) cls.push("focus");
+            else if (this._depFocusSet && this._depFocusSet.has(n.col)) cls.push("lit");
+            else cls.push("dim");
+        }
+        return cls.join(" ");
+    }
+    depEdgeCls(e) {
+        const cls = ["dep-edge"];
+        const a = this._depByCol[e[0]], b = this._depByCol[e[1]];
+        if (this._depCycleCols && this._depCycleCols.has(e[0]) && this._depCycleCols.has(e[1])) cls.push("cycle");
+        if (this.state.depCriticalOn && this._depCritEdge(e[0], e[1])) cls.push("crit");
+        if (this.state.depHidden.includes(a && a.group) || this.state.depHidden.includes(b && b.group)) cls.push("ghost");
+        if (this.state.depFocus) {
+            if (this._depFocusSet && this._depFocusSet.has(e[0]) && this._depFocusSet.has(e[1])) cls.push("lit");
+            else cls.push("dim");
+        }
+        return cls.join(" ");
+    }
+    depEdgePath(e) {
+        const a = this._depByCol[e[0]], b = this._depByCol[e[1]];
+        if (!a || !b) return "";
+        const x1 = a.x + a.w, y1 = a.y + a.h / 2;
+        const x2 = b.x, y2 = b.y + b.h / 2;
+        const dx = Math.max(28, Math.abs(x2 - x1) * 0.45);
+        return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+    }
+    depClip(name) { return (name && name.length > 20) ? name.slice(0, 19) + "…" : (name || ""); }
+    get depViewBox() { return `0 0 ${this._depW || 100} ${this._depH || 100}`; }
+    get depTransform() { return `translate(${this.state.depPan.x},${this.state.depPan.y}) scale(${this.state.depZoom})`; }
+
+    // ---- pan / zoom ----
+    fitDepMap() {
+        const el = this.depCanvasRef && this.depCanvasRef.el;
+        if (!el || !this._depW) return;
+        const cw = el.clientWidth, ch = el.clientHeight;
+        const s = Math.min(cw / this._depW, ch / this._depH, 1.4) * 0.94;
+        this.state.depZoom = s;
+        this.state.depPan = { x: (cw - this._depW * s) / 2, y: (ch - this._depH * s) / 2 };
+    }
+    depZoomBy(f) {
+        const el = this.depCanvasRef && this.depCanvasRef.el;
+        const cw = el ? el.clientWidth / 2 : 400, ch = el ? el.clientHeight / 2 : 300;
+        const z0 = this.state.depZoom, z1 = Math.min(2.2, Math.max(0.15, z0 * f));
+        // keep the viewport centre fixed
+        this.state.depPan = {
+            x: cw - (cw - this.state.depPan.x) * (z1 / z0),
+            y: ch - (ch - this.state.depPan.y) * (z1 / z0),
+        };
+        this.state.depZoom = z1;
+    }
+    depZoomIn() { this.depZoomBy(1.2); }
+    depZoomOut() { this.depZoomBy(1 / 1.2); }
+    onDepWheel(ev) { this.depZoomBy(ev.deltaY < 0 ? 1.1 : 1 / 1.1); }
+    onDepDown(ev) {
+        if (ev.target.closest && ev.target.closest(".dep-node")) return; // let node clicks through
+        this.state.depDragging = true;
+        this._depPanStart = { x: ev.clientX - this.state.depPan.x, y: ev.clientY - this.state.depPan.y };
+    }
+    onDepMove(ev) {
+        if (!this.state.depDragging) return;
+        this.state.depPan = { x: ev.clientX - this._depPanStart.x, y: ev.clientY - this._depPanStart.y };
+    }
+    onDepUp() { this.state.depDragging = false; }
 
     // ---- inline component editor ----
     get editing() { return this.state.editMode && this.selected && this.selected.id === this.state.editId; }
