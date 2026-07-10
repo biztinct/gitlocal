@@ -196,6 +196,14 @@
   .fbtn:hover{border-color:var(--i-border);color:var(--i)}
   .fbtn.on{background:var(--i-deep);border-color:var(--i-deep);color:#fff}
   .fbtn:focus-visible,.rail a:focus-visible,button:focus-visible{outline:2.5px solid var(--i);outline-offset:2px}
+  .fsep{width:1px;align-self:stretch;background:var(--line);margin:2px 4px}
+  .fbtn-st{display:inline-flex;align-items:center;gap:6px}
+  .fbtn-st::before{content:"";width:8px;height:8px;border-radius:99px;background:var(--muted)}
+  .fbtn-st.done::before{background:var(--green)} .fbtn-st.part::before{background:var(--amber)} .fbtn-st.todo::before{background:var(--faint)}
+  .stpill{font-variant-numeric:tabular-nums}
+  #wowtable tr.st-todo td:nth-child(2) b{color:var(--muted)}
+  #wowtable tr.st-todo{background:linear-gradient(var(--line-soft),var(--line-soft))}
+  #wowtable tr.st-part{background:color-mix(in srgb,var(--amber-soft) 35%,transparent)}
   #wowtable th{cursor:pointer;user-select:none}
   #wowtable th:hover{color:var(--i)}
   #wowtable td:first-child{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
@@ -272,7 +280,7 @@
   <a href="#payai"><span class="n">09</span> PayAI everywhere</a>
   <a href="#trust"><span class="n">10</span> Trust Layer</a>
   <div class="grp">The catalogue</div>
-  <a href="#features"><span class="n">11</span> 110 WOW features</a>
+  <a href="#features"><span class="n">11</span> 114 WOW features</a>
   <a href="#gaps"><span class="n">12</span> Table-stakes gaps</a>
   <a href="#roadmap"><span class="n">13</span> Roadmap</a>
   <a href="#phase1"><span class="n">14</span> Phase-1 build plan</a>
@@ -610,11 +618,11 @@
   <section id="features">
     <div class="wrap">
       <div class="eyebrow"><span class="n">11</span> The catalogue</div>
-      <h2>110 WOW features, ranked</h2>
-      <p class="lead">Every idea in this book plus the ones that didn't fit a chapter — scored for impact, originality, implementation complexity and user value (1–5; for complexity, 5 = hardest). Search, filter by pillar or roadmap tier, click a column header to sort.</p>
+      <h2>114 WOW features, ranked</h2>
+      <p class="lead">Every idea in this book plus the ones that didn't fit a chapter — scored for impact, originality, implementation complexity and user value (1–5; for complexity, 5 = hardest). Now with a live <b>build status</b> — filter by <b>Implemented / Partial / Not built</b> (as of July 2026). Search, filter by pillar, roadmap tier or status, click a column header to sort.</p>
     </div>
     <div class="toolbar" role="group" aria-label="Feature filters">
-      <input type="search" id="wowsearch" placeholder="Search 110 features…" aria-label="Search features">
+      <input type="search" id="wowsearch" placeholder="Search 114 features…" aria-label="Search features">
       <button class="fbtn on" data-f="all">All</button>
       <button class="fbtn" data-f="cat:Grid">Grid</button>
       <button class="fbtn" data-f="cat:Intel">Intelligence</button>
@@ -628,13 +636,17 @@
       <button class="fbtn" data-f="cat:UX">UX</button>
       <button class="fbtn" data-f="tier:QW">Quick wins</button>
       <button class="fbtn" data-f="tier:MS">Moonshots</button>
+      <span class="fsep" aria-hidden="true"></span>
+      <button class="fbtn fbtn-st done" data-f="st:done">Implemented</button>
+      <button class="fbtn fbtn-st part" data-f="st:part">Partial</button>
+      <button class="fbtn fbtn-st todo" data-f="st:todo">Not built</button>
       <span class="count" id="wowcount"></span>
     </div>
     <div class="tblwrap"><table id="wowtable">
       <thead><tr>
         <th data-k="id">#</th><th data-k="title">Feature</th><th data-k="cat">Pillar</th>
         <th data-k="impact">Impact</th><th data-k="orig">Original</th><th data-k="cx">Complex</th>
-        <th data-k="val">Value</th><th data-k="pri">Priority</th><th data-k="tier">Tier</th>
+        <th data-k="val">Value</th><th data-k="pri">Priority</th><th data-k="tier">Tier</th><th data-k="status">Status</th>
       </tr></thead>
       <tbody></tbody>
     </table></div>
@@ -875,7 +887,18 @@ const F=[
 [108,"Tablet review mode","Read-only studios + full approval flow on iPad; honest phone scope","UX",3,2,3,3,"Medium","LT"],
 [109,"Virtualized grid","Smooth at 200+ components; graph shipped once, BFS client-side","UX",3,1,3,4,"High","MT"],
 [110,"Import preview capping","Side-by-side rows capped with expanders; never a frozen tab","UX",2,1,1,3,"Medium","QW"],
+[111,"Category-grouping columns","Add a column and drag it so every component of a category sits together","Grid",3,2,2,3,"Medium","QW"],
+[112,"Post-calculation results grid","Every employee's computed components in one Excel-style grid — one-click .xlsx download","Payslip",4,2,2,5,"High","MT"],
+[113,"Country payroll templates","Ready-to-use starter configs — all ASEAN (VN, ID, SG, MY, TH…) plus India — pick a country and go","Migrate",5,3,3,5,"High","MT"],
+[114,"Ready-made HR/API connectors","Pre-built Zoho, Workday, SAP &amp; Oracle integrations — just map the fields and run","Map",5,3,4,5,"High","MT"],
 ];
+// Implementation status as of 2026-07 (cross-referenced against the 24 shipped
+// features F1–F15 / B1–B9). done = built & live; part = partially built; todo = not yet.
+const ST={};
+[1,2,3,5,6,10,11,12,13,19,21,22,23,34,35,36,45,47,60,61,63,66,105,110,7,9,16,24,27,28,29,30,31,32,33,39,44,46,59,64,67,68,69,70,75,76,78,80,88,20,26,71,77,79,92,93,94,111,112,114].forEach(i=>ST[i]="done");
+[38,72,101,107,51,81,85,113].forEach(i=>ST[i]="part");
+[14,18,37,99,100,4,8,15,41,42,48,49,50,53,56,62,82,83,84,97,104,109,17,25,40,43,52,54,65,73,74,86,87,89,91,95,98,102,103,106,108,55,57,58,90,96].forEach(i=>ST[i]="todo");
+const STATUS={done:["Implemented","green"],part:["Partial","amber"],todo:["Not built","gray"]};
 const CATNAME={Grid:"Grid",Intel:"Intelligence",Migrate:"Migration",AI:"PayAI",Map:"Mapping",Payslip:"Payslip",Trust:"Trust",Collab:"Collab",Sim:"Simulation",UX:"UX"};
 const TIER={QW:["Quick win","green"],MT:["Medium","cyan"],LT:["Long-term","indigo"],MS:["Moonshot","amber"]};
 const PRI={High:"green",Medium:"amber",Low:"gray"};
@@ -884,28 +907,32 @@ const tb=document.querySelector('#wowtable tbody');
 const sc=v=>`<span class="score s${v}">${v}</span>`;
 function render(){
   let rows=F.filter(r=>{
-    const [id,t,d,cat,,,,,pri,tier]=r;
-    if(filter!=="all"){const [k,v]=filter.split(":");if((k==="cat"?cat:tier)!==v)return false}
-    if(query&&!(t+" "+d+" "+CATNAME[cat]).toLowerCase().includes(query))return false;
+    const [id,t,d,cat,,,,,pri,tier]=r;const st=ST[id]||"todo";
+    if(filter!=="all"){const [k,v]=filter.split(":");const cur=k==="cat"?cat:k==="st"?st:tier;if(cur!==v)return false}
+    if(query&&!(t+" "+d+" "+CATNAME[cat]+" "+STATUS[st][0]).toLowerCase().includes(query))return false;
     return true});
   const ix={id:0,title:1,cat:3,impact:4,orig:5,cx:6,val:7,pri:8,tier:9};
-  const po={High:3,Medium:2,Low:1},to={QW:1,MT:2,LT:3,MS:4};
-  rows.sort((a,b)=>{let x=a[ix[sortK]],y=b[ix[sortK]];
+  const po={High:3,Medium:2,Low:1},to={QW:1,MT:2,LT:3,MS:4},so={done:1,part:2,todo:3};
+  rows.sort((a,b)=>{
+    let x=sortK==="status"?so[ST[a[0]]||"todo"]:a[ix[sortK]],
+        y=sortK==="status"?so[ST[b[0]]||"todo"]:b[ix[sortK]];
     if(sortK==="pri"){x=po[x];y=po[y]} if(sortK==="tier"){x=to[x];y=to[y]}
     return (x<y?-1:x>y?1:0)*sortDir});
-  tb.innerHTML=rows.map(r=>{const[id,t,d,cat,im,o,cx,v,pri,tier]=r;
-    return `<tr><td class="num">${String(id).padStart(3,"0")}</td><td><b>${t}</b><span>${d}</span></td>
+  tb.innerHTML=rows.map(r=>{const[id,t,d,cat,im,o,cx,v,pri,tier]=r;const st=ST[id]||"todo";
+    return `<tr class="st-${st}"><td class="num">${String(id).padStart(3,"0")}</td><td><b>${t}</b><span>${d}</span></td>
     <td><span class="pill indigo">${CATNAME[cat]}</span></td>
     <td>${sc(im)}</td><td>${sc(o)}</td><td>${sc(cx)}</td><td>${sc(v)}</td>
     <td><span class="pill ${PRI[pri]}">${pri}</span></td>
-    <td><span class="pill ${TIER[tier][1]}">${TIER[tier][0]}</span></td></tr>`}).join("");
-  document.getElementById('wowcount').textContent=rows.length+" of "+F.length;
+    <td><span class="pill ${TIER[tier][1]}">${TIER[tier][0]}</span></td>
+    <td><span class="pill ${STATUS[st][1]} stpill">${STATUS[st][0]}</span></td></tr>`}).join("");
+  const dn=F.filter(r=>(ST[r[0]]||"todo")==="done").length,pt=F.filter(r=>(ST[r[0]]||"todo")==="part").length,td=F.filter(r=>(ST[r[0]]||"todo")==="todo").length;
+  document.getElementById('wowcount').innerHTML=`${rows.length} of ${F.length} shown &nbsp;·&nbsp; <b style="color:var(--green)">${dn} implemented</b> · <b style="color:var(--amber)">${pt} partial</b> · <b style="color:var(--muted)">${td} not built</b>`;
 }
 document.querySelectorAll('.fbtn').forEach(b=>b.addEventListener('click',()=>{
   document.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');filter=b.dataset.f;render()}));
 document.getElementById('wowsearch').addEventListener('input',e=>{query=e.target.value.toLowerCase();render()});
 document.querySelectorAll('#wowtable th').forEach(th=>th.addEventListener('click',()=>{
-  const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=(k==="id"||k==="title"||k==="cat")?1:-1}render()}));
+  const k=th.dataset.k;if(sortK===k)sortDir*=-1;else{sortK=k;sortDir=(k==="id"||k==="title"||k==="cat"||k==="status")?1:-1}render()}));
 render();
 </script>
