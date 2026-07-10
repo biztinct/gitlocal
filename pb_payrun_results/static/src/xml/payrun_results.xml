@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_payrun_results.PbPayrunResults">
+    <div class="pbr-root">
+      <!-- header -->
+      <div class="pbr-head">
+        <div class="pbr-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+          <div>
+            <b>Pay Run Results</b>
+            <small t-if="state.data.run">Every employee's computed components · <t t-esc="state.data.run.config_name"/></small>
+          </div>
+        </div>
+        <div class="pbr-head-actions">
+          <select class="pbr-select" t-on-change="selectRun">
+            <t t-foreach="state.data.runs or []" t-as="r" t-key="r.id">
+              <option t-att-value="r.id" t-att-selected="r.id === state.runId" t-esc="r.name"/>
+            </t>
+          </select>
+          <button class="pbr-btn primary" t-att-disabled="state.exporting or !(state.data.rows and state.data.rows.length)" t-on-click="exportXlsx">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Export to Excel
+          </button>
+        </div>
+      </div>
+
+      <!-- toolbar -->
+      <div class="pbr-toolbar" t-if="state.data.columns and state.data.columns.length">
+        <input type="search" class="pbr-search" placeholder="Search employee…" t-att-value="state.filters.search" t-on-input="onSearch"/>
+        <select class="pbr-select sm" t-on-change="selectDept">
+          <option value="">All departments</option>
+          <t t-foreach="state.data.departments or []" t-as="d" t-key="d.id">
+            <option t-att-value="d.id" t-att-selected="d.id == state.filters.department_id" t-esc="d.name"/>
+          </t>
+        </select>
+        <button t-attf-class="pbr-chip {{ state.filters.with_variance ? 'on' : '' }}" t-on-click="toggleVariance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/></svg>
+          vs previous run
+        </button>
+        <span class="pbr-count" t-if="state.data.row_count"><b t-esc="state.data.row_count"/> employees</span>
+      </div>
+
+      <!-- empty -->
+      <div t-if="state.loaded and state.data.empty_reason" class="pbr-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+        <p t-esc="state.data.empty_reason"/>
+      </div>
+
+      <!-- grid -->
+      <div t-if="state.data.columns and state.data.columns.length" class="pbr-gridwrap">
+        <table class="pbr-table">
+          <thead>
+            <tr>
+              <th class="pbr-corner">Employee</th>
+              <t t-foreach="state.data.columns" t-as="col" t-key="col_index">
+                <th t-attf-class="pbr-col" t-attf-style="border-bottom-color:{{ col.color }}" t-att-title="col.category">
+                  <span class="pbr-col-name" t-esc="col.name"/>
+                  <span class="pbr-col-code" t-esc="col.code"/>
+                </th>
+              </t>
+            </tr>
+          </thead>
+          <tbody>
+            <t t-foreach="state.data.rows" t-as="row" t-key="row.slip_id">
+              <tr class="pbr-row" t-on-click="() => this.openPayslip(row)">
+                <th class="pbr-emp">
+                  <span class="pbr-emp-name" t-esc="row.employee_name"/>
+                  <span class="pbr-emp-dept" t-esc="row.department"/>
+                </th>
+                <t t-foreach="state.data.columns" t-as="col" t-key="col_index">
+                  <td class="pbr-cell">
+                    <span class="pbr-val" t-esc="fmt(col, row.values[col.code])"/>
+                    <span t-if="row.deltas and row.deltas[col.code]" t-attf-class="{{ deltaClass(row, col) }}" t-esc="deltaLabel(row, col)"/>
+                  </td>
+                </t>
+              </tr>
+            </t>
+          </tbody>
+          <tfoot>
+            <tr class="pbr-totals">
+              <th class="pbr-emp">TOTAL</th>
+              <t t-foreach="state.data.columns" t-as="col" t-key="col_index">
+                <td class="pbr-cell"><b t-esc="fmt(col, state.data.totals[col.code])"/></td>
+              </t>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- pagination -->
+      <div class="pbr-pager" t-if="state.data.page_count and state.data.page_count > 1">
+        <button class="pbr-pg" t-att-disabled="state.data.page &lt;= 1" t-on-click="() => this.gotoPage(state.data.page - 1)">‹ Prev</button>
+        <span class="pbr-pginfo">Showing <b t-esc="pageInfo.from"/>–<b t-esc="pageInfo.to"/> of <b t-esc="pageInfo.total"/></span>
+        <button class="pbr-pg" t-att-disabled="state.data.page &gt;= state.data.page_count" t-on-click="() => this.gotoPage(state.data.page + 1)">Next ›</button>
+      </div>
+    </div>
+  </t>
+
+</templates>

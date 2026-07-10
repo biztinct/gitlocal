@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_payrun_results" model="ir.actions.client">
+        <field name="name">Pay Run Results</field>
+        <field name="tag">pb_payrun_results</field>
+    </record>
+
+    <record id="item_payrun_results" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="name">Results Grid</field>
+        <field name="icon">table</field>
+        <field name="sequence">35</field>
+        <field name="action_xmlid">pb_payrun_results.action_pb_payrun_results</field>
+        <field name="action_tag">pb_payrun_results</field>
+    </record>
+</odoo>
