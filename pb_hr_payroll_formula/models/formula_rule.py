@@ -461,6 +461,48 @@ class HrFormulaRule(models.Model):
             index = index // 26 - 1
         return result
 
+    # ======================================================================
+    # F111 — column letters are PERMANENT identities (frozen via
+    # forced_column_letter). sequence is pure display order; reordering can
+    # never move a letter, so letter-based formula references stay valid.
+    # ======================================================================
+    @staticmethod
+    def _letter_to_num(letter):
+        """Excel column letter -> 1-based number ('A'->1, 'Z'->26, 'AA'->27)."""
+        n = 0
+        for ch in (letter or '').strip().upper():
+            if 'A' <= ch <= 'Z':
+                n = n * 26 + (ord(ch) - 64)
+            else:
+                return 0
+        return n
+
+    @api.model
+    def _is_constant_namespace(self, letter):
+        """True for the ZA/ZB… constants namespace (Z followed by a letter),
+        which must be skipped when picking the next free identity letter. A
+        lone 'Z' is an ordinary column and is NOT excluded (D111.3)."""
+        return bool(letter) and len(letter) > 1 and letter[0].upper() == 'Z'
+
+    @api.model
+    def _next_free_letter(self, config):
+        """The next permanent letter = max(existing) + 1, never reusing a freed
+        letter (D111.3). The ZA+ constants namespace is skipped."""
+        used = [self._letter_to_num(r.column_letter) for r in config.rule_ids
+                if r.column_letter and not self._is_constant_namespace(r.column_letter)]
+        nxt = (max(used) if used else 0) + 1
+        return self._index_to_letter(nxt - 1)   # 1-based number -> 0-based index
+
+    @api.model
+    def _assert_letters_frozen(self, config, before):
+        """Guard: after any sequence-only reorder, every rule's column_letter
+        must be unchanged (D111.2). Raise — never silently re-point formulas."""
+        after = {r.id: r.column_letter for r in config.rule_ids}
+        if before != after:
+            raise UserError(_(
+                "Column letters changed during reorder — the operation was "
+                "aborted to protect your formulas. This is a bug; please report it."))
+
     @staticmethod
     def _letter_to_index(letter):
         """Convert Excel column letter to 0-based index"""
@@ -1045,35 +1087,51 @@ class HrFormulaRule(models.Model):
     # ==========================================
     # CRUD OVERRIDES
     # ==========================================
-    @api.model
-    def create(self, vals):
-        """Auto-assign sequence to avoid duplicate column letters when adding new rows manually.
-        
-        This does NOT interfere with Excel import because:
-        - Excel import explicitly sets sequence based on column order (line 2143 in multisheet_import_wizard.py)
-        - We only auto-assign when sequence is missing or equals the default (10)
-        - Excel import assigns unique sequences like 0, 10, 20, 30, etc.
-        """
-        # Only auto-assign if:
-        # 1. config_id is provided (creating a rule for a config)
-        # 2. sequence is not explicitly set OR is the default value (10)
-        # This prevents duplicate column letters when clicking "Add a line" in the UI
-        if 'config_id' in vals and vals.get('sequence', 10) == 10:
-            # IMPORTANT: Use explicit search instead of config.rule_ids to avoid pagination issues
-            # When viewing a paginated One2many list, config.rule_ids only contains visible records
-            existing_rules = self.env['hr.formula.rule'].search([
-                ('config_id', '=', vals['config_id']),
-                ('forced_column_letter', '=', False)
-            ])
-            
-            if existing_rules:
-                # Find the maximum sequence among ALL existing rules (not just current page)
-                max_sequence = max(existing_rules.mapped('sequence'))
-                # Assign next sequence (increment by 10 as per Odoo convention)
-                vals['sequence'] = max_sequence + 10
-            # If no existing rules, leave sequence as default (10)
-        
-        return super(HrFormulaRule, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Auto-assign sequence to avoid duplicate column letters when adding rows
+        manually, and (F111) freeze a permanent letter identity at birth.
+
+        Excel import sets sequence + column_letter explicitly, so both branches
+        below no-op for it. Batch-safe: in-batch counters keep siblings created
+        in one call from colliding on a sequence or a letter."""
+        seq_next = {}   # config_id -> next auto sequence within this batch
+        let_next = {}   # config_id -> highest letter number assigned within this batch
+
+        def _base_letter_num(cid, config):
+            used = [self._letter_to_num(r.column_letter) for r in config.rule_ids
+                    if r.column_letter and not self._is_constant_namespace(r.column_letter)]
+            return max(used) if used else 0
+
+        for vals in vals_list:
+            cid = vals.get('config_id')
+            # sequence: only when unset/default (never override an explicit import order)
+            if cid and vals.get('sequence', 10) == 10:
+                if cid not in seq_next:
+                    existing = self.env['hr.formula.rule'].search([
+                        ('config_id', '=', cid), ('forced_column_letter', '=', False)])
+                    seq_next[cid] = (max(existing.mapped('sequence')) + 10) if existing else 10
+                else:
+                    seq_next[cid] += 10
+                vals['sequence'] = seq_next[cid]
+            # F111 permanent letter: respect an explicit letter/forced letter
+            # (import, ZA+ constants); otherwise assign the next letter from a
+            # monotonic high-water mark, so a freed letter is never reused.
+            if cid and not vals.get('forced_column_letter') and not vals.get('column_letter'):
+                config = self.env['hr.formula.config'].browse(cid)
+                if config.exists():
+                    if cid not in let_next:
+                        let_next[cid] = max(config.col_letter_hwm or 0, _base_letter_num(cid, config))
+                    let_next[cid] += 1
+                    vals['forced_column_letter'] = self._index_to_letter(let_next[cid] - 1)
+
+        records = super(HrFormulaRule, self).create(vals_list)
+        # persist the high-water mark so deleted letters are never handed out again
+        for cid, hwm in let_next.items():
+            cfg = self.env['hr.formula.config'].browse(cid)
+            if cfg.exists() and (cfg.col_letter_hwm or 0) < hwm:
+                cfg.sudo().col_letter_hwm = hwm
+        return records
 
     def write(self, vals):
         """F7 capture funnel. Snapshot the OUTGOING state of any rule whose
@@ -1207,71 +1265,55 @@ class HrFormulaRule(models.Model):
     # REORDER ACTIONS
     # ==========================================
     def move_column_left(self):
-        """Move this column one position left"""
+        """Move this column one position left — DISPLAY ONLY (F111/D111.2).
+        Letters are frozen; only sequence moves, so no formula is re-pointed."""
         self.ensure_one()
-        prev_rule = self.config_id.rule_ids.filtered(
+        config = self.config_id
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        prev_rule = config.rule_ids.filtered(
             lambda r: r.sequence < self.sequence
         ).sorted(key=lambda r: r.sequence, reverse=True)[:1]
-
         if prev_rule:
-            # Swap sequences
             my_seq = self.sequence
             self.sequence = prev_rule.sequence
             prev_rule.sequence = my_seq
-
-        # Trigger recomputation
-        self.config_id.rule_ids._compute_column_letter()
+        self._assert_letters_frozen(config, before)
 
     def move_column_right(self):
-        """Move this column one position right"""
+        """Move this column one position right — DISPLAY ONLY (F111/D111.2)."""
         self.ensure_one()
-        next_rule = self.config_id.rule_ids.filtered(
+        config = self.config_id
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        next_rule = config.rule_ids.filtered(
             lambda r: r.sequence > self.sequence
         ).sorted(key=lambda r: r.sequence)[:1]
-
         if next_rule:
-            # Swap sequences
             my_seq = self.sequence
             self.sequence = next_rule.sequence
             next_rule.sequence = my_seq
-
-        # Trigger recomputation
-        self.config_id.rule_ids._compute_column_letter()
+        self._assert_letters_frozen(config, before)
 
     def reorder_to_position(self, new_sequence):
-        """Reorder this column to a new sequence position"""
+        """Reorder this column to a new display position — DISPLAY ONLY
+        (F111/D111.2). Only sequence changes; column letters stay frozen."""
         self.ensure_one()
+        config = self.config_id
         old_seq = self.sequence
-
         if new_sequence == old_seq:
-            return
-
-        rules = self.config_id.rule_ids.sorted(key=lambda r: r.sequence)
-
+            return True
+        before = {r.id: r.column_letter for r in config.rule_ids}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
         if new_sequence > old_seq:
-            # Moving right - shift others left
             for rule in rules:
                 if old_seq < rule.sequence <= new_sequence:
                     rule.sequence -= 1
         else:
-            # Moving left - shift others right
             for rule in rules:
                 if new_sequence <= rule.sequence < old_seq:
                     rule.sequence += 1
-
         self.sequence = new_sequence
-
-        # Update formula references if needed
-        self._update_formula_references_after_reorder()
-
-        # Trigger recomputation
-        self.config_id.rule_ids._compute_column_letter()
-
-    def _update_formula_references_after_reorder(self):
-        """Update formula references in all rules after column reorder"""
-        # This is handled by the computed field _compute_python_formula
-        # which will regenerate Python code with new column letters
-        pass
+        self._assert_letters_frozen(config, before)
+        return True
 
     # ==========================================
     # CONSTRAINTS

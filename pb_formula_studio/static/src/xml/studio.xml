@@ -989,7 +989,9 @@
                         onScenarioSave="(sid, f) => this.gridScenarioSave(sid, f)"
                         onScenarioEval="(sid, sampleId) => this.gridScenarioEval(sid, sampleId)"
                         onScenarioPromote="(sid) => this.gridScenarioPromote(sid)"
-                        onScenarioDiscard="(sid) => this.gridScenarioDiscard(sid)"/>
+                        onScenarioDiscard="(sid) => this.gridScenarioDiscard(sid)"
+                        onReorder="(dragId, beforeId) => this.gridReorder(dragId, beforeId)"
+                        onGroupByCategory="() => this.gridGroupByCategory()"/>
           </div>
 
           <!-- live preview (grid: always a drawer · cards: drawer below the md breakpoint) -->

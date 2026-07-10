@@ -38,6 +38,9 @@ export class GridStudio extends Component {
         onScenarioEval: { type: Function, optional: true },     // (sid, sampleId) => {base_value,scenario_value,net_*}
         onScenarioPromote: { type: Function, optional: true },  // (sid) => write into base rule (versioned)
         onScenarioDiscard: { type: Function, optional: true },  // (sid) => delete
+        // F111 — display reorder + group by category (letters stay frozen)
+        onReorder: { type: Function, optional: true },          // (dragId, beforeId|false) => reorder + refresh
+        onGroupByCategory: { type: Function, optional: true },  // () => group + refresh
     };
 
     setup() {
@@ -60,6 +63,9 @@ export class GridStudio extends Component {
             fill: { active: false, pending: false, srcId: null, hoverCol: null, targets: [] },
             // F14 scenario editing: {id, buffer, valid, message} | null (one at a time)
             scenarioEdit: null,
+            // F111 column drag-reorder
+            dragId: null,
+            dragOverId: null,
         });
         // F14 scenario overlay values, keyed by scenario id → {base_value, scenario_value,
         // net_base, net_scenario, forSample, loading}. Separate reactive store so a value
@@ -79,10 +85,63 @@ export class GridStudio extends Component {
     }
 
     // ---- derived (recomputed against CURRENT props each render) ----
+    // F111: display order follows `sequence` (letters are frozen identities that
+    // no longer track position), falling back to letter order for older payloads.
     get ordered() {
-        return [...this.props.components].sort((a, b) => this._colNum(a.col) - this._colNum(b.col));
+        return [...this.props.components].sort((a, b) =>
+            ((a.sequence ?? 0) - (b.sequence ?? 0)) || (this._colNum(a.col) - this._colNum(b.col)));
     }
     get focused() { return this.props.components.find(c => c.id === this.ui.focus.colId) || null; }
+
+    // ---- F111: column drag-reorder (display only) ----
+    onColDragStart(ev, c) {
+        if (!this.props.canEdit || !this.props.onReorder) { ev.preventDefault(); return; }
+        this.ui.dragId = c.id;
+        ev.dataTransfer.effectAllowed = "move";
+        try { ev.dataTransfer.setData("text/plain", String(c.id)); } catch (e) { /* older browsers */ }
+    }
+    onColDragOver(ev, c) {
+        if (this.ui.dragId == null || c.id === this.ui.dragId) return;
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = "move";
+        if (this.ui.dragOverId !== c.id) this.ui.dragOverId = c.id;
+    }
+    onColDrop(ev, c) {
+        ev.preventDefault();
+        const dragId = this.ui.dragId;
+        this.ui.dragId = null; this.ui.dragOverId = null;
+        if (dragId == null || c.id === dragId) return;
+        // drop on the left half of a column inserts before it, right half after it
+        const rect = ev.currentTarget.getBoundingClientRect();
+        let beforeId = c.id;
+        if ((ev.clientX - rect.left) > rect.width / 2) {
+            const ord = this.ordered;
+            const idx = ord.findIndex(x => x.id === c.id);
+            beforeId = (idx >= 0 && idx + 1 < ord.length) ? ord[idx + 1].id : false; // false = to the end
+        }
+        this.props.onReorder(dragId, beforeId);
+    }
+    onColDragEnd() { this.ui.dragId = null; this.ui.dragOverId = null; }
+    groupByCategory() { if (this.props.onGroupByCategory) this.props.onGroupByCategory(); }
+
+    // ---- F111: category band strip ----
+    _bandColor(group) {
+        return { Inputs: "#0E7490", Earnings: "#4F46E5", Deductions: "#B45309", Totals: "#059669" }[group] || "#8B88A0";
+    }
+    bandStyle(c) { return "--band:" + this._bandColor(c.group); }
+    get _bandStarts() {
+        const starts = new Set();
+        let prev = null;
+        for (const c of this.ordered) {
+            const cat = c.category_id || c.category || c.group;
+            if (cat !== prev) starts.add(c.id);
+            prev = cat;
+        }
+        return starts;
+    }
+    bandStart(c) { return this._bandStarts.has(c.id); }
+    bandBoundaryClass(c) { return this._bandStarts.has(c.id) ? "g2-band g2-band-start" : "g2-band"; }
+
     _colNum(col) {
         let n = 0;
         for (const ch of String(col || "").toUpperCase()) {

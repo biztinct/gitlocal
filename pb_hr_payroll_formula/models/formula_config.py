@@ -235,6 +235,11 @@ class HrFormulaConfig(models.Model):
              "this variant and therefore protected from a master push/sync."
     )
 
+    # F111 — high-water mark for permanent column letters. Monotonic: never
+    # decreases, so a deleted component's letter is never handed out again
+    # (D111.3). Lazily initialised from the current max letter on first use.
+    col_letter_hwm = fields.Integer(string='Letter high-water mark', default=0)
+
     rule_count = fields.Integer(
         string='Rules Count',
         compute='_compute_rule_count'
