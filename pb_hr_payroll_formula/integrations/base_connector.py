@@ -310,9 +310,10 @@ class BaseHRConnector(ABC):
                 result['errors'].append("Authentication failed")
                 return result
 
-            # Get config and mappings
+            # Get config and mappings (F114/D114.2: only confirmed 'active'
+            # mappings feed sync — 'suggested' template guesses are excluded)
             config = self.env['hr.formula.config'].browse(config_id)
-            mappings = self.connector.field_mapping_ids.filtered(lambda m: m.active)
+            mappings = self.connector._sync_mapping_ids()
 
             if not mappings:
                 result['errors'].append("No active field mappings configured")

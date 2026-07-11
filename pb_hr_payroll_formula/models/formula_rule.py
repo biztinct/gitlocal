@@ -426,31 +426,39 @@ class HrFormulaRule(models.Model):
                 else:
                     record.column_letter = ''
             else:
-                # Unsaved record
+                # Unsaved record with data — show the letter create() will
+                # ACTUALLY assign (from the high-water mark), so what the user
+                # sees is what gets saved. (The old "count unforced saved
+                # siblings" logic showed 'A' post-freeze — a mirage, since every
+                # saved rule is forced — and the user would author references
+                # against an occupied identity.)
                 if record.name or record.code:
-                    # Has data - show provisional letter
-                    # Count saved records (excluding those with forced_column_letter)
-                    saved_count = len(record.config_id.rule_ids.filtered(
-                        lambda r: isinstance(r.id, int) and not r.forced_column_letter
-                    ))
-                    # Count unsaved records WITH DATA that come before this one
-                    # Use sequence and id string for ordering
+                    config = record.config_id
+                    used = [self._letter_to_num(r.column_letter)
+                            for r in config.rule_ids
+                            if isinstance(r.id, int) and r.column_letter
+                            and not self._is_constant_namespace(r.column_letter)]
+                    base = max(config.col_letter_hwm or 0, max(used) if used else 0)
                     current_key = (record.sequence or 0, str(record.id))
-                    unsaved_with_data_before = len(record.config_id.rule_ids.filtered(
-                        lambda r: not isinstance(r.id, int) and
-                        (r.name or r.code) and
-                        not r.forced_column_letter and
-                        (r.sequence or 0, str(r.id)) < current_key
-                    ))
-                    record.column_letter = self._index_to_letter(saved_count + unsaved_with_data_before)
+                    offset = len(config.rule_ids.filtered(
+                        lambda r: not isinstance(r.id, int) and (r.name or r.code)
+                        and (r.sequence or 0, str(r.id)) < current_key))
+                    record.column_letter = self._index_to_letter(base + offset)
                 else:
                     # Empty/new row - blank
                     record.column_letter = ''
 
     def _inverse_column_letter(self):
+        """Setting a letter (re)freezes it; BLANKING it is ignored when a frozen
+        letter already exists — a column letter is a permanent identity (F111),
+        so a cleared cell must not silently unfreeze the rule and let it be
+        re-lettered positionally, orphaning every formula that referenced it."""
         for record in self:
             value = (record.column_letter or '').strip().upper()
-            record.forced_column_letter = value or False
+            if value:
+                record.forced_column_letter = value
+            elif not record.forced_column_letter:
+                record.forced_column_letter = False
 
     @staticmethod
     def _index_to_letter(index):
@@ -486,12 +494,14 @@ class HrFormulaRule(models.Model):
 
     @api.model
     def _next_free_letter(self, config):
-        """The next permanent letter = max(existing) + 1, never reusing a freed
-        letter (D111.3). The ZA+ constants namespace is skipped."""
+        """The next permanent letter identity for `config`, never reusing a freed
+        letter (D111.3). Mirrors create(): the mark is max(letter high-water,
+        current max letter), so a deleted top letter is not handed out again. The
+        ZA+ constants namespace is skipped."""
         used = [self._letter_to_num(r.column_letter) for r in config.rule_ids
                 if r.column_letter and not self._is_constant_namespace(r.column_letter)]
-        nxt = (max(used) if used else 0) + 1
-        return self._index_to_letter(nxt - 1)   # 1-based number -> 0-based index
+        base = max(config.col_letter_hwm or 0, max(used) if used else 0)
+        return self._index_to_letter(base)   # 1-based mark -> next 0-based index
 
     @api.model
     def _assert_letters_frozen(self, config, before):
@@ -1105,11 +1115,13 @@ class HrFormulaRule(models.Model):
 
         for vals in vals_list:
             cid = vals.get('config_id')
-            # sequence: only when unset/default (never override an explicit import order)
+            # sequence: only when unset/default (never override an explicit import
+            # order). Count ALL rules — post-F111 every rule carries a forced
+            # letter, so an old `forced_column_letter = False` filter would match
+            # nothing and pile every new row at sequence 10.
             if cid and vals.get('sequence', 10) == 10:
                 if cid not in seq_next:
-                    existing = self.env['hr.formula.rule'].search([
-                        ('config_id', '=', cid), ('forced_column_letter', '=', False)])
+                    existing = self.env['hr.formula.rule'].search([('config_id', '=', cid)])
                     seq_next[cid] = (max(existing.mapped('sequence')) + 10) if existing else 10
                 else:
                     seq_next[cid] += 10
@@ -1126,8 +1138,17 @@ class HrFormulaRule(models.Model):
                     vals['forced_column_letter'] = self._index_to_letter(let_next[cid] - 1)
 
         records = super(HrFormulaRule, self).create(vals_list)
-        # persist the high-water mark so deleted letters are never handed out again
-        for cid, hwm in let_next.items():
+        # Persist the high-water mark so a freed top letter is NEVER handed out
+        # again — derive it from the letters actually assigned (covers both the
+        # auto-minted rows above AND explicitly-lettered import rows, which never
+        # touched `let_next`). Without this, an Excel/JSON import leaves hwm=0 and
+        # the next studio-added component reuses a just-deleted letter (D111.3).
+        by_cfg = {}
+        for rec in records:
+            if rec.config_id and rec.column_letter and not self._is_constant_namespace(rec.column_letter):
+                n = self._letter_to_num(rec.column_letter)
+                by_cfg[rec.config_id.id] = max(by_cfg.get(rec.config_id.id, 0), n)
+        for cid, hwm in by_cfg.items():
             cfg = self.env['hr.formula.config'].browse(cid)
             if cfg.exists() and (cfg.col_letter_hwm or 0) < hwm:
                 cfg.sudo().col_letter_hwm = hwm

@@ -313,10 +313,11 @@ class HrPayslipFormula(models.Model):
                     else:
                         value = worked_day.number_of_days
 
-            # Try to get from integration connector
+            # Try to get from integration connector (only confirmed 'active'
+            # mappings are load-bearing — F114/D114.2)
             if config.connector_id:
                 # Get from mapped field
-                mapping = config.connector_id.field_mapping_ids.filtered(
+                mapping = config.connector_id._sync_mapping_ids().filtered(
                     lambda m: m.target_rule_id == rule
                 )[:1]
                 if mapping:
