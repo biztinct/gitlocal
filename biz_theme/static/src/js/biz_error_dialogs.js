@@ -69,13 +69,28 @@ const EXCEPTION_VARIANT = {
     "werkzeug.exceptions.Forbidden": "session",
 };
 
-/** Pull "- Group Name" bullet lines out of an access-error message. */
+/**
+ * Pull "- Group Name" bullets out of an access-error message — but only the
+ * ones under an "allowed for the following groups:" marker. Other AccessError
+ * formats also use bullets for MODEL names ("records of type:\n- Excel
+ * Formula Configuration (hr.formula.config)"); those must never be presented
+ * as roles.
+ */
 export function parseAccessGroups(message) {
     const groups = [];
+    let inGroupList = false;
     for (const line of (message || "").split("\n")) {
+        if (/groups\s*:\s*$/i.test(line.trim())) {
+            inGroupList = true;
+            continue;
+        }
         const m = /^\s*-\s+(.+?)\s*$/.exec(line);
-        if (m && m[1].length <= 80) {
-            groups.push(m[1]);
+        if (m && inGroupList) {
+            if (m[1].length <= 80) {
+                groups.push(m[1]);
+            }
+        } else if (line.trim()) {
+            inGroupList = false;
         }
     }
     return groups;
@@ -127,6 +142,12 @@ export class BizErrorDialog extends Component {
     get hasDetails() {
         // Session/timeout screens carry no useful payload for end users
         return this.variant !== "session" && !!(this.message || this.props.traceback);
+    }
+
+    get showTechnicalDetails() {
+        // Raw payloads are never surfaced to end users — "Copy details" still
+        // captures them for support. Developers see the expander in debug mode.
+        return this.hasDetails && Boolean(window.odoo && window.odoo.debug);
     }
 
     toggleDetails() {

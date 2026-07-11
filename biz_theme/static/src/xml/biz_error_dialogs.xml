@@ -4,6 +4,9 @@
     <t t-name="biz_theme.BizErrorDialog">
         <Dialog size="'md'" header="false" contentClass="'biz-err-modal'">
             <div t-attf-class="biz-err biz-err--{{ variant }}" role="alert">
+                <button class="biz-err__x" t-on-click="props.close" title="Close" aria-label="Close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
                 <div class="biz-err__icon">
                     <svg t-if="meta.icon === 'shield'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
@@ -39,7 +42,8 @@
                     </div>
                 </div>
 
-                <div t-if="hasDetails" class="biz-err__details">
+                <!-- raw payload is debug-mode only; end users never see it -->
+                <div t-if="showTechnicalDetails" class="biz-err__details">
                     <button class="biz-err__details-toggle" t-on-click="toggleDetails">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" t-attf-style="transform: rotate({{ state.showDetails ? 90 : 0 }}deg)">
                             <path d="m9 18 6-6-6-6"/>
