@@ -2435,10 +2435,11 @@ class HrPayrollImportBatch(models.Model):
                 return fields.Datetime.to_string(value)
             return value
 
-        # First, try using connector field mappings if available
+        # First, try using connector field mappings if available (F114/D114.2:
+        # only confirmed 'active' mappings — never 'suggested' template guesses)
         if self.source_type == 'connector' and config.connector_id:
             connector = config.connector_id.sudo()
-            for mapping in connector.field_mapping_ids:
+            for mapping in connector._sync_mapping_ids():
                 if mapping.target_rule_id and mapping.source_field:
                     source_value = raw_data.get(mapping.source_field)
                     if source_value is not None:

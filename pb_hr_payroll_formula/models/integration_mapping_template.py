@@ -188,9 +188,23 @@ class HrIntegrationOnboardingWizard(models.TransientModel):
         ) % (len(act), len(sug), ''.join(rows))
 
     def action_test_mappings(self):
+        """Test suggested mappings against a real sample payload and promote the
+        ones that resolve (the only path from 'suggested' → 'active')."""
         self.ensure_one()
-        return self.connector_id.action_test_field_mappings() if hasattr(
-            self.connector_id, 'action_test_field_mappings') else self._reopen()
+        if not self.connector_id:
+            self._ensure_connector()
+        res = self.connector_id.action_test_field_mappings(
+            config_id=self.config_id.id if self.config_id else None)
+        if not res.get('ok'):
+            note = ('<p style="color:#B45309;font-size:12px">%s</p>'
+                    % (res.get('msg') or _('Could not test mappings.')))
+        else:
+            note = ('<p style="color:#166534;font-size:12px">Promoted <b>%s</b> of %s '
+                    'testable suggested field(s) to active; <b>%s</b> still need review.</p>'
+                    % (res.get('promoted', 0), res.get('tested', 0), res.get('remaining', 0)))
+        self.summary_html = note + self._build_summary()
+        self.step = 'mappings'
+        return self._reopen()
 
     def action_to_activate(self):
         self.step = 'activate'

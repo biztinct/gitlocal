@@ -111,12 +111,15 @@ export class GridStudio extends Component {
         const dragId = this.ui.dragId;
         this.ui.dragId = null; this.ui.dragOverId = null;
         if (dragId == null || c.id === dragId) return;
-        // drop on the left half of a column inserts before it, right half after it
+        // Resolve the insertion point in the order WITHOUT the dragged column, so
+        // "after c" is the real next column — never the dragged column itself
+        // (else dropping on the right half of the drag's own left neighbour, an
+        // intended no-op, would send the column to the far end).
+        const ord = this.ordered.filter(x => x.id !== dragId);
+        const idx = ord.findIndex(x => x.id === c.id);
         const rect = ev.currentTarget.getBoundingClientRect();
-        let beforeId = c.id;
-        if ((ev.clientX - rect.left) > rect.width / 2) {
-            const ord = this.ordered;
-            const idx = ord.findIndex(x => x.id === c.id);
+        let beforeId = c.id; // left half: land just before c
+        if ((ev.clientX - rect.left) > rect.width / 2) { // right half: land after c
             beforeId = (idx >= 0 && idx + 1 < ord.length) ? ord[idx + 1].id : false; // false = to the end
         }
         this.props.onReorder(dragId, beforeId);

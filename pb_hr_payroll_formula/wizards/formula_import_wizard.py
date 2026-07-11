@@ -99,6 +99,10 @@ class FormulaImportWizard(models.TransientModel):
 
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
+            # full rebuild: restart the letter namespace at A so the fresh set is
+            # lettered in creation order (F111 — otherwise create() mints letters
+            # past the old high-water mark and re-import misaligns references)
+            self.config_id.col_letter_hwm = 0
 
         # Get existing sequence
         max_sequence = max(
@@ -181,6 +185,9 @@ class FormulaImportWizard(models.TransientModel):
 
         if not self.preserve_existing:
             self.config_id.rule_ids.unlink()
+            # full rebuild: restart the letter namespace at A (F111) so verbatim
+            # excel_formula references (=A2+B2) re-align on the fresh rule set
+            self.config_id.col_letter_hwm = 0
 
         # Import rules from JSON
         rules_data = data.get('rules', [])
@@ -204,6 +211,9 @@ class FormulaImportWizard(models.TransientModel):
                 'default_value': rule_data.get('default_value', 0.0),
                 'number_format': rule_data.get('number_format', 'currency'),
                 'decimal_places': rule_data.get('decimal_places', 2),
+                # honour an exported letter when present (authoritative); else
+                # create() assigns A,B,C… in order against the reset namespace
+                'column_letter': rule_data.get('column_letter') or False,
             }
 
             created_rules |= self.env['hr.formula.rule'].create(values)

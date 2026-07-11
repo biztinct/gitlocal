@@ -299,15 +299,28 @@ class HrIntegrationConnector(models.Model):
             config = self.env['hr.formula.config'].sudo().search([('connector_id', '=', self.id)], limit=1)
         existing_src = set((self.field_mapping_ids.mapped('source_field')) or [])
         applied = suggested = 0
+        def _norm(s):
+            return ''.join(ch for ch in (s or '').upper() if ch.isalnum())
+
         for t in rows:
             if t.source_path in existing_src:
                 continue
             rule = self.env['hr.formula.rule']
+            exact = False
             if config:
-                rule = config.rule_ids.filtered(
-                    lambda r: r.column_type == 'input'
-                    and (r.code or '').upper() == (t.target_code or '').upper())[:1]
-            state = 'active' if (rule and not t.verify) else 'suggested'
+                inputs = config.rule_ids.filtered(lambda r: r.column_type == 'input')
+                tc = (t.target_code or '').upper()
+                rule = inputs.filtered(lambda r: (r.code or '').upper() == tc)[:1]
+                exact = bool(rule)
+                if not rule:
+                    # normalized fallback (strip non-alphanumerics), e.g. a tenant
+                    # 'BASICSAL' ~ template 'BASIC_SAL'. A fuzzy match only PROPOSES
+                    # a target — it stays 'suggested' until the batch test confirms.
+                    ntc = _norm(t.target_code)
+                    rule = inputs.filtered(lambda r: _norm(r.code) == ntc)[:1]
+            # 'active' only for an EXACT, non-verify match; every fuzzy / unmatched
+            # / verify row stays 'suggested' and is never load-bearing (D114.2).
+            state = 'active' if (rule and exact and not t.verify) else 'suggested'
             Map.create({
                 'connector_id': self.id,
                 'connector_type': self.connector_type,
@@ -328,6 +341,53 @@ class HrIntegrationConnector(models.Model):
             else:
                 suggested += 1
         return {'applied': applied, 'suggested': suggested, 'total': applied + suggested}
+
+    def _sample_payload(self):
+        """A representative source record for mapping tests: the newest stored
+        payload if a data pull has run, else the demo/stub connector's own
+        built-in sample. Returns a dict or None."""
+        self.ensure_one()
+        store = self.env['hr.api.data.store'].sudo().search(
+            [('connector_id', '=', self.id), ('raw_payload', '!=', False)],
+            order='pull_date desc, id desc', limit=1)
+        payload = store.raw_payload if store else None
+        if isinstance(payload, dict):
+            return payload
+        if isinstance(payload, list) and payload and isinstance(payload[0], dict):
+            return payload[0]
+        try:
+            emps = self._get_connector_instance().fetch_employees({}) or []
+        except Exception:
+            emps = []
+        return emps[0] if emps and isinstance(emps[0], dict) else None
+
+    def action_test_field_mappings(self, config_id=None):
+        """F114 promotion path (D114.2): test each 'suggested' mapping against a
+        real sample payload and promote the ones that resolve to a value to
+        'active'. Rows that don't resolve, or have no target rule yet, stay
+        'suggested'. This is the ONLY way a template guess becomes load-bearing."""
+        self.ensure_one()
+        sample = self._sample_payload()
+        suggested = self.field_mapping_ids.filtered(
+            lambda m: m.active_state == 'suggested')
+        if sample is None:
+            return {'ok': False, 'promoted': 0, 'tested': 0,
+                    'msg': _("No sample payload yet — run a data pull (or use the "
+                             "demo connector) before testing.")}
+        promoted = tested = 0
+        for m in suggested:
+            if not m.target_rule_id:
+                continue
+            tested += 1
+            try:
+                val = m.get_value_from_record(sample)
+            except Exception:
+                val = None
+            if val is not None:
+                m.active_state = 'active'
+                promoted += 1
+        return {'ok': True, 'promoted': promoted, 'tested': tested,
+                'remaining': len(suggested) - promoted}
 
     @api.model
     def action_open_onboarding(self):
@@ -893,11 +953,20 @@ class HrIntegrationConnector(models.Model):
         connector = self._get_connector_instance()
         return connector.fetch_payroll_data(employee_ids, date_from, date_to)
 
+    def _sync_mapping_ids(self):
+        """Field mappings that are load-bearing for sync (F114/D114.2): only
+        confirmed 'active' rows. 'suggested' rows are unconfirmed vendor-template
+        guesses and 'ignored' rows are switched off — neither may ever feed a
+        real payslip input until promoted via the onboarding batch test."""
+        self.ensure_one()
+        return self.field_mapping_ids.filtered(
+            lambda m: m.active and m.active_state == 'active')
+
     def transform_data(self, raw_data):
         """Transform raw data using field mappings"""
         self.ensure_one()
         connector = self._get_connector_instance()
-        return connector.transform_data(raw_data, self.field_mapping_ids)
+        return connector.transform_data(raw_data, self._sync_mapping_ids())
 
     # ==========================================
     # EXCEL IMPORT

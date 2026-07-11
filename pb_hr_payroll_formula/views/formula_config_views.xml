@@ -183,7 +183,7 @@
                                       decoration-warning="has_circular_ref"
                                       decoration-success="column_type == 'formula'">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="column_letter" string="Col" width="45px"/>
+                                    <field name="column_letter" string="Col" width="45px" readonly="1"/>
                                     <field name="source_sheet_name" string="Section" optional="hide"/>
                                     <field name="name" string="Component" width="200px"/>
                                     <field name="component_type" string="Category" optional="hide"/>
@@ -391,7 +391,7 @@
                               decoration-success="column_type == 'formula'"
                               decoration-info="column_type == 'input'">
                             <field name="sequence" widget="handle"/>
-                            <field name="column_letter" string="Col" width="50px"/>
+                            <field name="column_letter" string="Col" width="50px" readonly="1"/>
                             <field name="source_sheet_name" string="Section" width="130px" optional="show"/>
                             <field name="name" string="Component" width="200px"/>
                             <field name="component_type" string="Category" width="110px" optional="show"/>
