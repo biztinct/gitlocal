@@ -7,8 +7,10 @@ template ships state='draft': the harness proving the tests reproduce is
 necessary but NOT sufficient for certification — the senior-band CPF splits and
 SHG automation remain VERIFY items pending a country reviewer's sign-off.
 """
-from odoo.addons.pb_hr_payroll_formula.hooks import certify_pack_templates
+from odoo.addons.pb_hr_payroll_formula.hooks import certify_module_templates
 
 
 def post_init_hook(env):
-    certify_pack_templates(env, ['pb_pack_sg.tpl_sg_standard_2026'])
+    # certify THIS module's own templates (discovered via ir.model.data) —
+    # immune to the copy-a-pack-and-forget-to-edit-the-xmlid mistake
+    certify_module_templates(env, __package__.rsplit('.', 1)[-1])

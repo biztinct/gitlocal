@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Country Pack — Thailand',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Thailand Standard 2026 template + 2026 SSF/PIT legislation pack',
     'description': '''

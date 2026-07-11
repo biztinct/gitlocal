@@ -31,11 +31,19 @@ template fails at authoring time, never at a client's payroll run.
 """
 import json
 import logging
+import re
+from datetime import date as _date
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from ..formula_engine.comparison import coerce_number
+
 _logger = logging.getLogger(__name__)
+
+# Same identifier shape the studio enforces on rename/add-component — one
+# contract, two enforcement points, identical rule.
+_CODE_RE = re.compile(r'^[A-Z][A-Z0-9]*$')
 
 # Mirror hr.formula.config / hr.formula.legislation.pack country vocabulary.
 _COUNTRY = [
@@ -115,8 +123,10 @@ class HrFormulaConfigTemplate(models.Model):
             t.component_count = len(t._components())
             t.test_count = len(t._sample_tests())
 
-    def name_get(self):
-        return [(t.id, '%s · %s' % (t.name, t.version)) for t in self]
+    @api.depends('name', 'version')
+    def _compute_display_name(self):
+        for t in self:
+            t.display_name = '%s · %s' % (t.name, t.version)
 
     # ------------------------------------------------------------------
     # JSON accessors (tolerant of empty/None)
@@ -171,17 +181,18 @@ class HrFormulaConfigTemplate(models.Model):
 
     @api.model
     def _assert_codes_convertible(self, codes):
-        # 1) shape: letters/digits only, start with a letter, no underscore
+        # 1) shape: the studio's exact rename/add-component rule (uppercase
+        #    letters + digits, starts with a letter — no underscores, no spaces)
         for code in codes:
             if '_' in code:
                 raise ValidationError(_(
                     "Component code '%s' contains an underscore. The Excel→Python "
                     "converter cannot round-trip underscored codes — rename it "
                     "(e.g. 'SI_EMP' → 'SIEMP').") % code)
-            if not code or not code[0].isalpha() or not code.replace(' ', '').isalnum():
+            if not _CODE_RE.match(code):
                 raise ValidationError(_(
-                    "Component code '%s' must be letters and digits only and start "
-                    "with a letter.") % code)
+                    "Component code '%s' must be uppercase letters and digits only, "
+                    "starting with a letter (no spaces).") % code)
         # 2) no code a substring of another (case-insensitive — the converter is)
         upper = [c.upper() for c in codes]
         for i, a in enumerate(upper):
@@ -218,6 +229,13 @@ class HrFormulaConfigTemplate(models.Model):
         RateTable = self.env['hr.formula.rate.table']
         Bracket = self.env['hr.formula.rate.bracket']
 
+        # -- 0. the config must carry the template's country ---------------
+        # (currency mapping, employee→config matching and B4 pack targeting
+        # are all keyed off config.country_code — a wizard default must never
+        # leave an SG structure labelled VN)
+        if self.country_code and config.country_code != self.country_code:
+            config.country_code = self.country_code
+
         # -- 1. rate tables ------------------------------------------------
         for rt in self._rate_tables():
             table = RateTable.create({
@@ -236,6 +254,7 @@ class HrFormulaConfigTemplate(models.Model):
         # -- 2. components -> rules ---------------------------------------
         # Resolve legislation values ONCE per (country, pack_version).
         legis = self._resolve_legislation_map(self.country_code, pack_version)
+        cat_cache = {}
         vals_list = []
         for i, comp in enumerate(self._components()):
             ctype = comp.get('type') or 'formula'
@@ -243,14 +262,18 @@ class HrFormulaConfigTemplate(models.Model):
             const = float(comp.get('constant_value') or 0.0)
             legis_code = comp.get('legislation_code')
             if ctype == 'constant' and legis_code:
-                # value owned by the B4 pack — override any placeholder
-                if legis_code in legis:
-                    const = legis[legis_code]
-                else:
-                    _logger.warning(
-                        "F113: template %s constant %s tags legislation_code %s "
-                        "with no matching pack item for %s — using placeholder %s",
-                        self.code, code, legis_code, self.country_code, const)
+                # Value owned by the B4 pack — the template's constant_value is
+                # documentation only. A resolution miss must FAIL, never fall
+                # back: a placeholder silently becomes a statutory rate.
+                if legis_code not in legis:
+                    raise ValidationError(_(
+                        "Template '%s': constant %s requires legislation code %s "
+                        "but no published %s legislation pack carries it%s. "
+                        "Publish the statutory pack before creating a "
+                        "configuration from this template.") % (
+                        self.code, code, legis_code, self.country_code,
+                        pack_version and _(" (pinned version %s)") % pack_version or ''))
+                const = legis[legis_code]
             vals = {
                 'config_id': config.id,
                 'code': code,
@@ -268,17 +291,25 @@ class HrFormulaConfigTemplate(models.Model):
             # seam already uses). Explicit letter preferred; else create() mints.
             if comp.get('column_letter'):
                 vals['column_letter'] = comp['column_letter']
-            cat_id = self._resolve_category(comp.get('category'))
+            cat_id = self._resolve_category(comp.get('category'), cat_cache)
             if cat_id:
                 vals['category_id'] = cat_id
             vals_list.append(vals)
         Rule.create(vals_list)
 
         # -- 3. formula regeneration (Excel -> Python) --------------------
-        try:
-            config.action_regenerate_formulas()
-        except Exception as e:  # never leave a half-seeded config unusable
-            _logger.warning("F113: formula regen failed for %s: %s", config.code, e)
+        # action_regenerate_formulas collects per-rule conversion errors into
+        # its returned notification instead of raising — check the rules
+        # themselves: a formula that failed to convert must FAIL the seed, not
+        # ship a component that silently computes 0 on payslips.
+        config.action_regenerate_formulas()
+        broken = config.rule_ids.filtered(
+            lambda r: r.column_type == 'formula' and r.excel_formula
+            and not r.python_formula)
+        if broken:
+            raise ValidationError(_(
+                "Template '%s': %d formula(s) failed Excel→Python conversion: %s")
+                % (self.code, len(broken), ', '.join(broken.mapped('code'))))
 
         # -- 4. sample tests ----------------------------------------------
         self._seed_sample_tests(config)
@@ -286,19 +317,24 @@ class HrFormulaConfigTemplate(models.Model):
 
     def _seed_sample_tests(self, config):
         """Import the certification suite as hr.formula.sample.data rows so the
-        tests are visible/re-runnable in the Test workbench."""
+        tests are visible AND assertable in the Test workbench — expected
+        values go into ``expected_values_json``, the field the workbench's
+        pass/fail comparison actually reads."""
         self.ensure_one()
         Sample = self.env['hr.formula.sample.data']
+        vals_list = []
         for i, test in enumerate(self._sample_tests()):
-            inputs = test.get('inputs') or {}
-            Sample.create({
+            vals_list.append({
                 'config_id': config.id,
                 'name': test.get('name') or (_('Test %d') % (i + 1)),
-                'description': _('Certification test — expected: %s') % json.dumps(
-                    test.get('expected') or {}, ensure_ascii=False),
-                'input_values_json': json.dumps(inputs),
+                'description': _('Certification test (template %s v%s)') % (
+                    self.code, self.version),
+                'input_values_json': json.dumps(test.get('inputs') or {}),
+                'expected_values_json': json.dumps(test.get('expected') or {}),
                 'sequence': (i + 1) * 10,
             })
+        if vals_list:
+            Sample.create(vals_list)
 
     # ------------------------------------------------------------------
     # category resolution (by code; create-on-miss with a sane name)
@@ -310,9 +346,11 @@ class HrFormulaConfigTemplate(models.Model):
     }
 
     @api.model
-    def _resolve_category(self, cat_code):
+    def _resolve_category(self, cat_code, cache=None):
         if not cat_code:
             return False
+        if cache is not None and cat_code in cache:
+            return cache[cat_code]
         Cat = self.env['hr.salary.rule.category']
         cat = Cat.search([('code', '=', cat_code)], limit=1)
         if not cat:
@@ -320,6 +358,8 @@ class HrFormulaConfigTemplate(models.Model):
                 'code': cat_code,
                 'name': self._CATEGORY_NAMES.get(cat_code.upper(), cat_code.title()),
             })
+        if cache is not None:
+            cache[cat_code] = cat.id
         return cat.id
 
     # ==================================================================
@@ -347,22 +387,27 @@ class HrFormulaConfigTemplate(models.Model):
         published = Pack.search(base_domain + [
             ('state', '=', 'published'),
             '|', ('effective_date', '=', False), ('effective_date', '<=', today),
-        ], order='effective_date asc, sequence asc, id asc')
+        ])
 
         result = {}
 
+        # newest-effective wins → apply oldest first. Sort in Python: SQL ASC
+        # puts NULL effective_date LAST (it would override every dated pack);
+        # an undated pack is a baseline and must apply FIRST.
+        def _sorted(packs):
+            return packs.sorted(
+                key=lambda p: (p.effective_date or _date.min, p.sequence, p.id))
+
         def _apply(packs):
-            for p in packs:
+            for p in _sorted(packs):
                 for it in p.item_ids:
                     if it.code:
                         result[it.code] = it.value
 
-        # newest-effective wins → apply oldest first
         _apply(published)
 
         if pack_version:
-            pinned = Pack.search(base_domain + [('version', '=', pack_version)],
-                                 order='effective_date asc, sequence asc, id asc')
+            pinned = Pack.search(base_domain + [('version', '=', pack_version)])
             _apply(pinned)
         return result
 
@@ -387,6 +432,17 @@ class HrFormulaConfigTemplate(models.Model):
         report = {'template': self.code, 'passed': True, 'total': 0,
                   'failed': [], 'log': []}
         Config = self.env['hr.formula.config'].sudo()
+        # Honour the suite's pack_version pin (A0 reproducibility): the tests
+        # were computed against one pack version — seed the throwaway config
+        # from exactly that version so a newer published pack can never turn
+        # a healthy pack install into a spurious certification failure.
+        pins = sorted({t.get('pack_version')
+                       for t in self._sample_tests() if t.get('pack_version')})
+        pin = pins[0] if pins else None
+        if len(pins) > 1:
+            _logger.warning(
+                "F113: template %s mixes pack_version pins %s — certifying "
+                "against %s", self.code, pins, pin)
         cfg = None
         try:
             # savepoint so nothing this method writes ever survives
@@ -396,7 +452,7 @@ class HrFormulaConfigTemplate(models.Model):
                     'country_code': self.country_code,
                     'state': 'draft',
                 })
-                self.seed_config(cfg)
+                self.seed_config(cfg, pack_version=pin)
                 report.update(self._run_suite(cfg))
                 # always roll the savepoint back — never persist the throwaway
                 raise _CertRollback()
@@ -418,10 +474,10 @@ class HrFormulaConfigTemplate(models.Model):
 
     def _run_suite(self, config):
         """Run this template's sample tests against ``config``. Legislation
-        values are resolved per-test at the pinned ``pack_version`` (already
-        materialised into constant rules at seed time — the harness pin is
-        honoured by seeding at the first test's pin; mixed pins would need
-        re-seeding, which no shipped pack does)."""
+        values were materialised into constant rules at seed time, resolved at
+        the suite's pinned ``pack_version`` (run_certification passes the pin
+        into seed_config; mixed pins in one suite are warned and certified at
+        the first pin — no shipped pack mixes them)."""
         self.ensure_one()
         Sample = self.env['hr.formula.sample.data']
         # one reusable throwaway sample bound to the config
@@ -437,11 +493,7 @@ class HrFormulaConfigTemplate(models.Model):
             tol = float(test.get('tol') or 1.0)  # ₫1 default tolerance
             results = probe._evaluate_rules_with_dependencies(inputs)
             for code, exp in expected.items():
-                got = results.get(code, 0.0)
-                try:
-                    got_f = float(got)
-                except (TypeError, ValueError):
-                    got_f = 0.0
+                got_f = coerce_number(results.get(code, 0.0)) or 0.0
                 if abs(got_f - float(exp)) > tol:
                     out['passed'] = False
                     out['failed'].append({
@@ -458,9 +510,11 @@ class HrFormulaConfigTemplate(models.Model):
     # ==================================================================
     def compare_template_versions(self, other):
         """Structural diff self→other (both hr.formula.config.template). Returns
-        {added, removed, changed: [{code, field, from, to}], refs}. Used to show
-        a consultant what a new template version changes before they apply it to
-        a live config (never a silent auto-update — D113.5)."""
+        {added, removed, changed: [{code, field, from, to}], rate_tables:
+        {added, removed, changed}, refs}. Used to show a consultant what a new
+        template version changes before they apply it to a live config (never
+        a silent auto-update — D113.5). A bracket/rate change is exactly the
+        kind of update this exists for, so rate tables diff too."""
         self.ensure_one()
         if isinstance(other, int):
             other = self.browse(other)
@@ -479,10 +533,23 @@ class HrFormulaConfigTemplate(models.Model):
                 if av != bv:
                     changed.append({'code': k, 'field': field,
                                     'from': av, 'to': bv})
+        ra = {rt.get('code'): rt for rt in self._rate_tables() if rt.get('code')}
+        rb = {rt.get('code'): rt for rt in other._rate_tables() if rt.get('code')}
+        rt_changed = [
+            {'code': k, 'field': 'brackets',
+             'from': ra[k].get('brackets') or [],
+             'to': rb[k].get('brackets') or []}
+            for k in ra if k in rb
+            and (ra[k].get('brackets') or []) != (rb[k].get('brackets') or [])]
         return {
             'from': {'code': self.code, 'version': self.version},
             'to': {'code': other.code, 'version': other.version},
             'added': added, 'removed': removed, 'changed': changed,
+            'rate_tables': {
+                'added': [rb[k] for k in rb if k not in ra],
+                'removed': [ra[k] for k in ra if k not in rb],
+                'changed': rt_changed,
+            },
             'refs': other._legislation_refs(),
         }
 

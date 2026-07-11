@@ -4418,12 +4418,22 @@ class PbFormulaStudio(models.AbstractModel):
         UX payload (T113.7): country/flag/version/effective date, the full
         component + rate-table preview, and legislation references."""
         out = [dict(t) for t in self._BUILTIN_TEMPLATES]
-        Template = self.env['hr.formula.config.template']
         if 'hr.formula.config.template' not in self.env:
             return out
-        templates = Template.sudo().search(
-            [('state', '!=', 'superseded')],
-            order='country_code, sequence, effective_date desc')
+        try:
+            # savepoint: if the registry table doesn't exist yet (deploy
+            # window — new code, base module not upgraded), the failed
+            # statement must not poison the cursor; the built-in entries keep
+            # the create wizard alive regardless.
+            with self.env.cr.savepoint():
+                templates = self.env['hr.formula.config.template'].sudo().search(
+                    [('state', '!=', 'superseded')],
+                    order='country_code, sequence, effective_date desc')
+                templates.mapped('code')  # force the fetch inside the savepoint
+        except Exception:
+            _logger.exception("F113: template registry unavailable — "
+                              "serving built-in templates only")
+            return out
         for tpl in templates:
             comps = tpl._components()
             preview = []
@@ -4483,11 +4493,15 @@ class PbFormulaStudio(models.AbstractModel):
         B4-resolved statutory constants, sample tests)."""
         if key and key not in ('vn_standard', 'blank'):
             Template = self.env['hr.formula.config.template']
-            tpl = Template.sudo().search([('code', '=', key)], limit=1)
+            # never materialise a superseded structure — the picker hides
+            # them, so a stale bookmarked/scripted key must not bypass that
+            tpl = Template.sudo().search([
+                ('code', '=', key), ('state', '!=', 'superseded')], limit=1)
             if tpl:
                 tpl.seed_config(cfg)
                 return
-            _logger.warning("F113: unknown template key '%s' — seeding blank", key)
+            _logger.warning("F113: unknown or superseded template key '%s' — "
+                            "seeding blank", key)
             return
         if key == 'vn_standard':
             # Assign column letters explicitly. The model's position-based

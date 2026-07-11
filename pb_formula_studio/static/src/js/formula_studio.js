@@ -3015,7 +3015,14 @@ export class PbFormulaStudio extends Component {
     }
     closeWizard() { this.state.wizardOpen = false; }
     wizardSet(field, ev) { this.state.wizardForm[field] = ev.target.value; }
-    pickTemplate(key) { this.state.wizardForm.template = key; }
+    pickTemplate(key) {
+        this.state.wizardForm.template = key;
+        // keep the config country in lock-step with the picked template — an
+        // SG structure must never be created as a VN config (currency,
+        // employee matching and legislation targeting all key off it)
+        const t = this.state.wizardTemplates.find((x) => x.key === key);
+        if (t && t.country) { this.state.wizardForm.country_code = t.country; }
+    }
     get wizardTpl() { return this.state.wizardTemplates.find(t => t.key === this.state.wizardForm.template) || {}; }
     wizardBack() { if (this.state.wizardStep > 1) this.state.wizardStep--; }
     wizardNext() {

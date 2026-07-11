@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Country Pack — Indonesia',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Indonesia Standard 2026 template + 2026 BPJS/PPh21 legislation pack',
     'description': '''
