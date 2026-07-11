@@ -2673,7 +2673,11 @@
                   <div t-foreach="state.wizardTemplates" t-as="tpl" t-key="tpl.key"
                        t-attf-class="tmpl-card {{ state.wizardForm.template === tpl.key ? 'sel' : '' }}"
                        t-on-click="() => this.pickTemplate(tpl.key)">
-                    <b t-esc="tpl.name"/><p t-esc="tpl.desc"/>
+                    <b><t t-if="tpl.flag"><t t-esc="tpl.flag"/> </t><t t-esc="tpl.name"/>
+                      <span t-if="tpl.certified" class="tmpl-badge cert" title="Country-reviewed &amp; certified">✓ Certified</span>
+                      <span t-elif="tpl.state === 'draft'" class="tmpl-badge draft" title="Structure validated; statutory items pending review">Draft</span>
+                    </b><p t-esc="tpl.desc"/>
+                    <small t-if="tpl.version and tpl.version !== 'legacy'" class="tmpl-ver">v<t t-esc="tpl.version"/><t t-if="tpl.effective_date"> · from <t t-esc="tpl.effective_date"/></t></small>
                   </div>
                   <div class="tmpl-card" t-on-click="importExcel">
                     <b>Import from Excel</b><p>Upload a spreadsheet — headers, columns and formulas detected automatically.</p>
@@ -2682,9 +2686,34 @@
               </t>
               <!-- Step 3: Formulas review -->
               <t t-elif="state.wizardStep === 3">
-                <h2>Review the components</h2>
-                <p class="lead"><t t-esc="wizardTpl.name"/> — these will be created. You'll tune them in the cockpit.</p>
-                <div t-if="wizardTpl.preview and wizardTpl.preview.length" class="wz-preview">
+                <h2>What's inside <t t-esc="wizardTpl.name"/></h2>
+                <p class="lead">These components will be created. You'll tune them in the cockpit.</p>
+                <!-- F113 registry template: full component list + rate tables + legislation refs -->
+                <div t-if="wizardTpl.components and wizardTpl.components.length" class="wz-inside">
+                  <div class="wz-complist">
+                    <div t-foreach="wizardTpl.components" t-as="c" t-key="c_index" class="cpr">
+                      <span class="c" t-esc="c.col"/><t t-esc="c.name"/>
+                      <span t-attf-class="f {{ c.type }}" t-esc="c.type"/>
+                    </div>
+                  </div>
+                  <div t-if="wizardTpl.rate_tables and wizardTpl.rate_tables.length" class="wz-rates">
+                    <h3>Rate tables</h3>
+                    <div t-foreach="wizardTpl.rate_tables" t-as="rt" t-key="rt_index" class="rate-row">
+                      <b t-esc="rt.code"/> <span t-esc="rt.name"/>
+                      <span class="rb"><t t-esc="rt.brackets.length"/> brackets</span>
+                    </div>
+                  </div>
+                  <div t-if="wizardTpl.refs and wizardTpl.refs.length" class="wz-refs">
+                    <h3>Legislation</h3>
+                    <div t-foreach="wizardTpl.refs" t-as="r" t-key="r_index" class="ref-row">
+                      <a t-if="r.url" t-att-href="r.url" target="_blank" t-esc="r.title || r.ref"/>
+                      <span t-else="" t-esc="r.title || r.ref"/>
+                      <span t-if="r.effective_date" class="rd"> · <t t-esc="r.effective_date"/></span>
+                    </div>
+                  </div>
+                </div>
+                <!-- legacy built-in template: short preview -->
+                <div t-elif="wizardTpl.preview and wizardTpl.preview.length" class="wz-preview">
                   <div t-foreach="wizardTpl.preview" t-as="p" t-key="p_index" class="cpr">
                     <span class="c" t-esc="p.col"/><t t-esc="p.name"/><span class="f" t-esc="p.f"/>
                   </div>
