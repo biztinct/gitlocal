@@ -2724,8 +2724,17 @@
               <!-- Step 4: Test -->
               <t t-elif="state.wizardStep === 4">
                 <h2>Test data</h2>
-                <p class="lead">We'll seed a sample employee so the live preview works immediately. Generate more from real staff anytime, then run tests from the cockpit.</p>
-                <div class="wz-note"><b>Sample — Standard</b> (Basic ₫15,000,000) will be added so you can see values right away.</div>
+                <t t-if="wizardTpl.builtin and wizardTpl.key === 'vn_standard'">
+                  <p class="lead">We'll seed a sample employee so the live preview works immediately. Generate more from real staff anytime, then run tests from the cockpit.</p>
+                  <div class="wz-note"><b>Sample — Standard</b> (Basic ₫15,000,000) will be added so you can see values right away.</div>
+                </t>
+                <t t-elif="wizardTpl.builtin">
+                  <p class="lead">A blank canvas starts without test data — generate samples from real staff anytime, then run tests from the cockpit.</p>
+                </t>
+                <t t-else="">
+                  <p class="lead">The template ships its certification test suite. Every test is seeded into the Test workbench with its expected values, so you can re-run and verify anytime.</p>
+                  <div class="wz-note"><b><t t-esc="wizardTpl.name"/></b> certification tests will be added, pre-wired with expected results.</div>
+                </t>
               </t>
               <!-- Step 5: Activate -->
               <t t-else="">

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Country Pack — Singapore',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Singapore starter template (CPF/SDL) + 2026 statutory legislation pack',
     'description': """

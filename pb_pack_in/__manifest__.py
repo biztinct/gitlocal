@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Country Pack — India',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'summary': 'India Standard 2026 template + 2026 EPF/ESI/PT/TDS legislation pack',
     'description': '''India Country Starter Template (F113)
