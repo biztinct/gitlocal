@@ -3481,12 +3481,6 @@ class PbFormulaStudio(models.AbstractModel):
             rule.unlink()
         return {'ok': True}
 
-    @api.model
-    def _dupe_delete_component(self, rule_id):
-        rule = self.env['hr.formula.rule'].browse(int(rule_id))
-        if rule.exists():
-            rule.unlink()
-        return {'ok': True}
 
     # ------------------------------------------------------------------
     # lifecycle (reuses config methods)
@@ -4394,19 +4388,71 @@ class PbFormulaStudio(models.AbstractModel):
             s = chr(65 + r) + s
         return s
 
+    # Built-in starter entries. The legacy 'vn_standard' set predates the F113
+    # converter contract (its codes SI_EMP/TOTAL_DED carry underscores but are
+    # only ever referenced by column letter, so they are safe) — it is kept as
+    # code, byte-identical, and is NOT a registry record. All richer, contract-
+    # clean country packs come from hr.formula.config.template (F113).
+    _BUILTIN_TEMPLATES = [
+        {'key': 'vn_standard', 'name': 'Vietnam Standard', 'country': 'VN',
+         'flag': '🇻🇳', 'version': 'legacy', 'builtin': True, 'certified': False,
+         'effective_date': False, 'refs': [],
+         'desc': '10 components pre-wired: Basic, allowances, SI/HI/UI, Gross & Net — VN statutory rates.',
+         'components': [], 'rate_tables': [],
+         'preview': [{'col': 'A', 'name': 'Basic Salary', 'f': 'input'},
+                     {'col': 'B', 'name': 'Housing Allowance', 'f': '= Basic × 20%'},
+                     {'col': 'E', 'name': 'Gross Salary', 'f': '= A+B+C+D'},
+                     {'col': 'J', 'name': 'Net Salary', 'f': '= Gross − Deductions'}]},
+        {'key': 'blank', 'name': 'Blank canvas', 'country': False,
+         'flag': '', 'version': '', 'builtin': True, 'certified': False,
+         'effective_date': False, 'refs': [], 'components': [], 'rate_tables': [],
+         'desc': 'Start empty and build components one by one — or ask PayAI to draft them.',
+         'preview': []},
+    ]
+
     @api.model
     def wizard_templates(self):
-        return [
-            {'key': 'vn_standard', 'name': 'Vietnam Standard',
-             'desc': '10 components pre-wired: Basic, allowances, SI/HI/UI, Gross & Net — VN statutory rates.',
-             'preview': [{'col': 'A', 'name': 'Basic Salary', 'f': 'input'},
-                         {'col': 'B', 'name': 'Housing Allowance', 'f': '= Basic × 20%'},
-                         {'col': 'E', 'name': 'Gross Salary', 'f': '= A+B+C+D'},
-                         {'col': 'J', 'name': 'Net Salary', 'f': '= Gross − Deductions'}]},
-            {'key': 'blank', 'name': 'Blank canvas',
-             'desc': 'Start empty and build components one by one — or ask PayAI to draft them.',
-             'preview': []},
-        ]
+        """Starter templates for the create-config wizard: the built-in legacy
+        set + every installed F113 country pack (hr.formula.config.template,
+        excluding superseded versions). Each registry entry carries the picker
+        UX payload (T113.7): country/flag/version/effective date, the full
+        component + rate-table preview, and legislation references."""
+        out = [dict(t) for t in self._BUILTIN_TEMPLATES]
+        Template = self.env['hr.formula.config.template']
+        if 'hr.formula.config.template' not in self.env:
+            return out
+        templates = Template.sudo().search(
+            [('state', '!=', 'superseded')],
+            order='country_code, sequence, effective_date desc')
+        for tpl in templates:
+            comps = tpl._components()
+            preview = []
+            for c in comps:
+                if c.get('type') == 'input':
+                    f = 'input'
+                elif c.get('type') == 'constant':
+                    f = 'constant'
+                else:
+                    f = (c.get('excel_formula') or '').lstrip('=') or 'formula'
+                preview.append({'col': c.get('column_letter') or '',
+                                'name': c.get('name') or c.get('code'), 'f': f})
+            out.append({
+                'key': tpl.code, 'name': tpl.name, 'country': tpl.country_code,
+                'flag': tpl.flag or '', 'version': tpl.version,
+                'effective_date': tpl.effective_date and str(tpl.effective_date) or False,
+                'state': tpl.state, 'certified': tpl.state == 'certified',
+                'builtin': False,
+                'desc': tpl.description or '',
+                'components': [{'code': c.get('code'), 'name': c.get('name'),
+                               'type': c.get('type'), 'category': c.get('category'),
+                               'col': c.get('column_letter') or ''} for c in comps],
+                'rate_tables': [{'code': rt.get('code'), 'name': rt.get('name'),
+                                'brackets': rt.get('brackets') or []}
+                               for rt in tpl._rate_tables()],
+                'refs': tpl._legislation_refs(),
+                'preview': preview[:8],
+            })
+        return out
 
     @api.model
     def create_config(self, vals):
@@ -4428,7 +4474,21 @@ class PbFormulaStudio(models.AbstractModel):
 
     def _seed_template(self, cfg, key):
         """Populate an empty config from a starter template. Shared by the
-        creation wizard and the cockpit 'Use Vietnam Standard' resume CTA."""
+        creation wizard and the cockpit 'Use Vietnam Standard' resume CTA.
+
+        Routing (F113): the built-in 'vn_standard' set stays a hardcoded code
+        path (guaranteed byte-identical to pre-F113); 'blank' seeds nothing; any
+        other key is looked up in the hr.formula.config.template registry and
+        materialised by its own seeder (categories, rate tables, frozen letters,
+        B4-resolved statutory constants, sample tests)."""
+        if key and key not in ('vn_standard', 'blank'):
+            Template = self.env['hr.formula.config.template']
+            tpl = Template.sudo().search([('code', '=', key)], limit=1)
+            if tpl:
+                tpl.seed_config(cfg)
+                return
+            _logger.warning("F113: unknown template key '%s' — seeding blank", key)
+            return
         if key == 'vn_standard':
             # Assign column letters explicitly. The model's position-based
             # compute is unreliable during batch create (o2m cache staleness
