@@ -1,0 +1,644 @@
+# PHASE 5 — Formula Engine Design: the Not-Built Backlog, High-Priority First
+
+**Source of sequence:** `docs/FORMULA_ENGINE_VISION.html` §11 catalogue, filtered **Not built**, sorted
+**High priority first**, Moonshot tier excluded. Feature IDs below are the catalogue numbers (W14 = row #14),
+so this doc maps 1:1 to the vision table.
+
+**Conventions:** every rule in `docs/FORMULA_ENGINE_CONVENTIONS.md` (C1–C11) is binding. Read it first.
+Do not re-derive any plumbing fact marked ✅ — each was personally verified against the live code on 2026-07-12.
+
+**Packaging:** four work packages, built in order **WP-A → WP-B → WP-C → WP-D**, one Opus session each.
+After each package the user reports "opus done", Fable reviews, then the next kickoff line is used.
+Part II holds design briefs for the 24 Medium features (designed fully in a later cycle); Part III is the
+Low-priority backlog.
+
+**Binding non-goals for all packages**
+- No Moonshot features (M-tier). No re-design of features an existing doc already covers (cross-refs in Part II).
+- Engine/wizard server code stays in `pb_hr_payroll_formula` (headless); all UI + studio RPCs in
+  `pb_formula_studio` (C1). AI always has a deterministic fallback (C1).
+- No schema migrations of existing tables beyond additive fields; no changes to the evaluator's semantics.
+- Manifest `version` bumped in every commit that touches assets (C2). One feature-scoped commit per W-feature (C10).
+
+---
+
+## Verified infrastructure the packages build on
+
+| Fact | Where (verified) |
+|---|---|
+| Grid renders ALL columns — no virtualization; components are columns, 6 fixed property rows | `grid_studio.js:7` (`ROWS`), full `<table class="g2-table">` in `grid_studio.xml` |
+| Grid UI state id-keyed (focus/selection/editing/fill), survives wholesale prop refresh | `grid_studio.js:46-84` |
+| Display order = `sequence`; letters frozen with high-water mark | `grid_studio.js:90-93`, `formula_rule.py:1129-1154` |
+| Client has full component list + dependency graph + preview values in memory | `formula_studio.js` state: `components`, `graph {nodes,edges,execution_order,unused,cycles}`, `preview.values` |
+| Client BFS tint primitives, memoized | `grid_studio.js:221-242` (`_bfsCols`, `_ensureTint`) |
+| `useHotkey` already wired in the studio root | `formula_studio.js:6`, usage `:300-306` |
+| Fixed-position overlay primitives: `.g2-ac` autocomplete, `.g2-bulkpop` + scrim | `grid_studio.xml:200-232`, `grid.scss:170-182` |
+| Studio RPC facade `pb.formula.studio` (AbstractModel, 4,568 lines) | `pb_formula_studio/models/pb_formula_studio.py` |
+| `save_formula` `:729` returns bare `{ok}`; `bulk_save_formulas` `:705` hardcodes `reason='fill'` `:717` | verified |
+| F7 write funnel: outgoing snapshots, context contract (`formula_version_reason/_note/_seen`, `skip_formula_version`) | `formula_rule.py:1157-1194`, `VERSIONED_FIELDS :14-20` |
+| `_formula_at(rule, when)` = formula live at time T (earliest version at-or-after T, else current) | `pb_formula_studio.py:1027-1034` |
+| `compare_to_milestone` / `_changes_between` produce per-rule old/new + token-diff runs | `pb_formula_studio.py:1036-1110` |
+| `restore_version(rule_id, seq)` restores ONE rule, reason='restore', recomputes python + validity | `pb_formula_studio.py:988-1014` |
+| Releases = query over F7 versions between two milestones; `release_approve` seals milestone `Release vN` | `formula_release.py`, `pb_formula_studio.py:1140-1194` |
+| Chunked simulation engine: `hr.formula.simulation` via `simulate_prepare/batch/result/drop`, `overrides={code: draft_formula}`, ~50-slip chunks | `pb_formula_studio.py:2068-2098` |
+| Test cases: `hr.formula.sample.data`; `_compute_results` depends ONLY on `input_values_json` + `config_id.rule_ids` (membership) → **formula edits do NOT rerun tests today** | `formula_sample_data.py:164-181`; validation `:183-230` (uses `coerce_number`) |
+| Payslips store `formula_computed_values` (full `{code: value}` JSON) + `formula_input_values`, `calculation_method='formula'`, `formula_config_id` | `hr_payslip_formula.py:21-60` |
+| Payrun batch recompute exists (regression anchor) | `hr_payslip_run.py:10` |
+| Import preview mixin: capture-in-context, confidence 40/25/20/15 (15% = sheets with a primary key, **binary**), `_diagnose`, fix actions; `issue_type` enum already contains `primary_key_miss` (unused: "later tasks", `:344`) | `multisheet_import_preview.py:41-151, 321-345, 371-377` |
+| Import execute already supports updating existing rules: `update_existing` flag, match by code | `multisheet_import_wizard.py:2686, 2721, 2765-2770` |
+| Primary-key resolution per sheet | `multisheet_import_wizard.py:124-167` (`primary_key_column_name` on sheet lines) |
+| Studio LLM entry: `_llm_chat(messages, json_mode=False)` `:4179`; engine reaches it only guarded (`multisheet_import_preview.py:206-213`) | verified |
+| AI pulse (cron anomalies + `provider.generate_text` summaries) exists but is global/cron, not per-payrun | `payroll_ai_pulse.py:72-106, 328-361` |
+| Manifest versions at design time: studio `19.0.1.38.0`, engine `19.0.1.23.0` | both `__manifest__.py` |
+| Studio problems/rename/mapping surfaces (reused, not rebuilt): `get_problems :2303`, `rename_component :2432`, `mapping_canvas_data :2562`, `get_component_edit :771` | verified |
+
+Effort summary: WP-A ≈ 3.5 wks · WP-B ≈ 2 wks · WP-C ≈ 3 wks · WP-D ≈ 4 days. Total ≈ 9–10 dev-weeks.
+
+---
+
+# WP-A — Studio Command Layer (`pb_formula_studio` only) — W109 → W14 → W99 → W100
+
+Build in that order: W109 changes how grid cells materialize, so the find/palette/hover layers land on
+the final DOM contract. W14/W99/W100 share one client-side search index (D-A4).
+
+## Locked decisions
+
+- **D-A1 (W109)** Virtualize **columns only** (rows are a fixed 6-property vocabulary). Keep the real
+  `<table>`: window = `[first..last]` visible columns ± 8 overscan, with two spacer `<td>`s (left/right)
+  of computed width per row. Activate only when `ordered.length > 60`; below that render everything
+  (zero regression risk for typical configs). Column width becomes a fixed constant `--g2-colw`
+  (set it to the current rendered width; read it once via `getComputedStyle`).
+- **D-A2 (W109)** The render set is `window ∪ pinned`, where pinned = focus column, editing column,
+  fill source + targets, tint anchor, scenario-ghost bases, drag column. A cell that owns transient UI
+  never unmounts mid-interaction. Keyboard nav to an off-window column: set focus id first, then
+  `scrollIntoView`; the scroll handler (rAF-throttled) recomputes the window; id-keyed focus survives (C3).
+- **D-A3 (W14)** Find & replace is **client-side search** (all formulas/names/codes are already in
+  `state.components`), **server-side commit** through `bulk_save_formulas` extended with
+  `reason='bulk'`, `note='find/replace: <q> → <r>'`. Replace mutates **formula text only**. A hit on a
+  component *code or name* offers "Rename component…" (jumps to the existing `rename_component` flow)
+  instead of text replacement — codes are referential identities (C5), never string-replaced.
+- **D-A4 (shared)** One memoized search index in `formula_studio.js`:
+  `[{id, col, code, name, category, formula}]` lowercased, rebuilt when `state.components` is replaced.
+  W14 filters it with match options; W99 fuzzy-scores it; W100 resolves hover targets against it.
+- **D-A5 (W99)** Command palette is registry-driven: a static array of command descriptors
+  `{id, section, label, keywords, run()}` + dynamic sections (components, configs). No new RPCs — every
+  action calls an existing `formula_studio.js` method (view switches, selectComponent, open import/release/
+  shadow/AI drawers). `Ctrl/Cmd+K` via `useHotkey`, global within the studio action.
+- **D-A6 (W100)** Hover cards are **pure client-side** (name, code, col, category, token chips, live
+  preview value from `state.preview.values[col]`, validity) — zero RPC, zero latency. 350 ms open delay,
+  `pointer-events: none` (no hover-trap), dismiss on scroll/keydown/mouseleave. One reusable
+  `<HoverCard/>` OWL component positioned fixed like `.g2-ac`.
+- **D-A7 (W14)** Replace validates before committing: run each proposed formula through
+  `validate_formula_live` in a batched loop client-side (reuse debounce token pattern, C8) and show
+  per-hit validity in the preview; invalid proposals are excluded from commit by default.
+
+## Tasks
+
+**TA.1 — W109 column window (core)** — new `useVirtualCols()` helper inside `grid_studio.js` (no new file):
+computes `{first, last, leftPad, rightPad}` from `scrollLeft`, `clientWidth`, `--g2-colw`, `ordered.length`;
+rAF-throttled scroll listener on `scrollerRef`. `ordered` slicing goes through one `visibleCols` getter used
+by the template's `t-foreach` (all six rows + header). Spacer cells carry `colspan=1` fixed widths via style.
+AC: with the 2 VN demo configs (<60 components) DOM is byte-identical to today (feature dormant); with a
+synthetic 250-component config (create via shell loop, keep for the demo library) the grid mounts < 300 ms,
+scroll is smooth, and total rendered `<td>`s ≤ (window+overscan+pinned) × 6.
+
+**TA.2 — W109 interaction survival** — pinned-set logic (D-A2); drag-fill auto-scroll at window edges;
+autocomplete/editor overlay positions computed from the rendered cell rect (unchanged code path — verify).
+AC: on the 250-component config: (1) F2-edit column 200 via keyboard-only from column 5 — focus, editor,
+autocomplete all work; (2) drag-fill from col 40 to col 90 crossing the window edge auto-scrolls and commits
+N version rows reason='fill' (C4); (3) dependency tint on a hub component tints off-window columns correctly
+once scrolled into view (BFS is data-level, `grid.scss` classes apply on render).
+
+**TA.3 — W109 scenario/reorder compatibility** — scenario ghost columns and F111 drag-reorder work with
+windowing (ghosts pin with their base; dragOver targets only rendered columns — dropping past the window
+edge auto-scrolls). AC: scenario create/eval/promote and a reorder from col 3 to col 120 both work on the
+250-component config.
+
+**TA.4 — W14 find panel** — new `static/src/js/grid/find_replace.js` + template + `find.scss` (manifest
+bump, C2). Drawer-style panel (reuse drawer pattern `formula_studio.js:256-257`): query, replace-with,
+options (match case, whole token — default ON for replace), scope chips (Formulas / Names / Codes).
+Hit list grouped by component: col+code chip, formula with `<mark>`ed match, per-hit checkbox, validity
+pill after dry-run (D-A7). `Ctrl/Cmd+F` opens it when focus is inside the studio; `Escape` closes (existing
+hotkey pattern). Enter in query = find; the panel is also openable from W99 palette.
+AC: searching `VLOOKUP` on VN demo config lists every formula containing it with correct counts; searching
+a code like `BHXH` shows formula refs AND a "rename" affordance for the component itself, which opens the
+existing rename flow (no text replace of codes).
+
+**TA.5 — W14 replace commit** — extend `bulk_save_formulas(items, reason='fill', note=False)`
+(`pb_formula_studio.py:705`): validate `reason` against `_VALID_VERSION_REASONS`-compatible subset
+(`fill`,`bulk`), pass `formula_version_note`; drag-fill callers unchanged (default keeps 'fill').
+Find&replace commits checked+valid hits with `reason='bulk'`. After commit: refresh + `compute_preview`
+(existing save pipeline), toast "Replaced N occurrence(s) in M component(s)".
+AC: replacing `0.105` → `SIRATE` across 6 formulas creates exactly 6 version rows, all reason='bulk' with
+the find/replace note (C4 batch rule); history view shows them; an invalid proposal (syntax break) is
+excluded and reported, not committed.
+
+**TA.6 — W99 command palette** — new `static/src/js/palette/command_palette.js` + xml + `palette.scss`.
+Overlay = fixed, centered, scrim; list = sections **Components** (index D-A4, jump = selectComponent +
+scroll grid), **Views** (Cards/Grid/Tests/Settings/Compare when WP-C lands), **Actions** (New component,
+Import…, Find & replace, Release preview, Shadow run, Explain formula, Problems), **Configs** (switch,
+from `state.configs`). Fuzzy scorer: subsequence match with word-boundary bonus (~30 lines, no lib).
+Keyboard: ↑↓ Enter Escape; typing filters live; `?` footer hint. Register `control+k` AND `meta+k`.
+AC: ⌘K → "bhx" → Enter selects the BHXH component in the grid with focus + tint; ⌘K → "rel" opens release
+preview; palette opens in < 50 ms (no RPC on open).
+
+**TA.7 — W100 hover cards** — new `static/src/js/hover_card.js` (+xml/scss). Attach via event delegation
+on the studio root for: token chips on editor cards, `depends_on`/`used_by` chips, grid formula-cell
+component references (resolve token under cursor from the cell's token spans), palette rows (preview on
+highlight). Card: name, col+code, category pill, formula as token chips, live sample value (formatted via
+existing `formatValue`), validity/warning line. AC: hovering any reference chip on the VN demo shows the
+card in ≤ 400 ms with the same value the grid value-row shows; card never intercepts clicks; scroll kills it.
+
+**TA.8 — polish + tours** — pb_coach steps for find (⌘F), palette (⌘K), hover cards; shortcuts listed in
+the palette footer. Chrome MCP validation run (below). Manifest bump; 4 feature commits (one per W).
+
+### Skeleton S-A1 — the window + pinned-set core (the risky spot)
+
+```js
+// grid_studio.js — inside setup()
+this.vcols = useState({ first: 0, last: Infinity, leftPad: 0, rightPad: 0, on: false });
+this._colW = null; // lazily read from --g2-colw on first measure
+
+_recomputeWindow() {
+    const n = this.ordered.length;
+    if (n <= 60) { if (this.vcols.on) Object.assign(this.vcols, {on:false, first:0, last:Infinity, leftPad:0, rightPad:0}); return; }
+    const el = this.scrollerRef.el; if (!el) return;
+    if (!this._colW) this._colW = parseFloat(getComputedStyle(el).getPropertyValue("--g2-colw")) || 160;
+    const labelW = /* frozen label col width, measure once */ this._labelW ??= el.querySelector(".g2-rowlabel")?.offsetWidth || 0;
+    const first = Math.max(0, Math.floor((el.scrollLeft) / this._colW) - 8);
+    const last  = Math.min(n - 1, Math.ceil((el.scrollLeft + el.clientWidth - labelW) / this._colW) + 8);
+    Object.assign(this.vcols, { on: true, first, last,
+        leftPad: first * this._colW, rightPad: (n - 1 - last) * this._colW });
+}
+// PINNED SET — cells owning transient UI never unmount (D-A2).
+get _pinnedIds() {
+    const p = new Set();
+    const add = id => id != null && p.add(id);
+    add(this.ui.focus.colId); add(this.ui.editing?.colId); add(this.ui.dragId);
+    if (this.ui.fill.active || this.ui.fill.pending) { add(this.ui.fill.srcId); this.ui.fill.targets.forEach(t => add(t.id)); }
+    return p;
+}
+get visibleCols() { // template iterates THIS everywhere `ordered` was iterated
+    if (!this.vcols.on) return this.ordered;
+    const pin = this._pinnedIds;
+    return this.ordered.filter((c, i) => (i >= this.vcols.first && i <= this.vcols.last) || pin.has(c.id));
+}
+// GOTCHA: pinned off-window columns break the contiguous spacer math — subtract
+// each pinned column's width from the pad on its side, keyed by its `ordered`
+// index. Compute pads in visibleCols' getter alongside the filter, not separately.
+// GOTCHA: scroll listener must be passive + rAF-coalesced; never setState per event.
+// GOTCHA: after `load()` replaces components, call _recomputeWindow() in onPatched —
+// n may have changed and stale pads misplace the sticky header row.
+```
+
+### WP-A verification (Chrome MCP on pb_demo VN world)
+
+1. Dormancy: VN demo config grid — DOM cell count and all Phase-1/2 grid interactions unchanged.
+2. Build the persistent 250-component demo config (shell; add to demo-scheme library per C10).
+3. Keyboard round-trip at scale (TA.2 AC), drag-fill across window edge, scenario + reorder (TA.3).
+4. Find & replace: TA.4/TA.5 ACs including version-row count check via history panel.
+5. ⌘K on both configs; ⌘F/⌘K/hover pb_coach tour steps fire.
+6. Regression anchor: batch recompute of VN demo payruns — zero value drift (C10).
+
+---
+
+# WP-B — Import Integrity (`pb_hr_payroll_formula`, mixin only) — W37 → W40
+
+## Locked decisions
+
+- **D-B1 (W37)** Join-key health is computed **per selected secondary sheet against the main sheet's key
+  set** at the same moment the preview lines are built (inside the existing
+  `action_process_with_resolution` wrapper — one new call, no new wizard step). Metrics per sheet:
+  `coverage` (% of main-sheet key values found in the sheet), `duplicates`, `blank_keys`,
+  `type_mismatch` (numeric-as-text / `123.0` float artifacts), `fuzzy_only` (case/whitespace-only matches).
+- **D-B2 (W37)** Confidence stays ONE score with the same 40/25/20/15 weights (C7): the 15% `key_ratio`
+  term upgrades from binary "sheet has a key" to `avg(coverage)` over selected sheets (a sheet with no
+  key = 0.0). Breakdown JSON gains a `key_health` sub-object. Rows that would silently drop become
+  preview lines with the already-existing `issue_type='primary_key_miss'` (`:371-377`) — turning the
+  `:344` "later tasks" comment into reality.
+- **D-B3 (W37)** Fixable mismatches (case/whitespace/float-artifact) get a one-click fix action
+  `normalize_keys` (extends the existing `fix_action` selection) that applies normalization to the
+  in-wizard key matching only — source files are never mutated.
+- **D-B4 (W40)** Diff re-import is a **preview layer over the existing `update_existing` commit path**
+  (`multisheet_import_wizard.py:2721, 2765-2770`) — we do not build a second import pipeline. When the
+  target config already has rules, the review step shows a config diff: **Added** (import code ∉ config),
+  **Changed** (code match, resolved formula ≠ live `excel_formula`), **Unchanged**, **Missing from file**
+  (config code ∉ import — reported, NEVER auto-deleted; per-line opt-in `archive` action only).
+- **D-B5 (W40)** Before the commit that applies a re-import, record a milestone
+  `Before re-import <filename>` (`hr.formula.config.milestone.record`, `formula_rule_version.py:74-78`).
+  This makes every re-import instantly comparable (`compare_to_milestone`) and rollbackable (WP-C W86).
+  Updated rules write with `formula_version_reason='import'`, note = filename (C4).
+
+## Tasks
+
+**TB.1 — W37 key-health scanner** — new mixin file `wizards/multisheet_join_health.py`
+(`_inherit` the wizard; C6). Method `_scan_join_health()` → per-sheet dicts (D-B1 metrics + up to 20
+sample missing keys); store `join_health_json`; called from the preview wrapper after
+`_build_preview_lines`. Key sets come from the already-loaded sheet data (the wizard has parsed rows in
+memory at this state — locate the parsed-rows structure next to `:124-167` primary-key resolution;
+do not re-read the file). AC: a doctored 3-sheet VN workbook (10 missing keys, 3 dupes, 5 float-artifact
+keys on sheet 2) reports exactly those counts per sheet.
+
+**TB.2 — W37 preview + confidence wiring** — `primary_key_miss` preview lines for main-sheet rows whose
+key misses a selected sheet (capped 200, C8); `key_ratio = avg(coverage)` in `_compute_confidence`
+(D-B2); `key_health` in breakdown JSON; health table rendered in the review step
+(`multisheet_wizard_view_inherit.xml` — Html field like `ai_review_html`).
+AC: the doctored workbook's confidence drops vs the clean one specifically via the `keys` term (visible
+in the breakdown gauge); clean VN Thaco template import score is unchanged to 3 decimals (regression, C10).
+
+**TB.3 — W37 normalize fix** — `normalize_keys` fix action (D-B3): strip/casefold/`float→int` string
+keys inside the wizard's matching pass; re-run `_scan_join_health` + `_compute_confidence` after applying.
+AC: the 5 float-artifact keys match after one click; coverage and confidence rise accordingly; source
+preview values untouched.
+
+**TB.4 — W40 diff builder** — new mixin file `wizards/multisheet_reimport_diff.py`. After preview build,
+if `config_id.rule_ids` non-empty: classify D-B4 buckets by code match (codes normalized per C5), store
+`reimport_diff_json` + render an Html diff table (added=green, changed=amber with old→new formula text,
+missing=grey with archive checkbox). Formula equality compares **resolved** import formula vs live
+`excel_formula`, whitespace-insensitive. AC: re-importing the identical Thaco workbook → 0 added,
+0 changed, all unchanged; re-importing with 2 edited formulas + 1 new column + 1 removed column reports
+exactly 2/1/1.
+
+**TB.5 — W40 guarded commit** — wrap `action_execute_import`: when a diff exists, (1) record the D-B5
+milestone, (2) force `update_existing` semantics for Changed rows with reason='import' + filename note,
+(3) apply `archive` only to explicitly ticked Missing rows (set `active=False`? — `hr.formula.rule` has
+no `active` field: instead set `is_visible_in_grid=False` + note, and report; true deletion stays manual),
+(4) after commit, chatter-log the summary on the config. AC: after the 2/1/1 re-import, version history
+shows exactly 2 'import' rows with the filename note; `compare_to_milestone` against the auto-milestone
+reproduces the diff table; the unticked missing rule is untouched.
+
+**TB.6 — studio surfacing** — import drawer's confidence panel shows the key-health table and the diff
+summary (data already in the wizard records the studio reads); pb_coach step. Manifest bumps both modules.
+
+### Skeleton S-B1 — coverage scorer core (risky: key normalization must match the wizard's real matching)
+
+```python
+_FLOAT_ARTIFACT = re.compile(r'^\d+\.0$')
+
+def _key_norm(self, v, fuzzy=False):
+    """Mirror of the BASE matching semantics + optional fuzzy layer. Base match
+    uses the raw cell values — verify against _resolve_primary_key_column's
+    consumers before changing ANYTHING here; health must measure the real join,
+    not an idealized one."""
+    s = '' if v is None or v is False else str(v).strip()
+    if _FLOAT_ARTIFACT.match(s):
+        s = s[:-2]                      # '1023.0' -> '1023' (Excel float artifact)
+    return s.casefold() if fuzzy else s
+
+def _scan_join_health(self):
+    main = self._main_sheet_line()      # the driving sheet (has the employee rows)
+    main_keys = [self._key_norm(v) for v in self._sheet_key_values(main)]
+    main_set = set(k for k in main_keys if k)
+    out = []
+    for sheet in self.available_sheet_ids.filtered('is_selected') - main:
+        vals = [self._key_norm(v) for v in self._sheet_key_values(sheet)]
+        nonblank = [v for v in vals if v]
+        sset = set(nonblank)
+        fuzzy_set = {self._key_norm(v, fuzzy=True) for v in nonblank}
+        missing = [k for k in main_set if k not in sset]
+        fuzzy_only = [k for k in missing if self._key_norm(k, fuzzy=True) in fuzzy_set]
+        out.append({
+            'sheet': sheet.sheet_name,
+            'has_key': bool(sheet.primary_key_column_name),
+            'coverage': (len(main_set) - len(missing)) / len(main_set) if main_set else 0.0,
+            'duplicates': len(nonblank) - len(sset),
+            'blank_keys': len(vals) - len(nonblank),
+            'fuzzy_only': len(fuzzy_only),
+            'sample_missing': missing[:20],
+        })
+    return out
+# GOTCHA: sheets can be huge — never materialize per-row records; lists/sets only.
+# GOTCHA: a sheet with no primary key contributes coverage 0.0 to key_ratio (D-B2),
+# preserving today's binary penalty as the degenerate case.
+```
+
+### WP-B verification
+
+1. Fixture workbooks (add to demo library, C10): clean Thaco template; doctored 3-sheet (TB.1 numbers);
+   edited re-import pair (TB.4 numbers).
+2. Full wizard walk via Chrome MCP for each: health table, confidence gauge + breakdown, fix actions,
+   diff table, guarded commit, auto-milestone visible in the compare picker.
+3. Regression: clean-template confidence unchanged; batch recompute anchor (C10).
+
+---
+
+# WP-C — Trust & Comparison — W82 → W86 → W97
+
+## Locked decisions
+
+- **D-C1 (W82)** Tests run on save is an **explicit post-save hook**, not an `@api.depends` widening —
+  `_compute_results` intentionally depends only on membership (`formula_sample_data.py:164`); wiring it
+  to formula text would synchronously re-evaluate every sample on every rule write in every code path
+  (imports, packs, merges). Instead: new engine method
+  `hr.formula.config.run_sample_tests(changed_codes=None)` → forces `_compute_results` +
+  `_compute_validation` on `sample_data_ids` (invalidate + recompute), returns
+  `{total, passed, failed, pending, failures:[{sample_id, sample, code, expected, computed, delta}]}` (≤ 20 failures).
+- **D-C2 (W82)** Callers: studio `save_formula`, `bulk_save_formulas`, `restore_version`,
+  `promote_scenario`, and WP-B's re-import commit — each calls `run_sample_tests` **once per logical
+  operation** (after the batch, mirroring the C4 one-batch rule) and returns a `tests` object in its
+  response. Guards: skip when the config has no samples; if `len(sample_data_ids) > 20`, run only the
+  samples whose input/expected JSON mention a changed code (cheap containment check) and mark the rest
+  `pending`. Tests **never block a save** — red is information, not a lock.
+- **D-C3 (W82 UI)** Grid/status surfaces show a test chip (`✓ 4/4` green, `✗ 2/4` red, `— no tests` grey)
+  next to the existing validity pill; clicking it opens the existing tests view filtered to failures.
+  Red toast on save when tests newly fail.
+- **D-C4 (W86)** Only the **latest release** of a config is rollback-eligible (linear history — no
+  cherry-pick reverts). Rollback is blocked while unreleased changes exist (`release_preview.change_count
+  > 0` → "Release or discard current changes first"). This keeps "rollback of release vN" ≡ "restore the
+  config to milestone `from` of vN" with zero ambiguity.
+- **D-C5 (W86)** Rollback compares via `_changes_between(config, release.from_milestone.date, None)`
+  **extended to constants**: comparison reads `excel_formula` AND `constant_value` (from
+  `snapshot_json`) — legislation packs edit constants (C4/VERSIONED_FIELDS), a formula-only rollback
+  would silently keep a new SI cap. Apply loop reuses the `restore_version` restoration logic factored
+  into a helper `_restore_rule_state(rule, excel_formula, constant_value)` (reason='restore',
+  note='Rollback <release>', shared `formula_version_seen` set, single savepoint — all-or-nothing).
+- **D-C6 (W86)** Simulate-first: the rollback dialog runs the delta through the existing simulation
+  engine (`simulate_prepare` with `overrides={code: old_formula}` + value overrides for constants,
+  `pb_formula_studio.py:2068`) and shows the org-wide distribution before the Apply button arms.
+  After apply: milestone `Rollback of <release>` + a release row named the same (audit trail stays in
+  one list), narrative auto-drafted.
+- **D-C7 (W97)** Period comparison is a **read-only chunked aggregation** — new lean TransientModel
+  `hr.formula.period.comparison` in the engine module cloning the simulation driver shape
+  (`prepare → batch(~100 slip-pairs) → result`, C8); studio RPC wrappers `compare_prepare/batch/result/drop`
+  mirroring `simulate_*`. No persistence beyond the transient.
+- **D-C8 (W97)** Employee matching by `employee_id` across the two selected runs (runs filtered to slips
+  with `calculation_method='formula'` and the studio's current config). Unmatched = joiners/leavers,
+  counted separately. Per-component fold: `{code: {sum_a, sum_b, delta, n_changed, movers:[top ±5 slips]}}`;
+  per-employee fold: net delta list (top ±25). **Cause candidates**: components changed for ≥ 90% of
+  employees whose NET moved, cross-referenced with `_changes_between(config, run_a.date_end, run_b.date_end)`
+  → "PIT formula changed in Release v4" attribution when the dates bracket a version row.
+
+## Tasks
+
+**TC.1 — W82 engine method** — `run_sample_tests` on `hr.formula.config` (new file
+`models/formula_config_tests.py` or in `formula_config.py` if < 80 lines) per D-C1/D-C2 guards.
+AC: shell test on VN demo config — edit a formula that breaks a sample's expectation, call the method,
+get the failure row with correct expected/computed; runtime < 2 s for the demo config's samples.
+
+**TC.2 — W82 caller wiring + UI** — extend the four studio RPC responses + WP-B commit; test chip +
+failures toast + filtered tests view (D-C3). AC: grid-editing GROSS to a wrong formula turns the chip red
+with the failing sample named in the toast, without blocking the save; drag-fill over 6 columns triggers
+exactly ONE test run (log-verified); fixing the formula turns it green on save.
+
+**TC.3 — W86 rollback preview RPC** — `rollback_preview(release_id)`: eligibility per D-C4 (+ block
+reasons), change list per D-C5 (formula + constant rows, token-diff runs for formulas), and the
+simulation work-list (D-C6). AC: on a demo config with two sealed releases, only the latest offers
+rollback; preview lists exactly the release's changed components including a constant-only change.
+
+**TC.4 — W86 apply RPC + UI** — `rollback_apply(release_id)` per D-C5 (savepoint, N version rows
+reason='restore', milestone + audit release row); studio Releases surface gains the Rollback button →
+dialog: change list → simulate (existing sim distribution component) → type-the-release-name confirm →
+apply → refreshed history. AC: after rollback, every affected rule's formula/constant equals its
+at-`from`-milestone value (`compare_to_milestone` returns 0 changes vs that milestone); history shows the
+restore batch; the audit release row exists; a second rollback attempt is blocked (nothing unreleased,
+but the rollback release is now latest and rolling IT back restores the original state — verify this
+round-trips cleanly).
+
+**TC.5 — W97 comparison engine** — `hr.formula.period.comparison` (fields: config/run_a/run_b/state/
+`fold_json`; methods `cmp_create/cmp_prepare/cmp_batch/cmp_finalize/cmp_drop`) per D-C7/D-C8. Batch
+parses `formula_computed_values` (`hr_payslip_formula.py:45-49`) for ~100 pairs per call, accumulates
+into `fold_json`. AC: shell-driven comparison of two VN demo months over 4,512 employees completes in
+< 60 s of chunked calls; component sums equal independent SQL/pandas spot-totals for 3 components;
+joiners/leavers counts match the demo world's known churn.
+
+**TC.6 — W97 studio surface** — new view `compare` (`static/src/js/compare/period_compare.js` + xml +
+`compare.scss`; sidebar/palette entries): run pickers (runs listed via a small `compare_runs(config_id)`
+RPC), progress bar during chunks (clone shadow-run UX), component delta table (sortable, delta-pct heat
+tint), employee movers drawer, cause-candidates card with release attribution (D-C8), and a **Narrate**
+button placeholder wired in WP-D. AC: Chrome MCP — full compare of two demo months from the UI; sorting
+and drill-downs work; a month-pair spanning a known release shows that release in cause candidates.
+
+### Skeleton S-C1 — rollback apply core (risky: atomicity + constants)
+
+```python
+@api.model
+def rollback_apply(self, release_id):
+    rel = self.env['hr.formula.release'].browse(int(release_id))
+    config = rel.config_id
+    guard = self._rollback_guard(rel)          # D-C4: latest release, no unreleased changes
+    if not guard['ok']:
+        return guard
+    when = rel.from_milestone_id.milestone_date if rel.from_milestone_id else None
+    changes = self._changes_between_full(config, when)   # D-C5: formulas + constants
+    seen = set()
+    ctx = dict(formula_version_reason='restore',
+               formula_version_note=_('Rollback %s') % rel.name,
+               formula_version_seen=seen)
+    try:
+        with self.env.cr.savepoint():          # all-or-nothing
+            for ch in changes:
+                rule = self.env['hr.formula.rule'].browse(ch['rule_id']).with_context(**ctx)
+                self._restore_rule_state(rule, ch['old_formula'], ch.get('old_constant'))
+    except Exception as e:
+        return {'ok': False, 'msg': str(e)}
+    self.env['hr.formula.config.milestone'].sudo().record(config, _('Rollback of %s') % rel.name)
+    # audit trail: the rollback IS a release (D-C6)
+    ...create release row with drafted narrative...
+    tests = config.run_sample_tests()          # W82 synergy: rollback is a save too
+    return {'ok': True, 'restored': len(seen), 'tests': tests}
+# GOTCHA: _restore_rule_state must mirror restore_version's python_formula rebuild +
+# validity check (pb_formula_studio.py:1002-1010) — a restored formula that no longer
+# converts must FAIL the savepoint loudly, not land half-applied (C7).
+# GOTCHA: old_constant comes from snapshot_json of the version row bracketing `when`
+# (_formula_at logic generalized) — do NOT add a second history (release = query, B3).
+```
+
+### WP-C verification
+
+1. W82: shell + Chrome MCP per TC.1/TC.2 ACs on the persistent demo schemes (C10).
+2. W86: two-release fixture on a demo config; TC.3/TC.4 ACs including the double-rollback round-trip;
+   confirm rollback of a legislation-pack constant restores the old cap in a recomputed sample.
+3. W97: TC.5 numeric spot-checks vs SQL; TC.6 UI walk; then the C10 batch-recompute anchor last —
+   comparisons are read-only, drift here means a bug escaped earlier.
+
+---
+
+# WP-D — Payrun Anomaly Narration (`pb_formula_studio` + engine read-only) — W48
+
+Hard dependency: WP-C's `hr.formula.period.comparison` payload.
+
+## Locked decisions
+
+- **D-D1** Narration consumes the finished compare fold (`fold_json`) — no new aggregation. RPC
+  `narrate_comparison(cmp_id, lang='en'|'vi')` on `pb.formula.studio`.
+- **D-D2** Deterministic narrative FIRST, always produced: template sentences from (1) headline totals
+  ("Total net −2.1% month-over-month"), (2) cause candidates with release attribution (D-C8:
+  "Net fell for 14 employees; all share the changed SI cap — Release v4, sealed 03 Jun"),
+  (3) joiners/leavers, (4) outlier movers. LLM (via `_llm_chat`, `json_mode=True`, facts-only payload —
+  the D-D2 sentences plus the numeric fold, never raw slips) may **rewrite for fluency in the requested
+  language**; any exception or empty return keeps the deterministic text (C1). Numbers in the LLM output
+  are re-verified against the fold (regex-extract, compare, reject on mismatch — no invented figures).
+- **D-D3** EN/VI both come from the deterministic layer too (template strings through the standard
+  `_()` translation path with VI terms consistent with the payslip vocabulary), so narration works with
+  no API key configured.
+- **D-D4** The cron pulse (`payroll_ai_pulse.py`) is untouched — W48 is on-demand, per comparison, in
+  the studio. (Feeding compare folds into pulse alerts is a Part-II/56-adjacent idea, out of scope.)
+
+## Tasks
+
+**TD.1 — deterministic narrator** — engine-side pure function (engine module, C1-clean:
+`hr.formula.period.comparison.narrate(lang)`) building the D-D2 sentence blocks from `fold_json`.
+AC: with no AI config at all, EN and VI narration render for a demo comparison, numbers match the fold,
+release attribution sentence appears for the release-spanning pair.
+
+**TD.2 — LLM polish + guard** — studio `narrate_comparison` wraps TD.1, optional `_llm_chat` rewrite +
+number re-verification (D-D2). AC: with AI configured, narration is fluent and every number in it exists
+in the fold; with a poisoned mock reply (wrong total), the deterministic text is served instead
+(unit-test the guard).
+
+**TD.3 — UI + tour** — Narrate card on the compare surface (skeleton button from TC.6): renders blocks,
+EN/VI toggle, "AI-polished"/"Built-in" source label (clone the `action_ai_review` labeling pattern,
+`multisheet_import_preview.py:250-258`); copy-to-clipboard. pb_coach step. Manifest bump, commit.
+
+### WP-D verification
+
+Chrome MCP: compare two demo months → Narrate in EN and VI, with and without an AI key; poisoned-reply
+unit test; numbers cross-checked against the compare table on screen.
+
+---
+
+# Part II — Medium-priority design briefs (24)
+
+Format: seam → locked direction → effort. Full task-level design happens in the cycle that schedules each.
+Ordered by affinity to the WP surfaces they extend.
+
+**W18 Shortcuts overlay** *(Grid/UX, 1–2 d)* — `?` (and palette entry) opens a static overlay listing every
+studio hotkey. Seam: hotkey handlers in `grid_studio.js:298-335` + `formula_studio.js:300`; render from the
+same registry the W99 palette uses so it can never drift from reality. Build immediately after WP-A.
+
+**W4 Multiple pinned sample rows** *(Grid, 3–4 d)* — 2–3 pinned value rows (junior/median/executive), each a
+`compute_preview(cfgId, sample_id)` call (`pb_formula_studio.py:634`); extend `state.preview` to keyed store
+`{sample_id: values}`; ROWS gains dynamic `value:<sample_id>` entries — touches the fixed-vocabulary
+assumption (C3), design the row-model change carefully with W109 in place.
+
+**W8 Collapse by category** *(Grid, 3 d)* — builds ON F111 grouping (shipped): fold a category's columns into
+one summary column (sum of visible members from `preview.values`). Client-side fold state + a synthetic
+column renderer; interacts with W109 windowing (fold changes `ordered` length — recompute window).
+
+**W104 Snippet library** *(UX, 4 d)* — new engine model `hr.formula.snippet` (name, body with `${ref}`
+placeholders, category, company-shared) + studio CRUD RPCs; insertion via cell autocomplete (`grid_studio.js:372`)
+and the W99 palette; seed with proration/cap/bracket patterns from the VN demo formulas.
+
+**W83 Test coverage view** *(Trust, 3–4 d)* — which components no sample exercises: for each
+`hr.formula.sample.data`, coverage = codes in `expected_values_json` ∪ dependency closure of exercised
+formulas (graph from `get_intelligence`); render as a lens in the problems rail (`get_problems`,
+`pb_formula_studio.py:2303`) + a sortable coverage % column in the tests view. Pairs with W82's chip.
+
+**W84 Boundary-value test generation** *(Trust, 3 d)* — deterministic, LLM-free core: for every
+`hr.formula.rate.table` bracket edge (`formula_rate_table.py:48-150`) and every `MIN/MAX/IF` threshold
+constant in formulas, generate sample rows at edge−1/edge/edge+1 into `hr.formula.sample.data` (marked
+`generated`). Expected values seeded from current engine output (characterization tests) — flagged for
+human confirmation before they count as passing.
+
+**W49 AI test generation** *(PayAI, 3 d)* — LLM layer over W84: `_llm_chat` proposes realistic input
+profiles + which expectations matter, engine computes the expected values (never the LLM); same
+`generated`+confirm flow. Requires W84 first.
+
+**W42 Rate-table extraction** *(Migration, 4–5 d)* — import-time detection of bracket-shaped constant
+blocks / `IF`-chains → propose promotion to `hr.formula.rate.table` (+ rewrite the formula to `BRACKET()`
+via `expand_brackets`' inverse). Seam: preview mixin + F11 typed-cell bracket editor (already designed in
+PHASE2_3 F11 — extend, don't re-design). Wizard fix-action style acceptance.
+
+**W41 Excel round-trip export** *(Migration, 4–5 d)* — config → living `.xlsx`: one row per sample
+employee, one column per component, real Excel formulas rebuilt from `excel_formula` (letters map 1:1 by
+design), rate tables as named ranges on a second sheet. Library decision inherited from F112's export
+(cross-ref FEATURES_111_114 doc); engine-side action on `hr.formula.config`.
+
+**W17 Smart paste from Excel** *(Grid, 4 d)* — paste TSV/formula column into the grid: parse clipboard in
+`grid_studio.js`, map `A1`-style refs through the studio's existing letter machinery (`_expand_refs`
+`pb_formula_studio.py:109`), stage as a drag-fill-style ghost preview (reuse `fill.targets` UX + one
+`bulk_save_formulas` commit, reason='bulk').
+
+**W40-adjacent W43 Multi-file import session** *(Migration, 1 wk)* — session model chaining the existing
+wizards (formulas workbook + historical results + employee master) with one shared confidence view; heavy
+lift is UX, all three imports exist (multisheet, shadow `shadow_import_wizard.py`, batch
+`payroll_import_batch.py:20`). Design fully only when scheduled.
+
+**W52 Duplicate-logic detection** *(PayAI, 3 d)* — token-normalized hash (rename refs to canonical slots)
+over `python_formula` per config → "these 3 formulas are identical modulo references; extract a component";
+problems-rail lens + optional LLM naming of the extracted component (W53 synergy). Pure engine + rail.
+
+**W54 Simplification suggestions** *(PayAI, 3–4 d)* — detect nested-`IF` ladders convertible to brackets
+(shares W42's detector), suggest `BRACKET()` rewrite with a token diff + equivalence check (evaluate both
+against all samples + boundary rows; only offer when outputs are identical). Requires W84 to be honest.
+
+**W62 Transforms on the wire** *(Mapping, 3–4 d)* — ×/÷/round/expression badges on mapping-canvas wires
+with live preview against the batch-test employee. Seam: `mapping_canvas_data` (`pb_formula_studio.py:2562`)
++ the F10 canvas kit; transform stored on the mapping line, applied in the engine's input-building path.
+
+**W65 Mapping templates** *(Mapping, 3 d)* — save/apply a mapping board as a named template across
+configs/clients (bureau workflow). Seam: the mapping models behind the canvas + `bureau_clone`
+(`pb_formula_studio.py:1272`) precedent for cross-config copying.
+
+**W95 Budget vs actual** *(Simulation, 4 d)* — budget lines per config/period (lean model) vs W97's
+per-component payrun fold; variance drill-down reuses the compare table component. Requires WP-C.
+
+**W98 Offer calculator** *(Simulation, 3 d)* — synthetic-employee net/cost preview through the live config:
+a one-off `_evaluate_rules_with_dependencies` call over hypothetical inputs (the sample-data path,
+no records created); simple form UI + shareable summary. Good first post-WP-C filler.
+
+**W50 Auto documentation** *(PayAI, 4 d)* — bilingual handbook generated from config: deterministic
+skeleton (per-component `_explain` `pb_formula_studio.py:155`, rate tables, execution order) + `_llm_chat`
+prose polish per section (C1 fallback = the skeleton itself); export as attachment (HTML→PDF via Odoo
+report). Regenerate button + staleness stamp vs last milestone.
+
+**W56 Copilot × coach tours** *(PayAI, 3 d)* — PayAI intent "how do I…" → launch the matching pb_coach
+tour (engine: intent classifier already in `payroll_ai_engine.py:189`; map intents → tour ids; response
+carries a `start_tour` action). Needs the tour registry exposed as data.
+
+**W74 Slip-linked explainers** *(Payslip, 3 d)* — manager view: payslip line → its component's
+explanation (deterministic `_explain` + `explain_formula_ai`) with THIS slip's numbers woven in from
+`formula_computed_values`. Seam: payslip form/portal templates + `payslip_identifier_payload` grouping.
+
+**W73 Payslip themes** *(Payslip, 3–4 d)* — brand tokens (logo, accent, typography) on the F9 payslip
+studio scheme, within compliance bounds; render in both A4 and portal previews. Extend the F9 canvas —
+cross-ref PHASE2_3 F9; do not fork its data model.
+
+**W89 @mentions & notifications** *(Collab, 3 d)* — F15 comments exist (component `note_count`/
+`review_open` in the studio payload): add partner parsing + `mail.thread` notification with a deep link
+(config + component anchor via the palette's jump). Odoo mention widget reuse.
+
+**W91 Guided handoff mode** *(Collab, 1 wk)* — consultant-authored narrated waypoints (ordered pins over
+components/surfaces) stored per config; replays as a pb_coach-style walkthrough for the client team.
+Design fully when scheduled; reuses B7 review-share auth for external viewers.
+
+**W108 Tablet review mode** *(UX, 1 wk)* — read-only studios + full approval flow on iPad: audit
+`studio_responsive.scss`, gate editing affordances behind `can_edit` + pointer-type, test release
+sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phone scope: approvals only.
+
+---
+
+# Part III — Low-priority backlog (no design yet)
+
+| W# | Feature | Pillar | Seam pointer |
+|---|---|---|---|
+| W15 | Conditional formatting on the live value row | Grid | heat-shade `preview.values` percentile in the value-row renderer |
+| W53 | Naming & category suggestions | PayAI | creation-time `_llm_chat` + C5 code validation |
+| W25 | Change heatmap | Intelligence | version-row counts + W82 failure counts per component |
+| W87 | Presence | Collab | bus presence channel per config; defer with W90 (moonshot) |
+| W102 | Formula timeline scrubber | UX | `get_rule_history` already returns the full sequence |
+| W103 | Floating calculator | UX | tiny overlay evaluating expressions against `preview.values` |
+| W106 | Dark mode | UX | token-swap layer over `studio.scss:1-5`; biz_theme coordination required |
+
+---
+
+# Report-back items (every package)
+
+1. Diff summary per W-feature commit (files + line counts).
+2. Any deviation from a locked decision, with reason (deviations without report = review finding).
+3. New gotchas hit → **add to `FORMULA_ENGINE_CONVENTIONS.md`** in the same commit.
+4. AC checklist with pass/fail per task, including the C10 batch-recompute anchor result.
+5. Anything discovered that invalidates a Part-II brief.
+
+# Opus kickoff lines
+
+**WP-A:**
+> Implement WP-A (Studio Command Layer: W109 virtualized grid, W14 find & replace, W99 command palette, W100 hover cards) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md, honoring every rule in docs/FORMULA_ENGINE_CONVENTIONS.md. Work only in pb_formula_studio. Build in order TA.1→TA.8, one feature-scoped commit per W-feature, and report back per the Report-back items section.
+
+**WP-B:**
+> Implement WP-B (Import Integrity: W37 join-key health check, W40 diff re-import) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md, honoring docs/FORMULA_ENGINE_CONVENTIONS.md — mixin-only, never grow the base wizard. Build TB.1→TB.6, one commit per W-feature, report back per the Report-back section.
+
+**WP-C:**
+> Implement WP-C (Trust & Comparison: W82 tests run on save, W86 one-action rollback, W97 period comparison) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md, honoring docs/FORMULA_ENGINE_CONVENTIONS.md. Build TC.1→TC.6, one commit per W-feature, report back per the Report-back section.
+
+**WP-D:**
+> Implement WP-D (W48 payrun anomaly narration) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md, honoring docs/FORMULA_ENGINE_CONVENTIONS.md — deterministic narrative first, LLM polish guarded. Build TD.1→TD.3, one commit, report back per the Report-back section.
