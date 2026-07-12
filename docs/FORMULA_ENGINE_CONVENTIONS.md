@@ -164,3 +164,38 @@ payslip path converts fresh per evaluation, but `evaluate_all` consumers read th
 converter/evaluator with odoo shimmed; 70 primary + 8 evaluator cases with hand-computed Excel
 expectations, exit 0 = green). Run it after ANY change to formula_rule.py conversion/helpers,
 evaluator.py, or excel_semantics.py, and add a case for every new Excel function or operator.
+
+## C13 — Import resolution: degrade visibly, generate C5-safe codes (WP-E)
+
+The stage between openpyxl and the stored `excel_formula` (`multisheet_import_wizard.py`
+resolution + code generation) must never lose a formula silently. Binding rules:
+
+- **Unresolved references become `#REF!`, never `0`.** The four resolver fallbacks
+  (`_resolve_cross_sheet_formula` VLOOKUP/SUMIF/direct + `_resolve_same_sheet_formula` VLOOKUP) return
+  `self._UNRESOLVED_MARK` (`#REF!`). The marker's trailing `!` makes the preview mixin's
+  `SHEET_REF_RE` red-line it, and the converter refuses it loudly (`has_evaluation_error`). Returning
+  `"0"` — the pre-WP-E behaviour — produced a silently-wrong component (C7 violation).
+- **The direct cross-sheet regex is anchored.** Sheet token = `(?:'[^']+'|[A-Za-z_À-￿]
+  [\w.À-￿]*)` with a `(?<![\w!.'])` left boundary. The old `'?([^'!]+)'?` greedily ate a
+  preceding `=IF(` so `=IF(Sheet2!B2>0,1,0)` was shredded to `0>0,1,0)`. The token now covers unquoted
+  **Vietnamese** sheet names (`Lương!A1`) and refuses to cross operators.
+- **Generated codes are underscore-free and unique** (`_generate_code` → `_dedupe_code_c5`). The
+  underscore is the actual converter-breaker; **substring collisions do NOT break the converter** —
+  its code substitution is greedy/maximal-munch, so `AMOUNT`/`AMOUNTX`/`SI`/`SIEMP` all resolve
+  correctly (empirically verified). Non-substring is therefore a *cosmetic preference*, taken only when
+  a short letter suffix achieves it (impossible when the base equals an existing code — every
+  superstring contains it). De-dup suffixes are **letters** (`AMOUNT` → `AMOUNTA`), never `_1`
+  (underscore + substring). `FORMULACOL`/`COL2024`, never `FORMULA_COL`/`COL_2024`.
+- **Blue-constant scan excludes data rows** (`_collect_constants_for_sheet`: `scan_up_to_row =
+  data_start_row`, not `+2`) — otherwise employee #1's value freezes into a workbook-wide constant.
+- **Non-numeric constants surface loudly.** Constant values parse via `excel_semantics.coerce_number`
+  (handles `8%`, thousands); genuinely non-numeric (text/date) values still import as `0.0` but are
+  collected and shown in a **sticky warning** on the completion notice (not a silent success).
+- **Positional lookups and cross-row refs warn.** `_diagnose` flags a resolved VLOOKUP/SUMIF
+  (`warning`: lookup key was dropped — verify per-employee row) and a same-column-two-rows reference
+  (`warning`: running total may be flattened). Structural fix for lookup keys is W37.
+
+All import-preview behaviour stays in the **mixin** (`multisheet_import_preview.py`, C6); base-wizard
+edits are confined to the regex/`return "0"` sites and code-gen. **Regression gate:**
+`python3 pb_hr_payroll_formula/tools/import_resolution_battery.py` (19 cases over the real resolver /
+code-gen / diagnose, self-contained odoo shim, exit 0 = green).
