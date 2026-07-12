@@ -79,6 +79,14 @@ $iw-green:   #2E7D4F;
     .o_list_table > thead > tr > th { background: #F1F5F9 !important; color: $iw-muted !important; text-transform: uppercase; font-size: 10.5px; letter-spacing: .04em; font-weight: 800; }
     .o_list_table > tbody > tr.o_data_row > td { border-top: 1px solid #F1F5F9 !important; }
     .o_boolean_toggle .form-check-input:checked { background-color: $iw-primary !important; border-color: $iw-primary !important; }
+
+    // ---- WP-B: join-key health + re-import diff panels (Html fields) ----
+    // These render as .alert blocks holding a Bootstrap table; tighten them to the
+    // wizard's design language so they read as first-class review content.
+    .o_field_html .table { margin-bottom: 0; font-size: 12px; }
+    .o_field_html .table th { background: #F1F5F9; color: $iw-muted; text-transform: uppercase; font-size: 10px; letter-spacing: .04em; }
+    .o_field_html .table code { font-size: 11px; color: $iw-primary; background: $iw-soft; padding: 1px 5px; border-radius: 5px; }
+    .o_field_html .badge { font-weight: 700; margin-right: 4px; }
 }
 
 // ---- footer buttons (dialog forms render the <footer> in .modal-footer) ----
