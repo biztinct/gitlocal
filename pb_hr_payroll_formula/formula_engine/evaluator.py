@@ -8,6 +8,8 @@ from typing import Dict, List, Any, Optional, Tuple
 from collections import defaultdict
 import logging
 
+from . import excel_semantics
+
 _logger = logging.getLogger(__name__)
 
 
@@ -27,14 +29,18 @@ class FormulaEvaluator:
     - Error handling with detailed messages
     """
 
-    # Safe functions available in formula context
+    # Safe functions available in formula context.
+    # sum/min/max/round are the EXCEL-semantics versions shared with the
+    # hr.formula.rule path (converted code emits sum([...]) over values that
+    # may contain text, and Excel ROUND is half-away-from-zero) — binding the
+    # raw builtins here made the two evaluation paths compute different money.
     SAFE_FUNCTIONS = {
         # Math
-        'sum': sum,
-        'min': min,
-        'max': max,
+        'sum': excel_semantics.sum_list,
+        'min': excel_semantics.min_list,
+        'max': excel_semantics.max_list,
         'abs': abs,
-        'round': round,
+        'round': excel_semantics.excel_round,
         'pow': pow,
         'int': int,
         'float': float,
@@ -62,18 +68,19 @@ class FormulaEvaluator:
         self._helper_functions = self._create_helper_functions()
 
     def _create_helper_functions(self) -> Dict[str, callable]:
-        """Create helper functions for Excel function emulation"""
+        """Create helper functions for Excel function emulation (bare names,
+        for legacy python_formula strings that call _if(...) directly)."""
         return {
-            '_avg': self._excel_average,
-            '_if': self._excel_if,
-            '_iferror': self._excel_iferror,
+            '_avg': self._avg,
+            '_if': self._if,
+            '_iferror': self._iferror,
             '_isblank': self._excel_isblank,
             '_mod': self._excel_mod,
             '_sign': self._excel_sign,
-            '_roundup': self._excel_roundup,
-            '_rounddown': self._excel_rounddown,
+            '_roundup': self._roundup,
+            '_rounddown': self._rounddown,
             '_concat': self._excel_concat,
-            '_counta': self._excel_counta,
+            '_counta': self._counta,
             '_vlookup': self._excel_vlookup,
             '_sumif': self._excel_sumif,
             '_sumifs': self._excel_sumifs,
@@ -84,6 +91,83 @@ class FormulaEvaluator:
             'ROW': self._excel_row,  # Direct function name for unconverted formulas
             'SUBTOTAL': self._excel_subtotal,  # Direct function name for unconverted formulas
         }
+
+    # ------------------------------------------------------------------
+    # self._X helpers — converted python_formula calls self._if(...), where
+    # `self` in the eval context is THIS evaluator. Before these existed,
+    # every IF/AVERAGE/… formula raised AttributeError and evaluate_all
+    # silently recorded 0. All semantics delegate to excel_semantics — the
+    # same single source of truth as hr.formula.rule, so the two evaluation
+    # paths cannot drift.
+    # ------------------------------------------------------------------
+
+    def _if(self, condition, true_value, false_value=0):
+        return excel_semantics.excel_if(condition, true_value, false_value)
+
+    def _iferror(self, value, error_value):
+        return excel_semantics.excel_iferror(value, error_value)
+
+    def _isblank(self, value):
+        return excel_semantics.excel_isblank(value)
+
+    def _isblank_value(self, value):
+        return excel_semantics.is_blank_value(value)
+
+    def _streq(self, left, right):
+        return excel_semantics.excel_streq(left, right)
+
+    def _not(self, value):
+        return excel_semantics.excel_not(value)
+
+    def _round(self, number, digits=0):
+        return excel_semantics.excel_round(number, digits)
+
+    def _roundup(self, number, decimals=0):
+        return excel_semantics.excel_roundup(number, decimals)
+
+    def _rounddown(self, number, decimals=0):
+        return excel_semantics.excel_rounddown(number, decimals)
+
+    def _ceiling(self, number, significance=1):
+        return excel_semantics.excel_ceiling(number, significance)
+
+    def _floor(self, number, significance=1):
+        return excel_semantics.excel_floor(number, significance)
+
+    def _avg(self, values_list):
+        return excel_semantics.avg_list(values_list)
+
+    def _sumlist(self, values_list):
+        return excel_semantics.sum_list(values_list)
+
+    def _minlist(self, values_list):
+        return excel_semantics.min_list(values_list)
+
+    def _maxlist(self, values_list):
+        return excel_semantics.max_list(values_list)
+
+    def _counta(self, values_list):
+        if values_list is not None and not isinstance(values_list, (list, tuple)):
+            return 0 if values_list in (None, '') else 1
+        return excel_semantics.counta_list(values_list)
+
+    def _mod(self, number, divisor):
+        return self._excel_mod(number, divisor)
+
+    def _sign(self, number):
+        return self._excel_sign(number)
+
+    def _sumif(self, range_val, criteria, sum_range=None):
+        return self._excel_sumif(range_val, criteria, sum_range)
+
+    def _sumifs(self, sum_range, *criteria_pairs):
+        return self._excel_sumifs(sum_range, *criteria_pairs)
+
+    def _row(self, reference=None):
+        return self._excel_row(reference)
+
+    def _subtotal(self, function_num, *args):
+        return self._excel_subtotal(function_num, *args)
 
     def evaluate_all(
         self,
@@ -158,14 +242,22 @@ class FormulaEvaluator:
         safe_context = self._build_safe_context(context)
 
         try:
-            # Sanitize None -> 0 for arithmetic
-            # Note: context parameter contains the values dict, we need to sanitize it
+            # Arithmetic coercion via the SHARED semantics module (numeric
+            # strings -> floats, None -> 0). Binding raw values here let
+            # "100" * 2 evaluate to "100100" -> 100100.0 — a silent 100x
+            # error the hr.formula.rule path never produced.
             safe_context["raw_values"] = context
             safe_context["values"] = {
-                k: (0 if v is None else v) for k, v in context.items()
+                k: excel_semantics.coerce_value(v) for k, v in context.items()
             }
 
-            result = eval(python_formula, {"__builtins__": {}}, safe_context)
+            # Same hardening + lambda-support shape as _run_formula: guard
+            # first, then eval with the context as GLOBALS so IFERROR
+            # lambdas resolve names at call time.
+            excel_semantics.assert_safe_expression(python_formula)
+            eval_globals = dict(safe_context)
+            eval_globals["__builtins__"] = {}
+            result = eval(python_formula, eval_globals)
             if result is None:
                 return 0.0
             if isinstance(result, str):

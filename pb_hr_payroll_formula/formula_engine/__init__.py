@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import excel_semantics
 from .column_manager import ColumnManager
 from .parser import FormulaParser
 from .converter import FormulaConverter

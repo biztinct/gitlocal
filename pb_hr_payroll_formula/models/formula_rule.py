@@ -6,6 +6,8 @@ import json
 import re
 import logging
 
+from ..formula_engine import excel_semantics
+
 _logger = logging.getLogger(__name__)
 
 # F7 — fields whose change is worth a version snapshot. A write touching none of
@@ -576,6 +578,24 @@ class HrFormulaRule(models.Model):
 
         result = re.sub(r'"([^"]|"")*"', _mask_string, result)
 
+        # Excel-only operators Python would misparse (strings are masked, so
+        # these can only be operators here):
+        # - <>  is Excel not-equal; unconverted it is a Python syntax error.
+        # - ^   is Excel power; Python ^ is XOR and silently returns garbage
+        #       (100^2 == 102). Known edge vs Excel: -2^2 (Excel 4, Python -4)
+        #       and right-assoc chains a^b^c — acceptable for payroll formulas.
+        # - &   is Excel text concatenation; we cannot rewrite an infix
+        #       operator reliably without a full parser, so fail LOUDLY (the
+        #       error lands in python_formula / has_evaluation_error) instead
+        #       of letting eval() produce a silent 0.
+        result = result.replace('<>', '!=')
+        result = result.replace('^', '**')
+        if '&' in result:
+            raise ValueError(
+                "Excel '&' text concatenation is not supported yet — "
+                "rewrite the formula without '&'."
+            )
+
         # F11 — expand BRACKET(table_code, value) into a nested-IF Excel string
         # BEFORE any further conversion, so the value expression's cell refs and
         # the emitted IF/MAX convert through the normal pipeline. The evaluator
@@ -584,7 +604,10 @@ class HrFormulaRule(models.Model):
             result = self.env['hr.formula.rate.table'].expand_brackets(result, self.config_id)
 
         # Normalize redundant parentheses around cell references like "(B15)".
-        result = re.sub(r'\(\s*(\$?[A-Z]+\$?\d+)\s*\)', r'\1', result, flags=re.IGNORECASE)
+        # The lookbehind is load-bearing: without it this turns a function
+        # call ISBLANK(G1) into ISBLANKG1, which the cell-ref regex then
+        # swallows as values.get('ISBLANKG', 0) -> silent 0.
+        result = re.sub(r'(?<![A-Za-z0-9_])\(\s*(\$?[A-Z]+\$?\d+)\s*\)', r'\1', result, flags=re.IGNORECASE)
 
         # Resolve same-sheet VLOOKUP into direct column references when possible.
         # Example: VLOOKUP(B5,CM2:$F$5,6,0) -> target column letter.
@@ -780,6 +803,12 @@ class HrFormulaRule(models.Model):
         result = re.sub(r'\$?([A-Z]+)\$?(\d+)', replace_ref_with_row, result)
         _logger.debug(f"  AFTER cell ref replacement: {result[:200]}...")
 
+        # Excel TRUE()/FALSE() and bare TRUE/FALSE literals -> Python booleans.
+        # Must run BEFORE the standalone-letter/code replacement, which would
+        # otherwise turn them into values.get('TRUE', 0) == permanent 0.
+        result = re.sub(r'\bTRUE\s*\(\s*\)|\bTRUE\b', 'True', result)
+        result = re.sub(r'\bFALSE\s*\(\s*\)|\bFALSE\b', 'False', result)
+
         # Replace standalone column letters WITHOUT row numbers (e.g., A, B, C)
         # But NOT if they're part of a string like "YES" OR inside already-converted values.get()
         def replace_ref_no_row(match):
@@ -826,18 +855,24 @@ class HrFormulaRule(models.Model):
             r'\bMIN\(': 'min([',
             r'\bMAX\(': 'max([',
             r'\bABS\(': 'abs(',
-            r'\bROUND\(': 'round(',
+            # Excel ROUND is half-away-from-zero; Python round() is banker's
+            # rounding (2.5 -> 2) which drifts money on .5 boundaries.
+            r'\bROUND\(': 'self._round(',
             r'\bIF\(': 'self._if(',
             r'\bIFERROR\(': 'self._iferror(',
             r'\bISBLANK\(': 'self._isblank(',
             r'\bAND\(': 'all([',
             r'\bOR\(': 'any([',
-            r'\bNOT\(': 'not(',
+            # NOT must stay a CALL: Python's `not` operator binds looser than
+            # *, so not(x)*5 parses as not(x*5).
+            r'\bNOT\(': 'self._not(',
             r'\bCOUNTA\(': 'self._counta([',
             r'\bPOWER\(': 'pow(',
             r'\bSQRT\(': 'math.sqrt(',
-            r'\bCEILING\(': 'math.ceil(',
-            r'\bFLOOR\(': 'math.floor(',
+            # Excel CEILING/FLOOR take a significance argument (round to a
+            # multiple); math.ceil/math.floor are 1-arg and TypeError'd here.
+            r'\bCEILING\(': 'self._ceiling(',
+            r'\bFLOOR\(': 'self._floor(',
             r'\bSUMIF\(': 'self._sumif(',
             r'\bSUMIFS\(': 'self._sumifs(',
             r'\bROW\(': 'self._row(',
@@ -862,6 +897,14 @@ class HrFormulaRule(models.Model):
         # Fix closing brackets for array functions (SUM, MIN, MAX, etc.)
         result = self._fix_array_brackets(result)
 
+        # Rewrite IF into a lazy Python ternary and IFERROR into a
+        # lambda-guarded call. Python evaluates call arguments eagerly, so
+        # without this IF(B1=0,0,A1/B1) raises #DIV/0! out of the branch
+        # Excel never evaluates, and IFERROR can catch nothing at all.
+        # Runs while string literals are still masked (no commas/parens
+        # hiding inside literals).
+        result = self._lazify_conditionals(result)
+
         # Restore string literals.
         for idx, literal in enumerate(string_literals):
             result = result.replace(f"__str{idx}__", literal)
@@ -879,6 +922,14 @@ class HrFormulaRule(models.Model):
                 result
             )
 
+        # ISBLANK must see the RAW value: the coerced `values` dict maps
+        # blank to 0, so self._isblank(values.get(...)) could never be True.
+        result = re.sub(
+            r"self\._isblank\(\s*values\.get\('([^']+)',\s*0\)\s*\)",
+            r"self._isblank(raw_values.get('\1'))",
+            result
+        )
+
         # Treat empty-string comparisons as blank checks using raw values.
         result = re.sub(
             r"values\.get\('([^']+)', 0\)\s*==\s*\"\"",
@@ -892,12 +943,12 @@ class HrFormulaRule(models.Model):
         )
         result = re.sub(
             r"values\.get\('([^']+)', 0\)\s*!=\s*\"\"",
-            r"not self._isblank_value(raw_values.get('\1'))",
+            r"(not self._isblank_value(raw_values.get('\1')))",
             result
         )
         result = re.sub(
             r"values\.get\('([^']+)', 0\)\s*!=\s*''",
-            r"not self._isblank_value(raw_values.get('\1'))",
+            r"(not self._isblank_value(raw_values.get('\1')))",
             result
         )
 
@@ -905,25 +956,29 @@ class HrFormulaRule(models.Model):
         def _quote_literal(value):
             return repr(value)
 
+        # Excel text equality is case-insensitive ("ct" = "CT" is TRUE), so
+        # string comparisons route through self._streq instead of Python ==.
+        # The `not` forms are parenthesized: `not x * 5` would otherwise
+        # parse as not(x * 5).
         def _replace_raw_eq(match):
             key = match.group(1)
             literal = match.group(2)
-            return f"raw_values.get('{key}') == {_quote_literal(literal)}"
+            return f"self._streq(raw_values.get('{key}'), {_quote_literal(literal)})"
 
         def _replace_raw_ne(match):
             key = match.group(1)
             literal = match.group(2)
-            return f"raw_values.get('{key}') != {_quote_literal(literal)}"
+            return f"(not self._streq(raw_values.get('{key}'), {_quote_literal(literal)}))"
 
         def _replace_raw_eq_reverse(match):
             literal = match.group(1)
             key = match.group(2)
-            return f"{_quote_literal(literal)} == raw_values.get('{key}')"
+            return f"self._streq(raw_values.get('{key}'), {_quote_literal(literal)})"
 
         def _replace_raw_ne_reverse(match):
             literal = match.group(1)
             key = match.group(2)
-            return f"{_quote_literal(literal)} != raw_values.get('{key}')"
+            return f"(not self._streq(raw_values.get('{key}'), {_quote_literal(literal)}))"
 
         result = re.sub(
             r"values\.get\('([^']+)',\s*0(?:\.0)?\)\s*==\s*\"([^\"]*)\"",
@@ -969,6 +1024,73 @@ class HrFormulaRule(models.Model):
         _logger.debug(f"Converted to Python: {result}")
 
         return result
+
+    @staticmethod
+    def _split_top_level_args(argstr):
+        """Split a call's argument string at top-level commas (paren- and
+        bracket-depth aware). String literals are masked as __strN__ at this
+        stage, so no comma can hide inside a literal."""
+        parts, depth, start = [], 0, 0
+        for i, ch in enumerate(argstr):
+            if ch in '([':
+                depth += 1
+            elif ch in ')]':
+                depth -= 1
+            elif ch == ',' and depth == 0:
+                parts.append(argstr[start:i])
+                start = i + 1
+        parts.append(argstr[start:])
+        return parts
+
+    def _lazify_conditionals(self, formula):
+        """Rewrite eager helper calls into lazy Python forms:
+
+        - self._if(c, t[, f])   -> ((t) if (c) else (f))    [f defaults to 0]
+        - self._iferror(x, y)   -> self._iferror(lambda: (x), (y))
+
+        Excel only evaluates the branch it returns; Python evaluates all call
+        arguments first, so without this IF(B1=0,0,A1/B1) explodes with
+        #DIV/0! from the branch Excel never runs, and IFERROR can never catch
+        anything. Processes rightmost-first (rightmost occurrence is always
+        innermost for nesting). Bails out to the eager helpers on anything
+        malformed — never raises.
+        """
+        for token, kind in (('self._iferror(', 'iferror'), ('self._if(', 'if')):
+            for _guard in range(200):
+                idx = formula.rfind(token)
+                if kind == 'iferror':
+                    # skip occurrences already rewritten to the lambda form
+                    while idx != -1 and formula[idx + len(token):].lstrip().startswith('lambda'):
+                        idx = formula.rfind(token, 0, idx)
+                if idx == -1:
+                    break
+                open_pos = idx + len(token) - 1
+                depth, close_pos = 0, -1
+                for i in range(open_pos, len(formula)):
+                    ch = formula[i]
+                    if ch == '(':
+                        depth += 1
+                    elif ch == ')':
+                        depth -= 1
+                        if depth == 0:
+                            close_pos = i
+                            break
+                if close_pos == -1:
+                    break  # unbalanced parens — leave the eager call in place
+                args = self._split_top_level_args(formula[open_pos + 1:close_pos])
+                if kind == 'if' and len(args) in (2, 3):
+                    cond = args[0].strip()
+                    true_val = args[1].strip()
+                    false_val = args[2].strip() if len(args) == 3 else '0'
+                    replacement = f"(({true_val}) if ({cond}) else ({false_val}))"
+                elif kind == 'iferror' and len(args) == 2:
+                    replacement = (
+                        f"self._iferror(lambda: ({args[0].strip()}), ({args[1].strip()}))"
+                    )
+                else:
+                    break  # unexpected arity — leave as-is (eager fallback)
+                formula = formula[:idx] + replacement + formula[close_pos + 1:]
+        return formula
 
     def _fix_array_brackets(self, formula):
         """Fix brackets for functions that were converted to list operations
@@ -1446,53 +1568,9 @@ class HrFormulaRule(models.Model):
                 return 0.0
 
             try:
-                # Helper function to safely convert values
-                def safe_value(v):
-                    """Convert value, preserving non-numeric strings for comparisons like ="YES"
-
-                    - None/empty → 0
-                    - Numbers → kept as-is
-                    - Numeric strings ("123") → converted to float
-                    - Non-numeric strings ("YES") → preserved for IF comparisons
-                    """
-                    if v is None or v == '':
-                        return 0
-                    if isinstance(v, (int, float)):
-                        return v
-                    if isinstance(v, str):
-                        cleaned = v.strip().replace(' ', '')
-                        if not cleaned:
-                            return 0
-                        is_percent = False
-                        if cleaned.endswith('%'):
-                            cleaned = cleaned[:-1]
-                            is_percent = True
-                        try:
-                            # Handle thousands separators and decimal marks.
-                            if ',' in cleaned and '.' in cleaned:
-                                if cleaned.rfind(',') > cleaned.rfind('.'):
-                                    cleaned = cleaned.replace('.', '').replace(',', '.')
-                                else:
-                                    cleaned = cleaned.replace(',', '')
-                            elif ',' in cleaned:
-                                parts = cleaned.split(',')
-                                if all(len(p) == 3 for p in parts[1:]):
-                                    cleaned = ''.join(parts)
-                                else:
-                                    cleaned = cleaned.replace(',', '.')
-                            elif '.' in cleaned:
-                                parts = cleaned.split('.')
-                                if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
-                                    cleaned = ''.join(parts)
-                            number = float(cleaned)
-                            if is_percent:
-                                number = number / 100
-                            return number
-                        except (ValueError, TypeError):
-                            # Return 0 for non-numeric strings in arithmetic contexts
-                            # String comparisons use raw_values via _isblank_value helper
-                            return 0
-                    return 0
+                # Arithmetic-context coercion — single source of truth shared
+                # with FormulaEvaluator so the two paths cannot drift.
+                safe_value = excel_semantics.coerce_value
 
                 # Build safe evaluation context with values properly converted
                 raw_values = values.copy()
@@ -1540,7 +1618,16 @@ class HrFormulaRule(models.Model):
                         ref_values,
                     )
 
-                result = eval(python_code, {"__builtins__": {}}, safe_context)
+                # Reject anything the converter never emits (ORM/interpreter
+                # tokens) BEFORE eval — formula text is user input.
+                excel_semantics.assert_safe_expression(python_code)
+
+                # safe_context goes in as GLOBALS (not locals): the IFERROR
+                # lambda resolves free names via its globals at call time, so
+                # names passed only as eval locals would NameError inside it.
+                eval_globals = dict(safe_context)
+                eval_globals["__builtins__"] = {}
+                result = eval(python_code, eval_globals)
                 _logger.debug(f"  Result: {result}")
 
                 # Clear any previous errors on successful evaluation
@@ -1615,140 +1702,62 @@ class HrFormulaRule(models.Model):
 
     def _isblank_value(self, value):
         """Return True when a raw value should be treated as blank."""
-        if value is None or value == '':
-            return True
-        if isinstance(value, str) and value.strip() in ('0', '0.0', '0.00'):
-            return True
-        if isinstance(value, (int, float)) and not isinstance(value, bool) and value == 0:
-            return True
-        return False
+        return excel_semantics.is_blank_value(value)
 
     def _coerce_number(self, value):
         """Convert a value to float for numeric functions, ignoring non-numeric text."""
-        if value is None or value == '':
-            return None
-        if isinstance(value, bool):
-            return 1.0 if value else 0.0
-        if isinstance(value, (int, float)):
-            return float(value)
-        try:
-            import numbers
-            if isinstance(value, numbers.Number):
-                return float(value)
-        except Exception:
-            pass
-        if isinstance(value, str):
-            cleaned = value.strip().replace(' ', '')
-            if not cleaned:
-                return None
-            is_percent = False
-            if cleaned.endswith('%'):
-                cleaned = cleaned[:-1]
-                is_percent = True
-            try:
-                if ',' in cleaned and '.' in cleaned:
-                    if cleaned.rfind(',') > cleaned.rfind('.'):
-                        cleaned = cleaned.replace('.', '').replace(',', '.')
-                    else:
-                        cleaned = cleaned.replace(',', '')
-                elif ',' in cleaned:
-                    parts = cleaned.split(',')
-                    if all(len(p) == 3 for p in parts[1:]):
-                        cleaned = ''.join(parts)
-                    else:
-                        cleaned = cleaned.replace(',', '.')
-                elif '.' in cleaned:
-                    parts = cleaned.split('.')
-                    if len(parts) > 2 and all(len(p) == 3 for p in parts[1:]):
-                        cleaned = ''.join(parts)
-                number = float(cleaned)
-                if is_percent:
-                    number = number / 100
-                return number
-            except (ValueError, TypeError):
-                return None
-        return None
+        return excel_semantics.coerce_number(value)
 
     def _sumlist(self, values_list):
         """Excel SUM that ignores non-numeric values."""
-        if values_list is None:
-            return 0.0
-
-        # Handle case where a single value is passed instead of a list
-        if not isinstance(values_list, (list, tuple)):
-            number = self._coerce_number(values_list)
-            return number if number is not None else 0.0
-
-        _logger.debug(f"_sumlist called with {len(values_list)} values: {values_list[:5]}..." if len(values_list) > 5 else f"_sumlist called with {len(values_list)} values: {values_list}")
-
-        total = 0.0
-        for value in values_list:
-            number = self._coerce_number(value)
-            if number is not None:
-                total += number
-        _logger.debug(f"_sumlist result: {total}")
-        return total
+        return excel_semantics.sum_list(values_list)
 
     def _maxlist(self, values_list):
         """Excel MAX that ignores non-numeric values."""
-        if values_list is None:
-            return 0.0
-        numbers = [self._coerce_number(v) for v in values_list]
-        numbers = [v for v in numbers if v is not None]
-        return max(numbers) if numbers else 0.0
+        return excel_semantics.max_list(values_list)
 
     def _minlist(self, values_list):
         """Excel MIN that ignores non-numeric values."""
-        if values_list is None:
-            return 0.0
-        numbers = [self._coerce_number(v) for v in values_list]
-        numbers = [v for v in numbers if v is not None]
-        return min(numbers) if numbers else 0.0
+        return excel_semantics.min_list(values_list)
 
     def _avg(self, values_list):
         """Excel AVERAGE function implementation"""
-        if not values_list:
-            return 0
-        numbers = [self._coerce_number(v) for v in values_list]
-        numbers = [v for v in numbers if v is not None]
-        return sum(numbers) / len(numbers) if numbers else 0
+        return excel_semantics.avg_list(values_list)
 
     def _counta(self, values_list):
         """Excel COUNTA function implementation (counts non-empty values)."""
-        if values_list is None:
-            return 0
-        if not isinstance(values_list, (list, tuple)):
+        if values_list is not None and not isinstance(values_list, (list, tuple)):
             return 0 if values_list in (None, '') else 1
-        count = 0
-        for value in values_list:
-            if value not in (None, ''):
-                count += 1
-        return count
+        return excel_semantics.counta_list(values_list)
 
     def _iferror(self, value, error_value):
-        """Excel IFERROR function implementation
-
-        Note: In Python, arguments are evaluated before the function is called,
-        so we can't catch evaluation errors here. Instead, we check for error
-        indicators like None, empty string, or the special ERROR_VALUE sentinel.
-        """
-        # Check if value is an error indicator
-        if value is None or value == '' or (hasattr(value, '__name__') and value.__name__ == 'ERROR_VALUE'):
-            return error_value
-
-        # Check if value is NaN or Inf (common error values)
-        try:
-            import math
-            if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
-                return error_value
-        except:
-            pass
-
-        return value
+        """Excel IFERROR — the converter passes the first argument as a
+        lambda so real evaluation errors (#DIV/0!…) are caught, like Excel."""
+        return excel_semantics.excel_iferror(value, error_value)
 
     def _isblank(self, value):
         """Excel ISBLANK function implementation"""
-        return value in (None, '')
+        return excel_semantics.excel_isblank(value)
+
+    def _round(self, number, digits=0):
+        """Excel ROUND — half away from zero (Python round() is banker's)."""
+        return excel_semantics.excel_round(number, digits)
+
+    def _ceiling(self, number, significance=1):
+        """Excel CEILING(number, significance) — round up to a multiple."""
+        return excel_semantics.excel_ceiling(number, significance)
+
+    def _floor(self, number, significance=1):
+        """Excel FLOOR(number, significance) — round down to a multiple."""
+        return excel_semantics.excel_floor(number, significance)
+
+    def _not(self, value):
+        """Excel NOT as a call (keeps precedence: NOT(x)*5)."""
+        return excel_semantics.excel_not(value)
+
+    def _streq(self, left, right):
+        """Excel text equality: case-insensitive, trimmed."""
+        return excel_semantics.excel_streq(left, right)
 
     def _sumif(self, range_val, criteria, sum_range=None):
         """
@@ -1921,13 +1930,10 @@ class HrFormulaRule(models.Model):
         return 0
 
     def _roundup(self, number, decimals=0):
-        """Excel ROUNDUP function implementation"""
-        import math
-        multiplier = 10 ** int(decimals)
-        return math.ceil(number * multiplier) / multiplier
+        """Excel ROUNDUP — away from zero (math.ceil is wrong for negatives
+        and float-multiply corrupts exact values like ROUNDUP(1.2, 1))."""
+        return excel_semantics.excel_roundup(number, decimals)
 
     def _rounddown(self, number, decimals=0):
-        """Excel ROUNDDOWN function implementation"""
-        import math
-        multiplier = 10 ** int(decimals)
-        return math.floor(number * multiplier) / multiplier
+        """Excel ROUNDDOWN — toward zero."""
+        return excel_semantics.excel_rounddown(number, decimals)

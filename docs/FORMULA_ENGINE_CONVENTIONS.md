@@ -22,7 +22,7 @@ deterministic fallback. Engine-side code may only reach the LLM guarded by
 ## C2 — Odoo 19 asset caching
 
 Bump the `version` in `__manifest__.py` on **every** asset-list or asset-file change
-(current: `pb_formula_studio` 19.0.1.42.0, `pb_hr_payroll_formula` 19.0.1.23.0). Develop with
+(current: `pb_formula_studio` 19.0.1.42.0, `pb_hr_payroll_formula` 19.0.1.24.0). Develop with
 `--dev=assets`. A new XML template file that isn't in the manifest's asset list fails only at first
 render — add it in the same commit that creates it.
 
@@ -128,3 +128,39 @@ Locked Payobook palette; no gradients, no emoji in UI; Lucide/SVG icons only. St
 `studio.scss:1-5` (`--i` indigo family, `--amber/--cyan` = upstream/downstream tint pair). New
 overlays reuse the existing fixed-position primitives (`.g2-ac` autocomplete, `.g2-bulkpop` popover
 scrim) rather than inventing new stacking contexts.
+
+## C12 — Excel semantics: one source of truth, one regression gate
+
+`formula_engine/excel_semantics.py` is the ONLY place Excel-vs-Python semantics live. Both evaluation
+paths — `hr.formula.rule._run_formula` (payslips, sample tests, studio workbench) and
+`FormulaEvaluator.evaluate_single` (studio fast paths, config Run Tests, sample-baseline generation) —
+delegate every helper (`_if/_iferror/_round/_streq/…`) there. **Never implement an Excel function
+inline in either path** — the pre-2026-07 duplicate helpers had already diverged (evaluator AVERAGE
+excluded zeros; `self._if` didn't even resolve on the evaluator → silent 0s).
+
+Converter contract (in `_convert_excel_to_python`):
+- `IF` compiles to a **lazy Python ternary**, `IFERROR` to `self._iferror(lambda: …, fallback)` —
+  Excel does not evaluate the untaken branch; eager helper calls exploded on `IF(B=0,0,A/B)`.
+  Because of the lambda, eval passes the safe context as **globals** (lambdas resolve free names via
+  globals at call time — locals-only eval NameErrors inside them).
+- `ROUND/ROUNDUP/ROUNDDOWN` are Decimal-based half-away-from-zero / away / toward zero — Python's
+  builtin `round()` is banker's rounding and drifts money on .5 boundaries. `CEILING/FLOOR` take a
+  significance argument. All via excel_semantics.
+- `<>` → `!=`, `^` → `**` (known edge: `-2^2`, right-assoc chains), `TRUE/FALSE` → `True/False`,
+  `NOT(` stays a **call** (`self._not`) for precedence.
+- Text equality routes through `self._streq` (case-insensitive, trimmed) on `raw_values`; `ISBLANK`
+  reads `raw_values` (coerced `values` maps blank→0, making ISBLANK unsatisfiable).
+- The "redundant parens" normalizer has a `(?<![A-Za-z0-9_])` lookbehind — without it `ISBLANK(G1)`
+  → `ISBLANKG1` → `values.get('ISBLANKG',0)` → silent 0 for EVERY one-arg fn over a cell ref.
+- **Unsupported constructs fail LOUDLY at conversion** (ValueError → `# Error:` python_formula +
+  `has_evaluation_error`), never silently: `&` concatenation is currently in this class.
+- Every eval is preceded by `excel_semantics.assert_safe_expression()` — formulas are user input;
+  the deny-list blocks `__`/ORM/interpreter tokens outside string literals.
+
+`python_formula` is a STORED compute — after changing the converter, regenerate it server-side (the
+payslip path converts fresh per evaluation, but `evaluate_all` consumers read the cache).
+
+**Regression gate:** `python3 pb_hr_payroll_formula/tools/excel_semantics_battery.py` (runs the real
+converter/evaluator with odoo shimmed; 70 primary + 8 evaluator cases with hand-computed Excel
+expectations, exit 0 = green). Run it after ANY change to formula_rule.py conversion/helpers,
+evaluator.py, or excel_semantics.py, and add a case for every new Excel function or operator.
