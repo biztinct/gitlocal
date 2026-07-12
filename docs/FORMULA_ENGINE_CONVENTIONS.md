@@ -1,0 +1,113 @@
+# Formula Engine — Conventions & Gotcha Ledger
+
+The single shared ledger every Formula Engine handover references. Rules here are **binding** for any
+implementation session (Opus or otherwise). When a new gotcha is hit during a build, add it here —
+do not restate ledger content inside individual phase docs; link to the entry.
+
+Sibling docs: `PHASE1_FORMULA_ENGINE_PLAN.md` (F1–F5) · `PHASE2_3_FORMULA_ENGINE_DESIGN.md` (F6–F15, B1–B9)
+· `FEATURES_111_114_DESIGN.md` (F111–F114) · `PHASE4_MOONSHOTS_DESIGN.md` (M1–M7) · `PHASE5_FORMULA_ENGINE_DESIGN.md` (W-features).
+
+---
+
+## C1 — Module boundary (headless engine / studio UI)
+
+Engine, wizard, and mapping **server** code lives in `pb_hr_payroll_formula` (must stay installable
+headless, no studio dependency). All cockpit UI, OWL components, and studio RPCs live in
+`pb_formula_studio` (model `pb.formula.studio`, an AbstractModel RPC facade). AI provider plumbing
+lives in `pb_payroll_ai_insights`; the studio's `_llm_chat(messages, json_mode=False)`
+(`pb_formula_studio.py:4179`) is the LLM entry point for studio features and **always** ships with a
+deterministic fallback. Engine-side code may only reach the LLM guarded by
+`'pb.formula.studio' in self.env` + try/except (pattern: `multisheet_import_preview.py:206-213`).
+
+## C2 — Odoo 19 asset caching
+
+Bump the `version` in `__manifest__.py` on **every** asset-list or asset-file change
+(current: `pb_formula_studio` 19.0.1.38.0, `pb_hr_payroll_formula` 19.0.1.23.0). Develop with
+`--dev=assets`. A new XML template file that isn't in the manifest's asset list fails only at first
+render — add it in the same commit that creates it.
+
+## C3 — OWL grid state invariants
+
+- Grid-local UI state (focus/selection/editing) is keyed by **component id, never array index** —
+  the parent replaces `state.components` wholesale after every save (`grid_studio.js:46-69`).
+- Property rows are the fixed vocabulary `["name","category","type","formula","value","status"]`
+  (`grid_studio.js:7`); only `formula` is cell-editable — other fields edit via the bulk popover.
+- Display order = `sequence`; **column letters are frozen identities** that no longer track position
+  (F111). Never renumber/reuse letters — a config-level high-water mark guarantees a freed letter is
+  never reissued (`formula_rule.py:1129-1154`). Code renames are metadata-only; letter renames are forbidden.
+- Cell editing uses a single overlay `<input>` (no contenteditable); Vietnamese IME commits on
+  `compositionend`, never raw `keydown` (`ui.composing` guard).
+
+## C4 — F7 version capture funnel (all rule mutations)
+
+Every write to a `VERSIONED_FIELDS` member (`formula_rule.py:14-20`) snapshots the **outgoing** state
+via the `write()` override (`formula_rule.py:1157-1194`). Contract for any new feature that writes rules:
+
+- Set `formula_version_reason` in context — one of
+  `edit / bulk / import / fill / restore / lifecycle / rename / legislation / merge / sync`.
+  Add a new enum value to `hr.formula.rule.version.reason` *and* `_VALID_VERSION_REASONS` if none fits.
+- Batch operations (drag-fill, find-&-replace): N rules changed → exactly **N version rows, one
+  reason** (not 1, not 2N). Use the shared `formula_version_seen` set in context to dedupe multiple
+  writes to one rule inside a single logical operation.
+- `skip_formula_version` opts a write out entirely — engine-internal recomputes only, never user edits.
+- Version rows store the state **before** the edit; "formula live at time T" = earliest version row
+  captured at-or-after T, else current (`pb_formula_studio.py:1027-1034` `_formula_at`).
+
+## C5 — Formula code & converter contract
+
+`hr.formula.rule` codes must be **underscore-free and non-substring of each other** or the
+Excel→Python converter mangles references to 0. Validate any generated/renamed code through the
+existing rename path (`rename_component`, `pb_formula_studio.py:2432`) which rewrites referencing
+formulas atomically. Validate engine behaviour via `_evaluate_rules_with_dependencies`, **not**
+`evaluate_all` directly.
+
+## C6 — Import wizard: mixin only, capture in context
+
+Never grow the 3,816-line `multisheet_import_wizard.py`. All import-preview behaviour is added in
+mixin classes (`multisheet_import_preview.py` pattern: `_inherit` the wizard). Odoo 19 recordsets use
+`__slots__` — instance attributes (`self._x = []`) raise; carry mutable capture state in **context**
+(`_import_capture` pattern, `multisheet_import_preview.py:41-53`). The base wizard destroys original
+formulas at resolution time (base lines 1238-1240) — the wrapper methods around
+`_resolve_same_sheet_formula` / `_resolve_cross_sheet_formula` are the only place pre-resolution text
+is visible. Broken refs must degrade **visibly** (red row / warning), never silently
+(`no silent zeros` — W66 principle).
+
+## C7 — Silent failures are bugs
+
+Any mapping/import/eval path that would produce `0` for an unresolvable reference must surface an
+error row, warning pill, or loud log instead. Confidence scoring (40/25/20/15 weights,
+`multisheet_import_preview.py:117-151`) must be *extended*, not forked, when new signals are added —
+one score, one breakdown JSON.
+
+## C8 — Performance guards
+
+- Don't stack `compute_preview` + live validation on one keystroke: reuse the studio's debounce
+  (260 ms) + monotonic supersede-token pattern (`grid_studio.js:80-81`).
+- Batch server work in ~50-payslip chunks driven by the client, following the simulation pattern
+  (`sim_prepare` work-list → `sim_batch` chunks → `sim_finalize`; `pb_formula_studio.py:2068-2098`).
+- Cap import-preview rendering (~500 lines) with expanders; never a frozen tab.
+
+## C9 — Odoo 19 breakages (recurring)
+
+`safe_eval` nocopy · `res.users.group_ids` (not `groups_id`) · `res.groups.category_id` changes ·
+`hr.employee.sex` · stateless recordsets (`__slots__`, see C6) · `ir_ui_view` lock via shell vs UI.
+Full list in the memory ledger (odoo19-payroll-gotchas); check it before touching core-model overrides.
+
+## C10 — Verification & delivery rituals
+
+- Every feature is validated against the **pb_demo VN world** (4,512 employees, 30.5k formula-computed
+  payslips, 2 configs, EN/VI) via Chrome MCP — reuse persistent demo schemes, never throwaway records.
+- The regression anchor is a **batch recompute** of the VN demo payruns
+  (`hr.payslip.run.action_recompute_formula_lines_batch`, `hr_payslip_run.py:10`) — zero value drift
+  expected after any engine-side change.
+- One **feature-scoped commit** after each feature is built + validated (explicit file staging,
+  reviewer-focused message). Don't batch features into one commit; don't push unless asked.
+- Payslip **Confirm is payroll-approval only** — GL auto-posting stays gated behind the
+  `post_payslip_gl` context flag (off). `struct_id` is not required for formula payslips.
+
+## C11 — Design system
+
+Locked Payobook palette; no gradients, no emoji in UI; Lucide/SVG icons only. Studio tokens live in
+`studio.scss:1-5` (`--i` indigo family, `--amber/--cyan` = upstream/downstream tint pair). New
+overlays reuse the existing fixed-position primitives (`.g2-ac` autocomplete, `.g2-bulkpop` popover
+scrim) rather than inventing new stacking contexts.
