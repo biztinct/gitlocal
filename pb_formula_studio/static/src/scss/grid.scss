@@ -38,6 +38,20 @@
 
     .g2-table { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: 12.5px; }
 
+    /* ---- W109 column virtualization ----
+       Dormant below 60 components (no .g2-virt class → variable-width columns,
+       DOM identical to before). When active, every column is pinned to a single
+       fixed width so the spacer <td>s (which stand in for the off-window columns)
+       add up to the exact scroll extent. */
+    .g2-root { --g2-colw: 168px; }
+    .g2-table.g2-virt .g2-chead,
+    .g2-table.g2-virt .g2-cell,
+    .g2-table.g2-virt .g2-scell {
+        width: var(--g2-colw); min-width: var(--g2-colw); max-width: var(--g2-colw);
+        overflow: hidden; text-overflow: ellipsis;
+    }
+    .g2-spacer { padding: 0 !important; border: 0 !important; background: transparent; }
+
     /* ---- frozen header (sticky top) + frozen label column (sticky left) ---- */
     .g2-table thead th { position: sticky; top: 0; z-index: 3; }
     .g2-rlabel { position: sticky; left: 0; z-index: 2; }

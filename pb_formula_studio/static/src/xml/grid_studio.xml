@@ -25,7 +25,7 @@
     </div>
     <div class="pbfs-grid2" data-coach="grid-canvas" t-ref="scroller" tabindex="0"
          t-on-keydown="onKeydown" t-on-focus="onScrollerFocus" t-on-blur="onScrollerBlur">
-      <table class="g2-table">
+      <table t-attf-class="g2-table {{ vcols.on ? 'g2-virt' : '' }}">
         <thead>
           <tr class="g2-hrow">
             <th class="g2-corner">Component</th>
@@ -48,6 +48,9 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
                   </button>
                 </th>
+              </t>
+              <t t-elif="u.kind === 'spacer'">
+                <th class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/>
               </t>
               <t t-else="">
                 <t t-set="s" t-value="u.scenario"/>
@@ -78,6 +81,7 @@
                   <span class="g2-name" t-esc="c.name"/>
                 </td>
               </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td class="g2-scell g2-sname muted">vs <b t-esc="u.comp.code"/></td>
               </t>
@@ -90,6 +94,7 @@
                 <td t-att-data-col-id="c.id" data-row="category" t-att-class="cellClass(c, 'category')"
                     t-on-click="(ev) => this.onCellClick(ev, c, 'category')" t-esc="c.category"/>
               </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
               <t t-else=""><td class="g2-scell muted">—</td></t>
             </t>
           </tr>
@@ -102,6 +107,7 @@
                   <span t-attf-class="g2-typ {{ c.type }}" t-esc="typeLabel(c)"/>
                 </td>
               </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
               <t t-else=""><td class="g2-scell"><span class="g2-typ scenario">what-if</span></td></t>
             </t>
           </tr>
@@ -123,6 +129,7 @@
                   <span t-if="canFillFrom(c)" class="g2-fillhandle" title="Drag right to fill this formula" t-on-mousedown="onFillDown"/>
                 </td>
               </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td t-attf-class="g2-scell g2-sformula {{ scenarioStatus(s).state === 'error' ? 'has-error' : '' }}"
                     t-on-click="() => this.startScenarioEdit(s)" t-att-title="s.override_formula">
@@ -141,6 +148,7 @@
                 <td t-att-data-col-id="c.id" data-row="value" t-att-class="cellClass(c, 'value')"
                     t-on-click="(ev) => this.onCellClick(ev, c, 'value')" t-esc="props.formatValue(c.col)"/>
               </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td class="g2-scell g2-svalue">
                   <span class="sv-num" t-esc="scenarioValue(s)"/>
@@ -164,6 +172,7 @@
                   </span>
                 </td>
               </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td class="g2-scell">
                   <span t-if="scenarioStatus(s).state === 'ok'" class="g2-badge ok" title="Valid">

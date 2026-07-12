@@ -1,5 +1,5 @@
 /** @odoo-module **/
-import { Component, useState, useRef, onPatched, onWillUnmount } from "@odoo/owl";
+import { Component, useState, useRef, onMounted, onPatched, onWillUnmount } from "@odoo/owl";
 import { FormulaBar } from "./formula_bar";
 import { CellAutocomplete } from "./cell_autocomplete";
 
@@ -73,7 +73,18 @@ export class GridStudio extends Component {
         this.scenarioValues = useState({});
         this._scSeq = 0;             // scenario-validate supersede token
         this._scEditorSeeded = false;
-        onWillUnmount(() => this._teardownFill());
+        // W109 — column virtualization window. Dormant (on:false) below the
+        // activation threshold, so typical configs render byte-identically to
+        // before. `first/last` are indices into `this.ordered` (base columns).
+        this.vcols = useState({ on: false, first: 0, last: Infinity });
+        this._colW = null;           // fixed column width (px) read from --g2-colw once
+        this._labelW = null;         // frozen row-label column width, measured once
+        this._lastN = null;          // last ordered length (recompute window on change)
+        this._scrollRaf = null;      // rAF handle coalescing scroll → window recompute
+        this._edgeDir = 0;           // auto-scroll direction at a drag/fill window edge
+        this._edgeTimer = null;
+        onWillUnmount(() => { this._teardownFill(); this._detachScroll(); this._stopEdgeScroll(); });
+        onMounted(() => this._attachScroll());
         this.scrollerRef = useRef("scroller");
         this.editorRef = useRef("editor");
         this.scEditorRef = useRef("scEditor");
@@ -93,6 +104,85 @@ export class GridStudio extends Component {
     }
     get focused() { return this.props.components.find(c => c.id === this.ui.focus.colId) || null; }
 
+    // ==== W109 — column virtualization (columns only; the 6 rows are fixed) ====
+    // Activate only above THRESHOLD; below it the window stays off and the DOM is
+    // identical to the pre-W109 grid (zero regression for typical configs).
+    static VCOL_THRESHOLD = 60;
+    static VCOL_OVERSCAN = 8;
+
+    _attachScroll() {
+        const el = this.scrollerRef.el;
+        if (el) {
+            this._onScroll = () => {
+                if (this._scrollRaf) return;               // coalesce: at most one recompute per frame
+                this._scrollRaf = requestAnimationFrame(() => { this._scrollRaf = null; this._recomputeWindow(); });
+            };
+            el.addEventListener("scroll", this._onScroll, { passive: true });
+        }
+        this._recomputeWindow();
+    }
+    _detachScroll() {
+        if (this._scrollRaf) { cancelAnimationFrame(this._scrollRaf); this._scrollRaf = null; }
+        const el = this.scrollerRef.el;
+        if (el && this._onScroll) el.removeEventListener("scroll", this._onScroll);
+        this._onScroll = null;
+    }
+    // Recompute {first,last} from scrollLeft/clientWidth. Only mutates vcols when
+    // the visible span actually changed, so it is safe to call from onPatched.
+    _recomputeWindow() {
+        const n = this.ordered.length;
+        if (n <= GridStudio.VCOL_THRESHOLD) {
+            if (this.vcols.on) Object.assign(this.vcols, { on: false, first: 0, last: Infinity });
+            return;
+        }
+        const el = this.scrollerRef.el;
+        if (!el) return;
+        if (!this._colW) this._colW = parseFloat(getComputedStyle(el).getPropertyValue("--g2-colw")) || 168;
+        const over = GridStudio.VCOL_OVERSCAN, w = this._colW;
+        const first = Math.max(0, Math.floor(el.scrollLeft / w) - over);
+        const last = Math.min(n - 1, Math.ceil((el.scrollLeft + el.clientWidth) / w) + over);
+        if (!this.vcols.on || this.vcols.first !== first || this.vcols.last !== last) {
+            Object.assign(this.vcols, { on: true, first, last });
+        }
+    }
+    // PINNED SET — columns owning transient UI (or a scenario) must render even
+    // when off-window, so a cell never unmounts mid-interaction (D-A2).
+    get _pinnedIds() {
+        const p = new Set();
+        const add = id => { if (id != null) p.add(id); };
+        add(this.ui.focus.colId); add(this.ui.editing?.colId); add(this.ui.dragId);
+        if (this.ui.fill.active || this.ui.fill.pending) {
+            add(this.ui.fill.srcId);
+            this.ui.fill.targets.forEach(t => add(t.id));
+        }
+        // scenario ghosts pin with their base (they add width the spacer math can't see)
+        for (const s of (this.props.scenarios || [])) add(s.rule_id);
+        return p;
+    }
+    // Edge auto-scroll shared by drag-fill and column reorder: while the pointer
+    // sits in the left/right margin, scroll the window so far columns come in.
+    _edgeAutoScroll(clientX) {
+        const el = this.scrollerRef.el;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const M = 52;
+        let dir = 0;
+        if (clientX > r.right - M) dir = 1;
+        else if (clientX < r.left + (this._labelW || 0) + M) dir = -1;
+        this._edgeDir = dir;
+        if (dir && !this._edgeTimer) this._edgeTimer = setInterval(() => this._edgeTick(), 16);
+        else if (!dir && this._edgeTimer) this._stopEdgeScroll();
+    }
+    _edgeTick() {
+        const el = this.scrollerRef.el;
+        if (!el || !this._edgeDir) return;
+        el.scrollLeft += this._edgeDir * 26;
+        // drag-fill: the pointer may be stationary at the edge while we scroll, so
+        // re-resolve the hovered target from the last known pointer position.
+        if (this.ui.fill.active) this._recomputeFillHover(this._fillPointerX, this._fillPointerY);
+    }
+    _stopEdgeScroll() { if (this._edgeTimer) { clearInterval(this._edgeTimer); this._edgeTimer = null; } this._edgeDir = 0; }
+
     // ---- F111: column drag-reorder (display only) ----
     onColDragStart(ev, c) {
         if (!this.props.canEdit || !this.props.onReorder) { ev.preventDefault(); return; }
@@ -104,10 +194,12 @@ export class GridStudio extends Component {
         if (this.ui.dragId == null || c.id === this.ui.dragId) return;
         ev.preventDefault();
         ev.dataTransfer.dropEffect = "move";
+        this._edgeAutoScroll(ev.clientX);               // W109: dropping past the window edge auto-scrolls
         if (this.ui.dragOverId !== c.id) this.ui.dragOverId = c.id;
     }
     onColDrop(ev, c) {
         ev.preventDefault();
+        this._stopEdgeScroll();
         const dragId = this.ui.dragId;
         this.ui.dragId = null; this.ui.dragOverId = null;
         if (dragId == null || c.id === dragId) return;
@@ -124,7 +216,7 @@ export class GridStudio extends Component {
         }
         this.props.onReorder(dragId, beforeId);
     }
-    onColDragEnd() { this.ui.dragId = null; this.ui.dragOverId = null; }
+    onColDragEnd() { this.ui.dragId = null; this.ui.dragOverId = null; this._stopEdgeScroll(); }
     groupByCategory() { if (this.props.onGroupByCategory) this.props.onGroupByCategory(); }
 
     // ---- F111: category band strip ----
@@ -485,7 +577,13 @@ export class GridStudio extends Component {
     }
     async _onFillMove(ev) {
         if (!this.ui.fill.active) return;
-        const el = document.elementFromPoint(ev.clientX, ev.clientY);
+        this._fillPointerX = ev.clientX; this._fillPointerY = ev.clientY;
+        this._edgeAutoScroll(ev.clientX);                // auto-scroll at the window edge (W109)
+        await this._recomputeFillHover(ev.clientX, ev.clientY);
+    }
+    async _recomputeFillHover(x, y) {
+        if (!this.ui.fill.active || x == null) return;
+        const el = document.elementFromPoint(x, y);
         const cellEl = el && el.closest("[data-col-id]");
         if (!cellEl) return;
         const hoverId = parseInt(cellEl.getAttribute("data-col-id"), 10);
@@ -511,6 +609,7 @@ export class GridStudio extends Component {
     async _onFillUp() {
         document.removeEventListener("mousemove", this._fillMove);
         document.removeEventListener("mouseup", this._fillUp);
+        this._stopEdgeScroll();
         const current = this.ui.fill.targets;
         if (!current.length) { this._clearFill(); return; }
         // definitive translate for the final span (awaited) so ghosts are correct
@@ -538,6 +637,7 @@ export class GridStudio extends Component {
         if (this._fillMove) { document.removeEventListener("mousemove", this._fillMove); this._fillMove = null; }
         if (this._fillUp) { document.removeEventListener("mouseup", this._fillUp); this._fillUp = null; }
         if (this._fillKey) { document.removeEventListener("keydown", this._fillKey, true); this._fillKey = null; }
+        this._stopEdgeScroll();
         this._clearFill();
     }
     _clearFill() { this.ui.fill = { active: false, pending: false, srcId: null, hoverCol: null, targets: [] }; }
@@ -586,12 +686,36 @@ export class GridStudio extends Component {
     // columns (this.ordered) — scenarios are mouse-interactive ghosts only.
     scenariosFor(ruleId) { return (this.props.scenarios || []).filter(s => s.rule_id === ruleId); }
     get hasScenarios() { return (this.props.scenarios || []).length > 0; }
+    // Base column + its scenario ghosts, as display units (used by every row).
+    _pushCol(units, c) {
+        units.push({ kind: "base", comp: c, key: "b" + c.id });
+        for (const s of this.scenariosFor(c.id)) units.push({ kind: "scenario", scenario: s, comp: c, key: "s" + s.id });
+    }
     get displayColumns() {
         const units = [];
-        for (const c of this.ordered) {
-            units.push({ kind: "base", comp: c, key: "b" + c.id });
-            for (const s of this.scenariosFor(c.id)) units.push({ kind: "scenario", scenario: s, comp: c, key: "s" + s.id });
+        const ord = this.ordered;
+        if (!this.vcols.on) {                        // dormant: render everything, unchanged
+            for (const c of ord) this._pushCol(units, c);
+            return units;
         }
+        // Windowed: render [first..last] ∪ pinned, in order, bridging every run of
+        // hidden columns with one spacer <td> of width (gapCount × colW). This is
+        // exact for arbitrary pinned columns (a pinned column just flushes the gap
+        // before it and renders in place) — no separate left/right pad bookkeeping.
+        const pin = this._pinnedIds;
+        const w = this._colW || 168;
+        let gap = 0;
+        const flush = (tag) => { if (gap > 0) { units.push({ kind: "spacer", width: gap * w, key: "sp" + tag }); gap = 0; } };
+        for (let i = 0; i < ord.length; i++) {
+            const c = ord[i];
+            if ((i >= this.vcols.first && i <= this.vcols.last) || pin.has(c.id)) {
+                flush(i);
+                this._pushCol(units, c);
+            } else {
+                gap++;
+            }
+        }
+        flush("end");
         return units;
     }
     canScenario(c) {
@@ -707,6 +831,19 @@ export class GridStudio extends Component {
 
     // ---- post-render: seed the overlay input once, keep focus in view ----
     _afterPatch() {
+        // W109: the component set may have been replaced (save/reorder/group) —
+        // n can change, which flips or resizes the window and moves the spacers.
+        // Only measure/recompute when the length actually changed (avoids a forced
+        // reflow on every unrelated patch).
+        const n = this.ordered.length;
+        if (n !== this._lastN) {
+            this._lastN = n;
+            if (this._labelW == null && this.scrollerRef.el) {
+                const lab = this.scrollerRef.el.querySelector(".g2-corner") || this.scrollerRef.el.querySelector(".g2-rlabel");
+                this._labelW = lab ? lab.offsetWidth : 0;
+            }
+            this._recomputeWindow();
+        }
         if (this.ui.editing && this.editorRef.el && !this._editorSeeded) {
             this._editorSeeded = true;
             const el = this.editorRef.el;
