@@ -22,9 +22,17 @@ deterministic fallback. Engine-side code may only reach the LLM guarded by
 ## C2 — Odoo 19 asset caching
 
 Bump the `version` in `__manifest__.py` on **every** asset-list or asset-file change
-(current: `pb_formula_studio` 19.0.1.38.0, `pb_hr_payroll_formula` 19.0.1.23.0). Develop with
+(current: `pb_formula_studio` 19.0.1.42.0, `pb_hr_payroll_formula` 19.0.1.23.0). Develop with
 `--dev=assets`. A new XML template file that isn't in the manifest's asset list fails only at first
 render — add it in the same commit that creates it.
+
+- **Live-server validation double-cache:** after rsync + `DELETE FROM ir_attachment WHERE url LIKE
+  '/web/assets/%'` (server bundle), the BROWSER may still serve a cached bundle on a plain reload. When
+  driving Chrome via CDP, do a `Page.reload {ignoreCache:true}` (+ `Network.clearBrowserCache`) — a
+  bare `Page.navigate` re-ran the OLD compiled template (W14 fix looked un-deployed until a hard reload).
+- **Odoo `odoo-bin shell` breaks dict/list comprehensions** fed on stdin (`exec()` with split
+  globals/locals → `NameError` on the comprehension's own loop var). Write plain `for` loops in shell
+  scripts. Registry boot is ~60–90 s, so batch server-side checks and run them via `run_in_background`.
 
 ## C3 — OWL grid state invariants
 
@@ -37,6 +45,15 @@ render — add it in the same commit that creates it.
   never reissued (`formula_rule.py:1129-1154`). Code renames are metadata-only; letter renames are forbidden.
 - Cell editing uses a single overlay `<input>` (no contenteditable); Vietnamese IME commits on
   `compositionend`, never raw `keydown` (`ui.composing` guard).
+- **Child studio components read inputs via `props.X`, never `state.X`.** A studio child (grid,
+  find/replace, palette, hover) receives data through props; `this.state` is its OWN local `useState`.
+  Referencing `state.canEdit` where `canEdit` is a prop silently reads `undefined` → the feature looks
+  built but is dead (W14 find/replace shipped with `state.canEdit` and the replace UI never rendered
+  until caught in live validation). Grep new child templates + getters for `state.<propName>`.
+- **Column virtualization (W109):** the grid windows COLUMNS only above 60 components (`.g2-virt`,
+  `--g2-colw`); below that it renders everything (DOM identical to before). Any new grid feature that
+  changes `ordered.length` (grouping/collapse/pinned rows) must let `_recomputeWindow` re-run and must
+  keep the transient-UI owner in `_pinnedIds` so its cell never unmounts mid-interaction.
 
 ## C4 — F7 version capture funnel (all rule mutations)
 
