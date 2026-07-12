@@ -17,6 +17,8 @@ import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 
+from ..formula_engine import excel_semantics
+
 _logger = logging.getLogger(__name__)
 
 
@@ -1252,12 +1254,25 @@ class MultiSheetImportWizard(models.TransientModel):
             _logger.exception("Failed to process sheets with resolution")
             raise UserError(_("Failed to process sheets: %s") % str(e))
 
+    # WP-E / D-E1: unresolved references must degrade VISIBLY, never become a
+    # silent 0. This sentinel (a) survives into the stored formula so the value
+    # is obviously wrong, (b) is matched by the preview mixin's SHEET_REF_RE
+    # (the trailing '!' makes `REF!` match) so the row goes red, and (c) makes
+    # the downstream Excel→Python converter fail loudly (syntax error → the rule
+    # carries has_evaluation_error) instead of quietly returning 0. It is inert
+    # to the column-ref regexes because nothing after the '!' looks like a
+    # <col><row> cell reference.
+    _UNRESOLVED_MARK = '#REF!'
+
     def _resolve_cross_sheet_formula(self, formula, column_mapping):
         """
         Resolve cross-sheet references in a formula to simple column references.
 
         VLOOKUP(B4,'TimeTB 2'!$C$4:$AU$11,45,0) → DM2
         SUMIF(Others!$B$8:$B$15,$B4,Others!$F$8:$F$15) → SUMIF(XX:XX,$B4,YY:YY)
+
+        Unresolved references are replaced with ``#REF!`` (D-E1), never ``0`` —
+        the import preview red-lines them and the converter refuses them loudly.
         """
         if not formula:
             return formula
@@ -1290,11 +1305,12 @@ class MultiSheetImportWizard(models.TransientModel):
                 # Return just the code - the formula converter handles codes in column_map.values()
                 return new_col
             else:
-                _logger.debug(
-                    f"VLOOKUP unresolved: sheet='{sheet_name}', target_col='{target_col}', "
-                    f"col_index={col_index}. Returning 0."
+                _logger.warning(
+                    "VLOOKUP unresolved: sheet='%s', target_col='%s', col_index=%s. "
+                    "Marking #REF! (was silently 0 before WP-E).",
+                    sheet_name, target_col, col_index
                 )
-                return "0"  # Unresolved - return 0
+                return self._UNRESOLVED_MARK  # D-E1: visible, never silent 0
 
         result = vlookup_pattern.sub(resolve_vlookup, result)
 
@@ -1324,20 +1340,32 @@ class MultiSheetImportWizard(models.TransientModel):
             if new_criteria_col and new_sum_col:
                 return f"SUMIF({new_criteria_col}:{new_criteria_col},{criteria},{new_sum_col}:{new_sum_col})"
             else:
-                return "0"
+                _logger.warning(
+                    "SUMIF unresolved: criteria='%s', sum='%s'. Marking #REF!.",
+                    criteria_sheet, sum_sheet
+                )
+                return self._UNRESOLVED_MARK  # D-E1
 
         result = sumif_pattern.sub(resolve_sumif, result)
 
-        # Resolve direct references: 'Sheet'!A4 -> NewCol4
+        # Resolve direct references: 'Sheet'!A4 -> NewCol
+        # D-E2: the sheet-name token is ANCHORED and constrained. The old
+        # `'?([^'!]+)'?` greedily swallowed everything up to the '!' — including a
+        # leading `=IF(` — so `=IF(Sheet2!B2>0,1,0)` matched with sheet name
+        # `=IF(Sheet2`, never resolved, and (returning "0") was shredded into
+        # `0>0,1,0)`. The token is now either a quoted name or a bare Excel sheet
+        # name (letter/underscore/unicode start; word-chars, dot, unicode after —
+        # NEVER operators or spaces, which Excel forces to be quoted), with a left
+        # boundary so it cannot eat a preceding function call or identifier.
         direct_pattern = re.compile(
-            r"'?([^'!]+)'?\s*!\s*\$?([A-Z]+)\$?(\d+)",
+            r"(?<![\w!.'])(?:'([^']+)'|([A-Za-z_\u00C0-\uffff][\w.\u00C0-\uffff]*))\s*!\s*\$?([A-Z]+)\$?(\d+)",
             re.IGNORECASE
         )
 
         def resolve_direct(match):
-            sheet_name = self._normalize_sheet_key(match.group(1))
-            col = match.group(2).upper()
-            row = match.group(3)
+            raw_sheet = match.group(1) if match.group(1) is not None else match.group(2)
+            sheet_name = self._normalize_sheet_key(raw_sheet)
+            col = match.group(3).upper()
 
             new_col = column_mapping.get((sheet_name, col))
             if not new_col:
@@ -1350,9 +1378,11 @@ class MultiSheetImportWizard(models.TransientModel):
                 return new_col
             else:
                 _logger.warning(
-                    f"Direct reference unresolved: sheet='{sheet_name}', col='{col}'. Returning 0."
+                    "Direct reference unresolved: sheet='%s', col='%s'. Marking #REF! "
+                    "(preserved visibly; was silently 0 before WP-E).",
+                    sheet_name, col
                 )
-                return "0"
+                return self._UNRESOLVED_MARK  # D-E1
 
         result = direct_pattern.sub(resolve_direct, result)
 
@@ -1414,7 +1444,7 @@ class MultiSheetImportWizard(models.TransientModel):
                 start_idx = self._column_letter_to_index(start_col)
                 end_idx = self._column_letter_to_index(end_col)
             except Exception:
-                return "0"
+                return self._UNRESOLVED_MARK  # D-E1
 
             base_idx = min(start_idx, end_idx)
             target_idx = base_idx + col_index - 1
@@ -1424,7 +1454,7 @@ class MultiSheetImportWizard(models.TransientModel):
             if not new_col:
                 new_col = column_mapping.get((sheet_key, target_idx))
 
-            return new_col or "0"
+            return new_col or self._UNRESOLVED_MARK  # D-E1
 
         result = vlookup_pattern.sub(resolve_same_sheet_vlookup, result)
 
@@ -2172,7 +2202,13 @@ class MultiSheetImportWizard(models.TransientModel):
         data_start_row = sheet_data.get('data_start_row', header_row + 1)
 
         constant_pairs = self._detect_colored_constant_pairs(formula_sheet, header_row, data_sheet)
-        scan_up_to_row = data_start_row + 2
+        # D-E4: scan ONLY the rows ABOVE the first data row. The old
+        # `data_start_row + 2` reached two rows INTO the employee data, so a
+        # blue-styled INPUT column would freeze employee #1's value as a
+        # workbook-wide constant applied to everyone. `_detect_blue_constant_cells`
+        # scans `range(1, scan_up_to_row)`, so passing `data_start_row` stops
+        # exactly before the data.
+        scan_up_to_row = data_start_row
         blue_constants = self._detect_blue_constant_cells(formula_sheet, scan_up_to_row, data_sheet)
         formula_referenced = self._detect_formula_referenced_constants(
             formula_columns, formula_sheet, header_row, data_sheet
@@ -2695,6 +2731,7 @@ class MultiSheetImportWizard(models.TransientModel):
 
             created_rules = []
             updated_rules = []
+            unparseable_constants = []   # D-E5: constants whose value wasn't numeric
             identifier_cache = {}
             payslip_config_model = self.env['hr.payslip.config']
 
@@ -2750,13 +2787,25 @@ class MultiSheetImportWizard(models.TransientModel):
                 if comp.column_type == 'formula' and comp.excel_formula:
                     rule_vals['excel_formula'] = comp.excel_formula
 
-                # Handle constant components (from colored cell pairs)
+                # Handle constant components (from colored cell pairs).
+                # D-E5: parse via the shared Excel coercion (handles "8%",
+                # "1.234,50", thousands separators) instead of a bare float().
+                # A value that is genuinely non-numeric (text/date) is NOT
+                # silently turned into 0.0 — it is recorded and surfaced loudly
+                # in the completion notice so the officer can fix it.
                 if comp.column_type == 'constant':
                     if comp.sample_value:
-                        try:
-                            rule_vals['constant_value'] = float(comp.sample_value)
-                        except (ValueError, TypeError):
+                        number = excel_semantics.coerce_number(comp.sample_value)
+                        if number is None:
                             rule_vals['constant_value'] = 0.0
+                            unparseable_constants.append(
+                                (comp.generated_code, comp.sample_value))
+                            _logger.warning(
+                                "Constant %s has non-numeric value %r — imported as 0.0; "
+                                "needs manual entry.",
+                                comp.generated_code, comp.sample_value)
+                        else:
+                            rule_vals['constant_value'] = number
 
                 if comp.data_source == 'integration' and comp.integration_connector_id:
                     rule_vals['integration_connector_id'] = comp.integration_connector_id.id
@@ -2789,6 +2838,15 @@ class MultiSheetImportWizard(models.TransientModel):
                 "Updated: %d rules"
             ) % (len(created_rules), len(updated_rules))
 
+            # D-E5: don't let non-numeric constants pass off as a clean import.
+            if unparseable_constants:
+                shown = ', '.join(
+                    '%s (%s)' % (code, val) for code, val in unparseable_constants[:8])
+                message += _(
+                    "\n\n⚠ %d constant(s) had non-numeric values and were imported "
+                    "as 0 — set them manually: %s"
+                ) % (len(unparseable_constants), shown)
+
             next_action = self.config_id.get_formview_action()
             next_action['target'] = 'current'
 
@@ -2798,8 +2856,8 @@ class MultiSheetImportWizard(models.TransientModel):
                 'params': {
                     'title': _('Import Complete'),
                     'message': message,
-                    'type': 'success',
-                    'sticky': False,
+                    'type': 'warning' if unparseable_constants else 'success',
+                    'sticky': bool(unparseable_constants),
                     'next': next_action,
                 }
             }
@@ -2964,32 +3022,88 @@ class MultiSheetImportWizard(models.TransientModel):
         }
 
     def _generate_code(self, header: str, existing_codes: set) -> str:
-        """Generate a unique code from header value."""
+        """Generate a code from a header value that obeys the C5 converter
+        contract: **underscore-free** and **not a substring** of (nor a
+        superstring of) any other code — otherwise the Excel→Python converter
+        mangles references to 0 (see docs/FORMULA_ENGINE_CONVENTIONS.md C5).
+
+        The previous implementation emitted ``FORMULA_COL`` / ``COL_12`` and
+        de-duplicated with ``_1`` suffixes — every one an underscore, and the
+        suffixes (``BASIC`` / ``BASIC_1``) were mutual substrings. Both broke
+        the converter silently.
+        """
         header_str = str(header).strip()
 
-        # Skip formula values - they start with '='
-        if header_str.startswith('='):
-            base_code = 'FORMULA_COL'
-        # Skip resolved formula patterns
-        elif 'values.get' in header_str or 'VLOOKUP' in header_str.upper() or 'SUMIF' in header_str.upper():
-            base_code = 'FORMULA_COL'
+        # Formula-looking headers (a stray formula cell used as a header)
+        if (header_str.startswith('=')
+                or 'values.get' in header_str
+                or 'VLOOKUP' in header_str.upper()
+                or 'SUMIF' in header_str.upper()):
+            base_code = 'FORMULACOL'
         elif header_str.isdigit():
-            base_code = f'COL_{header_str}'
+            base_code = 'COL' + header_str
         else:
             base_code = re.sub(r'[^A-Za-z0-9]', '', header_str).upper()
             if not base_code:
                 base_code = 'UNNAMED'
-            # Truncate overly long codes (likely formula remnants)
+            if base_code[0].isdigit():
+                base_code = 'C' + base_code  # a code must not start with a digit
             if len(base_code) > 40:
                 base_code = base_code[:40]
 
-        code = base_code
-        suffix = 1
-        while code in existing_codes:
-            code = f"{base_code}_{suffix}"
-            suffix += 1
+        return self._dedupe_code_c5(base_code, existing_codes)
 
-        return code
+    @staticmethod
+    def _dedupe_code_c5(base, existing_codes):
+        """Return a code derived from ``base`` that is safe under the C5
+        converter contract.
+
+        The HARD guarantee is **underscore-free and unique** (not equal to any
+        existing code). Underscores are what actually break the Excel→Python
+        converter; substring codes are matched greedily (maximal munch), so
+        ``AMOUNT``/``AMOUNTX``/``SI``/``SIEMP`` all resolve correctly —
+        empirically verified. So substring-avoidance is a *cosmetic preference*
+        here, not a correctness requirement, and is applied only when a short
+        letter suffix can achieve it (it is mathematically impossible when the
+        base equals an existing code — every superstring contains it).
+
+        Dedup suffixes are LETTERS so the result stays underscore- and
+        digit-free. This always terminates.
+        """
+        import string
+
+        def is_exact(cand):
+            return cand in existing_codes
+
+        def is_substring(cand):
+            return any(cand != e and (cand in e or e in cand)
+                       for e in existing_codes if e)
+
+        if not is_exact(base) and not is_substring(base):
+            return base
+
+        # Candidate suffixes: '', A..Z, then AA..ZZ. Prefer a candidate that is
+        # both unique AND non-substring; otherwise take the first merely-unique
+        # one (guaranteed underscore-free).
+        suffixes = [''] + list(string.ascii_uppercase) + [
+            a + b for a in string.ascii_uppercase for b in string.ascii_uppercase]
+        first_unique = None
+        for suffix in suffixes:
+            cand = base + suffix
+            if is_exact(cand):
+                continue
+            if first_unique is None:
+                first_unique = cand
+            if not is_substring(cand):
+                return cand
+        if first_unique is not None:
+            return first_unique
+
+        # Pathological exhaustion — guaranteed-unique, still underscore-free.
+        cand = base
+        while cand in existing_codes:
+            cand += 'X'
+        return cand
 
 
 class MultiSheetSheetLine(models.TransientModel):
