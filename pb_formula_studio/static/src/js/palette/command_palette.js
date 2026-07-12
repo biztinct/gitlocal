@@ -1,5 +1,6 @@
 /** @odoo-module **/
 import { Component, useState, useRef, onMounted } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 // W99 — Command palette (WP-A / D-A5). Registry-driven: the parent hands a static
 // array of descriptors {id, section, label, keywords, run, sublabel} plus dynamic
@@ -17,6 +18,7 @@ export class CommandPalette extends Component {
         this.state = useState({ q: "", active: 0 });
         this.searchRef = useRef("search");
         this.listRef = useRef("list");
+        this.notif = useService("notification");
         onMounted(() => { if (this.searchRef.el) this.searchRef.el.focus(); });
     }
 
@@ -91,7 +93,16 @@ export class CommandPalette extends Component {
         const r = this.results[idx];
         if (!r) return;
         this.props.onClose();
-        try { r.cmd.run(); } catch (e) { /* never let a bad command wedge the palette */ }
+        // Never let a bad command wedge the palette — but don't fail SILENTLY
+        // either (W99 review finding): tell the user the command errored.
+        try {
+            r.cmd.run();
+        } catch (e) {
+            console.error("Command palette action failed:", r.cmd.id, e);
+            this.notif.add(
+                "That action couldn't be completed. Please try again.",
+                { type: "danger" });
+        }
     }
     close() { this.props.onClose(); }
 }

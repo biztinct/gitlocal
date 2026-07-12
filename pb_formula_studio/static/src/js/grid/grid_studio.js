@@ -130,7 +130,8 @@ export class GridStudio extends Component {
     // Recompute {first,last} from scrollLeft/clientWidth. Only mutates vcols when
     // the visible span actually changed, so it is safe to call from onPatched.
     _recomputeWindow() {
-        const n = this.ordered.length;
+        const ord = this.ordered;
+        const n = ord.length;
         if (n <= GridStudio.VCOL_THRESHOLD) {
             if (this.vcols.on) Object.assign(this.vcols, { on: false, first: 0, last: Infinity });
             return;
@@ -139,8 +140,34 @@ export class GridStudio extends Component {
         if (!el) return;
         if (!this._colW) this._colW = parseFloat(getComputedStyle(el).getPropertyValue("--g2-colw")) || 168;
         const over = GridStudio.VCOL_OVERSCAN, w = this._colW;
-        const first = Math.max(0, Math.floor(el.scrollLeft / w) - over);
-        const last = Math.min(n - 1, Math.ceil((el.scrollLeft + el.clientWidth) / w) + over);
+        const sl = el.scrollLeft, sr = sl + el.clientWidth;
+
+        // Scenario ghosts (what-if columns) render at full colW too, and a base
+        // column's pixel offset is (i + ghostsBefore(i)) × colW — matching the
+        // displayColumns layout, where the spacer bridging a hidden run counts
+        // only hidden BASE columns (ghost-bearing columns are always pinned, so
+        // they never fall in a gap). Walking cumulative unit widths keeps the
+        // window's scrollLeft→index inverse consistent with that layout; the old
+        // `floor(scrollLeft/colW)` ignored ghost width and drifted the window
+        // right by the ghost count left of the viewport (W109 review fix).
+        // No scenarios → units == index, i.e. identical to the previous math.
+        const scen = this.props.scenarios || [];
+        let ghost = null;
+        if (scen.length) {
+            ghost = new Map();
+            for (const s of scen) ghost.set(s.rule_id, (ghost.get(s.rule_id) || 0) + 1);
+        }
+        let first = -1, last = 0, units = 0;
+        for (let i = 0; i < n; i++) {
+            const colLeft = units * w;
+            if (colLeft >= sr) break;              // this column and all after are past the viewport
+            if (first === -1 && colLeft + w > sl) first = i;   // first at-least-partially-visible
+            last = i;
+            units += 1 + (ghost ? (ghost.get(ord[i].id) || 0) : 0);
+        }
+        if (first === -1) first = 0;
+        first = Math.max(0, first - over);
+        last = Math.min(n - 1, last + over);
         if (!this.vcols.on || this.vcols.first !== first || this.vcols.last !== last) {
             Object.assign(this.vcols, { on: true, first, last });
         }
@@ -155,7 +182,9 @@ export class GridStudio extends Component {
             add(this.ui.fill.srcId);
             this.ui.fill.targets.forEach(t => add(t.id));
         }
-        // scenario ghosts pin with their base (they add width the spacer math can't see)
+        // Scenario ghosts pin with their base so a what-if cell never unmounts
+        // mid-interaction AND so no ghost ever lands in a hidden gap (keeping the
+        // spacer math — which bridges only hidden BASE columns — exact).
         for (const s of (this.props.scenarios || [])) add(s.rule_id);
         return p;
     }

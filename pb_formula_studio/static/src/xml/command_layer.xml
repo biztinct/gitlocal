@@ -16,9 +16,11 @@
 
       <div class="pbfs-find-fields">
         <input class="pbfs-find-in" t-ref="query" placeholder="Find in formulas, names, codes…"
-               t-on-input="onQuery" t-on-keydown="onQueryKeydown"/>
+               t-on-input="onQuery" t-on-keydown="onQueryKeydown"
+               t-on-compositionstart="onCompositionStart" t-on-compositionend="onCompositionEnd"/>
         <input t-if="props.canEdit" class="pbfs-find-in" placeholder="Replace formula text with…"
-               t-on-input="onReplace"/>
+               t-on-input="onReplace"
+               t-on-compositionstart="onCompositionStart" t-on-compositionend="onCompositionEnd"/>
       </div>
 
       <div class="pbfs-find-opts">
