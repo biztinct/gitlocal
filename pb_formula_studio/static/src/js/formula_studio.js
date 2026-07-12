@@ -7,6 +7,9 @@ import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { GridStudio } from "./grid/grid_studio";
 import { MappingCanvas } from "./mapping/mapping_canvas";
+import { FindReplace } from "./grid/find_replace";
+import { CommandPalette } from "./palette/command_palette";
+import { HoverCard } from "./hover_card";
 
 const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
@@ -71,7 +74,7 @@ export class CfgCombo extends Component {
 
 export class PbFormulaStudio extends Component {
     static template = "pb_formula_studio.PbFormulaStudio";
-    static components = { CfgCombo, GridStudio, MappingCanvas };
+    static components = { CfgCombo, GridStudio, MappingCanvas, FindReplace, CommandPalette, HoverCard };
     static props = ["*"];
 
     setup() {
@@ -282,6 +285,10 @@ export class PbFormulaStudio extends Component {
             editError: "",
             advOpen: false,
             fieldMeta: {},
+            // WP-A — Studio Command Layer
+            findOpen: false,        // W14 find & replace drawer
+            paletteOpen: false,     // W99 command palette
+            hoverCard: null,        // W100 hover card: {compId, x, y} | null
         });
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
@@ -298,12 +305,17 @@ export class PbFormulaStudio extends Component {
             }
         });
         useHotkey("escape", () => {
-            if (this.state.outlineDrawer || this.state.previewDrawer) {
+            if (this.state.paletteOpen) {
+                this.state.paletteOpen = false;
+            } else if (this.state.findOpen) {
+                this.state.findOpen = false;
+            } else if (this.state.outlineDrawer || this.state.previewDrawer) {
                 this.closeDrawers();
             } else if (this.state.moreOpen) {
                 this.state.moreOpen = false;
             }
         }, { global: true, bypassEditableProtection: false });
+        this._setupCommandLayer();   // WP-A: ⌘K palette, ⌘F find, hover-card listeners
         onWillStart(async () => {
             await this.load();
             try {
@@ -508,6 +520,155 @@ export class PbFormulaStudio extends Component {
         this.notif.add(`Filled ${items.length} column${items.length === 1 ? "" : "s"}`, { type: "success" });
         await this.load(cfgId);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+    }
+
+    // ==== WP-A — Studio Command Layer (W14 find · W99 palette · W100 hover) ====
+
+    // D-A4 — one shared search index, rebuilt only when state.components is
+    // replaced wholesale (identity compared by array reference, which load()
+    // always swaps). W14 filters it, W99 fuzzy-scores it, W100 resolves against it.
+    get searchIndex() {
+        const comps = this.state.components;
+        if (this._searchIndexSrc !== comps) {
+            this._searchIndexSrc = comps;
+            this._searchIndex = comps.map(c => {
+                const formula = c.type === "formula" ? (c.excel_formula || "")
+                    : c.type === "constant" ? String(c.constant_value ?? "") : "";
+                return {
+                    id: c.id, col: c.col, code: c.code || "", name: c.name || "",
+                    category: c.category || "", type: c.type, formula,
+                    is_valid: c.is_valid !== false,
+                    _code: (c.code || "").toLowerCase(), _name: (c.name || "").toLowerCase(),
+                    _cat: (c.category || "").toLowerCase(), _formula: formula.toLowerCase(),
+                    _col: (c.col || "").toLowerCase(),
+                };
+            });
+        }
+        return this._searchIndex;
+    }
+
+    // ---- W14 find & replace ----
+    openFind() { if (this.state.empty) return; this.state.paletteOpen = false; this.state.findOpen = true; }
+    closeFind() { this.state.findOpen = false; }
+    // Commit checked + valid hits through the extended bulk_save_formulas
+    // (reason='bulk', note = the find/replace summary). One batch → N version rows.
+    async findCommit(items, note) {
+        if (!items || !items.length) return { ok: false, saved: 0 };
+        if (this._lockedNotice()) return { ok: false };
+        const cfgId = this.state.config.id;
+        const sampleId = this.state.preview.sample_id;
+        let r;
+        try {
+            r = await this.orm.call("pb.formula.studio", "bulk_save_formulas", [items, "bulk", note]);
+        } catch (e) { this.notif.add("Replace failed", { type: "warning" }); return { ok: false }; }
+        await this.load(cfgId);
+        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        return r || { ok: true };
+    }
+    // A code/name hit → jump to the component and open its rename flow. Codes are
+    // referential identities (C5) — never string-replaced.
+    findRename(id) {
+        this.state.findOpen = false;
+        this.setView("cards");
+        this.selectComponent(id);
+        requestAnimationFrame(() => this.startRename());
+    }
+    // A formula hit → reveal the component in the grid.
+    findJump(id) {
+        this.selectComponent(id);
+        if (this.state.view !== "grid") this.setView("grid");
+        requestAnimationFrame(() => this.selectComponent(id));   // re-run scroll after the view swap mounts
+    }
+
+    // ---- W99 command palette ----
+    openPalette() { if (this.state.empty) return; this.state.findOpen = false; this.state.paletteOpen = true; }
+    closePalette() { this.state.paletteOpen = false; }
+    // Registry-driven descriptors; every run() calls an existing method (no new RPC).
+    get paletteCommands() {
+        const cmds = [];
+        const add = (id, section, label, keywords, run, sublabel) => cmds.push({ id, section, label, keywords, run, sublabel });
+        add("view.cards", "Views", "Cards view", "cards components overview", () => this.setView("cards"));
+        add("view.grid", "Views", "Grid view", "grid spreadsheet table", () => this.setView("grid"));
+        add("view.test", "Views", "Tests view", "tests samples validate check", () => this.setView("test"));
+        add("view.settings", "Views", "Settings", "settings configuration setup", () => this.setView("settings"));
+        if (this.state.canEdit) add("act.new", "Actions", "New component", "add new create column", () => this.addComponentQuick());
+        if (this.state.canEdit) add("act.import", "Actions", "Import from Excel…", "import excel upload spreadsheet workbook", () => this.importExcelInto());
+        add("act.find", "Actions", "Find & replace", "find search replace formula", () => this.openFind());
+        add("act.release", "Actions", "Release preview", "release sign-off bundle approve", () => this.openReleases());
+        add("act.problems", "Actions", "Problems", "problems lint errors warnings", () => this.openProblems());
+        add("act.ai", "Actions", "PayAI assistant", "ai assistant copilot chat", () => this.openAI());
+        if (this.selected) add("act.explain", "Actions", "Explain " + this.selected.code, "explain formula describe", () => this.openExplain());
+        for (const c of this.searchIndex) {
+            add("cmp." + c.id, "Components", c.col + " · " + c.code, c._code + " " + c._name + " " + c._col,
+                () => this.findJump(c.id), c.name);
+        }
+        for (const cfg of this.state.configs) {
+            if (cfg.id === (this.state.config && this.state.config.id)) continue;
+            add("cfg." + cfg.id, "Configs", cfg.name, "config switch " + (cfg.name || "").toLowerCase(), () => this.pickConfig(cfg.id));
+        }
+        return cmds;
+    }
+
+    // ---- W100 hover cards (pure client-side, zero RPC) ----
+    _hoverTargetEl(el) {
+        return el && el.closest && el.closest(
+            "[data-hover-comp],[data-hover-col],.g2-chead[data-col-id],.g2-cell.g2-formula[data-col-id],.ol-item[data-col],.fchip.fref[data-hover-col]");
+    }
+    _onHoverMove(ev) {
+        const t = this._hoverTargetEl(ev.target);
+        if (!t) { this._killHover(); return; }
+        let comp = null;
+        const cid = t.getAttribute("data-hover-comp") || t.getAttribute("data-col-id");
+        if (cid) comp = this.state.components.find(c => c.id === parseInt(cid, 10));
+        if (!comp) {
+            const col = t.getAttribute("data-hover-col") || t.getAttribute("data-col");
+            if (col) comp = this.byCol(col);
+        }
+        if (!comp) { this._killHover(); return; }
+        if (this.state.hoverCard && this.state.hoverCard.compId === comp.id) return;
+        clearTimeout(this._hoverTimer);
+        const r = t.getBoundingClientRect();
+        this._hoverPending = { compId: comp.id, x: r.left, y: r.bottom + 6 };
+        this._hoverTimer = setTimeout(() => {
+            if (this._hoverPending) this.state.hoverCard = this._hoverPending;   // 350 ms open delay (D-A6)
+        }, 350);
+    }
+    _killHover() {
+        clearTimeout(this._hoverTimer);
+        this._hoverPending = null;
+        if (this.state.hoverCard) this.state.hoverCard = null;
+    }
+    get hoverCardData() {
+        const h = this.state.hoverCard;
+        if (!h) return null;
+        const c = this.state.components.find(x => x.id === h.compId);
+        if (!c) return null;
+        return {
+            name: c.name, code: c.code, col: c.col, category: c.category || "", type: c.type,
+            tokens: c.type === "formula" ? this.chips(c.excel_formula || "") : [],
+            constant: c.type === "constant" ? String(c.constant_value ?? "") : "",
+            value: this.previewVal(c.col),
+            valid: c.is_valid !== false,
+            message: c.validation_message || "",
+        };
+    }
+    get hoverCardStyle() {
+        const h = this.state.hoverCard;
+        if (!h) return "";
+        const w = 320, x = Math.max(8, Math.min(h.x, window.innerWidth - w - 8));
+        const y = Math.max(8, Math.min(h.y, window.innerHeight - 200));
+        return `left:${Math.round(x)}px; top:${Math.round(y)}px;`;
+    }
+
+    // Registered once from setup() (hooks must run synchronously in setup).
+    _setupCommandLayer() {
+        useHotkey("control+k", () => this.openPalette(), { global: true, bypassEditableProtection: true });
+        useHotkey("control+f", () => this.openFind(), { global: true, bypassEditableProtection: true });
+        // Odoo folds Cmd(meta) into the "control" token on macOS (hotkey_service
+        // lines 76-77), so a single registration covers ⌘K/⌘F and Ctrl+K/Ctrl+F.
+        useExternalListener(window, "mouseover", (ev) => this._onHoverMove(ev));
+        useExternalListener(window, "scroll", () => this._killHover(), { capture: true });
+        useExternalListener(window, "keydown", () => this._killHover());
     }
 
     // ---- F14 scenario columns (what-if overlays) ----
