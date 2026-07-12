@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, useEffect, useExternalListener, onWillStart, onMounted, onPatched } from "@odoo/owl";
+import { Component, useState, useRef, useEffect, useExternalListener, onWillStart, onMounted, onPatched, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { useHotkey } from "@web/core/hotkeys/hotkey_hook";
@@ -337,6 +337,16 @@ export class PbFormulaStudio extends Component {
             }
         });
         onMounted(() => { this._bindArrowEvents(); this.redrawArrows(); });
+        // Clear every pending debounce/open timer on unmount so a fired callback
+        // never sets state on a destroyed component (W100 review finding — the
+        // 350 ms hover-open timer was the reported case, but none of the studio's
+        // debounce timers were being cleared).
+        onWillUnmount(() => {
+            for (const t of [this._hoverTimer, this._rawTimer, this._replayTimer,
+                this._whatifTimer, this._liveTimer, this._testTimer, this._rateTimer]) {
+                clearTimeout(t);
+            }
+        });
         onPatched(() => {
             this.redrawArrows();
             // F12 — seed the raw textarea imperatively (uncontrolled, so the caret

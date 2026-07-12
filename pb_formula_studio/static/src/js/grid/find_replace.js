@@ -83,8 +83,14 @@ export class FindReplace extends Component {
 
     // ---- events ----
     _reset() { this.state.checked = {}; this.state.validity = {}; this._scheduleDryRun(); }
-    onQuery(ev) { this.state.query = ev.target.value; this._reset(); }
-    onReplace(ev) { this.state.replace = ev.target.value; this._reset(); }
+    // IME guard (C3): the inputs are uncontrolled (t-ref, no value binding), so
+    // while an IME composition is active we skip the search/dry-run entirely and
+    // run once on compositionend — Vietnamese/CJK input no longer searches over
+    // half-composed strings (W14 review finding).
+    onCompositionStart() { this._composing = true; }
+    onCompositionEnd(ev) { this._composing = false; this.state.query = this.queryRef.el ? this.queryRef.el.value : ev.target.value; this._reset(); }
+    onQuery(ev) { if (this._composing) return; this.state.query = ev.target.value; this._reset(); }
+    onReplace(ev) { if (this._composing) return; this.state.replace = ev.target.value; this._reset(); }
     toggleOpt(k) { this.state.opts[k] = !this.state.opts[k]; this._reset(); }
     toggleHit(id) { this.state.checked[id] = this.isChecked(id) === false ? true : false; }
     onQueryKeydown(ev) { if (ev.key === "Enter") { ev.preventDefault(); this.queryRef.el && this.queryRef.el.blur(); } }
