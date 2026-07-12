@@ -181,5 +181,30 @@ check('diag-vlookup-warn', diag("=VLOOKUP(B2,'R'!A:C,3,0)", '=TAXRATE')[0], 'war
 check('diag-rowoffset-warn', diag('=B5+B4', '=BONUS+BONUS')[0], 'warning')
 check('diag-surviving-xref', diag("=X", "='Sheet'!A1")[0], 'broken')
 
+# ---- W40 diff re-import: constant-value change detection (review fix M1) ----
+# A changed statutory constant (8% -> 9%) carries its value in constant_value,
+# not excel_formula, so a formula-only diff would call it "unchanged" while the
+# commit still writes it — a payroll change bypassing officer review.
+rd_g = load_module(os.path.join(MODULE, 'wizards', 'multisheet_reimport_diff.py'), 'rd')
+RdCls = next(v for v in rd_g.values()
+             if isinstance(v, type) and hasattr(v, '_rd_constant_change'))
+rd = object.__new__(RdCls)
+
+
+class _P:
+    def __init__(self, sv):
+        self.sample_value = sv
+
+
+class _R:
+    def __init__(self, cv):
+        self.constant_value = cv
+
+
+check('reimport-const-8to9-changed', rd._rd_constant_change(_P('9%'), _R(0.08))[0], True)
+check('reimport-const-8to9-newval', rd._rd_constant_change(_P('9%'), _R(0.08))[2], '0.09')
+check('reimport-const-same-unchanged', rd._rd_constant_change(_P('0.08'), _R(0.08))[0], False)
+check('reimport-const-cap-intfmt', rd._rd_constant_change(_P('46800000'), _R(46800000.0))[2], '46800000')
+
 print(f"\nRESULT: {'ALL GREEN' if not fails else str(len(fails)) + ' FAILURES: ' + ', '.join(fails)}")
 sys.exit(1 if fails else 0)
