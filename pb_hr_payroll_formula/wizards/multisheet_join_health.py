@@ -69,7 +69,10 @@ class MultisheetJoinHealth(models.TransientModel):
         selected = self.available_sheet_ids.filtered('is_selected')
         main = selected.filtered('is_main_sheet')[:1]
         if not self.import_file or not main:
-            self.join_health_json = json.dumps([])
+            # M3: store FALSE, not '[]'. '[]' is truthy, which defeats the
+            # `not self.join_health_json` fallback in _compute_confidence and
+            # spuriously drops a clean keyed sheet's 15% term from 1.0 to 0.0.
+            self.join_health_json = False
             self.join_health_html = False
             return []
         from ..integrations import ExcelConnector
@@ -113,8 +116,10 @@ class MultisheetJoinHealth(models.TransientModel):
                 'missing': len(missing),
                 'sample_missing': sorted(missing)[:20],
             })
-        self.join_health_json = json.dumps(out)
-        self.join_health_html = self._build_join_health_html(out, main.sheet_name)
+        # M3: an empty result (single sheet = main only, no secondaries) stores
+        # FALSE too, so the clean-import fallback holds (see early-return above).
+        self.join_health_json = json.dumps(out) if out else False
+        self.join_health_html = self._build_join_health_html(out, main.sheet_name) if out else False
         return out
 
     # ---- primary_key_miss preview lines (D-B2) ----

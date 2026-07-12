@@ -14,6 +14,8 @@ import re
 from odoo import _, fields, models
 from odoo.tools import html_escape
 
+from ..formula_engine import excel_semantics
+
 _logger = logging.getLogger(__name__)
 
 
@@ -37,6 +39,29 @@ class MultisheetReimportDiff(models.TransientModel):
         # excel_formula (both are already in the same letterized/resolved space).
         return re.sub(r'\s+', '', f or '')
 
+    @staticmethod
+    def _rd_fmt_const(value):
+        """Render a constant value for the diff table (integers without .0)."""
+        if value is None:
+            return '—'
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+        return str(value)
+
+    def _rd_constant_change(self, preview, rule):
+        """For a constant component, return (changed?, old_str, new_str) by
+        comparing the imported VALUE to the live rule's constant_value — not the
+        (empty) formula text. Without this, a statutory rate/cap change (8%→9%)
+        lands in 'unchanged' yet is still written on commit (base
+        action_execute_import writes constant_value from sample_value): a
+        payroll-affecting change that bypasses officer review (M1)."""
+        new_v = excel_semantics.coerce_number(preview.sample_value)
+        if new_v is None:
+            new_v = 0.0
+        old_v = rule.constant_value or 0.0
+        changed = abs(new_v - old_v) > 1e-9
+        return changed, self._rd_fmt_const(old_v), self._rd_fmt_const(new_v)
+
     # ---- diff builder (D-B4) ----
     def _build_reimport_diff(self):
         self.ensure_one()
@@ -58,6 +83,14 @@ class MultisheetReimportDiff(models.TransientModel):
             r = live.get(code)
             if not r:
                 added.append({'code': p.generated_code, 'name': p.generated_name})
+            elif p.column_type == 'constant' or r.column_type == 'constant':
+                # Constants carry their value in constant_value, not excel_formula;
+                # compare by VALUE so a changed rate/cap is shown (M1).
+                is_changed, old_s, new_s = self._rd_constant_change(p, r)
+                if is_changed:
+                    changed.append({'code': r.code, 'name': r.name, 'old': old_s, 'new': new_s})
+                else:
+                    unchanged.append(r.code)
             elif self._rd_norm_formula(p.resolved_formula or p.excel_formula or '') == \
                     self._rd_norm_formula(r.excel_formula or ''):
                 unchanged.append(r.code)
@@ -117,6 +150,16 @@ class MultisheetReimportDiff(models.TransientModel):
             return super().action_execute_import()
 
         fname = self.import_filename or _('re-import')
+
+        # M2/TB.5: the guarded re-import applies the reviewed diff, so the
+        # "Changed" rows MUST land. The base update path is gated on
+        # `update_existing` (a user-toggleable field, default True); if the user
+        # unticked it earlier, the base would silently SKIP every changed rule —
+        # no update, no version row — while the milestone/chatter still claim a
+        # re-import happened. Force it on for this commit.
+        if not self.update_existing:
+            self.update_existing = True
+
         # D-B5: auto milestone BEFORE the commit → instantly comparable/rollbackable.
         self.env['hr.formula.config.milestone'].sudo().record(
             self.config_id, _('Before re-import %s') % fname)
