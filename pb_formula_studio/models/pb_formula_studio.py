@@ -702,10 +702,19 @@ class PbFormulaStudio(models.AbstractModel):
         return out
 
     @api.model
-    def bulk_save_formulas(self, items):
-        """Persist several formulas at once (drag-fill commit). ``items`` =
-        ``[{rule_id, formula}, ...]``."""
+    def bulk_save_formulas(self, items, reason='fill', note=False):
+        """Persist several formulas at once. ``items`` = ``[{rule_id, formula}, ...]``.
+
+        ``reason`` selects the F7 version-row reason for the whole batch — one of
+        the batch-write reasons (``fill`` for drag-fill, ``bulk`` for find/replace,
+        W14/TA.5). Any other value is coerced to ``fill`` so a bad caller can never
+        mislabel history. ``note`` (e.g. ``find/replace: q → r``) is stamped on
+        every version row. A shared ``formula_version_seen`` set keeps the batch to
+        exactly N rows, one reason (C4), even though each rule is written twice
+        (excel_formula is versioned, python_formula is not)."""
+        reason = reason if reason in ('fill', 'bulk') else 'fill'
         Rule = self.env['hr.formula.rule']
+        seen = set()
         saved = 0
         for it in (items or []):
             rule = Rule.browse(int(it.get('rule_id')))
@@ -713,8 +722,11 @@ class PbFormulaStudio(models.AbstractModel):
                 continue
             config = rule.config_id
             column_map = {r.column_letter: r.code for r in config.rule_ids if r.column_letter}
-            # F7: drag-fill commits N formulas — each its own 'fill' version row
-            rule = rule.with_context(formula_version_reason='fill')
+            # F7: N formulas → N version rows, one reason, one shared seen-set (C4)
+            ctx = {'formula_version_reason': reason, 'formula_version_seen': seen}
+            if note:
+                ctx['formula_version_note'] = note
+            rule = rule.with_context(**ctx)
             try:
                 rule.excel_formula = it.get('formula') or ''
                 rule.python_formula = rule._convert_excel_to_python(rule.excel_formula, column_map)

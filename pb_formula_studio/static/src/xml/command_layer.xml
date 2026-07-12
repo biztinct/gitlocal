@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- W14 — Find & replace (drawer, right side) -->
+  <t t-name="pb_formula_studio.FindReplace">
+    <div class="pbfs-find" data-coach="find-panel">
+      <div class="pbfs-find-h">
+        <div class="pbfs-find-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          Find <t t-if="props.canEdit">&amp; replace</t>
+        </div>
+        <button class="pbfs-find-x" t-on-click="close" title="Close (Esc)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <div class="pbfs-find-fields">
+        <input class="pbfs-find-in" t-ref="query" placeholder="Find in formulas, names, codes…"
+               t-on-input="onQuery" t-on-keydown="onQueryKeydown"/>
+        <input t-if="props.canEdit" class="pbfs-find-in" placeholder="Replace formula text with…"
+               t-on-input="onReplace"/>
+      </div>
+
+      <div class="pbfs-find-opts">
+        <button t-attf-class="fr-opt {{ state.opts.matchCase ? 'on' : '' }}" t-on-click="() => this.toggleOpt('matchCase')" title="Match case">Aa</button>
+        <button t-attf-class="fr-opt {{ state.opts.wholeToken ? 'on' : '' }}" t-on-click="() => this.toggleOpt('wholeToken')" title="Whole token only">\b</button>
+        <span class="fr-sep"/>
+        <button t-attf-class="fr-chip {{ state.opts.scopeFormulas ? 'on' : '' }}" t-on-click="() => this.toggleOpt('scopeFormulas')">Formulas</button>
+        <button t-attf-class="fr-chip {{ state.opts.scopeNames ? 'on' : '' }}" t-on-click="() => this.toggleOpt('scopeNames')">Names</button>
+        <button t-attf-class="fr-chip {{ state.opts.scopeCodes ? 'on' : '' }}" t-on-click="() => this.toggleOpt('scopeCodes')">Codes</button>
+      </div>
+
+      <div class="pbfs-find-sum" t-if="state.query.trim()">
+        <b t-esc="totalOccurrences"/> occurrence<t t-if="totalOccurrences !== 1">s</t>
+        in <b t-esc="hits.length"/> component<t t-if="hits.length !== 1">s</t>
+        <span t-if="state.dryRunning" class="fr-dry">· checking…</span>
+      </div>
+
+      <div class="pbfs-find-list">
+        <div t-if="state.query.trim() and !hits.length" class="pbfs-find-empty">No matches.</div>
+        <div t-foreach="hits" t-as="h" t-key="h.comp.id" class="fr-hit">
+          <div class="fr-hit-h">
+            <input t-if="h.fHit and props.canEdit and state.replace !== ''" type="checkbox" class="fr-check"
+                   t-att-checked="isChecked(h.comp.id)" t-on-change="() => this.toggleHit(h.comp.id)"/>
+            <span class="fr-col" t-esc="h.comp.col"/>
+            <span class="fr-code" t-esc="h.comp.code"/>
+            <span class="fr-name" t-esc="h.comp.name"/>
+            <span t-if="h.fHit" class="fr-count" t-esc="h.count"/>
+            <t t-if="h.fHit and state.replace !== '' and validityOf(h.comp.id)">
+              <span t-attf-class="fr-pill {{ validityOf(h.comp.id).valid === false ? 'bad' : 'ok' }}"
+                    t-att-title="validityOf(h.comp.id).message">
+                <t t-if="validityOf(h.comp.id).valid === false">invalid</t><t t-else="">valid</t>
+              </span>
+            </t>
+          </div>
+          <div t-if="h.fHit" class="fr-formula">
+            <t t-foreach="segs(h.comp.formula)" t-as="sg" t-key="sg_index">
+              <mark t-if="sg.m" t-esc="sg.t"/><t t-else="" t-esc="sg.t"/>
+            </t>
+          </div>
+          <div t-if="h.fHit and state.replace !== ''" class="fr-proposed" t-att-title="h.proposed">
+            <span class="fr-arrow">→</span> <span t-esc="h.proposed"/>
+          </div>
+          <div t-if="(h.nHit or h.cHit) and !h.fHit" class="fr-rename">
+            <span class="fr-rename-lbl">Matched this component's <t t-if="h.cHit">code</t><t t-else="">name</t> —</span>
+            <button class="fr-rename-btn" t-on-click="() => this.rename(h.comp.id)">Rename component…</button>
+            <button class="fr-jump-btn" t-on-click="() => this.jump(h.comp.id)">Show in grid</button>
+          </div>
+          <div t-if="(h.nHit or h.cHit) and h.fHit" class="fr-rename subtle">
+            <button class="fr-jump-btn" t-on-click="() => this.rename(h.comp.id)">Rename instead…</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pbfs-find-foot" t-if="props.canEdit">
+        <span t-if="excludedCount" class="fr-excluded"><b t-esc="excludedCount"/> invalid excluded</span>
+        <button class="pbfs-btn primary sm" t-att-disabled="!canCommit" t-on-click="commit">
+          <t t-if="state.busy">Replacing…</t>
+          <t t-else="">Replace <t t-esc="commitItems.length"/></t>
+        </button>
+      </div>
+    </div>
+  </t>
+
+  <!-- W99 — Command palette (centered overlay) -->
+  <t t-name="pb_formula_studio.CommandPalette">
+    <div class="pbfs-palette-scrim" t-on-click="close" data-coach="palette">
+      <div class="pbfs-palette" t-on-click="(ev) => ev.stopPropagation()">
+        <div class="cp-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input t-ref="search" class="cp-input" placeholder="Search components, actions, views…"
+                 t-on-input="onInput" t-on-keydown="onKeydown"/>
+        </div>
+        <div class="cp-list" t-ref="list">
+          <div t-if="!count" class="cp-empty">No commands match.</div>
+          <div t-foreach="groups" t-as="g" t-key="g.name" class="cp-group">
+            <div class="cp-section" t-esc="g.name"/>
+            <div t-foreach="g.rows" t-as="row" t-key="row.cmd.id"
+                 t-attf-class="cp-row {{ row.idx === state.active ? 'active' : '' }}"
+                 t-att-data-hover-comp="hoverId(row.cmd) or false"
+                 t-on-mousemove="() => this.setActive(row.idx)" t-on-click="() => this.run(row.idx)">
+              <span class="cp-label" t-esc="row.cmd.label"/>
+              <span t-if="row.cmd.sublabel" class="cp-sub" t-esc="row.cmd.sublabel"/>
+            </div>
+          </div>
+        </div>
+        <div class="cp-foot">
+          <span><b>↑↓</b> navigate</span><span><b>↵</b> run</span><span><b>esc</b> close</span>
+        </div>
+      </div>
+    </div>
+  </t>
+
+  <!-- W100 — Hover card -->
+  <t t-name="pb_formula_studio.HoverCard">
+    <div class="pbfs-hovercard" t-attf-style="{{ props.style }}">
+      <div class="hc-h">
+        <span class="hc-col" t-esc="props.data.col"/>
+        <span class="hc-code" t-esc="props.data.code"/>
+        <span t-if="props.data.category" class="hc-cat" t-esc="props.data.category"/>
+      </div>
+      <div class="hc-name" t-esc="props.data.name"/>
+      <div t-if="props.data.type === 'formula'" class="hc-formula">
+        <t t-foreach="props.data.tokens" t-as="tok" t-key="tok_index">
+          <span t-if="tok.kind === 'func'" class="hc-tok func" t-esc="tok.text"/>
+          <span t-elif="tok.kind === 'ref'" class="hc-tok ref"><span class="hc-refcol" t-esc="tok.col"/><t t-esc="tok.text"/></span>
+          <span t-elif="tok.kind === 'range'" class="hc-tok range"><span class="hc-refcol" t-esc="tok.start"/>…<span class="hc-refcol" t-esc="tok.end"/></span>
+          <span t-elif="tok.kind === 'num'" class="hc-tok num" t-esc="tok.text"/>
+          <span t-elif="tok.kind === 'op'" t-attf-class="hc-tok op {{ tok.ded ? 'ded' : '' }}" t-esc="tok.text"/>
+          <span t-elif="tok.kind === 'paren'" class="hc-tok paren" t-esc="tok.text"/>
+          <span t-elif="tok.kind === 'comma'" class="hc-tok comma">,</span>
+          <span t-else="" class="hc-tok" t-esc="tok.text"/>
+        </t>
+      </div>
+      <div t-elif="props.data.type === 'constant'" class="hc-formula"><span class="hc-tok num" t-esc="props.data.constant"/></div>
+      <div class="hc-foot">
+        <span class="hc-val" t-esc="props.data.value"/>
+        <span t-if="props.data.valid" class="hc-ok" title="Valid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"/></svg>
+        </span>
+        <span t-else="" class="hc-bad" t-att-title="props.data.message || 'Has an error'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+        </span>
+      </div>
+    </div>
+  </t>
+
+</templates>
