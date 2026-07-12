@@ -642,3 +642,70 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 
 **WP-D:**
 > Implement WP-D (W48 payrun anomaly narration) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md, honoring docs/FORMULA_ENGINE_CONVENTIONS.md — deterministic narrative first, LLM polish guarded. Build TD.1→TD.3, one commit, report back per the Report-back section.
+
+---
+
+# WP-E — Import Resolution Integrity (`pb_hr_payroll_formula` wizard) — converter-audit follow-up
+
+*Added 2026-07-12 after the Excel→Python converter deep audit. The converter itself was fixed
+directly by Fable (see `FORMULA_ENGINE_CONVENTIONS.md` C12 and the battery tool
+`pb_hr_payroll_formula/tools/excel_semantics_battery.py`). WP-E is the IMPORT-side remediation: the
+stage between openpyxl and the stored `excel_formula` still destroys or mis-rewrites formulas in the
+scenarios below. Findings were produced by a full review and the top three verified line-by-line.*
+
+**Ordering note:** WP-E overlaps WP-B's files (wizard + preview mixin). Run WP-E **before or together
+with WP-B** — W37/W40 build on resolution output being trustworthy.
+
+## Locked decisions
+
+- **D-E1** No resolver may return the literal `"0"` for an unresolved reference. Replace every such
+  return (`multisheet_import_wizard.py:1297, :1327, :1355` and the same-sheet VLOOKUP fallback in
+  `formula_rule.py::_resolve_vlookup`) with an explicit unresolved marker that (a) keeps the original
+  ref text in the stored formula, (b) creates a red preview line (`issue_type='unresolved_xref'`),
+  and (c) fails conversion loudly (C7/C12 pattern: ValueError → `has_evaluation_error`).
+- **D-E2** Anchor the direct cross-sheet ref regex (`:1332`): sheet token must be
+  `(?:'[^']+'|[\wÀ-ỿ][\wÀ-ỿ .\-]*)` with a left boundary `(?<![\w!])` — never
+  `[^'!]+` unanchored (it swallows `IF(Sheet2` and shreds the formula). Must cover unquoted
+  Vietnamese sheet names (`Lương!A1`) in BOTH the masking pass (`:1389`) and extraction passes
+  (`:668, :737, :745, :753, :3596`).
+- **D-E3** Generated codes MUST honor the C5 contract: no underscores, no substring collisions.
+  Replace `f"{base}_{n}"` dedup (`:2986-2990`), `COL_{n}` (`:2977`), `FORMULA_COL` (`:2972`) with
+  underscore-free, collision-checked generation (e.g. `BASICSALARY`, `BASICSALARYB`, checked against
+  the FULL config code set for substring conflicts both directions).
+- **D-E4** Blue-constant scan must exclude data rows: scan strictly ABOVE `data_start_row`
+  (`:2176`), so an employee's first-row VALUE is never frozen into a workbook-wide constant.
+- **D-E5** Constants that fail numeric parse (text/dates, `:1710-1732`, `:2755-2759`) must import as
+  red preview lines, not silent `0.0`.
+- **D-E6** VLOOKUP/SUMIF rewrites that DROP lookup-key semantics (key discarded at `:1269`,
+  `cross_sheet_resolver.py:110-167`; bounded SUMIF ranges widened at `:1303-1329`) must at minimum
+  emit a WARNING preview line ("resolved positionally — verify join semantics"); track W37 (join-key
+  health) as the structural fix.
+- **D-E7** Row-offset detection: when a formula references a row ≠ the detected data row (`B4` when
+  data row is 5 — running totals), flag a warning preview line; do NOT silently collapse to same-row.
+- **D-E8** All changes in the **preview mixin / new mixin classes** (C6). Base-wizard edits allowed
+  ONLY for the regex constants and `return "0"` sites themselves.
+
+## Tasks
+
+- **TE.1** D-E1 unresolved markers + red preview lines (all resolver fallbacks). AC: importing a
+  workbook with a ref to an unmapped sheet produces a red line naming the ref; stored formula still
+  contains the original ref text; rule shows `has_evaluation_error`.
+- **TE.2** D-E2 regex anchoring + Vietnamese sheet names. AC: `=IF(Sheet2!B2>0,1,0)` resolves (or
+  red-lines) intact; `=Lương!A1+B3` fully resolves; no formula text is ever shredded.
+- **TE.3** D-E3 code generation contract. AC: duplicate headers import as underscore-free,
+  non-substring codes; `_check_converter_contract` passes on the resulting config.
+- **TE.4** D-E4 + D-E5 constant integrity. AC: blue DATA cell no longer becomes a constant; text/date
+  constant → red line, not 0.0.
+- **TE.5** D-E6 + D-E7 warning lines. AC: keyed VLOOKUP to a non-PK sheet and a running-total formula
+  each produce a visible warning in preview.
+- **TE.6** Re-import the ORIGINAL VN customer workbook (the one behind the live 616-rule config) and
+  the pb_demo generator output; AC: zero silent zeros, preview confidence unchanged or higher,
+  `excel_semantics_battery.py` still green, C10 batch-recompute anchor unchanged.
+
+## Opus kickoff line
+
+> Implement WP-E (Import Resolution Integrity) exactly as specified in
+> docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-E, honoring docs/FORMULA_ENGINE_CONVENTIONS.md — especially
+> C5, C6, C7 and the new C12. Work in pb_hr_payroll_formula only, mixin-first (D-E8). Build
+> TE.1→TE.6, one feature-scoped commit per task, run pb_hr_payroll_formula/tools/excel_semantics_battery.py
+> after every commit, and report back per the Report-back items section.
