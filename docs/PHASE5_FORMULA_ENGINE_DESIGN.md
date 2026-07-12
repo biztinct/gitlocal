@@ -647,14 +647,21 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 
 # WP-E — Import Resolution Integrity (`pb_hr_payroll_formula` wizard) — converter-audit follow-up
 
+**STATUS: ✅ IMPLEMENTED by Fable 2026-07-12** (commit on branch `19.1`; deployed to Payobook19v2,
+smoke-tested on the live registry). This was the import-side kernel, so — like the converter fix — it
+was coded directly rather than handed to Opus. Binding rules folded into
+`FORMULA_ENGINE_CONVENTIONS.md` **C13**; regression gate
+`pb_hr_payroll_formula/tools/import_resolution_battery.py` (18 cases, all green). See the
+**Implementation record** at the end of this section for what shipped vs. the spec below.
+
 *Added 2026-07-12 after the Excel→Python converter deep audit. The converter itself was fixed
 directly by Fable (see `FORMULA_ENGINE_CONVENTIONS.md` C12 and the battery tool
 `pb_hr_payroll_formula/tools/excel_semantics_battery.py`). WP-E is the IMPORT-side remediation: the
 stage between openpyxl and the stored `excel_formula` still destroys or mis-rewrites formulas in the
 scenarios below. Findings were produced by a full review and the top three verified line-by-line.*
 
-**Ordering note:** WP-E overlaps WP-B's files (wizard + preview mixin). Run WP-E **before or together
-with WP-B** — W37/W40 build on resolution output being trustworthy.
+**Ordering note:** WP-E overlaps WP-B's files (wizard + preview mixin). WP-E landed first, so W37/W40
+now build on trustworthy resolution output.
 
 ## Locked decisions
 
@@ -702,10 +709,45 @@ with WP-B** — W37/W40 build on resolution output being trustworthy.
   the pb_demo generator output; AC: zero silent zeros, preview confidence unchanged or higher,
   `excel_semantics_battery.py` still green, C10 batch-recompute anchor unchanged.
 
-## Opus kickoff line
+## Implementation record (2026-07-12)
 
-> Implement WP-E (Import Resolution Integrity) exactly as specified in
-> docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-E, honoring docs/FORMULA_ENGINE_CONVENTIONS.md — especially
-> C5, C6, C7 and the new C12. Work in pb_hr_payroll_formula only, mixin-first (D-E8). Build
-> TE.1→TE.6, one feature-scoped commit per task, run pb_hr_payroll_formula/tools/excel_semantics_battery.py
-> after every commit, and report back per the Report-back items section.
+**Shipped.** All eight decisions implemented; TE.1–TE.5 fully, TE.6 as harness + live smoke (the
+original customer workbook wasn't on hand — see caveat). File-level:
+
+| Decision | What shipped | Location |
+|---|---|---|
+| D-E1 | All 4 resolver fallbacks return `self._UNRESOLVED_MARK` (`#REF!`), never `"0"` — visible in the stored formula, red-lined by the mixin, refused loudly by the converter | `multisheet_import_wizard.py` `_resolve_cross_sheet_formula` (VLOOKUP/SUMIF/direct) + `_resolve_same_sheet_formula` VLOOKUP |
+| D-E2 | Direct regex re-anchored: `(?<![\w!.'])(?:'[^']+'\|[A-Za-z_À-￿][\w.À-￿]*)\s*!…`; resolves refs inside functions, covers unquoted Vietnamese sheet names, never shreds | `_resolve_cross_sheet_formula` direct_pattern |
+| D-E3 | `_generate_code` → `_dedupe_code_c5`: underscore-free + unique (`FORMULACOL`/`COL2024`, letter-suffix dedup); non-substring is best-effort (see deviation note — substring verified harmless) | `_generate_code`, `_dedupe_code_c5` |
+| D-E4 | Blue-constant scan bound changed `data_start_row + 2` → `data_start_row` (excludes data rows) | `_collect_constants_for_sheet` |
+| D-E5 | Constants parse via `excel_semantics.coerce_number`; non-numeric → sticky warning on the completion notice (collected in `unparseable_constants`), not silent success | `action_execute_import` |
+| D-E6 | Resolved VLOOKUP/SUMIF → `warning` (lookup key dropped, verify per-employee row) | `multisheet_import_preview.py` `_diagnose` |
+| D-E7 | Same-column-two-rows reference → `warning` (running total may be flattened) | `_diagnose` |
+| D-E8 | Diagnosis/warnings all in the mixin; base-wizard edits confined to the 4 `return "0"` sites, the one regex, and code-gen | — |
+
+**Deviations from the spec above (all intentional):**
+- D-E1 uses `#REF!` as the marker rather than *preserving the exact original ref text*. Preserving the
+  original text of an unresolved **VLOOKUP/SUMIF** would let the later direct-ref pass re-grab the
+  fragment and silently produce a malformed-but-clean-looking formula (the mixin would score it OK).
+  `#REF!` is inert to every downstream pass, unambiguously flagged, and still names the failing
+  *component*. Direct single refs would have been safe to preserve verbatim, but one uniform marker is
+  simpler and safer than two code paths.
+- D-E5 surfaces non-numeric constants as a **sticky completion-notice warning + loud log**, not as a
+  preview line. Constants don't currently get preview lines (only formulas do); a full constant preview
+  surface is more than the finding needs and is deferred.
+- D-E2's line numbers in the spec drifted after the C12 edits; the extraction-pass regexes
+  (`:668,:737…`) were already anchored/safe, so only the resolver's direct_pattern needed the fix.
+- D-E3 relaxes the spec's *strict* non-substring requirement to **underscore-free + unique**, with
+  non-substring as a best-effort cosmetic. Two reasons: (1) strict non-substring is mathematically
+  impossible when a header maps to an existing code (`Amount` vs an existing `AMOUNT` — every
+  underscore-free superstring contains it); (2) a direct converter test proved substring codes
+  (`AMOUNT`/`AMOUNTX`, `SI`/`SIEMP`) resolve **correctly** — the converter tokenizes greedily, so the
+  underscore is the only real breaker. The original C5 substring warning traced to the underscore in
+  its example (`BON_PERF`), not substringing per se.
+
+**TE.6 caveat:** validated by the 19-case `import_resolution_battery.py` (real resolver/code-gen/
+diagnose) + a live-registry smoke test (`_resolve_cross_sheet_formula` and `_generate_code` on a
+transient wizard). The original VN customer workbook was not available in this session; the
+converter-side `excel_semantics_battery.py` remains green and the C10 batch-recompute anchor is
+unaffected (no engine-eval change in WP-E). **Recommended before customer use:** one real re-import of
+that workbook through the preview to confirm confidence and red/warning lines behave as intended.
