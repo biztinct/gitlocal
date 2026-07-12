@@ -68,10 +68,14 @@ class MultisheetJoinHealth(models.TransientModel):
         self.ensure_one()
         selected = self.available_sheet_ids.filtered('is_selected')
         main = selected.filtered('is_main_sheet')[:1]
-        if not self.import_file or not main:
-            # M3: store FALSE, not '[]'. '[]' is truthy, which defeats the
-            # `not self.join_health_json` fallback in _compute_confidence and
-            # spuriously drops a clean keyed sheet's 15% term from 1.0 to 0.0.
+        # Skip the (openpyxl) workbook parse entirely when there is nothing to
+        # measure — no file, no main, OR no SECONDARY sheet (the common
+        # single-sheet import). Join health only compares secondaries to the
+        # main, so a lone sheet has zero work; parsing it was pure waste (m1).
+        # M3: store FALSE, not '[]' — '[]' is truthy and defeats the
+        # `not self.join_health_json` fallback in _compute_confidence, which
+        # would spuriously drop a clean keyed sheet's 15% term from 1.0 to 0.0.
+        if not self.import_file or not main or not (selected - main):
             self.join_health_json = False
             self.join_health_html = False
             return []
