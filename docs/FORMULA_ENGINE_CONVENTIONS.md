@@ -22,7 +22,7 @@ deterministic fallback. Engine-side code may only reach the LLM guarded by
 ## C2 — Odoo 19 asset caching
 
 Bump the `version` in `__manifest__.py` on **every** asset-list or asset-file change
-(current: `pb_formula_studio` 19.0.1.42.0, `pb_hr_payroll_formula` 19.0.1.24.0). Develop with
+(current: `pb_formula_studio` 19.0.1.43.0, `pb_hr_payroll_formula` 19.0.1.28.0). Develop with
 `--dev=assets`. A new XML template file that isn't in the manifest's asset list fails only at first
 render — add it in the same commit that creates it.
 
@@ -89,6 +89,21 @@ formulas at resolution time (base lines 1238-1240) — the wrapper methods aroun
 is visible. Broken refs must degrade **visibly** (red row / warning), never silently
 (`no silent zeros` — W66 principle).
 
+## C6b — Import join-key semantics (verified for W37)
+
+The multi-sheet import join keys rows by `str(pk_value).strip()`, skipping falsy
+values (`multisheet_import_wizard.py:2927-2961`). Any code measuring or altering the
+join (health, diff, normalize) MUST mirror this exactly, or it measures a fake join.
+Two verified facts:
+- **The Excel connector coerces integral floats to int** (`1041.0` → `1041`) before
+  values reach the wizard (`ExcelConnector.load_sheet_with_detection`), so the classic
+  `123.0` float artifact is auto-normalized by the join itself — it never produces a
+  key mismatch here. The fixable mismatch that actually SURVIVES is case/whitespace.
+  Test join-key features with case-different keys (`EMP1` vs `emp1`), not int-vs-float.
+- Parsed rows are NOT stored on the wizard — re-read via
+  `connector.load_workbook_multisheet(b64decode(import_file))` then
+  `load_sheet_with_detection(sheet_name)['data_rows']` (list of `{col: value}`).
+
 ## C7 — Silent failures are bugs
 
 Any mapping/import/eval path that would produce `0` for an unresolvable reference must surface an
@@ -107,7 +122,10 @@ one score, one breakdown JSON.
 ## C9 — Odoo 19 breakages (recurring)
 
 `safe_eval` nocopy · `res.users.group_ids` (not `groups_id`) · `res.groups.category_id` changes ·
-`hr.employee.sex` · stateless recordsets (`__slots__`, see C6) · `ir_ui_view` lock via shell vs UI.
+`hr.employee.sex` · stateless recordsets (`__slots__`, see C6) · `ir_ui_view` lock via shell vs UI ·
+`fields.Selection(selection_add=...)` **requires an `ondelete` policy that the base field can honor** —
+`'set default'` asserts at registry load if the base field has no `default` (`ondelete policy of type
+'set default' is invalid … does not define a default!`); use `'set null'` for a plain optional Selection.
 Full list in the memory ledger (odoo19-payroll-gotchas); check it before touching core-model overrides.
 
 ## C10 — Verification & delivery rituals
