@@ -46,7 +46,18 @@ export class CommandPalette extends Component {
             if (s === -Infinity) continue;
             scored.push({ cmd: c, score: s });
         }
-        if (q) scored.sort((a, b) => b.score - a.score);
+        // Order by SECTION first, then score within a section. `results` is the
+        // single source of truth for both the flat index (state.active / run())
+        // AND the grouped render, so this ordering makes ArrowUp/Down walk the
+        // list exactly as it appears on screen. Sorting only by score let the
+        // flat index and the section-grouped rendering disagree, so the
+        // highlight jumped between sections instead of moving down (W99 fix).
+        const rank = s => {
+            const i = CommandPalette.SECTION_ORDER.indexOf(s);
+            return i === -1 ? CommandPalette.SECTION_ORDER.length : i;
+        };
+        scored.sort((a, b) =>
+            rank(a.cmd.section) - rank(b.cmd.section) || (q ? b.score - a.score : 0));
         return scored.slice(0, 60);   // keep the list snappy at 250-component scale
     }
     get groups() {
