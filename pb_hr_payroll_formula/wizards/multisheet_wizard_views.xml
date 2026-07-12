@@ -239,6 +239,9 @@
                                 <field name="ai_review_html" nolabel="1" readonly="1"
                                        invisible="not ai_review_html"
                                        class="alert alert-light border"/>
+                                <field name="join_health_html" nolabel="1" readonly="1"
+                                       invisible="not join_health_html"
+                                       class="alert alert-light border" data-coach="imp-joinhealth"/>
                                 <separator string="Formulas — original → resolved"/>
                                 <field name="preview_line_ids" nolabel="1">
                                     <list limit="500" editable="bottom" create="false" delete="false"

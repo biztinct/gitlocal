@@ -115,7 +115,10 @@ class MultisheetImportPreview(models.TransientModel):
 
     # ---- confidence score (T3.3) — weighted 40/25/20/15 --------------------
     def _compute_confidence(self):
-        lines = self.preview_line_ids
+        # Key-health preview lines (W37 primary_key_miss) are a DIFFERENT kind of
+        # signal — they must not dilute the formula-resolution ratios, or the
+        # confidence would drop through the 40% term instead of the 15% key term.
+        lines = self.preview_line_ids.filtered(lambda l: l.issue_type != 'primary_key_miss')
         total = len(lines) or 1
         # 40% — formulas that resolved cleanly (status ok)
         resolved_ratio = len(lines.filtered(lambda l: l.status == 'ok')) / total
@@ -129,10 +132,31 @@ class MultisheetImportPreview(models.TransientModel):
             column_ratio = mapped / len(selected_cols)
         else:
             column_ratio = 1.0
-        # 15% — selected sheets whose primary key was matched
+        # 15% — join-key health (W37/D-B2). Generalizes the old binary "sheet has a
+        # key" term to coverage: a keyed MAIN sheet scores 1.0 (it IS the key
+        # source), a keyed SECONDARY sheet scores its coverage of the main key set,
+        # a no-key sheet scores 0.0. When no health scan has run yet (or none is
+        # stored) every keyed sheet scores 1.0 — bit-identical to the old term, so a
+        # clean import (full coverage) never drifts; only a partial-coverage
+        # secondary sheet lowers the score.
         selected_sheets = self.available_sheet_ids.filtered('is_selected')
         if selected_sheets:
-            key_ratio = len(selected_sheets.filtered('primary_key_column_name')) / len(selected_sheets)
+            cov = {}
+            if self.join_health_json:
+                try:
+                    cov = {h['sheet']: h.get('coverage', 0.0)
+                           for h in json.loads(self.join_health_json)}
+                except Exception:
+                    cov = {}
+            parts = []
+            for sh in selected_sheets:
+                if not sh.primary_key_column_name:
+                    parts.append(0.0)
+                elif sh.is_main_sheet or not self.join_health_json:
+                    parts.append(1.0)
+                else:
+                    parts.append(cov.get(sh.sheet_name, 0.0))
+            key_ratio = sum(parts) / len(parts)
         else:
             key_ratio = 1.0
 
@@ -145,6 +169,11 @@ class MultisheetImportPreview(models.TransientModel):
             'keys': round(key_ratio, 3),
             'weights': {'resolved': 0.40, 'no_zeros': 0.25, 'columns': 0.20, 'keys': 0.15},
         }
+        if self.join_health_json:
+            try:
+                breakdown['key_health'] = json.loads(self.join_health_json)
+            except Exception:
+                pass
         self.write({
             'confidence_score': round(score, 3),
             'confidence_breakdown_json': json.dumps(breakdown),
