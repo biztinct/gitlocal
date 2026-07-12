@@ -322,10 +322,16 @@ class MultisheetImportPreview(models.TransientModel):
         """Classify one original→resolved pair. Deterministic, no LLM."""
         o = (original or '').strip()
         r = (resolved or '').strip()
+        o_up = o.upper()
+        r_up = r.upper()
+        # 0) WP-E D-E1 marker: an unresolvable reference the base resolver
+        #    replaced with #REF! (never a silent 0 anymore).
+        if '#REF!' in r_up:
+            return 'broken', 'becomes_zero', _(
+                "A reference in %s could not be mapped (#REF!) — fix before importing") % o
         # 1) A sheet-qualified ref survived resolution → converter will choke or zero it.
         if SHEET_REF_RE.search(r):
             return 'broken', 'unresolved_xref', _("Sheet reference not resolved: %s") % r
-        o_up = o.upper()
         had_lookup = (bool(SHEET_REF_RE.search(o))
                       or any(fn in o_up for fn in ('VLOOKUP', 'HLOOKUP', 'SUMIF', 'INDEX', 'MATCH', 'LOOKUP')))
         r_body = r.lstrip('=').strip()
@@ -335,13 +341,30 @@ class MultisheetImportPreview(models.TransientModel):
             return 'broken', 'becomes_zero', _(
                 "A reference in %s could not be mapped and became 0") % o
         # 3) A lookup was partially replaced by a bare 0 that wasn't there before.
-        if had_lookup and 'VLOOKUP' not in r.upper():
+        if had_lookup and 'VLOOKUP' not in r_up:
             zeros_before = len(re.findall(r'(?<![\w.])0(?![\w.])', o))
             zeros_after = len(re.findall(r'(?<![\w.])0(?![\w.])', r))
             if zeros_after > zeros_before:
                 return 'broken', 'becomes_zero', _(
                     "A reference in %s could not be mapped and became 0") % o
-        # 4) otherwise ok (unknown_column / primary_key_miss handled in later tasks)
+        # 4) D-E6: a VLOOKUP/SUMIF that DID resolve was matched POSITIONALLY —
+        #    the lookup key was discarded. Correct only if the key is the
+        #    per-row primary key; otherwise every employee reads the same cell.
+        if any(fn in o_up for fn in ('VLOOKUP', 'SUMIF', 'HLOOKUP')):
+            return 'warning', False, _(
+                "%s was resolved positionally — the lookup key was dropped; verify "
+                "each employee reads their own row") % o
+        # 5) D-E7: the same column is referenced at two different rows (e.g.
+        #    B5+B4 — a running total / prior-row reference). Downstream strips
+        #    the row, so it silently computes as a same-row sum. Warn.
+        col_rows = {}
+        for col, row in re.findall(r"(?<![\w!])\$?([A-Za-z]{1,3})\$?(\d+)", o):
+            col_rows.setdefault(col.upper(), set()).add(row)
+        if any(len(rows) > 1 for rows in col_rows.values()):
+            return 'warning', False, _(
+                "%s references the same column at different rows (e.g. a running "
+                "total) — verify it isn't flattened to a single row") % o
+        # 6) otherwise ok (unknown_column / primary_key_miss handled in later tasks)
         return 'ok', False, False
 
 
