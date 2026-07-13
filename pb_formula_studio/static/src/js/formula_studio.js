@@ -288,6 +288,10 @@ export class PbFormulaStudio extends Component {
             cmpSort: "delta",
             cmpSortDir: -1,
             cmpMoversOpen: false,
+            // W48 — payrun anomaly narration over the compare fold
+            cmpNarrate: null,        // {blocks, source, lang}
+            cmpNarrateBusy: false,
+            cmpNarrateLang: "en",
             // W82 — tests-on-save chip: the verdict from the last save RPC
             // ({has_tests,total,passed,failed,pending,failures:[]}), cleared on
             // config switch. null = no save yet this session.
@@ -2508,6 +2512,7 @@ export class PbFormulaStudio extends Component {
         this.state.cmpProgress = 0;
         this.state.cmpResult = null;
         this.state.cmpMoversOpen = false;
+        this.state.cmpNarrate = null;
         try {
             const prep = await this.orm.call("pb.formula.studio", "compare_prepare",
                 [this.state.config.id, this.state.cmpA, this.state.cmpB], {}, { silent: true });
@@ -2562,7 +2567,30 @@ export class PbFormulaStudio extends Component {
         return delta > 0 ? `background: rgba(15,138,99,${a});` : `background: rgba(220,38,38,${a});`;
     }
     toggleCmpMovers() { this.state.cmpMoversOpen = !this.state.cmpMoversOpen; }
-    openNarrate() { this.notif.add("Payrun narration lands with the next phase (W48).", { type: "info" }); }
+    // W48 — narrate the finished comparison (deterministic floor, LLM polish when keyed)
+    async openNarrate() {
+        if (!this.state.cmpId || this.state.cmpNarrateBusy) return;
+        this.state.cmpNarrateBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "narrate_comparison",
+                [this.state.cmpId, this.state.cmpNarrateLang], {}, { silent: true });
+            this.state.cmpNarrate = (r && r.ok) ? r : null;
+            if (!this.state.cmpNarrate) this.notif.add("Could not narrate this comparison", { type: "warning" });
+        } catch (e) {
+            this.notif.add("Narration failed", { type: "warning" });
+        } finally { this.state.cmpNarrateBusy = false; }
+    }
+    async setNarrateLang(lang) {
+        if (this.state.cmpNarrateLang === lang) return;
+        this.state.cmpNarrateLang = lang;
+        if (this.state.cmpNarrate) await this.openNarrate();   // re-narrate in the new language
+    }
+    copyNarrate() {
+        const t = ((this.state.cmpNarrate && this.state.cmpNarrate.blocks) || []).join("\n");
+        if (t && navigator.clipboard) {
+            navigator.clipboard.writeText(t).then(() => this.notif.add("Narrative copied", { type: "success" }));
+        }
+    }
 
     // ---- Test & Validate workbench ----
     async openTest() {

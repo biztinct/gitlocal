@@ -594,9 +594,9 @@
               <div class="pbcmp-stat"><b t-esc="state.cmpResult.net_moved.toLocaleString('en-US')"/><span><t t-esc="state.cmpResult.headline"/> moved</span></div>
               <div class="pbcmp-stat"><b t-esc="state.cmpResult.joiners.toLocaleString('en-US')"/><span>joiners</span></div>
               <div class="pbcmp-stat"><b t-esc="state.cmpResult.leavers.toLocaleString('en-US')"/><span>leavers</span></div>
-              <button class="pbfs-btn soft pbcmp-narr" t-on-click="openNarrate" title="AI narration (next phase)">
+              <button class="pbfs-btn soft pbcmp-narr" t-on-click="openNarrate" t-att-disabled="state.cmpNarrateBusy" title="Narrate this comparison">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Narrate
+                <t t-if="state.cmpNarrateBusy">Narrating…</t><t t-else="">Narrate</t>
               </button>
             </div>
 
@@ -608,6 +608,27 @@
                 <span class="cc-cov">moved for <t t-esc="cz.coverage"/>% of changed employees</span>
                 <span t-if="cz.attributed" class="cc-attr">edited <t t-esc="cz.when"/> (<t t-esc="cz.reason"/>)</span>
               </div>
+            </div>
+
+            <!-- W48 — narration card -->
+            <div t-if="state.cmpNarrate" class="pbcmp-narr-card">
+              <div class="pbcmp-narr-head">
+                <div class="nh-left">
+                  <b>Narrative</b>
+                  <span t-attf-class="nh-src {{ state.cmpNarrate.source }}" t-esc="state.cmpNarrate.source === 'ai' ? 'AI-polished' : 'Built-in'"/>
+                </div>
+                <div class="nh-right">
+                  <div class="nh-lang">
+                    <button t-attf-class="{{ state.cmpNarrateLang === 'en' ? 'on' : '' }}" t-on-click="() => this.setNarrateLang('en')">EN</button>
+                    <button t-attf-class="{{ state.cmpNarrateLang === 'vi' ? 'on' : '' }}" t-on-click="() => this.setNarrateLang('vi')">VI</button>
+                  </div>
+                  <button class="pbfs-btn ghost sm" t-on-click="copyNarrate" title="Copy narrative">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                </div>
+              </div>
+              <p t-foreach="state.cmpNarrate.blocks" t-as="b" t-key="b_index" class="pbcmp-narr-line" t-esc="b"/>
+              <div t-if="state.cmpNarrateBusy" class="pbcmp-narr-busy">Narrating…</div>
             </div>
 
             <!-- component delta table -->
