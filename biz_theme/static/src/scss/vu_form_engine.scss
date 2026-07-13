@@ -373,6 +373,23 @@
         &:not(:has(.o_cell:not(:empty), .o_horizontal_separator)) {
             display: none;
         }
+
+        // `contain: layout` above makes every card its own stacking context.
+        // A many2one / select dropdown opened inside a card overflows the card
+        // box fine (no paint containment → nothing is clipped), but its z-index
+        // is now trapped INSIDE this card's context, so the menu can no longer
+        // rise above LATER sibling cards — the next card simply paints over it
+        // and the menu looks "chopped off" (e.g. res.users → Default Company).
+        // While a card hosts an open menu, promote the whole card so it (and its
+        // overflowing menu) sits above the cards that follow it in the grid.
+        &:has(
+            .o-autocomplete--dropdown-menu,
+            .o_select_menu_menu,
+            .dropdown-menu.show
+        ) {
+            position: relative;
+            z-index: 20;
+        }
     }
 
     // bespoke cards (booking cockpit, client profile, CRM contact…) already
