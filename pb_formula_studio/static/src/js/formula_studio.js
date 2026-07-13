@@ -276,6 +276,18 @@ export class PbFormulaStudio extends Component {
             cfgAdvOpen: false,
             settingsBusy: false,
             settingsError: "",
+            // W97 — period comparison view (state.view === 'compare')
+            cmpRuns: [],
+            cmpA: null,
+            cmpB: null,
+            cmpCurrency: "",
+            cmpBusy: false,
+            cmpProgress: 0,
+            cmpResult: null,
+            cmpId: null,
+            cmpSort: "delta",
+            cmpSortDir: -1,
+            cmpMoversOpen: false,
             // W82 — tests-on-save chip: the verdict from the last save RPC
             // ({has_tests,total,passed,failed,pending,failures:[]}), cleared on
             // config switch. null = no save yet this session.
@@ -675,6 +687,7 @@ export class PbFormulaStudio extends Component {
         add("view.cards", "Views", "Cards view", "cards components overview", () => this.setView("cards"));
         add("view.grid", "Views", "Grid view", "grid spreadsheet table", () => this.setView("grid"));
         add("view.test", "Views", "Tests view", "tests samples validate check", () => this.setView("test"));
+        add("view.compare", "Views", "Compare periods", "compare periods payrun delta difference month", () => this.openCompare());
         add("view.settings", "Views", "Settings", "settings configuration setup", () => this.setView("settings"));
         if (this.state.canEdit) add("act.new", "Actions", "New component", "add new create column", () => this.addComponentQuick());
         if (this.state.canEdit) add("act.import", "Actions", "Import from Excel…", "import excel upload spreadsheet workbook", () => this.importExcelInto());
@@ -2461,6 +2474,96 @@ export class PbFormulaStudio extends Component {
         if (r.settings && this.state.settings) { this.state.settings = r.settings; this.state.setDraft = Object.assign({}, r.settings.values); }
         await this.load(this.state.config.id);
     }
+    // ---- W97 — period comparison view ----
+    async openCompare() {
+        if (this.state.empty) return;
+        this.state.view = "compare";
+        this.state.cmpResult = null;
+        this.state.cmpId = null;
+        this.state.cmpBusy = false;
+        this.state.cmpProgress = 0;
+        this.state.cmpMoversOpen = false;
+        await this._loadCompareRuns();
+    }
+    async _loadCompareRuns() {
+        try {
+            const r = await this.orm.call("pb.formula.studio", "compare_runs", [this.state.config.id]);
+            this.state.cmpRuns = (r && r.runs) || [];
+            this.state.cmpCurrency = (r && r.currency) || "";
+            if (this.state.cmpRuns.length >= 2) {
+                this.state.cmpB = this.state.cmpRuns[0].id;    // newest period = B (the "after")
+                this.state.cmpA = this.state.cmpRuns[1].id;    // prior period  = A (the "before")
+            } else { this.state.cmpA = null; this.state.cmpB = null; }
+        } catch (e) { this.state.cmpRuns = []; }
+    }
+    onCmpPick(side, ev) {
+        const v = parseInt(ev.target.value, 10) || null;
+        if (side === "a") this.state.cmpA = v; else this.state.cmpB = v;
+    }
+    async runCompare() {
+        if (!this.state.cmpA || !this.state.cmpB) { this.notif.add("Pick two periods to compare", { type: "warning" }); return; }
+        if (this.state.cmpA === this.state.cmpB) { this.notif.add("Pick two different periods", { type: "warning" }); return; }
+        const CHUNK = 100;
+        this.state.cmpBusy = true;
+        this.state.cmpProgress = 0;
+        this.state.cmpResult = null;
+        this.state.cmpMoversOpen = false;
+        try {
+            const prep = await this.orm.call("pb.formula.studio", "compare_prepare",
+                [this.state.config.id, this.state.cmpA, this.state.cmpB], {}, { silent: true });
+            if (!prep || prep.ok === false || !prep.cmp_id) {
+                this.notif.add((prep && prep.msg) || "Comparison failed", { type: "warning" });
+                return;
+            }
+            this.state.cmpId = prep.cmp_id;
+            const pairs = prep.pairs || [];
+            if (!pairs.length) { this.state.cmpResult = { empty: true, matched: 0 }; return; }
+            for (let i = 0; i < pairs.length; i += CHUNK) {
+                await this.orm.call("pb.formula.studio", "compare_batch",
+                    [{ cmp_id: prep.cmp_id, pairs: pairs.slice(i, i + CHUNK) }], {}, { silent: true });
+                this.state.cmpProgress = Math.round(100 * Math.min(i + CHUNK, pairs.length) / pairs.length);
+                if (this.state.view !== "compare") return;   // user navigated away → abandon
+            }
+            const res = await this.orm.call("pb.formula.studio", "compare_result",
+                [prep.cmp_id], {}, { silent: true });
+            if (this.state.view === "compare") this.state.cmpResult = (res && res.result) || null;
+        } catch (e) {
+            this.notif.add("Comparison failed", { type: "danger" });
+        } finally { this.state.cmpBusy = false; }
+    }
+    cmpSetSort(key) {
+        if (this.state.cmpSort === key) this.state.cmpSortDir = -this.state.cmpSortDir;
+        else { this.state.cmpSort = key; this.state.cmpSortDir = -1; }
+    }
+    get cmpComponents() {
+        const r = this.state.cmpResult;
+        if (!r || !r.components) return [];
+        const key = this.state.cmpSort || "delta";
+        const dir = this.state.cmpSortDir || -1;
+        const arr = r.components.slice();
+        arr.sort((a, b) => {
+            if (key === "code") return dir * String(a.code).localeCompare(String(b.code));
+            return dir * (Math.abs(a[key] ?? 0) - Math.abs(b[key] ?? 0));
+        });
+        return arr;
+    }
+    get cmpMaxDelta() {
+        const r = this.state.cmpResult;
+        if (!r || !r.components) return 0;
+        let m = 0;
+        for (const c of r.components) m = Math.max(m, Math.abs(c.delta || 0));
+        return m;
+    }
+    // delta-pct heat tint: 0..0.16 alpha green (up) / red (down)
+    cmpHeat(delta) {
+        const m = this.cmpMaxDelta;
+        if (!m || !delta) return "";
+        const a = Math.min(0.16, 0.16 * Math.abs(delta) / m).toFixed(3);
+        return delta > 0 ? `background: rgba(15,138,99,${a});` : `background: rgba(220,38,38,${a});`;
+    }
+    toggleCmpMovers() { this.state.cmpMoversOpen = !this.state.cmpMoversOpen; }
+    openNarrate() { this.notif.add("Payrun narration lands with the next phase (W48).", { type: "info" }); }
+
     // ---- Test & Validate workbench ----
     async openTest() {
         await this.loadTestData();
