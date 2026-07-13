@@ -113,6 +113,24 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="tx">Settings</span>
               </button>
             </div>
+            <!-- W82 — tests-on-save chip: last save's sample-test verdict -->
+            <div t-if="testChip" class="pbfs-testchip-wrap">
+              <button t-attf-class="pbfs-testchip {{ testChip.kind }}" t-on-click.stop="toggleTestsFail"
+                      t-att-title="testChip.kind === 'fail' ? (testChip.failed + ' sample test(s) failing — click for details') : 'All sample tests passing'">
+                <svg t-if="testChip.kind === 'pass'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                <svg t-else="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span class="tx" t-esc="testChip.label"/>
+              </button>
+              <div t-if="state.testsFailOpen and state.tests and state.tests.failures.length" class="pbfs-testchip-pop" t-on-click.stop="">
+                <div class="pbfs-testchip-pop-h">Failing samples</div>
+                <button t-foreach="state.tests.failures" t-as="f" t-key="f_index" class="pbfs-testchip-row"
+                        t-on-click="() => this.openTestsFailure(f.sample_id)">
+                  <span class="s" t-esc="f.sample"/>
+                  <span class="c" t-esc="f.code"/>
+                  <span class="d">exp <t t-esc="f.expected"/> · got <t t-esc="f.computed"/></span>
+                </button>
+              </div>
+            </div>
             <div class="pbfs-top-actions">
               <button class="pbfs-btn soft pbfs-replaybtn biz-icon-only-lg biz-hide-lg" data-coach="fs-replay" t-on-click="openReplay" title="Execution replay — watch a payslip compute step by step">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>

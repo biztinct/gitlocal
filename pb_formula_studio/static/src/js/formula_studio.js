@@ -265,6 +265,11 @@ export class PbFormulaStudio extends Component {
             cfgAdvOpen: false,
             settingsBusy: false,
             settingsError: "",
+            // W82 — tests-on-save chip: the verdict from the last save RPC
+            // ({has_tests,total,passed,failed,pending,failures:[]}), cleared on
+            // config switch. null = no save yet this session.
+            tests: null,
+            testsFailOpen: false,        // failures popover under the chip
             // test & validate workbench
             test: { samples: [], inputComponents: [], currency: "" },
             testSampleId: null,
@@ -303,12 +308,18 @@ export class PbFormulaStudio extends Component {
             if (this.state.moreOpen && !ev.target.closest(".pbfs-more")) {
                 this.state.moreOpen = false;
             }
+            // W82 — the test-failures popover closes on any outside click.
+            if (this.state.testsFailOpen && !ev.target.closest(".pbfs-testchip-wrap")) {
+                this.state.testsFailOpen = false;
+            }
         });
         useHotkey("escape", () => {
             if (this.state.paletteOpen) {
                 this.state.paletteOpen = false;
             } else if (this.state.findOpen) {
                 this.state.findOpen = false;
+            } else if (this.state.testsFailOpen) {
+                this.state.testsFailOpen = false;
             } else if (this.state.outlineDrawer || this.state.previewDrawer) {
                 this.closeDrawers();
             } else if (this.state.moreOpen) {
@@ -360,11 +371,18 @@ export class PbFormulaStudio extends Component {
     }
 
     async load(configId) {
+        // W82 — drop a stale test verdict when the user switches to another
+        // config; a reload of the SAME config (after a save) keeps the chip.
+        const prevCfgId = this.state.config && this.state.config.id;
         const d = await this.orm.call("pb.formula.studio", "get_studio_data", [configId || false]);
         this.state.empty = d.empty;
         this.state.configs = d.configs || [];
         this.state.canEdit = d.can_edit !== false;
         if (d.empty) { this.state.loaded = true; return; }
+        if (prevCfgId && d.config && prevCfgId !== d.config.id) {
+            this.state.tests = null;
+            this.state.testsFailOpen = false;
+        }
         this.state.config = d.config;
         this.state.components = d.components;
         this.state.samples = d.samples;
@@ -463,6 +481,48 @@ export class PbFormulaStudio extends Component {
         if (!c) return null;
         return this.graphCycles.find(cy => (cy.cols || []).includes(c.col)) || null;
     }
+    // ---- W82 — tests-on-save chip -----------------------------------------
+    // Fold a save RPC's `tests` payload into state; toast (danger) when tests
+    // NEWLY fail (were clean/absent before, or the failure count grew). Called
+    // AFTER load() so the config reload can't wipe the fresh verdict.
+    _applyTests(tests) {
+        if (!tests) return;
+        const prev = this._lastTests || null;
+        this.state.tests = tests;
+        this._lastTests = tests;
+        if (tests.has_tests && tests.failed > 0) {
+            const wasClean = !prev || !prev.has_tests || !prev.failed;
+            const grew = prev && prev.failed !== undefined && tests.failed > prev.failed;
+            if (wasClean || grew) {
+                const f = (tests.failures && tests.failures[0]) || null;
+                const detail = f ? ` — ${f.sample}: ${f.code}` : "";
+                this.notif.add(
+                    `${tests.failed} sample test${tests.failed === 1 ? "" : "s"} failing${detail}`,
+                    { type: "danger", title: "Tests failing" });
+            }
+        }
+    }
+    // Chip descriptor for the toolbar (null when no tests exist on this config).
+    get testChip() {
+        const t = this.state.tests;
+        if (!t || !t.has_tests) return null;
+        const kind = t.failed > 0 ? "fail" : "pass";
+        return { kind, label: `${t.passed}/${t.total}`, failed: t.failed,
+                 passed: t.passed, total: t.total };
+    }
+    toggleTestsFail() {
+        const t = this.state.tests;
+        if (!t || !t.failed) { this.openTests(); return; }
+        this.state.testsFailOpen = !this.state.testsFailOpen;
+    }
+    // Jump from a failing chip/row into the Tests workbench for that sample.
+    async openTestsFailure(sampleId) {
+        this.state.testsFailOpen = false;
+        await this.openTest();          // loads the Tests workbench + sets the view
+        if (sampleId) this.state.testSampleId = sampleId;
+    }
+    async openTests() { this.state.testsFailOpen = false; await this.openTest(); }
+
     // ---- Grid Studio callbacks (T2.2/T2.3): save a formula and live-validate ----
     // Mirrors the inline editor's round-trip: save_formula → reload → recompute
     // the preview for the CURRENTLY selected sample (load() only computes sample[0]).
@@ -472,6 +532,7 @@ export class PbFormulaStudio extends Component {
         const r = await this.orm.call("pb.formula.studio", "save_formula", [ruleId, formula]);
         if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not save formula", { type: "warning" }); return; }
         await this.load(cfgId);
+        this._applyTests(r.tests);
         if (sampleId) {
             this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
         }
@@ -524,11 +585,13 @@ export class PbFormulaStudio extends Component {
     async gridBulkSaveFormulas(items) {
         const cfgId = this.state.config.id;
         const sampleId = this.state.preview.sample_id;
+        let r;
         try {
-            await this.orm.call("pb.formula.studio", "bulk_save_formulas", [items]);
+            r = await this.orm.call("pb.formula.studio", "bulk_save_formulas", [items]);
         } catch (e) { this.notif.add("Fill failed", { type: "warning" }); return; }
         this.notif.add(`Filled ${items.length} column${items.length === 1 ? "" : "s"}`, { type: "success" });
         await this.load(cfgId);
+        this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
     }
 
@@ -572,6 +635,7 @@ export class PbFormulaStudio extends Component {
             r = await this.orm.call("pb.formula.studio", "bulk_save_formulas", [items, "bulk", note]);
         } catch (e) { this.notif.add("Replace failed", { type: "warning" }); return { ok: false }; }
         await this.load(cfgId);
+        this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
         return r || { ok: true };
     }
@@ -711,6 +775,7 @@ export class PbFormulaStudio extends Component {
         if (!r || !r.ok) { this.notif.add((r && r.msg) || "Promote failed", { type: "warning" }); return { ok: false }; }
         this.notif.add(`Promoted into ${r.code}`, { type: "success" });
         await this.load(cfgId);   // the rule changed → refresh grid + scenarios + version history
+        this._applyTests(r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
         return r;
     }
@@ -1862,6 +1927,7 @@ export class PbFormulaStudio extends Component {
             const cid = this.state.config.id;
             this.cancelEdit();
             await this.load(cid);
+            this._applyTests(r.tests);
         } finally { this.state.editBusy = false; }
     }
 
@@ -2621,6 +2687,7 @@ export class PbFormulaStudio extends Component {
             // reflect the new formula everywhere, then refresh the rail (the
             // restore itself is a new 'restore' version — history never rewrites)
             await this.load(this.state.config.id);
+            this._applyTests(r.tests);
             this.state.historyDiffSeq = null;
             this.state.historyDiffRuns = null;
             await this._loadHistory(ruleId);
