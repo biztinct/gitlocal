@@ -701,6 +701,20 @@ class PbFormulaStudio(models.AbstractModel):
             out.append({'col': tgt, 'proposed_formula': proposed, 'valid': valid})
         return out
 
+    def _run_tests_after_save(self, config, changed_codes=None):
+        """W82 — re-run a config's sample tests once after a save operation and
+        return the compact verdict for the studio's test chip. Never raises: a
+        broken test run must not sink the save it rides on."""
+        if not config or not config.exists():
+            return {'has_tests': False, 'total': 0, 'passed': 0,
+                    'failed': 0, 'pending': 0, 'failures': []}
+        try:
+            return config.run_sample_tests(changed_codes=changed_codes)
+        except Exception as e:
+            _logger.warning("run_sample_tests failed for config %s: %s", config.id, e)
+            return {'has_tests': False, 'total': 0, 'passed': 0,
+                    'failed': 0, 'pending': 0, 'failures': []}
+
     @api.model
     def bulk_save_formulas(self, items, reason='fill', note=False):
         """Persist several formulas at once. ``items`` = ``[{rule_id, formula}, ...]``.
@@ -716,6 +730,8 @@ class PbFormulaStudio(models.AbstractModel):
         Rule = self.env['hr.formula.rule']
         seen = set()
         saved = 0
+        config = False
+        changed_codes = []
         for it in (items or []):
             rule = Rule.browse(int(it.get('rule_id')))
             if not rule.exists() or rule.column_type != 'formula':
@@ -733,9 +749,13 @@ class PbFormulaStudio(models.AbstractModel):
                 rule.is_valid = True
                 rule.validation_message = ''
                 saved += 1
+                if rule.code:
+                    changed_codes.append(rule.code)
             except Exception as e:
                 _logger.debug("bulk_save_formulas skip %s: %s", rule.id, e)
-        return {'ok': True, 'saved': saved}
+        # W82: one test run for the whole batch (C4 one-batch rule), not per item.
+        tests = self._run_tests_after_save(config, changed_codes)
+        return {'ok': True, 'saved': saved, 'tests': tests}
 
     @api.model
     def save_formula(self, rule_id, excel_formula):
@@ -752,7 +772,7 @@ class PbFormulaStudio(models.AbstractModel):
             rule.validation_message = ''
         except Exception as e:
             return {'ok': False, 'msg': str(e)}
-        return {'ok': True}
+        return {'ok': True, 'tests': self._run_tests_after_save(config, [rule.code])}
 
     @api.model
     def update_component(self, rule_id, vals):
@@ -1023,7 +1043,8 @@ class PbFormulaStudio(models.AbstractModel):
         except Exception as e:
             return {'ok': False, 'msg': str(e)}
         return {'ok': True, 'excel_formula': target,
-                'is_valid': bool(rule.is_valid)}
+                'is_valid': bool(rule.is_valid),
+                'tests': self._run_tests_after_save(rule.config_id, [rule.code])}
 
     @api.model
     def get_config_milestones(self, config_id):
@@ -2280,8 +2301,11 @@ class PbFormulaStudio(models.AbstractModel):
                 if rule.column_type == 'formula' else rule.python_formula,
             'is_valid': True, 'validation_message': '',
         })
+        code = rule.code or ''
+        tests = self._run_tests_after_save(config, [code] if code else None)
         sc.unlink()
-        return {'ok': True, 'rule_id': rule.id, 'code': rule.code or '', 'formula': formula}
+        return {'ok': True, 'rule_id': rule.id, 'code': code, 'formula': formula,
+                'tests': tests}
 
     @api.model
     def discard_scenario(self, scenario_id):

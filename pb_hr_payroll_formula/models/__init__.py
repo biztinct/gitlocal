@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import formula_config
+from . import formula_config_tests
 from . import formula_rule
 from . import formula_rule_version
 from . import shadow_run

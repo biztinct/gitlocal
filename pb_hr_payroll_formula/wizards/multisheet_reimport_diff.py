@@ -179,12 +179,24 @@ class MultisheetReimportDiff(models.TransientModel):
         wiz = self.with_context(formula_version_note=fname)
         res = super(MultisheetReimportDiff, wiz).action_execute_import()
 
+        # W82: a re-import is a save too — re-run the config's sample tests ONCE
+        # after the commit (D-C2) and fold the verdict into the chatter summary so
+        # a re-import that quietly breaks a sample expectation is visible.
+        tests = {}
+        try:
+            tests = self.config_id.run_sample_tests()
+        except Exception as e:
+            _logger.warning("re-import sample tests failed on %s: %s", self.config_id.code, e)
+
         # Chatter summary on the config (audit trail beside the version history).
         if hasattr(self.config_id, 'message_post'):
-            self.config_id.message_post(body=(
-                _("Re-imported <b>%s</b>: %d added, %d changed, %d unchanged, %d missing (%d hidden).")
-                % (html_escape(fname), len(diff.get('added', [])), len(diff.get('changed', [])),
-                   diff.get('unchanged_count', 0), len(diff.get('missing', [])), len(to_archive))))
+            body = (_("Re-imported <b>%s</b>: %d added, %d changed, %d unchanged, %d missing (%d hidden).")
+                    % (html_escape(fname), len(diff.get('added', [])), len(diff.get('changed', [])),
+                       diff.get('unchanged_count', 0), len(diff.get('missing', [])), len(to_archive)))
+            if tests.get('has_tests'):
+                body += (_(" Sample tests: %d passed, %d failed.")
+                         % (tests.get('passed', 0), tests.get('failed', 0)))
+            self.config_id.message_post(body=body)
         return res
 
 

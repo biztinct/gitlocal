@@ -77,6 +77,22 @@
     .pbfs-seg button svg { width: 15px; height: 15px; }
     .pbfs-seg button.active { background: #fff; color: var(--i); box-shadow: 0 1px 3px rgba(15,12,40,.12); }
 
+    /* W82 — tests-on-save chip (sits between the view segment and the actions) */
+    .pbfs-testchip-wrap { position: relative; display: inline-flex; }
+    .pbfs-testchip { display: inline-flex; align-items: center; gap: 5px; border: 1px solid transparent; border-radius: 999px; padding: 5px 11px 5px 9px; font-size: 12px; font-weight: 800; font-family: inherit; cursor: pointer; letter-spacing: .01em; }
+    .pbfs-testchip svg { width: 14px; height: 14px; }
+    .pbfs-testchip.pass { background: var(--green-soft); color: var(--green); border-color: #A7E8CE; }
+    .pbfs-testchip.pass:hover { background: #BFF3DE; }
+    .pbfs-testchip.fail { background: #FEF2F2; color: var(--danger); border-color: #F3C7CF; }
+    .pbfs-testchip.fail:hover { background: #FDE4E4; }
+    .pbfs-testchip-pop { position: absolute; top: calc(100% + 8px); left: 0; z-index: 60; width: 320px; max-height: 340px; overflow-y: auto; background: #fff; border: 1px solid #E6E8EE; border-radius: 12px; box-shadow: 0 18px 44px rgba(15,12,40,.18); padding: 8px; }
+    .pbfs-testchip-pop-h { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #94A3B8; padding: 4px 8px 6px; }
+    .pbfs-testchip-row { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "s c" "d d"; gap: 2px 8px; width: 100%; text-align: left; border: none; background: none; font-family: inherit; padding: 7px 8px; border-radius: 8px; cursor: pointer; }
+    .pbfs-testchip-row:hover { background: #F6F8FB; }
+    .pbfs-testchip-row .s { grid-area: s; font-size: 12.5px; font-weight: 700; color: #1E293B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbfs-testchip-row .c { grid-area: c; font-size: 11px; font-weight: 800; color: var(--danger); font-family: ui-monospace, monospace; }
+    .pbfs-testchip-row .d { grid-area: d; font-size: 11px; color: #64748B; font-family: ui-monospace, monospace; }
+
     .pbfs-btn { display: inline-flex; align-items: center; gap: 7px; border-radius: 10px; padding: 9px 16px; font-size: 13px; font-weight: 700; border: 1px solid transparent; font-family: inherit; }
     .pbfs-btn.primary { background: var(--i); color: #fff; box-shadow: 0 8px 20px rgba(90,75,176,.18); }
     .pbfs-btn.primary:hover { background: var(--i600); }
