@@ -323,6 +323,24 @@ def _scan_join_health(self):
 
 # WP-C — Trust & Comparison — W82 → W86 → W97
 
+> **Design refresh 2026-07-13 (after WP-A/WP-B/WP-E landed).** Still Opus-ready; three notes:
+> 1. **`pb_formula_studio.py` line anchors below shifted ~+12** from the WP-A additions. Verified
+>    current locations: `save_formula:741`, `bulk_save_formulas:705`, `restore_version:1000`
+>    (python-rebuild + validity at **:1015-1022**), `_formula_at:1039`, `compare_to_milestone:1049`,
+>    `_changes_between:1096`, `simulate_prepare:2080`, `promote_scenario:2265`. Methods are unchanged
+>    by name — find them there, don't re-derive.
+> 2. **`restore_version` restores only `excel_formula`, never `constant_value`** (verified `:1015-1022`)
+>    — this is exactly the gap D-C5 closes; `_restore_rule_state` must add the constant path.
+> 3. **The converter fix (ledger C12) strengthens W82/W97, not changes them.** Sample tests and period
+>    comparison now read Excel-correct computed values through `_evaluate_rules_with_dependencies`. One
+>    caveat for TC.1: a sample whose **expected** baseline was generated with the pre-fix converter
+>    (e.g. a formula using `^`, `<>`, or `ROUND` on a .5 boundary) may now legitimately show a failure —
+>    that is the fix surfacing a real correction, not a W82 bug. The VN demo has **zero** such drift
+>    (proven), so its baselines still pass; note it in the failures UI wording, don't "fix" it by
+>    reverting math. Also: **WP-B is now built**, so D-C2's "re-import commit calls `run_sample_tests`"
+>    is a concrete edit to `multisheet_reimport_diff.py::action_execute_import` (add the `tests` call
+>    after `super()` returns, once per commit).
+
 ## Locked decisions
 
 - **D-C1 (W82)** Tests run on save is an **explicit post-save hook**, not an `@api.depends` widening —
@@ -353,7 +371,7 @@ def _scan_join_health(self):
   note='Rollback <release>', shared `formula_version_seen` set, single savepoint — all-or-nothing).
 - **D-C6 (W86)** Simulate-first: the rollback dialog runs the delta through the existing simulation
   engine (`simulate_prepare` with `overrides={code: old_formula}` + value overrides for constants,
-  `pb_formula_studio.py:2068`) and shows the org-wide distribution before the Apply button arms.
+  `pb_formula_studio.py:2080`) and shows the org-wide distribution before the Apply button arms.
   After apply: milestone `Rollback of <release>` + a release row named the same (audit trail stays in
   one list), narrative auto-drafted.
 - **D-C7 (W97)** Period comparison is a **read-only chunked aggregation** — new lean TransientModel
@@ -436,8 +454,9 @@ def rollback_apply(self, release_id):
     tests = config.run_sample_tests()          # W82 synergy: rollback is a save too
     return {'ok': True, 'restored': len(seen), 'tests': tests}
 # GOTCHA: _restore_rule_state must mirror restore_version's python_formula rebuild +
-# validity check (pb_formula_studio.py:1002-1010) — a restored formula that no longer
-# converts must FAIL the savepoint loudly, not land half-applied (C7).
+# validity check (pb_formula_studio.py:1015-1022) — a restored formula that no longer
+# converts must FAIL the savepoint loudly, not land half-applied (C7). Note that
+# restore_version writes ONLY excel_formula; the constant path is net-new here.
 # GOTCHA: old_constant comes from snapshot_json of the version row bracketing `when`
 # (_formula_at logic generalized) — do NOT add a second history (release = query, B3).
 ```
