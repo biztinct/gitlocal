@@ -1781,7 +1781,7 @@
                         <span class="rl-change-nm" t-esc="c.name"/>
                         <span t-attf-class="rl-reason {{ c.reason }}" t-esc="reasonLabel(c.reason)"/>
                       </div>
-                      <div class="rl-diff">
+                      <div t-if="!c.type or c.formula_changed !== false" class="rl-diff">
                         <t t-foreach="c.runs" t-as="run" t-key="run_index">
                           <t t-if="run.op === 'equal'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/></t>
                           <t t-elif="run.op === 'insert'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/></t>
@@ -1792,6 +1792,9 @@
                             <span t-foreach="run.new" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
                           </t>
                         </t>
+                      </div>
+                      <div t-if="c.constant_changed" class="rl-diff">
+                        <span class="hs-tok del" t-esc="fmtSigned(c.old_constant)"/><span class="hs-arrow">→</span><span class="hs-tok ins" t-esc="fmtSigned(c.cur_constant)"/>
                       </div>
                     </div>
                   </div>
@@ -1830,7 +1833,7 @@
                   <t t-if="state.releaseDetail and state.releaseDetail.changes">
                     <div t-foreach="state.releaseDetail.changes" t-as="c" t-key="c.rule_id" class="rl-change">
                       <div class="rl-change-head"><span class="rl-change-col" t-esc="c.col"/><span class="rl-change-nm" t-esc="c.name"/><span t-attf-class="rl-reason {{ c.reason }}" t-esc="reasonLabel(c.reason)"/></div>
-                      <div class="rl-diff">
+                      <div t-if="!c.type or c.formula_changed !== false" class="rl-diff">
                         <t t-foreach="c.runs" t-as="run" t-key="run_index">
                           <t t-if="run.op === 'equal'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/></t>
                           <t t-elif="run.op === 'insert'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/></t>
@@ -1840,12 +1843,101 @@
                           </t>
                         </t>
                       </div>
+                      <div t-if="c.constant_changed" class="rl-diff">
+                        <span class="hs-tok del" t-esc="fmtSigned(c.old_constant)"/><span class="hs-arrow">→</span><span class="hs-tok ins" t-esc="fmtSigned(c.cur_constant)"/>
+                      </div>
                     </div>
                   </t>
                   <div t-else="" class="rl-rel-loading">…</div>
+                  <!-- W86 — rollback available on the latest release only -->
+                  <div t-if="rel.is_latest and state.canEdit" class="rl-rollback-row">
+                    <button class="pbfs-btn danger sm" t-on-click.stop="() => this.openRollback(rel)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
+                      Roll back this release
+                    </button>
+                    <span class="rl-rollback-hint">Reverts every component to its state before this release.</span>
+                  </div>
                 </div>
               </div>
             </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- W86 — rollback dialog: change list → simulate → type-to-confirm → apply -->
+      <div t-if="state.rollbackOpen" class="pbfs-rollback-scrim" t-on-click="closeRollback">
+        <div class="pbfs-rollback" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="rb-head">
+            <div class="rb-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
+              <div>
+                <b>Roll back <t t-esc="state.rollbackData and state.rollbackData.release ? state.rollbackData.release.name : ''"/></b>
+                <small t-if="state.rollbackData and state.rollbackData.ok !== false"><t t-esc="state.rollbackData.change_count"/> component<t t-if="state.rollbackData.change_count !== 1">s</t> will be restored</small>
+              </div>
+            </div>
+            <button class="hs-x" t-on-click="closeRollback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+          <div class="rb-body">
+            <div t-if="state.rollbackBusy and !state.rollbackData" class="rb-loading">Building rollback preview…</div>
+            <t t-elif="state.rollbackData and state.rollbackData.ok !== false">
+              <!-- block reason -->
+              <div t-if="!state.rollbackData.eligible" class="rb-blocked">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span t-esc="state.rollbackData.block_reason"/>
+              </div>
+              <!-- empty -->
+              <div t-elif="!state.rollbackData.change_count" class="rb-empty">This release changed nothing to roll back.</div>
+              <t t-else="">
+                <!-- change list -->
+                <div class="rb-changes">
+                  <div t-foreach="state.rollbackData.changes" t-as="c" t-key="c.rule_id" class="rb-change">
+                    <div class="rb-change-head">
+                      <span class="rb-change-col" t-esc="c.col"/>
+                      <span class="rb-change-nm" t-esc="c.name"/>
+                      <span t-if="c.constant_changed" class="rb-tag const">constant</span>
+                    </div>
+                    <div t-if="c.formula_changed" class="rb-diff">
+                      <t t-foreach="c.runs" t-as="run" t-key="run_index">
+                        <t t-if="run.op === 'equal'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok eq" t-esc="tk"/></t>
+                        <t t-elif="run.op === 'insert'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/></t>
+                        <t t-elif="run.op === 'delete'"><span t-foreach="run.tokens" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/></t>
+                        <t t-elif="run.op === 'replace'">
+                          <span t-foreach="run.old" t-as="tk" t-key="tk_index" class="hs-tok del" t-esc="tk"/><span class="hs-arrow">→</span><span t-foreach="run.new" t-as="tk" t-key="tk_index" class="hs-tok ins" t-esc="tk"/>
+                        </t>
+                      </t>
+                    </div>
+                    <div t-if="c.constant_changed" class="rb-const">
+                      <span class="hs-tok del" t-esc="fmtSigned(c.cur_constant)"/><span class="hs-arrow">→</span><span class="hs-tok ins" t-esc="fmtSigned(c.old_constant)"/>
+                    </div>
+                  </div>
+                </div>
+                <!-- simulate-first -->
+                <div class="rb-sim">
+                  <div class="rb-sim-head">
+                    <b>Impact preview</b>
+                    <button class="pbfs-btn soft sm" t-on-click="runRollbackSim" t-att-disabled="state.rollbackSimBusy">
+                      <t t-if="state.rollbackSimBusy">Simulating… <t t-esc="state.rollbackSimProgress"/>%</t>
+                      <t t-else="">Simulate impact</t>
+                    </button>
+                  </div>
+                  <div t-if="state.rollbackSimResult and !state.rollbackSimResult.empty" class="rb-sim-out">
+                    <div class="rb-sim-stat"><b t-esc="state.rollbackSimResult.employees_changed.toLocaleString('en-US')"/><span>of <t t-esc="state.rollbackSimResult.employees_total.toLocaleString('en-US')"/> employees affected</span></div>
+                    <div class="rb-sim-stat"><b t-esc="fmtSigned(state.rollbackSimResult.delta_total)"/><span><t t-esc="state.rollbackSimResult.headline"/> total Δ</span></div>
+                  </div>
+                  <div t-elif="state.rollbackSimResult and state.rollbackSimResult.empty" class="rb-sim-empty">No historical payslips to simulate against.</div>
+                </div>
+                <!-- type-to-confirm + apply -->
+                <div class="rb-confirm" t-if="state.rollbackData.eligible and state.rollbackData.can_edit">
+                  <label>Type <b t-esc="state.rollbackData.release.name"/> to confirm</label>
+                  <input type="text" class="rb-confirm-in" t-att-value="state.rollbackConfirm" t-on-input="onRollbackConfirm" placeholder="Release name"/>
+                  <button class="pbfs-btn danger-solid" t-att-disabled="!rollbackConfirmOk or state.rollbackApplying" t-on-click="applyRollback">
+                    <t t-if="state.rollbackApplying">Rolling back…</t>
+                    <t t-else="">Roll back now</t>
+                  </button>
+                </div>
+              </t>
+            </t>
+            <div t-else="" class="rb-empty">Could not load the rollback preview.</div>
           </div>
         </div>
       </div>

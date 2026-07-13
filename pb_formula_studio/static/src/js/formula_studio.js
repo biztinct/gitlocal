@@ -174,6 +174,17 @@ export class PbFormulaStudio extends Component {
             releaseList: [],
             releaseDetail: null,
             releaseExpandId: null,
+            releaseLatestId: false,
+            // W86 — one-action rollback (revert the latest release)
+            rollbackOpen: false,
+            rollbackBusy: false,
+            rollbackData: null,        // rollback_preview payload
+            rollbackConfirm: "",       // typed release-name confirmation
+            rollbackSimBusy: false,
+            rollbackSimProgress: 0,
+            rollbackSimResult: null,
+            rollbackSimId: null,
+            rollbackApplying: false,
             // B6 — bureau cockpit
             bureauOpen: false,
             bureauBusy: false,
@@ -1204,7 +1215,8 @@ export class PbFormulaStudio extends Component {
         try {
             const r = await this.orm.call("pb.formula.studio", "list_releases", [this.state.config.id]);
             this.state.releaseList = (r && r.releases) || [];
-        } catch (e) { this.state.releaseList = []; }
+            this.state.releaseLatestId = (r && r.latest_id) || false;
+        } catch (e) { this.state.releaseList = []; this.state.releaseLatestId = false; }
     }
     onReleaseNarrative(ev) { this.state.releaseNarrative = ev.target.value; }
     reasonLabel(reason) {
@@ -1241,6 +1253,81 @@ export class PbFormulaStudio extends Component {
             const r = await this.orm.call("pb.formula.studio", "release_detail", [rel.id]);
             if (this.state.releaseExpandId === rel.id) this.state.releaseDetail = r;
         } catch (e) { this.state.releaseDetail = { changes: [] }; }
+    }
+
+    // ---- W86 — one-action rollback (revert the latest release atomically) ----
+    async openRollback(rel) {
+        if (this._lockedNotice()) return;
+        this.state.rollbackOpen = true;
+        this.state.rollbackData = null;
+        this.state.rollbackConfirm = "";
+        this.state.rollbackSimResult = null;
+        this.state.rollbackSimId = null;
+        this.state.rollbackBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "rollback_preview", [rel.id]);
+            this.state.rollbackData = r;
+        } catch (e) { this.state.rollbackData = { ok: false }; }
+        finally { this.state.rollbackBusy = false; }
+    }
+    closeRollback() {
+        this.state.rollbackOpen = false;
+        const id = this.state.rollbackSimId;   // discard the transient sim — no residue
+        this.state.rollbackSimId = null;
+        this.state.rollbackSimResult = null;
+        if (id) this.orm.call("pb.formula.studio", "simulate_drop", [id], {}, { silent: true }).catch(() => {});
+    }
+    onRollbackConfirm(ev) { this.state.rollbackConfirm = ev.target.value; }
+    get rollbackConfirmOk() {
+        const d = this.state.rollbackData;
+        return !!(d && d.release && this.state.rollbackConfirm.trim() === d.release.name);
+    }
+    async runRollbackSim() {
+        const d = this.state.rollbackData;
+        if (!d || !d.release) return;
+        const CHUNK = 100;
+        this.state.rollbackSimBusy = true;
+        this.state.rollbackSimProgress = 0;
+        this.state.rollbackSimResult = null;
+        try {
+            const prep = await this.orm.call("pb.formula.studio", "rollback_simulate_prepare",
+                [d.release.id, null], {}, { silent: true });
+            if (!prep || prep.ok === false || !prep.sim_id) {
+                this.notif.add((prep && prep.msg) || "No historical payslips to simulate against", { type: "warning" });
+                return;
+            }
+            this.state.rollbackSimId = prep.sim_id;
+            const ids = prep.payslip_ids || [];
+            if (!ids.length) { this.state.rollbackSimResult = { empty: true }; return; }
+            for (let i = 0; i < ids.length; i += CHUNK) {
+                await this.orm.call("pb.formula.studio", "simulate_batch",
+                    [{ sim_id: prep.sim_id, payslip_ids: ids.slice(i, i + CHUNK) }], {}, { silent: true });
+                this.state.rollbackSimProgress = Math.round(100 * Math.min(i + CHUNK, ids.length) / ids.length);
+                if (!this.state.rollbackOpen) return;   // user closed → abandon
+            }
+            const res = await this.orm.call("pb.formula.studio", "simulate_result", [prep.sim_id], {}, { silent: true });
+            if (this.state.rollbackOpen) this.state.rollbackSimResult = (res && res.result) || null;
+        } catch (e) {
+            this.notif.add("Simulation failed", { type: "danger" });
+        } finally { this.state.rollbackSimBusy = false; }
+    }
+    async applyRollback() {
+        const d = this.state.rollbackData;
+        if (!d || !d.release || !this.rollbackConfirmOk) return;
+        if (this.state.rollbackApplying) return;
+        this.state.rollbackApplying = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "rollback_apply", [d.release.id]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Rollback failed", { type: "danger" }); return; }
+            this.notif.add(`Rolled back · ${r.restored} component${r.restored === 1 ? "" : "s"} restored`, { type: "success" });
+            this.closeRollback();
+            await this.load(this.state.config.id);   // formulas/constants changed everywhere
+            this._applyTests(r.tests);
+            await this._loadReleasePreview();
+            await this._loadReleaseList();
+        } catch (e) {
+            this.notif.add("Rollback failed", { type: "danger" });
+        } finally { this.state.rollbackApplying = false; }
     }
 
     // ---- Bureau cockpit (B6) ----
