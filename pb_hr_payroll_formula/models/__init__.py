@@ -6,6 +6,7 @@ from . import formula_rule
 from . import formula_rule_version
 from . import shadow_run
 from . import formula_simulation
+from . import formula_period_comparison
 from . import formula_scenario
 from . import formula_rate_table
 from . import formula_rule_note

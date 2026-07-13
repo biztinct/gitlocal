@@ -109,6 +109,9 @@
               <button t-att-class="state.view === 'test' ? 'active' : ''" t-on-click="openTest" title="Test &amp; validate">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6M9 2v6.5L4.5 18a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L15 8.5V2"/><path d="M7 14h10"/></svg><span class="tx">Test</span>
               </button>
+              <button t-att-class="state.view === 'compare' ? 'active' : ''" t-on-click="openCompare" title="Compare two periods">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h7M3 6l2-2M3 6l2 2M21 18h-7M21 18l-2-2M21 18l-2 2"/></svg><span class="tx">Compare</span>
+              </button>
               <button t-att-class="state.view === 'settings' ? 'active' : ''" t-on-click="openSettings" title="Configuration settings">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="tx">Settings</span>
               </button>
@@ -545,6 +548,114 @@
             </t>
             <div t-else="" class="pbtest-noselect">Select or generate a sample to view its inputs &amp; results.</div>
           </div>
+        </div>
+        </t>
+
+        <!-- W97 — period comparison view -->
+        <t t-elif="state.view === 'compare'">
+        <div class="pbcmp">
+          <div class="pbcmp-head">
+            <div class="pbcmp-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h7M3 6l2-2M3 6l2 2M21 18h-7M21 18l-2-2M21 18l-2 2"/></svg>
+              <div><b>Compare periods</b><small>Fold two payruns of this configuration component-by-component.</small></div>
+            </div>
+            <div class="pbcmp-pickers">
+              <label>Before
+                <select t-on-change="(ev) => this.onCmpPick('a', ev)">
+                  <option value="">—</option>
+                  <option t-foreach="state.cmpRuns" t-as="r" t-key="r.id" t-att-value="r.id" t-att-selected="r.id === state.cmpA" t-esc="r.name + ' · ' + r.slips"/>
+                </select>
+              </label>
+              <svg class="pbcmp-arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              <label>After
+                <select t-on-change="(ev) => this.onCmpPick('b', ev)">
+                  <option value="">—</option>
+                  <option t-foreach="state.cmpRuns" t-as="r" t-key="r.id" t-att-value="r.id" t-att-selected="r.id === state.cmpB" t-esc="r.name + ' · ' + r.slips"/>
+                </select>
+              </label>
+              <button class="pbfs-btn primary" t-att-disabled="state.cmpBusy" t-on-click="runCompare">
+                <t t-if="state.cmpBusy">Comparing… <t t-esc="state.cmpProgress"/>%</t>
+                <t t-else="">Compare</t>
+              </button>
+            </div>
+          </div>
+
+          <div t-if="state.cmpBusy" class="pbcmp-progress"><div class="bar" t-attf-style="width:{{ state.cmpProgress }}%"/></div>
+
+          <div t-if="!state.cmpRuns.length" class="pbcmp-empty">
+            <b>No comparable payruns yet</b>
+            <span>Run this configuration over at least two periods to compare them here.</span>
+          </div>
+
+          <t t-elif="state.cmpResult and !state.cmpResult.empty">
+            <!-- headline stats -->
+            <div class="pbcmp-stats">
+              <div class="pbcmp-stat"><b t-esc="state.cmpResult.matched.toLocaleString('en-US')"/><span>matched employees</span></div>
+              <div class="pbcmp-stat"><b t-esc="state.cmpResult.net_moved.toLocaleString('en-US')"/><span><t t-esc="state.cmpResult.headline"/> moved</span></div>
+              <div class="pbcmp-stat"><b t-esc="state.cmpResult.joiners.toLocaleString('en-US')"/><span>joiners</span></div>
+              <div class="pbcmp-stat"><b t-esc="state.cmpResult.leavers.toLocaleString('en-US')"/><span>leavers</span></div>
+              <button class="pbfs-btn soft pbcmp-narr" t-on-click="openNarrate" title="AI narration (next phase)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Narrate
+              </button>
+            </div>
+
+            <!-- cause candidates -->
+            <div t-if="state.cmpResult.causes.length" class="pbcmp-causes">
+              <div class="pbcmp-causes-h">Likely cause<t t-if="state.cmpResult.causes.length !== 1">s</t></div>
+              <div t-foreach="state.cmpResult.causes" t-as="cz" t-key="cz.code" class="pbcmp-cause">
+                <span class="cc-code" t-esc="cz.code"/>
+                <span class="cc-cov">moved for <t t-esc="cz.coverage"/>% of changed employees</span>
+                <span t-if="cz.attributed" class="cc-attr">edited <t t-esc="cz.when"/> (<t t-esc="cz.reason"/>)</span>
+              </div>
+            </div>
+
+            <!-- component delta table -->
+            <div class="pbcmp-tablewrap">
+              <table class="pbcmp-table">
+                <thead>
+                  <tr>
+                    <th class="s" t-on-click="() => this.cmpSetSort('code')">Component</th>
+                    <th class="n" t-on-click="() => this.cmpSetSort('sum_a')">Before (<t t-esc="state.cmpResult.run_a.date_end"/>)</th>
+                    <th class="n" t-on-click="() => this.cmpSetSort('sum_b')">After (<t t-esc="state.cmpResult.run_b.date_end"/>)</th>
+                    <th class="n" t-on-click="() => this.cmpSetSort('delta')">Δ</th>
+                    <th class="n" t-on-click="() => this.cmpSetSort('n_changed')">Employees</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="cmpComponents" t-as="c" t-key="c.code">
+                    <td class="s" t-esc="c.code"/>
+                    <td class="n" t-esc="c.sum_a.toLocaleString('en-US')"/>
+                    <td class="n" t-esc="c.sum_b.toLocaleString('en-US')"/>
+                    <td class="n d" t-attf-style="{{ cmpHeat(c.delta) }}" t-esc="fmtSigned(c.delta)"/>
+                    <td class="n" t-esc="c.n_changed.toLocaleString('en-US')"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- movers drawer -->
+            <div t-if="state.cmpResult.movers.length" class="pbcmp-movers">
+              <button class="pbcmp-movers-h" t-on-click="toggleCmpMovers">
+                <svg t-attf-class="chev {{ state.cmpMoversOpen ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                Biggest employee movers (<t t-esc="state.cmpResult.headline"/>)
+              </button>
+              <div t-if="state.cmpMoversOpen" class="pbcmp-movers-list">
+                <div t-foreach="state.cmpResult.movers" t-as="m" t-key="m_index" class="pbcmp-mover">
+                  <span class="mv-emp" t-esc="m.emp || m.ref"/>
+                  <span class="mv-ab"><t t-esc="m.a.toLocaleString('en-US')"/> → <t t-esc="m.b.toLocaleString('en-US')"/></span>
+                  <span t-attf-class="mv-d {{ m.delta >= 0 ? 'up' : 'dn' }}" t-esc="fmtSigned(m.delta)"/>
+                </div>
+              </div>
+            </div>
+          </t>
+
+          <div t-elif="state.cmpResult and state.cmpResult.empty" class="pbcmp-empty">
+            <b>No matched employees</b>
+            <span>These two periods share no employees computed with this configuration.</span>
+          </div>
+
+          <div t-elif="!state.cmpBusy" class="pbcmp-idle">Pick two periods and hit Compare.</div>
         </div>
         </t>
 

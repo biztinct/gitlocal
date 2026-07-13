@@ -1515,6 +1515,59 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True, 'restored': len(seen), 'release_id': audit.id, 'tests': tests}
 
     # ==================================================================
+    # W97 — Period comparison (read-only chunked aggregation of two payruns)
+    # ==================================================================
+    @api.model
+    def compare_runs(self, config_id=None):
+        """The payslip runs comparable for a config: those carrying this config's
+        formula slips, newest period first. Feeds the two run pickers."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'runs': []}
+        slips = self.env['hr.payslip'].sudo().search([
+            ('formula_config_id', '=', config.id),
+            ('calculation_method', '=', 'formula'),
+            ('payslip_run_id', '!=', False)])
+        counts = defaultdict(int)
+        for s in slips:
+            counts[s.payslip_run_id.id] += 1
+        runs = self.env['hr.payslip.run'].sudo().browse(list(counts.keys())).exists()
+        items = sorted(([{
+            'id': r.id, 'name': r.name or '',
+            'date_start': str(r.date_start or ''), 'date_end': str(r.date_end or ''),
+            'slips': counts.get(r.id, 0),
+        } for r in runs]), key=lambda x: (x['date_start'], x['name']), reverse=True)
+        return {'ok': True, 'config': {'id': config.id, 'name': config.display_name},
+                'runs': items,
+                'currency': config.currency_id.symbol if config.currency_id else ''}
+
+    @api.model
+    def compare_prepare(self, config_id, run_a_id, run_b_id):
+        """Create a comparison and return the matched slip-pair work-list to drive
+        through it in chunks (mirrors simulate_prepare)."""
+        Cmp = self.env['hr.formula.period.comparison']
+        created = Cmp.cmp_create(config_id, run_a_id, run_b_id)
+        if not created.get('ok'):
+            return created
+        prep = Cmp.cmp_prepare(created['cmp_id'])
+        prep.update({'ok': True, 'headline': created.get('headline')})
+        return prep
+
+    @api.model
+    def compare_batch(self, payload):
+        return self.env['hr.formula.period.comparison'].cmp_batch(payload or {})
+
+    @api.model
+    def compare_result(self, cmp_id):
+        return self.env['hr.formula.period.comparison'].cmp_finalize(cmp_id)
+
+    @api.model
+    def compare_drop(self, cmp_id):
+        cmp = self.env['hr.formula.period.comparison'].browse(int(cmp_id))
+        cmp.cmp_drop()
+        return {'ok': True}
+
+    # ==================================================================
     # B6 — Bureau cockpit (read-only multi-config health board)
     # ==================================================================
     @api.model
