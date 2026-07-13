@@ -323,6 +323,34 @@ def _scan_join_health(self):
 
 # WP-C — Trust & Comparison — W82 → W86 → W97
 
+> **✅ IMPLEMENTED 2026-07-13** (`ea29f138` W82 · `e7e9f052` W86 · `6c923ddf` W97). Deployed
+> pb_hr_payroll_formula 19.0.1.33.0 · pb_formula_studio 19.0.1.48.0. Branch 19.1, **not pushed**.
+> Implementation record + deviations:
+> - **W82** — `hr.formula.config.run_sample_tests(changed_codes)` (new `models/formula_config_tests.py`);
+>   wired into `save_formula`/`bulk_save_formulas`/`save_component`/`restore_version`/`promote_scenario`
+>   + the WP-B re-import commit, each returning a `tests` object; studio test chip + failures popover +
+>   danger-toast-on-new-failure. Verified live: controlled pass→fail→pass with exact expected/computed/
+>   delta rows on Viet Retail. (D-C2's "large-config" guard runs only changed-code-mentioning samples.)
+> - **W86** — `rollback_preview`/`rollback_simulate_prepare`/`rollback_apply` + Releases-History Rollback
+>   button → change-list → simulate → type-to-confirm dialog. **Deviation (important):** the timestamp
+>   milestone boundary is fatally second-granular (Odoo Datetime domain compares truncate sub-second), so
+>   a milestone sealed in the same second as its edits can't be separated from them — this broke the
+>   double-rollback round-trip. Fixed by adding `hr.formula.config.milestone.version_hwm` (max version id
+>   at seal) and id-based boundary helpers (`_formula_at_ver`/`_constant_at_ver`/`_changes_between_ver`/
+>   `_ms_hwm`/`_seal_milestone`); release_preview/approve/detail now use them too (which also makes
+>   constant-only changes releasable → rollback-able, closing D-C5 end-to-end). Verified live: preview,
+>   apply, double-rollback round-trip, not-latest + unreleased guards, constant rollback (SI cap reverted).
+> - **W97** — transient `hr.formula.period.comparison` (cmp_create/prepare/batch/finalize/result/drop) +
+>   `compare_*` studio RPCs + a new **Compare** view (5th toolbar button + palette). **Deviation:** reads
+>   `formula_computed_values` **with a fallback to payslip line totals** (the demo history — and real
+>   client data — store computed values as lines, not the JSON; only 28/26.5k slips carried the JSON), the
+>   same fallback the F6/F8 drivers use. Verified live: engine sums match independent SQL exactly over 978
+>   matched employees (9.7s), Compare UI driven end-to-end with zero console errors.
+> - **UI validation scope:** the W97 Compare view was driven fully live (Chrome MCP). The W82 chip and W86
+>   rollback dialog were validated by engine-correctness (shell) + a clean asset-bundle compile + a
+>   zero-console-error mount of the shared bundle, but were not interactively driven (would require
+>   mutating demo formulas / sealing a demo release).
+
 > **Design refresh 2026-07-13 (after WP-A/WP-B/WP-E landed).** Still Opus-ready; three notes:
 > 1. **`pb_formula_studio.py` line anchors below shifted ~+12** from the WP-A additions. Verified
 >    current locations: `save_formula:741`, `bulk_save_formulas:705`, `restore_version:1000`

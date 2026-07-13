@@ -217,3 +217,35 @@ All import-preview behaviour stays in the **mixin** (`multisheet_import_preview.
 edits are confined to the regex/`return "0"` sites and code-gen. **Regression gate:**
 `python3 pb_hr_payroll_formula/tools/import_resolution_battery.py` (19 cases over the real resolver /
 code-gen / diagnose, self-contained odoo shim, exit 0 = green).
+
+## C14 — Milestone boundaries are version-id, not timestamp (WP-C / W86)
+
+"What changed since milestone M" must be answered by a **version-id high-water mark**, never a
+`create_date >= milestone_date` timestamp comparison. Odoo's `fields.Datetime.now()` is
+**second-precision** while `hr.formula.rule.version.create_date` carries microseconds, and — worse —
+**Odoo truncates sub-second precision when a datetime is used as a domain value**. So a milestone
+sealed in the same wall-clock second as the edits it caps cannot be separated from them by timestamp.
+This is invisible for B3 releases (sealed in a separate request from their edits, seconds apart) but
+**fatal for one-action rollback** (W86), which edits AND seals in one transaction — a
+rollback-of-a-rollback read its own sealing writes as "unreleased changes" and refused.
+
+Binding rules:
+- `hr.formula.config.milestone` carries `version_hwm` (max version id at seal time). `_seal_milestone`
+  sets it; `_ms_hwm(ms)` resolves it (legacy milestones with `version_hwm = -1` fall back to the
+  timestamp boundary — safe there, per above).
+- All "changed since / between milestones" logic uses the id-based helpers `_formula_at_ver` /
+  `_constant_at_ver` / `_changes_between_ver` (id `>` from_hwm, `<=` to_hwm), which compare **both**
+  `excel_formula` and `constant_value` (so a legislation-pack constant change is releasable and
+  therefore rollback-able — D-C5).
+- Rollback restores each changed rule's formula+constant in **one savepoint** (all-or-nothing; a
+  restored formula that no longer converts raises and aborts — C7), records a milestone + audit release
+  row, and re-runs sample tests (W82 — a rollback is a save).
+
+## C15 — Payrun value reads fall back to line totals (WP-C / W97, F6, F8)
+
+Any feature that reads a payslip's computed component values (period comparison, shadow run,
+simulation) must read `formula_computed_values` (JSON) **with a fallback to the paid line totals**
+(`{pl.code: pl.total for pl in slip.line_ids if pl.code}`). The JSON snapshot is populated only on the
+studio compute path; **historical and bulk-imported slips store their result as `hr.payslip.line`
+rows, not the JSON** (in the VN demo, only 28 of 26.5k formula slips carry the JSON). Reading only the
+JSON silently yields empty folds. Helper: `_slip_computed(slip)`.
