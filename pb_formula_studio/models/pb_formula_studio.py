@@ -1106,6 +1106,95 @@ class PbFormulaStudio(models.AbstractModel):
         return self.env['hr.formula.config.milestone'].sudo().search(
             [('config_id', '=', config.id)], order='milestone_date desc, id desc', limit=1)
 
+    def _seal_milestone(self, config, name):
+        """Record a milestone carrying the config's version high-water mark — the
+        max ``hr.formula.rule.version`` id at seal time. This is the exact,
+        collision-free boundary for 'changed since this milestone' (W86): unlike
+        ``milestone_date`` (second-precision, so it can't be separated from edits
+        sealed in the same second) the id boundary is unambiguous even when the
+        seal and its edits share one transaction — the one-action-rollback case."""
+        Ver = self.env['hr.formula.rule.version'].sudo()
+        last = Ver.search([('config_id', '=', config.id)], order='id desc', limit=1)
+        return self.env['hr.formula.config.milestone'].sudo().create({
+            'config_id': config.id, 'name': name,
+            'milestone_date': fields.Datetime.now(),
+            'version_hwm': last.id if last else 0})
+
+    def _config_version_hwm(self, config):
+        """The current max version id for a config (the 'now' boundary)."""
+        last = self.env['hr.formula.rule.version'].sudo().search(
+            [('config_id', '=', config.id)], order='id desc', limit=1)
+        return last.id if last else 0
+
+    def _ms_hwm(self, ms):
+        """Version-id boundary for a milestone: its stored hwm, or — for a legacy
+        milestone sealed before W86 — the max version id at-or-before its
+        timestamp (reliable there because legacy releases were sealed in a
+        SEPARATE request from their edits, so no same-second collision)."""
+        if not ms:
+            return 0
+        if ms.version_hwm is not None and ms.version_hwm >= 0:
+            return ms.version_hwm
+        last = self.env['hr.formula.rule.version'].sudo().search(
+            [('config_id', '=', ms.config_id.id),
+             ('create_date', '<=', ms.milestone_date)], order='id desc', limit=1)
+        return last.id if last else 0
+
+    def _formula_at_ver(self, rule, from_hwm):
+        """The rule's Excel formula in effect just after version boundary
+        ``from_hwm`` — the earliest version for this rule with id > from_hwm (its
+        OUTGOING snapshot = the live state at that boundary); none → current.
+        ``from_hwm`` 0 = start of history (the original formula)."""
+        ver = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', rule.id), ('id', '>', from_hwm)], order='id asc', limit=1)
+        return (ver.excel_formula if ver else rule.excel_formula) or ''
+
+    def _constant_at_ver(self, rule, from_hwm):
+        """The rule's ``constant_value`` in effect just after version boundary
+        ``from_hwm`` (from the same OUTGOING snapshot as ``_formula_at_ver``)."""
+        ver = self.env['hr.formula.rule.version'].sudo().search(
+            [('rule_id', '=', rule.id), ('id', '>', from_hwm)], order='id asc', limit=1)
+        if ver:
+            try:
+                return float(json.loads(ver.snapshot_json or '{}').get('constant_value') or 0.0)
+            except Exception:
+                pass
+        return rule.constant_value or 0.0
+
+    def _changes_between_ver(self, config, from_hwm, to_hwm=None):
+        """Rules whose Excel formula OR constant differs between two version
+        boundaries (D-C5). ``from_hwm`` 0 = start of history; ``to_hwm`` None =
+        the live current state. Replaces the timestamp comparison so a milestone
+        can never lose an edit to second-granularity (W86)."""
+        Ver = self.env['hr.formula.rule.version'].sudo()
+        changed = []
+        for rule in config.rule_ids:
+            old_f = self._formula_at_ver(rule, from_hwm)
+            cur_f = self._formula_at_ver(rule, to_hwm) if to_hwm else (rule.excel_formula or '')
+            old_c = self._constant_at_ver(rule, from_hwm)
+            cur_c = self._constant_at_ver(rule, to_hwm) if to_hwm else (rule.constant_value or 0.0)
+            f_changed = (old_f or '') != (cur_f or '')
+            c_changed = abs((old_c or 0.0) - (cur_c or 0.0)) > 1e-9
+            if not f_changed and not c_changed:
+                continue
+            dom = [('rule_id', '=', rule.id), ('id', '>', from_hwm)]
+            if to_hwm:
+                dom.append(('id', '<=', to_hwm))
+            v = Ver.search(dom, order='id desc', limit=1)
+            changed.append({
+                'rule_id': rule.id, 'code': rule.code or '',
+                'name': (rule.salary_rule_id.name if rule.salary_rule_id else False) or rule.name or '',
+                'col': rule.column_letter or '', 'group': _group_for(rule),
+                'type': rule.column_type,
+                'old_formula': old_f, 'cur_formula': cur_f,
+                'old_constant': old_c, 'cur_constant': cur_c,
+                'formula_changed': f_changed, 'constant_changed': c_changed,
+                'reason': v.reason if v else 'edit',
+                'runs': self._token_diff_runs(self._tokenize_text(old_f), self._tokenize_text(cur_f))
+                        if f_changed else [],
+            })
+        return changed
+
     def _formula_original(self, rule):
         """The rule's formula at the very start of its history — the earliest
         version's OUTGOING snapshot (each row is pre-edit), else the current if
@@ -1178,8 +1267,10 @@ class PbFormulaStudio(models.AbstractModel):
         if not config:
             return {'ok': False}
         last = self._last_milestone(config)
-        when = last.milestone_date if last else False
-        changes = self._changes_between(config, when, None)
+        # id boundary (W86) so a constant-only change (legislation pack) is
+        # releasable AND rollback-able (D-C5), with no second-granularity loss.
+        from_hwm = self._ms_hwm(last)
+        changes = self._changes_between_ver(config, from_hwm, None)
         return {
             'ok': True,
             'config': {'id': config.id, 'name': config.name, 'state': config.state},
@@ -1202,18 +1293,17 @@ class PbFormulaStudio(models.AbstractModel):
         if not config:
             return {'ok': False}
         last = self._last_milestone(config)
-        when = last.milestone_date if last else False
-        changes = self._changes_between(config, when, None)
+        from_hwm = self._ms_hwm(last)
+        changes = self._changes_between_ver(config, from_hwm, None)
         if not changes:
             return {'ok': False, 'reason': 'no_changes',
                     'msg': _("There are no changes to release since the last milestone.")}
         Release = self.env['hr.formula.release']
         n = Release.search_count([('config_id', '=', config.id)]) + 1
-        Milestone = self.env['hr.formula.config.milestone'].sudo()
-        to_ms = Milestone.record(config, _("Release v%s") % n)
-        vdom = [('config_id', '=', config.id)]
-        if when:
-            vdom.append(('create_date', '>=', when))
+        # Seal at the current version high-water mark (W86) so a later rollback of
+        # this release reads an exact 'from' boundary — see _seal_milestone.
+        to_ms = self._seal_milestone(config, _("Release v%s") % n)
+        vdom = [('config_id', '=', config.id), ('id', '>', from_hwm)]
         versions = self.env['hr.formula.rule.version'].sudo().search(vdom)
         rel = Release.create({
             'name': _("Release v%s") % n,
@@ -1232,29 +1322,197 @@ class PbFormulaStudio(models.AbstractModel):
         if not config:
             return {'ok': False, 'releases': []}
         rels = self.env['hr.formula.release'].search([('config_id', '=', config.id)])
-        return {'ok': True, 'releases': [{
-            'id': r.id, 'name': r.name,
-            'approved_by': r.approved_by_id.name or '',
-            'approved_date': fields.Datetime.to_string(r.approved_date) if r.approved_date else '',
-            'change_count': r.change_count,
-            'narrative': r.narrative or '',
-            'from': r.from_milestone_id.name or '(start)',
-            'to': r.to_milestone_id.name or '',
-        } for r in rels]}
+        # W86 — only the latest release is rollback-eligible (D-C4); flag it so the
+        # UI shows the Rollback button on exactly one row.
+        latest = self._last_release(config)
+        return {'ok': True, 'latest_id': latest.id or False, 'can_edit': self._can_edit(),
+                'releases': [{
+                    'id': r.id, 'name': r.name,
+                    'approved_by': r.approved_by_id.name or '',
+                    'approved_date': fields.Datetime.to_string(r.approved_date) if r.approved_date else '',
+                    'change_count': r.change_count,
+                    'narrative': r.narrative or '',
+                    'from': r.from_milestone_id.name or '(start)',
+                    'to': r.to_milestone_id.name or '',
+                    'is_latest': r.id == latest.id,
+                } for r in rels]}
 
     @api.model
     def release_detail(self, release_id):
-        """Re-derive a past release's diffs from its two milestone timestamps."""
+        """Re-derive a past release's diffs from its two milestone boundaries."""
         rel = self.env['hr.formula.release'].browse(int(release_id))
         if not rel.exists():
             return {'ok': False}
-        from_when = rel.from_milestone_id.milestone_date if rel.from_milestone_id else False
-        to_when = rel.to_milestone_id.milestone_date if rel.to_milestone_id else False
-        changes = self._changes_between(rel.config_id, from_when, to_when)
+        from_hwm = self._ms_hwm(rel.from_milestone_id)
+        to_hwm = self._ms_hwm(rel.to_milestone_id) if rel.to_milestone_id else None
+        changes = self._changes_between_ver(rel.config_id, from_hwm, to_hwm)
         return {'ok': True, 'name': rel.name, 'narrative': rel.narrative or '',
                 'approved_by': rel.approved_by_id.name or '',
                 'approved_date': fields.Datetime.to_string(rel.approved_date) if rel.approved_date else '',
                 'change_count': len(changes), 'changes': changes}
+
+    # ==================================================================
+    # W86 — One-action rollback (revert the latest release atomically)
+    # ==================================================================
+    # Rollback of release vN ≡ restore the config to milestone `from` of vN
+    # (D-C4). It is itself a versioned + released event (reason='restore', a new
+    # milestone + audit release row) so history is never rewritten and a second
+    # rollback round-trips cleanly. Constants are reverted too (D-C5): a
+    # legislation pack edits `constant_value`, so a formula-only rollback would
+    # silently keep a new SI cap.
+    def _last_release(self, config):
+        return self.env['hr.formula.release'].search(
+            [('config_id', '=', config.id)], order='approved_date desc, id desc', limit=1)
+
+    def _restore_rule_state(self, rule, excel_formula, constant_value):
+        """Write a past (formula, constant) back onto a live rule. Mirrors
+        ``restore_version``'s python-rebuild + validity check for the formula path
+        (``pb_formula_studio.py`` restore) and ADDS the constant path (net-new,
+        D-C5). A restored formula that no longer converts RAISES here so the
+        caller's savepoint aborts loudly — never a half-applied rollback (C7)."""
+        vals = {}
+        if rule.column_type == 'formula':
+            column_map = {r.column_letter: r.code for r in rule.config_id.rule_ids if r.column_letter}
+            py = rule._convert_excel_to_python(excel_formula or '', column_map)   # may raise → savepoint aborts
+            ok, msg = self._check_formula(rule.config_id, excel_formula or '', exclude_id=rule.id)
+            vals.update({'excel_formula': excel_formula or '', 'python_formula': py,
+                         'is_valid': ok, 'validation_message': '' if ok else msg})
+        elif excel_formula is not None:
+            vals['excel_formula'] = excel_formula or ''
+        if constant_value is not None:
+            vals['constant_value'] = constant_value
+        if vals:
+            rule.write(vals)
+
+    def _rollback_guard(self, rel):
+        """D-C4 eligibility: only the latest release, and only when nothing is
+        unreleased (else 'rollback of vN' is ambiguous). Returns {ok[, reason,
+        msg]}."""
+        config = rel.config_id
+        latest = self._last_release(config)
+        if not latest or rel.id != latest.id:
+            return {'ok': False, 'reason': 'not_latest',
+                    'msg': _("Only the latest release can be rolled back.")}
+        to_hwm = self._ms_hwm(rel.to_milestone_id)
+        unreleased = self._changes_between_ver(config, to_hwm, None)
+        if unreleased:
+            return {'ok': False, 'reason': 'unreleased',
+                    'msg': _("Release or discard the current changes first "
+                             "(%d unreleased change(s)).") % len(unreleased)}
+        return {'ok': True}
+
+    def _rollback_overrides(self, changes):
+        """Split a change list into the formula + constant overrides that seed a
+        simulate-before-apply run (the rollback previews its OLD state)."""
+        formula_overrides = {c['code']: c['old_formula']
+                             for c in changes if c['formula_changed'] and c['code']}
+        value_overrides = {c['code']: c['old_constant']
+                           for c in changes if c['constant_changed'] and c['code']}
+        return formula_overrides, value_overrides
+
+    @api.model
+    def rollback_preview(self, release_id):
+        """What rolling back a release would revert: eligibility (+ block reason),
+        the formula/constant change list, and the simulate overrides (D-C6).
+        Nothing is written."""
+        rel = self.env['hr.formula.release'].browse(int(release_id))
+        if not rel.exists():
+            return {'ok': False}
+        config = rel.config_id
+        guard = self._rollback_guard(rel)
+        from_hwm = self._ms_hwm(rel.from_milestone_id)
+        changes = self._changes_between_ver(config, from_hwm, None)
+        formula_overrides, value_overrides = self._rollback_overrides(changes)
+        return {
+            'ok': True,
+            'eligible': guard['ok'],
+            'block_reason': '' if guard['ok'] else guard.get('msg', ''),
+            'release': {'id': rel.id, 'name': rel.name, 'narrative': rel.narrative or '',
+                        'approved_by': rel.approved_by_id.name or '',
+                        'approved_date': fields.Datetime.to_string(rel.approved_date)
+                                         if rel.approved_date else ''},
+            'change_count': len(changes),
+            'changes': changes,
+            'formula_overrides': formula_overrides,
+            'value_overrides': value_overrides,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def rollback_simulate_prepare(self, release_id, limit=None):
+        """Seed a simulation with the rollback's OLD formulas + constants and
+        return the payslip work-list (drive it via the shared simulate_batch /
+        simulate_result RPCs). Shows the org-wide impact before Apply arms."""
+        rel = self.env['hr.formula.release'].browse(int(release_id))
+        if not rel.exists():
+            return {'ok': False}
+        config = rel.config_id
+        from_hwm = self._ms_hwm(rel.from_milestone_id)
+        changes = self._changes_between_ver(config, from_hwm, None)
+        formula_overrides, value_overrides = self._rollback_overrides(changes)
+        Sim = self.env['hr.formula.simulation']
+        created = Sim.sim_create(config.id, overrides=formula_overrides,
+                                 value_overrides=value_overrides)
+        if not created.get('ok'):
+            return created
+        prep = Sim.sim_prepare(created['sim_id'], limit=limit)
+        prep.update({'ok': True, 'headline': created.get('headline'),
+                     'overrides': created.get('overrides', 0)})
+        return prep
+
+    @api.model
+    def rollback_apply(self, release_id):
+        """Revert the latest release atomically (S-C1). Restores every changed
+        rule's formula AND constant to its at-`from`-milestone value in one
+        savepoint (all-or-nothing), records a 'Rollback of vN' milestone + audit
+        release row, and re-runs the sample tests (W82 — a rollback is a save)."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to roll back releases.")}
+        rel = self.env['hr.formula.release'].browse(int(release_id))
+        if not rel.exists():
+            return {'ok': False, 'msg': _('Release not found')}
+        config = rel.config_id
+        guard = self._rollback_guard(rel)
+        if not guard['ok']:
+            return guard
+        from_hwm = self._ms_hwm(rel.from_milestone_id)
+        changes = self._changes_between_ver(config, from_hwm, None)
+        if not changes:
+            return {'ok': False, 'reason': 'nothing', 'msg': _('Nothing to roll back.')}
+        seen = set()
+        pre_hwm = self._config_version_hwm(config)     # id boundary before the restore writes
+        ctx = dict(formula_version_reason='restore',
+                   formula_version_note=_('Rollback %s') % rel.name,
+                   formula_version_seen=seen)
+        try:
+            with self.env.cr.savepoint():
+                for ch in changes:
+                    rule = self.env['hr.formula.rule'].browse(ch['rule_id']).with_context(**ctx)
+                    self._restore_rule_state(rule, ch['old_formula'], ch['old_constant'])
+        except Exception as e:
+            _logger.warning("rollback_apply failed on %s: %s", config.code, e)
+            return {'ok': False, 'msg': str(e)}
+        # audit: the rollback IS a release (D-C6) — milestone + release row, from
+        # the rolled-back release's `to` up to the new rollback milestone. The
+        # provenance rows are exactly the restore versions just created (id > the
+        # pre-restore boundary), and _seal_milestone stamps the new milestone at
+        # the post-restore hwm so rolling back THIS rollback reads a clean
+        # boundary — the double-rollback round-trip (D-C4).
+        versions = self.env['hr.formula.rule.version'].sudo().search(
+            [('config_id', '=', config.id), ('id', '>', pre_hwm)])
+        to_ms = self._seal_milestone(config, _('Rollback of %s') % rel.name)
+        Release = self.env['hr.formula.release']
+        audit = Release.create({
+            'name': _('Rollback of %s') % rel.name,
+            'config_id': config.id,
+            'from_milestone_id': rel.to_milestone_id.id if rel.to_milestone_id else False,
+            'to_milestone_id': to_ms.id,
+            'narrative': self._draft_release_narrative(config, changes),
+            'change_count': len(changes),
+            'version_ids': [(6, 0, versions.ids)],
+        })
+        tests = self._run_tests_after_save(config)
+        return {'ok': True, 'restored': len(seen), 'release_id': audit.id, 'tests': tests}
 
     # ==================================================================
     # B6 — Bureau cockpit (read-only multi-config health board)

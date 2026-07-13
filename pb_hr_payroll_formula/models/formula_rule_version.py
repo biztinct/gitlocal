@@ -70,6 +70,14 @@ class HrFormulaConfigMilestone(models.Model):
         string='Date', required=True, default=fields.Datetime.now, index=True)
     user_id = fields.Many2one(
         'res.users', string='By', default=lambda s: s.env.user, readonly=True)
+    # W86 — version-id boundary at seal time. Odoo Datetime domain comparisons
+    # are second-granular, so a milestone sealed in the SAME second as the edits
+    # it caps cannot be separated from them by timestamp (fatal for one-action
+    # rollback, which edits + seals atomically). The max hr.formula.rule.version
+    # id at seal time is an exact, collision-free boundary: "changed since this
+    # milestone" == versions with id > version_hwm. -1 = legacy milestone with no
+    # hwm recorded → callers fall back to the timestamp boundary.
+    version_hwm = fields.Integer(string='Version high-water mark', default=-1)
 
     @api.model
     def record(self, config, name):
