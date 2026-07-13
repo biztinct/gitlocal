@@ -501,6 +501,15 @@ def rollback_apply(self, release_id):
 
 # WP-D — Payrun Anomaly Narration (`pb_formula_studio` + engine read-only) — W48
 
+> **✅ IMPLEMENTED 2026-07-13** (`5a63508a`). pb_hr_payroll_formula 19.0.1.34.0 · pb_formula_studio
+> 19.0.1.49.0. Branch 19.1, not pushed. `hr.formula.period.comparison.narrate(lang)` (deterministic EN+VI
+> blocks in code, no .po pipeline) + `narrate_allowed_numbers()`; studio `narrate_comparison(cmp_id, lang)`
+> wraps it with an optional `_llm_chat` polish gated by `_narr_numbers_ok` (pure, unit-tested — a poisoned
+> wrong-total reply is rejected). Narrate card on the Compare surface (blocks, EN/VI toggle, source badge,
+> copy). Verified live: EN+VI render with no AI key ("Built-in"), numbers match the fold, zero console
+> errors. **Deviation:** VI comes from code-held templates (not the `_()` path) so it works with no
+> translation catalogue — the D-D3 intent, more honest for a keyless demo.
+
 Hard dependency: WP-C's `hr.formula.period.comparison` payload.
 
 ## Locked decisions
