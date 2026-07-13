@@ -33,6 +33,32 @@ class LLMUnavailable(Exception):
 # Map an Excel operator to a friendly chip glyph
 OP_GLYPH = {'+': '+', '-': '−', '*': '×', '/': '÷'}
 
+# W48 — number guard for LLM-polished narration (D-D2). Pure + unit-testable:
+# every money-scale figure (>= _NARR_MONEY_FLOOR) in the rewritten text must
+# exist in the compare fold's allowed set, else the rewrite invented a number
+# and is rejected in favour of the deterministic text. Counts/dates/percentages
+# (small numbers) are not policed — they are low-risk and hard to enumerate.
+_NARR_MONEY_FLOOR = 1000
+_NARR_NUM_RE = re.compile(r'-?\d[\d,]*(?:\.\d+)?')
+
+
+def _narr_numbers_ok(text, allowed):
+    """True unless the text contains a money-scale number absent from `allowed`
+    (a set of rounded-abs integers). `allowed` should already hold every sum /
+    delta / count from the fold."""
+    for raw in _NARR_NUM_RE.findall(text or ''):
+        s = raw.replace(',', '')
+        try:
+            n = round(abs(float(s)))
+        except Exception:
+            continue
+        if n < _NARR_MONEY_FLOOR:
+            continue                      # counts / dates / small pcts: not policed
+        if n not in allowed:
+            return False                  # an invented money figure
+    return True
+
+
 # Category grouping for the outline (by code/name heuristics)
 def _group_for(rule):
     code = (rule.code or '').upper()
@@ -1566,6 +1592,41 @@ class PbFormulaStudio(models.AbstractModel):
         cmp = self.env['hr.formula.period.comparison'].browse(int(cmp_id))
         cmp.cmp_drop()
         return {'ok': True}
+
+    # ==================================================================
+    # W48 — Payrun anomaly narration (deterministic-first, LLM-polished)
+    # ==================================================================
+    @api.model
+    def narrate_comparison(self, cmp_id, lang='en'):
+        """TD.2 — narrate a finished period comparison. The deterministic blocks
+        (D-D2) are always the floor; an LLM rewrite for fluency is served ONLY if
+        every money-scale number in it exists in the fold (invented figures →
+        deterministic text). No AI key / any error → deterministic (C1)."""
+        cmp = self.env['hr.formula.period.comparison'].browse(int(cmp_id))
+        if not cmp.exists():
+            return {'ok': False}
+        lang = lang if lang in ('en', 'vi') else 'en'
+        det = cmp.narrate(lang)
+        det_blocks = det['blocks']
+        try:
+            allowed = cmp.narrate_allowed_numbers()
+            sys_lang = 'Vietnamese' if lang == 'vi' else 'English'
+            system = (
+                "You are PayAI, a payroll analyst. Rewrite the given factual bullet points into a "
+                "concise, fluent %s narrative of 3-6 sentences in plain business language. You MUST NOT "
+                "invent, alter, round differently, or drop any number, employee name, component code, or "
+                "date — reuse them exactly. Reply STRICT JSON: {\"narrative\": \"...\"}." % sys_lang)
+            user = json.dumps({'facts': det['facts'], 'sentences': det_blocks}, ensure_ascii=False)
+            out = self._llm_chat(
+                [{'role': 'system', 'content': system}, {'role': 'user', 'content': user}],
+                json_mode=True)
+            polished = (out or {}).get('narrative') if isinstance(out, dict) else None
+            if polished and polished.strip() and _narr_numbers_ok(polished, allowed):
+                return {'ok': True, 'blocks': [polished.strip()], 'source': 'ai',
+                        'lang': lang, 'deterministic': det_blocks}
+        except Exception as e:
+            _logger.info("narrate_comparison LLM fallback: %s", e)
+        return {'ok': True, 'blocks': det_blocks, 'source': 'deterministic', 'lang': lang}
 
     # ==================================================================
     # B6 — Bureau cockpit (read-only multi-config health board)

@@ -33,6 +33,31 @@ _CAUSE_COVERAGE = 0.9
 
 _NET_CODES = {'NET', 'NETPAY', 'NET_PAY', 'NETSALARY', 'TAKEHOME', 'TAKE_HOME'}
 
+# W48 — deterministic narrative templates (D-D3): EN + VI in code so narration
+# works with no translation pipeline and no AI key. Keys are format strings.
+_NARR = {
+    'en': {
+        'up': "Total %(code)s rose %(pct)s%% (%(a)s → %(b)s) across %(n)s employees.",
+        'down': "Total %(code)s fell %(pct)s%% (%(a)s → %(b)s) across %(n)s employees.",
+        'flat': "Total %(code)s held steady (%(a)s → %(b)s) across %(n)s employees.",
+        'cause_attr': "%(code)s changed for %(cov)s%% of the %(moved)s employees whose net moved — attributed to a %(reason)s edit on %(when)s.",
+        'cause_plain': "%(code)s moved for %(cov)s%% of the %(moved)s employees whose net changed.",
+        'churn': "%(j)s joiner(s) and %(l)s leaver(s) between the two periods.",
+        'mover': "Largest mover: %(emp)s (%(a)s → %(b)s, %(delta)s).",
+        'nomove': "No material movement between the two periods.",
+    },
+    'vi': {
+        'up': "Tổng %(code)s tăng %(pct)s%% (%(a)s → %(b)s) trên %(n)s nhân viên.",
+        'down': "Tổng %(code)s giảm %(pct)s%% (%(a)s → %(b)s) trên %(n)s nhân viên.",
+        'flat': "Tổng %(code)s không đổi (%(a)s → %(b)s) trên %(n)s nhân viên.",
+        'cause_attr': "%(code)s thay đổi ở %(cov)s%% trong %(moved)s nhân viên có biến động — do một chỉnh sửa %(reason)s ngày %(when)s.",
+        'cause_plain': "%(code)s biến động ở %(cov)s%% trong %(moved)s nhân viên có thay đổi.",
+        'churn': "%(j)s nhân viên mới và %(l)s nhân viên nghỉ giữa hai kỳ.",
+        'mover': "Biến động lớn nhất: %(emp)s (%(a)s → %(b)s, %(delta)s).",
+        'nomove': "Không có biến động đáng kể giữa hai kỳ.",
+    },
+}
+
 
 class HrFormulaPeriodComparison(models.TransientModel):
     _name = 'hr.formula.period.comparison'
@@ -267,3 +292,81 @@ class HrFormulaPeriodComparison(models.TransientModel):
     def cmp_drop(self):
         self.exists().unlink()
         return True
+
+    # ------------------------------------------------------------ W48 narration
+    def narrate(self, lang='en'):
+        """TD.1 — deterministic narrative blocks from the finished compare fold
+        (D-D2), always produced, EN/VI, no AI needed. Also returns `facts` (the
+        numeric fold) for the optional LLM-polish layer to rewrite fluently
+        without inventing figures."""
+        self.ensure_one()
+        res = self.cmp_result()
+        L = _NARR.get(lang if lang in _NARR else 'en')
+        cur = res.get('currency') or ''
+
+        def money(v):
+            try:
+                return '%s%s' % (cur, '{:,.0f}'.format(round(float(v or 0))))
+            except Exception:
+                return '%s0' % cur
+
+        blocks = []
+        head = res.get('headline') or ''
+        n = res.get('matched', 0)
+        hc = next((c for c in res.get('components', []) if c['code'] == head), None)
+        if hc:
+            a, b = hc['sum_a'], hc['sum_b']
+            pct = (abs(b - a) / abs(a) * 100) if a else 0.0
+            key = 'flat' if abs(b - a) < 0.005 else ('up' if b > a else 'down')
+            blocks.append(L[key] % {'code': head, 'pct': '%.1f' % pct,
+                                    'a': money(a), 'b': money(b), 'n': n})
+        for cz in res.get('causes', [])[:3]:
+            if cz.get('attributed'):
+                blocks.append(L['cause_attr'] % {
+                    'code': cz['code'], 'cov': cz['coverage'], 'moved': res['net_moved'],
+                    'reason': cz.get('reason') or 'edit', 'when': cz.get('when') or ''})
+            else:
+                blocks.append(L['cause_plain'] % {
+                    'code': cz['code'], 'cov': cz['coverage'], 'moved': res['net_moved']})
+        if res.get('joiners') or res.get('leavers'):
+            blocks.append(L['churn'] % {'j': res['joiners'], 'l': res['leavers']})
+        movers = res.get('movers', [])
+        if movers:
+            m = movers[0]
+            sign = '+' if (m.get('delta', 0) or 0) >= 0 else '−'
+            blocks.append(L['mover'] % {
+                'emp': m.get('emp') or m.get('ref') or '',
+                'a': money(m.get('a')), 'b': money(m.get('b')),
+                'delta': sign + money(abs(m.get('delta', 0) or 0))})
+        if not blocks:
+            blocks = [L['nomove']]
+
+        return {
+            'ok': True, 'blocks': blocks, 'source': 'deterministic', 'lang': lang,
+            'facts': {
+                'headline': head,
+                'headline_before': hc['sum_a'] if hc else 0,
+                'headline_after': hc['sum_b'] if hc else 0,
+                'matched': n, 'joiners': res.get('joiners', 0),
+                'leavers': res.get('leavers', 0), 'net_moved': res.get('net_moved', 0),
+                'top_components': res.get('components', [])[:8],
+                'causes': res.get('causes', []),
+            },
+        }
+
+    def narrate_allowed_numbers(self):
+        """The set of money-scale integers that may legitimately appear in a
+        narration of this comparison (used to reject LLM-invented figures, D-D2)."""
+        self.ensure_one()
+        res = self.cmp_result()
+        allowed = set()
+
+        def add(v):
+            try:
+                allowed.add(round(abs(float(v))))
+            except Exception:
+                pass
+        add(self.matched); add(self.joiners); add(self.leavers); add(res.get('net_moved'))
+        for c in res.get('components', []):
+            add(c['sum_a']); add(c['sum_b']); add(c['delta']); add(c['n_changed'])
+        return allowed
