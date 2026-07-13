@@ -22,6 +22,20 @@ class IrHttp(models.AbstractModel):
             icp.get_param("pb_theme.vu_form_engine", "on"),
         )
         info["biz_theme_version"] = icp.get_param("biz_theme.theme_version", "0")
+        # Brand/app name for the browser-tab title. Same resolution chain as the
+        # backend favicon/title template (webclient_templates.xml): an explicit
+        # `biz_theme.app_name` knob wins, then the debrand suite's keys if
+        # installed, then the current company name, then "Odoo". The core JS
+        # title service hard-codes "Odoo" as its empty-title fallback and runs
+        # AFTER the server-rendered <title>, so biz_title_service.js reads this
+        # to keep the tab branded.
+        info["biz_app_name"] = (
+            icp.get_param("biz_theme.app_name")
+            or icp.get_param("biz_debrand.brand_name")
+            or icp.get_param("web_debranding.new_title")
+            or (self.env.company.name if self.env.company else None)
+            or "Odoo"
+        )
         # Menu-driven sidebar: comma-separated root-menu xml_ids for which the
         # zero-config BizSidebar renders (empty = feature off).
         info["biz_menu_sidebar_apps"] = [

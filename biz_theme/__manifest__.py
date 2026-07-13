@@ -43,6 +43,8 @@
         'web.assets_backend': [
             # Services first (theme draft preview)
             'biz_theme/static/src/services/theme_loader_service.js',
+            # Branded browser-tab title (overrides core title service's "Odoo")
+            'biz_theme/static/src/js/biz_title_service.js',
             # Core theme
             'biz_theme/static/src/scss/backend.scss',
             'biz_theme/static/src/scss/biz_loading.scss',
