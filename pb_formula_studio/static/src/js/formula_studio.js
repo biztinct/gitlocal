@@ -762,6 +762,7 @@ export class PbFormulaStudio extends Component {
     // _afterPatch (starting an editor on the focused formula cell if needed).
     requestSnippetInsert(sid) {
         if (this.state.empty) return;
+        if (this._lockedNotice()) return;   // read-only: say so, never a silent no-op
         if (this.state.view !== "grid") this.setView("grid");
         this.state.pendingSnippet = sid;
     }
@@ -980,12 +981,24 @@ export class PbFormulaStudio extends Component {
         // useHotkey token: shifted-punctuation parsing is layout-dependent) guarded
         // so it never fires while typing in any field or while another modal is up.
         useExternalListener(window, "keydown", (ev) => this._onGlobalHelpKey(ev));
+        // Escape must close the overlay even when the grid scroller has focus: the
+        // grid's navigator consumes Escape (clear-selection + stopPropagation,
+        // grid_studio.js onKeydown), so the bubble-phase hotkey ladder never fires
+        // on that path. Capture phase runs first; only intercept while the overlay
+        // (always the topmost layer) is actually open.
+        useExternalListener(window, "keydown", (ev) => {
+            if (ev.key === "Escape" && this.state.shortcutsOpen) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                this.closeShortcuts();
+            }
+        }, { capture: true });
     }
     _onGlobalHelpKey(ev) {
         if (ev.key !== "?" || this.state.shortcutsOpen) return;
         const t = ev.target, tag = t && t.tagName;
         if (t && (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || t.isContentEditable)) return;
-        if (this.state.paletteOpen || this.state.findOpen || this.state.aiOpen) return;
+        if (this.state.paletteOpen || this.state.findOpen || this.state.aiOpen || this.state.snipManageOpen) return;
         ev.preventDefault();
         this.openShortcuts();
     }
@@ -2927,6 +2940,8 @@ export class PbFormulaStudio extends Component {
     async openInFormulaView() {
         if (!this.state.testSampleId) return;
         await this.load(this.state.config.id);  // refresh cards sample list so the preview header resolves
+        // keep the W4 invariant (active ∉ pinnedSamples): jumping to a pinned sample unpins it
+        this.state.pinnedSamples = this.state.pinnedSamples.filter(x => x !== this.state.testSampleId);
         this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview",
             [this.state.config.id, this.state.testSampleId]);
         this.state.view = "cards";
