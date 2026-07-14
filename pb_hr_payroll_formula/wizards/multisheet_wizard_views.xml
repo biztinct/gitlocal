@@ -275,6 +275,25 @@
                                                invisible="fix_action != 'map_component'"/>
                                     </list>
                                 </field>
+                                <!-- W42 — rate-table promotions (progressive IF-chains) -->
+                                <separator string="Rate-table promotions" invisible="not rate_proposal_ids"/>
+                                <div class="text-muted" invisible="not rate_proposal_ids"
+                                     style="margin-bottom:6px">
+                                    These formulas are progressive brackets written as a nested IF chain.
+                                    Tick <b>Promote</b> to import them as a clean rate table (BRACKET) instead —
+                                    left off, they import exactly as written.
+                                </div>
+                                <field name="rate_proposal_ids" nolabel="1"
+                                       invisible="not rate_proposal_ids">
+                                    <list editable="bottom" create="false" delete="false">
+                                        <field name="component_code" string="Code" readonly="1"/>
+                                        <field name="component_name" string="Component" readonly="1"/>
+                                        <field name="driver" string="Driver" readonly="1"/>
+                                        <field name="edges" string="Structure" readonly="1"/>
+                                        <field name="table_code" string="New table" readonly="1"/>
+                                        <field name="accept" string="Promote" widget="boolean_toggle"/>
+                                    </list>
+                                </field>
                             </page>
                         </notebook>
                     </div>

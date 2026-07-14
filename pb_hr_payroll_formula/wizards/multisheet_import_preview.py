@@ -18,7 +18,14 @@ import re
 from odoo import _, fields, models
 from odoo.tools import html_escape
 
+from ..formula_engine import if_chain
+
 _logger = logging.getLogger(__name__)
+
+
+def _fmt_amt(x):
+    x = float(x or 0.0)
+    return '{:,.0f}'.format(x) if x == int(x) else '{:,.2f}'.format(x)
 
 # Any remaining sheet-qualified ref (e.g. 'TimeTB 2'!A1 or Sheet!A1) that survived
 # resolution — the Excel→Python converter would choke on or zero it.
@@ -37,6 +44,10 @@ class MultisheetImportPreview(models.TransientModel):
     confidence_score = fields.Float(string='Confidence', readonly=True)
     confidence_breakdown_json = fields.Text(string='Confidence Breakdown', readonly=True)
     ai_review_html = fields.Html(string='AI Review', readonly=True, sanitize=False)
+    # W42 — rate-table promotion proposals detected among the resolved formulas.
+    rate_proposal_ids = fields.One2many(
+        'hr.formula.import.rate.proposal', 'wizard_id',
+        string='Rate-table promotions')
 
     # ---- resolution capture (T3.2, skeleton S2 adapted) -----------------------
     # The capture list is carried in the CONTEXT, not as an instance attribute:
@@ -112,6 +123,102 @@ class MultisheetImportPreview(models.TransientModel):
         if vals_list:
             Line.create(vals_list)
         self._compute_confidence()
+        self._build_rate_proposals()
+
+    # ---- W42 rate-table promotion (D-J5) --------------------------------------
+    def _build_rate_proposals(self):
+        """Run the SHARED progressive-chain detector (if_chain, no logic
+        duplication with W54) over each resolved formula component. A *consistent*
+        chain becomes a promotion proposal the officer can accept — never
+        automatic, never silent (C7). Detector only — no evaluation."""
+        self.rate_proposal_ids.unlink()
+        Prop = self.env['hr.formula.import.rate.proposal']
+        # dedupe candidate table codes against config + every staged code
+        existing = set()
+        if self.config_id:
+            existing |= {(t.code or '').upper() for t in self.config_id.rate_table_ids}
+            existing |= {(r.code or '').upper() for r in self.config_id.rule_ids if r.code}
+        existing |= {(c.generated_code or '').upper()
+                     for c in self.component_preview_ids if c.generated_code}
+        by_letter = {c.column_letter: c for c in self.component_preview_ids if c.column_letter}
+        vals = []
+        for comp in self.component_preview_ids:
+            if comp.column_type != 'formula' or not (comp.excel_formula or '').strip():
+                continue
+            res = if_chain.detect(comp.excel_formula)
+            if not res or not res.get('consistent'):
+                continue
+            brackets = res['brackets']
+            # a friendly driver label: resolve a cell-ref driver to a staged name
+            drv = res['driver']
+            m = re.fullmatch(r'([A-Za-z]+)\d+', (drv or '').strip())
+            drv_label = drv
+            if m and m.group(1).upper() in by_letter:
+                drv_label = by_letter[m.group(1).upper()].generated_name or drv
+            base = re.sub(r'[^A-Z0-9]', '', (comp.generated_code or 'RATE').upper()) or 'RATE'
+            if base[0].isdigit():
+                base = 'R' + base
+            code = self._dedupe_code_c5((base + 'RATE')[:40], existing)
+            existing.add(code)
+            lowers = [b['lower'] for b in brackets]
+            vals.append({
+                'wizard_id': self.id,
+                'component_code': comp.generated_code,
+                'component_name': comp.generated_name or comp.generated_code,
+                'driver': drv_label,
+                'n_brackets': len(brackets),
+                'edges': _("%s bands · %s → %s (%s%%–%s%%)") % (
+                    len(brackets), _fmt_amt(min(lowers)), _fmt_amt(max(lowers)),
+                    _fmt_amt(brackets[0]['rate'] * 100), _fmt_amt(brackets[-1]['rate'] * 100)),
+                'table_code': code,
+                'accept': False,
+            })
+        if vals:
+            Prop.create(vals)
+
+    def action_execute_import(self):
+        """W42: apply accepted rate-table promotions FIRST — create each table and
+        rewrite the STAGED formula to BRACKET(code, driver) — so the rule the base
+        wizard then creates is born clean (D-J5). Declined chains import verbatim."""
+        self._apply_rate_table_promotions()
+        return super().action_execute_import()
+
+    def _apply_rate_table_promotions(self):
+        accepted = self.rate_proposal_ids.filtered('accept')
+        if not accepted or not self.config_id:
+            return
+        Table = self.env['hr.formula.rate.table']
+        existing = {(t.code or '').upper() for t in self.config_id.rate_table_ids}
+        existing |= {(r.code or '').upper() for r in self.config_id.rule_ids if r.code}
+        existing |= {(c.generated_code or '').upper()
+                     for c in self.component_preview_ids if c.generated_code}
+        for prop in accepted:
+            comp = self.component_preview_ids.filtered(
+                lambda c: c.generated_code == prop.component_code
+                and c.column_type == 'formula')[:1]
+            if not comp:
+                continue
+            # Re-detect on the CURRENT staged text (defensive — never trust the
+            # stored proposal blindly); a chain that no longer parses/consists is
+            # skipped, so the formula imports verbatim rather than being corrupted.
+            res = if_chain.detect(comp.excel_formula or '')
+            if not res or not res.get('consistent'):
+                continue
+            brackets = [(b['lower'], b['rate']) for b in res['brackets']]
+            driver = res['driver']
+            s, e = res['span']
+            code = self._dedupe_code_c5((prop.table_code or 'RATE').upper(), existing)
+            existing.add(code)
+            Table.create({
+                'name': _("%s — rate table") % (comp.generated_name or code),
+                'code': code,
+                'config_id': self.config_id.id,
+                'line_ids': [(0, 0, {'lower': lo, 'rate': ra}) for lo, ra in brackets],
+            })
+            new_formula = (comp.excel_formula[:s]
+                           + 'BRACKET(%s,%s)' % (code, driver)
+                           + comp.excel_formula[e:])
+            comp.write({'excel_formula': new_formula, 'resolved_formula': new_formula})
 
     # ---- confidence score (T3.3) — weighted 40/25/20/15 --------------------
     def _compute_confidence(self):
@@ -437,3 +544,22 @@ class HrFormulaImportPreviewLine(models.TransientModel):
         ('skip', 'Skip this component'),
     ], string='Fix Action')
     fix_target_rule_code = fields.Char(string='Fix Target Component Code')
+
+
+class HrFormulaImportRateProposal(models.TransientModel):
+    _name = 'hr.formula.import.rate.proposal'
+    _description = 'W42 — import-time rate-table promotion proposal'
+    _order = 'component_code'
+
+    wizard_id = fields.Many2one(
+        'hr.formula.multisheet.import.wizard',
+        string='Wizard', required=True, ondelete='cascade', index=True)
+    component_code = fields.Char(string='Component Code', readonly=True)
+    component_name = fields.Char(string='Component', readonly=True)
+    driver = fields.Char(string='Driver', readonly=True)
+    n_brackets = fields.Integer(string='Brackets', readonly=True)
+    edges = fields.Char(string='Bands', readonly=True)
+    table_code = fields.Char(string='Table Code', readonly=True)
+    # The ONLY editable field — accept promotes this chain to a rate table at
+    # commit; left off, the formula imports verbatim (D-J5: never automatic).
+    accept = fields.Boolean(string='Promote', default=False)
