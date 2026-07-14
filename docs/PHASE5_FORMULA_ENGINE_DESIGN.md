@@ -819,6 +819,37 @@ that workbook through the preview to confirm confidence and red/warning lines be
 
 # WP-F — Grid & Command Polish — W18 → W4 → W8 → W104
 
+> **✅ IMPLEMENTED 2026-07-14** (Opus) — `642da268` W18 · `3b37ee64` W4 · `88b0198d` W8 ·
+> `e13e2552` W104 engine · `c69c4320` W104 studio · `06ff8748` W104 palette-insert fix. Deployed
+> pb_hr_payroll_formula 19.0.1.35.0 · pb_formula_studio 19.0.1.53.0 to Payobook19v2 (`-u` both;
+> `formulas` pip dep is now present so the engine `-u` no longer rolls back). Branch 19.1, not pushed.
+> Implementation + validation record:
+> - **W18** — registry-driven overlay: `SHORTCUT_GRID` static table + `shortcutSections` getter
+>   (Find row derived from `act.find`), a guarded `?` window listener, front-of-Escape-ladder, grid
+>   `?`-seed exclusion, palette "Keyboard shortcuts" entry. Live: opens from grid+cards, Esc closes
+>   first, typing-guard holds, all 15 bindings render.
+> - **W4** — parent `pinnedSamples`/`previewExtra`, `extraPreviews` prop + display-only value rows,
+>   pin control by the cycler, `_refreshPinned` on all 6 save paths. Live on an 85-col clone: 3-row
+>   matrix correct per-sample (cross-checked), one-save refresh of all rows, cap (button hidden when no
+>   spare) + unpin, config-switch clears. **Pin UX deviation (intentional):** pinning the active sample
+>   ADVANCES the active row to the next free sample (so the invariant "active ∉ pinned" holds and the
+>   pin gives immediate feedback); needs ≥3 samples for 2 pins. Unpin also exposed as preview-panel chips.
+> - **W8** — `viewOrdered` transform + `baseCols`; all four consumers switched; summary column with
+>   per-row Σ; focus relocation; parent `state.folds`. Live: fold Σ exact, window drift-free
+>   (scrollWidth 14388→13884 = −3 units on 4→1 constants, = label+units×colW at every scroll), nav/fill
+>   skip folded, W4×W8 compose (per-sample Σ in every row). **Note:** the VN demo's `category` field
+>   holds Input/Formula/Constant, so fold groups by those (data-driven, `_catKey` = category∥group).
+> - **W104** — engine model `hr.formula.snippet` + 6 seeds (idempotent, 6 after 2nd `-u`), studio RPCs
+>   (manager-guarded), ${CODE} resolution in the grid, autocomplete rows + palette Snippets section +
+>   manage overlay. Live: green insert (`${MSNV}+${MCLNGHL}`→`B1+G1`, valid), red insert
+>   (`${AMOUNT}`→literal, invalid msg, C7), palette + autocomplete both insert, CRUD round-trips.
+>   **Bug found+fixed in validation (`06ff8748`):** `_afterPatch`'s editor-seeding early-`return`
+>   swallowed the palette-queued insert on the mount patch → now consumed inside that block (ledger C3).
+> - **C10 anchor:** no eval-path file touched (git-verified) + `excel_semantics_battery` green + 25/25
+>   demo slips recompute to their stored values (max 0.5 VND on one PIT = raw-vs-rounded-line, C15, not
+>   drift). Console clean across the whole sweep. Throwaway clone (85-col) created→driven→deleted
+>   (cascade-clean); the real demo config is byte-unchanged.
+
 **Designed 2026-07-14 (Fable), after WP-A..E shipped.** First Medium batch, promoted from the Part-II
 briefs and re-verified against the live code. Modules: `pb_formula_studio` for all four features;
 `pb_hr_payroll_formula` ONLY for the W104 snippet model + seed data (C1 boundary — no other engine
