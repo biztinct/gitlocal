@@ -90,5 +90,29 @@
             <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
+        <!-- W65 Mapping Templates - Company Rule (WP-I review: RPC checks alone
+             left the direct-ORM path open to managers of other companies) -->
+        <record id="mapping_template_comp_rule" model="ir.rule">
+            <field name="name">Mapping Template: Company Access</field>
+            <field name="model_id" ref="model_hr_formula_mapping_template"/>
+            <field name="domain_force">[
+                '|',
+                ('company_id', '=', False),
+                ('company_id', 'in', company_ids)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="mapping_template_line_comp_rule" model="ir.rule">
+            <field name="name">Mapping Template Line: Company Access</field>
+            <field name="model_id" ref="model_hr_formula_mapping_template_line"/>
+            <field name="domain_force">[
+                '|',
+                ('template_id.company_id', '=', False),
+                ('template_id.company_id', 'in', company_ids)
+            ]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
     </data>
 </odoo>
