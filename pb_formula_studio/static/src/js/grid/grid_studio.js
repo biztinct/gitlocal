@@ -1007,6 +1007,10 @@ export class GridStudio extends Component {
             el.focus();
             const n = el.value.length;
             try { el.setSelectionRange(n, n); } catch (e) { /* non-text input */ }
+            // W104: a palette-queued snippet opened THIS editor — insert now, into the
+            // just-seeded input. (This block returns early, so the consume call at the
+            // end of _afterPatch would otherwise never run on the mount patch.)
+            this._consumePendingSnippet();
             return;
         }
         if (!this.ui.editing) {
