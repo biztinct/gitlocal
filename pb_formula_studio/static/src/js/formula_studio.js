@@ -327,6 +327,13 @@ export class PbFormulaStudio extends Component {
             budgetEdit: null,         // {id,name,period_label,note,rows[],orphans[]}
             budgetBusy: false,
             budgetSeedRun: null,      // run id chosen in the seed-from-run picker
+            // W98 (WP-H) — offer calculator overlay
+            offerOpen: false,
+            offerInputs: [],          // [{code,col,name,value}]
+            offerSamples: [],
+            offerResult: null,        // {rows, net_code, net_value, subtotals}
+            offerCurrency: "",
+            offerBusy: false,
             // W82 — tests-on-save chip: the verdict from the last save RPC
             // ({has_tests,total,passed,failed,pending,failures:[]}), cleared on
             // config switch. null = no save yet this session.
@@ -397,6 +404,8 @@ export class PbFormulaStudio extends Component {
         this.depCanvasRef = useRef("depCanvas");
         this._rawNeedsSeed = false;
         this._liveTimer = null;
+        this._offerTimer = null;   // W98 — debounced offer recompute
+        this._offerToken = 0;      // monotonic supersede token (C8)
         // Tools ▾ closes on any outside click; Esc closes the grid drawers.
         // Esc goes through the hotkey service — a plain window keydown listener
         // never fires because the service intercepts Escape at capture phase.
@@ -412,6 +421,8 @@ export class PbFormulaStudio extends Component {
         useHotkey("escape", () => {
             if (this.state.shortcutsOpen) {          // W18 — front of the Escape ladder (D-F1)
                 this.state.shortcutsOpen = false;
+            } else if (this.state.offerOpen) {        // W98 — offer calculator overlay
+                this.closeOfferCalc();
             } else if (this.state.budgetEditOpen) {  // W95 — budget editor overlay
                 this.closeBudgetEditor();
             } else if (this.state.snipManageOpen) {  // W104 — manage-snippets overlay
@@ -919,6 +930,7 @@ export class PbFormulaStudio extends Component {
         add("view.test", "Views", "Tests view", "tests samples validate check", () => this.setView("test"));
         add("view.compare", "Views", "Compare periods", "compare periods payrun delta difference month", () => this.openCompare());
         add("view.budget", "Views", "Compare vs budget", "budget variance vs actual target plan compare", () => this.openCompareBudget());
+        add("act.offer", "Actions", "Offer calculator", "offer calculator hypothetical hire net breakdown simulate salary", () => this.openOfferCalc());
         add("view.settings", "Views", "Settings", "settings configuration setup", () => this.setView("settings"));
         add("view.shortcuts", "Views", "Keyboard shortcuts", "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
         if (this.state.canEdit) add("act.new", "Actions", "New component", "add new create column", () => this.addComponentQuick());
@@ -3045,6 +3057,104 @@ export class PbFormulaStudio extends Component {
         }
         groups.sort((a, b) => (order.indexOf(a.group) + 99) - (order.indexOf(b.group) + 99) || a.group.localeCompare(b.group));
         return groups;
+    }
+
+    // ==== W98 (WP-H) — offer calculator (read-only, in-memory) ====
+    async openOfferCalc() {
+        if (this.state.empty) return;
+        this.state.moreOpen = false;
+        this.state.offerOpen = true;
+        this.state.offerResult = null;
+        try {
+            const d = await this.orm.call("pb.formula.studio", "get_test_data", [this.state.config.id]);
+            this.state.offerCurrency = (d && d.currency) || "";
+            this.state.offerSamples = (d && d.samples) || [];
+            this.state.offerInputs = ((d && d.input_components) || []).map((i) => ({
+                code: i.code, col: i.col, name: i.name || i.code, value: i.default || 0,
+            }));
+        } catch (e) { this.state.offerInputs = []; }
+        this._offerRun();
+    }
+    closeOfferCalc() { this.state.offerOpen = false; }
+    onOfferInput(code, ev) {
+        const row = this.state.offerInputs.find((i) => i.code === code);
+        if (row) row.value = ev.target.value;
+        this._offerSchedule();
+    }
+    _offerSchedule() {
+        if (this._offerTimer) clearTimeout(this._offerTimer);
+        this._offerTimer = setTimeout(() => this._offerRun(), 320);   // C8 — one RPC per pause
+    }
+    async _offerRun() {
+        const token = ++this._offerToken;
+        const inputs = {};
+        for (const i of this.state.offerInputs) {
+            const v = String(i.value ?? "").trim();
+            // Send the raw value — the server coerces numeric strings and passes
+            // text inputs (name/department columns) through to the evaluator.
+            if (v !== "") inputs[i.code] = v;
+        }
+        this.state.offerBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "offer_calc",
+                [this.state.config.id, inputs], {}, { silent: true });
+            if (token !== this._offerToken) return;   // superseded by a newer keystroke
+            if (!r || !r.ok) { this.state.offerResult = null; if (r && r.msg) this.notif.add(r.msg, { type: "warning" }); return; }
+            this.state.offerResult = r;
+        } catch (e) {
+            if (token === this._offerToken) this.state.offerResult = null;
+        } finally {
+            if (token === this._offerToken) this.state.offerBusy = false;
+        }
+    }
+    async offerFromSample(ev) {
+        const sid = parseInt(ev.target.value, 10);
+        if (!sid) return;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "offer_sample_inputs", [sid]);
+            const vals = (r && r.inputs) || {};
+            for (const i of this.state.offerInputs) if (vals[i.code] != null) i.value = vals[i.code];
+            this._offerRun();
+        } catch (e) { this.notif.add("Could not load that sample", { type: "warning" }); }
+    }
+    get offerGroups() {
+        const r = this.state.offerResult;
+        if (!r || !r.rows) return [];
+        const order = ["Earnings", "Deductions", "Totals", "Inputs"];
+        const seen = {}, groups = [];
+        for (const row of r.rows) {
+            const g = row.group || "Earnings";
+            if (!seen[g]) { seen[g] = { group: g, rows: [] }; groups.push(seen[g]); }
+            seen[g].rows.push(row);
+        }
+        groups.sort((a, b) => (order.indexOf(a.group) + 99) - (order.indexOf(b.group) + 99));
+        return groups;
+    }
+    copyOfferSummary() {
+        const r = this.state.offerResult;
+        if (!r) return;
+        const cur = this.state.offerCurrency || "";
+        const money = (v) => cur + Math.round(v || 0).toLocaleString("en-US");
+        const lines = [];
+        lines.push("Offer — " + (this.state.config.name || ""));
+        lines.push(new Date().toLocaleDateString("en-GB"));
+        lines.push("");
+        lines.push("Inputs:");
+        for (const i of this.state.offerInputs) lines.push("  " + (i.name || i.code) + ": " + i.value);
+        lines.push("");
+        lines.push("Breakdown (payslip components):");
+        for (const row of r.rows) {
+            if (row.appears_on_payslip) lines.push("  " + row.code + " (" + row.name + "): " + money(row.value));
+        }
+        if (r.net_code) { lines.push(""); lines.push("Net (" + r.net_code + "): " + money(r.net_value)); }
+        const text = lines.join("\n");
+        if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => this.notif.add("Offer summary copied", { type: "success" }));
+    }
+    offerMoney(v) { return (this.state.offerCurrency || "") + Math.round(v || 0).toLocaleString("en-US"); }
+    offerVal(row) {
+        const n = row.value || 0;
+        if (row.number_format === "percent") return Number(n).toLocaleString("en-US") + "%";
+        return this.offerMoney(n);
     }
 
     // ---- Test & Validate workbench ----
