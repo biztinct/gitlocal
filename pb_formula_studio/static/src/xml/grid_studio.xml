@@ -16,6 +16,22 @@
       </button>
       <span class="g2-toolbar-hint">Drag a column header to reorder — letters stay fixed</span>
     </div>
+    <!-- W8 — collapse-by-category fold chips (view transform; available to all viewers) -->
+    <div class="g2-foldbar" t-if="props.onToggleFold and foldableCategories.length > 1">
+      <span class="g2-foldbar-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        Collapse
+      </span>
+      <button t-foreach="foldableCategories" t-as="cat" t-key="cat.key"
+              t-attf-class="g2-foldchip {{ cat.folded ? 'on' : '' }}"
+              t-on-click="() => this.toggleFold(cat.key)"
+              t-att-title="(cat.folded ? 'Unfold ' : 'Fold ') + cat.label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path t-if="cat.folded" d="m9 18 6-6-6-6"/><path t-else="" d="m6 9 6 6 6-6"/>
+        </svg>
+        <span t-esc="cat.label"/>
+      </button>
+    </div>
     <div class="g2-bulkbar" t-if="selectionCount >= 2">
       <span class="g2-bulk-count"><b t-esc="selectionCount"/> columns selected</span>
       <button t-if="props.canEdit and props.onBulkUpdate" class="pbfs-btn primary sm" t-on-click="openBulk">
@@ -52,6 +68,18 @@
               <t t-elif="u.kind === 'spacer'">
                 <th class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/>
               </t>
+              <t t-elif="u.kind === 'summary'">
+                <t t-set="sm" t-value="u.summary"/>
+                <th class="g2-chead g2-summary g2-band g2-band-start" t-attf-style="{{ summaryBandStyle(sm) }}"
+                    t-att-title="'Unfold ' + sm.label + ' (' + sm.members.length + ' components)'"
+                    t-on-click="() => this.toggleFold(sm.cat)">
+                  <span class="g2-sumfold">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </span>
+                  <span class="g2-sumlabel" t-esc="sm.label"/>
+                  <span class="g2-sumcount" t-esc="sm.members.length"/>
+                </th>
+              </t>
               <t t-else="">
                 <t t-set="s" t-value="u.scenario"/>
                 <th t-attf-class="g2-chead g2-shead sc-{{ s.color }}" t-att-title="'Scenario: ' + s.name">
@@ -82,6 +110,7 @@
                 </td>
               </t>
               <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td class="g2-scell g2-sname muted">vs <b t-esc="u.comp.code"/></td>
               </t>
@@ -95,6 +124,7 @@
                     t-on-click="(ev) => this.onCellClick(ev, c, 'category')" t-esc="c.category"/>
               </t>
               <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
               <t t-else=""><td class="g2-scell muted">—</td></t>
             </t>
           </tr>
@@ -108,6 +138,7 @@
                 </td>
               </t>
               <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
               <t t-else=""><td class="g2-scell"><span class="g2-typ scenario">what-if</span></td></t>
             </t>
           </tr>
@@ -130,6 +161,7 @@
                 </td>
               </t>
               <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td t-attf-class="g2-scell g2-sformula {{ scenarioStatus(s).state === 'error' ? 'has-error' : '' }}"
                     t-on-click="() => this.startScenarioEdit(s)" t-att-title="s.override_formula">
@@ -149,6 +181,9 @@
                     t-on-click="(ev) => this.onCellClick(ev, c, 'value')" t-esc="props.formatValue(c.col)"/>
               </t>
               <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><t t-set="sm" t-value="u.summary"/>
+                <td class="g2-cell g2-value g2-summary g2-sumvalue" t-esc="summaryValue(sm, props.preview.values)"/>
+              </t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td class="g2-scell g2-svalue">
                   <span class="sv-num" t-esc="scenarioValue(s)"/>
@@ -171,6 +206,9 @@
                 <td class="g2-cell g2-value g2-value-extra" t-esc="extraValue(ex, c.col)"/>
               </t>
               <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><t t-set="sm" t-value="u.summary"/>
+                <td class="g2-cell g2-value g2-value-extra g2-sumvalue" t-esc="summaryValue(sm, ex.values)"/>
+              </t>
               <t t-else=""><td class="g2-scell g2-svalue muted">—</td></t>
             </t>
           </tr>
@@ -189,6 +227,7 @@
                 </td>
               </t>
               <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-elif="u.kind === 'summary'"><td class="g2-cell g2-summary muted">—</td></t>
               <t t-else=""><t t-set="s" t-value="u.scenario"/>
                 <td class="g2-scell">
                   <span t-if="scenarioStatus(s).state === 'ok'" class="g2-badge ok" title="Valid">
