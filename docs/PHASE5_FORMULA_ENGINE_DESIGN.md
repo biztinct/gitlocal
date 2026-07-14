@@ -564,6 +564,8 @@ Ordered by affinity to the WP surfaces they extend.
 > (re-verified against the post-WP-F code, including the W82 hook it gates).
 > **2026-07-14 (third):** **W95, W98** are promoted to **WP-H** (Simulation & Planning) — budget
 > mode rides the W97 comparison transient; the offer calculator evaluates on an in-memory sample.
+> **2026-07-14 (fourth):** **W62, W65** are promoted to **WP-I** (Mapping Intelligence). Cycle-wire
+> transforms are a binding NON-goal there — live payruns bypass cycle-mapping records entirely.
 
 **W18 Shortcuts overlay** *(Grid/UX, 1–2 d)* — `?` (and palette entry) opens a static overlay listing every
 studio hotkey. Seam: hotkey handlers in `grid_studio.js:298-335` + `formula_studio.js:300`; render from the
@@ -715,6 +717,9 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 
 **WP-H:**
 > Implement WP-H (Simulation & Planning: W95 budget vs actual, W98 offer calculator) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-H, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C5, C7, C8, C10, C11 are load-bearing here). Build TH.1→TH.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world, and report back per the Report-back items section. Two binding rules above all: budget mode must NOT fork the comparison fold (extend the existing transient per skeleton S-H1, and prove period mode unchanged via the TH.1 regression AC), and the offer calculator reports net + per-group subtotals only — never a fabricated "employer cost". Do not touch docs/FORMULA_ENGINE_TOUR.html.
+
+**WP-I:**
+> Implement WP-I (Mapping Intelligence: W62 transforms on the wire, W65 mapping templates) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-I, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C7, C8, C10, C11 are load-bearing here). Build TI.1→TI.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world (throwaway connector if no live one carries source fields — delete it after), and report back per the Report-back items section. Three binding rules above all: W62 touches the API adapter ONLY (cycle-wire transforms are a binding non-goal — live payruns bypass cycle-mapping records, see the WP-I facts); preview and sync application must share ONE transform function (skeleton S-I1); and the python transform moves to safe_eval with env REMOVED from the context after the env-usage sweep. Do not touch docs/FORMULA_ENGINE_TOUR.html.
 
 ---
 
@@ -1344,6 +1349,36 @@ Report back per the **Report-back items** section (deviations from D-G1..D-G7 mu
 
 # WP-H — Simulation & Planning — W95 → W98
 
+> **✅ IMPLEMENTED 2026-07-14** (Opus) — `e37f5379` W95 engine · `ae6ac4e3` W95 UI · `226c389b` W98
+> engine · `97f05c16` W98 UI · `0f7a8a58` ledger (C2 Sass mixed-unit gotcha). Deployed engine
+> 19.0.1.37.0 / studio 19.0.1.60.0. Disclosed deviations: D-H4 non-numeric inputs pass through as
+> TEXT (real configs carry text input columns; unknown codes + |v|>1e12 still rejected) and D-H6
+> read-only evaluation via a narrowly-scoped sudo() instead of an eval-path flag (D-H7 forbade the
+> flag). All ACs reported pass incl. the S-H1 period-path regression (263→313 matched=978).
+
+> **✅ REVIEWED 2026-07-14** (Fable auto-review: bulk subagent — full-diff read + live security
+> probes + budget round-trip — plus personal reads of offer_calc and the eval kernel).
+> **Verdict: SHIP.** Both deviations PROVEN SAFE: client values are inert dict data end-to-end
+> (`__import__('os').system('id')` as an input value computes a normal payroll — the compiled
+> python comes solely from the rule's own formula, `__builtins__={}` +
+> `assert_safe_expression` guard the eval), and the sudo is bounded — the config/rules read happens
+> as the REAL user first, so the multi-company record rule blocks cross-company probes before any
+> sudo work (live-probed: AccessError).
+> **One Major — root cause SYSTEMIC, fixed same day:** the `(budget_id, code)` unique constraint
+> never materialized on the live DB. The reviewer diagnosed a partial schema apply; chasing it
+> revealed the real cause — **Odoo 19 silently ignores the legacy `_sql_constraints` list**
+> (`model_classes.py:162` warning only), so NO `hr_formula_*` table had ANY unique constraint,
+> ever. All 13 engine constraints were converted to the `models.Constraint` class-attribute API
+> (dup-checked live first — zero violations, the app-level guards had held), deployed via engine
+> `-u`, and pg_constraint-verified. Ledger C9 updated; ~28 non-engine files still carry the dead
+> attribute (convert on touch). The app path was safe regardless (budget_save rebuilds lines from
+> a code-keyed dict).
+> **Minors fixed same day:** cross-company `offer_calc`/`budget_get` now return a graceful
+> `{ok:False}` instead of a raw AccessError 500; numeric-string overflow (`"1e400"` → inf) is now
+> rejected as out-of-range instead of slipping down the text-passthrough branch;
+> `offer_sample_inputs` now gates through the parent config's record rule (samples carry no
+> company rule of their own).
+
 **Designed 2026-07-14 (Fable), after WP-G shipped.** Third Medium batch: put the compare surface to
 planning work. **W95 budget vs actual** — author a per-component budget for a config and fold a real
 payrun against it in the existing Compare table. **W98 offer calculator** — type a hypothetical
@@ -1522,3 +1557,188 @@ def cmp_prepare(self, cmp_id):
 5. Drive artifacts (budgets, any samples) deleted; console clean throughout.
 
 Report back per the **Report-back items** section (deviations from D-H1..D-H8 must be flagged).
+
+---
+
+# WP-I — Mapping Intelligence — W62 → W65
+
+**Designed 2026-07-14 (Fable), after WP-H shipped.** Fourth Medium batch: finish the F10 mapping
+canvas. **W62 transforms on the wire** — surface, edit and live-preview the per-mapping transforms
+that ALREADY run at sync time, as badges on the API-adapter wires. **W65 mapping templates** — save a
+mapped board as a named, reusable template and apply it across configs/connectors (bureau workflow).
+Modules: engine for the transform hardening + template models; studio for badges/popover/template UI.
+Effort ≈ 6 d.
+
+## Verified plumbing facts (do not re-derive)
+
+*Transforms already exist and already run (`pb_hr_payroll_formula/models/integration_field_mapping.py`):*
+- `hr.integration.field.mapping` carries `transformation_type` (Selection: direct / multiply /
+  divide / add / subtract / round / abs / default_if_empty / **python**), `transformation_value`,
+  `transformation_decimals`, `transformation_code` — `:91-127`; plus `source_sample_value` (`:61`),
+  `is_required` / `default_value` / `min_value` / `max_value` (`:131-153`).
+- The apply site is `:228-275`: numeric coercion (required → ValidationError, else default), the
+  op ladder, divide-by-zero guard, and — the hazard — **`python` runs raw
+  `eval(transformation_code, {"__builtins__": {}}, {'value', 'record', 'env'})`** (`:264-275`) with
+  the full `env` in scope; errors fall back to `default_value` with only a server log.
+- W62 for this adapter is therefore SURFACING + HARDENING, not building: zero schema change.
+
+*The two canvas adapters (`pb_formula_studio/models/pb_formula_studio.py`):*
+- Cycle adapter: `mapping_canvas_data` `:3185-3221` (left/right/wires payload; wires
+  `{id, kind: mapping|suggestion, ref, leftId, rightId, state, confidence?, reason?}`),
+  `mapping_create` `:3257` (uniqueness by dropping existing wires on either side, `:3270-3273`),
+  `mapping_delete` `:3279`, suggestion accept/reject `:3238/:3248` — all writes `_can_edit`-gated.
+- API adapter: `api_mapping_data` `:3316-3390` (left = connector source fields via
+  `get_available_source_fields`, incl. `sample`; right = input-type rules; accepted wires from
+  persisted `hr.integration.field.mapping` rows; suggestions computed LIVE by name-match, never
+  persisted; `supports_suggest: False`), `api_mapping_create` `:3391`, `api_mapping_delete` `:3409`.
+- Canvas JS is adapter-generic (`mapping_canvas.js:6` — "just a different adapter"); the wire-badge
+  action block is `:108+`. 140 lines total; styles `mapping.scss`.
+
+*Cycle mappings and WHERE they are actually applied — the W62 scoping fact:*
+- Model `hr.payroll.cycle.component.mapping` (`payroll_cycle_component_mapping.py:7-58`): pair of
+  configs + pair of components, three SQL uniques (pair / one-per-mid / one-per-end), NO transform
+  fields.
+- The generic application machinery lives ONLY in the import path
+  (`payroll_import_batch.py:1204-1210` search helpers, applied `:1314` / `:1427`).
+- **Live payrun paths BYPASS the mapping records**: the demo payrun wizard reads the mid advance
+  straight off mid-run slip lines by hard-coded code (`pb_demo/models/demo_payrun.py:78-137`, used
+  `:246/:347`), and the history generator passes it directly (`demo_history.py:160-161`). A
+  transform stored on a cycle mapping would run on imports but be IGNORED by live runs.
+
+*W65 raw material:*
+- `hr.integration.mapping.template` (`integration_mapping_template.py:22-44`) is the VENDOR-seeded
+  canonical table (keyed `connector_type`, `source_path` → `target_code`, own transform columns,
+  `verify` flag) applied by the onboarding wizard's `action_apply_template` (`:154`). It is seed
+  data, not a user-save surface — do not overload it.
+- Cross-config copying precedent: `bureau_clone` in the studio facade (B4). Snippet-library
+  precedent for user-authored shared records: `formula_snippet.py` + manager-gated CRUD — including
+  its REVIEW FINDING: writes were not company-scoped (deferred gap). W65 must not repeat it.
+
+## Locked decisions
+
+- **D-I1 (W62 scope = API adapter ONLY; cycle transforms are a BINDING NON-GOAL)** — because live
+  runs bypass cycle-mapping records (facts above), a transform on a cycle wire would silently apply
+  to import batches and NOT to live payruns — an architecture-level C7 violation. Cycle wires render
+  unchanged. If cycle transforms are ever wanted, the prerequisite package is "unify the carryover
+  read path through the mapping records", which is NOT this WP. State this in the canvas UI copy
+  only if a user asks — no dead affordances.
+- **D-I2 (badges surface the EXISTING fields)** — every accepted API wire shows a compact transform
+  badge: `=` direct, `×n` multiply, `÷n` divide, `+n` / `−n`, `≈d` round, `|x|` abs, `?n`
+  default_if_empty, and `ƒ` for python. Clicking opens a popover editor (scrim pattern, C11) for
+  type/value/decimals with a LIVE preview line: `sample → transformed`. **The `python` type is
+  read-only on the canvas** (badge + "edit in backend form" note, manager-only there) — the canvas
+  must not grow the code-authoring surface.
+- **D-I3 (one transform code path)** — refactor the `:238-275` op ladder into a pure helper
+  `_apply_transform_ops(vals, value, record)` used by BOTH the persisted sync application and a new
+  draft-preview RPC `api_transform_preview(mapping_id, draft_vals)` (evaluates the draft against
+  `source_sample_value` WITHOUT writing). Persist via `api_transform_save(mapping_id, vals)`
+  (manager-gated, whitelisted fields: type/value/decimals only — never `transformation_code`).
+  Preview and application can never diverge because they are the same function.
+- **D-I4 (safe_eval hardening, in scope)** — replace the raw `eval` with
+  `odoo.tools.safe_eval.safe_eval(expr, {'value': …, 'record': …})` — **`env` is REMOVED from the
+  eval context**. Before landing: grep the seed XML (`data/mapping_templates.xml`) and psql the live
+  `hr_integration_field_mapping.transformation_code` rows for `env` usage; none expected — if any
+  exists, migrate that row explicitly and say so in the report. Error behaviour: keep the
+  default_value fallback + log, and ALSO mark the mapping row (`has_transform_error`-style rendering
+  via the existing payload — a red tint on the badge) so the failure is visible on the canvas (C7),
+  not only in a server log.
+- **D-I5 (W65 = new lean user-template models; vendor seeds untouched)** — engine models
+  `hr.formula.mapping.template` (`name` required, `adapter` Selection `api/cycle`, `connector_type`
+  optional (api), `company_id` **required-by-default behaviour: writes are company-scoped from day
+  one** — do not repeat the W104 snippet gap; empty company = shared, but save/delete RPCs must
+  check the record's company against `self.env.company` for non-shared rows) and
+  `hr.formula.mapping.template.line` (`source_key` — API source path or mid-component CODE;
+  `target_code` — input/end-component CODE; `transformation_type/value/decimals` copied for api
+  lines). Templates store CODES, never ids — they must apply across configs.
+- **D-I6 (W65 apply semantics — loud, never destructive)** — `mapping_template_apply(template_id,
+  config_id, connector_id?)` matches lines by code/path against the target board and returns
+  `{applied, skipped_existing, unmatched_sources, unmatched_targets}`; it NEVER overwrites an
+  existing wire (skip + report) and never deletes anything. `mapping_template_save(config_id,
+  adapter, name)` snapshots the CURRENT accepted wires (+ transforms for api). Both manager-gated;
+  list is open. UI: "Save board as template…" / "Apply template…" buttons on the canvas toolbar for
+  both adapters (cycle templates carry pairs only, no transforms — D-I1).
+- **D-I7 (schema/deploy)** — new template models ⇒ one engine `-u`; access rows user-read/
+  manager-write; both manifests bump (C2). The refactor of the transform ladder touches
+  `integration_field_mapping.py` — this is sync-path engine code, NOT payslip-eval code; the C10
+  anchor still applies as the standard ritual plus one transform-regression check (see TI.5).
+- **D-I8** — `docs/FORMULA_ENGINE_TOUR.html` stays untouched.
+
+## Tasks
+
+**TI.1 — W62 engine: transform helper + preview/save RPCs + safe_eval hardening** *(~1.5 d)*
+Refactor ladder → pure helper; `api_transform_preview` / `api_transform_save`; safe_eval swap with
+the env-usage sweep; extend `api_mapping_data` wires with `{transform: {type, value, decimals,
+label, error}}`.
+AC: preview(draft) == what the sync path would produce for the same vals (unit-check by calling
+both on 5 op types incl. divide-by-zero → loud error not crash); python rows: preview refuses
+(read-only), safe_eval runs a benign expr, `env` absent from context (attempt `env` in a test expr
+→ NameError caught → default+badge error); no `transformation_code` writable via RPC.
+
+**TI.2 — W62 canvas UI: badges + popover** *(~1.5 d)*
+Badge rendering on accepted API wires; popover editor with live preview (260 ms debounce +
+supersede token, C8); error tint; read-only python badge; read-only users see badges, no editor
+(locked notice — W104 lesson).
+AC: full drive on a connector board: set ×12 on one wire → badge updates, preview shows
+`sample → sample×12`, sync-side value verified changed accordingly (or via preview==apply parity
+from TI.1 if no live sync is safe to run); cycle canvas shows NO transform affordances; zero
+console errors.
+
+**TI.3 — W65 engine: template models + save/apply RPCs** *(~1.5 d)*
+Models + access rows + `mapping_template_save/list/apply/delete` with D-I5/D-I6 semantics + `-u`.
+AC: save a board with 6 wires (2 transformed) → template has 6 code-level lines; apply to a config
+whose inputs match 4 → `{applied: 4, unmatched: 2 listed}`, existing wires untouched
+(`skipped_existing` correct); company-scoping: non-shared template from another company is
+invisible AND un-deletable (server-side check, not just UI).
+
+**TI.4 — W65 canvas UI** *(~1 d)*
+Toolbar Save-as-template / Apply-template pickers on both adapters; apply-result summary (applied /
+skipped / unmatched, all shown); manager-gating.
+AC: round-trip save→apply on a second config drivable in the browser; unmatched lines rendered, not
+hidden; zero console errors.
+
+**TI.5 — package validation sweep** *(~0.5 d)*
+Chrome-MCP drive on the pb_demo VN world. If no live connector with source fields exists, create a
+throwaway connector (+ sample fields) for the drive and DELETE it after (reviewer-verified cleanup
+pattern). Transform-regression check: for every PRE-EXISTING live mapping row (psql list), compute
+apply-before vs apply-after on its sample value across the refactor — zero drift expected. C10
+anchor small-scale recompute parity (unchanged ritual). Console clean; artifacts deleted.
+
+### Skeleton S-I1 — the shared ladder (the risky spot: preview and sync must be ONE function)
+
+```python
+# integration_field_mapping.py — refactor, not fork
+def _apply_transform_ops(self, vals, value, record=None):
+    """Pure op ladder. `vals` = {'transformation_type','transformation_value',
+    'transformation_decimals','transformation_code'} — from the RECORD for the
+    sync path, from the DRAFT for previews. Same function, both callers."""
+    t = vals.get('transformation_type') or 'direct'
+    v = vals.get('transformation_value') or 0.0
+    ...
+    if t == 'python':
+        expr = vals.get('transformation_code') or ''
+        # D-I4: safe_eval, NO env. Draft previews never reach here (RPC refuses
+        # python drafts); the sync path logs + falls back + flags the row.
+        from odoo.tools.safe_eval import safe_eval
+        return safe_eval(expr, {'value': value, 'record': record or {}})
+    ...
+# apply_transformation(self, value, record) → coercion/required/default logic stays,
+#   then: return self._apply_transform_ops({f: self[f] for f in _T_FIELDS}, value, record)
+# api_transform_preview → coercion of the SAMPLE + _apply_transform_ops(draft, ...)
+# GOTCHA: keep the numeric-coercion + is_required + min/max clamp OUTSIDE the shared
+#   ladder and run it in BOTH callers identically — previews that skip the clamp
+#   would show a value the sync would never produce.
+```
+
+## WP-I verification (Chrome MCP on pb_demo VN world)
+
+1. W62: badge vocabulary renders for every op type; popover edit ×12 → preview parity with the
+   sync-path function; divide-by-zero draft → loud popover error; python wire read-only + badge.
+2. safe_eval: env-usage sweep result reported (seed XML + live rows); a `value * 2` python row
+   still transforms; an `env`-touching expr fails visibly (badge error tint), not silently.
+3. Transform regression: all pre-existing live mapping rows produce identical apply results across
+   the refactor (list count + zero-drift statement in the report).
+4. W65: save→apply round-trip with correct applied/skipped/unmatched accounting; cross-company
+   invisibility + server-side delete rejection; vendor seed table row-count unchanged.
+5. Cycle canvas byte-identical (no badges, no transform UI). 6. Artifacts deleted; console clean.
+
+Report back per the **Report-back items** section (deviations from D-I1..D-I8 must be flagged).
