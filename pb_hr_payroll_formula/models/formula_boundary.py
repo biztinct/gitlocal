@@ -308,14 +308,16 @@ class HrFormulaConfigBoundary(models.Model):
         existing = {s.boundary_key for s in self.sample_data_ids
                     if s.source_type == 'generated' and s.boundary_key}
 
-        created = skipped = capped = 0
+        created = skipped = capped = dropped = 0
         for p in (picks or []):
             code = (p or {}).get('input_code')
             if not code or code not in by_code_input:
-                continue                       # only reachable input dimensions
+                dropped += 1                   # C7: count it, never vanish it
+                continue
             try:
                 edge = float(p.get('edge'))
             except (TypeError, ValueError):
+                dropped += 1
                 continue
             src = p.get('label') or p.get('source') or 'boundary'
             for delta, tag in ((-1, '−1'), (0, '0'), (1, '+1')):
@@ -334,4 +336,5 @@ class HrFormulaConfigBoundary(models.Model):
                     'Boundary sample from %s' % src, boundary_key=key)
                 existing.add(key)
                 created += 1
-        return {'ok': True, 'created': created, 'skipped': skipped, 'capped': capped}
+        return {'ok': True, 'created': created, 'skipped': skipped,
+                'capped': capped, 'dropped': dropped}
