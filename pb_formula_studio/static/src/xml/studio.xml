@@ -3011,6 +3011,33 @@
                  onRename="(id) => this.findRename(id)" onJump="(id) => this.findJump(id)"/>
     <CommandPalette t-if="state.paletteOpen and !state.empty" commands="paletteCommands" onClose="() => this.closePalette()"/>
     <HoverCard t-if="state.hoverCard and hoverCardData" data="hoverCardData" style="hoverCardStyle"/>
+
+    <!-- WP-F · W18 — keyboard-shortcuts overlay (registry-driven, zero RPC) -->
+    <div t-if="state.shortcutsOpen" class="pbfs-shortcuts-scrim" t-on-click="closeShortcuts" data-coach="shortcuts">
+      <div class="pbfs-shortcuts" t-on-click="(ev) => ev.stopPropagation()">
+        <div class="pbsc-h">
+          <div class="pbsc-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M9 13h6"/></svg>
+            Keyboard shortcuts
+          </div>
+          <button class="pbsc-x" t-on-click="closeShortcuts" title="Close (Esc)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <div class="pbsc-body">
+          <div t-foreach="shortcutSections" t-as="sec" t-key="sec.title" class="pbsc-sec">
+            <div class="pbsc-sec-t" t-esc="sec.title"/>
+            <div t-foreach="sec.rows" t-as="row" t-key="row_index" class="pbsc-row">
+              <span class="pbsc-keys">
+                <t t-foreach="row.keys" t-as="k" t-key="k_index"><kbd class="pbsc-kbd" t-esc="k"/></t>
+              </span>
+              <span class="pbsc-lbl" t-esc="row.label"/>
+            </div>
+          </div>
+        </div>
+        <div class="pbsc-foot"><b>?</b> opens this panel · <b>Esc</b> closes</div>
+      </div>
+    </div>
     </div>
   </t>
 
