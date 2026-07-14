@@ -4236,9 +4236,12 @@ class PbFormulaStudio(models.AbstractModel):
     # Test & Validate workbench
     # ------------------------------------------------------------------
     def _sample_verdict(self, s):
-        """Preview when no expected; else the model's validation_status."""
+        """Preview when no expected; pending when the baseline is unconfirmed
+        (W84 — matches run_sample_tests); else the model's validation_status."""
         if not (s.expected_values_json and s.expected_values_json not in ('{}', '')):
             return 'preview'
+        if not s.expected_confirmed:
+            return 'pending'
         return s.validation_status or 'pending'
 
     def _sample_row(self, s):
@@ -4247,6 +4250,7 @@ class PbFormulaStudio(models.AbstractModel):
             'source_type': s.source_type or 'manual',
             'verdict': self._sample_verdict(s),
             'has_expected': bool(s.expected_values_json and s.expected_values_json not in ('{}', '')),
+            'expected_confirmed': bool(s.expected_confirmed),
             'discrepancy_count': s.discrepancy_count,
             'last_computed': s.last_computed and str(s.last_computed) or '',
         }
@@ -4365,6 +4369,7 @@ class PbFormulaStudio(models.AbstractModel):
             'source_type': s.source_type or 'manual',
             'verdict': self._sample_verdict(s),
             'has_expected': bool(s.expected_values_json and s.expected_values_json not in ('{}', '')),
+            'expected_confirmed': bool(s.expected_confirmed),
             'rows': s.get_comparison_data(),
         }
 
@@ -4554,6 +4559,62 @@ class PbFormulaStudio(models.AbstractModel):
             c = self.env['hr.formula.config'].browse(cid)
             samples = [self._sample_row(x) for x in c.sample_data_ids]
         return {'ok': True, 'samples': samples}
+
+    # ------------------------------------------------------------------
+    # W84 — boundary-value test generation (engine does the work; these are
+    # thin studio wrappers). Generation + confirm are manager-gated writes.
+    # ------------------------------------------------------------------
+    @api.model
+    def boundary_candidates(self, config_id):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'candidates': [], 'reachable': 0, 'unreachable': 0}
+        return c.boundary_candidates()
+
+    @api.model
+    def generate_boundary_samples(self, config_id, picks, base_sample_id=None):
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': _('Configuration not found')}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can generate test samples.')}
+        try:
+            r = c.generate_boundary_samples(picks or [], base_sample_id)
+        except Exception as e:
+            _logger.warning("generate_boundary_samples failed on %s: %s", c.id, e)
+            return {'ok': False, 'msg': str(e).splitlines()[0] if str(e) else 'Could not generate.'}
+        r['samples'] = [self._sample_row(x) for x in c.sample_data_ids]
+        return r
+
+    @api.model
+    def confirm_sample_expected(self, sample_id):
+        """Flip one generated sample's baseline to confirmed and re-run the chip
+        (W84/D-G3). Manager-gated like every studio write."""
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        if not s.exists():
+            return {'ok': False}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can confirm baselines.')}
+        s.expected_confirmed = True
+        detail = self.get_sample_detail(s.id)
+        detail['tests'] = self._run_tests_after_save(s.config_id)
+        return detail
+
+    @api.model
+    def confirm_all_samples(self, config_id):
+        """Confirm every unconfirmed baseline in the config, then re-run the chip."""
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can confirm baselines.')}
+        unconf = c.sample_data_ids.filtered(lambda x: not x.expected_confirmed)
+        n = len(unconf)
+        if unconf:
+            unconf.expected_confirmed = True
+        return {'ok': True, 'confirmed': n,
+                'samples': [self._sample_row(x) for x in c.sample_data_ids],
+                'tests': self._run_tests_after_save(c)}
 
     @api.model
     def cfg_generate_wizard(self, config_id, source):

@@ -93,9 +93,13 @@ class HrFormulaConfigTests(models.Model):
         for s in samples:
             expected = _load(s.expected_values_json)
             testable = any(v is not None for v in expected.values())
-            if testable:
+            # W84 (D-G3): a testable sample whose baseline a human has NOT yet
+            # confirmed is a characterization hypothesis — it counts as pending,
+            # never passed/failed, so a generated row can never move the chip.
+            confirmed = s.expected_confirmed
+            if testable and confirmed:
                 has_tests = True
-            if s in skipped or not testable:
+            if s in skipped or not testable or not confirmed:
                 pending += 1
                 continue
             if s.all_passed:

@@ -331,6 +331,13 @@ export class PbFormulaStudio extends Component {
             testCoverage: null,
             coverageOpen: false,   // expandable untested list
             testGenOpen: false,
+            // W84 — Generate dropdown sub-panels: null | 'boundary' | 'ai'
+            genMode: null,
+            boundaryCands: null,   // {candidates, reachable, unreachable}
+            boundaryPicks: [],     // selected candidate keys
+            boundaryBase: null,    // base sample id to clone inputs from
+            boundaryBusy: false,
+            boundaryResult: null,  // {created, skipped, capped}
             testInputsOpen: true,
             randomCount: 3,
             randomMin: 5000000,
@@ -2871,10 +2878,69 @@ export class PbFormulaStudio extends Component {
     }
     get testSample() { return this.state.test.samples.find(s => s.id === this.state.testSampleId) || null; }
     tcell(v) { return (v === null || v === undefined || v === "") ? "—" : this.vnd(v); }
-    toggleTestGen() { this.state.testGenOpen = !this.state.testGenOpen; }
+    toggleTestGen() {
+        this.state.testGenOpen = !this.state.testGenOpen;
+        if (!this.state.testGenOpen) this.state.genMode = null;
+    }
     // W83 — coverage strip
     toggleCoverage() { this.state.coverageOpen = !this.state.coverageOpen; }
     coverageJump(ruleId) { this.state.coverageOpen = false; this.findJump(ruleId); }
+    // W84 — boundary-value generation panel (inside the Generate dropdown)
+    backToGenMenu() { this.state.genMode = null; }
+    async openBoundaryPanel() {
+        this.state.genMode = "boundary";
+        this.state.boundaryResult = null;
+        this.state.boundaryBusy = true;
+        this.state.boundaryCands = null;
+        const r = await this.orm.call("pb.formula.studio", "boundary_candidates", [this.state.config.id]);
+        this.state.boundaryBusy = false;
+        this.state.boundaryCands = (r && r.ok) ? r : { candidates: [], reachable: 0, unreachable: 0 };
+        // default: all reachable edges checked
+        this.state.boundaryPicks = this.state.boundaryCands.candidates.filter(c => c.reachable).map(c => c.key);
+        if (this.state.boundaryBase === null) {
+            const first = this.state.test.samples[0];
+            this.state.boundaryBase = first ? first.id : null;
+        }
+    }
+    toggleBoundaryPick(key) {
+        const p = this.state.boundaryPicks, i = p.indexOf(key);
+        if (i >= 0) p.splice(i, 1); else p.push(key);
+    }
+    setBoundaryBase(ev) { const v = parseInt(ev.target.value, 10); this.state.boundaryBase = isNaN(v) ? null : v; }
+    async runBoundaryGen() {
+        const picks = (this.state.boundaryCands.candidates || [])
+            .filter(c => c.reachable && this.state.boundaryPicks.includes(c.key));
+        if (!picks.length) { this.notif.add("Select at least one reachable edge.", { type: "warning" }); return; }
+        this.state.boundaryBusy = true;
+        const r = await this.orm.call("pb.formula.studio", "generate_boundary_samples",
+            [this.state.config.id, picks, this.state.boundaryBase]);
+        this.state.boundaryBusy = false;
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not generate", { type: "warning" }); return; }
+        this.state.boundaryResult = { created: r.created, skipped: r.skipped, capped: r.capped };
+        const summary = `${r.created} created` + (r.skipped ? `, ${r.skipped} skipped` : "") + (r.capped ? `, ${r.capped} over cap` : "");
+        this.notif.add(`Boundary samples: ${summary}`, { type: r.created ? "success" : "info" });
+        await this.loadTestData(true);   // refresh samples + coverage strip
+        if (r.created) {
+            const gen = this.state.test.samples.filter(s => s.source_type === "generated");
+            const last = gen[gen.length - 1];
+            if (last) { this.state.testGenOpen = false; this.state.genMode = null; await this.selectSample(last.id); }
+        }
+    }
+    // W84 — confirm characterization baselines (unconfirmed → chip-neutral until confirmed)
+    get hasUnconfirmed() { return (this.state.test.samples || []).some(s => s.expected_confirmed === false); }
+    async confirmBaseline(id) {
+        const r = await this.orm.call("pb.formula.studio", "confirm_sample_expected", [id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not confirm", { type: "warning" }); return; }
+        this.state.testDetail = r; this._syncSampleVerdict(r); this._applyTests(r.tests);
+        this.notif.add("Baseline confirmed", { type: "success" });
+    }
+    async confirmAllBaselines() {
+        const r = await this.orm.call("pb.formula.studio", "confirm_all_samples", [this.state.config.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not confirm", { type: "warning" }); return; }
+        this.state.test.samples = r.samples; this._applyTests(r.tests);
+        if (this.state.testSampleId) await this.loadSampleDetail(this.state.testSampleId);
+        this.notif.add(`${r.confirmed} baseline${r.confirmed === 1 ? "" : "s"} confirmed`, { type: "success" });
+    }
     toggleTestInputs() { this.state.testInputsOpen = !this.state.testInputsOpen; }
     setRandomField(field, ev) { const v = parseFloat(ev.target.value); this.state[field] = isNaN(v) ? 0 : v; }
     onTestInput(code, ev) {
@@ -2887,7 +2953,7 @@ export class PbFormulaStudio extends Component {
     }
     _syncSampleVerdict(detail) {
         const s = this.state.test.samples.find(x => x.id === detail.id);
-        if (s) { s.verdict = detail.verdict; s.has_expected = detail.has_expected; }
+        if (s) { s.verdict = detail.verdict; s.has_expected = detail.has_expected; s.expected_confirmed = detail.expected_confirmed; }
     }
     async addManualSample() {
         this.state.testGenOpen = false;
