@@ -15,6 +15,32 @@ const GROUPS = ["Inputs", "Earnings", "Deductions", "Totals"];
 const CAT_COLOR = { info: "#0E7490", earn: "#4F46E5", ded: "#B45309", total: "#059669" };
 const OPSYM = { "+": "+", "-": "−", "*": "×", "/": "÷", "^": "^" };
 
+// W18 (D-F2) — keyboard-shortcut registry for the shortcuts overlay. The GRID rows
+// are a static table living in this ONE file, right next to `paletteCommands` and
+// `_setupCommandLayer` (which register the actual hotkeys), so W99 and W18 can never
+// drift apart — one file to update. The "Command layer" section is derived from
+// `paletteCommands` labels in `shortcutSections` (a binding-per-row), keeping the
+// ⌘F row honest against the real Find command.
+const SHORTCUT_GRID = [
+    { title: "Grid navigation", rows: [
+        { keys: ["←", "↑", "→", "↓"], label: "Move between cells" },
+        { keys: ["Tab"], label: "Next column · Shift+Tab for previous" },
+        { keys: ["Shift", "←/→"], label: "Extend the column selection" },
+        { keys: ["Enter"], label: "Edit the focused formula cell" },
+        { keys: ["F2"], label: "Edit the focused formula cell" },
+    ] },
+    { title: "Grid editing", rows: [
+        { keys: ["A–Z", "0–9"], label: "Start typing to edit a formula cell" },
+        { keys: ["Enter"], label: "Save the edit" },
+        { keys: ["Esc"], label: "Cancel the edit · clear selection" },
+        { keys: ["Ctrl", "Z"], label: "Undo the last saved formula" },
+    ] },
+    { title: "Drag-fill", rows: [
+        { keys: ["Enter"], label: "Confirm the proposed fill" },
+        { keys: ["Esc"], label: "Cancel the fill" },
+    ] },
+];
+
 // Searchable many2one combobox (substring filter on name+code+col, keyboard nav).
 // Menu is position:fixed so it escapes the .pbcfg scroll-container clipping.
 export class CfgCombo extends Component {
@@ -321,6 +347,8 @@ export class PbFormulaStudio extends Component {
             findOpen: false,        // W14 find & replace drawer
             paletteOpen: false,     // W99 command palette
             hoverCard: null,        // W100 hover card: {compId, x, y} | null
+            // WP-F · W18 — keyboard-shortcuts overlay
+            shortcutsOpen: false,
         });
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
@@ -341,7 +369,9 @@ export class PbFormulaStudio extends Component {
             }
         });
         useHotkey("escape", () => {
-            if (this.state.paletteOpen) {
+            if (this.state.shortcutsOpen) {          // W18 — front of the Escape ladder (D-F1)
+                this.state.shortcutsOpen = false;
+            } else if (this.state.paletteOpen) {
                 this.state.paletteOpen = false;
             } else if (this.state.findOpen) {
                 this.state.findOpen = false;
@@ -693,6 +723,7 @@ export class PbFormulaStudio extends Component {
         add("view.test", "Views", "Tests view", "tests samples validate check", () => this.setView("test"));
         add("view.compare", "Views", "Compare periods", "compare periods payrun delta difference month", () => this.openCompare());
         add("view.settings", "Views", "Settings", "settings configuration setup", () => this.setView("settings"));
+        add("view.shortcuts", "Views", "Keyboard shortcuts", "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
         if (this.state.canEdit) add("act.new", "Actions", "New component", "add new create column", () => this.addComponentQuick());
         if (this.state.canEdit) add("act.import", "Actions", "Import from Excel…", "import excel upload spreadsheet workbook", () => this.importExcelInto());
         add("act.find", "Actions", "Find & replace", "find search replace formula", () => this.openFind());
@@ -771,6 +802,34 @@ export class PbFormulaStudio extends Component {
         useExternalListener(window, "mouseover", (ev) => this._onHoverMove(ev));
         useExternalListener(window, "scroll", () => this._killHover(), { capture: true });
         useExternalListener(window, "keydown", () => this._killHover());
+        // W18 (D-F1) — "?" opens the shortcuts overlay. A window keydown (not a
+        // useHotkey token: shifted-punctuation parsing is layout-dependent) guarded
+        // so it never fires while typing in any field or while another modal is up.
+        useExternalListener(window, "keydown", (ev) => this._onGlobalHelpKey(ev));
+    }
+    _onGlobalHelpKey(ev) {
+        if (ev.key !== "?" || this.state.shortcutsOpen) return;
+        const t = ev.target, tag = t && t.tagName;
+        if (t && (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || t.isContentEditable)) return;
+        if (this.state.paletteOpen || this.state.findOpen || this.state.aiOpen) return;
+        ev.preventDefault();
+        this.openShortcuts();
+    }
+
+    // ---- W18 shortcuts overlay ----
+    openShortcuts() { this.state.paletteOpen = false; this.state.shortcutsOpen = true; }
+    closeShortcuts() { this.state.shortcutsOpen = false; }
+    // Command-layer rows are DERIVED from paletteCommands (binding-per-row, D-F2) so
+    // the ⌘F row matches the real Find command; the grid rows are the static table.
+    get shortcutSections() {
+        const find = this.paletteCommands.find(c => c.id === "act.find");
+        const cmd = [
+            { keys: ["⌘/Ctrl", "K"], label: "Command palette" },
+            { keys: ["⌘/Ctrl", "F"], label: (find && find.label) || "Find & replace" },
+            { keys: ["?"], label: "Keyboard shortcuts (this panel)" },
+            { keys: ["Esc"], label: "Close palette · find · drawers" },
+        ];
+        return [{ title: "Command layer", rows: cmd }, ...SHORTCUT_GRID];
     }
 
     // ---- F14 scenario columns (what-if overlays) ----

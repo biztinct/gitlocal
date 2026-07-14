@@ -445,8 +445,11 @@ export class GridStudio extends Component {
             case "Enter": case "F2": this._startEdit(); break;
             case "Escape": this.ui.selection = []; break;
             default:
-                // printable char on an editable cell → open editor pre-seeded with the char
-                if (ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey && !ev.altKey
+                // printable char on an editable cell → open editor pre-seeded with the char.
+                // "?" is EXCLUDED (W18/D-F1): it is not a legal formula-start token, and
+                // leaving it unhandled lets it bubble to the window listener that opens the
+                // shortcuts overlay while the grid scroller is focused.
+                if (ev.key.length === 1 && ev.key !== "?" && !ev.ctrlKey && !ev.metaKey && !ev.altKey
                     && EDITABLE_ROWS.has(this.ui.focus.row) && this.props.canEdit) {
                     this._startEdit(ev.key); break;
                 }
