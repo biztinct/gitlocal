@@ -136,8 +136,14 @@ one score, one breakdown JSON.
 `hr.employee.sex` · stateless recordsets (`__slots__`, see C6) · `ir_ui_view` lock via shell vs UI ·
 `fields.Selection(selection_add=...)` **requires an `ondelete` policy that the base field can honor** —
 `'set default'` asserts at registry load if the base field has no `default` (`ondelete policy of type
-'set default' is invalid … does not define a default!`); use `'set null'` for a plain optional Selection.
-Full list in the memory ledger (odoo19-payroll-gotchas); check it before touching core-model overrides.
+'set default' is invalid … does not define a default!`); use `'set null'` for a plain optional Selection
+(WP-G used `ondelete={'generated': 'set default'}` safely because `hr.formula.sample.data.source_type`
+defines `default='manual'`). **Import order for `_inherit`-only extension files matters** — Odoo 19 adds
+model classes to the registry in *import order*, so a file that does `_inherit='hr.formula.sample.data'`
+without a `_name` MUST be imported in `models/__init__.py` **after** the file that defines the base model,
+or load aborts with `TypeError: Model 'hr.formula.sample.data' does not exist in registry` (WP-G:
+`formula_boundary` had to move below `formula_sample_data`). Full list in the memory ledger
+(odoo19-payroll-gotchas); check it before touching core-model overrides.
 
 ## C10 — Verification & delivery rituals
 
