@@ -302,3 +302,36 @@ simulation) must read `formula_computed_values` (JSON) **with a fallback to the 
 studio compute path; **historical and bulk-imported slips store their result as `hr.payslip.line`
 rows, not the JSON** (in the VN demo, only 28 of 26.5k formula slips carry the JSON). Reading only the
 JSON silently yields empty folds. Helper: `_slip_computed(slip)`.
+
+## C16 — Progressive-chain detector (WP-J / W52·W54·W42)
+
+The nested-`IF` progressive-tax detector is `formula_engine/if_chain.py` — **pure, no ORM**, the
+single source shared by W54 (studio) and W42 (import mixin); never re-implement chain parsing in a
+caller (D-J1). `detect(expr)` returns `None` for a non-chain, else a dict with `brackets`,
+`deductions`, `span` (char offsets), `consistent`, `bad_band`, `reason`. Binding facts hit building it:
+
+- **The VN demo PIT parses to 8 value-branches but 7 statutory brackets.** `=-MAX(0,IF(TXBASE<=0,0,
+  IF(TXBASE<=5M,…)))` has a leading `<=0 → 0` non-negative guard plus 7 rate bands. The guard is NOT a
+  bracket — `BRACKET()`'s own `MAX(0,…)` reproduces it — so the rate table has **7** brackets
+  (0/5%…80M/35%), and the rewrite is `=-MAX(0,BRACKET(<code>,TXBASE))` with the guard folded away. The
+  design's "8 brackets" prose (TJ.1/TJ.3 AC) counts branches; the table is 7 (matches the explicit
+  statutory list at design:1892). Flagged as the one D-J deviation.
+- **Equivalence is proven, never assumed.** W54 offers a rewrite only after `_run_formula` overlays
+  match (|Δ|<0.005) on every sample PLUS edge probes at each bracket boundary −1/0/+1. Probes inject
+  `{driver_code: x}` and work for ANY **single-token** driver — computed helper included (demo TXBASE
+  is a helper formula, driver_kind `computed`) — because the chain references the driver only as a
+  looked-up value. Only a COMPOUND driver expression (`MIN(A,B)`) is samples-only. For the demo that is
+  8 edges × 3 = **24 probes** (7 lowers + one synthetic top edge). This reading of D-J3's "single input
+  component" (= single reference, not literally an input column) is what makes the AC's 24 probes hold.
+- **The equivalence draft must compile the SAME Excel the committed BRACKET emits.** Use the pure
+  `formula_rate_table.compile_brackets_excel(brackets, value_expr)` (extracted from `compile_excel`),
+  inlined into the span, so the proof matches the apply exactly — no table is persisted during
+  detection.
+- **`hr.formula.config.copy()` clones the unique `code`** → `ValidationError: Configuration code must
+  be unique per company`. Always pass an override `code` in the copy defaults when cloning a config
+  (validation harnesses: `copy(id, {'name':…, 'code':'ZZ…'})`).
+- **Battery-shim upkeep:** `tools/if_chain_battery.py` is pure (no shim). `tools/w42_promotion_check.py`
+  exercises the preview-mixin promotion logic offline (call_kw can't reach private mixin methods). Any
+  new `from ..formula_engine import X` in a shimmed file must be mirrored in the battery's fake package
+  (`import_resolution_battery`), and the `excel_semantics_battery` odoo shim needs `models.Constraint`
+  (class-attribute constraints since the C9 conversion).
