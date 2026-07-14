@@ -88,12 +88,16 @@ def load_module(path, name, inject=None):
     pkg.__path__ = []
     fe = types.ModuleType('fakepkg.formula_engine')
     import excel_semantics as _es
+    import if_chain as _ic
     fe.excel_semantics = _es
+    fe.if_chain = _ic
     sys.modules['fakepkg'] = pkg
     sys.modules['fakepkg.formula_engine'] = fe
     src = open(path, encoding='utf-8').read()
     src = src.replace('from ..formula_engine import excel_semantics',
                       'from fakepkg.formula_engine import excel_semantics')
+    src = src.replace('from ..formula_engine import if_chain',
+                      'from fakepkg.formula_engine import if_chain')
     g = {'__name__': name, '__package__': 'fakepkg'}
     exec(compile(src, path, 'exec'), g)
     return g
