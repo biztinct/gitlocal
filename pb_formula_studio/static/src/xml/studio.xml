@@ -1147,7 +1147,10 @@
                         onGroupByCategory="() => this.gridGroupByCategory()"
                         folds="state.folds"
                         onToggleFold="(k) => this.onToggleFold(k)"
-                        formatSum="(n) => this.vnd(n)"/>
+                        formatSum="(n) => this.vnd(n)"
+                        snippets="state.snippets"
+                        pendingSnippet="state.pendingSnippet"
+                        onSnippetConsumed="() => this.onSnippetConsumed()"/>
           </div>
 
           <!-- live preview (grid: always a drawer · cards: drawer below the md breakpoint) -->
@@ -3056,6 +3059,64 @@
           </div>
         </div>
         <div class="pbsc-foot"><b>?</b> opens this panel · <b>Esc</b> closes</div>
+      </div>
+    </div>
+
+    <!-- WP-F · W104 — manage-snippets overlay (managers only) -->
+    <div t-if="state.snipManageOpen" class="pbfs-snipmgr-scrim" t-on-click="closeSnipManage" data-coach="snippets">
+      <div class="pbfs-snipmgr" t-on-click="(ev) => ev.stopPropagation()">
+        <div class="pbsc-h">
+          <div class="pbsc-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+            Snippet library
+          </div>
+          <button class="pbsc-x" t-on-click="closeSnipManage" title="Close (Esc)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </div>
+        <div class="snm-body">
+          <div class="snm-list">
+            <button class="pbfs-btn primary sm snm-new" t-on-click="newSnippet">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New snippet
+            </button>
+            <div t-if="!state.snippets.length" class="snm-empty">No snippets yet.</div>
+            <div t-foreach="state.snippets" t-as="s" t-key="s.id"
+                 t-attf-class="snm-row {{ state.snipEdit and state.snipEdit.id === s.id ? 'active' : '' }}"
+                 t-on-click="() => this.editSnippet(s)">
+              <div class="snm-row-main">
+                <span class="snm-name" t-esc="s.name"/>
+                <span class="snm-cat" t-esc="s.category"/>
+              </div>
+              <code class="snm-body-preview" t-esc="s.body"/>
+              <button class="snm-del" t-on-click.stop="() => this.deleteSnippet(s)" title="Delete snippet">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="snm-edit" t-if="state.snipEdit">
+            <label class="snm-f"><span>Name</span>
+              <input class="ce-input" t-att-value="state.snipEdit.name" t-on-input="(ev) => this.onSnipField('name', ev)"/></label>
+            <label class="snm-f"><span>Category</span>
+              <select class="ce-input" t-on-change="(ev) => this.onSnipField('category', ev)">
+                <option t-foreach="snipCategories" t-as="c" t-key="c[0]" t-att-value="c[0]"
+                        t-att-selected="state.snipEdit.category === c[0]" t-esc="c[1]"/>
+              </select></label>
+            <label class="snm-f"><span>Body — use ${CODE} placeholders</span>
+              <input class="ce-input snm-bodyinput" t-att-value="state.snipEdit.body" t-on-input="(ev) => this.onSnipField('body', ev)"/></label>
+            <label class="snm-f"><span>Description</span>
+              <input class="ce-input" t-att-value="state.snipEdit.description" t-on-input="(ev) => this.onSnipField('description', ev)"/></label>
+            <div class="snm-edit-foot">
+              <button class="pbfs-btn ghost sm" t-on-click="cancelSnipEdit">Cancel</button>
+              <button class="pbfs-btn primary sm" t-att-disabled="state.snipBusy" t-on-click="saveSnippet">
+                <t t-if="state.snipBusy">Saving…</t><t t-else="">Save snippet</t>
+              </button>
+            </div>
+          </div>
+          <div class="snm-edit snm-hint" t-else="">
+            Select a snippet to edit, or create a new one. Insert snippets from the ⌘K palette or by typing their name in a formula cell.
+          </div>
+        </div>
       </div>
     </div>
     </div>

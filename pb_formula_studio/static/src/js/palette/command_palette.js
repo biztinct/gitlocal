@@ -12,7 +12,7 @@ export class CommandPalette extends Component {
         commands: Array,
         onClose: Function,
     };
-    static SECTION_ORDER = ["Views", "Actions", "Components", "Configs"];
+    static SECTION_ORDER = ["Views", "Actions", "Snippets", "Components", "Configs"];
 
     setup() {
         this.state = useState({ q: "", active: 0 });

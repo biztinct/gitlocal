@@ -49,6 +49,10 @@ export class GridStudio extends Component {
         folds: { type: Object, optional: true },
         onToggleFold: { type: Function, optional: true },       // (catKey) => parent flips state.folds
         formatSum: { type: Function, optional: true },          // (total) => display string for a summary Σ
+        // W104 — snippet library: autocomplete rows + palette-queued insertion
+        snippets: { type: Array, optional: true },
+        pendingSnippet: { optional: true },                     // snippet id queued by the palette | null
+        onSnippetConsumed: { type: Function, optional: true },  // () => parent clears the queue
     };
 
     setup() {
@@ -92,7 +96,7 @@ export class GridStudio extends Component {
         this._edgeDir = 0;           // auto-scroll direction at a drag/fill window edge
         this._edgeTimer = null;
         onWillUnmount(() => { this._teardownFill(); this._detachScroll(); this._stopEdgeScroll(); });
-        onMounted(() => this._attachScroll());
+        onMounted(() => { this._attachScroll(); this._consumePendingSnippet(); });
         this.scrollerRef = useRef("scroller");
         this.editorRef = useRef("editor");
         this.scEditorRef = useRef("scEditor");
@@ -603,11 +607,18 @@ export class GridStudio extends Component {
         const prev = start > 0 ? text[start - 1] : "=";   // treat start-of-buffer like after '='
         if (!/[=+\-*/(%,\s]/.test(prev)) return this._closeAutocomplete();
         const q = query.toLowerCase();
-        const items = this.props.components
+        // W104 — snippet rows match on name/category and list AFTER component matches
+        const snips = (this.props.snippets || [])
+            .filter(s => (s.name || "").toLowerCase().includes(q) || (s.category || "").toLowerCase().includes(q))
+            .slice(0, 4)
+            .map(s => ({ id: "snip" + s.id, kind: "snippet", snippetId: s.id, code: s.name,
+                         name: s.description || s.category || "", value: "snippet", body: s.body }));
+        const comps = this.props.components
             .filter(c => (c.code || "").toLowerCase().startsWith(q) || (c.name || "").toLowerCase().includes(q))
             .sort((a, b) => this._colNum(a.col) - this._colNum(b.col))
-            .slice(0, 8)
+            .slice(0, snips.length ? 6 : 8)
             .map(c => ({ id: c.id, col: c.col, code: c.code, name: c.name, value: this.props.formatValue(c.col) }));
+        const items = [...comps, ...snips].slice(0, 8);
         if (!items.length) return this._closeAutocomplete();
         const r = el.getBoundingClientRect();
         this.ui.autocomplete = { open: true, query, start, caret, items, active: 0, left: r.left, top: r.bottom + 2 };
@@ -624,12 +635,24 @@ export class GridStudio extends Component {
         }
         return "2";
     }
+    // W104 — resolve ${CODE} placeholders to column-letter refs; an unknown code
+    // is left AS-IS so live validation red-flags the cell (C7 — never silent 0).
+    _resolveSnippetBody(body) {
+        const row = this._refRow();
+        return String(body || "").replace(/\$\{\s*([^}]+?)\s*\}/g, (m, codeRaw) => {
+            const code = codeRaw.trim().toUpperCase();
+            const comp = this.props.components.find(c => (c.code || "").toUpperCase() === code);
+            return comp ? (comp.col + row) : m;
+        });
+    }
     _insertAutocomplete(item) {
         const ac = this.ui.autocomplete;
         const el = this.editorRef.el;
         if (!ac.open || !item || !el) return;
         const text = el.value;
-        const ref = item.col + this._refRow();       // e.g. "A2"
+        const ref = item.kind === "snippet"      // W104 — snippet expands to resolved body
+            ? this._resolveSnippetBody(item.body)
+            : item.col + this._refRow();          // e.g. "A2"
         const head = text.slice(0, ac.start) + ref;
         const newText = head + text.slice(ac.caret);
         el.value = newText;
@@ -1002,6 +1025,42 @@ export class GridStudio extends Component {
         if (!this.ui.scenarioEdit) this._scEditorSeeded = false;
         // keep scenario overlay values in sync with the current sample / scenario set
         this._syncScenarioValues();
+        // W104 — a palette-queued snippet is inserted here (may span two patches:
+        // one to open the editor, the next to insert once its <input> is mounted).
+        this._consumePendingSnippet();
+    }
+    // Insert a snippet queued by the palette (D-F8 entry point b). Opens an editor
+    // on the focused formula cell first if none is open.
+    _consumePendingSnippet() {
+        const sid = this.props.pendingSnippet;
+        if (sid == null) return;
+        const done = () => { if (this.props.onSnippetConsumed) this.props.onSnippetConsumed(); };
+        const snip = (this.props.snippets || []).find(s => s.id === sid);
+        if (!snip) return done();
+        if (!this.ui.editing) {
+            // prefer the focused formula cell; fall back to the first visible formula
+            // column (e.g. when the palette was opened from another view, C3 remount)
+            let f = this.focused;
+            if (!f || f.type !== "formula") f = this.baseCols.find(c => c.type === "formula") || null;
+            if (!f || !this.props.canEdit) return done();   // nowhere to insert
+            this.setFocus(f.id, "formula");
+            this._startEdit();          // editor <input> mounts on the next patch
+            return;                     // wait for it, then this runs again
+        }
+        const el = this.editorRef.el;
+        if (!el) return;                // editor not mounted yet — wait one more patch
+        const text = el.value;
+        const start = el.selectionStart ?? text.length, end = el.selectionEnd ?? start;
+        const ins = this._resolveSnippetBody(snip.body);
+        const newText = text.slice(0, start) + ins + text.slice(end);
+        el.value = newText;
+        const caret = start + ins.length;
+        try { el.setSelectionRange(caret, caret); } catch (e) { /* non-text */ }
+        this.ui.editing.buffer = newText;
+        this._closeAutocomplete();
+        el.focus();
+        this._scheduleValidate();
+        done();
     }
     _scrollFocusIntoView() {
         const root = this.scrollerRef.el;
