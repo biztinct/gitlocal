@@ -10,7 +10,7 @@ except Exception:  # pragma: no cover
     requests = None
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -1625,8 +1625,12 @@ class PbFormulaStudio(models.AbstractModel):
         exists in the config (D-H2 honesty — surfaced, never dropped). A falsy
         ``budget_id`` returns a blank editor over the config's components."""
         config = self.env['hr.formula.config'].browse(int(config_id))
-        if not config.exists():
-            return {'ok': False}
+        try:
+            if not config.exists():
+                return {'ok': False}
+            config.check_access('read')
+        except AccessError:
+            return {'ok': False, 'msg': _('No access to this configuration.')}
         amounts = {}
         budget = None
         if budget_id:
@@ -4427,9 +4431,14 @@ class PbFormulaStudio(models.AbstractModel):
         (D-H4/C7). Validates inputs like W49: known input codes, numeric,
         |v| <= 1e12."""
         config = self.env['hr.formula.config'].browse(int(config_id))
-        if not config.exists():
-            return {'ok': False, 'msg': _('Configuration not found.')}
-        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        try:
+            if not config.exists():
+                return {'ok': False, 'msg': _('Configuration not found.')}
+            rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        except AccessError:
+            # cross-company probe: fail closed AND gracefully (review minor) —
+            # the record rule already blocked the read before any sudo work.
+            return {'ok': False, 'msg': _('No access to this configuration.')}
         input_codes = {r.code for r in rules if r.column_type == 'input' and r.code}
         clean = {}
         for code, v in (inputs or {}).items():
@@ -4438,6 +4447,18 @@ class PbFormulaStudio(models.AbstractModel):
                 return {'ok': False, 'msg': _('Unknown input: %s') % code}
             n = self._as_num(v)
             if n is None:
+                # _as_num refuses BOTH text and NaN/Inf. Only genuine text may
+                # pass through — a value that PARSES numeric but was refused
+                # (e.g. "1e400" -> inf) is out of range, not a department name.
+                looks_numeric = isinstance(v, (int, float))
+                if not looks_numeric and isinstance(v, str):
+                    try:
+                        float(v.strip())
+                        looks_numeric = True
+                    except (TypeError, ValueError):
+                        pass
+                if looks_numeric:
+                    return {'ok': False, 'msg': _('Input %s is out of range.') % code}
                 # Text input column (e.g. an employee name / department the config
                 # carries as an input) — pass it through to the evaluator as-is.
                 # Only NUMERIC inputs are range-checked; text inputs are legitimate
@@ -4510,6 +4531,13 @@ class PbFormulaStudio(models.AbstractModel):
         the "start from sample" picker (D-H5). Read of stored JSON only."""
         s = self.env['hr.formula.sample.data'].browse(int(sample_id))
         if not s.exists():
+            return {'ok': False, 'inputs': {}}
+        try:
+            # samples carry no company/record rule of their own — gate through
+            # the parent config's rule instead (review minor: no cross-company
+            # sample reads through this new RPC).
+            s.config_id.check_access('read')
+        except AccessError:
             return {'ok': False, 'inputs': {}}
         try:
             vals = json.loads(s.input_values_json or '{}')

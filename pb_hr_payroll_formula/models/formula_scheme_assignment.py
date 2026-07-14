@@ -22,10 +22,12 @@ class HrFormulaSchemeAssignment(models.Model):
     sequence = fields.Integer(default=10)
     active = fields.Boolean(default=True)
 
-    _sql_constraints = [
-        ('dept_config_uniq', 'unique(department_id, config_id)',
-         'This department is already assigned to this scheme.'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _dept_config_uniq = models.Constraint(
+        'unique(department_id, config_id)',
+        'This department is already assigned to this scheme.')
 
     @api.depends('department_id', 'config_id')
     def _compute_name(self):

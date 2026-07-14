@@ -45,9 +45,12 @@ class HrFormulaReviewShare(models.Model):
 
     comment_ids = fields.One2many('hr.formula.review.comment', 'share_id')
 
-    _sql_constraints = [
-        ('token_uniq', 'unique(token)', 'A review token must be unique.'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _token_uniq = models.Constraint(
+        'unique(token)',
+        'A review token must be unique.')
 
     def _is_live(self):
         """True when the share is usable right now (active + not past expiry)."""

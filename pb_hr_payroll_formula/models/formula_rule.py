@@ -1461,10 +1461,12 @@ class HrFormulaRule(models.Model):
     # ==========================================
     # CONSTRAINTS
     # ==========================================
-    _sql_constraints = [
-        ('code_config_uniq', 'unique(code, config_id)',
-         'Rule code must be unique within the configuration!'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _code_config_uniq = models.Constraint(
+        'unique(code, config_id)',
+        'Rule code must be unique within the configuration!')
 
     @api.constrains('column_type', 'excel_formula', 'data_source_field')
     def _check_column_settings(self):

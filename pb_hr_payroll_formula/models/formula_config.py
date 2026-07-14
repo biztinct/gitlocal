@@ -619,10 +619,12 @@ class HrFormulaConfig(models.Model):
     # ==========================================
     # CONSTRAINTS
     # ==========================================
-    _sql_constraints = [
-        ('code_uniq', 'unique(code, company_id)',
-         'Configuration code must be unique per company!'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _code_uniq = models.Constraint(
+        'unique(code, company_id)',
+        'Configuration code must be unique per company!')
 
     @api.model
     def _generate_unique_code(self, name, company_id=None):

@@ -96,10 +96,9 @@ class HrPayrollProrationLine(models.Model):
         readonly=True,
     )
 
-    _sql_constraints = [
-        (
-            'proration_unique_batch',
-            'unique(import_batch_id, employee_id, component_id, effective_date)',
-            'A proration line already exists for this batch, employee, component and date.'
-        ),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _proration_unique_batch = models.Constraint(
+        'unique(import_batch_id, employee_id, component_id, effective_date)',
+        'A proration line already exists for this batch, employee, component and date.')

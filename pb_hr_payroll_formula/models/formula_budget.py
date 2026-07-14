@@ -49,7 +49,9 @@ class HrFormulaBudgetLine(models.Model):
              "component codes at variance time.")
     amount = fields.Float(default=0.0)
 
-    _sql_constraints = [
-        ('budget_code_uniq', 'unique(budget_id, code)',
-         'A budget can carry only one line per component code.'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _budget_code_uniq = models.Constraint(
+        'unique(budget_id, code)',
+        'A budget can carry only one line per component code.')

@@ -89,10 +89,9 @@ class HrPayrollRetroAdjustment(models.Model):
         readonly=True,
     )
 
-    _sql_constraints = [
-        (
-            'retro_unique_period',
-            'unique(applied_in_batch_id, employee_id, component_id, original_payslip_id, advantage_change_id)',
-            'A retro adjustment already exists for this batch and period.'
-        ),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _retro_unique_period = models.Constraint(
+        'unique(applied_in_batch_id, employee_id, component_id, original_payslip_id, advantage_change_id)',
+        'A retro adjustment already exists for this batch and period.')
