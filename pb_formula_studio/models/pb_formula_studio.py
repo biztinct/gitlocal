@@ -2872,6 +2872,20 @@ class PbFormulaStudio(models.AbstractModel):
                        "the payslip. Employees will not see it."),
                      rule=r)
 
+        # 5b) W83 — untested formula components (absence of a test is a smell,
+        # not an error → hint tier). Reuses the deterministic coverage graph.
+        cov = self.get_test_coverage(config.id)
+        for u in cov.get('untested', []):
+            rr = by_col.get(u.get('col'))
+            if not rr:
+                continue
+            _add('untested', 'hint',
+                 _("%s (%s) has no test") % (rr.name or '', rr.column_letter),
+                 _("No sample asserts an expected value for this calculated "
+                   "component (and nothing that is asserted depends on it) — "
+                   "its result is unverified."),
+                 rule=rr)
+
         # 5) open review notes (F15) — a note flagged for review stays in the
         # rail until someone resolves it (resolving keeps it in history).
         rule_by_id = {r.id: r for r in rules}
@@ -4251,6 +4265,93 @@ class PbFormulaStudio(models.AbstractModel):
             'samples': [self._sample_row(s) for s in c.sample_data_ids],
             'input_components': inputs,
             'currency': c.currency_id.symbol if c.currency_id else '',
+        }
+
+    # ------------------------------------------------------------------
+    # W83 — test coverage (deterministic, three-valued; NEVER evaluates a
+    # formula — pure metadata over the dependency graph + sample JSONs).
+    # ------------------------------------------------------------------
+    def _coverage_info(self, r):
+        return {'rule_id': r.id, 'col': r.column_letter or '',
+                'code': r.code or '', 'name': r.name or '(unnamed)'}
+
+    @api.model
+    def get_test_coverage(self, config_id=None):
+        """Which formula components the samples DO / DON'T exercise (D-G1/D-G2).
+
+        Three-valued per formula component:
+
+        * **asserted** — >=1 active sample carries a non-null expected value for
+          its code (the SAME testable rule W82 uses, formula_config_tests.py:95).
+        * **exercised** — not asserted, but on the upstream dependency closure of
+          an asserted component (its value feeds an assertion), via the
+          ``_normalized_dep_cols`` edges — the same graph get_intelligence walks.
+        * **untested** — neither.
+
+        Coverage ``pct`` = asserted / formula-components. Inputs/constants are
+        excluded from the % but any that no asserted formula transitively reads
+        are returned as ``orphan_inputs``. This method reads only stored JSON +
+        dependency metadata — it NEVER calls ``_compute_results``.
+        """
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'pct': 0, 'formula_total': 0,
+                    'asserted': [], 'exercised': [], 'untested': [],
+                    'orphan_inputs': []}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        by_col = {r.column_letter: r for r in rules if r.column_letter}
+        deps = self._normalized_dep_cols(rules)   # {rule.id: {source_col, ...}}
+        formula_rules = [r for r in rules
+                         if r.column_type == 'formula' and r.column_letter]
+
+        # asserted codes: any active sample with a non-null expected for that code
+        asserted_codes = set()
+        for s in config.sample_data_ids:
+            try:
+                exp = json.loads(s.expected_values_json or '{}')
+            except Exception:
+                exp = {}
+            if isinstance(exp, dict):
+                for code, v in exp.items():
+                    if v is not None:
+                        asserted_codes.add(code)
+
+        asserted = [r for r in formula_rules if r.code and r.code in asserted_codes]
+        asserted_cols = {r.column_letter for r in asserted}
+
+        # upstream closure: walk each asserted rule's dependency SOURCES,
+        # transitively, over the same edges the evaluator resolves.
+        closure = set()
+        stack = list(asserted_cols)
+        while stack:
+            col = stack.pop()
+            if col in closure:
+                continue
+            closure.add(col)
+            rr = by_col.get(col)
+            if rr:
+                for d in deps.get(rr.id, ()):  # empty for input/constant rules
+                    if d not in closure:
+                        stack.append(d)
+
+        exercised = [r for r in formula_rules
+                     if r.column_letter not in asserted_cols
+                     and r.column_letter in closure]
+        untested = [r for r in formula_rules
+                    if r.column_letter not in asserted_cols
+                    and r.column_letter not in closure]
+        orphan = [r for r in rules
+                  if r.column_type in ('input', 'constant') and r.column_letter
+                  and r.column_letter not in closure]
+
+        n = len(formula_rules)
+        pct = int(round(len(asserted) / n * 100)) if n else 0
+        return {
+            'ok': True, 'pct': pct, 'formula_total': n,
+            'asserted': [self._coverage_info(r) for r in asserted],
+            'exercised': [self._coverage_info(r) for r in exercised],
+            'untested': [self._coverage_info(r) for r in untested],
+            'orphan_inputs': [self._coverage_info(r) for r in orphan],
         }
 
     @api.model
