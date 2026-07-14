@@ -475,18 +475,60 @@
                   <button class="pbfs-btn primary sm" t-on-click="toggleTestGen">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Generate
                   </button>
-                  <div t-if="state.testGenOpen" class="pbtest-gen-menu">
-                    <div class="gm-rand">
-                      <div class="gm-rl">Random samples</div>
-                      <div class="gm-rrow">
-                        <label class="gm-f"><span>Count</span><input type="number" min="1" t-att-value="state.randomCount" t-on-change="(ev)=>this.setRandomField('randomCount',ev)"/></label>
-                        <label class="gm-f"><span>Min salary</span><input type="number" t-att-value="state.randomMin" t-on-change="(ev)=>this.setRandomField('randomMin',ev)"/></label>
-                        <label class="gm-f"><span>Max salary</span><input type="number" t-att-value="state.randomMax" t-on-change="(ev)=>this.setRandomField('randomMax',ev)"/></label>
+                  <div t-if="state.testGenOpen" t-attf-class="pbtest-gen-menu {{ state.genMode ? 'wide' : '' }}">
+                    <!-- default menu -->
+                    <t t-if="!state.genMode">
+                      <div class="gm-rand">
+                        <div class="gm-rl">Random samples</div>
+                        <div class="gm-rrow">
+                          <label class="gm-f"><span>Count</span><input type="number" min="1" t-att-value="state.randomCount" t-on-change="(ev)=>this.setRandomField('randomCount',ev)"/></label>
+                          <label class="gm-f"><span>Min salary</span><input type="number" t-att-value="state.randomMin" t-on-change="(ev)=>this.setRandomField('randomMin',ev)"/></label>
+                          <label class="gm-f"><span>Max salary</span><input type="number" t-att-value="state.randomMax" t-on-change="(ev)=>this.setRandomField('randomMax',ev)"/></label>
+                        </div>
+                        <button class="pbfs-btn soft sm gm-go" t-on-click="generateRandom">Generate</button>
                       </div>
-                      <button class="pbfs-btn soft sm gm-go" t-on-click="generateRandom">Generate</button>
-                    </div>
-                    <button class="gm-item" t-on-click="() => this.generateFromWizard('employees')">From employees <small>pull contract values</small></button>
-                    <button class="gm-item" t-on-click="() => this.generateFromWizard('payslips')">From payslips <small>inputs + expected (regression)</small></button>
+                      <button class="gm-item" t-on-click="() => this.generateFromWizard('employees')">From employees <small>pull contract values</small></button>
+                      <button class="gm-item" t-on-click="() => this.generateFromWizard('payslips')">From payslips <small>inputs + expected (regression)</small></button>
+                      <button class="gm-item" t-on-click="openBoundaryPanel">Boundary tests… <small>edge−1 / edge / edge+1 at every threshold</small></button>
+                    </t>
+
+                    <!-- W84 — boundary panel -->
+                    <t t-elif="state.genMode === 'boundary'">
+                      <div class="gm-head"><button class="gm-back" t-on-click="backToGenMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button><span>Boundary tests</span></div>
+                      <div t-if="state.boundaryBusy and !state.boundaryCands" class="gm-note">Scanning formulas for edges…</div>
+                      <t t-if="state.boundaryCands">
+                        <div t-if="!state.boundaryCands.candidates.length" class="gm-note">No rate-table brackets or comparison thresholds found in this config.</div>
+                        <t t-else="">
+                          <div class="gm-sub">Reachable edges <small>(<t t-esc="state.boundaryCands.reachable"/> — pin an input; each makes 3 samples)</small></div>
+                          <div class="gm-cands">
+                            <t t-foreach="state.boundaryCands.candidates" t-as="c" t-key="c.key">
+                              <label t-if="c.reachable" class="gm-cand">
+                                <input type="checkbox" t-att-checked="state.boundaryPicks.includes(c.key)" t-on-change="() => this.toggleBoundaryPick(c.key)"/>
+                                <span class="lb"><b t-esc="c.label"/><small t-esc="'via ' + c.formula_code"/></span>
+                              </label>
+                            </t>
+                          </div>
+                          <t t-set="unreach" t-value="state.boundaryCands.candidates.filter(c => !c.reachable)"/>
+                          <t t-if="unreach.length">
+                            <div class="gm-sub muted">Not reachable <small>(<t t-esc="unreach.length"/> — operand is computed; set inputs manually)</small></div>
+                            <div class="gm-cands">
+                              <div t-foreach="unreach" t-as="c" t-key="c.key" class="gm-cand off" t-att-title="c.reason">
+                                <span class="lb"><b t-esc="c.label"/><small t-esc="c.reason"/></span>
+                              </div>
+                            </div>
+                          </t>
+                          <label class="gm-base">Clone inputs from
+                            <select t-on-change="setBoundaryBase">
+                              <option t-foreach="state.test.samples" t-as="bs" t-key="bs.id" t-att-value="bs.id" t-att-selected="bs.id === state.boundaryBase" t-esc="bs.name"/>
+                            </select>
+                          </label>
+                          <button class="pbfs-btn primary sm gm-go" t-att-disabled="state.boundaryBusy" t-on-click="runBoundaryGen">Generate boundary samples</button>
+                          <div t-if="state.boundaryResult" class="gm-note">
+                            <b t-esc="state.boundaryResult.created"/> created<t t-if="state.boundaryResult.skipped">, <t t-esc="state.boundaryResult.skipped"/> already existed</t><t t-if="state.boundaryResult.capped">, <t t-esc="state.boundaryResult.capped"/> over the 60-per-run cap</t>.
+                          </div>
+                        </t>
+                      </t>
+                    </t>
                   </div>
                 </div>
                 <button class="pbfs-btn soft sm" t-on-click="triggerImport" title="Import input values from an Excel file">
@@ -499,6 +541,7 @@
               </div>
             </div>
             <button class="pbfs-btn soft sm pbtest-runall" t-on-click="runAllTests">Run all tests</button>
+            <button t-if="hasUnconfirmed" class="pbfs-btn soft sm pbtest-runall pbtest-confirmall" t-on-click="confirmAllBaselines">Confirm all baselines</button>
             <div class="pbtest-list">
               <div t-if="!state.test.samples.length" class="pbtest-empty">No samples yet — Generate one to start.</div>
               <div t-foreach="state.test.samples" t-as="s" t-key="s.id"
@@ -520,11 +563,13 @@
                 <input class="pbtest-name" t-att-value="state.testDetail.name" t-on-change="renameSample"/>
                 <span class="pbtest-src" t-esc="state.testDetail.source_type"/>
                 <span t-attf-class="pbcfg-vbadge big {{ state.testDetail.verdict }}" t-esc="state.testDetail.verdict"/>
+                <span t-if="state.testDetail.has_expected and state.testDetail.expected_confirmed === false" class="pbtest-needs">needs confirmation</span>
                 <div class="pbtest-dact">
                   <button class="pbfs-btn primary sm" t-on-click="openInFormulaView">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                     <t t-esc="state.testDetail.source_type === 'manual' ? 'Calculate in Formula View' : 'Open in Formula View'"/>
                   </button>
+                  <button t-if="state.testDetail.has_expected and state.testDetail.expected_confirmed === false" class="pbfs-btn soft sm" t-on-click="() => this.confirmBaseline(state.testDetail.id)">Confirm baseline</button>
                   <button t-if="!state.testDetail.has_expected" class="pbfs-btn soft sm" t-on-click="snapshotExpected">Snapshot as expected</button>
                   <button t-if="state.testDetail.has_expected" class="pbfs-btn ghost sm" t-on-click="clearExpected">Clear expected</button>
                 </div>
