@@ -490,6 +490,7 @@
                       <button class="gm-item" t-on-click="() => this.generateFromWizard('employees')">From employees <small>pull contract values</small></button>
                       <button class="gm-item" t-on-click="() => this.generateFromWizard('payslips')">From payslips <small>inputs + expected (regression)</small></button>
                       <button class="gm-item" t-on-click="openBoundaryPanel">Boundary tests… <small>edge−1 / edge / edge+1 at every threshold</small></button>
+                      <button class="gm-item" t-on-click="openAiPanel">AI suggest profiles… <small>realistic inputs, engine-computed baseline</small></button>
                     </t>
 
                     <!-- W84 — boundary panel -->
@@ -527,6 +528,27 @@
                             <b t-esc="state.boundaryResult.created"/> created<t t-if="state.boundaryResult.skipped">, <t t-esc="state.boundaryResult.skipped"/> already existed</t><t t-if="state.boundaryResult.capped">, <t t-esc="state.boundaryResult.capped"/> over the 60-per-run cap</t>.
                           </div>
                         </t>
+                      </t>
+                    </t>
+
+                    <!-- W49 — AI panel -->
+                    <t t-elif="state.genMode === 'ai'">
+                      <div class="gm-head"><button class="gm-back" t-on-click="backToGenMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button><span>AI suggest profiles</span></div>
+                      <div t-if="state.aiBusy" class="gm-note">Asking PayAI for realistic profiles…</div>
+                      <div t-if="state.aiError and !state.aiBusy" class="gm-note err" t-esc="state.aiError"/>
+                      <t t-if="state.aiProps and !state.aiBusy">
+                        <div t-if="!state.aiProps.length and !state.aiError" class="gm-note">No usable profiles returned.</div>
+                        <div t-if="state.aiProps.length" class="gm-sub">Proposed profiles <small>(engine computes the baseline — the LLM never supplies outputs)</small></div>
+                        <div t-if="state.aiProps.length" class="gm-cands">
+                          <label t-foreach="state.aiProps" t-as="p" t-key="p_index" class="gm-cand">
+                            <input type="checkbox" t-att-checked="state.aiPicks.includes(p_index)" t-on-change="() => this.toggleAiPick(p_index)"/>
+                            <span class="lb"><b t-esc="p.name"/><small t-esc="p.rationale"/></span>
+                          </label>
+                        </div>
+                        <div t-if="state.aiRejected.length" class="gm-note err">
+                          <b t-esc="state.aiRejected.length"/> rejected: <t t-foreach="state.aiRejected" t-as="rj" t-key="rj_index"><t t-esc="rj.name + ' (' + rj.reason + ')'"/><t t-if="rj_index !== state.aiRejected.length - 1">; </t></t>
+                        </div>
+                        <button t-if="state.aiProps.length" class="pbfs-btn primary sm gm-go" t-att-disabled="state.aiBusy" t-on-click="acceptAiSamples">Add selected profiles</button>
                       </t>
                     </t>
                   </div>

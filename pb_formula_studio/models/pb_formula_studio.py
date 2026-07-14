@@ -4616,6 +4616,144 @@ class PbFormulaStudio(models.AbstractModel):
                 'samples': [self._sample_row(x) for x in c.sample_data_ids],
                 'tests': self._run_tests_after_save(c)}
 
+    # ------------------------------------------------------------------
+    # W49 — AI-proposed sample profiles (LLM proposes INPUTS; the engine
+    # computes the truth — the LLM never supplies an output, so the
+    # number-invention bug class is excluded by construction, D-G5).
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _as_num(v):
+        try:
+            n = float(v)
+        except (TypeError, ValueError):
+            return None
+        if n != n or n in (float('inf'), float('-inf')):   # NaN/Inf guard
+            return None
+        return n
+
+    @api.model
+    def ai_propose_samples(self, config_id):
+        """Ask the LLM for <=8 realistic INPUT profiles, hard-validate every one
+        (unknown code / non-numeric / |v|>1e12 → rejected + reported), and return
+        the survivors for the user to accept. No key / LLM error → {ok:False}."""
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'reason': _('Configuration not found.')}
+        inputs = [r for r in c.rule_ids.sorted(key=lambda r: r.sequence)
+                  if r.column_type == 'input' and r.code]
+        if not inputs:
+            return {'ok': False, 'reason': _('This configuration has no input components.')}
+        input_codes = {r.code for r in inputs}
+
+        # min/max observed across existing samples (helps the model stay realistic)
+        obs = {}
+        for s in c.sample_data_ids:
+            try:
+                iv = json.loads(s.input_values_json or '{}')
+            except Exception:
+                iv = {}
+            if not isinstance(iv, dict):
+                continue
+            for code, v in iv.items():
+                n = self._as_num(v)
+                if n is None:
+                    continue
+                lo, hi = obs.get(code, (n, n))
+                obs[code] = (min(lo, n), max(hi, n))
+        schema = [{'code': r.code, 'name': r.name or r.code,
+                   'default': r.default_value or 0.0,
+                   'min_observed': obs.get(r.code, (None, None))[0],
+                   'max_observed': obs.get(r.code, (None, None))[1]}
+                  for r in inputs]
+
+        system = (
+            "You are PayAI, generating realistic payroll TEST INPUT profiles. "
+            "You are given the input components of a salary configuration. Propose "
+            "diverse, plausible employee profiles (e.g. junior, senior, part-time, "
+            "high earner, edge cases). Reply with STRICT JSON only, shaped exactly:\n"
+            '{"profiles":[{"name":"<short label>","inputs":{"<CODE>":<number>},'
+            '"rationale":"<one sentence>"}]}\n'
+            "Rules: use ONLY the given component codes as keys; every value MUST be a "
+            "plain number (no %, no text, no formulas). NEVER include output, computed, "
+            "or expected values — inputs only. At most 8 profiles."
+        )
+        user = ("Input components:\n" + json.dumps(schema, ensure_ascii=False)
+                + "\n\nPropose up to 8 realistic, diverse input profiles.")
+        try:
+            data = self._llm_chat(
+                [{'role': 'system', 'content': system},
+                 {'role': 'user', 'content': user}], json_mode=True)
+        except LLMUnavailable as e:
+            return {'ok': False, 'reason': _('AI is unavailable: %s') % e}
+
+        profiles = data.get('profiles') if isinstance(data, dict) else None
+        if not isinstance(profiles, list):
+            return {'ok': False, 'reason': _('AI returned an unexpected response shape.')}
+
+        accepted, rejected = [], []
+        for p in profiles[:8]:
+            if not isinstance(p, dict):
+                continue
+            name = (str(p.get('name') or 'Profile').strip() or 'Profile')[:80]
+            raw = p.get('inputs')
+            if not isinstance(raw, dict) or not raw:
+                rejected.append({'name': name, 'reason': 'no inputs'})
+                continue
+            clean, bad = {}, None
+            for k, v in raw.items():
+                if k not in input_codes:
+                    bad = 'unknown code %s' % k
+                    break
+                n = self._as_num(v)
+                if n is None:
+                    bad = 'non-numeric %s' % k
+                    break
+                if abs(n) > 1e12:
+                    bad = 'value out of range for %s' % k
+                    break
+                clean[k] = n
+            if bad:
+                rejected.append({'name': name, 'reason': bad})
+                continue
+            accepted.append({'name': name, 'inputs': clean,
+                             'rationale': (str(p.get('rationale') or '').strip())[:200]})
+        return {'ok': True, 'proposals': accepted, 'rejected': rejected}
+
+    @api.model
+    def create_ai_samples(self, config_id, proposals):
+        """Turn accepted AI proposals into generated + unconfirmed samples with an
+        engine-computed baseline (manager-gated). Re-validates every value — never
+        trusts the client echo (D-G5)."""
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': _('Configuration not found')}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can add test samples.')}
+        input_codes = {r.code for r in c.rule_ids
+                       if r.column_type == 'input' and r.code}
+        created = 0
+        for p in (proposals or []):
+            if not isinstance(p, dict):
+                continue
+            raw = p.get('inputs') or {}
+            clean = {}
+            for k, v in (raw.items() if isinstance(raw, dict) else []):
+                if k not in input_codes:
+                    continue
+                n = self._as_num(v)
+                if n is None or abs(n) > 1e12:
+                    continue
+                clean[k] = n
+            if not clean:
+                continue
+            name = (str(p.get('name') or 'AI profile').strip() or 'AI profile')[:80]
+            desc = 'AI-proposed profile: ' + (str(p.get('rationale') or '').strip())[:180]
+            c._create_generated_sample(clean, name, desc)
+            created += 1
+        return {'ok': True, 'created': created,
+                'samples': [self._sample_row(x) for x in c.sample_data_ids],
+                'tests': self._run_tests_after_save(c)}
+
     @api.model
     def cfg_generate_wizard(self, config_id, source):
         c = self.env['hr.formula.config'].browse(int(config_id))

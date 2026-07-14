@@ -338,6 +338,12 @@ export class PbFormulaStudio extends Component {
             boundaryBase: null,    // base sample id to clone inputs from
             boundaryBusy: false,
             boundaryResult: null,  // {created, skipped, capped}
+            // W49 — AI-proposed profiles
+            aiProps: null,         // accepted proposals [{name, inputs, rationale}]
+            aiPicks: [],           // selected proposal indices
+            aiRejected: [],        // [{name, reason}]
+            aiBusy: false,
+            aiError: "",
             testInputsOpen: true,
             randomCount: 3,
             randomMin: 5000000,
@@ -2940,6 +2946,36 @@ export class PbFormulaStudio extends Component {
         this.state.test.samples = r.samples; this._applyTests(r.tests);
         if (this.state.testSampleId) await this.loadSampleDetail(this.state.testSampleId);
         this.notif.add(`${r.confirmed} baseline${r.confirmed === 1 ? "" : "s"} confirmed`, { type: "success" });
+    }
+    // W49 — AI-proposed profiles (LLM proposes inputs; engine computes the baseline)
+    async openAiPanel() {
+        this.state.genMode = "ai";
+        this.state.aiBusy = true; this.state.aiError = "";
+        this.state.aiProps = null; this.state.aiPicks = []; this.state.aiRejected = [];
+        const r = await this.orm.call("pb.formula.studio", "ai_propose_samples", [this.state.config.id]);
+        this.state.aiBusy = false;
+        if (!r || !r.ok) { this.state.aiError = (r && r.reason) || "AI is unavailable."; this.state.aiProps = []; return; }
+        this.state.aiProps = r.proposals || [];
+        this.state.aiRejected = r.rejected || [];
+        this.state.aiPicks = this.state.aiProps.map((_p, i) => i);   // all checked by default
+    }
+    toggleAiPick(i) {
+        const p = this.state.aiPicks, k = p.indexOf(i);
+        if (k >= 0) p.splice(k, 1); else p.push(i);
+    }
+    async acceptAiSamples() {
+        const chosen = (this.state.aiProps || []).filter((_p, i) => this.state.aiPicks.includes(i));
+        if (!chosen.length) { this.notif.add("Select at least one profile.", { type: "warning" }); return; }
+        this.state.aiBusy = true;
+        const r = await this.orm.call("pb.formula.studio", "create_ai_samples", [this.state.config.id, chosen]);
+        this.state.aiBusy = false;
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not add samples", { type: "warning" }); return; }
+        this.notif.add(`${r.created} AI profile${r.created === 1 ? "" : "s"} added`, { type: "success" });
+        this.state.testGenOpen = false; this.state.genMode = null;
+        await this.loadTestData(true);
+        const gen = this.state.test.samples.filter(s => s.source_type === "generated");
+        const last = gen[gen.length - 1];
+        if (last) await this.selectSample(last.id);
     }
     toggleTestInputs() { this.state.testInputsOpen = !this.state.testInputsOpen; }
     setRandomField(field, ev) { const v = parseFloat(ev.target.value); this.state[field] = isNaN(v) ? 0 : v; }
