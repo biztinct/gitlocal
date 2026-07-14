@@ -602,6 +602,7 @@
               <div t-if="!state.testDetail.has_expected" class="pbtest-banner preview">
                 <b>Preview only.</b> No expected baseline yet — the outputs below are just computed. Click <b>Snapshot as expected</b> to freeze them as the pass/fail baseline, or generate from payslips for real expected values.
               </div>
+              <div t-elif="state.testDetail.expected_confirmed === false" class="pbtest-banner preview"><b>Awaiting confirmation.</b> This baseline was captured from the current engine output. It stays <b>out</b> of the pass/fail chip (counted as pending) until you <b>Confirm baseline</b>.</div>
               <div t-elif="state.testDetail.verdict === 'passed'" class="pbtest-banner passed"><b>Passed.</b> Every output matches its expected baseline.</div>
               <div t-else="" t-attf-class="pbtest-banner {{ state.testDetail.verdict }}"><b><t t-esc="state.testDetail.verdict === 'warning' ? 'Warning' : 'Failed'"/>.</b> <t t-esc="fails.length"/> output<t t-if="fails.length !== 1">s</t> differ from the expected baseline — flagged ✗ below.</div>
 
