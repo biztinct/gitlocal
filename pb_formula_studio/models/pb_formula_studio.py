@@ -3488,6 +3488,194 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True, 'transform': self._transform_payload(m)}
 
     # ------------------------------------------------------------------
+    # W65 — mapping templates (save a board as a named, reusable template and
+    # apply it across configs/connectors — the bureau workflow). New lean
+    # user-template models (D-I5); the vendor-seeded hr.integration.mapping.template
+    # is untouched. Templates store CODES/PATHS, never ids, so they apply across
+    # configs. Company-scoped from day one — no W104 snippet gap.
+    # ------------------------------------------------------------------
+    def _tmpl_can_delete(self, tpl):
+        """Managers can delete shared templates and their own company's; a
+        non-shared template from ANOTHER company is un-deletable (server-side)."""
+        if not self._can_edit():
+            return False
+        return (not tpl.company_id) or tpl.company_id.id == self.env.company.id
+
+    @api.model
+    def mapping_template_list(self, adapter=None):
+        """Visible templates = shared (no company) + this company's. Reads are open."""
+        Tpl = self.env['hr.formula.mapping.template']
+        domain = ['|', ('company_id', '=', False), ('company_id', '=', self.env.company.id)]
+        if adapter in ('api', 'cycle'):
+            domain = [('adapter', '=', adapter)] + domain
+        out = []
+        for t in Tpl.search(domain):
+            out.append({'id': t.id, 'name': t.name or '', 'adapter': t.adapter,
+                        'connector_type': t.connector_type or '',
+                        'shared': not t.company_id,
+                        'line_count': len(t.line_ids),
+                        'can_delete': self._tmpl_can_delete(t)})
+        return {'ok': True, 'templates': out, 'can_edit': self._can_edit()}
+
+    @api.model
+    def mapping_template_save(self, config_id, adapter, name):
+        """Snapshot the CURRENT accepted wires of a board into a named template
+        (D-I6). API boards carry transforms; cycle boards carry pairs only (D-I1).
+        Manager-gated; always company-scoped to self.env.company."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("Only managers can save templates.")}
+        name = (name or '').strip()
+        if not name:
+            return {'ok': False, 'msg': _("Give the template a name.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("No configuration.")}
+        lines, connector_type = [], False
+        if adapter == 'api':
+            conn = self._api_active_connector(config)
+            if not conn:
+                return {'ok': False, 'msg': _("No connector to snapshot.")}
+            connector_type = conn.connector_type or False
+            input_ids = config.rule_ids.filtered(lambda r: r.column_type == 'input').ids
+            FM = self.env['hr.integration.field.mapping']
+            for m in FM.search([('connector_id', '=', conn.id),
+                                ('target_rule_id', 'in', input_ids)]):
+                if not (m.source_field and m.target_rule_id.code):
+                    continue
+                lines.append((0, 0, {
+                    'source_key': m.source_field,
+                    'target_code': m.target_rule_id.code,
+                    'transformation_type': m.transformation_type or 'direct',
+                    'transformation_value': m.transformation_value or 0.0,
+                    'transformation_decimals': m.transformation_decimals
+                        if m.transformation_decimals is not None else 2,
+                    'sequence': m.sequence or 10,
+                }))
+        elif adapter == 'cycle':
+            mid, end = self._cycle_pair(config)
+            if not (mid and end):
+                return {'ok': False, 'msg': _("No paired cycle configuration to snapshot.")}
+            Mapping = self.env['hr.payroll.cycle.component.mapping']
+            for m in Mapping.search([('mid_cycle_config_id', '=', mid.id),
+                                    ('end_cycle_config_id', '=', end.id)]):
+                if not (m.mid_component_id.code and m.end_component_id.code):
+                    continue
+                lines.append((0, 0, {'source_key': m.mid_component_id.code,
+                                     'target_code': m.end_component_id.code}))
+        else:
+            return {'ok': False, 'msg': _("Unknown adapter.")}
+        if not lines:
+            return {'ok': False, 'msg': _("Nothing mapped to save yet.")}
+        tpl = self.env['hr.formula.mapping.template'].create({
+            'name': name, 'adapter': adapter, 'connector_type': connector_type,
+            'company_id': self.env.company.id, 'line_ids': lines,
+        })
+        return {'ok': True, 'template_id': tpl.id, 'line_count': len(lines)}
+
+    @api.model
+    def mapping_template_apply(self, template_id, config_id, connector_id=None):
+        """Apply a template to a board by matching lines on code/path (D-I6). NEVER
+        overwrites an existing wire (skip + report) and never deletes anything.
+        Returns {applied, skipped_existing, unmatched_sources, unmatched_targets}."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("Only managers can apply templates.")}
+        tpl = self.env['hr.formula.mapping.template'].browse(int(template_id or 0)).exists()
+        if not tpl:
+            return {'ok': False, 'msg': _("Template not found.")}
+        # visibility guard — server-side, not just UI (D-I5)
+        if tpl.company_id and tpl.company_id.id != self.env.company.id:
+            return {'ok': False, 'msg': _("This template belongs to another company.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'msg': _("No configuration.")}
+        applied, skipped, un_src, un_tgt = [], [], [], []
+        if tpl.adapter == 'api':
+            conn = self._api_active_connector(config, connector_id)
+            if not conn:
+                return {'ok': False, 'msg': _("No connector on this board.")}
+            FM = self.env['hr.integration.field.mapping']
+            input_rules = config.rule_ids.filtered(lambda r: r.column_type == 'input')
+            code_to_rule = {r.code: r for r in input_rules if r.code}
+            try:
+                avail = {f['path'] for f in (FM.get_available_source_fields(conn.id) or [])}
+            except Exception:
+                avail = set()
+            existing = FM.search([('connector_id', '=', conn.id),
+                                  ('target_rule_id', 'in', input_rules.ids)])
+            used_src = {m.source_field for m in existing}
+            used_tgt = {m.target_rule_id.id for m in existing}
+            for ln in tpl.line_ids:
+                rule = code_to_rule.get(ln.target_code)
+                src_ok = ln.source_key in avail
+                if not src_ok:
+                    un_src.append(ln.source_key)
+                if not rule:
+                    un_tgt.append(ln.target_code)
+                if not (rule and src_ok):
+                    continue
+                if ln.source_key in used_src or rule.id in used_tgt:
+                    skipped.append({'source': ln.source_key, 'target': ln.target_code})
+                    continue
+                FM.create({'connector_id': conn.id, 'source_field': ln.source_key,
+                           'target_rule_id': rule.id,
+                           'source_field_label': (ln.source_key or '').replace('_', ' ').title(),
+                           'transformation_type': ln.transformation_type or 'direct',
+                           'transformation_value': ln.transformation_value or 0.0,
+                           'transformation_decimals': ln.transformation_decimals
+                               if ln.transformation_decimals is not None else 2})
+                used_src.add(ln.source_key)
+                used_tgt.add(rule.id)
+                applied.append({'source': ln.source_key, 'target': ln.target_code})
+        elif tpl.adapter == 'cycle':
+            mid, end = self._cycle_pair(config)
+            if not (mid and end):
+                return {'ok': False, 'msg': _("This configuration has no paired cycle to apply to.")}
+            Mapping = self.env['hr.payroll.cycle.component.mapping']
+            mid_by_code = {r.code: r for r in mid.rule_ids if r.code}
+            end_by_code = {r.code: r for r in end.rule_ids if r.code}
+            existing = Mapping.search([('mid_cycle_config_id', '=', mid.id),
+                                      ('end_cycle_config_id', '=', end.id)])
+            used_mid = {m.mid_component_id.id for m in existing}
+            used_end = {m.end_component_id.id for m in existing}
+            for ln in tpl.line_ids:
+                midc = mid_by_code.get(ln.source_key)
+                endc = end_by_code.get(ln.target_code)
+                if not midc:
+                    un_src.append(ln.source_key)
+                if not endc:
+                    un_tgt.append(ln.target_code)
+                if not (midc and endc):
+                    continue
+                if midc.id in used_mid or endc.id in used_end:
+                    skipped.append({'source': ln.source_key, 'target': ln.target_code})
+                    continue
+                Mapping.create({'mid_cycle_config_id': mid.id, 'end_cycle_config_id': end.id,
+                                'mid_component_id': midc.id, 'end_component_id': endc.id})
+                used_mid.add(midc.id)
+                used_end.add(endc.id)
+                applied.append({'source': ln.source_key, 'target': ln.target_code})
+        else:
+            return {'ok': False, 'msg': _("Unknown template adapter.")}
+        return {'ok': True, 'applied': applied, 'skipped_existing': skipped,
+                'unmatched_sources': sorted(set(un_src)),
+                'unmatched_targets': sorted(set(un_tgt))}
+
+    @api.model
+    def mapping_template_delete(self, template_id):
+        """Manager-gated + company-scope server-side check (D-I5): a non-shared
+        template from another company is un-deletable here."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("Only managers can delete templates.")}
+        tpl = self.env['hr.formula.mapping.template'].browse(int(template_id or 0)).exists()
+        if not tpl:
+            return {'ok': True}
+        if not self._tmpl_can_delete(tpl):
+            return {'ok': False, 'msg': _("This template belongs to another company "
+                                          "and can't be deleted here.")}
+        tpl.unlink()
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
     # F10 adapter 3 — import column mapping (Excel columns → inputs)
     # ------------------------------------------------------------------
     def _import_batch_columns(self, batch):

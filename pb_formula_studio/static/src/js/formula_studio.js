@@ -175,6 +175,12 @@ export class PbFormulaStudio extends Component {
             mapContextId: null,      // adapter context (e.g. connector id for api)
             mapDismissed: [],        // client-side-dismissed suggestion wire ids
             mapData: null,           // {ok, left, right, wires, left_title, right_title, supports_suggest, contexts, ...}
+            // W65 — mapping templates
+            tmplMode: null,          // null | "save" | "apply"
+            tmplName: "",            // save: template name
+            tmplList: [],            // apply: visible templates
+            tmplBusy: false,
+            tmplResult: null,        // apply summary {applied, skipped_existing, unmatched_sources, unmatched_targets}
             // F9 — payslip studio
             psOpen: false,
             psBusy: false,
@@ -3984,6 +3990,51 @@ export class PbFormulaStudio extends Component {
         if (r && r.ok) { await this._loadMapping(); }
         else if (r && r.msg) { this.notif.add(r.msg, { type: "warning" }); }
         return r;
+    }
+    // W65 — mapping templates (save a board / apply across configs). Both api + cycle.
+    get mapTemplatable() { return ["api", "cycle"].includes(this.state.mapMode); }
+    openTmplSave() { this.state.tmplMode = "save"; this.state.tmplName = ""; this.state.tmplResult = null; }
+    async openTmplApply() {
+        this.state.tmplMode = "apply";
+        this.state.tmplResult = null;
+        this.state.tmplBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "mapping_template_list", [this.state.mapMode]);
+            this.state.tmplList = (r && r.templates) || [];
+        } catch (e) { this.state.tmplList = []; }
+        finally { this.state.tmplBusy = false; }
+    }
+    closeTmpl() { this.state.tmplMode = null; this.state.tmplResult = null; }
+    onTmplName(ev) { this.state.tmplName = ev.target.value; }
+    onTmplKey(ev) { if (ev.key === "Enter") this.saveTmpl(); }
+    async saveTmpl() {
+        const name = (this.state.tmplName || "").trim();
+        if (!name) { this.notif.add("Give the template a name", { type: "warning" }); return; }
+        this.state.tmplBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "mapping_template_save",
+                [this.state.config.id, this.state.mapMode, name]);
+            if (r && r.ok) {
+                this.notif.add(`Saved "${name}" (${r.line_count} wire${r.line_count === 1 ? "" : "s"})`, { type: "success" });
+                this.closeTmpl();
+            } else { this.notif.add((r && r.msg) || "Could not save template", { type: "warning" }); }
+        } finally { this.state.tmplBusy = false; }
+    }
+    async applyTmpl(id) {
+        this.state.tmplBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "mapping_template_apply",
+                [id, this.state.config.id, this.state.mapContextId || false]);
+            if (r && r.ok) {
+                this.state.tmplResult = r;
+                await this._loadMapping();
+            } else { this.notif.add((r && r.msg) || "Could not apply template", { type: "warning" }); }
+        } finally { this.state.tmplBusy = false; }
+    }
+    async deleteTmpl(id) {
+        const r = await this.orm.call("pb.formula.studio", "mapping_template_delete", [id]);
+        if (r && r.ok === false) { this.notif.add(r.msg || "Could not delete", { type: "warning" }); return; }
+        await this.openTmplApply();   // refresh the list in place
     }
 
     // ---- Payslip Studio (F9) ----
