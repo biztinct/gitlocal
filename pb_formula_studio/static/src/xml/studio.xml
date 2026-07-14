@@ -1745,6 +1745,15 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3.2"/></svg>Auto-suggest
                 </button>
                 <button t-if="mapSuggestedCount" class="pbfs-btn primary sm" t-on-click="mapAcceptAll">Accept all ≥90%</button>
+                <!-- W65 — mapping templates (api + cycle only) -->
+                <t t-if="mapTemplatable">
+                  <button class="pbfs-btn soft sm" title="Save this board as a reusable template" t-on-click="openTmplSave">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Save as template…
+                  </button>
+                  <button class="pbfs-btn soft sm" title="Apply a saved template to this board" t-on-click="openTmplApply">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4zM4 12h10M4 17h10"/><path d="M18 12l3 3-3 3M21 15h-7"/></svg>Apply template…
+                  </button>
+                </t>
               </t>
               <button class="hs-x" t-on-click="closeMapping"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
             </div>
@@ -1786,6 +1795,51 @@
                            onSuggest="() => this.mapSuggest()"
                            onTransformPreview="(ref, d) => this.mapTransformPreview(ref, d)"
                            onTransformSave="(ref, v) => this.mapTransformSave(ref, v)"/>
+
+            <!-- W65 — mapping template panel (save / apply) -->
+            <t t-if="state.tmplMode">
+              <div class="pm-tmpl-scrim" t-on-click="closeTmpl"/>
+              <div class="pm-tmpl" t-on-click="(ev) => ev.stopPropagation()">
+                <div class="pm-tmpl-head">
+                  <b t-esc="state.tmplMode === 'save' ? 'Save board as template' : 'Apply a template'"/>
+                  <button class="hs-x" t-on-click="closeTmpl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+                </div>
+
+                <!-- SAVE -->
+                <t t-if="state.tmplMode === 'save'">
+                  <p class="pm-tmpl-hint">Snapshots the <b t-esc="mapAcceptedCount"/> accepted wire<t t-if="mapAcceptedCount !== 1">s</t> on this board<t t-if="state.mapMode === 'api'"> (with their transforms)</t>. Templates apply by code, so you can reuse them across configurations.</p>
+                  <input class="pm-tmpl-input" placeholder="Template name…" t-att-value="state.tmplName" t-on-input="onTmplName" t-on-keydown="onTmplKey"/>
+                  <div class="pm-tmpl-actions">
+                    <button class="pbfs-btn ghost sm" t-on-click="closeTmpl">Cancel</button>
+                    <button class="pbfs-btn primary sm" t-att-disabled="state.tmplBusy" t-on-click="saveTmpl">Save template</button>
+                  </div>
+                </t>
+
+                <!-- APPLY -->
+                <t t-else="">
+                  <div t-if="state.tmplBusy and !state.tmplList.length" class="pm-tmpl-hint">Loading…</div>
+                  <div t-elif="!state.tmplList.length" class="pm-tmpl-empty">No saved templates for this surface yet. Wire a board and use <b>Save as template…</b>.</div>
+                  <div t-else="" class="pm-tmpl-list">
+                    <div t-foreach="state.tmplList" t-as="t" t-key="t.id" class="pm-tmpl-row">
+                      <div class="pm-tmpl-row-main">
+                        <b t-esc="t.name"/>
+                        <small><t t-esc="t.line_count"/> wire<t t-if="t.line_count !== 1">s</t><t t-if="t.shared"> · shared</t><t t-if="t.connector_type"> · <t t-esc="t.connector_type"/></t></small>
+                      </div>
+                      <button class="pbfs-btn primary sm" t-att-disabled="state.tmplBusy" t-on-click="() => this.applyTmpl(t.id)">Apply</button>
+                      <button t-if="t.can_delete" class="pm-tmpl-del" title="Delete template" t-on-click="() => this.deleteTmpl(t.id)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
+                    </div>
+                  </div>
+
+                  <!-- apply result summary — every bucket shown, unmatched never hidden (D-I6, C7) -->
+                  <div t-if="state.tmplResult" class="pm-tmpl-result">
+                    <div class="pm-tmpl-res-head"><b t-esc="state.tmplResult.applied.length"/> applied · <b t-esc="state.tmplResult.skipped_existing.length"/> skipped · <b t-esc="state.tmplResult.unmatched_sources.length + state.tmplResult.unmatched_targets.length"/> unmatched</div>
+                    <div t-if="state.tmplResult.skipped_existing.length" class="pm-tmpl-res-sec"><span class="pm-tmpl-tag skip">Skipped (already wired)</span><t t-foreach="state.tmplResult.skipped_existing" t-as="s" t-key="'sk'+s_index"><code t-esc="s.source + ' → ' + s.target"/></t></div>
+                    <div t-if="state.tmplResult.unmatched_sources.length" class="pm-tmpl-res-sec"><span class="pm-tmpl-tag miss">Source not on board</span><t t-foreach="state.tmplResult.unmatched_sources" t-as="u" t-key="'us'+u_index"><code t-esc="u"/></t></div>
+                    <div t-if="state.tmplResult.unmatched_targets.length" class="pm-tmpl-res-sec"><span class="pm-tmpl-tag miss">Target not in scheme</span><t t-foreach="state.tmplResult.unmatched_targets" t-as="u" t-key="'ut'+u_index"><code t-esc="u"/></t></div>
+                  </div>
+                </t>
+              </div>
+            </t>
           </div>
         </div>
       </div>
