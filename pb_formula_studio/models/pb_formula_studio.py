@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import hashlib
 import json
 import logging
 import re
@@ -2913,6 +2914,62 @@ class PbFormulaStudio(models.AbstractModel):
         return f
 
     @api.model
+    def _slot_formula(self, formula, by_col, by_code):
+        """W52 (D-J2): normalize an ``excel_formula`` to its logical skeleton.
+
+        Strip ``=``, uppercase, drop whitespace, then replace every COMPONENT
+        REFERENCE — cell-letter form (``A1``/``X2``), bare column letter
+        (``A``/``X``), or code form (``BASIC``/``TXBASE``), resolved
+        letter-first-then-code exactly like the engine — with positional slots
+        ``§1, §2…`` in order of first occurrence. Numeric literals, operators,
+        function names and string literals survive verbatim, so two formulas
+        collide iff they are identical modulo which components they reference (a
+        differing constant ⇒ different skeleton ⇒ no false group).
+
+        Returns ``(slotted_str, n_refs)`` where ``n_refs`` is the count of
+        distinct references (0 ⇒ no component logic to share). Pure text — never
+        evaluates anything (TJ.2: zero evaluation in the path)."""
+        f = (formula or '').strip()
+        if f.startswith('='):
+            f = f[1:]
+        f = f.upper()
+        # Mask string literals (content-sensitive, letter-free placeholder) so a
+        # differing string still differs, but its letters are never slotted.
+        def _mask(m):
+            h = int(hashlib.md5(m.group(0).encode('utf-8')).hexdigest()[:8], 16)
+            return '\x01%d\x01' % h
+        f = re.sub(r'"[^"]*"', _mask, f)
+        f = re.sub(r'\s+', '', f)
+        slots = {}
+        order = []
+
+        def _rep(m):
+            tok = m.group(0)
+            # A function call — identifier immediately followed by '(' — is never
+            # a component reference (protects a component coded like a function).
+            if m.end() < len(f) and f[m.end()] == '(':
+                return tok
+            cell = re.match(r'^([A-Z]+)\d+$', tok)
+            key = None
+            if cell:
+                letter = cell.group(1)
+                if letter in by_col:
+                    key = 'C:' + letter
+            elif tok in by_col:          # bare column letter — resolve letter first
+                key = 'C:' + tok
+            elif tok in by_code:         # …then code (engine order)
+                key = 'K:' + tok
+            if key is None:
+                return tok               # function/keyword/unknown → verbatim
+            if key not in slots:
+                slots[key] = len(order) + 1
+                order.append(key)
+            return '\xa7%d' % slots[key]
+
+        slotted = re.sub(r'[A-Z]+\d*', _rep, f)
+        return slotted, len(order)
+
+    @api.model
     def get_problems(self, config_id=None):
         """Aggregate everything wrong (or smelly) about a config into one ranked
         list for the Problems rail. Pure metadata + regex — never computes a
@@ -3008,6 +3065,35 @@ class PbFormulaStudio(models.AbstractModel):
                      _("Appears in %s formulas (%s) — consider extracting a named "
                        "constant so a rate change is a one-line edit.") % (cnt, cols),
                      rule=where[0])
+
+        # 3c) W52 — duplicate-logic groups (D-J2). Token-normalized skeleton
+        # hash; groups of >=2 formula components that are identical modulo which
+        # components they reference. Detection only (v1) — extracting a shared
+        # component changes downstream reference semantics, a human decision.
+        # Zero evaluation, no LLM.
+        by_code = {r.code: r for r in rules if r.code}
+        dupe_groups = defaultdict(list)
+        for r in rules:
+            if r.column_type != 'formula' or not (r.excel_formula or '').strip():
+                continue
+            slotted, n_refs = self._slot_formula(r.excel_formula, by_col, by_code)
+            if n_refs < 1:
+                continue    # a formula referencing no component shares no logic
+            h = hashlib.sha1(slotted.encode('utf-8')).hexdigest()
+            dupe_groups[h].append(r)
+        for members in dupe_groups.values():
+            if len(members) < 2:
+                continue
+            members = sorted(members, key=lambda r: (r.sequence, r.id))
+            cols = ', '.join('%s (%s)' % (m.column_letter or '?', m.code or '—')
+                             for m in members)
+            _add('dupe', 'hint',
+                 _("%s components share this logic") % len(members),
+                 _("These calculated components are identical apart from which "
+                   "components they reference: %s. Consider a single shared "
+                   "component — the references would change, so this is a manual "
+                   "decision.") % cols,
+                 rule=members[0])
 
         # 4) totals that are not shown on the payslip ----------------------
         for r in rules:
