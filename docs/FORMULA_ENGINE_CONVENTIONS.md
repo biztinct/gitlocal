@@ -42,6 +42,23 @@ render — add it in the same commit that creates it.
 - **Odoo `odoo-bin shell` breaks dict/list comprehensions** fed on stdin (`exec()` with split
   globals/locals → `NameError` on the comprehension's own loop var). Write plain `for` loops in shell
   scripts. Registry boot is ~60–90 s, so batch server-side checks and run them via `run_in_background`.
+- **An `if`/statement inside an inline `t-on-*` arrow handler breaks the WHOLE OWL template compile
+  (WP-I, W65):** `t-on-keydown="(ev) => { if (ev.key === 'Enter') this.save(); }"` makes the QWeb→JS
+  compiler emit invalid JS (`Failed to compile template … Unexpected identifier 'vNNN'`), which fails
+  the ENTIRE component template at first render — the cockpit goes blank with only a browser-console
+  error. Expression/call arrows are fine (`(ev) => ev.stopPropagation()`, even multi-call
+  `{ a(); b(); }`); it is the `if`/statement keyword the compiler mishandles. Like the SCSS mixed-unit
+  trap above, `odoo-bin -u --stop-after-init` does NOT surface it (templates compile lazily in the
+  browser) — always Chrome-MCP the cockpit after a template change. Fix: hoist to a named component
+  method (`t-on-keydown="onFooKey"`).
+- **`odoo-bin shell` deadlocks on `access_roles._update_role_groups_view` while the service is up
+  (WP-I):** the shell rebuilds the registry, whose `_register_hook` rewrites the role-groups
+  `ir_ui_view` arch; if the live service is concurrently up (or a stale detached `odoo-bin` still
+  holds the row) it dies with `LockNotAvailable: … updating tuple in "ir_ui_view"`. Prefer validating
+  against the RUNNING registry over JSON-RPC (`/web/dataset/call_kw`, public methods only) — no
+  registry rebuild, no lock. If you must use the shell, stop the service AND confirm zero `odoo-bin`
+  procs first (kill stale ones by PID — never `pkill -f odoo-bin`, it self-matches). Registry reload
+  is ~150 s here because that view rebuild is slow (non-fatal warnings during boot).
 
 ## C3 — OWL grid state invariants
 
