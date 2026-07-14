@@ -157,7 +157,17 @@ export class GridStudio extends Component {
         // GOTCHA (S-F1): relocate focus OUT of a category that is about to fold
         // BEFORE the parent flips state and re-renders, else `focused` resolves to
         // a cell that no longer exists and _scrollFocusIntoView queries a dead node.
-        if (willFold) this._relocateFocusOutOf(catKey);
+        if (willFold) {
+            this._relocateFocusOutOf(catKey);
+            // purge hidden columns from the multi-selection too — the bulk bar must
+            // never act on columns the user can no longer see
+            const hidden = new Set(this.ordered
+                .filter(c => this._catKey(c) === catKey).map(c => c.id));
+            if (this.ui.selection.some(id => hidden.has(id))) {
+                this.ui.selection = this.ui.selection.filter(id => !hidden.has(id));
+            }
+            if (this.ui.anchorId != null && hidden.has(this.ui.anchorId)) this.ui.anchorId = null;
+        }
         this.props.onToggleFold(catKey);
     }
     _relocateFocusOutOf(catKey) {

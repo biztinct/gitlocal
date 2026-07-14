@@ -12,7 +12,7 @@ C1 boundary: the model + seed data are the ONLY engine-side footprint of W104.
 All CRUD RPCs and insertion logic live in ``pb_formula_studio`` (no eval-path
 change here — snippets are inert text until pasted into a rule).
 """
-from odoo import _, fields, models
+from odoo import fields, models
 
 
 class HrFormulaSnippet(models.Model):

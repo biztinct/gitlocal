@@ -2722,7 +2722,8 @@ class PbFormulaStudio(models.AbstractModel):
             try:
                 data['sequence'] = int(vals['sequence'])
             except (TypeError, ValueError):
-                pass
+                # C7: reject loudly, never silently drop a field the caller sent
+                return {'ok': False, 'msg': _('Sequence must be a whole number.')}
         Snip = self.env['hr.formula.snippet']
         sid = vals.get('id')
         if sid:
