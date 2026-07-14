@@ -175,8 +175,11 @@ unique constraints at all (found in the WP-H review — `hr_formula_budget_line`
 codes; the sweep showed ZERO unique constraints across all `hr_formula_*` tables). The Odoo 19 form
 is a class attribute: `_code_uniq = models.Constraint('unique(config_id, code)', 'message')`. All
 13 engine constraints were converted 2026-07-14 (dup-checked live first — all clean). ~28 more
-files elsewhere in the repo still carry dead `_sql_constraints`; convert on touch. Full list in the
-memory ledger (odoo19-payroll-gotchas); check it before touching core-model overrides.
+files elsewhere in the repo still carry dead `_sql_constraints`; convert on touch. **An unset Char
+field reads as `False` from the ORM** — `raw is None or raw == ''` misses it and `float(False)` is
+silently `0.0`; empty-checks on ORM Chars must be `if not raw` (bit the W62 preview fix TWICE
+before landing). Full list in the memory ledger (odoo19-payroll-gotchas); check it before touching
+core-model overrides.
 
 ## C10 — Verification & delivery rituals
 
