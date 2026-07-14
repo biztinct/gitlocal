@@ -3040,6 +3040,20 @@ class PbFormulaStudio(models.AbstractModel):
                      rule=rr)
 
         # 3) magic-number lint --------------------------------------------
+        # D-J6: literals sitting inside a detected (consistent) progressive
+        # IF-chain span are explained by the pending W54 simplify suggestion —
+        # one cause, one card — so suppress the magic hint for exactly those
+        # tokens. Detection is the cheap parse-only pass (no evaluation), so
+        # get_problems stays eval-free.
+        chains = self._detect_chains(rules)
+        suppress = {}
+        for r in rules:
+            res = chains.get(r.id)
+            if not res or not res.get('consistent'):
+                continue
+            s, e = res['span']
+            span_txt = self._strip_for_lint((r.excel_formula or '')[s:e])
+            suppress[r.id] = set(re.findall(r'(?<![A-Za-z0-9._])\d+(?:\.\d+)?', span_txt))
         from collections import Counter
         counter = Counter()
         rules_for_lit = {}
@@ -3047,7 +3061,10 @@ class PbFormulaStudio(models.AbstractModel):
             if r.column_type != 'formula' or not r.excel_formula:
                 continue
             seen_here = set()
+            _drop = suppress.get(r.id, ())
             for tok in re.findall(r'(?<![A-Za-z0-9._])\d+(?:\.\d+)?', self._strip_for_lint(r.excel_formula)):
+                if tok in _drop:
+                    continue
                 try:
                     val = float(tok)
                 except ValueError:
@@ -3140,6 +3157,263 @@ class PbFormulaStudio(models.AbstractModel):
             counts[p['severity']] = counts.get(p['severity'], 0) + 1
         return {'ok': True, 'count': len(problems), 'counts': counts,
                 'problems': problems}
+
+    # ==================================================================
+    # WP-J — W54 Simplification suggestions (detect → prove → offer → apply)
+    # ==================================================================
+    @api.model
+    def _detect_chains(self, rules):
+        """Shared cheap pass (D-J1): run the pure ``if_chain`` detector over each
+        formula rule — parse + consistency ONLY, no evaluation. Returns
+        ``{rule.id: detect_result}`` for rules whose ``excel_formula`` IS a
+        progressive IF-chain (consistent or irregular). Used by BOTH the D-J6
+        magic-hint suppression and the W54 suggestion RPC, so chain detection
+        lives in one place."""
+        from odoo.addons.pb_hr_payroll_formula.formula_engine import if_chain
+        out = {}
+        for r in rules:
+            if r.column_type != 'formula' or not (r.excel_formula or '').strip():
+                continue
+            res = if_chain.detect(r.excel_formula)
+            if res:
+                out[r.id] = res
+        return out
+
+    @api.model
+    def _rate_table_name(self, rule):
+        return _("%s — rate table") % (rule.name or rule.code or rule.column_letter)
+
+    @api.model
+    def _gen_rate_table_code(self, config, rule):
+        """C5-safe (D-J4): letters/digits only, deduped against existing rate
+        table AND component codes. Reuses the WP-E `_dedupe_code_c5` deduper —
+        one source, no logic fork."""
+        existing = {(t.code or '').upper() for t in config.rate_table_ids if t.code}
+        existing |= {(r.code or '').upper() for r in config.rule_ids if r.code}
+        base = re.sub(r'[^A-Z0-9]', '', (rule.code or 'RATE').upper()) or 'RATE'
+        if base[0].isdigit():
+            base = 'R' + base
+        base = (base + 'RATE')[:40]
+        Wiz = self.env['hr.formula.multisheet.import.wizard']
+        return Wiz._dedupe_code_c5(base, existing)
+
+    @api.model
+    def _find_reusable_table(self, config, brackets, eps=0.5):
+        """A rate table in ``config`` whose brackets equal ``brackets`` (lowers
+        within ``eps``, rates within 1e-9), else False. C7 honesty — the offer
+        says which existing table it would reuse rather than minting a twin."""
+        want = sorted((float(lo), float(ra)) for lo, ra in brackets)
+        for t in config.rate_table_ids:
+            got = sorted((b.lower, b.rate) for b in t.line_ids)
+            if len(got) != len(want):
+                continue
+            if all(abs(g[0] - w[0]) <= eps and abs(g[1] - w[1]) <= 1e-9
+                   for g, w in zip(got, want)):
+                return t
+        return False
+
+    @api.model
+    def _resolve_driver_rule(self, config, driver_text):
+        """The single component a chain's driver references (cell-letter form
+        ``AB2``, bare column letter, or code — engine order), or False for a
+        COMPOUND driver expression (``MIN(A,B)``, operators). Only a single
+        component can carry injected edge probes (D-J3)."""
+        t = re.sub(r'\s+', '', (driver_text or '')).upper()
+        m = re.fullmatch(r'([A-Z]+)(\d+)?', t)
+        if not m:
+            return False    # compound expression → probes not injectable
+        by_col = {r.column_letter: r for r in config.rule_ids if r.column_letter}
+        by_code = {r.code: r for r in config.rule_ids if r.code}
+        letters = m.group(1)
+        if m.group(2) is not None:          # cell form LETTERS+digits
+            return by_col.get(letters) or False
+        return by_col.get(letters) or by_code.get(letters) or False
+
+    @api.model
+    def _probe_edges(self, brackets):
+        """Every bracket lower bound plus one synthetic edge just inside the top
+        band — so each boundary is probed at −1/0/+1 (D-J3). For the VN PIT that
+        is 8 edges × 3 = 24 probes."""
+        lowers = sorted(float(lo) for lo, _ in brackets)
+        if not lowers:
+            return []
+        step = (lowers[-1] - lowers[-2]) if len(lowers) > 1 else 1.0
+        return lowers + [lowers[-1] + max(1.0, step)]
+
+    def _eq_delta(self, rule, values, original, draft):
+        """|original(values) − draft(values)| through the REAL evaluator
+        (_run_formula overlay, no persistence — C12). None if either side fails
+        to evaluate."""
+        try:
+            a = rule._run_formula(values, original, write_diagnostics=False)
+            b = rule._run_formula(values, draft, write_diagnostics=False)
+            return abs(float(a) - float(b))
+        except Exception:
+            return None
+
+    @api.model
+    def _equivalence_check(self, rule, brackets, driver_text, span_start, span_end):
+        """D-J3 gate: prove the BRACKET rewrite evaluates identically to the
+        original on every sample row (confirmed or not) PLUS synthetic edge
+        probes when the driver is a single component. The draft INLINES the exact
+        Excel the committed table will emit (``compile_brackets_excel``), so the
+        proof matches the apply. Read-only."""
+        from odoo.addons.pb_hr_payroll_formula.models.formula_rate_table import (
+            compile_brackets_excel,
+        )
+        EPS = 0.005
+        original = rule.excel_formula or ''
+        compiled = compile_brackets_excel(brackets, driver_text)
+        draft = original[:span_start] + '(' + compiled + ')' + original[span_end:]
+
+        max_delta = 0.0
+        samples_total = samples_matched = 0
+        for smp in rule.config_id.sample_data_ids:
+            try:
+                vals = smp._evaluate_rules_with_dependencies(smp.get_input_values())
+            except Exception:
+                continue
+            d = self._eq_delta(rule, vals, original, draft)
+            if d is None:
+                continue
+            samples_total += 1
+            max_delta = max(max_delta, d)
+            if d < EPS:
+                samples_matched += 1
+
+        drule = self._resolve_driver_rule(rule.config_id, driver_text)
+        driver_kind = 'compound'
+        probes_total = probes_matched = 0
+        if drule:
+            driver_kind = 'input' if drule.column_type == 'input' else 'computed'
+            for edge in self._probe_edges(brackets):
+                for x in (edge - 1.0, edge, edge + 1.0):
+                    d = self._eq_delta(rule, {drule.code: x}, original, draft)
+                    if d is None:
+                        continue
+                    probes_total += 1
+                    max_delta = max(max_delta, d)
+                    if d < EPS:
+                        probes_matched += 1
+
+        evidence = samples_total + probes_total
+        ok = bool(evidence > 0
+                  and samples_matched == samples_total
+                  and probes_matched == probes_total)
+        return {
+            'ok': ok, 'driver_kind': driver_kind, 'max_delta': max_delta,
+            'samples_total': samples_total, 'samples_matched': samples_matched,
+            'probes_total': probes_total, 'probes_matched': probes_matched,
+        }
+
+    @api.model
+    def get_simplify_suggestions(self, config_id=None):
+        """W54 (D-J3): detect progressive IF-chains, PROVE equivalence to a
+        ``BRACKET`` rewrite through the real evaluator, and return offers.
+        Read-only — nothing is persisted. Consistent+equivalent chains carry
+        ``can_apply``; irregular or unproven chains are LISTED with a reason,
+        never offered a rewrite (C7).
+
+        Shape: ``{ok, suggestions: [{rule_id, col, code, name, consistent,
+        can_apply, driver, driver_kind, span, brackets, table:{code,name,reuse,
+        reuse_of}, equivalence:{…}, before, after, reason}]}``"""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'suggestions': []}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        chains = self._detect_chains(rules)
+        rule_by_id = {r.id: r for r in rules}
+        suggestions = []
+        for rid, res in chains.items():
+            rule = rule_by_id[rid]
+            brackets = [(b['lower'], b['rate']) for b in res['brackets']]
+            driver_text = res['driver']
+            s, e = res['span']
+            item = {
+                'rule_id': rid, 'col': rule.column_letter or '', 'code': rule.code or '',
+                'name': rule.name or rule.column_letter or '',
+                'consistent': bool(res.get('consistent')),
+                'driver': driver_text, 'span': [s, e],
+                'brackets': res['brackets'], 'before': rule.excel_formula or '',
+            }
+            if not res.get('consistent'):
+                item.update({'can_apply': False, 'reason': res.get('reason'),
+                             'driver_kind': None, 'equivalence': None,
+                             'table': None, 'after': None})
+                suggestions.append(item)
+                continue
+            reuse = self._find_reusable_table(config, brackets)
+            tcode = reuse.code if reuse else self._gen_rate_table_code(config, rule)
+            after = (rule.excel_formula[:s]
+                     + 'BRACKET(%s,%s)' % (tcode, driver_text)
+                     + rule.excel_formula[e:])
+            eq = self._equivalence_check(rule, brackets, driver_text, s, e)
+            item.update({
+                'can_apply': eq['ok'],
+                'driver_kind': eq['driver_kind'],
+                'equivalence': {k: eq[k] for k in (
+                    'samples_total', 'samples_matched', 'probes_total',
+                    'probes_matched', 'max_delta')},
+                'table': {'code': tcode,
+                          'name': reuse.name if reuse else self._rate_table_name(rule),
+                          'reuse': bool(reuse),
+                          'reuse_of': reuse.code if reuse else None},
+                'after': after,
+                'reason': None if eq['ok'] else
+                _("Could not prove the rewrite is equivalent (max Δ %.4f) — not offered.")
+                % eq['max_delta'],
+            })
+            suggestions.append(item)
+        return {'ok': True, 'suggestions': suggestions}
+
+    @api.model
+    def simplify_apply(self, rule_id):
+        """W54 apply (D-J3/D-J4): create-or-reuse the rate table, rewrite ONLY
+        the detected span to ``BRACKET(code, driver)`` (wrapper survives
+        verbatim), stamp version reason ``refactor`` (C4), and re-run W82 tests
+        (a refactor is a save). Atomic — table + rewrite in one savepoint.
+        Manager-gated; re-proves equivalence defensively before touching data."""
+        from odoo.addons.pb_hr_payroll_formula.formula_engine import if_chain
+        rule = self.env['hr.formula.rule'].browse(int(rule_id))
+        if not rule.exists():
+            return {'ok': False, 'msg': _("Component not found.")}
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+        config = rule.config_id
+        res = if_chain.detect(rule.excel_formula or '')
+        if not res or not res.get('consistent'):
+            return {'ok': False, 'msg': _("This formula is no longer a consistent progressive chain.")}
+        brackets = [(b['lower'], b['rate']) for b in res['brackets']]
+        driver_text = res['driver']
+        s, e = res['span']
+        eq = self._equivalence_check(rule, brackets, driver_text, s, e)
+        if not eq['ok']:
+            return {'ok': False,
+                    'msg': _("Could not prove the rewrite is equivalent — not applied.")}
+        original = rule.excel_formula
+        with self.env.cr.savepoint():
+            reuse = self._find_reusable_table(config, brackets)
+            if reuse:
+                table, reused = reuse, True
+            else:
+                table = self.env['hr.formula.rate.table'].create({
+                    'name': self._rate_table_name(rule),
+                    'code': self._gen_rate_table_code(config, rule),
+                    'config_id': config.id,
+                    'line_ids': [(0, 0, {'lower': lo, 'rate': ra}) for lo, ra in brackets],
+                })
+                reused = False
+            new_formula = (original[:s] + 'BRACKET(%s,%s)' % (table.code, driver_text)
+                           + original[e:])
+            rule.with_context(formula_version_reason='refactor').write(
+                {'excel_formula': new_formula})
+        tests = config.run_sample_tests(changed_codes={rule.code})
+        return {'ok': True, 'reused': reused, 'table_code': table.code,
+                'brackets': len(brackets), 'new_formula': new_formula,
+                'tests': tests,
+                'msg': (_("Reused rate table %s.") % table.code if reused
+                        else _("Created rate table %s (%s brackets).")
+                        % (table.code, len(brackets)))}
 
     @api.model
     def rename_component(self, rule_id, new_code):
