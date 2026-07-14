@@ -429,6 +429,39 @@
 
         <!-- ============ TEST &amp; VALIDATE WORKBENCH ============ -->
         <t t-elif="state.view === 'test'">
+        <!-- W83 — test coverage strip: what the samples do / don't exercise -->
+        <div t-if="state.testCoverage and state.testCoverage.ok" class="pbcov">
+          <div class="pbcov-main">
+            <div t-attf-class="pbcov-pct {{ state.testCoverage.pct >= 80 ? 'good' : (state.testCoverage.pct >= 40 ? 'mid' : 'low') }}">
+              <span class="n" t-esc="state.testCoverage.pct"/><span class="u">%</span>
+            </div>
+            <div class="pbcov-body">
+              <div class="pbcov-title">Test coverage</div>
+              <div class="pbcov-chips">
+                <span class="pbcov-chip asserted"><b t-esc="state.testCoverage.asserted.length"/> asserted</span>
+                <span class="pbcov-chip exercised"><b t-esc="state.testCoverage.exercised.length"/> exercised</span>
+                <button t-attf-class="pbcov-chip untested {{ state.testCoverage.untested.length ? 'clk' : '' }}"
+                        t-on-click="toggleCoverage" t-att-disabled="!state.testCoverage.untested.length">
+                  <b t-esc="state.testCoverage.untested.length"/> untested
+                  <svg t-if="state.testCoverage.untested.length" t-attf-class="chev {{ state.coverageOpen ? 'open' : '' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <span t-if="state.testCoverage.orphan_inputs.length" class="pbcov-chip orphan" t-attf-title="Inputs/constants no asserted formula reads: {{ state.testCoverage.orphan_inputs.map(o => o.code).join(', ') }}">
+                  <b t-esc="state.testCoverage.orphan_inputs.length"/> unread input<t t-if="state.testCoverage.orphan_inputs.length !== 1">s</t>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div t-if="state.coverageOpen and state.testCoverage.untested.length" class="pbcov-list">
+            <div class="pbcov-list-h">Untested calculated components — no sample verifies these</div>
+            <button t-foreach="state.testCoverage.untested" t-as="u" t-key="u.rule_id" class="pbcov-row"
+                    t-on-click="() => this.coverageJump(u.rule_id)" t-attf-title="Jump to {{ u.col }} in the grid">
+              <span class="c" t-esc="u.col"/>
+              <span class="nm" t-esc="u.name"/>
+              <span class="cd" t-esc="u.code"/>
+              <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
         <div class="pbtest">
           <!-- left rail -->
           <div class="pbtest-rail">

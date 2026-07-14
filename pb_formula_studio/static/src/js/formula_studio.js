@@ -327,6 +327,9 @@ export class PbFormulaStudio extends Component {
             test: { samples: [], inputComponents: [], currency: "" },
             testSampleId: null,
             testDetail: null,
+            // W83 — coverage strip payload {pct, asserted, exercised, untested, orphan_inputs}
+            testCoverage: null,
+            coverageOpen: false,   // expandable untested list
             testGenOpen: false,
             testInputsOpen: true,
             randomCount: 3,
@@ -2851,6 +2854,9 @@ export class PbFormulaStudio extends Component {
         const d = await this.orm.call("pb.formula.studio", "get_test_data", [this.state.config.id]);
         if (!d || !d.ok) return;
         this.state.test = d;
+        // W83 — coverage strip: one extra RPC per load (not per-sample).
+        this.state.testCoverage = await this.orm.call(
+            "pb.formula.studio", "get_test_coverage", [this.state.config.id]);
         if (!keepSel || !d.samples.some(s => s.id === this.state.testSampleId)) {
             const first = d.samples[0];
             if (first) { await this.selectSample(first.id); } else { this.state.testSampleId = null; this.state.testDetail = null; }
@@ -2866,6 +2872,9 @@ export class PbFormulaStudio extends Component {
     get testSample() { return this.state.test.samples.find(s => s.id === this.state.testSampleId) || null; }
     tcell(v) { return (v === null || v === undefined || v === "") ? "—" : this.vnd(v); }
     toggleTestGen() { this.state.testGenOpen = !this.state.testGenOpen; }
+    // W83 — coverage strip
+    toggleCoverage() { this.state.coverageOpen = !this.state.coverageOpen; }
+    coverageJump(ruleId) { this.state.coverageOpen = false; this.findJump(ruleId); }
     toggleTestInputs() { this.state.testInputsOpen = !this.state.testInputsOpen; }
     setRandomField(field, ev) { const v = parseFloat(ev.target.value); this.state[field] = isNaN(v) ? 0 : v; }
     onTestInput(code, ev) {
