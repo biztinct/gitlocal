@@ -77,6 +77,15 @@ class HrFormulaPeriodComparison(models.TransientModel):
     joiners = fields.Integer(default=0)   # in B, not A
     leavers = fields.Integer(default=0)   # in A, not B
 
+    # W95 (WP-H, D-H1) — budget-vs-actual is a SIDE of this transient, not a fork.
+    # In budget mode: side A = the budget's per-component line amounts (synthetic,
+    # no slips), side B = the picked run's actual fold (map_b only). The period
+    # branch below is untouched (TH.1 regression AC).
+    mode = fields.Selection([
+        ('period', 'Period vs period'), ('budget', 'Budget vs actual'),
+    ], default='period')
+    budget_id = fields.Many2one('hr.formula.budget', ondelete='cascade')
+
     # ------------------------------------------------------------------ helpers
     def _pick_headline_code(self):
         """Net/take-home column if one exists, else the last payslip-visible
@@ -144,6 +153,48 @@ class HrFormulaPeriodComparison(models.TransientModel):
         return {'ok': True, 'cmp_id': cmp.id, 'headline': cmp.headline_code}
 
     @api.model
+    def cmp_create_budget(self, config_id, budget_id, run_b_id):
+        """W95 (D-H1) — create a budget-vs-actual comparison: side A is the
+        budget's line amounts (synthetic), side B is the picked run. Uses the
+        same transient/flow as a period compare — only ``mode`` differs."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        budget = self.env['hr.formula.budget'].browse(int(budget_id))
+        run_b = self.env['hr.payslip.run'].browse(int(run_b_id))
+        if not (config.exists() and budget.exists() and run_b.exists()):
+            return {'ok': False, 'msg': _('Configuration, budget or period not found')}
+        if budget.config_id.id != config.id:
+            return {'ok': False, 'msg': _('That budget belongs to a different configuration')}
+        cmp = self.create({
+            'config_id': config.id, 'budget_id': budget.id, 'run_b_id': run_b.id,
+            'mode': 'budget', 'state': 'draft',
+        })
+        cmp.headline_code = cmp._pick_headline_code() or ''
+        return {'ok': True, 'cmp_id': cmp.id, 'headline': cmp.headline_code}
+
+    @api.model
+    def run_component_sums(self, config_id, run_id):
+        """Per-component actual sums for one run keyed by CODE — identical to the
+        fold budget-mode side B produces (reuses ``_run_slip_map`` /
+        ``_slip_computed``, D-H2). Seeds a budget from a run and is the C10
+        small-scale recompute-parity anchor. Reads slips only; writes nothing."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        run = self.env['hr.payslip.run'].browse(int(run_id))
+        if not (config.exists() and run.exists()):
+            return {}
+        tmp = self.new({'config_id': config.id})
+        rule_codes = set(config.rule_ids.mapped('code'))
+        Slip = self.env['hr.payslip'].sudo()
+        sums = {}
+        for sid in tmp._run_slip_map(run).values():
+            vals = tmp._slip_computed(Slip.browse(sid))
+            for code in rule_codes:
+                nb = coerce_number(vals.get(code))
+                if nb is None:
+                    continue
+                sums[code] = sums.get(code, 0.0) + nb
+        return {c: round(v, 2) for c, v in sums.items()}
+
+    @api.model
     def cmp_prepare(self, cmp_id):
         """Match employees across the two runs and return the slip-pair work-list.
         Unmatched employees are joiners (B-only) / leavers (A-only), counted but
@@ -151,6 +202,21 @@ class HrFormulaPeriodComparison(models.TransientModel):
         cmp = self.browse(int(cmp_id)).exists()
         if not cmp:
             return {'cmp_id': False, 'pairs': [], 'total': 0}
+        if cmp.mode == 'budget':
+            # Side A is synthetic: seed the fold with the budget sums; only B
+            # chunks (S-H1). No matching — every B slip folds into sum_b.
+            lines = {l.code: l.amount for l in cmp.budget_id.line_ids if l.code}
+            fold = {'components': {c: [amt, 0.0, 0, 0.0] for c, amt in lines.items()},
+                    'budget_codes': list(lines)}
+            cmp.fold_json = json.dumps(fold)
+            map_b = cmp._run_slip_map(cmp.run_b_id)
+            pairs = [[False, sid] for sid in map_b.values()]
+            cmp.write({
+                'state': 'computing',
+                'employees_a': 0, 'employees_b': len(map_b),
+                'matched': 0, 'joiners': 0, 'leavers': 0,
+            })
+            return {'cmp_id': cmp.id, 'pairs': pairs, 'total': len(pairs)}
         map_a = cmp._run_slip_map(cmp.run_a_id)
         map_b = cmp._run_slip_map(cmp.run_b_id)
         matched = set(map_a) & set(map_b)
@@ -173,6 +239,8 @@ class HrFormulaPeriodComparison(models.TransientModel):
         pairs = payload.get('pairs') or []
         if not cmp or not pairs:
             return {'done': 0}
+        if cmp.mode == 'budget':
+            return cmp._cmp_batch_budget(pairs)
         fold = json.loads(cmp.fold_json or '{}')
         comp = fold.setdefault('components', {})     # code -> [sum_a, sum_b, n_changed, max_abs]
         movers = fold.get('movers', [])
@@ -219,6 +287,28 @@ class HrFormulaPeriodComparison(models.TransientModel):
         cmp.fold_json = json.dumps(fold)
         return {'done': len(pairs)}
 
+    def _cmp_batch_budget(self, pairs):
+        """Fold one chunk of B slips in budget mode: sum each component's actual
+        into ``sum_b`` only — no A side, no movers, no per-employee net (S-H1).
+        Reuses the same accumulator dict and the same code-keyed ``_slip_computed``
+        as the period fold. NEVER writes a payslip or a rule."""
+        self.ensure_one()
+        fold = json.loads(self.fold_json or '{}')
+        comp = fold.setdefault('components', {})
+        rule_codes = set(self.config_id.rule_ids.mapped('code'))
+        Slip = self.env['hr.payslip'].sudo()
+        b_by_id = {s.id: s for s in Slip.browse([p[1] for p in pairs]).exists()}
+        for p in pairs:
+            vb = self._slip_computed(b_by_id.get(p[1]))
+            for code in rule_codes:
+                nb = coerce_number(vb.get(code))
+                if nb is None:
+                    continue
+                slot = comp.setdefault(code, [0.0, 0.0, 0, 0.0])
+                slot[1] += nb
+        self.fold_json = json.dumps(fold)
+        return {'done': len(pairs)}
+
     @api.model
     def cmp_finalize(self, cmp_id):
         cmp = self.browse(int(cmp_id)).exists()
@@ -232,6 +322,8 @@ class HrFormulaPeriodComparison(models.TransientModel):
         top movers, joiner/leaver counts, and cause candidates with release
         attribution when a version edit brackets the two periods."""
         self.ensure_one()
+        if self.mode == 'budget':
+            return self._cmp_result_budget()
         try:
             fold = json.loads(self.fold_json or '{}')
         except Exception:
@@ -286,6 +378,66 @@ class HrFormulaPeriodComparison(models.TransientModel):
             'components': components,
             'movers': fold.get('movers', [])[:_MOVERS_KEEP],
             'causes': causes,
+            'currency': currency,
+        }
+
+    def _cmp_result_budget(self):
+        """W95 (D-H1) — budget-vs-actual result: same row shape as the period
+        table (a = budget, b = actual, delta, delta%), heat-shadable. Coverage
+        lists BOTH un-budgeted components (in the run, no budget line) and orphan
+        budget lines (a code no longer in the config) — never silently dropped
+        (C7). Employee-level blocks (movers/causes/joiners/leavers) are empty in
+        budget mode; the UI hides those cards."""
+        self.ensure_one()
+        try:
+            fold = json.loads(self.fold_json or '{}')
+        except Exception:
+            fold = {}
+        comp = fold.get('components', {})
+        budget_codes = set(fold.get('budget_codes', []))
+        rule_codes = set(self.config_id.rule_ids.mapped('code'))
+        rows = []
+        tot_budget = tot_actual = 0.0
+        for code, v in comp.items():
+            a = round(v[0], 2)   # budget
+            b = round(v[1], 2)   # actual
+            delta = round(b - a, 2)
+            rows.append({
+                'code': code, 'sum_a': a, 'sum_b': b, 'delta': delta,
+                'delta_pct': (round(100.0 * delta / a, 1) if abs(a) > _EPS else None),
+                'budgeted': code in budget_codes,
+                # A budget line whose code no longer exists in the config: kept,
+                # flagged, struck-through in the UI (D-H2 honesty) — not hidden.
+                'orphan': code in budget_codes and code not in rule_codes,
+            })
+            tot_budget += a
+            tot_actual += b
+        rows.sort(key=lambda r: -abs(r['delta']))
+
+        # Coverage honesty (C7): both asymmetric sets always present.
+        unbudgeted = sorted(c for c in comp
+                            if c in rule_codes and c not in budget_codes)
+        orphan_lines = sorted(c for c in budget_codes if c not in rule_codes)
+
+        currency = self.config_id.currency_id.symbol if self.config_id.currency_id else ''
+        return {
+            'cmp_id': self.id, 'state': self.state, 'mode': 'budget',
+            'config_id': self.config_id.id, 'config': self.config_id.display_name,
+            'budget': {'id': self.budget_id.id, 'name': self.budget_id.name or '',
+                       'period_label': self.budget_id.period_label or ''},
+            'run_b': {'id': self.run_b_id.id, 'name': self.run_b_id.name,
+                      'date_start': str(self.run_b_id.date_start or ''),
+                      'date_end': str(self.run_b_id.date_end or '')},
+            'headline': self.headline_code or '',
+            'employees_b': self.employees_b,
+            'components': rows,
+            'coverage': {'unbudgeted': unbudgeted, 'orphan_lines': orphan_lines},
+            'total_budget': round(tot_budget, 2),
+            'total_actual': round(tot_actual, 2),
+            'total_delta': round(tot_actual - tot_budget, 2),
+            # Employee-level blocks are period-mode only (D-H1) — empty here.
+            'movers': [], 'causes': [], 'joiners': 0, 'leavers': 0,
+            'matched': 0, 'net_moved': 0, 'employees_a': 0,
             'currency': currency,
         }
 
