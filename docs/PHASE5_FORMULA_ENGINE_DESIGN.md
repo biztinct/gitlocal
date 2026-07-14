@@ -557,6 +557,10 @@ unit test; numbers cross-checked against the compare table on screen.
 Format: seam → locked direction → effort. Full task-level design happens in the cycle that schedules each.
 Ordered by affinity to the WP surfaces they extend.
 
+> **2026-07-14:** the first Medium batch — **W18, W4, W8, W104** — is promoted to a full Opus-ready
+> package: see **WP-F** at the end of this doc. The four briefs below are kept for history; WP-F
+> supersedes them where they differ (it was re-verified against the post-WP-A..E code).
+
 **W18 Shortcuts overlay** *(Grid/UX, 1–2 d)* — `?` (and palette entry) opens a static overlay listing every
 studio hotkey. Seam: hotkey handlers in `grid_studio.js:298-335` + `formula_studio.js:300`; render from the
 same registry the W99 palette uses so it can never drift from reality. Build immediately after WP-A.
@@ -699,6 +703,9 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 **WP-D:**
 > Implement WP-D (W48 payrun anomaly narration) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md, honoring docs/FORMULA_ENGINE_CONVENTIONS.md — deterministic narrative first, LLM polish guarded. Build TD.1→TD.3, one commit, report back per the Report-back section.
 
+**WP-F:**
+> Implement WP-F (Grid & Command Polish: W18 shortcuts overlay, W4 pinned sample rows, W8 collapse by category, W104 snippet library) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-F, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C3, C5, C7, C8, C10, C11 are load-bearing here). Build TF.1→TF.6 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world (throwaway-clone pattern for the perf/fold checks, delete the clone afterwards), and report back per the Report-back items section. Do not touch docs/FORMULA_ENGINE_TOUR.html.
+
 ---
 
 # WP-E — Import Resolution Integrity (`pb_hr_payroll_formula` wizard) — converter-audit follow-up
@@ -807,3 +814,229 @@ transient wizard). The original VN customer workbook was not available in this s
 converter-side `excel_semantics_battery.py` remains green and the C10 batch-recompute anchor is
 unaffected (no engine-eval change in WP-E). **Recommended before customer use:** one real re-import of
 that workbook through the preview to confirm confidence and red/warning lines behave as intended.
+
+---
+
+# WP-F — Grid & Command Polish — W18 → W4 → W8 → W104
+
+**Designed 2026-07-14 (Fable), after WP-A..E shipped.** First Medium batch, promoted from the Part-II
+briefs and re-verified against the live code. Modules: `pb_formula_studio` for all four features;
+`pb_hr_payroll_formula` ONLY for the W104 snippet model + seed data (C1 boundary — no other engine
+edits, no eval-path changes). Deployed baselines at design time: studio `19.0.1.49.0`, engine
+`19.0.1.34.0`. Effort ≈ 11–13 d.
+
+Build order is dependency order: W18 is standalone warm-up; W4 and W8 both restructure how the grid
+renders columns/rows, and W8's fold pipeline must be built ON TOP of W4's extra rows (they share the
+value-row templates); W104 is last (only feature with a schema change + `-u pb_hr_payroll_formula`).
+
+## Verified plumbing facts (do not re-derive)
+
+*Grid (`pb_formula_studio/static/src/js/grid/grid_studio.js`, 908 lines):*
+- `ROWS` fixed vocabulary + `EDITABLE_ROWS` — `grid_studio.js:7-8`. Grid-local UI state (id-keyed
+  focus/selection/editing/fill/drag) — `:50-69` (C3).
+- Display order getter `ordered` — `:101-104`. Keyboard nav walks `this.ordered` — `onKeydown :419-456`;
+  the printable-char branch that seeds an editor is `:449-451`.
+- **W109 window:** `vcols` state `:79-85`, `VCOL_THRESHOLD=60`/`OVERSCAN=8` `:110-111`,
+  `_recomputeWindow` `:132-174` — NOTE it now walks **cumulative units** (base column = 1 unit +
+  1 per scenario ghost of that column), not `floor(scrollLeft/colW)`. `_pinnedIds` `:177-190`,
+  `displayColumns` `:723-749` (unit kinds `base`/`scenario`/`spacer`; a spacer bridges a run of
+  hidden BASE columns with width `gap × colW`). Length-change recompute in `_afterPatch` `:867-875`.
+- Value row template: ONE `<tr class="g2-prow g2-valrow">` rendered from `props.formatValue(c.col)` —
+  `grid_studio.xml:144-160`. Band strip/contiguity: `_bandStarts` `grid_studio.js:256-267`.
+- Drag-fill target resolution `_fillTargetsFor` `:601-606` (filters `this.ordered` by colNum span).
+- Cell autocomplete: `_updateAutocomplete` `:496-517` (items `{id,col,code,name,value}`, max 8),
+  `_insertAutocomplete` `:530-545`, `_refRow` `:523-529`; dropdown template
+  `pb_formula_studio.CellAutocomplete` `grid_studio.xml:246-258` (fixed-position `.g2-ac`, C11).
+
+*Studio root (`pb_formula_studio/static/src/js/formula_studio.js`):*
+- Palette registry `paletteCommands` `:688-712` — sections Views/Actions/Components/Configs; every
+  `run()` calls an existing method. `CommandPalette.SECTION_ORDER` is STATIC at
+  `command_palette.js:15` — a new section must be added there or it ranks last.
+- Hotkeys: `_setupCommandLayer` `:766-774` — `useHotkey("control+k"/"control+f", {global:true,
+  bypassEditableProtection:true})` (macOS ⌘ folds into "control"), plus `useExternalListener(window,
+  "mouseover"/"scroll"/"keydown")` for hover cards. The Escape close-ladder is `useHotkey("escape")`
+  `:343-355` (palette → find → drawers).
+- Shared search index `searchIndex` `:630-648` (rebuilt on `state.components` identity change).
+- Preview: `state.preview = {sample_id, values}` (single sample); formatter chain
+  `previewVal :906-909` → `fmtTyped :898-905` → `vnd :891-895`; `sampleName :840-843`;
+  `state.samples = [{id,name}]`.
+- Grid prop wiring (all callbacks): `studio.xml:1127-1144`. Save-path preview refresh sites that W4
+  must extend: `formula_studio.js:558-666` (save/bulk/find-commit) and `:801-807` (restore/promote).
+
+*Server (`pb_formula_studio/models/pb_formula_studio.py`):*
+- `compute_preview(config_id, sample_id)` `:660-662` → `_compute` `:633-657` returns
+  `{'sample_id': int, 'values': {col_letter: float}}`, computed via
+  `sample._evaluate_rules_with_dependencies` (the real evaluator — C5). Already per-sample; W4 needs
+  **zero server changes**.
+- Components payload carries `category_id`, `category`, `group`, `sequence` — `:250-263`.
+
+*Engine (`pb_hr_payroll_formula`):*
+- Model registration pattern: `models/__init__.py` (one import per file); access rows pattern in
+  `security/ir.model.access.csv` — user `1,1,1,0`, manager `1,1,1,1`, groups
+  `pb_hr_payroll_formula.group_formula_user` / `group_formula_manager`.
+- Data files load via the manifest `data:` list; seed data uses `noupdate="1"`.
+
+## Locked decisions
+
+- **D-F1 (W18 trigger)** — the overlay opens on a **window-level keydown listener** checking
+  `ev.key === "?"` with guards (target is not input/textarea/contenteditable; palette/find/AI not
+  open), NOT via a `useHotkey` token — hotkey-service token parsing for shifted punctuation is
+  layout-dependent and not worth the risk. Also reachable from the palette ("Keyboard shortcuts",
+  Views section) and it joins the FRONT of the Escape ladder (`:343`). The grid's printable-seed
+  branch (`grid_studio.js:449-451`) must EXCLUDE `"?"` (not a legal formula-start token) so the
+  overlay is reachable while the grid scroller is focused; an OPEN editor keeps `?` normally
+  (editor keydown already `stopPropagation`s, `:686`).
+- **D-F2 (W18 content is registry-driven)** — one static descriptor list module-level next to
+  `paletteCommands`: sections + rows `{keys:[...], label}`. The Views/Actions rows are DERIVED from
+  `paletteCommands` labels where a binding exists (⌘K, ⌘F, Esc); grid keys (arrows, Tab, Enter/F2,
+  Esc, Ctrl+Z, type-to-edit, drag-fill Enter/Esc) are a static table in that same module — one file
+  to update, so W99 and W18 cannot drift apart. Zero RPC; overlay reuses the `.g2-bulkpop` scrim
+  pattern (C11); `<kbd>`-styled chips, Lucide icons only.
+- **D-F3 (W4 keeps ROWS frozen — C3)** — extra samples do NOT extend the `ROWS` vocabulary. The
+  active sample's value row stays exactly as-is (focusable, part of nav). Pinned samples render as
+  ADDITIONAL display-only `<tr class="g2-prow g2-valrow g2-valrow-extra">` rows below it —
+  non-focusable, no `data-row`, no keyboard participation (precedent: scenario cells). Row label =
+  sample name + unpin ×.
+- **D-F4 (W4 state & data flow)** — parent owns `state.pinnedSamples = [sid,...]` (max 2 extra; the
+  active sample is never in it) and `state.previewExtra = {sid: {sample_id, values}}`; grid receives
+  ONE new prop `extraPreviews: [{sample_id, name, values}]` and formats via a passed
+  `formatValueFor(col, values)` (reuse `fmtTyped`). Pin/unpin UI lives in the Live-preview panel's
+  sample row (pin icon beside the `tp-sel` cycler, `studio.xml:1155`). Every save path that today
+  refreshes `state.preview` also refreshes all pinned samples via ONE `Promise.all` of
+  `compute_preview` calls (C8: per-save, never per-keystroke). Pinned set is **client-session only**
+  (D: no server persistence in v1; reload resets). Config switch clears pins (like `load()` clears
+  tests).
+- **D-F5 (W8 fold = display transform, single pipeline)** — introduce `viewOrdered`: the unit list
+  `[{kind:'base', comp} | {kind:'summary', cat, label, members:[comp]}]` built from `ordered` by
+  collapsing each CONTIGUOUS run of a folded category into one summary unit (contiguity matches the
+  band strip, `_bandStarts`; a category split across the sheet folds into multiple summary units —
+  correct by construction). **All four consumers switch from `ordered` to `viewOrdered`:**
+  `_recomputeWindow` (summary unit = 1 colW unit; ghost math applies to base units only),
+  `displayColumns` (windows viewOrdered indices; `_pinnedIds` applies to base comp ids; summary
+  units are never pinned), keyboard nav (`cols` = base units only), and `_fillTargetsFor` (folded
+  columns are NEVER silent fill targets). Fold state is a plain `{catKey: true}` map owned by the
+  PARENT (`state.folds`), passed as a prop with `onToggleFold(catKey)` — the "Group by category"
+  toolbar grows per-category fold chips. Folding a category containing the focused column moves
+  focus to the nearest visible base column. Client-only state; clears on config switch.
+- **D-F6 (W8 summary cell content)** — header: category name + member count + unfold affordance
+  (click anywhere on the column unfolds). Value row(s): Σ of member values from that row's values
+  map, formatted with `vnd()` (orientation aid, not accounting — deductions are summed as computed,
+  not negated). Name/Category/Type/Formula/Status rows show an em-dash. Band tint follows
+  `_bandColor`.
+- **D-F7 (W104 model in the engine — C1)** — new file `pb_hr_payroll_formula/models/formula_snippet.py`,
+  model `hr.formula.snippet`: `name` (required), `category` (Selection: proration / cap / bracket /
+  rounding / other), `body` (Text, an Excel fragment with `${CODE}` placeholders), `description`,
+  `sequence`, `active`, `company_id` (optional; empty = shared library). Access rows: user read-only
+  (`1,0,0,0`), manager full (`1,1,1,1`) — snippet CRUD is manager-only. Seed
+  `data/formula_snippet_data.xml` (`noupdate="1"`) with 4–6 patterns taken from the VN demo formulas
+  (workday proration, cap-at-constant, `BRACKET()` PIT, round-to-thousands). Schema change ⇒ engine
+  manifest bump + `-u pb_hr_payroll_formula` (the ONLY `-u` of the package).
+- **D-F8 (W104 insertion semantics — C5/C7)** — placeholders resolve at INSERTION time, client-side:
+  `${CODE}` → column-letter ref (`col + _refRow()`) when CODE exists in the current config's
+  components; an unresolvable placeholder is inserted AS-IS so live validation flags the cell red
+  (visible failure, C7 — never silently dropped or zeroed). Two entry points, both into an open cell
+  editor: (a) the cell autocomplete gains snippet rows (distinct `snippet` style, listed after
+  component matches) when the typed query matches a snippet name/category; (b) palette section
+  **Snippets** (add to `SECTION_ORDER`) — if no editor is open, it starts an edit on the focused
+  formula cell first, then inserts at caret. Snippet management (list/create/edit/delete) is a small
+  scrim overlay reachable from the palette ("Manage snippets…", managers only via `can_edit`).
+  Studio RPCs on `pb.formula.studio`: `list_snippets()`, `save_snippet(vals)`,
+  `delete_snippet(snippet_id)` — write paths guarded by the same manager check as other studio
+  writes. Loaded once per `load()` into `state.snippets`.
+- **D-F9 (no tour edits)** — `docs/FORMULA_ENGINE_TOUR.html` stays untouched (user-deferred until all
+  features land).
+
+## Tasks
+
+**TF.1 — W18 shortcuts overlay** *(studio only, ~1 d)*
+Registry module + overlay component/template + `?` listener + palette entry + Escape-ladder front.
+AC: opens from cards AND grid views; does NOT open while typing in any input (cell editor, formula
+bar, find, palette, AI chat); every listed binding actually works as printed (spot-check all);
+`?` excluded from grid edit-seeding; zero RPC on open; zero console errors.
+
+**TF.2 — W4 pinned sample rows** *(studio only, ~3 d)*
+Parent pin state + preview-panel pin UI + `extraPreviews` prop + extra value rows + save-path
+refresh extension (ALL sites: save_formula, bulk update, drag-fill commit, find&replace commit,
+restore_version, promote_scenario).
+AC: pin 2 extra samples → 3 value rows with correct per-sample values (cross-check one component's
+three values against the Tests view for those samples); editing GROSS updates all three rows after
+ONE save; cap enforced at 2 extra with a polite notification; unpin removes the row; config switch
+clears pins; W109 clone (>60 cols) scrolls smoothly with extra rows present (spacers span them).
+
+**TF.3 — W8 collapse by category** *(studio only, ~3 d)*
+`viewOrdered` pipeline (skeleton S-F1) + fold chips on the grid toolbar + summary column + the four
+consumer switches + focus relocation.
+AC: folding Earnings on the demo config hides exactly its columns and shows one summary column whose
+Σ equals the sum of the hidden columns' displayed raw values; fold state survives a save/refresh
+(state is client-side; components array replacement must not reset it); keyboard nav skips folded
+columns; drag-fill never targets a folded column; focused-column fold relocates focus without a
+console error; on a >60-column clone, fold/unfold keeps the window exact — total `scrollWidth`
+equals (visible units × colW) + label width at every step (no spacer drift); pinned W4 rows render
+correct summary Σ per sample.
+
+**TF.4 — W104 engine model + seeds** *(engine, ~1 d)*
+`formula_snippet.py` + `__init__` import + access CSV rows + seed XML + manifest `data:` entry +
+version bump + server `-u pb_hr_payroll_formula`.
+AC: upgrade clean in the deploy ritual; seeds present exactly once after a SECOND `-u`
+(noupdate honored); C10 batch-recompute anchor still zero-drift (no eval-path change expected —
+prove it).
+
+**TF.5 — W104 studio surface** *(studio, ~2–3 d)*
+RPCs + `state.snippets` + autocomplete snippet rows + palette Snippets section (+ `SECTION_ORDER`)
++ insertion with placeholder resolution + manage overlay.
+AC: inserting the PIT bracket snippet into a formula cell on the demo config resolves `${...}`
+placeholders to the right column letters and validates green; a snippet referencing a code the
+config lacks inserts with the literal `${CODE}` and the cell goes red with a clear message (C7);
+non-manager sees insertion but no manage entry; palette shows Snippets as its own ranked section;
+manage overlay CRUD round-trips.
+
+**TF.6 — package validation sweep** *(~1 d)*
+Interactive Chrome-MCP drive of all four features on the pb_demo VN world; perf/fold checks on a
+throwaway >60-component clone of a demo config (create → drive → DELETE, keeping demo pristine —
+the WP-C pattern); zero console errors across the sweep; C10 anchor run once for the package.
+
+### Skeleton S-F1 — the fold pipeline (the risky spot: one unit list, four consumers)
+
+```js
+// grid_studio.js — W8. `ordered` stays untouched; everything downstream reads viewOrdered.
+_catKey(c) { return String(c.category_id || c.category || c.group || "?"); }
+get viewOrdered() {
+    const folds = this.props.folds || {};            // parent-owned {catKey: true}
+    const out = [];
+    let openCat = null;                              // contiguous folded run being absorbed
+    for (const c of this.ordered) {
+        const k = this._catKey(c);
+        if (folds[k]) {
+            if (openCat === k) { out[out.length - 1].members.push(c); continue; }
+            openCat = k;
+            out.push({ kind: "summary", cat: k, label: c.category, members: [c], key: "cat:" + k + ":" + c.id });
+        } else { openCat = null; out.push({ kind: "base", comp: c, key: "b" + c.id }); }
+    }
+    return out;
+}
+// _recomputeWindow: iterate viewOrdered; unit width = 1 colW for summary units,
+//   1 + scenarioGhosts(comp) for base units. first/last index into viewOrdered.
+// displayColumns: window over viewOrdered; pin-check = (u.kind === 'base' && pin.has(u.comp.id));
+//   summary units window like base ones; spacers bridge hidden runs exactly as today.
+// keyboard nav + _fillTargetsFor: this.viewOrdered.filter(u => u.kind === 'base').map(u => u.comp)
+// GOTCHA: ui.focus.colId can point at a column that just got folded — the parent's
+//   onToggleFold relocates focus BEFORE the re-render, else `focused` resolves but its
+//   cell no longer exists and _scrollFocusIntoView queries a missing node every patch.
+// GOTCHA: W4 extra value rows iterate the SAME displayColumns — build TF.2 first and
+//   render summary Σ from the row's own values map, so W4×W8 composition is free.
+```
+
+## WP-F verification (Chrome MCP on pb_demo VN world)
+
+1. W18: `?` from grid and cards; blocked while editing; all bindings true; Esc closes first.
+2. W4: 3-row value matrix correct vs Tests view; one-save refresh of all rows; cap + unpin + config
+   switch behaviours.
+3. W8: fold Σ correctness; window exactness on the >60-col clone (scrollWidth check); nav/fill skip
+   folded; focus relocation.
+4. W4×W8 composition: fold with 2 pinned samples → per-sample Σ correct in every extra row.
+5. W104: seeded snippets insert + resolve on demo config; unresolvable placeholder goes visibly red;
+   manager-only manage; second `-u` idempotent.
+6. C10 batch-recompute anchor: zero drift.
+7. Console clean across the whole drive; clone deleted afterwards.
+
+Report back per the **Report-back items** section (deviations from D-F1..D-F9 must be flagged).
