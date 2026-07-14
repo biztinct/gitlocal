@@ -24,6 +24,10 @@ export class GridStudio extends Component {
         selectedId: { optional: true },
         onSelect: Function,          // (ruleId) => parent.selectComponent
         formatValue: Function,       // (col) => display string, mirrors parent previewVal
+        // W4 — extra pinned sample value rows (display-only; never focusable, C3/D-F3)
+        extraPreviews: { type: Array, optional: true },       // [{sample_id, name, values}]
+        formatValueFor: { type: Function, optional: true },   // (col, values) => display string
+        onUnpinSample: { type: Function, optional: true },    // (sid) => parent unpins
         sampleName: { type: String, optional: true },
         fieldMeta: { type: Object, optional: true },   // {categories, number_formats, ...}
         onSaveFormula: Function,     // (ruleId, formula) => parent save + refresh + compute_preview
@@ -275,6 +279,13 @@ export class GridStudio extends Component {
         }
         return n;
     }
+
+    // W4 — extra pinned value rows (display-only). They iterate the SAME
+    // displayColumns as the active value row, so spacers/scenarios line up under
+    // W109 windowing; base cells format via the parent's per-sample formatter.
+    get extraPreviews() { return this.props.extraPreviews || []; }
+    extraValue(ex, col) { return this.props.formatValueFor ? this.props.formatValueFor(col, ex.values) : "—"; }
+    onUnpinExtra(sid) { if (this.props.onUnpinSample) this.props.onUnpinSample(sid); }
 
     typeLabel(c) { return { input: "Input", formula: "Formula", constant: "Constant" }[c.type] || c.type; }
     formulaText(c) {
