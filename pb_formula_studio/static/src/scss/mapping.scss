@@ -104,3 +104,39 @@
 .mapping-canvas .mc-drawhint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 8px; background: var(--i-deep, #241F52); color: #fff; font-size: 12.5px; font-weight: 600; padding: 8px 15px; border-radius: 999px; box-shadow: 0 8px 24px rgba(36, 31, 82, .35); }
 .mapping-canvas .mc-drawhint svg { width: 15px; height: 15px; }
 .mapping-canvas .mc-drawhint b { font-weight: 800; }
+
+/* ---- W62 transform badge (accepted API wires) ---- */
+.mapping-canvas .mc-badge.tf { gap: 4px; }
+.mapping-canvas .mc-tf-chip { width: auto; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 999px; border: 1px solid var(--i-border, #CBC2EE); background: #fff; color: var(--i600, #4A3D96); font-size: 11.5px; font-weight: 800; font-family: ui-monospace, "SF Mono", Menlo, monospace; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 6px rgba(90, 75, 176, .16); line-height: 1; }
+.mapping-canvas .mc-tf-chip:hover { background: var(--i-soft, #EDEAF8); border-color: var(--i, #5A4BB0); }
+.mapping-canvas .mc-badge.tf.err .mc-tf-chip { color: #B91C1C; border-color: #FCA5A5; background: #FEF2F2; box-shadow: 0 2px 6px rgba(220, 38, 38, .2); }
+
+/* ---- W62 transform popover (scrim pattern, C11) ---- */
+.mapping-canvas .mc-tf-scrim { position: fixed; inset: 0; z-index: 40; background: transparent; }
+.mapping-canvas .mc-tf-pop { position: absolute; z-index: 41; transform: translate(-50%, 12px); width: 300px; max-width: 92%; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 14px; box-shadow: 0 18px 50px rgba(20, 16, 50, .28); padding: 14px; }
+.mapping-canvas .mc-tf-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.mapping-canvas .mc-tf-title { font-size: 12.5px; font-weight: 800; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-x { border: 0; background: none; color: var(--muted, #6B7280); cursor: pointer; padding: 3px; border-radius: 6px; display: grid; place-items: center; }
+.mapping-canvas .mc-tf-x:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-x svg { width: 15px; height: 15px; }
+.mapping-canvas .mc-tf-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 9px; }
+.mapping-canvas .mc-tf-row label { font-size: 11.5px; font-weight: 700; color: var(--muted, #6B7280); flex: none; }
+.mapping-canvas .mc-tf-sel, .mapping-canvas .mc-tf-inp { flex: 1; min-width: 0; border: 1px solid var(--line, #E8E9F3); border-radius: 8px; padding: 6px 9px; font-family: inherit; font-size: 12.5px; color: var(--ink, #1E1B2E); background: #fff; }
+.mapping-canvas .mc-tf-inp { max-width: 130px; text-align: right; }
+.mapping-canvas .mc-tf-sel:focus, .mapping-canvas .mc-tf-inp:focus { outline: none; border-color: var(--i, #5A4BB0); box-shadow: 0 0 0 3px var(--i-soft, #EDEAF8); }
+.mapping-canvas .mc-tf-prev { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: #FAFAFE; border: 1px solid var(--line, #E8E9F3); border-radius: 9px; padding: 8px 10px; margin: 4px 0 12px; font-size: 12.5px; }
+.mapping-canvas .mc-tf-badge { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; font-weight: 800; background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); padding: 2px 7px; border-radius: 6px; }
+.mapping-canvas .mc-tf-dim { color: var(--muted, #6B7280); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.mapping-canvas .mc-tf-prev b { color: var(--ink, #1E1B2E); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 800; }
+.mapping-canvas .mc-tf-arr { width: 15px; height: 15px; color: var(--i, #5A4BB0); flex: none; }
+.mapping-canvas .mc-tf-err { color: #B91C1C; font-weight: 600; }
+.mapping-canvas .mc-tf-note { display: flex; gap: 11px; align-items: flex-start; }
+.mapping-canvas .mc-tf-note .mc-tf-glyph { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 16px; font-weight: 800; color: var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); border-radius: 8px; width: 34px; height: 34px; display: grid; place-items: center; flex: none; }
+.mapping-canvas .mc-tf-note b { font-size: 12.5px; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-note p { font-size: 11.5px; color: var(--muted, #6B7280); line-height: 1.5; margin: 3px 0 0; }
+.mapping-canvas .mc-tf-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.mapping-canvas .mc-tf-cancel { border: 1px solid var(--line, #E8E9F3); background: #fff; color: var(--muted, #6B7280); font-family: inherit; font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 8px; cursor: pointer; }
+.mapping-canvas .mc-tf-cancel:hover { background: #F1F5F9; color: var(--ink, #1E1B2E); }
+.mapping-canvas .mc-tf-save { border: 0; background: var(--i, #5A4BB0); color: #fff; font-family: inherit; font-size: 12px; font-weight: 800; padding: 7px 16px; border-radius: 8px; cursor: pointer; }
+.mapping-canvas .mc-tf-save:hover { background: var(--i600, #4A3D96); }
+.mapping-canvas .mc-tf-save:disabled { opacity: .6; cursor: default; }

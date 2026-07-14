@@ -66,6 +66,19 @@
             <button t-if="props.canEdit" class="mc-b-ok" title="Accept" t-on-click="() => this.accept(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg></button>
             <button t-if="props.canEdit" class="mc-b-x" title="Reject" t-on-click="() => this.reject(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
+          <!-- W62 — accepted API wire: transform badge (visible to everyone) + delete (managers) -->
+          <div t-elif="g.state==='accepted' and g.transform"
+               t-attf-class="mc-badge tf {{ g.transform.error ? 'err' : '' }}"
+               t-attf-style="left:{{g.mx}}px;top:{{g.my}}px"
+               t-on-mouseenter="() => { ui.hoverWire = g.id; }" t-on-mouseleave="() => { ui.hoverWire = null; }">
+            <button class="mc-tf-chip"
+                    t-att-title="g.transform.error ? (g.transform.error_msg or 'Transform failed — using default') : (g.transform.python ? 'Python transform (edit in backend)' : 'Edit transform')"
+                    t-on-click="() => this.openTransform(g)">
+              <t t-esc="transformGlyph(g.transform)"/>
+            </button>
+            <button t-if="props.canEdit" class="mc-b-del" title="Remove mapping" t-on-click="() => this.del(g)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+          <!-- accepted cycle wire (no transform): delete only, managers -->
           <div t-elif="g.state==='accepted' and props.canEdit" class="mc-badge acc"
                t-attf-style="left:{{g.mx}}px;top:{{g.my}}px"
                t-on-mouseenter="() => { ui.hoverWire = g.id; }" t-on-mouseleave="() => { ui.hoverWire = null; }">
@@ -73,6 +86,73 @@
           </div>
         </t>
       </div>
+
+      <!-- W62 — transform editor popover (scrim pattern, C11) -->
+      <t t-if="ui.tfOpen">
+        <div class="mc-tf-scrim" t-on-click="closeTransform"/>
+        <div class="mc-tf-pop" t-attf-style="left:{{tfAnchor.x}}px;top:{{tfAnchor.y}}px" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="mc-tf-head">
+            <span class="mc-tf-title">Transform on the wire</span>
+            <button class="mc-tf-x" t-on-click="closeTransform"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+          </div>
+
+          <!-- python: read-only on the canvas (D-I2) -->
+          <div t-if="ui.tfPy" class="mc-tf-note">
+            <span class="mc-tf-glyph">ƒ</span>
+            <div>
+              <b>Python expression</b>
+              <p>Code transforms are edited in the connector's field-mapping form in the backend, not on the canvas.</p>
+              <p t-if="ui.tfPreview.error" class="mc-tf-err"><t t-esc="ui.tfPreview.error"/></p>
+            </div>
+          </div>
+
+          <!-- read-only user: badge + locked notice, no editor (W104 lesson) -->
+          <div t-elif="!props.canEdit" class="mc-tf-note">
+            <span class="mc-tf-glyph"><t t-esc="tfDraftGlyph"/></span>
+            <div>
+              <b>View only</b>
+              <p>Only payroll managers can edit transforms on the wire.</p>
+            </div>
+          </div>
+
+          <!-- manager editor -->
+          <t t-else="">
+            <div class="mc-tf-row">
+              <label>Operation</label>
+              <select class="mc-tf-sel" t-on-change="onDraftType">
+                <option t-foreach="tfTypeOptions" t-as="o" t-key="o.v" t-att-value="o.v" t-att-selected="o.v === ui.tfDraft.transformation_type" t-esc="o.l"/>
+              </select>
+            </div>
+            <div t-if="tfNeedsValue" class="mc-tf-row">
+              <label>Factor / value</label>
+              <input class="mc-tf-inp" type="number" step="any" t-att-value="ui.tfDraft.transformation_value" t-on-input="onDraftValue"/>
+            </div>
+            <div t-if="tfNeedsDecimals" class="mc-tf-row">
+              <label>Decimal places</label>
+              <input class="mc-tf-inp" type="number" step="1" min="0" t-att-value="ui.tfDraft.transformation_decimals" t-on-input="onDraftDecimals"/>
+            </div>
+
+            <!-- live preview: sample → transformed (D-I2) -->
+            <div class="mc-tf-prev">
+              <span class="mc-tf-badge"><t t-esc="tfDraftGlyph"/></span>
+              <t t-if="ui.tfPreview.loading"><span class="mc-tf-dim">computing…</span></t>
+              <t t-elif="ui.tfPreview.error"><span class="mc-tf-err" t-esc="ui.tfPreview.error"/></t>
+              <t t-else="">
+                <span class="mc-tf-dim" t-esc="ui.tfPreview.sample"/>
+                <svg class="mc-tf-arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                <b t-esc="ui.tfPreview.result"/>
+              </t>
+            </div>
+
+            <div class="mc-tf-actions">
+              <button class="mc-tf-cancel" t-on-click="closeTransform">Cancel</button>
+              <button class="mc-tf-save" t-att-disabled="ui.tfSaving" t-on-click="saveTransform">
+                <t t-esc="ui.tfSaving ? 'Saving…' : 'Save'"/>
+              </button>
+            </div>
+          </t>
+        </div>
+      </t>
 
       <!-- draw-mode hint -->
       <div t-if="ui.armedLeft != null and props.canEdit" class="mc-drawhint">
