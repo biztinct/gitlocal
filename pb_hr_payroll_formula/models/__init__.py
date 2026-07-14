@@ -9,7 +9,6 @@ from . import formula_simulation
 from . import formula_period_comparison
 from . import formula_scenario
 from . import formula_rate_table
-from . import formula_boundary
 from . import formula_snippet
 from . import formula_rule_note
 from . import formula_scheme_assignment
@@ -19,6 +18,10 @@ from . import formula_config_template
 from . import formula_review
 from . import formula_sample_data
 from . import formula_test_result
+# W84 — extends hr.formula.sample.data / hr.formula.config; MUST import after the
+# base sample model so the _inherit target is already registered (Odoo 19 adds
+# model classes to the registry in import order).
+from . import formula_boundary
 from . import integration_connector
 from . import integration_field_mapping
 from . import integration_mapping_template
