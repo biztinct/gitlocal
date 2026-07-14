@@ -151,8 +151,15 @@ defines `default='manual'`). **Import order for `_inherit`-only extension files 
 model classes to the registry in *import order*, so a file that does `_inherit='hr.formula.sample.data'`
 without a `_name` MUST be imported in `models/__init__.py` **after** the file that defines the base model,
 or load aborts with `TypeError: Model 'hr.formula.sample.data' does not exist in registry` (WP-G:
-`formula_boundary` had to move below `formula_sample_data`). Full list in the memory ledger
-(odoo19-payroll-gotchas); check it before touching core-model overrides.
+`formula_boundary` had to move below `formula_sample_data`). **`_sql_constraints` is silently
+IGNORED in Odoo 19** — `model_classes.py:162` only logs a warning ("no longer supported") and the
+constraint NEVER reaches the database: every legacy list in the codebase produced tables with no
+unique constraints at all (found in the WP-H review — `hr_formula_budget_line` accepted duplicate
+codes; the sweep showed ZERO unique constraints across all `hr_formula_*` tables). The Odoo 19 form
+is a class attribute: `_code_uniq = models.Constraint('unique(config_id, code)', 'message')`. All
+13 engine constraints were converted 2026-07-14 (dup-checked live first — all clean). ~28 more
+files elsewhere in the repo still carry dead `_sql_constraints`; convert on touch. Full list in the
+memory ledger (odoo19-payroll-gotchas); check it before touching core-model overrides.
 
 ## C10 — Verification & delivery rituals
 
