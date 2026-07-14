@@ -358,6 +358,13 @@ export class PbFormulaStudio extends Component {
             // (D-F5); cleared on config switch. The grid owns the fold pipeline; the
             // parent just holds the flag map and relays toggles.
             folds: {},
+            // WP-F · W104 — snippet library. Loaded once per load(); insertion +
+            // ${CODE} resolution happen in the grid (D-F8).
+            snippets: [],
+            pendingSnippet: null,   // snippet id queued by the palette for the grid to insert
+            snipManageOpen: false,  // manage-snippets scrim (managers only)
+            snipEdit: null,         // {id, name, category, body, description} being edited | null
+            snipBusy: false,
         });
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
@@ -380,6 +387,8 @@ export class PbFormulaStudio extends Component {
         useHotkey("escape", () => {
             if (this.state.shortcutsOpen) {          // W18 — front of the Escape ladder (D-F1)
                 this.state.shortcutsOpen = false;
+            } else if (this.state.snipManageOpen) {  // W104 — manage-snippets overlay
+                this.closeSnipManage();
             } else if (this.state.paletteOpen) {
                 this.state.paletteOpen = false;
             } else if (this.state.findOpen) {
@@ -477,6 +486,12 @@ export class PbFormulaStudio extends Component {
             this.state.probData = await this.orm.call("pb.formula.studio", "get_problems", [d.config.id]);
         } catch (e) {
             this.state.probData = null;
+        }
+        // W104 — snippet library (global; company-scoped server-side). Non-fatal.
+        try {
+            this.state.snippets = await this.orm.call("pb.formula.studio", "list_snippets", []);
+        } catch (e) {
+            this.state.snippets = [];
         }
         this.state.loaded = true;
     }
@@ -741,6 +756,69 @@ export class PbFormulaStudio extends Component {
         this.state.folds = folds;
     }
 
+    // ==== WP-F · W104 — snippet library =====================================
+    // Insertion + ${CODE} resolution live in the grid (D-F8). From the palette we
+    // just queue the snippet id and switch to the grid; the grid consumes it in
+    // _afterPatch (starting an editor on the focused formula cell if needed).
+    requestSnippetInsert(sid) {
+        if (this.state.empty) return;
+        if (this.state.view !== "grid") this.setView("grid");
+        this.state.pendingSnippet = sid;
+    }
+    onSnippetConsumed() { this.state.pendingSnippet = null; }
+
+    // ---- manage overlay (managers only) ----
+    openSnipManage() {
+        if (this._lockedNotice()) return;   // managers only (same guard as other writes)
+        this.state.snipManageOpen = true;
+        this.state.snipEdit = null;
+    }
+    closeSnipManage() { this.state.snipManageOpen = false; this.state.snipEdit = null; }
+    newSnippet() { this.state.snipEdit = { id: null, name: "", category: "other", body: "", description: "" }; }
+    editSnippet(s) { this.state.snipEdit = { id: s.id, name: s.name, category: s.category, body: s.body, description: s.description }; }
+    cancelSnipEdit() { this.state.snipEdit = null; }
+    onSnipField(field, ev) { if (this.state.snipEdit) this.state.snipEdit[field] = ev.target.value; }
+    get snipCategories() {
+        return [["proration", "Proration"], ["cap", "Cap / floor"], ["bracket", "Bracket / rate table"],
+                ["rounding", "Rounding"], ["other", "Other"]];
+    }
+    async saveSnippet() {
+        const e = this.state.snipEdit;
+        if (!e || this.state.snipBusy) return;
+        if (!(e.name || "").trim() || !(e.body || "").trim()) {
+            this.notif.add("A snippet needs a name and a body", { type: "warning" }); return;
+        }
+        this.state.snipBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "save_snippet", [{
+                id: e.id || false, name: e.name, category: e.category,
+                body: e.body, description: e.description,
+            }]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not save snippet", { type: "warning" }); return; }
+            this.state.snippets = await this.orm.call("pb.formula.studio", "list_snippets", []);
+            this.state.snipEdit = null;
+            this.notif.add("Snippet saved", { type: "success" });
+        } catch (err) {
+            this.notif.add("Could not save snippet", { type: "danger" });
+        } finally {
+            this.state.snipBusy = false;
+        }
+    }
+    async deleteSnippet(s) {
+        if (this.state.snipBusy) return;
+        this.state.snipBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "delete_snippet", [s.id]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not delete snippet", { type: "warning" }); return; }
+            this.state.snippets = await this.orm.call("pb.formula.studio", "list_snippets", []);
+            if (this.state.snipEdit && this.state.snipEdit.id === s.id) this.state.snipEdit = null;
+        } catch (err) {
+            this.notif.add("Could not delete snippet", { type: "danger" });
+        } finally {
+            this.state.snipBusy = false;
+        }
+    }
+
     // ==== WP-A — Studio Command Layer (W14 find · W99 palette · W100 hover) ====
 
     // D-A4 — one shared search index, rebuilt only when state.components is
@@ -821,6 +899,12 @@ export class PbFormulaStudio extends Component {
         add("act.problems", "Actions", "Problems", "problems lint errors warnings", () => this.openProblems());
         add("act.ai", "Actions", "PayAI assistant", "ai assistant copilot chat", () => this.openAI());
         if (this.selected) add("act.explain", "Actions", "Explain " + this.selected.code, "explain formula describe", () => this.openExplain());
+        if (this.state.canEdit) add("act.snipmanage", "Actions", "Manage snippets…", "snippet library manage create edit delete", () => this.openSnipManage());
+        // W104 — Snippets section: insert a reusable fragment into the focused cell
+        for (const s of this.state.snippets) {
+            add("snip." + s.id, "Snippets", s.name, "snippet " + (s.category || "") + " " + (s.name || "").toLowerCase(),
+                () => this.requestSnippetInsert(s.id), s.description || s.category);
+        }
         for (const c of this.searchIndex) {
             add("cmp." + c.id, "Components", c.col + " · " + c.code, c._code + " " + c._name + " " + c._col,
                 () => this.findJump(c.id), c.name);

@@ -301,13 +301,23 @@
   <t t-name="pb_formula_studio.CellAutocomplete">
     <div class="g2-ac" t-attf-style="{{ props.style }}" t-on-mousedown="(ev) => ev.preventDefault()">
       <div t-foreach="props.items" t-as="it" t-key="it.id"
-           t-attf-class="g2-ac-item {{ it_index === props.active ? 'active' : '' }}"
+           t-attf-class="g2-ac-item {{ it.kind === 'snippet' ? 'snippet' : '' }} {{ it_index === props.active ? 'active' : '' }}"
            t-on-mouseenter="() => props.onHover(it_index)"
            t-on-click="() => props.onPick(it)">
-        <span class="g2-ac-col" t-esc="it.col"/>
-        <span class="g2-ac-code" t-esc="it.code"/>
-        <span class="g2-ac-name" t-esc="it.name"/>
-        <span class="g2-ac-val" t-esc="it.value"/>
+        <t t-if="it.kind === 'snippet'">
+          <span class="g2-ac-snip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+          </span>
+          <span class="g2-ac-code" t-esc="it.code"/>
+          <span class="g2-ac-name" t-esc="it.name"/>
+          <span class="g2-ac-val">snippet</span>
+        </t>
+        <t t-else="">
+          <span class="g2-ac-col" t-esc="it.col"/>
+          <span class="g2-ac-code" t-esc="it.code"/>
+          <span class="g2-ac-name" t-esc="it.name"/>
+          <span class="g2-ac-val" t-esc="it.value"/>
+        </t>
       </div>
     </div>
   </t>

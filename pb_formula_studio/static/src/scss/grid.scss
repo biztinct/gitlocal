@@ -208,6 +208,12 @@
     .g2-ac-code { font-size: 12px; font-weight: 800; color: var(--i-deep); flex-shrink: 0; }
     .g2-ac-name { font-size: 12px; color: var(--muted); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .g2-ac-val { font-size: 11.5px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    /* W104 — snippet rows in the cell autocomplete (distinct from component refs) */
+    .g2-ac-item.snippet { border-top: 1px solid var(--line-soft); margin-top: 2px; }
+    .g2-ac-item.snippet:first-child { border-top: 0; margin-top: 0; }
+    .g2-ac-snip { display: inline-flex; align-items: center; justify-content: center; width: 24px; flex-shrink: 0; color: var(--i600); }
+    .g2-ac-snip svg { width: 14px; height: 14px; }
+    .g2-ac-item.snippet .g2-ac-val { color: var(--i600); text-transform: uppercase; font-size: 9.5px; letter-spacing: .05em; }
 
     /* ---- dependency tinting (T2.4): amber upstream / cyan downstream ---- */
     .g2-chead.dep-upstream, .g2-cell.dep-upstream { background: var(--amber-soft); }

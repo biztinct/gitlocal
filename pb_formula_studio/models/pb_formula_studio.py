@@ -2687,6 +2687,63 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True}
 
     # ------------------------------------------------------------------
+    # W104 — snippet library (reusable Excel fragments). CRUD only; the
+    # ${CODE} → column-letter resolution happens client-side at insertion
+    # time (D-F8). Writes are manager-guarded like every other studio write.
+    # ------------------------------------------------------------------
+    def _snippet_payload(self, s):
+        return {
+            'id': s.id, 'name': s.name or '', 'category': s.category or 'other',
+            'body': s.body or '', 'description': s.description or '',
+            'sequence': s.sequence, 'company_id': s.company_id.id or False,
+        }
+
+    @api.model
+    def list_snippets(self):
+        # shared library (no company) + this company's private snippets
+        domain = ['|', ('company_id', '=', False), ('company_id', '=', self.env.company.id)]
+        snips = self.env['hr.formula.snippet'].search(domain)
+        return [self._snippet_payload(s) for s in snips]
+
+    @api.model
+    def save_snippet(self, vals):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can edit snippets.')}
+        name = (vals.get('name') or '').strip()
+        body = (vals.get('body') or '').strip()
+        if not name or not body:
+            return {'ok': False, 'msg': _('A snippet needs a name and a body.')}
+        data = {
+            'name': name, 'body': body,
+            'category': vals.get('category') or 'other',
+            'description': (vals.get('description') or '').strip(),
+        }
+        if vals.get('sequence') is not None:
+            try:
+                data['sequence'] = int(vals['sequence'])
+            except (TypeError, ValueError):
+                pass
+        Snip = self.env['hr.formula.snippet']
+        sid = vals.get('id')
+        if sid:
+            rec = Snip.browse(int(sid))
+            if not rec.exists():
+                return {'ok': False, 'msg': _('Snippet not found.')}
+            rec.write(data)
+        else:
+            rec = Snip.create(data)
+        return {'ok': True, 'snippet': self._snippet_payload(rec)}
+
+    @api.model
+    def delete_snippet(self, snippet_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can delete snippets.')}
+        rec = self.env['hr.formula.snippet'].browse(int(snippet_id))
+        if rec.exists():
+            rec.unlink()
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
     # F13 — Problems rail + lint + rename-refactor
     # ------------------------------------------------------------------
     # Numeric literals worth flagging: big enough to be a "magic amount"
