@@ -4285,8 +4285,9 @@ class PbFormulaStudio(models.AbstractModel):
 
         Three-valued per formula component:
 
-        * **asserted** — >=1 active sample carries a non-null expected value for
-          its code (the SAME testable rule W82 uses, formula_config_tests.py:95).
+        * **asserted** — >=1 active CONFIRMED sample carries a non-null expected
+          value for its code (the W82 testable rule, formula_config_tests.py:95,
+          plus the D-G3 confirmation gate — unconfirmed baselines don't count).
         * **exercised** — not asserted, but on the upstream dependency closure of
           an asserted component (its value feeds an assertion), via the
           ``_normalized_dep_cols`` edges — the same graph get_intelligence walks.
@@ -4308,9 +4309,14 @@ class PbFormulaStudio(models.AbstractModel):
         formula_rules = [r for r in rules
                          if r.column_type == 'formula' and r.column_letter]
 
-        # asserted codes: any active sample with a non-null expected for that code
+        # asserted codes: any active sample with a non-null expected for that
+        # code AND a CONFIRMED baseline — an unconfirmed generated sample is a
+        # hypothesis (D-G3) and must not raise coverage while the chip says
+        # pending (review finding, WP-G).
         asserted_codes = set()
         for s in config.sample_data_ids:
+            if not s.expected_confirmed:
+                continue
             try:
                 exp = json.loads(s.expected_values_json or '{}')
             except Exception:
@@ -4732,25 +4738,30 @@ class PbFormulaStudio(models.AbstractModel):
         input_codes = {r.code for r in c.rule_ids
                        if r.column_type == 'input' and r.code}
         created = 0
+        rejected = 0
         for p in (proposals or []):
             if not isinstance(p, dict):
+                rejected += 1
                 continue
             raw = p.get('inputs') or {}
+            # D-G5: one invalid entry rejects the WHOLE row — creating a sample
+            # from the surviving keys would differ from what the user accepted.
             clean = {}
+            bad = not isinstance(raw, dict) or not raw
             for k, v in (raw.items() if isinstance(raw, dict) else []):
-                if k not in input_codes:
-                    continue
                 n = self._as_num(v)
-                if n is None or abs(n) > 1e12:
-                    continue
+                if k not in input_codes or n is None or abs(n) > 1e12:
+                    bad = True
+                    break
                 clean[k] = n
-            if not clean:
+            if bad or not clean:
+                rejected += 1
                 continue
             name = (str(p.get('name') or 'AI profile').strip() or 'AI profile')[:80]
             desc = 'AI-proposed profile: ' + (str(p.get('rationale') or '').strip())[:180]
             c._create_generated_sample(clean, name, desc)
             created += 1
-        return {'ok': True, 'created': created,
+        return {'ok': True, 'created': created, 'rejected': rejected,
                 'samples': [self._sample_row(x) for x in c.sample_data_ids],
                 'tests': self._run_tests_after_save(c)}
 
