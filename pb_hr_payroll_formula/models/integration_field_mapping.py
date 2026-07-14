@@ -182,6 +182,21 @@ Example: value * 1.1 if value > 1000 else value
         string='Notes'
     )
 
+    # W62 (D-I4) — surfaced on the mapping canvas as a red badge tint. Set when a
+    # `python` transform raises at sync/test time (safe_eval failure, e.g. an
+    # `env`-touching expr after env was removed from the context): the value falls
+    # back to `default_value` + a server log, but the FAILURE stays visible (C7),
+    # not silent. Cleared the moment the same row transforms cleanly again.
+    has_transform_error = fields.Boolean(
+        string='Transform Error',
+        default=False,
+        help="A Python transform on this mapping last failed and fell back to the "
+             "default value. Fix the expression in the backend form."
+    )
+    transform_error_msg = fields.Char(
+        string='Transform Error Detail'
+    )
+
     # ==========================================
     # DISPLAY
     # ==========================================
@@ -209,8 +224,81 @@ Example: value * 1.1 if value > 1000 else value
     # ==========================================
     # TRANSFORMATION METHODS
     # ==========================================
+    # W62 (D-I3, skeleton S-I1) — the transform is ONE function. The persisted
+    # sync path (`transform_value`) and the draft-preview path (`preview_transform`,
+    # driven by the studio RPC `api_transform_preview`) both run `_apply_transform_ops`
+    # for the op ladder and `_clamp_result` for the min/max clamp, so a preview can
+    # never show a value the sync would not produce. The numeric coercion + is_required
+    # gate lives in BOTH callers identically (per the S-I1 gotcha) — never inside the
+    # shared ladder.
+    _T_FIELDS = ('transformation_type', 'transformation_value',
+                 'transformation_decimals', 'transformation_code')
+
+    def _apply_transform_ops(self, vals, value, record=None):
+        """Pure op ladder (S-I1). `vals` = the transform fields, drawn from the
+        RECORD for the sync path or from a DRAFT for previews — same function, both
+        callers. Raises ValidationError on divide-by-zero (loud, never a silent 0).
+        `python` runs through safe_eval with NO `env` in the context (D-I4)."""
+        t = (vals.get('transformation_type') or 'direct')
+        v = vals.get('transformation_value') or 0.0
+        dec = vals.get('transformation_decimals')
+        dec = 2 if dec is None else int(dec)
+
+        if t == 'direct':
+            return value
+        if t == 'multiply':
+            return value * v
+        if t == 'divide':
+            if v == 0:
+                raise ValidationError(_("Division by zero in transformation"))
+            return value / v
+        if t == 'add':
+            return value + v
+        if t == 'subtract':
+            return value - v
+        if t == 'round':
+            return round(value, dec)
+        if t == 'abs':
+            return abs(value)
+        if t == 'default_if_empty':
+            return value if value else v
+        if t == 'python':
+            expr = (vals.get('transformation_code') or '').strip()
+            if not expr:
+                return value
+            # D-I4: safe_eval, NO env. Draft previews never reach here (the RPC
+            # refuses python drafts); the sync path below catches + flags + falls back.
+            from odoo.tools.safe_eval import safe_eval
+            return safe_eval(expr, {'value': value, 'record': record or {}})
+        return value
+
+    def _clamp_result(self, result):
+        """Min/max clamp — numeric results only, and treat 0 as "unset" (Float
+        fields can't be None, so 0.0 means no bound). Shared by sync + preview so
+        the clamp can never diverge (S-I1 gotcha)."""
+        if isinstance(result, (int, float)) and not isinstance(result, bool):
+            if self.min_value:
+                result = max(result, self.min_value)
+            if self.max_value:
+                result = min(result, self.max_value)
+        return result
+
+    def _flag_transform_error(self, is_error, msg=''):
+        """Persist the python-transform failure state so the canvas can red-tint the
+        badge (D-I4, C7). Writes only on a genuine state change — the sync path calls
+        this per payload across thousands of employees, so a no-op must not write."""
+        try:
+            msg = (msg or '')[:500] if is_error else False
+            if bool(self.has_transform_error) != bool(is_error) or \
+                    (is_error and (self.transform_error_msg or '') != (msg or '')):
+                self.sudo().write({'has_transform_error': bool(is_error),
+                                   'transform_error_msg': msg})
+        except Exception:
+            # never let error-flagging break the transform itself
+            pass
+
     def transform_value(self, value, record=None):
-        """Apply transformation to a value"""
+        """Apply transformation to a value (persisted sync path)."""
         self.ensure_one()
 
         # Handle None/empty values
@@ -232,57 +320,55 @@ Example: value * 1.1 if value > 1000 else value
                 ) % (value, self.source_field))
             return self.default_value
 
-        # Apply transformation
-        result = value
+        vals = {f: self[f] for f in self._T_FIELDS}
+        if self.transformation_type == 'python':
+            # python is caught + flagged + fallen back (never crashes the sync);
+            # every other op propagates (divide-by-zero stays loud, as before).
+            try:
+                result = self._apply_transform_ops(vals, value, record)
+                self._flag_transform_error(False)
+            except Exception as e:
+                _logger.error("Transformation error for %s: %s", self.source_field, e)
+                self._flag_transform_error(True, str(e) or type(e).__name__)
+                result = self.default_value
+        else:
+            result = self._apply_transform_ops(vals, value, record)
 
-        if self.transformation_type == 'direct':
-            result = value
+        return self._clamp_result(result)
 
-        elif self.transformation_type == 'multiply':
-            result = value * self.transformation_value
+    def preview_transform(self, draft_vals):
+        """W62 draft preview (D-I3) — evaluate a DRAFT transform against this row's
+        `source_sample_value` WITHOUT writing anything. `python` drafts are refused
+        (the canvas keeps python read-only — D-I2). Returns a JSON-safe dict:
+        {ok, sample, result} or {ok: False, readonly|error}."""
+        self.ensure_one()
+        draft = dict(draft_vals or {})
+        t = draft.get('transformation_type') or 'direct'
+        if t == 'python':
+            return {'ok': False, 'readonly': True,
+                    'msg': _("Python transforms are edited in the backend form, "
+                             "not on the canvas.")}
 
-        elif self.transformation_type == 'divide':
-            if self.transformation_value == 0:
-                raise ValidationError(_("Division by zero in transformation"))
-            result = value / self.transformation_value
+        raw = self.source_sample_value
+        # coerce the SAMPLE identically to the sync path
+        if raw is None or raw == '':
+            value = self.default_value
+        else:
+            try:
+                value = float(raw) if self.source_data_type in (
+                    'number', 'float', 'integer', 'currency') else raw
+            except (ValueError, TypeError):
+                value = self.default_value
 
-        elif self.transformation_type == 'add':
-            result = value + self.transformation_value
-
-        elif self.transformation_type == 'subtract':
-            result = value - self.transformation_value
-
-        elif self.transformation_type == 'round':
-            result = round(value, self.transformation_decimals)
-
-        elif self.transformation_type == 'abs':
-            result = abs(value)
-
-        elif self.transformation_type == 'default_if_empty':
-            result = value if value else self.transformation_value
-
-        elif self.transformation_type == 'python':
-            if self.transformation_code:
-                try:
-                    local_vars = {
-                        'value': value,
-                        'record': record or {},
-                        'env': self.env,
-                    }
-                    result = eval(self.transformation_code, {"__builtins__": {}}, local_vars)
-                except Exception as e:
-                    _logger.error(f"Transformation error for {self.source_field}: {e}")
-                    result = self.default_value
-
-        # Apply min/max constraints — numeric results only, and treat 0 as
-        # "unset" (Float fields can't be None, so 0.0 means no bound here).
-        if isinstance(result, (int, float)) and not isinstance(result, bool):
-            if self.min_value:
-                result = max(result, self.min_value)
-            if self.max_value:
-                result = min(result, self.max_value)
-
-        return result
+        try:
+            result = self._clamp_result(self._apply_transform_ops(draft, value, {}))
+        except ValidationError as e:
+            return {'ok': False, 'error': (e.args and e.args[0]) or str(e)}
+        except Exception as e:
+            return {'ok': False, 'error': str(e) or type(e).__name__}
+        return {'ok': True,
+                'sample': self._jsonable(raw),
+                'result': self._jsonable(result)}
 
     def get_value_from_record(self, record):
         """Extract and transform value from a source record"""

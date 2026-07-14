@@ -3347,7 +3347,8 @@ class PbFormulaStudio(models.AbstractModel):
                             ('target_rule_id', 'in', input_rules.ids)]):
             wires.append({'id': 'm%s' % m.id, 'kind': 'mapping', 'ref': m.id,
                           'leftId': 'f:' + (m.source_field or ''), 'rightId': m.target_rule_id.id,
-                          'state': 'accepted'})
+                          'state': 'accepted',
+                          'transform': self._transform_payload(m)})   # W62 (D-I2)
             mapped_paths.add(m.source_field or '')
             mapped_rules.add(m.target_rule_id.id)
         # suggested wires = best name match between an unmapped source field and an
@@ -3417,6 +3418,74 @@ class PbFormulaStudio(models.AbstractModel):
         if m.exists():
             m.unlink()
         return {'ok': True}
+
+    # ------------------------------------------------------------------
+    # W62 — transforms on the wire (surface + edit + live-preview the transforms
+    # that ALREADY run at sync time). API adapter ONLY — cycle wires carry no
+    # transform (D-I1: live payruns bypass cycle-mapping records, so a cycle
+    # transform would apply to imports but not to live runs — a C7 trap).
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _transform_payload(m):
+        """Compact transform descriptor for an accepted API wire (D-I2). The badge
+        glyph is rendered client-side from type/value/decimals so the popover's live
+        preview updates without a round-trip."""
+        return {
+            'type': m.transformation_type or 'direct',
+            'value': m.transformation_value or 0.0,
+            'decimals': m.transformation_decimals if m.transformation_decimals is not None else 2,
+            'python': m.transformation_type == 'python',
+            'error': bool(m.has_transform_error),
+            'error_msg': m.transform_error_msg or '',
+            'sample': m.source_sample_value or '',
+        }
+
+    @api.model
+    def api_transform_preview(self, mapping_id, draft_vals):
+        """Evaluate a DRAFT transform against the mapping's sample value WITHOUT
+        writing (D-I3). preview == what the sync path produces — they are the same
+        engine function. Reads are open; the preview never mutates."""
+        m = self.env['hr.integration.field.mapping'].browse(int(mapping_id or 0)).exists()
+        if not m:
+            return {'ok': False, 'error': _("Mapping not found.")}
+        return m.preview_transform(draft_vals or {})
+
+    @api.model
+    def api_transform_save(self, mapping_id, vals):
+        """Persist a transform edit (D-I3). Manager-gated; whitelisted to
+        type/value/decimals ONLY — `transformation_code` is NEVER writable here (the
+        canvas must not grow a code-authoring surface, D-I2/D-I3). Returns the fresh
+        transform payload so the badge re-renders."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("Only managers can edit transforms.")}
+        m = self.env['hr.integration.field.mapping'].browse(int(mapping_id or 0)).exists()
+        if not m:
+            return {'ok': False, 'msg': _("Mapping not found.")}
+        vals = dict(vals or {})
+        t = vals.get('transformation_type') or 'direct'
+        allowed = {'direct', 'multiply', 'divide', 'add', 'subtract',
+                   'round', 'abs', 'default_if_empty'}
+        if t not in allowed:
+            # python (and anything unknown) is not editable on the canvas
+            return {'ok': False, 'msg': _("This transform type can only be edited in "
+                                          "the backend form.")}
+        data = {'transformation_type': t}
+        if 'transformation_value' in vals:
+            try:
+                data['transformation_value'] = float(vals.get('transformation_value') or 0.0)
+            except (TypeError, ValueError):
+                return {'ok': False, 'msg': _("Factor / value must be a number.")}
+        if 'transformation_decimals' in vals:
+            try:
+                data['transformation_decimals'] = int(vals.get('transformation_decimals') or 0)
+            except (TypeError, ValueError):
+                return {'ok': False, 'msg': _("Decimals must be a whole number.")}
+        # switching AWAY from python (or off an errored op) clears the stale error flag
+        if m.has_transform_error:
+            data['has_transform_error'] = False
+            data['transform_error_msg'] = False
+        m.write(data)
+        return {'ok': True, 'transform': self._transform_payload(m)}
 
     # ------------------------------------------------------------------
     # F10 adapter 3 — import column mapping (Excel columns → inputs)

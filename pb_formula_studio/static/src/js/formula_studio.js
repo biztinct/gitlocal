@@ -3973,6 +3973,18 @@ export class PbFormulaStudio extends Component {
         await this._loadMapping();
         this.notif.add(`Accepted ${sugs.length} high-confidence mapping${sugs.length === 1 ? "" : "s"}`, { type: "success" });
     }
+    // W62 — transform preview/save (API adapter only). Preview never writes; save
+    // is manager-gated + field-whitelisted server-side (never transformation_code).
+    async mapTransformPreview(ref, draft) {
+        try { return await this.orm.call("pb.formula.studio", "api_transform_preview", [ref, draft]); }
+        catch (e) { return { ok: false, error: "Preview failed" }; }
+    }
+    async mapTransformSave(ref, vals) {
+        const r = await this.orm.call("pb.formula.studio", "api_transform_save", [ref, vals]);
+        if (r && r.ok) { await this._loadMapping(); }
+        else if (r && r.msg) { this.notif.add(r.msg, { type: "warning" }); }
+        return r;
+    }
 
     // ---- Payslip Studio (F9) ----
     openPayslip() {
