@@ -111,9 +111,12 @@ class HrFormulaConfigTemplate(models.Model):
     component_count = fields.Integer(compute='_compute_counts')
     test_count = fields.Integer(compute='_compute_counts')
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'A template code must be unique.'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _code_uniq = models.Constraint(
+        'unique(code)',
+        'A template code must be unique.')
 
     # ------------------------------------------------------------------
     # computes

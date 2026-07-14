@@ -64,10 +64,12 @@ class HrFormulaRateTable(models.Model):
     sequence = fields.Integer(default=10)
     note = fields.Char()
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(config_id, code)',
-         'A rate table code must be unique within a configuration.'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _code_uniq = models.Constraint(
+        'unique(config_id, code)',
+        'A rate table code must be unique within a configuration.')
 
     @api.constrains('code')
     def _check_code(self):

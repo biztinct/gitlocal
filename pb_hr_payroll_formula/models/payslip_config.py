@@ -55,8 +55,9 @@ class HrPayslipConfig(models.Model):
             result.append((record.id, name))
         return result
 
-    _sql_constraints = [
-        ('identifier_config_uniq',
-         'unique(identifier, salary_structure_id)',
-         'Identifier must be unique per salary structure.'),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _identifier_config_uniq = models.Constraint(
+        'unique(identifier, salary_structure_id)',
+        'Identifier must be unique per salary structure.')
