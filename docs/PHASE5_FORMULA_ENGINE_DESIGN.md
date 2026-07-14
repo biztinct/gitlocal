@@ -566,6 +566,8 @@ Ordered by affinity to the WP surfaces they extend.
 > mode rides the W97 comparison transient; the offer calculator evaluates on an in-memory sample.
 > **2026-07-14 (fourth):** **W62, W65** are promoted to **WP-I** (Mapping Intelligence). Cycle-wire
 > transforms are a binding NON-goal there — live payruns bypass cycle-mapping records entirely.
+> **2026-07-14 (fifth):** **W52, W54, W42** are promoted to **WP-J** (Formula Refactoring
+> Intelligence) — one shared IF-chain detector; the demo PIT chain is the built-in acceptance case.
 
 **W18 Shortcuts overlay** *(Grid/UX, 1–2 d)* — `?` (and palette entry) opens a static overlay listing every
 studio hotkey. Seam: hotkey handlers in `grid_studio.js:298-335` + `formula_studio.js:300`; render from the
@@ -720,6 +722,9 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 
 **WP-I:**
 > Implement WP-I (Mapping Intelligence: W62 transforms on the wire, W65 mapping templates) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-I, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C7, C8, C10, C11 are load-bearing here). Build TI.1→TI.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world (throwaway connector if no live one carries source fields — delete it after), and report back per the Report-back items section. Three binding rules above all: W62 touches the API adapter ONLY (cycle-wire transforms are a binding non-goal — live payruns bypass cycle-mapping records, see the WP-I facts); preview and sync application must share ONE transform function (skeleton S-I1); and the python transform moves to safe_eval with env REMOVED from the context after the env-usage sweep. Do not touch docs/FORMULA_ENGINE_TOUR.html.
+
+**WP-J:**
+> Implement WP-J (Formula Refactoring Intelligence: W52 duplicate-logic detection, W54 simplification suggestions, W42 import-time rate-table extraction) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-J, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C4, C5, C6, C7, C10, C12 are load-bearing here). Build TJ.1→TJ.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world using THROWAWAY CLONES only — never mutate demo formulas — and report back per the Report-back items section. Three binding rules above all: one pure detector module shared by W54 and W42 (formula_engine/if_chain.py + its battery — no logic duplication); a rewrite may only be OFFERED after proven equivalence through the real evaluator on samples + edge probes (D-J3 — irregular chains are listed, never rewritten); and the rewrite is span-surgical so surrounding expression text survives verbatim (D-J4). Do not touch docs/FORMULA_ENGINE_TOUR.html.
 
 ---
 
@@ -1562,6 +1567,40 @@ Report back per the **Report-back items** section (deviations from D-H1..D-H8 mu
 
 # WP-I — Mapping Intelligence — W62 → W65
 
+> **✅ IMPLEMENTED 2026-07-14** (Opus) — `ea35e4f5` W62 · `7ff93854` W65 · `620bf7fd` ledger (C2:
+> OWL if-in-t-on-arrow breaks the whole template compile; odoo-shell ir_ui_view deadlock → use
+> JSON-RPC for server-side validation). All three binding rules honored (API-adapter only, one
+> ladder, safe_eval with env removed — env sweep found 0 using rows). 196 live mapping rows
+> zero-drift; C10 anchor parity; throwaway fixtures cleaned.
+
+> **✅ REVIEWED 2026-07-14** (Fable auto-review: bulk subagent — code trace + live probes — plus
+> personal reads of both flagged files). **Verdict was FIX-FIRST**, two Majors, both fixed same
+> day (engine 19.0.1.41.0):
+> - *Major 1 (live-proven):* `preview_transform` diverged from sync on EMPTY/unparseable samples —
+>   it laddered+clamped the default value while sync early-returns it raw (preview 5.0 vs sync 0.0
+>   on an add+5 draft; all 196 live rows carry empty samples, so every live preview took the
+>   divergent branch). Fixed: preview now mirrors sync's early-return exactly and says
+>   "no sample stored — sync would emit the default" (S-I1 upheld for real). The first fix pass
+>   did NOT close it — an unset ORM Char reads `False`, which `raw is None or raw == ''` misses
+>   (float(False)==0.0 slid into the ladder); the landed guard is `if not raw` (ledger C9).
+> - *Major 2 (undisclosed):* a LEFTOVER duplicate op ladder with raw `exec` + silent
+>   divide-by-zero→0.0 survived in `integrations/base_connector.py` (dead code — zero callers —
+>   but one future caller from reintroducing the pre-D-I4 hazard). Fixed by delegating
+>   `_apply_transformation` to `mapping.transform_value` (the one ladder) and making
+>   `_apply_validation` a passthrough.
+> - *Minors fixed:* `record` in the safe_eval context is now dict-guarded (an ORM recordset there
+>   would have exposed `record.env` — safe_eval only blocks underscore attrs); stale field help no
+>   longer advertises `env`; ir.rules added for the template models (RPC-level company checks left
+>   the direct-ORM path open to managers of other companies — the review's live probe confirmed
+>   the RPC layer held, the rules close the flank).
+> - *Everything else verified clean:* save whitelist structurally excludes `transformation_code`
+>   (live injection probe → DB code still NULL), op-by-op old-vs-new ladder table shows zero drift
+>   for the 196 live rows (176 direct / 19 multiply / 1 empty-python), W65 company checks real +
+>   live-probed, vendor seed table exactly 52 rows, all four apply-result keys always present.
+> **Recorded, not fixed:** transform popover + template panel don't close on Escape (same class as
+> the WP-G Generate dropdown — one capture-phase pass over the newer overlays is due); engine
+> version stamp lag (39→git 40) was disclosed and is synced by this fix's `-u` (41).
+
 **Designed 2026-07-14 (Fable), after WP-H shipped.** Fourth Medium batch: finish the F10 mapping
 canvas. **W62 transforms on the wire** — surface, edit and live-preview the per-mapping transforms
 that ALREADY run at sync time, as badges on the API-adapter wires. **W65 mapping templates** — save a
@@ -1742,3 +1781,176 @@ def _apply_transform_ops(self, vals, value, record=None):
 5. Cycle canvas byte-identical (no badges, no transform UI). 6. Artifacts deleted; console clean.
 
 Report back per the **Report-back items** section (deviations from D-I1..D-I8 must be flagged).
+
+---
+
+# WP-J — Formula Refactoring Intelligence — W52 → W54 → W42
+
+**Designed 2026-07-14 (Fable), after WP-I shipped.** Fifth Medium batch: deterministic refactoring
+intelligence over formulas. **W52 duplicate-logic detection** — "these N formulas are identical
+modulo references" as a problems-rail lens. **W54 simplification suggestions** — detect progressive
+IF-chains, prove equivalence, offer a one-click `BRACKET()` rewrite. **W42 rate-table extraction** —
+the same detector at import-preview time, promoting incoming IF-chains to rate tables before they
+ever land. One shared detector module powers W54 and W42. Engine for detector/rewrite; studio for
+lenses/actions; import mixin for W42. Effort ≈ 9–10 d.
+
+## Verified plumbing facts (do not re-derive)
+
+*The target shape exists in production data:* the VN demo PIT is the canonical progressive chain —
+`=-MAX(0,IF(TXBASE<=0,0,IF(TXBASE<=5000000,TXBASE*0.05,IF(TXBASE<=10000000,TXBASE*0.1-250000,…))))`
+(`pb_demo/models/demo_catalog.py:51-54`; 7-deep, single driver `TXBASE`, `X*rate − quickdeduction`
+bands). The rate-table docstring itself names this the replacement target ("one BRACKET call
+replaces the hand-written 7-deep IF chain", `formula_rate_table.py` module docstring).
+
+*Rate tables (F11, shipped):* `hr.formula.rate.table` + brackets (`lower`, `rate`),
+`compile_excel(value_expr)` `formula_rate_table.py:83-111` (progressive bands with cumulative
+bases, `MAX(0, …)` guard), `expand_brackets(formula, config)` `:116+` (balanced-paren aware),
+`code` constraint letters/digits only `:72-78` — table codes obey C5.
+
+*Analysis / rendering plumbing (studio):*
+- Problems rail `get_problems` + `_add` helper (kind/severity/title/detail/rule_id/col/code);
+  the magic-number lint (`pb_formula_studio.py:2897-3006`, kind `magic`) already flags the
+  duplicated threshold constants these chains carry — W54's lens supersedes those hints when a
+  chain is detected (one cause, one card).
+- Token plumbing: `_tokenize_text` `:924` (broader tokenizer used by `diff_versions` `:987`) —
+  reuse for the W54 before/after diff rendering; `_tokenize` `:155` builds the live chips.
+- Draft evaluation WITHOUT persistence: `rule._run_formula(values, draft_text)`
+  (`formula_rule.py:1519-1525`, factored for F8 exactly so drafts can be evaluated as overlays).
+- W82 hook `run_sample_tests` (`formula_config_tests.py:43`) — a refactor is a save.
+- W84 `boundary_candidates` / generated-sample machinery (`formula_boundary.py`) — edge probes.
+
+*Versioning (C4):* `VERSIONED_FIELDS` + write-override capture (`formula_rule.py:14-20`,
+`:1157-1194` region); version reason enum lives on `hr.formula.rule.version` — adding a value
+means editing the Selection in the owning module AND `_VALID_VERSION_REASONS` (C4).
+
+*Import side (C6):* all preview behaviour in the mixin `multisheet_import_preview.py`
+(`_import_capture` context pattern; fix-action precedent = the W37/W40 preview actions). The
+resolved formula text for each staged component is available at preview time (WP-E made
+unresolved refs loud, C13).
+
+## Locked decisions
+
+- **D-J1 (one pure detector module)** — new engine file `formula_engine/if_chain.py`:
+  `parse_progressive_chain(expr) -> {driver, brackets: [{lower, rate}], span: (start, end),
+  wrapper_ok: bool} | None`, plus `verify_consistency(brackets, deductions, eps=0.5)`. It
+  recognizes the canonical shape only: nested `IF(D<=c_i, D*r_i [- d_i], …)` chains over ONE
+  driver expression, thresholds strictly increasing. **The quick-deductions must equal the
+  cumulative-base values implied by (lowers, rates)** — the same math `compile_excel` emits — or
+  the chain is reported `irregular` (LISTED with the reason, never offered a rewrite; C7). Pure
+  python, no ORM — unit-testable standalone (add cases to a small
+  `tools/if_chain_battery.py`, same pattern as the existing batteries, exit 0 = green).
+- **D-J2 (W52 hash = canonical ref slotting)** — normalize `excel_formula`: strip `=`, uppercase,
+  collapse whitespace, then replace every component reference (cell-letter form AND code form,
+  resolved letter-first-then-code like the engine) with positional slots `§1, §2…` in order of
+  first occurrence. SHA1 the result; group by (config, hash); groups of ≥2 formula components →
+  rail lens `kind='dupe'`, `severity='hint'`, one row per GROUP (title "N components share this
+  logic", detail lists cols/codes, jump to the first). **v1 is detection only** — no
+  auto-extraction (extracting a shared component changes downstream reference semantics; that is
+  a human decision). No LLM (W53 naming stays a Low).
+- **D-J3 (W54 offer gate = proven equivalence, never vibes)** — for each detected+consistent
+  chain, build the rewrite (D-J4) and accept it as a SUGGESTION only if original and rewrite
+  evaluate identically (|Δ| < 0.005) on: every sample's input row (confirmed or not — this is
+  equivalence, not assertion), PLUS synthetic probes at every bracket edge −1/0/+1 injected on the
+  driver when the driver resolves to a single input component (driver = computed → samples only,
+  and the suggestion says so). Evaluation via `_run_formula(values, draft)` overlays — nothing
+  persisted during detection. Suggestions render in the problems rail (`kind='simplify'`,
+  severity `hint`) with a before/after token diff; accepting calls `simplify_apply(rule_id)`
+  which atomically: creates the `hr.formula.rate.table` (+brackets), rewrites the formula, and
+  re-runs W82 tests. The write carries **new version reason `refactor`** (add to the enum +
+  `_VALID_VERSION_REASONS`, C4).
+- **D-J4 (rewrite is span-surgical)** — replace ONLY the detected IF-chain span with
+  `BRACKET(CODE, driver)`; every character outside the span survives verbatim (the PIT's
+  `=-MAX(0,…)` wrapper must remain). Table code = C5-safe generation (letters-only, deduped
+  against existing table AND component codes — reuse the WP-E `_dedupe_code_c5` approach); name
+  derived from the component name. If the config already HAS a rate table whose brackets equal
+  the detected ones (± eps), reuse it instead of creating a twin (C7 honesty: the suggestion
+  says which).
+- **D-J5 (W42 = the same detector in the import preview, mixin-only)** — after resolution, run
+  `parse_progressive_chain` over each staged formula; consistent chains render as promotion
+  proposals in the preview (component, driver, N brackets, first/last edge) with accept/decline;
+  ACCEPT creates the table and rewrites the STAGED text before commit (the committed rule is
+  born clean); DECLINE imports unchanged. Never silent, never automatic. All code in
+  `multisheet_import_preview.py` (C6) calling the shared module — zero logic duplication with
+  W54.
+- **D-J6 (rail lens dedup)** — when a `simplify` suggestion exists for a rule, suppress the
+  `magic` hints whose literals sit inside the detected span (one cause, one card); W52 `dupe`
+  groups and `simplify` can coexist (different findings).
+- **D-J7 (schema/deploy)** — no new models; the version-reason enum edit + detector module ⇒
+  engine `-u` (ritual); manifests bump (C2). `simplify_apply` is manager-gated like every studio
+  write; detection RPCs are read-only.
+- **D-J8** — `docs/FORMULA_ENGINE_TOUR.html` stays untouched.
+
+## Tasks
+
+**TJ.1 — detector module + battery** *(~2 d)*
+`formula_engine/if_chain.py` + `tools/if_chain_battery.py` (≥12 cases: the exact demo PIT chain
+(expect 8 bands, driver TXBASE, consistent), a 2-band minimal, inconsistent deductions →
+irregular, non-monotonic thresholds → None, driver-mismatch mid-chain → None, `>=`-direction
+variant if supported or explicitly None, wrapper preservation spans, nested func in driver
+`IF(MIN(A,B)<=…)`).
+AC: battery green; demo PIT parses to exactly the VN statutory brackets
+(0/5%, 5M/10%, 10M/15%, 18M/20%, 32M/25%, 52M/30%, 80M/35% — lowers/rates recovered from the
+chain, deductions verified consistent).
+
+**TJ.2 — W52 dupe lens** *(~1.5 d)*
+Slotting/normalizer + hash + rail lens + jump.
+AC: two cloned formulas with different refs on a throwaway config group together; near-miss (one
+constant differs) does NOT; rail row lists all members; zero evaluation calls in the path.
+
+**TJ.3 — W54 suggestions + apply** *(~3 d)*
+Detection RPC over the config, equivalence gate (samples + edge probes), rail cards with token
+diff, `simplify_apply` (table create-or-reuse + span rewrite + reason `refactor` + W82 rerun),
+suppression rule D-J6.
+AC: on a CLONE of a demo config, the PIT component gets a suggestion whose equivalence report
+shows all samples + 24 edge probes (8 edges × 3) MATCH; apply → formula becomes
+`=-MAX(0,BRACKET(<code>,TXBASE))`-shaped, wrapper intact, table has 8 brackets, chip stays green,
+version row reason `refactor`; a deliberately-corrupted deduction (edit one constant first) →
+`irregular`, NO suggestion, magic hints remain; second run offers table REUSE not a twin.
+
+**TJ.4 — W42 import promotion** *(~2 d)*
+Mixin detection + proposal rows + accept-rewrites-staged-text + decline path.
+AC: importing a workbook whose sheet carries the PIT chain (export one from the clone via F112 or
+author a minimal fixture) shows the proposal; accept → committed rule is BRACKET-form + table
+exists; decline → verbatim import; preview stays responsive (detector runs once per staged
+formula, no evaluation).
+
+**TJ.5 — package validation sweep** *(~1 d)*
+All drives on throwaway clones (never mutate demo formulas — C10); battery + semantics battery
+green; C10 small-scale recompute parity; clones + tables deleted, verified; console clean.
+
+### Skeleton S-J1 — the consistency gate (the risky spot: no false equivalence)
+
+```python
+# formula_engine/if_chain.py — pure, no ORM
+def verify_consistency(brackets, deductions, eps=0.5):
+    """brackets = [(lower_i, rate_i)] ascending; deductions[i] = the literal
+    quick-deduction in band i (0 for the first). A chain is a TRUE progressive
+    table iff d_i == lower_i*r_i − Σ_{k<i} r_k*(lower_{k+1}−lower_k) … i.e. the
+    exact cumulative base compile_excel() would emit. Compare within eps —
+    statutory tables are integers, so 0.5 absorbs authoring rounding only."""
+    base = 0.0
+    for i in range(1, len(brackets)):
+        lo_prev, r_prev = brackets[i - 1]
+        lo_i, r_i = brackets[i]
+        base += r_prev * (lo_i - lo_prev)
+        expected_d = lo_i * r_i - base          # tax(x) = x*r_i − d_i form
+        if abs(expected_d - deductions[i]) > eps:
+            return False, i                     # irregular at band i — LIST, never rewrite
+    return True, -1
+# GOTCHA: the demo chain is ASCENDING <= with the ELSE carrying the top band —
+#   parse from the innermost ELSE out, and reject any chain whose branches don't
+#   all share the same driver TEXT (normalized) — near-miss drivers (TXBASE vs
+#   TXBASE2) are silently-different tables.
+# GOTCHA: equivalence probes must go through the SAME evaluator as production
+#   (_run_formula overlay) — never re-implement eval in the detector (C12).
+```
+
+## WP-J verification (Chrome MCP on pb_demo VN world — clones only)
+
+1. Battery green incl. the verbatim demo PIT case. 2. W52 group on the clone; near-miss excluded.
+3. W54 full cycle on the clone (suggest → diff → apply → wrapper intact → chip green → reason
+   `refactor`); corrupted-deduction chain → irregular, no offer; table reuse on re-run.
+4. W42 import round-trip (accept + decline paths). 5. Magic-hint suppression only inside detected
+   spans. 6. C10 parity + batteries; clones/tables deleted, verified; console clean.
+
+Report back per the **Report-back items** section (deviations from D-J1..D-J8 must be flagged).
