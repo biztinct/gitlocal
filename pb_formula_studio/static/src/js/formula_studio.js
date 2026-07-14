@@ -354,6 +354,10 @@ export class PbFormulaStudio extends Component {
             // active one, D-F4); `previewExtra` caches their computed value maps.
             pinnedSamples: [],
             previewExtra: {},
+            // WP-F · W8 — collapse-by-category fold state {catKey: true}. Client-only
+            // (D-F5); cleared on config switch. The grid owns the fold pipeline; the
+            // parent just holds the flag map and relays toggles.
+            folds: {},
         });
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
@@ -446,6 +450,7 @@ export class PbFormulaStudio extends Component {
             this.state.testsFailOpen = false;
             this.state.pinnedSamples = [];   // W4 — pins are per-config, client-session only
             this.state.previewExtra = {};
+            this.state.folds = {};           // W8 — folds are per-config, client-session only
         }
         this.state.config = d.config;
         this.state.components = d.components;
@@ -725,6 +730,15 @@ export class PbFormulaStudio extends Component {
         const ex = {};
         pins.forEach((sid, i) => { ex[sid] = results[i]; });
         this.state.previewExtra = ex;
+    }
+
+    // ==== WP-F · W8 — collapse by category ==================================
+    // The grid owns the fold pipeline + focus relocation; the parent just flips the
+    // per-category flag (D-F5). formatSum below formats a summary Σ with vnd (D-F6).
+    onToggleFold(catKey) {
+        const folds = { ...this.state.folds };
+        if (folds[catKey]) delete folds[catKey]; else folds[catKey] = true;
+        this.state.folds = folds;
     }
 
     // ==== WP-A — Studio Command Layer (W14 find · W99 palette · W100 hover) ====

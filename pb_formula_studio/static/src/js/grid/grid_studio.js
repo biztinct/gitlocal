@@ -45,6 +45,10 @@ export class GridStudio extends Component {
         // F111 — display reorder + group by category (letters stay frozen)
         onReorder: { type: Function, optional: true },          // (dragId, beforeId|false) => reorder + refresh
         onGroupByCategory: { type: Function, optional: true },  // () => group + refresh
+        // W8 — collapse by category (display fold; parent owns {catKey:true})
+        folds: { type: Object, optional: true },
+        onToggleFold: { type: Function, optional: true },       // (catKey) => parent flips state.folds
+        formatSum: { type: Function, optional: true },          // (total) => display string for a summary Σ
     };
 
     setup() {
@@ -108,6 +112,81 @@ export class GridStudio extends Component {
     }
     get focused() { return this.props.components.find(c => c.id === this.ui.focus.colId) || null; }
 
+    // ==== W8 — collapse by category (display transform; S-F1) =================
+    // ONE unit list downstream of `ordered`; every windowing/nav/fill consumer
+    // reads `viewOrdered` (or `baseCols`) instead of `ordered`. `ordered` itself
+    // is never touched, so letters/sequence stay authoritative.
+    _catKey(c) { return String((c && (c.category_id || c.category || c.group)) || "?"); }
+    get viewOrdered() {
+        const folds = this.props.folds || {};
+        const out = [];
+        let openCat = null;                       // contiguous folded run being absorbed
+        for (const c of this.ordered) {
+            const k = this._catKey(c);
+            if (folds[k]) {
+                if (openCat === k) { out[out.length - 1].members.push(c); continue; }
+                openCat = k;
+                out.push({ kind: "summary", cat: k, label: c.category || c.group || k, members: [c], key: "cat:" + k + ":" + c.id });
+            } else {
+                openCat = null;
+                out.push({ kind: "base", comp: c, key: "b" + c.id });
+            }
+        }
+        return out;
+    }
+    // Visible base components only — the vocabulary keyboard nav and drag-fill walk
+    // (folded columns never participate, D-F5).
+    get baseCols() { return this.viewOrdered.filter(u => u.kind === "base").map(u => u.comp); }
+    // Distinct categories in display order, for the toolbar fold chips.
+    get foldableCategories() {
+        const seen = new Map();
+        for (const c of this.ordered) {
+            const k = this._catKey(c);
+            if (!seen.has(k)) seen.set(k, { key: k, label: c.category || c.group || k });
+        }
+        const folds = this.props.folds || {};
+        return [...seen.values()].map(x => ({ ...x, folded: !!folds[x.key] }));
+    }
+    toggleFold(catKey) {
+        if (!this.props.onToggleFold) return;
+        const willFold = !((this.props.folds || {})[catKey]);
+        // GOTCHA (S-F1): relocate focus OUT of a category that is about to fold
+        // BEFORE the parent flips state and re-renders, else `focused` resolves to
+        // a cell that no longer exists and _scrollFocusIntoView queries a dead node.
+        if (willFold) this._relocateFocusOutOf(catKey);
+        this.props.onToggleFold(catKey);
+    }
+    _relocateFocusOutOf(catKey) {
+        const f = this.focused;
+        if (!f) return;
+        const folds = { ...(this.props.folds || {}), [catKey]: true };
+        const visible = (c) => !folds[this._catKey(c)];
+        if (visible(f)) return;                   // focused column stays visible
+        if (this.ui.editing) this.ui.editing = null;   // its editor cell is unmounting
+        const ord = this.ordered;
+        const i = ord.findIndex(c => c.id === f.id);
+        let target = null;
+        for (let d = 1; d < ord.length && !target; d++) {
+            const r = ord[i + d]; if (r && visible(r)) { target = r; break; }
+            const l = ord[i - d]; if (l && visible(l)) { target = l; break; }
+        }
+        if (target) { this.setFocus(target.id, this.ui.focus.row); }
+        else { this.ui.focus = { colId: null, row: this.ui.focus.row }; this.ui.tintCol = null; }
+    }
+    // Summary cell content: Σ of member values from the given values map (D-F6).
+    summaryValue(summary, valuesMap) {
+        let total = 0;
+        for (const c of summary.members) {
+            const v = valuesMap ? valuesMap[c.col] : undefined;
+            if (typeof v === "number") total += v;
+        }
+        return this.props.formatSum ? this.props.formatSum(total) : this._fmtNum(total);
+    }
+    summaryBandStyle(summary) {
+        const g = summary.members[0] && summary.members[0].group;
+        return "--band:" + this._bandColor(g);
+    }
+
     // ==== W109 — column virtualization (columns only; the 6 rows are fixed) ====
     // Activate only above THRESHOLD; below it the window stays off and the DOM is
     // identical to the pre-W109 grid (zero regression for typical configs).
@@ -134,8 +213,8 @@ export class GridStudio extends Component {
     // Recompute {first,last} from scrollLeft/clientWidth. Only mutates vcols when
     // the visible span actually changed, so it is safe to call from onPatched.
     _recomputeWindow() {
-        const ord = this.ordered;
-        const n = ord.length;
+        const vord = this.viewOrdered;      // W8: window indexes into viewOrdered
+        const n = vord.length;
         if (n <= GridStudio.VCOL_THRESHOLD) {
             if (this.vcols.on) Object.assign(this.vcols, { on: false, first: 0, last: Infinity });
             return;
@@ -161,13 +240,17 @@ export class GridStudio extends Component {
             ghost = new Map();
             for (const s of scen) ghost.set(s.rule_id, (ghost.get(s.rule_id) || 0) + 1);
         }
+        // A base unit occupies 1 colW + one per scenario ghost of that column; a
+        // summary unit occupies exactly 1 colW (summaries never carry ghosts, D-F5).
         let first = -1, last = 0, units = 0;
         for (let i = 0; i < n; i++) {
             const colLeft = units * w;
-            if (colLeft >= sr) break;              // this column and all after are past the viewport
+            if (colLeft >= sr) break;              // this unit and all after are past the viewport
             if (first === -1 && colLeft + w > sl) first = i;   // first at-least-partially-visible
             last = i;
-            units += 1 + (ghost ? (ghost.get(ord[i].id) || 0) : 0);
+            const u = vord[i];
+            const gcount = (u.kind === "base" && ghost) ? (ghost.get(u.comp.id) || 0) : 0;
+            units += 1 + gcount;
         }
         if (first === -1) first = 0;
         first = Math.max(0, first - over);
@@ -390,7 +473,7 @@ export class GridStudio extends Component {
     }
     onScrollerFocus() {
         if (this.ui.focus.colId == null) {
-            const first = this.ordered[0];
+            const first = this.baseCols[0];   // W8: never seed focus on a folded column
             if (first) this.setFocus(first.id, "formula");
         } else if (this.ui.tintCol == null) {
             const comp = this.focused;
@@ -419,7 +502,7 @@ export class GridStudio extends Component {
         else { this.ui.selection = this.ui.selection.filter(x => x !== colId); }
     }
     _rangeSelect(colId) {
-        const ids = this.ordered.map(c => c.id);
+        const ids = this.baseCols.map(c => c.id);   // W8: range spans visible columns only
         const a = ids.indexOf(this.ui.anchorId), b = ids.indexOf(colId);
         if (a === -1 || b === -1) return;
         const [lo, hi] = a < b ? [a, b] : [b, a];
@@ -433,7 +516,7 @@ export class GridStudio extends Component {
         if ((ev.ctrlKey || ev.metaKey) && (ev.key === "z" || ev.key === "Z")) {
             ev.preventDefault(); ev.stopPropagation(); this._undo(); return;   // single-level undo (T2.9)
         }
-        const cols = this.ordered;
+        const cols = this.baseCols;   // W8: nav walks visible base columns only
         let ci = cols.findIndex(c => c.id === this.ui.focus.colId);
         if (ci === -1) ci = 0;
         const ri = Math.max(0, ROWS.indexOf(this.ui.focus.row));
@@ -613,7 +696,8 @@ export class GridStudio extends Component {
     // the highlight/ghost is immediate and race-free; fire a best-effort translate
     // for live ghost text (guarded by hoverCol so stale replies are ignored).
     _fillTargetsFor(src, hover) {
-        return this.ordered.filter(c =>
+        // W8: never fill into a folded column — walk visible base columns only.
+        return this.baseCols.filter(c =>
             c.type === "formula"
             && this._colNum(c.col) > this._colNum(src.col)
             && this._colNum(c.col) <= this._colNum(hover.col));
@@ -736,24 +820,29 @@ export class GridStudio extends Component {
     }
     get displayColumns() {
         const units = [];
-        const ord = this.ordered;
+        const vord = this.viewOrdered;               // W8: base + summary units
+        const pushUnit = (u) => {
+            if (u.kind === "summary") units.push({ kind: "summary", summary: u, key: u.key });
+            else this._pushCol(units, u.comp);        // base column + its scenario ghosts
+        };
         if (!this.vcols.on) {                        // dormant: render everything, unchanged
-            for (const c of ord) this._pushCol(units, c);
+            for (const u of vord) pushUnit(u);
             return units;
         }
         // Windowed: render [first..last] ∪ pinned, in order, bridging every run of
-        // hidden columns with one spacer <td> of width (gapCount × colW). This is
-        // exact for arbitrary pinned columns (a pinned column just flushes the gap
-        // before it and renders in place) — no separate left/right pad bookkeeping.
+        // hidden units with one spacer <td> of width (gapCount × colW). A summary
+        // and a (ghost-free, hence unpinned) hidden base each occupy exactly 1 colW,
+        // so the spacer math stays exact. Pinning is a base-only concept (D-F5).
         const pin = this._pinnedIds;
         const w = this._colW || 168;
         let gap = 0;
         const flush = (tag) => { if (gap > 0) { units.push({ kind: "spacer", width: gap * w, key: "sp" + tag }); gap = 0; } };
-        for (let i = 0; i < ord.length; i++) {
-            const c = ord[i];
-            if ((i >= this.vcols.first && i <= this.vcols.last) || pin.has(c.id)) {
+        for (let i = 0; i < vord.length; i++) {
+            const u = vord[i];
+            const pinned = u.kind === "base" && pin.has(u.comp.id);
+            if ((i >= this.vcols.first && i <= this.vcols.last) || pinned) {
                 flush(i);
-                this._pushCol(units, c);
+                pushUnit(u);
             } else {
                 gap++;
             }
@@ -876,9 +965,10 @@ export class GridStudio extends Component {
     _afterPatch() {
         // W109: the component set may have been replaced (save/reorder/group) —
         // n can change, which flips or resizes the window and moves the spacers.
-        // Only measure/recompute when the length actually changed (avoids a forced
-        // reflow on every unrelated patch).
-        const n = this.ordered.length;
+        // W8: folding a category also changes the unit count, so track viewOrdered
+        // length (not ordered length). Only measure/recompute when it changed
+        // (avoids a forced reflow on every unrelated patch).
+        const n = this.viewOrdered.length;
         if (n !== this._lastN) {
             this._lastN = n;
             if (this._labelW == null && this.scrollerRef.el) {

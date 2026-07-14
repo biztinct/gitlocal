@@ -1144,7 +1144,10 @@
                         onScenarioPromote="(sid) => this.gridScenarioPromote(sid)"
                         onScenarioDiscard="(sid) => this.gridScenarioDiscard(sid)"
                         onReorder="(dragId, beforeId) => this.gridReorder(dragId, beforeId)"
-                        onGroupByCategory="() => this.gridGroupByCategory()"/>
+                        onGroupByCategory="() => this.gridGroupByCategory()"
+                        folds="state.folds"
+                        onToggleFold="(k) => this.onToggleFold(k)"
+                        formatSum="(n) => this.vnd(n)"/>
           </div>
 
           <!-- live preview (grid: always a drawer · cards: drawer below the md breakpoint) -->
