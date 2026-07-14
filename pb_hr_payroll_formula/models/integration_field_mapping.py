@@ -116,10 +116,9 @@ class HrIntegrationFieldMapping(models.Model):
         string='Python Expression',
         help="""
 Python expression to transform the value.
-Available variables:
+Available variables (evaluated with safe_eval — no ORM access):
 - value: The source value
-- record: The full source record (dict)
-- env: Odoo environment
+- record: The full source record (plain dict)
 
 Example: value * 1.1 if value > 1000 else value
         """
@@ -269,7 +268,10 @@ Example: value * 1.1 if value > 1000 else value
             # D-I4: safe_eval, NO env. Draft previews never reach here (the RPC
             # refuses python drafts); the sync path below catches + flags + falls back.
             from odoo.tools.safe_eval import safe_eval
-            return safe_eval(expr, {'value': value, 'record': record or {}})
+            # record must be PLAIN DATA: safe_eval only blocks underscore
+            # attributes, so an ORM recordset here would expose record.env.
+            return safe_eval(expr, {'value': value,
+                                    'record': record if isinstance(record, dict) else {}})
         return value
 
     def _clamp_result(self, result):
@@ -350,15 +352,27 @@ Example: value * 1.1 if value > 1000 else value
                              "not on the canvas.")}
 
         raw = self.source_sample_value
-        # coerce the SAMPLE identically to the sync path
-        if raw is None or raw == '':
-            value = self.default_value
-        else:
-            try:
-                value = float(raw) if self.source_data_type in (
-                    'number', 'float', 'integer', 'currency') else raw
-            except (ValueError, TypeError):
-                value = self.default_value
+        # MIRROR the sync path exactly (S-I1 / review Major): an empty or
+        # unparseable sample short-circuits to default_value WITHOUT running the
+        # ladder or clamp — sync's early-return does exactly that, so a preview
+        # that laddered the default showed a value sync would never produce
+        # (e.g. add+5 on an empty sample: preview 5.0 vs sync 0.0).
+        # ORM trap: an unset Char reads as False (not None/''), and
+        # float(False) == 0.0 would silently slip an "empty" sample into the
+        # ladder — the exact divergence this branch exists to prevent.
+        if not raw or (isinstance(raw, str) and not raw.strip()):
+            return {'ok': True, 'sample': None, 'no_sample': True,
+                    'result': self._jsonable(self.default_value),
+                    'msg': _("No sample value stored — sync would emit the "
+                             "default (%s).") % self.default_value}
+        try:
+            value = float(raw) if self.source_data_type in (
+                'number', 'float', 'integer', 'currency') else raw
+        except (ValueError, TypeError):
+            return {'ok': True, 'sample': self._jsonable(raw), 'no_sample': True,
+                    'result': self._jsonable(self.default_value),
+                    'msg': _("Sample is not numeric — sync would emit the "
+                             "default (%s).") % self.default_value}
 
         try:
             result = self._clamp_result(self._apply_transform_ops(draft, value, {}))

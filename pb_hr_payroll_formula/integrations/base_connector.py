@@ -178,86 +178,21 @@ class BaseHRConnector(ABC):
         return current
 
     def _apply_transformation(self, value: Any, mapping: Any) -> Any:
+        """Delegate to the ONE transform ladder (S-I1 / WP-I review Major 2).
+
+        The previous inline ladder here duplicated (and had drifted from) the
+        mapping model's — raw exec for python, SILENT divide-by-zero -> 0.0. It
+        was dead code, but one future caller away from reintroducing both
+        hazards. mapping.transform_value handles coercion, required/default,
+        the shared op ladder (safe_eval'd python, no env) and the min/max
+        clamp, so _apply_validation below is intentionally a passthrough.
         """
-        Apply transformation to a value based on mapping configuration.
-
-        Args:
-            value: Original value
-            mapping: hr.integration.field.mapping record
-
-        Returns:
-            Transformed value
-        """
-        if value is None:
-            return mapping.default_value or 0.0
-
-        transform_type = mapping.transformation_type
-
-        try:
-            if transform_type == 'direct':
-                return self._to_float(value)
-
-            elif transform_type == 'multiply':
-                factor = mapping.transformation_value or 1.0
-                return self._to_float(value) * factor
-
-            elif transform_type == 'divide':
-                divisor = mapping.transformation_value or 1.0
-                if divisor == 0:
-                    return 0.0
-                return self._to_float(value) / divisor
-
-            elif transform_type == 'round':
-                decimals = mapping.transformation_decimals or 2
-                return round(self._to_float(value), decimals)
-
-            elif transform_type == 'python':
-                # Execute custom Python transformation
-                code = mapping.transformation_code
-                if code:
-                    local_vars = {'value': value, 'result': None}
-                    exec(code, {'__builtins__': {}}, local_vars)
-                    return local_vars.get('result', value)
-
-            return self._to_float(value)
-
-        except Exception as e:
-            _logger.warning(f"Transformation error for {mapping.source_field}: {e}")
-            return mapping.default_value or 0.0
+        return mapping.transform_value(value, record=None)
 
     def _apply_validation(self, value: Any, mapping: Any) -> Any:
-        """
-        Apply validation rules to a value.
-
-        Args:
-            value: Value to validate
-            mapping: hr.integration.field.mapping record
-
-        Returns:
-            Validated value (may be adjusted if out of range)
-        """
-        value = self._to_float(value)
-
-        # Check required
-        if mapping.is_required and (value is None or value == 0):
-            if mapping.default_value:
-                return mapping.default_value
-            _logger.warning(f"Required field {mapping.source_field} is empty")
-
-        # Check min value
-        if mapping.min_value is not None and value < mapping.min_value:
-            _logger.warning(
-                f"Value {value} for {mapping.source_field} below minimum {mapping.min_value}"
-            )
-            return mapping.min_value
-
-        # Check max value
-        if mapping.max_value is not None and value > mapping.max_value:
-            _logger.warning(
-                f"Value {value} for {mapping.source_field} above maximum {mapping.max_value}"
-            )
-            return mapping.max_value
-
+        """Passthrough — required/default and min/max clamping already happen
+        inside mapping.transform_value (the one ladder). Kept only so existing
+        transform_data call sites keep their shape."""
         return value
 
     def _to_float(self, value: Any) -> float:
