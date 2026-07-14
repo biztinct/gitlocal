@@ -1594,6 +1594,146 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True}
 
     # ==================================================================
+    # W95 (WP-H) — component budgets (vs-actual variance in the compare view)
+    # Reads are open; writes are manager-gated (D-H2), same split as snippets.
+    # ==================================================================
+    def _budget_payload(self, b):
+        return {'id': b.id, 'name': b.name or '',
+                'period_label': b.period_label or '', 'note': b.note or '',
+                'line_count': len(b.line_ids)}
+
+    @api.model
+    def budget_list(self, config_id=None):
+        """Budgets authored for a config, newest first. Feeds the budget picker."""
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'budgets': []}
+        budgets = self.env['hr.formula.budget'].search(
+            [('config_id', '=', config.id)], order='id desc')
+        return {'ok': True, 'config': {'id': config.id, 'name': config.display_name},
+                'budgets': [self._budget_payload(b) for b in budgets],
+                'can_edit': self._can_edit(),
+                'currency': config.currency_id.symbol if config.currency_id else ''}
+
+    @api.model
+    def budget_get(self, config_id, budget_id=None):
+        """Editor payload: every config component (code, name, group) with its
+        current budget amount, PLUS orphan budget lines whose code no longer
+        exists in the config (D-H2 honesty — surfaced, never dropped). A falsy
+        ``budget_id`` returns a blank editor over the config's components."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'ok': False}
+        amounts = {}
+        budget = None
+        if budget_id:
+            budget = self.env['hr.formula.budget'].browse(int(budget_id)).exists()
+            if budget:
+                for l in budget.line_ids:
+                    if l.code:
+                        amounts[l.code] = l.amount
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        rule_codes = set()
+        components = []
+        for r in rules:
+            if not r.code:
+                continue
+            rule_codes.add(r.code)
+            components.append({
+                'code': r.code,
+                'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
+                'group': _group_for(r),
+                'type': r.column_type,
+                'amount': amounts.get(r.code, 0.0),
+            })
+        orphans = []
+        for code, amt in amounts.items():
+            if code not in rule_codes:
+                orphans.append({'code': code, 'amount': amt})
+        orphans.sort(key=lambda o: o['code'])
+        return {
+            'ok': True,
+            'budget': (self._budget_payload(budget) if budget else None),
+            'components': components,
+            'orphans': orphans,
+            'can_edit': self._can_edit(),
+            'currency': config.currency_id.symbol if config.currency_id else '',
+        }
+
+    @api.model
+    def budget_seed_from_run(self, config_id, run_id):
+        """Per-component actual sums for a run keyed by code (D-H2 Seed-from-run).
+        Pure read of stored slips via the engine helper — open to all."""
+        sums = self.env['hr.formula.period.comparison'].run_component_sums(config_id, run_id)
+        return {'ok': True, 'amounts': sums}
+
+    @api.model
+    def budget_save(self, vals):
+        """Create/replace a budget from the editor (manager-gated). The client
+        sends the FULL desired line set (config amounts + any kept orphans); the
+        server validates every value (numeric, |v| <= 1e12 — same rule as W49)
+        and replaces line_ids wholesale so removed rows disappear atomically."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can edit budgets.')}
+        config = self.env['hr.formula.config'].browse(int(vals.get('config_id') or 0))
+        if not config.exists():
+            return {'ok': False, 'msg': _('Configuration not found.')}
+        name = (vals.get('name') or '').strip()
+        if not name:
+            return {'ok': False, 'msg': _('A budget needs a name.')}
+        # Validate lines: {code: amount}. Reject non-numeric / absurd values loudly.
+        raw = vals.get('lines') or {}
+        clean = {}
+        for code, amount in (raw.items() if isinstance(raw, dict) else []):
+            code = (str(code) or '').strip()
+            if not code:
+                continue
+            n = self._as_num(amount)
+            if n is None:
+                return {'ok': False, 'msg': _('Budget amount for %s is not a number.') % code}
+            if abs(n) > 1e12:
+                return {'ok': False, 'msg': _('Budget amount for %s is out of range.') % code}
+            clean[code] = n
+        Budget = self.env['hr.formula.budget']
+        bid = vals.get('id')
+        head = {'name': name, 'config_id': config.id,
+                'period_label': (vals.get('period_label') or '').strip(),
+                'note': (vals.get('note') or '').strip()}
+        if bid:
+            budget = Budget.browse(int(bid))
+            if not budget.exists():
+                return {'ok': False, 'msg': _('Budget not found.')}
+            budget.write(head)
+            budget.line_ids.unlink()
+        else:
+            budget = Budget.create(head)
+        Line = self.env['hr.formula.budget.line']
+        for code, amount in clean.items():
+            Line.create({'budget_id': budget.id, 'code': code, 'amount': amount})
+        return {'ok': True, 'budget': self._budget_payload(budget)}
+
+    @api.model
+    def budget_delete(self, budget_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _('Only managers can delete budgets.')}
+        budget = self.env['hr.formula.budget'].browse(int(budget_id))
+        if budget.exists():
+            budget.unlink()
+        return {'ok': True}
+
+    @api.model
+    def budget_prepare(self, config_id, budget_id, run_b_id):
+        """Create a budget-vs-actual comparison and return the B-slip work-list to
+        drive in chunks — parallels ``compare_prepare`` (only side B chunks)."""
+        Cmp = self.env['hr.formula.period.comparison']
+        created = Cmp.cmp_create_budget(config_id, budget_id, run_b_id)
+        if not created.get('ok'):
+            return created
+        prep = Cmp.cmp_prepare(created['cmp_id'])
+        prep.update({'ok': True, 'headline': created.get('headline')})
+        return prep
+
+    # ==================================================================
     # W48 — Payrun anomaly narration (deterministic-first, LLM-polished)
     # ==================================================================
     @api.model
