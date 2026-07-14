@@ -22,9 +22,18 @@ deterministic fallback. Engine-side code may only reach the LLM guarded by
 ## C2 — Odoo 19 asset caching
 
 Bump the `version` in `__manifest__.py` on **every** asset-list or asset-file change
-(current: `pb_formula_studio` 19.0.1.43.0, `pb_hr_payroll_formula` 19.0.1.28.0). Develop with
+(current: `pb_formula_studio` 19.0.1.60.0, `pb_hr_payroll_formula` 19.0.1.37.0). Develop with
 `--dev=assets`. A new XML template file that isn't in the manifest's asset list fails only at first
 render — add it in the same commit that creates it.
+
+- **Sass `min()`/`max()` with MIXED units silently breaks the WHOLE bundle (WP-H, W98):** a rule like
+  `width: min(640px, 96vw)` (px + vw) makes Dart Sass evaluate its OWN `min()` and die with
+  `Internal Error: Incompatible units: 'vw' and 'px'` — this fails the ENTIRE `web.assets_backend`
+  compile, so *none* of that module's new SCSS rules apply (the feature looks styled-but-broken with
+  no obvious cause). `odoo-bin -u --stop-after-init` does NOT surface it (SCSS compiles lazily at
+  page load); the error is only in `/var/log/odoo/odoo-server.log` (`assetsbundle: Internal Error`).
+  Fix: use `width: 96vw; max-width: 640px;` (or `#{}`-interpolate to force CSS passthrough).
+  Always Chrome-MCP a page + check the CSSOM for a new rule after any SCSS deploy.
 
 - **Live-server validation double-cache:** after rsync + `DELETE FROM ir_attachment WHERE url LIKE
   '/web/assets/%'` (server bundle), the BROWSER may still serve a cached bundle on a plain reload. When
