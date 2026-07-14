@@ -50,6 +50,12 @@ render — add it in the same commit that creates it.
   Referencing `state.canEdit` where `canEdit` is a prop silently reads `undefined` → the feature looks
   built but is dead (W14 find/replace shipped with `state.canEdit` and the replace UI never rendered
   until caught in live validation). Grep new child templates + getters for `state.<propName>`.
+- **`_afterPatch` seeds the editor in an early-`return` block (W104 gotcha):** the grid
+  seeds the overlay `<input>` value once, in a block that `return`s before the rest of
+  `_afterPatch`. Any action that must run *after the editor mounts* (e.g. inserting a
+  palette-queued snippet at the caret) has to be invoked INSIDE that block, not only at
+  the tail of `_afterPatch` — otherwise it never fires on the mount patch (no further
+  patch is scheduled) and the feature silently no-ops (found in W104 live validation).
 - **Column virtualization (W109):** the grid windows COLUMNS only above 60 components (`.g2-virt`,
   `--g2-colw`); below that it renders everything (DOM identical to before). Any new grid feature that
   changes `ordered.length` (grouping/collapse/pinned rows) must let `_recomputeWindow` re-run and must
