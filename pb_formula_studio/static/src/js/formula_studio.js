@@ -318,6 +318,15 @@ export class PbFormulaStudio extends Component {
             cmpNarrate: null,        // {blocks, source, lang}
             cmpNarrateBusy: false,
             cmpNarrateLang: "en",
+            // W95 (WP-H) — budget-vs-actual mode of the compare view
+            cmpMode: "period",        // "period" | "budget"
+            budgets: [],              // budgets for the picked config
+            budgetSel: null,          // chosen budget id (side A in budget mode)
+            budgetCanEdit: false,
+            budgetEditOpen: false,
+            budgetEdit: null,         // {id,name,period_label,note,rows[],orphans[]}
+            budgetBusy: false,
+            budgetSeedRun: null,      // run id chosen in the seed-from-run picker
             // W82 — tests-on-save chip: the verdict from the last save RPC
             // ({has_tests,total,passed,failed,pending,failures:[]}), cleared on
             // config switch. null = no save yet this session.
@@ -403,6 +412,8 @@ export class PbFormulaStudio extends Component {
         useHotkey("escape", () => {
             if (this.state.shortcutsOpen) {          // W18 — front of the Escape ladder (D-F1)
                 this.state.shortcutsOpen = false;
+            } else if (this.state.budgetEditOpen) {  // W95 — budget editor overlay
+                this.closeBudgetEditor();
             } else if (this.state.snipManageOpen) {  // W104 — manage-snippets overlay
                 this.closeSnipManage();
             } else if (this.state.paletteOpen) {
@@ -907,6 +918,7 @@ export class PbFormulaStudio extends Component {
         add("view.grid", "Views", "Grid view", "grid spreadsheet table", () => this.setView("grid"));
         add("view.test", "Views", "Tests view", "tests samples validate check", () => this.setView("test"));
         add("view.compare", "Views", "Compare periods", "compare periods payrun delta difference month", () => this.openCompare());
+        add("view.budget", "Views", "Compare vs budget", "budget variance vs actual target plan compare", () => this.openCompareBudget());
         add("view.settings", "Views", "Settings", "settings configuration setup", () => this.setView("settings"));
         add("view.shortcuts", "Views", "Keyboard shortcuts", "keyboard shortcuts hotkeys keys help ?", () => this.openShortcuts());
         if (this.state.canEdit) add("act.new", "Actions", "New component", "add new create column", () => this.addComponentQuick());
@@ -2754,6 +2766,11 @@ export class PbFormulaStudio extends Component {
         this.state.cmpProgress = 0;
         this.state.cmpMoversOpen = false;
         await this._loadCompareRuns();
+        if (this.state.cmpMode === "budget") await this._loadBudgets();
+    }
+    async openCompareBudget() {
+        this.state.cmpMode = "budget";
+        await this.openCompare();
     }
     async _loadCompareRuns() {
         try {
@@ -2856,6 +2873,178 @@ export class PbFormulaStudio extends Component {
         if (t && navigator.clipboard) {
             navigator.clipboard.writeText(t).then(() => this.notif.add("Narrative copied", { type: "success" }));
         }
+    }
+
+    // ==== W95 (WP-H) — budget vs actual ====
+    async setCmpMode(mode) {
+        if (this.state.cmpMode === mode) return;
+        this.state.cmpMode = mode;
+        this.state.cmpResult = null;      // a mode switch invalidates the prior fold
+        this.state.cmpNarrate = null;
+        if (mode === "budget") await this._loadBudgets();
+    }
+    async _loadBudgets() {
+        try {
+            const r = await this.orm.call("pb.formula.studio", "budget_list", [this.state.config.id]);
+            this.state.budgets = (r && r.budgets) || [];
+            this.state.budgetCanEdit = !!(r && r.can_edit);
+            if (this.state.budgets.length && !this.state.budgets.find((b) => b.id === this.state.budgetSel)) {
+                this.state.budgetSel = this.state.budgets[0].id;
+            } else if (!this.state.budgets.length) {
+                this.state.budgetSel = null;
+            }
+        } catch (e) { this.state.budgets = []; }
+    }
+    onBudgetPick(ev) { this.state.budgetSel = parseInt(ev.target.value, 10) || null; }
+    async runBudgetCompare() {
+        if (!this.state.budgetSel) { this.notif.add("Pick or create a budget first", { type: "warning" }); return; }
+        if (!this.state.cmpB) { this.notif.add("Pick a payrun to measure against", { type: "warning" }); return; }
+        const CHUNK = 100;
+        this.state.cmpBusy = true;
+        this.state.cmpProgress = 0;
+        this.state.cmpResult = null;
+        this.state.cmpNarrate = null;
+        try {
+            const prep = await this.orm.call("pb.formula.studio", "budget_prepare",
+                [this.state.config.id, this.state.budgetSel, this.state.cmpB], {}, { silent: true });
+            if (!prep || prep.ok === false || !prep.cmp_id) {
+                this.notif.add((prep && prep.msg) || "Budget comparison failed", { type: "warning" });
+                return;
+            }
+            this.state.cmpId = prep.cmp_id;
+            const pairs = prep.pairs || [];
+            for (let i = 0; i < pairs.length; i += CHUNK) {
+                await this.orm.call("pb.formula.studio", "compare_batch",
+                    [{ cmp_id: prep.cmp_id, pairs: pairs.slice(i, i + CHUNK) }], {}, { silent: true });
+                this.state.cmpProgress = pairs.length ? Math.round(100 * Math.min(i + CHUNK, pairs.length) / pairs.length) : 100;
+                if (this.state.view !== "compare") return;
+            }
+            const res = await this.orm.call("pb.formula.studio", "compare_result",
+                [prep.cmp_id], {}, { silent: true });
+            if (this.state.view === "compare") this.state.cmpResult = (res && res.result) || null;
+        } catch (e) {
+            this.notif.add("Budget comparison failed", { type: "danger" });
+        } finally { this.state.cmpBusy = false; }
+    }
+    // — editor overlay (manager-gated writes; reads open) —
+    async openBudgetEditor(budgetId) {
+        if (this._lockedNotice()) return;     // read-only: say so, never a silent no-op
+        this.state.budgetBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "budget_get",
+                [this.state.config.id, budgetId || false]);
+            if (!r || !r.ok) { this.notif.add("Could not open the budget editor", { type: "warning" }); return; }
+            const head = r.budget || {};
+            this.state.budgetEdit = {
+                id: head.id || null,
+                name: head.name || "",
+                period_label: head.period_label || "",
+                note: head.note || "",
+                rows: (r.components || []).map((c) => ({ ...c, amount: c.amount || 0 })),
+                orphans: (r.orphans || []).map((o) => ({ ...o })),
+            };
+            this.state.budgetSeedRun = (this.state.cmpRuns[0] && this.state.cmpRuns[0].id) || null;
+            this.state.budgetEditOpen = true;
+        } catch (e) {
+            this.notif.add("Could not open the budget editor", { type: "danger" });
+        } finally { this.state.budgetBusy = false; }
+    }
+    newBudget() { this.openBudgetEditor(null); }
+    closeBudgetEditor() { this.state.budgetEditOpen = false; this.state.budgetEdit = null; }
+    onBudgetHead(field, ev) { if (this.state.budgetEdit) this.state.budgetEdit[field] = ev.target.value; }
+    onBudgetAmount(code, ev) {
+        const e = this.state.budgetEdit; if (!e) return;
+        const row = e.rows.find((r) => r.code === code) || e.orphans.find((r) => r.code === code);
+        if (row) row.amount = ev.target.value;
+    }
+    dropOrphan(code) {
+        const e = this.state.budgetEdit; if (!e) return;
+        e.orphans = e.orphans.filter((o) => o.code !== code);
+    }
+    onSeedRunPick(ev) { this.state.budgetSeedRun = parseInt(ev.target.value, 10) || null; }
+    async seedBudgetFromRun() {
+        const e = this.state.budgetEdit;
+        if (!e || !this.state.budgetSeedRun) { this.notif.add("Pick a payrun to seed from", { type: "warning" }); return; }
+        this.state.budgetBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "budget_seed_from_run",
+                [this.state.config.id, this.state.budgetSeedRun], {}, { silent: true });
+            const amounts = (r && r.amounts) || {};
+            for (const row of e.rows) row.amount = amounts[row.code] != null ? amounts[row.code] : row.amount;
+            this.notif.add("Amounts seeded from the payrun", { type: "success" });
+        } catch (err) {
+            this.notif.add("Could not seed from that payrun", { type: "warning" });
+        } finally { this.state.budgetBusy = false; }
+    }
+    // seed from an on-screen PERIOD compare (client-side, no RPC) — uses the "after" sums
+    get canSeedFromCompare() {
+        const r = this.state.cmpResult;
+        return !!(r && !r.empty && r.mode !== "budget" && r.components && r.components.length);
+    }
+    seedBudgetFromCompare() {
+        const e = this.state.budgetEdit; const r = this.state.cmpResult;
+        if (!e || !this.canSeedFromCompare) return;
+        const bycode = {};
+        for (const c of r.components) bycode[c.code] = c.sum_b;
+        for (const row of e.rows) if (bycode[row.code] != null) row.amount = bycode[row.code];
+        this.notif.add("Amounts seeded from the on-screen comparison", { type: "success" });
+    }
+    async saveBudget() {
+        const e = this.state.budgetEdit;
+        if (!e || this.state.budgetBusy) return;
+        if (!(e.name || "").trim()) { this.notif.add("A budget needs a name", { type: "warning" }); return; }
+        const lines = {};
+        for (const row of e.rows) {
+            const v = String(row.amount ?? "").trim();
+            if (v !== "" && Number(v) !== 0) lines[row.code] = Number(v);
+        }
+        for (const o of e.orphans) {   // kept orphan lines persist unless dropped
+            const v = String(o.amount ?? "").trim();
+            if (v !== "") lines[o.code] = Number(v);
+        }
+        this.state.budgetBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "budget_save", [{
+                id: e.id || false, config_id: this.state.config.id,
+                name: e.name, period_label: e.period_label, note: e.note, lines,
+            }]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not save budget", { type: "warning" }); return; }
+            await this._loadBudgets();
+            this.state.budgetSel = r.budget.id;
+            this.state.budgetEditOpen = false;
+            this.state.budgetEdit = null;
+            this.notif.add("Budget saved", { type: "success" });
+        } catch (err) {
+            this.notif.add("Could not save budget", { type: "danger" });
+        } finally { this.state.budgetBusy = false; }
+    }
+    async deleteBudget(b) {
+        if (this._lockedNotice() || this.state.budgetBusy) return;
+        this.state.budgetBusy = true;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "budget_delete", [b.id]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not delete budget", { type: "warning" }); return; }
+            if (this.state.budgetSel === b.id) this.state.budgetSel = null;
+            if (this.state.budgetEdit && this.state.budgetEdit.id === b.id) this.closeBudgetEditor();
+            await this._loadBudgets();
+            this.notif.add("Budget deleted", { type: "success" });
+        } catch (err) {
+            this.notif.add("Could not delete budget", { type: "danger" });
+        } finally { this.state.budgetBusy = false; }
+    }
+    get budgetEditByGroup() {
+        const e = this.state.budgetEdit;
+        if (!e) return [];
+        const order = ["Earnings", "Deductions", "Totals", "Inputs"];
+        const seen = {};
+        const groups = [];
+        for (const row of e.rows) {
+            const g = row.group || "Earnings";
+            if (!seen[g]) { seen[g] = { group: g, rows: [] }; groups.push(seen[g]); }
+            seen[g].rows.push(row);
+        }
+        groups.sort((a, b) => (order.indexOf(a.group) + 99) - (order.indexOf(b.group) + 99) || a.group.localeCompare(b.group));
+        return groups;
     }
 
     // ---- Test & Validate workbench ----
