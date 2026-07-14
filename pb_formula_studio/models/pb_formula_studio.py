@@ -60,6 +60,9 @@ def _narr_numbers_ok(text, allowed):
 
 
 # Category grouping for the outline (by code/name heuristics)
+_NET_CODES = {'NET', 'NETPAY', 'NET_PAY', 'NETSALARY', 'TAKEHOME', 'TAKE_HOME'}
+
+
 def _group_for(rule):
     code = (rule.code or '').upper()
     name = (rule.name or '').lower()
@@ -4410,6 +4413,109 @@ class PbFormulaStudio(models.AbstractModel):
             'input_components': inputs,
             'currency': c.currency_id.symbol if c.currency_id else '',
         }
+
+    # ==================================================================
+    # W98 (WP-H) — offer calculator: evaluate hypothetical inputs through the
+    # LIVE config with ZERO records created. Read-only; open to everyone (D-H6).
+    # ==================================================================
+    @api.model
+    def offer_calc(self, config_id, inputs):
+        """Evaluate a hypothetical employee's inputs through the live config and
+        return the full component breakdown — no records created (D-H4, in-memory
+        ``Sample.new`` on the SAME evaluator previews/tests use, C5). Reports
+        headline NET + per-group subtotals only; NEVER a fabricated employer cost
+        (D-H4/C7). Validates inputs like W49: known input codes, numeric,
+        |v| <= 1e12."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'ok': False, 'msg': _('Configuration not found.')}
+        rules = config.rule_ids.sorted(key=lambda r: r.sequence)
+        input_codes = {r.code for r in rules if r.column_type == 'input' and r.code}
+        clean = {}
+        for code, v in (inputs or {}).items():
+            code = str(code)
+            if code not in input_codes:
+                return {'ok': False, 'msg': _('Unknown input: %s') % code}
+            n = self._as_num(v)
+            if n is None:
+                # Text input column (e.g. an employee name / department the config
+                # carries as an input) — pass it through to the evaluator as-is.
+                # Only NUMERIC inputs are range-checked; text inputs are legitimate
+                # and must not reject the whole offer (C7 — degrade visibly).
+                clean[code] = v
+            elif abs(n) > 1e12:
+                return {'ok': False, 'msg': _('Input %s is out of range.') % code}
+            else:
+                clean[code] = n
+        # In-memory evaluation — zero rows. Evaluate under sudo so the engine's
+        # eval-diagnostic writes on the rules (the same side-effect every preview
+        # performs) succeed for READ-ONLY users too (D-H6 — offer calc is a
+        # calculator open to everyone; it creates no data, only the internal
+        # diagnostic bookkeeping the eval path already does). This avoids touching
+        # the eval path itself (D-H7) while honoring D-H6's read-only guarantee.
+        sample = self.env['hr.formula.sample.data'].sudo().new({'config_id': config.id})
+        try:
+            values = sample._evaluate_rules_with_dependencies(clean)
+        except Exception as e:
+            _logger.warning("offer_calc eval failed: %s", e)
+            return {'ok': False, 'msg': _('Could not evaluate this offer.')}
+
+        def _num(x):
+            try:
+                return float(x)
+            except (TypeError, ValueError):
+                return 0.0
+
+        rows = []
+        subtotals = {}
+        for r in rules:
+            if not r.code:
+                continue
+            grp = _group_for(r)
+            val = _num(values.get(r.code, 0.0))
+            rows.append({
+                'col': r.column_letter or '?', 'code': r.code,
+                'name': (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code,
+                'group': grp, 'type': r.column_type, 'value': round(val, 2),
+                'appears_on_payslip': bool(r.appears_on_payslip),
+                'number_format': r.number_format or 'number',
+            })
+            if grp != 'Inputs':                    # Inputs excluded from subtotals (D-H4)
+                subtotals[grp] = subtotals.get(grp, 0.0) + val
+
+        # headline net — same heuristic as the comparison (_pick_headline_code)
+        net_code = self.env['hr.formula.period.comparison'].new(
+            {'config_id': config.id})._pick_headline_code() or ''
+        net_value = round(_num(values.get(net_code, 0.0)), 2) if net_code else 0.0
+
+        order = ['Earnings', 'Deductions', 'Totals']
+        sub_list = [{'group': g, 'value': round(subtotals[g], 2)}
+                    for g in order if g in subtotals]
+        for g, v in subtotals.items():
+            if g not in order:
+                sub_list.append({'group': g, 'value': round(v, 2)})
+
+        return {
+            'ok': True,
+            'config': {'id': config.id, 'name': config.display_name},
+            'currency': config.currency_id.symbol if config.currency_id else '',
+            'rows': rows,
+            'net_code': net_code, 'net_value': net_value,
+            'subtotals': sub_list,
+        }
+
+    @api.model
+    def offer_sample_inputs(self, sample_id):
+        """The input values of an existing sample — copied into the offer form by
+        the "start from sample" picker (D-H5). Read of stored JSON only."""
+        s = self.env['hr.formula.sample.data'].browse(int(sample_id))
+        if not s.exists():
+            return {'ok': False, 'inputs': {}}
+        try:
+            vals = json.loads(s.input_values_json or '{}')
+        except Exception:
+            vals = {}
+        return {'ok': True, 'inputs': vals}
 
     # ------------------------------------------------------------------
     # W83 — test coverage (deterministic, three-valued; NEVER evaluates a
