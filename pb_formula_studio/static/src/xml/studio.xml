@@ -156,6 +156,10 @@
                 <span>Tables</span>
                 <span t-if="state.rateTables.length" class="pbfs-ratecount biz-keep" t-esc="state.rateTables.length"/>
               </button>
+              <button class="pbfs-btn soft pbfs-offerbtn biz-icon-only-lg biz-hide-lg" t-on-click="openOfferCalc" title="Offer calculator — type hypothetical inputs, see the full breakdown">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h4M8 18h.01M12 18h.01"/></svg>
+                <span>Offer</span>
+              </button>
               <!-- Tools ▾ overflow — absorbs the five buttons above below 1280px (CSS-gated, no resize JS) -->
               <div class="pbfs-more biz-more-menu biz-only-lg">
                 <button class="pbfs-btn soft" t-on-click="toggleMore" title="More tools">
@@ -171,6 +175,7 @@
                   <button t-on-click="() => this.pickTool('rates')">
                     Tables<t t-if="state.rateTables.length"> (<t t-esc="state.rateTables.length"/>)</t>
                   </button>
+                  <button t-on-click="openOfferCalc">Offer calculator</button>
                 </div>
               </div>
               <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-depmap" t-on-click="openDepMap" title="Dependency map — the whole configuration as a graph">
@@ -3329,6 +3334,81 @@
           <button class="pbfs-btn primary sm" t-att-disabled="state.budgetBusy" t-on-click="saveBudget">
             <t t-if="state.budgetBusy">Saving…</t><t t-else="">Save budget</t>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP-H · W98 — offer calculator overlay (read-only, in-memory) -->
+    <div t-if="state.offerOpen" class="pbfs-offer-scrim" t-on-click="closeOfferCalc">
+      <div class="pbfs-offer" t-on-click="(ev) => ev.stopPropagation()">
+        <div class="pbof-head">
+          <div class="pbof-titles">
+            <b>Offer calculator</b>
+            <small>Type hypothetical inputs — the full breakdown runs through the live configuration. Nothing is saved.</small>
+          </div>
+          <button class="pbof-x" t-on-click="closeOfferCalc" title="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="pbof-body">
+          <!-- inputs -->
+          <div class="pbof-left">
+            <div class="pbof-sec-h">
+              <span>Inputs</span>
+              <select t-if="state.offerSamples.length" class="pbof-sample" t-on-change="(ev) => this.offerFromSample(ev)">
+                <option value="">Start from sample…</option>
+                <option t-foreach="state.offerSamples" t-as="s" t-key="s.id" t-att-value="s.id" t-esc="s.name"/>
+              </select>
+            </div>
+            <div t-if="!state.offerInputs.length" class="pbof-noinputs">This configuration has no input components.</div>
+            <div t-foreach="state.offerInputs" t-as="i" t-key="i.code" class="pbof-input">
+              <label>
+                <span class="pbof-icode" t-esc="i.code"/>
+                <span class="pbof-iname" t-esc="i.name"/>
+              </label>
+              <input class="ce-input" type="text" inputmode="decimal" t-att-value="i.value" t-on-input="(ev) => this.onOfferInput(i.code, ev)"/>
+            </div>
+          </div>
+
+          <!-- breakdown -->
+          <div class="pbof-right">
+            <t t-if="state.offerResult">
+              <div class="pbof-net">
+                <span class="pbof-net-l"><t t-esc="state.offerResult.net_code || 'Net'"/></span>
+                <span class="pbof-net-v" t-esc="offerMoney(state.offerResult.net_value)"/>
+              </div>
+              <div t-if="state.offerResult.subtotals.length" class="pbof-subs">
+                <div t-foreach="state.offerResult.subtotals" t-as="st" t-key="st.group" class="pbof-sub">
+                  <span class="pbof-sub-g" t-esc="st.group"/>
+                  <span class="pbof-sub-v" t-esc="offerMoney(st.value)"/>
+                </div>
+              </div>
+              <div class="pbof-break">
+                <t t-foreach="offerGroups" t-as="grp" t-key="grp.group">
+                  <div class="pbof-grp" t-esc="grp.group"/>
+                  <div t-foreach="grp.rows" t-as="row" t-key="row.code" t-attf-class="pbof-row {{ row.appears_on_payslip ? 'onslip' : '' }}">
+                    <span class="pbof-rcode" t-esc="row.code"/>
+                    <span class="pbof-rname" t-esc="row.name"/>
+                    <span class="pbof-rval" t-esc="offerVal(row)"/>
+                  </div>
+                </t>
+              </div>
+              <div class="pbof-honesty">Reports net + per-group subtotals only — no employer-cost figure is invented.</div>
+            </t>
+            <div t-elif="state.offerBusy" class="pbof-idle">Calculating…</div>
+            <div t-else="" class="pbof-idle">Enter inputs to see the breakdown.</div>
+          </div>
+        </div>
+
+        <div class="pbof-foot">
+          <span class="pbof-foot-note" t-if="state.offerBusy">Calculating…</span>
+          <span class="pbbud-spacer"/>
+          <button class="pbfs-btn soft sm" t-att-disabled="!state.offerResult" t-on-click="copyOfferSummary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy summary
+          </button>
+          <button class="pbfs-btn ghost sm" t-on-click="closeOfferCalc">Close</button>
         </div>
       </div>
     </div>
