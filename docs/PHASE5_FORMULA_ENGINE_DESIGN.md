@@ -562,6 +562,8 @@ Ordered by affinity to the WP surfaces they extend.
 > supersedes them where they differ (it was re-verified against the post-WP-A..E code).
 > **2026-07-14 (later):** the second batch — **W83, W84, W49** — is promoted likewise: see **WP-G**
 > (re-verified against the post-WP-F code, including the W82 hook it gates).
+> **2026-07-14 (third):** **W95, W98** are promoted to **WP-H** (Simulation & Planning) — budget
+> mode rides the W97 comparison transient; the offer calculator evaluates on an in-memory sample.
 
 **W18 Shortcuts overlay** *(Grid/UX, 1–2 d)* — `?` (and palette entry) opens a static overlay listing every
 studio hotkey. Seam: hotkey handlers in `grid_studio.js:298-335` + `formula_studio.js:300`; render from the
@@ -710,6 +712,9 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 
 **WP-G:**
 > Implement WP-G (Test Intelligence: W83 test coverage view, W84 boundary-value test generation, W49 AI test generation) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-G, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C5, C7, C8, C9, C10 are load-bearing here — note the selection_add/ondelete rule in C9). Build TG.1→TG.6 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world, and report back per the Report-back items section. The non-negotiable invariant: a generated sample with an unconfirmed baseline counts as PENDING in run_sample_tests — it must never move the W82 chip's passed/failed counts. Do not touch docs/FORMULA_ENGINE_TOUR.html.
+
+**WP-H:**
+> Implement WP-H (Simulation & Planning: W95 budget vs actual, W98 offer calculator) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-H, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C5, C7, C8, C10, C11 are load-bearing here). Build TH.1→TH.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world, and report back per the Report-back items section. Two binding rules above all: budget mode must NOT fork the comparison fold (extend the existing transient per skeleton S-H1, and prove period mode unchanged via the TH.1 regression AC), and the offer calculator reports net + per-group subtotals only — never a fabricated "employer cost". Do not touch docs/FORMULA_ENGINE_TOUR.html.
 
 ---
 
@@ -1102,6 +1107,35 @@ Report back per the **Report-back items** section (deviations from D-F1..D-F9 mu
 
 # WP-G — Test Intelligence — W83 → W84 → W49
 
+> **✅ IMPLEMENTED 2026-07-14** (Opus) — `8f4bc5ee` W83 · `6f71ebc1` W84 · `083f3765` W49 ·
+> `28d1be64` import-order fix · `fe341bfd` verdict banner · `dd2c988d` ledger C9. Deployed engine
+> 19.0.1.36.0 (schema migrated) + studio to Payobook19v2. The D-G3 invariant was proven live on
+> demo config 44: generate trio → chip unchanged (3 land pending) → confirm → chip moves →
+> re-generate dedupes (0 created / 3 skipped) → cleanup restores the exact original chip.
+> Disclosed deviations: `has_tests` now means "has CONFIRMED testable samples" (accepted in review —
+> no behavior change possible for existing configs); the rate-table candidate source was not
+> live-driven by the implementer (demo has no BRACKET tables); the C10 full-batch anchor was
+> skipped by reasoning (no eval-path file touched).
+
+> **✅ REVIEWED 2026-07-14** (Fable auto-review: bulk subagent — full-diff read vs spec + live
+> JSON-RPC/psql verification — plus personal reads of the flagged files). **Verdict: SHIP**, 5 Minors.
+> The review CLOSED all three implementer gaps: (1) the rate-table branch was driven live on a
+> throwaway config+BRACKET table (all 3 bracket lowers listed reachable, generated trio's
+> characterization math hand-checked against progressive brackets, dedupe + chip gating re-proven,
+> everything deleted with psql-verified cleanup); (2) C10 closed at mini-scale — diff shows zero
+> eval-path hunks, semantics battery green, and a 130-line recompute snapshot on 5 live slips came
+> back byte-identical; (3) migration psql-clean (all 33 pre-existing samples confirmed=t, 0
+> generated leftovers). Prompt-injection surface on W49 verified closed (t-esc only, truncated
+> text fields, numeric-only create path).
+> **Fixed by Fable (same day):** `create_ai_samples` now rejects a WHOLE row on any invalid entry
+> and reports `rejected` (was: silently created from surviving keys); `generate_boundary_samples`
+> counts client-invalid picks as `dropped` (was: vanished); coverage "asserted" now requires a
+> CONFIRMED baseline (review observation #5 — coverage no longer rises while the chip says pending).
+> **Recorded, not fixed:** the Generate dropdown has no Escape/outside-click close (pre-existing
+> pattern, amplified by the new 340px panels — fold into the next UI pass); the studio version-stamp
+> lag was synced by this fix's `-u`. Pre-existing data note: legacy slips 1–5 carry a text value in
+> their inputs and fail recompute (unrelated to WP-G).
+
 **Designed 2026-07-14 (Fable), after WP-F shipped.** Second Medium batch: make the W82 test chip
 *trustworthy at scale* — show what the samples DON'T cover (W83), then manufacture the missing
 boundary tests deterministically (W84), then let the LLM propose realistic profiles on top (W49).
@@ -1305,3 +1339,186 @@ def _threshold_candidates(self, rules):
 5. C10 batch-recompute anchor: zero drift. 6. Console clean; drive-test artifacts deleted.
 
 Report back per the **Report-back items** section (deviations from D-G1..D-G7 must be flagged).
+
+---
+
+# WP-H — Simulation & Planning — W95 → W98
+
+**Designed 2026-07-14 (Fable), after WP-G shipped.** Third Medium batch: put the compare surface to
+planning work. **W95 budget vs actual** — author a per-component budget for a config and fold a real
+payrun against it in the existing Compare table. **W98 offer calculator** — type a hypothetical
+employee's inputs and see the full component breakdown (net + employer cost) through the LIVE config,
+zero records created. Modules: engine (`pb_hr_payroll_formula`) for the budget model + comparison
+extension; studio for RPCs/UI. Effort ≈ 6–7 d. W95 first (it extends the transient W98 doesn't touch);
+W98 is independent and can land second without rebasing.
+
+## Verified plumbing facts (do not re-derive)
+
+*Comparison transient (`pb_hr_payroll_formula/models/formula_period_comparison.py`):*
+- `hr.formula.period.comparison` is a **TransientModel** `:62-79`: `config_id`, `run_a_id`,
+  `run_b_id` (both `ondelete='cascade'`, **not required**), `state draft/computing/done`,
+  `headline_code`, `fold_json`, counters (`employees_a/b`, `matched`, `joiners`, `leavers`).
+- Helpers: `_pick_headline_code` `:81` (NET-name heuristics, `_NET_CODES` `:33`); `_slip_computed`
+  `:100` (JSON-or-line-totals, C15); `_run_slip_map` `:115`.
+- Flow: `cmp_create` `:131` → `cmp_prepare` `:147` (builds map_a/map_b, work list) → `cmp_batch`
+  `:168` (folds `components: {code: [sum_a, sum_b, n_changed, max_abs]}`, movers, net_moved) →
+  `cmp_finalize` `:223` → `cmp_result` `:230` (rows, causes, movers ≤25) → `cmp_drop` `:292`.
+  `_EPS = 0.005` `:24`. W48 `narrate()` `:297` sits on the same model.
+- Studio wrappers: `compare_runs / compare_prepare / compare_batch / compare_result / compare_drop`
+  in `pb_formula_studio.py`; client state `cmpRuns/cmpA/cmpB/cmpId/cmpBusy/cmpProgress/cmpResult…`
+  (`formula_studio.js:2748+`), view branch `state.view === 'compare'` in `studio.xml`, styles in
+  `compare.scss` (`.pbcmp*`).
+
+*Evaluation for synthetic inputs (W98):*
+- `hr.formula.sample.data._evaluate_rules_with_dependencies(input_values)`
+  (`formula_sample_data.py:569-629`) needs only `self.config_id` — it reads `config_id.rule_ids`,
+  topo-sorts, calls `rule.evaluate(results)` per rule, two fixup passes. It is an `ensure_one`
+  recordset method, so W98 evaluates on an **in-memory record**: `Sample.new({'config_id': cid})`
+  — zero rows created, same evaluator as previews/tests (C5).
+- CAUTION: `rule.evaluate` → `_run_formula(..., write_diagnostics=True)`
+  (`formula_rule.py:1500-1519`) — evaluation may write eval-diagnostic fields on the RULE (same
+  side-effect every preview/sample compute already has; it is NOT a data mutation of configs).
+  `rules._compute_dependencies()` is called at the top of the eval — also identical to previews.
+- Input schema for the form: `get_test_data` payload `input_components` (`pb_formula_studio.py:4245-4247`
+  — code/col/name/default per input-type rule).
+- Component metadata for the breakdown: the studio components payload (name, category, `group`,
+  `appears_on_payslip`, `number_format`) — `get_studio_data` `:242-270`.
+
+*Misc:* palette registry `paletteCommands` (`formula_studio.js:905+`); Tools ▾ overflow `pickTool`;
+engine access-CSV row pattern; transient models still need access rows (see the
+`access_formula_period_comparison_*` rows added in WP-C).
+
+## Locked decisions
+
+- **D-H1 (W95 = a budget SIDE on the existing transient, not a parallel engine)** — new persistent
+  engine models `hr.formula.budget` (`config_id` required cascade, `name` required, `period_label`
+  Char, `note` Char, `active`) and `hr.formula.budget.line` (`budget_id` cascade, `code` Char
+  required, `amount` Float; SQL-unique `(budget_id, code)`). The comparison transient gains
+  `budget_id` (Many2one, optional) and `mode` (Selection `period/budget`, default `period`).
+  In budget mode: side A = budget line amounts (no slips, no chunking for A), side B = the picked
+  run's fold (same `cmp_prepare`/`cmp_batch` machinery over map_b only; map_a empty).
+  `cmp_result` in budget mode emits the same row shape (`a` = budget, `b` = actual, delta, delta%)
+  plus `coverage`: components in the run with NO budget line and budget lines matching NO component
+  are BOTH listed explicitly (C7 — never silently dropped from the variance). Employee-level blocks
+  (movers/joiners/leavers/causes/narrate) are period-mode only — budget mode returns them empty and
+  the UI hides those cards.
+- **D-H2 (W95 authoring UX)** — budgets are edited in a studio overlay (scrim pattern, C11):
+  rows = the config's current formula components (code, name, amount input), plus **Seed from
+  run…** (one click fills amounts from a picked run's actual per-component sums — reuses
+  `_run_slip_map`/`_slip_computed` server-side) and **Seed from compare** when a period compare is
+  on screen. Budget CRUD RPCs are manager-gated (`_can_edit`) server-side like every studio write;
+  reads are open. `boundary`-style honesty: a budget line whose code no longer exists in the config
+  renders struck-through with a "component gone" tag, not hidden.
+- **D-H3 (W95 UI placement)** — the Compare view gains a mode toggle (`vs Period · vs Budget`).
+  Budget mode swaps the second run-picker for a budget picker (+ "New budget…" opens the editor).
+  The variance table reuses `.pbcmp-table` (columns Budget / Actual / Δ / Δ%; heat shading as
+  today); stats strip shows total budget / total actual / variance / coverage counts. Palette entry
+  "Compare vs budget".
+- **D-H4 (W98 = in-memory evaluation, one RPC)** — studio RPC `offer_calc(config_id, inputs)`:
+  validates inputs (known input codes only, numeric, reject |v| > 1e12 — same rules as W49's
+  validator), evaluates via `Sample.new({'config_id': cid})._evaluate_rules_with_dependencies`,
+  returns ordered component rows (col, code, name, group, value, `appears_on_payslip`,
+  `number_format`) + headline net (same `_NET_CODES` heuristic as the comparison) + employer-cost
+  subtotal = Σ of a `group == 'Deductions'`-excluded gross-side… **NO.** Employer cost is NOT
+  derivable generically — v1 reports **net + per-group subtotals** (Inputs excluded; one subtotal
+  per category band) and labels them exactly that. No invented "employer cost" number (C7 honesty:
+  if the config has no employer-contribution components, we do not fabricate one).
+- **D-H5 (W98 UI)** — a Tools-menu + palette entry "Offer calculator": overlay with the input form
+  (prefilled from input defaults; a "start from sample…" picker copies an existing sample's
+  inputs), live recompute on a 320 ms debounce (C8 — one RPC per pause, supersede-token like the
+  grid validator), breakdown grouped by category band with the payslip-visible components
+  highlighted, headline net card. **Shareable summary = clipboard text** (formatted lines: config,
+  date, inputs, visible components, net) — no server-side share links in v1 (B7 share infra is for
+  review flows; do not couple).
+- **D-H6 (W98 is read-only for everyone)** — offer calc never writes; it is available to read-only
+  users too (it is a calculator, not an edit). The RPC must therefore not trip `_can_edit` guards,
+  and the evaluation side-effect noted above must be acceptable: rule diagnostic writes happen via
+  the SAME code path previews already use for read-only users. Verify once in TG… TH.3 that a
+  read-only session can run it without a permission error (if rule diagnostic writes fail on the
+  read-only group, pass `write_diagnostics=False` through — `_run_formula` already supports it).
+- **D-H7 (schema/deploy)** — two new engine models + 2 transient fields ⇒ one engine
+  `-u pb_hr_payroll_formula`; access rows for budget models (user read, manager write — same split
+  as snippets); both manifests bump (C2). No eval-path file changes.
+- **D-H8** — `docs/FORMULA_ENGINE_TOUR.html` stays untouched.
+
+## Tasks
+
+**TH.1 — W95 engine** *(~2 d)*
+Budget models + access rows + transient `mode`/`budget_id` + budget-mode prepare/batch/result +
+seed-from-run helper + `-u`.
+AC: budget-mode fold on a demo run: per-component actual sums EQUAL the same run's period-compare
+sums (cross-check vs an existing period compare of run×itself or SQL); un-budgeted component and
+orphan budget line both appear in `coverage`; movers/causes empty in budget mode; period mode
+byte-identical for existing calls (regression: one period compare re-run matches pre-WP-H output).
+
+**TH.2 — W95 studio UI** *(~2 d)*
+Mode toggle + budget picker + budget editor overlay (seed-from-run) + variance table/stats + palette
+entry + budget CRUD RPCs (manager-gated writes).
+AC: author a budget seeded from May, compare June vs it — variance table renders with heat + correct
+Δ%; editing a budget line and re-running updates; read-only user can view budgets/variance but gets
+the locked notice on edit; zero console errors.
+
+**TH.3 — W98 engine + RPC** *(~1 d)*
+`offer_calc` with input validation + in-memory `Sample.new` evaluation + ordered breakdown + net
+heuristic + per-group subtotals.
+AC: for an existing sample's exact inputs, `offer_calc` returns values identical to that sample's
+`computed_values_json` (the strongest correctness proof available); unknown/absurd inputs rejected
+loudly; read-only session runs it without error (D-H6 — flip `write_diagnostics` if needed).
+
+**TH.4 — W98 UI** *(~1.5 d)*
+Overlay form + debounced live recompute + grouped breakdown + net card + copy-summary + Tools/palette
+entries.
+AC: typing updates within one debounce tick; values match the Tests view for copied inputs; clipboard
+summary contains config name, inputs and visible components; works for read-only users; zero console
+errors.
+
+**TH.5 — package validation sweep** *(~0.5–1 d)*
+Chrome-MCP drive of both features on the pb_demo VN world; budgets created for drive-testing deleted
+afterwards (or kept ONLY if named `Demo Budget …` intentionally — say which in the report); C10
+anchor n/a-by-construction is NOT claimable here — budget mode reads slips, so run the small-scale
+recompute parity check (one run's per-component sums before/after) and the period-compare regression
+of TH.1; console clean.
+
+### Skeleton S-H1 — budget mode inside the existing flow (the risky spot: don't fork the fold)
+
+```python
+# formula_period_comparison.py — additions, not a parallel path
+mode = fields.Selection([('period', 'Period vs period'), ('budget', 'Budget vs actual')],
+                        default='period')
+budget_id = fields.Many2one('hr.formula.budget', ondelete='cascade')
+
+def cmp_prepare(self, cmp_id):
+    cmp = self.browse(int(cmp_id))
+    ...
+    if cmp.mode == 'budget':
+        # side A is synthetic: fold_json starts with the budget sums; only B chunks.
+        lines = {l.code: l.amount for l in cmp.budget_id.line_ids}
+        fold = {'components': {c: [amt, 0.0, 0, 0.0] for c, amt in lines.items()},
+                'budget_codes': list(lines)}
+        cmp.fold_json = json.dumps(fold)
+        map_b = cmp._run_slip_map(cmp.run_b_id)
+        work = [{'b': sid} for sid in map_b.values()]   # no matching — every B slip folds
+        ...
+    # period path UNCHANGED — do not touch the existing branch (TH.1 regression AC).
+# cmp_batch: in budget mode fold ONLY sums into [., sum_b, ., .] per code — reuse the same
+#   accumulator dict; skip movers/net_moved entirely.
+# cmp_result: budget mode emits rows for the UNION of budget codes and folded codes;
+#   coverage = {'unbudgeted': [...], 'orphan_lines': [...]} — both always present (C7).
+# GOTCHA: budget lines key by CODE, folded sums key by code via _slip_computed — a slip
+#   line with an empty code is already skipped there; do not "helpfully" match by name.
+```
+
+## WP-H verification (Chrome MCP on pb_demo VN world)
+
+1. W95: budget seeded from May == May's own actuals (variance ≈ 0 row-by-row); June vs May-budget
+   variance matches the May→June period compare's per-component deltas (same numbers, different
+   framing — cross-check 3 components by hand).
+2. W95 coverage honesty: delete one budget line → component appears under "unbudgeted"; add a bogus
+   line `ZZZX` → appears under "orphan lines" struck through.
+3. W95 regression: a period compare re-run on runs 263→313 produces the SAME stats as recorded in
+   the WP-C validation (978 matched, NET sums).
+4. W98: inputs copied from an existing sample reproduce its computed values exactly; read-only user
+   drive; clipboard summary correct; debounce = no request storm (network tab ≤ 1 call per pause).
+5. Drive artifacts (budgets, any samples) deleted; console clean throughout.
+
+Report back per the **Report-back items** section (deviations from D-H1..D-H8 must be flagged).
