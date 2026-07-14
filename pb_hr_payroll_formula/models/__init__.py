@@ -10,6 +10,7 @@ from . import formula_period_comparison
 from . import formula_scenario
 from . import formula_rate_table
 from . import formula_snippet
+from . import formula_budget
 from . import formula_rule_note
 from . import formula_scheme_assignment
 from . import formula_release

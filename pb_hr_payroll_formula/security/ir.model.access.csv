@@ -106,3 +106,7 @@ access_formula_config_template_user,hr.formula.config.template.user,model_hr_for
 access_formula_config_template_manager,hr.formula.config.template.manager,model_hr_formula_config_template,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_formula_snippet_user,hr.formula.snippet.user,model_hr_formula_snippet,pb_hr_payroll_formula.group_formula_user,1,0,0,0
 access_formula_snippet_manager,hr.formula.snippet.manager,model_hr_formula_snippet,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_budget_user,hr.formula.budget.user,model_hr_formula_budget,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_formula_budget_manager,hr.formula.budget.manager,model_hr_formula_budget,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_budget_line_user,hr.formula.budget.line.user,model_hr_formula_budget_line,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_formula_budget_line_manager,hr.formula.budget.line.manager,model_hr_formula_budget_line,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
