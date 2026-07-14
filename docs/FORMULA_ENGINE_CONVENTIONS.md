@@ -60,6 +60,11 @@ render — add it in the same commit that creates it.
   `--g2-colw`); below that it renders everything (DOM identical to before). Any new grid feature that
   changes `ordered.length` (grouping/collapse/pinned rows) must let `_recomputeWindow` re-run and must
   keep the transient-UI owner in `_pinnedIds` so its cell never unmounts mid-interaction.
+- **Overlays that don't take focus must close on Escape via a CAPTURE-phase window listener.** The
+  grid navigator consumes Escape unconditionally (clear-selection + `stopPropagation`), so Odoo's
+  bubble-phase `useHotkey("escape")` ladder never fires while the grid scroller has focus. The W18
+  shortcuts overlay shipped un-closable on exactly the natural `?`-from-grid path (review Major).
+  Either focus the overlay on mount, or intercept in capture phase gated on the overlay being open.
 
 ## C4 — F7 version capture funnel (all rule mutations)
 
