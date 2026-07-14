@@ -158,6 +158,22 @@
               </t>
             </t>
           </tr>
+          <!-- W4 — extra pinned sample value rows (display-only; non-focusable, D-F3) -->
+          <tr t-foreach="extraPreviews" t-as="ex" t-key="'xrow' + ex.sample_id" class="g2-prow g2-valrow g2-valrow-extra">
+            <th class="g2-rlabel g2-rlabel-extra" t-att-title="ex.name">
+              <span class="g2-extraname" t-esc="ex.name"/>
+              <button class="g2-unpin" title="Unpin this sample row" t-on-click="() => this.onUnpinExtra(ex.sample_id)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+              </button>
+            </th>
+            <t t-foreach="displayColumns" t-as="u" t-key="u.key">
+              <t t-if="u.kind === 'base'"><t t-set="c" t-value="u.comp"/>
+                <td class="g2-cell g2-value g2-value-extra" t-esc="extraValue(ex, c.col)"/>
+              </t>
+              <t t-elif="u.kind === 'spacer'"><td class="g2-spacer" t-attf-style="width:{{u.width}}px;min-width:{{u.width}}px;max-width:{{u.width}}px"/></t>
+              <t t-else=""><td class="g2-scell g2-svalue muted">—</td></t>
+            </t>
+          </tr>
           <tr class="g2-prow">
             <th class="g2-rlabel">Status</th>
             <t t-foreach="displayColumns" t-as="u" t-key="u.key">

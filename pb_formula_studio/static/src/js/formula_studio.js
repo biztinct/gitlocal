@@ -349,6 +349,11 @@ export class PbFormulaStudio extends Component {
             hoverCard: null,        // W100 hover card: {compId, x, y} | null
             // WP-F · W18 — keyboard-shortcuts overlay
             shortcutsOpen: false,
+            // WP-F · W4 — pinned sample rows (client-session only; cleared on config
+            // switch). `pinnedSamples` holds up to 2 extra sample ids (never the
+            // active one, D-F4); `previewExtra` caches their computed value maps.
+            pinnedSamples: [],
+            previewExtra: {},
         });
         this.formulaRef = useRef("formulaInput");
         this.testFileRef = useRef("testFile");
@@ -439,6 +444,8 @@ export class PbFormulaStudio extends Component {
         if (prevCfgId && d.config && prevCfgId !== d.config.id) {
             this.state.tests = null;
             this.state.testsFailOpen = false;
+            this.state.pinnedSamples = [];   // W4 — pins are per-config, client-session only
+            this.state.previewExtra = {};
         }
         this.state.config = d.config;
         this.state.components = d.components;
@@ -593,6 +600,7 @@ export class PbFormulaStudio extends Component {
         if (sampleId) {
             this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
         }
+        await this._refreshPinned(cfgId);   // W4 — keep pinned sample rows in sync
     }
     async gridValidateLive(formula, excludeRuleId) {
         try {
@@ -613,6 +621,7 @@ export class PbFormulaStudio extends Component {
         }
         await this.load(cfgId);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._refreshPinned(cfgId);   // W4
     }
     async gridTranslateFormula(ruleId, targetCols) {
         try { return await this.orm.call("pb.formula.studio", "translate_formula", [ruleId, targetCols]); }
@@ -650,6 +659,72 @@ export class PbFormulaStudio extends Component {
         await this.load(cfgId);
         this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._refreshPinned(cfgId);   // W4
+    }
+
+    // ==== WP-F · W4 — pinned sample rows ====================================
+    // Extra display-only value rows in the grid: 2–3 samples side by side. Client
+    // state only (D-F4); every formula save recomputes them alongside the active
+    // preview via ONE Promise.all (C8 — per-save, never per-keystroke).
+    _sampleNameOf(sid) { const s = this.state.samples.find(x => x.id === sid); return s ? s.name : "—"; }
+    // Formatter used by the grid's extra rows — mirrors previewVal but reads a
+    // supplied values map instead of state.preview.
+    previewValFrom(col, values) {
+        const v = values ? values[col] : undefined;
+        return (v === undefined) ? "—" : this.fmtTyped(this.byCol(col), v);
+    }
+    // The prop the grid receives; excludes the active sample so it is never shown
+    // twice (invariant: the active sample is never rendered as an extra).
+    get extraPinnedPreviews() {
+        const activeId = this.state.preview.sample_id;
+        const out = [];
+        for (const sid of this.state.pinnedSamples) {
+            if (sid === activeId) continue;
+            const ex = this.state.previewExtra[sid];
+            out.push({ sample_id: sid, name: this._sampleNameOf(sid), values: (ex && ex.values) || {} });
+        }
+        return out;
+    }
+    // Can we pin the active sample? Need room (≤2) and a spare sample to keep
+    // active afterwards (so active ∉ pinnedSamples stays true, D-F4).
+    get canPinSample() {
+        if (this.state.samples.length < 2 || this.state.pinnedSamples.length >= 2) return false;
+        const sid = this.state.preview.sample_id;
+        return this.state.samples.some(s => s.id !== sid && !this.state.pinnedSamples.includes(s.id));
+    }
+    // Pin the active sample and advance the active row to the next free sample, so
+    // pinning gives immediate feedback (new pinned row + a fresh active row).
+    async pinActiveSample() {
+        const sid = this.state.preview.sample_id;
+        if (!sid || this.state.pinnedSamples.includes(sid)) return;
+        if (this.state.pinnedSamples.length >= 2) {
+            this.notif.add("You can pin up to 2 extra sample rows", { type: "info" }); return;
+        }
+        const nextActive = this.state.samples.find(s => s.id !== sid && !this.state.pinnedSamples.includes(s.id));
+        if (!nextActive) { this.notif.add("Add more sample data to pin another row", { type: "info" }); return; }
+        const cfgId = this.state.config.id;
+        // reuse the already-computed active values — no extra RPC for the pin itself
+        this.state.pinnedSamples = [...this.state.pinnedSamples, sid];
+        this.state.previewExtra = { ...this.state.previewExtra,
+            [sid]: { sample_id: sid, values: { ...this.state.preview.values } } };
+        this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, nextActive.id]);
+    }
+    unpinSample(sid) {
+        this.state.pinnedSamples = this.state.pinnedSamples.filter(x => x !== sid);
+        const ex = { ...this.state.previewExtra };
+        delete ex[sid];
+        this.state.previewExtra = ex;
+    }
+    // Recompute all pinned samples after a formula-changing save (D-F4). ONE
+    // Promise.all; no-op when nothing is pinned.
+    async _refreshPinned(cfgId) {
+        const pins = this.state.pinnedSamples;
+        if (!pins.length) return;
+        const results = await Promise.all(pins.map(sid =>
+            this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sid])));
+        const ex = {};
+        pins.forEach((sid, i) => { ex[sid] = results[i]; });
+        this.state.previewExtra = ex;
     }
 
     // ==== WP-A — Studio Command Layer (W14 find · W99 palette · W100 hover) ====
@@ -694,6 +769,7 @@ export class PbFormulaStudio extends Component {
         await this.load(cfgId);
         this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._refreshPinned(cfgId);   // W4
         return r || { ok: true };
     }
     // A code/name hit → jump to the component and open its rename flow. Codes are
@@ -864,6 +940,7 @@ export class PbFormulaStudio extends Component {
         await this.load(cfgId);   // the rule changed → refresh grid + scenarios + version history
         this._applyTests(r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._refreshPinned(cfgId);   // W4
         return r;
     }
     async gridScenarioDiscard(sid) {
@@ -2487,10 +2564,13 @@ export class PbFormulaStudio extends Component {
     }
 
     // ---- sample switching ----
+    // Cycle the active sample among the NON-pinned samples so a pinned sample is
+    // never also the active one (W4 invariant, D-F4).
     async cycleSample() {
-        if (this.state.samples.length < 2) return;
-        const idx = this.state.samples.findIndex(s => s.id === this.state.preview.sample_id);
-        const next = this.state.samples[(idx + 1) % this.state.samples.length];
+        const avail = this.state.samples.filter(s => !this.state.pinnedSamples.includes(s.id));
+        if (avail.length < 2) return;
+        const idx = avail.findIndex(s => s.id === this.state.preview.sample_id);
+        const next = avail[(idx + 1) % avail.length];   // idx === -1 → first available
         this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [this.state.config.id, next.id]);
     }
 
@@ -2965,6 +3045,7 @@ export class PbFormulaStudio extends Component {
             // restore itself is a new 'restore' version — history never rewrites)
             await this.load(this.state.config.id);
             this._applyTests(r.tests);
+            await this._refreshPinned(this.state.config.id);   // W4
             this.state.historyDiffSeq = null;
             this.state.historyDiffRuns = null;
             await this._loadHistory(ruleId);
