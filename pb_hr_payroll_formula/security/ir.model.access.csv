@@ -104,3 +104,5 @@ access_integration_onboarding_wizard_user,hr.integration.onboarding.wizard.user,
 access_integration_onboarding_wizard_manager,hr.integration.onboarding.wizard.manager,model_hr_integration_onboarding_wizard,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
 access_formula_config_template_user,hr.formula.config.template.user,model_hr_formula_config_template,pb_hr_payroll_formula.group_formula_user,1,0,0,0
 access_formula_config_template_manager,hr.formula.config.template.manager,model_hr_formula_config_template,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
+access_formula_snippet_user,hr.formula.snippet.user,model_hr_formula_snippet,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_formula_snippet_manager,hr.formula.snippet.manager,model_hr_formula_snippet,pb_hr_payroll_formula.group_formula_manager,1,1,1,1
