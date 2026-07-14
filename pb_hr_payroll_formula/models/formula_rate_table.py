@@ -31,6 +31,36 @@ def _num(x):
     return repr(round(x, 10))
 
 
+def compile_brackets_excel(brackets, value_expr):
+    """Pure form of :meth:`HrFormulaRateTable.compile_excel` — no ORM record
+    needed. ``brackets`` = ``[(lower, rate)]`` (any order) → the progressive
+    Excel string (``IF/MAX`` piecewise) that computes the marginal value for
+    ``value_expr``. Shared with W54's equivalence draft (WP-J) so the proof is
+    over the EXACT Excel the committed ``BRACKET(code, …)`` will expand to —
+    one compilation source, no drift (C12 spirit)."""
+    brs = sorted(brackets, key=lambda b: b[0])
+    if not brs:
+        return '0'
+    lowers = [b[0] for b in brs]
+    rates = [b[1] for b in brs]
+    n = len(brs)
+    base = [0.0] * n
+    for i in range(1, n):
+        base[i] = base[i - 1] + rates[i - 1] * (lowers[i] - lowers[i - 1])
+    v = '(' + (value_expr or '0').strip() + ')'
+
+    def band(i):
+        piece = '%s*(%s-%s)' % (_num(rates[i]), v, _num(lowers[i]))
+        if base[i]:
+            return '%s+%s' % (_num(base[i]), piece)
+        return piece
+
+    expr = band(0)
+    for i in range(1, n):
+        expr = 'IF(%s>=%s,%s,%s)' % (v, _num(lowers[i]), band(i), expr)
+    return 'MAX(0,%s)' % expr
+
+
 def _split_first_comma(s):
     """Split ``s`` at its first TOP-LEVEL comma → (before, after). Respects
     nested parentheses so BRACKET(PIT, MIN(A,B)) keeps MIN(A,B) intact."""
@@ -87,30 +117,9 @@ class HrFormulaRateTable(models.Model):
         ``value_expr``. The result is plain Excel (IF/MAX/arithmetic) so the
         normal converter turns it into Python. Empty table → ``0``."""
         self.ensure_one()
-        brackets = self.line_ids.sorted(key=lambda b: b.lower)
-        if not brackets:
-            return '0'
-        lowers = [b.lower for b in brackets]
-        rates = [b.rate for b in brackets]
-        n = len(brackets)
-        # cumulative base filling every lower band
-        base = [0.0] * n
-        for i in range(1, n):
-            base[i] = base[i - 1] + rates[i - 1] * (lowers[i] - lowers[i - 1])
-        v = '(' + (value_expr or '0').strip() + ')'
-
-        def band(i):
-            # base_i + rate_i * (v - lower_i)
-            piece = '%s*(%s-%s)' % (_num(rates[i]), v, _num(lowers[i]))
-            if base[i]:
-                return '%s+%s' % (_num(base[i]), piece)
-            return piece
-
-        expr = band(0)
-        for i in range(1, n):
-            expr = 'IF(%s>=%s,%s,%s)' % (v, _num(lowers[i]), band(i), expr)
-        # tax is never negative (guards value_expr < first lower bound)
-        return 'MAX(0,%s)' % expr
+        brackets = [(b.lower, b.rate)
+                    for b in self.line_ids.sorted(key=lambda b: b.lower)]
+        return compile_brackets_excel(brackets, value_expr)
 
     # ------------------------------------------------------------------
     # BRACKET(...) expansion — shared by the converter and the validator

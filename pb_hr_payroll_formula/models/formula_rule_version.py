@@ -53,6 +53,7 @@ class HrFormulaRuleVersion(models.Model):
         ('legislation', 'Legislation pack'),
         ('merge', 'Branch merge'),
         ('sync', 'Master sync'),
+        ('refactor', 'Refactor'),
     ], string='Reason', default='edit', required=True, index=True)
     note = fields.Char(string='Note')
 

@@ -1581,6 +1581,51 @@
                   </div>
                 </t>
               </t>
+
+              <!-- W54 — simplification suggestions (rate-table rewrites) -->
+              <t t-if="simplifySuggestions.length">
+                <div class="pp-simp-head">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 9-9"/><path d="M14.5 2.5 12 5l3.5 3.5L18 6a2.12 2.12 0 0 0-3.5-3.5z"/><path d="M9 6 6 9"/></svg>
+                  Simplify — rate tables
+                </div>
+                <div t-foreach="simplifySuggestions" t-as="s" t-key="s.rule_id" t-attf-class="pp-simp {{ s.can_apply ? 'ok' : 'warn' }}">
+                  <div class="pp-simp-t">
+                    <span class="pp-simp-col"><t t-esc="s.col"/></span>
+                    <b><t t-esc="s.name"/></b>
+                    <span t-if="s.can_apply" class="pp-simp-badge"><t t-esc="s.brackets.length"/>-band progressive chain</span>
+                    <span t-elif="!s.consistent" class="pp-simp-badge irr">irregular chain</span>
+                    <span t-else="" class="pp-simp-badge irr">unverified</span>
+                  </div>
+
+                  <t t-if="s.can_apply">
+                    <t t-set="db" t-value="simplifyDiff(s, 'before')"/>
+                    <t t-set="da" t-value="simplifyDiff(s, 'after')"/>
+                    <div class="pp-diff">
+                      <div class="pp-diff-row"><span class="pp-diff-tag del">before</span><code><t t-esc="db[0]"/><mark class="del"><t t-esc="db[1]"/></mark><t t-esc="db[2]"/></code></div>
+                      <div class="pp-diff-row"><span class="pp-diff-tag add">after</span><code><t t-esc="da[0]"/><mark class="add"><t t-esc="da[1]"/></mark><t t-esc="da[2]"/></code></div>
+                    </div>
+                    <div class="pp-simp-eq">
+                      <b><t t-esc="s.table.code"/></b>
+                      <t t-if="s.table.reuse"> · reuse existing table</t>
+                      <t t-else=""> · new <t t-esc="s.brackets.length"/>-bracket table</t>
+                      · equivalent on <t t-esc="s.equivalence.samples_matched"/>/<t t-esc="s.equivalence.samples_total"/> samples<t t-if="s.equivalence.probes_total"> + <t t-esc="s.equivalence.probes_matched"/>/<t t-esc="s.equivalence.probes_total"/> edge probes</t>
+                      <t t-if="s.driver_kind === 'computed'"> (driver is computed — probes are synthetic)</t>
+                    </div>
+                    <div class="pp-simp-act">
+                      <button class="pbfs-btn soft sm" t-on-click="() => this.gotoProblem({rule_id: s.rule_id, col: s.col})">View</button>
+                      <button class="pbfs-btn primary sm" t-att-disabled="state.simplifyBusy === s.rule_id" t-on-click="() => this.applySimplify(s)">
+                        <t t-esc="state.simplifyBusy === s.rule_id ? 'Applying…' : (s.table.reuse ? 'Use ' + s.table.code : 'Create table &amp; simplify')"/>
+                      </button>
+                    </div>
+                  </t>
+                  <t t-else="">
+                    <div class="pp-simp-eq irr"><t t-esc="s.reason"/></div>
+                    <div class="pp-simp-act">
+                      <button class="pbfs-btn soft sm" t-on-click="() => this.gotoProblem({rule_id: s.rule_id, col: s.col})">View</button>
+                    </div>
+                  </t>
+                </div>
+              </t>
             </t>
           </div>
         </div>

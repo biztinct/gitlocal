@@ -156,6 +156,8 @@ export class PbFormulaStudio extends Component {
             probOpen: false,
             probData: null,          // {ok, count, counts, problems:[]}
             probBusy: false,
+            simplifyData: null,      // W54 — {ok, suggestions:[]}
+            simplifyBusy: null,      // rule_id currently applying
             renameId: null,          // rule being renamed inline on the card
             renameVal: "",
             renameBusy: false,
@@ -3680,6 +3682,52 @@ export class PbFormulaStudio extends Component {
             this.state.probData = await this.orm.call("pb.formula.studio", "get_problems", [this.state.config.id]);
         } catch (e) { /* keep last */ }
         finally { this.state.probBusy = false; }
+        // W54 — simplification suggestions load in a second call (this one
+        // evaluates, so it is deliberately off the eval-free get_problems path).
+        try {
+            this.state.simplifyData = await this.orm.call(
+                "pb.formula.studio", "get_simplify_suggestions", [this.state.config.id]);
+        } catch (e) { this.state.simplifyData = null; }
+    }
+    get simplifySuggestions() {
+        return (this.state.simplifyData && this.state.simplifyData.suggestions) || [];
+    }
+    // split the changed span of a formula around a suggestion for a before/after
+    // diff: [head, changed, tail]. `after` has no span, so highlight the BRACKET(...)
+    // call by matching the head/tail against the before text.
+    simplifyDiff(s, which) {
+        const text = which === "after" ? (s.after || "") : (s.before || "");
+        if (which === "before" && s.span) {
+            return [text.slice(0, s.span[0]), text.slice(s.span[0], s.span[1]), text.slice(s.span[1])];
+        }
+        if (which === "after" && s.span) {
+            const head = (s.before || "").slice(0, s.span[0]);
+            const tail = (s.before || "").slice(s.span[1]);
+            const changed = text.slice(head.length, text.length - tail.length);
+            return [head, changed, tail];
+        }
+        return [text, "", ""];
+    }
+    async applySimplify(s) {
+        if (!s || !s.can_apply || this.state.simplifyBusy) return;
+        if (this._lockedNotice && this._lockedNotice()) return;
+        this.state.simplifyBusy = s.rule_id;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "simplify_apply", [s.rule_id]);
+            if (!r || !r.ok) {
+                this.notif.add((r && r.msg) || "Could not apply the rewrite", { type: "danger" });
+                return;
+            }
+            const t = r.tests || {};
+            const chip = t.has_tests ? ` · tests ${t.passed}/${t.total}` : "";
+            this.notif.add(r.msg + chip, { type: "success" });
+            await this.load(this.state.config.id);   // fresh formula + tables + problems
+            await this._loadProblems();
+        } catch (e) {
+            this.notif.add("Could not apply the rewrite", { type: "danger" });
+        } finally {
+            this.state.simplifyBusy = null;
+        }
     }
     // jump to the component a problem points at (switch to Cards, select, scroll)
     gotoProblem(p) {
@@ -3692,7 +3740,7 @@ export class PbFormulaStudio extends Component {
     probIcon(kind) {
         return {
             invalid: "alert", empty: "alert", cycle: "cycle", unused: "unplug",
-            magic: "hash", offpayslip: "eye",
+            magic: "hash", offpayslip: "eye", dupe: "copy", simplify: "wand",
         }[kind] || "dot";
     }
 

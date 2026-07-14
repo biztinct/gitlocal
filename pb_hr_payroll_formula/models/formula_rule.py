@@ -20,7 +20,7 @@ VERSIONED_FIELDS = {
     # legislation pack (or any rate/cap edit) leaves an F7 audit trail.
     'constant_value',
 }
-_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle', 'rename', 'legislation', 'merge', 'sync'}
+_VALID_VERSION_REASONS = {'edit', 'bulk', 'import', 'fill', 'restore', 'lifecycle', 'rename', 'legislation', 'merge', 'sync', 'refactor'}
 
 
 class HrFormulaRule(models.Model):
