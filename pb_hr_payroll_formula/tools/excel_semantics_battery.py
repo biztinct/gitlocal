@@ -70,6 +70,9 @@ def install_odoo_shim():
     models.Model = type('Model', (), {})
     models.TransientModel = type('TransientModel', (), {})
     models.AbstractModel = type('AbstractModel', (), {})
+    # Odoo 19 constraints are class attributes (`models.Constraint(...)`, C9);
+    # formula_rule.py carries several — the shim must accept them as no-ops.
+    models.Constraint = lambda *a, **k: None
 
     exceptions = types.ModuleType('odoo.exceptions')
     exceptions.UserError = type('UserError', (Exception,), {})
