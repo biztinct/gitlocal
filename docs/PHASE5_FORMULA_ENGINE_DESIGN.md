@@ -560,6 +560,8 @@ Ordered by affinity to the WP surfaces they extend.
 > **2026-07-14:** the first Medium batch — **W18, W4, W8, W104** — is promoted to a full Opus-ready
 > package: see **WP-F** at the end of this doc. The four briefs below are kept for history; WP-F
 > supersedes them where they differ (it was re-verified against the post-WP-A..E code).
+> **2026-07-14 (later):** the second batch — **W83, W84, W49** — is promoted likewise: see **WP-G**
+> (re-verified against the post-WP-F code, including the W82 hook it gates).
 
 **W18 Shortcuts overlay** *(Grid/UX, 1–2 d)* — `?` (and palette entry) opens a static overlay listing every
 studio hotkey. Seam: hotkey handlers in `grid_studio.js:298-335` + `formula_studio.js:300`; render from the
@@ -706,6 +708,9 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 **WP-F:**
 > Implement WP-F (Grid & Command Polish: W18 shortcuts overlay, W4 pinned sample rows, W8 collapse by category, W104 snippet library) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-F, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C3, C5, C7, C8, C10, C11 are load-bearing here). Build TF.1→TF.6 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world (throwaway-clone pattern for the perf/fold checks, delete the clone afterwards), and report back per the Report-back items section. Do not touch docs/FORMULA_ENGINE_TOUR.html.
 
+**WP-G:**
+> Implement WP-G (Test Intelligence: W83 test coverage view, W84 boundary-value test generation, W49 AI test generation) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-G, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C5, C7, C8, C9, C10 are load-bearing here — note the selection_add/ondelete rule in C9). Build TG.1→TG.6 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world, and report back per the Report-back items section. The non-negotiable invariant: a generated sample with an unconfirmed baseline counts as PENDING in run_sample_tests — it must never move the W82 chip's passed/failed counts. Do not touch docs/FORMULA_ENGINE_TOUR.html.
+
 ---
 
 # WP-E — Import Resolution Integrity (`pb_hr_payroll_formula` wizard) — converter-audit follow-up
@@ -849,6 +854,27 @@ that workbook through the preview to confirm confidence and red/warning lines be
 >   demo slips recompute to their stored values (max 0.5 VND on one PIT = raw-vs-rounded-line, C15, not
 >   drift). Console clean across the whole sweep. Throwaway clone (85-col) created→driven→deleted
 >   (cascade-clean); the real demo config is byte-unchanged.
+
+> **✅ REVIEWED 2026-07-14** (Fable auto-review: one bulk subagent — whole-diff read vs spec + independent
+> ssh/psql/live-Chrome verification — plus personal reads of the flagged files). Verdict was fix-first
+> with 1 Major + 8 Minor; deployment, seeds, ACLs, D-F3..D-F8 core mechanics all verified faithful.
+> **Fixed by Fable (same day, deployed as studio 19.0.1.54.0):**
+> - *Major:* Esc did not close the shortcuts overlay while the grid scroller had focus — the grid
+>   navigator consumes Escape (clear-selection + stopPropagation), so the bubble-phase `useHotkey`
+>   ladder never fired on exactly the natural `?`-from-grid path. Fixed with a capture-phase window
+>   listener that closes the overlay before the grid can eat the event (ledger C3 note). The
+>   implementer's "Esc closes first" live claim was false for this path — reviewer caught it live.
+> - *Minors:* `?` guard now also checks `snipManageOpen`; read-only palette snippet insert shows the
+>   locked notice instead of a silent no-op (C7); folding a category now purges hidden columns from
+>   `ui.selection`/`anchorId` (bulk bar can't act on invisible columns); `openInFormulaView` unpins a
+>   sample it makes active (W4 invariant); `save_snippet` rejects a non-numeric sequence loudly
+>   instead of `except: pass`; unused `_` import dropped from `formula_snippet.py`; the missed C2
+>   bump from `06ff8748` is absorbed by this fix's bump.
+> **Deferred (recorded, not fixed):** snippet RPCs have no multi-company scoping — `list_snippets`
+> filters shared+own-company but `save_snippet`/`delete_snippet` accept any id and nothing ever sets
+> `company_id` (field is dead in v1). Acceptable single-company; revisit before any multi-company
+> deployment. Also noted: `_scrollFocusIntoView` runs on every patch (pre-existing W109 trait, not a
+> WP-F regression) — programmatic scrolling snaps back to the focused cell on virtualized configs.
 
 **Designed 2026-07-14 (Fable), after WP-A..E shipped.** First Medium batch, promoted from the Part-II
 briefs and re-verified against the live code. Modules: `pb_formula_studio` for all four features;
@@ -1071,3 +1097,211 @@ get viewOrdered() {
 7. Console clean across the whole drive; clone deleted afterwards.
 
 Report back per the **Report-back items** section (deviations from D-F1..D-F9 must be flagged).
+
+---
+
+# WP-G — Test Intelligence — W83 → W84 → W49
+
+**Designed 2026-07-14 (Fable), after WP-F shipped.** Second Medium batch: make the W82 test chip
+*trustworthy at scale* — show what the samples DON'T cover (W83), then manufacture the missing
+boundary tests deterministically (W84), then let the LLM propose realistic profiles on top (W49).
+Modules: engine (`pb_hr_payroll_formula`) for coverage math, boundary extraction/generation and one
+small schema change; studio (`pb_formula_studio`) for RPC wrappers + Tests-view UI + problems-rail
+lens. Effort ≈ 7–9 d. Build order is a strict ladder: W84 depends on W83's coverage definitions in
+the UI; W49 depends on W84's confirm flow.
+
+## Verified plumbing facts (do not re-derive)
+
+*Sample model (`pb_hr_payroll_formula/models/formula_sample_data.py`):*
+- `hr.formula.sample.data`: `source_type` Selection `manual/employee/payslip/import` (`:57-62`,
+  default `manual`); `input_values_json` / `expected_values_json` / stored-computed
+  `computed_values_json` (`:91-118`); `_compute_results` depends ONLY on
+  `input_values_json, config_id.rule_ids` (`:164` — membership, not formula text; that is WHY W82
+  is an explicit hook); `_compute_validation` (`:183-242`): tolerance 0.01 %, `warning` ≤1 %,
+  `failed` >1 %, `pending` when either JSON is empty. Evaluation path
+  `_evaluate_rules_with_dependencies` (`:569-629`) — the C5-sanctioned path.
+- `hr.formula.sample.input.line` and `hr.formula.test.result` also live in this file.
+
+*W82 hook (`pb_hr_payroll_formula/models/formula_config_tests.py`):*
+- `run_sample_tests(changed_codes)` `:43-115`; a sample is *testable* iff any expected value is
+  non-null (`:95`); non-testable/skipped → `pending`; `_LARGE_SAMPLE_SET = 20`,
+  `_MAX_FAILURES = 20`, `_DISC_PCT = 0.01`; failures collected by `_collect_sample_failures`
+  `:117-146`. **W84 must gate here** (see D-G3).
+
+*Rate tables (`pb_hr_payroll_formula/models/formula_rate_table.py`):*
+- `hr.formula.rate.table` (+ `hr.formula.rate.bracket` lines with `lower` + `rate`);
+  `compile_excel` `:83-111` (progressive bands, `IF(v>=lower_i, …)`); `expand_brackets` `:116+`
+  (balanced-paren aware, `BRACKET(code, value_expr)`); config field `rate_table_ids`.
+
+*Studio Tests view:*
+- Server payload: `get_test_data` `pb_formula_studio.py:4240-4253` →
+  `{samples:[_sample_row], input_components, currency}`; `_sample_row` `:4229-4237` already ships
+  `source_type`; detail `get_sample_detail` `:4256-4267` (rows from `get_comparison_data`).
+  Sample CRUD RPCs `:4269+`: `save_sample_inputs`, `add_manual_sample`, `generate_random_samples`
+  (delegates to `hr.formula.sample.data.wizard._generate_random`), `snapshot_expected`,
+  `clear_expected`, `delete_sample`, `rename_sample`, import/export.
+- Client: `openTest/loadTestData/selectSample/...` `formula_studio.js:2833-2960`; the **Generate
+  dropdown already exists** (`state.testGenOpen`, `toggleTestGen`, entries `addManualSample` /
+  `generateRandom` / `generateFromWizard`) — W84/W49 entries slot in there, no new toolbar real
+  estate.
+
+*Coverage inputs:*
+- Dependency graph: `get_intelligence` `pb_formula_studio.py:352` /
+  `_normalized_dep_cols` `:320-349` (edges resolved letter-first-then-code, config-scoped).
+- Problems rail: `get_problems` `:2768+`, shape
+  `{key, kind, severity, title, detail, rule_id, col, code, note_id}` via the `_add` helper —
+  a new lens = a new `kind` emitted there; the rail renderer is generic.
+- W82 chip client state: `_applyTests` / `state.tests` in `formula_studio.js` (WP-C).
+
+## Locked decisions
+
+- **D-G1 (coverage is deterministic and three-valued)** — per formula-type component:
+  **asserted** = ≥1 active sample has a non-null expected value for its code (the SAME testable
+  rule as W82, `formula_config_tests.py:95` — one definition, never two); **exercised** = not
+  asserted, but on the upstream dependency closure of an asserted component (its value feeds an
+  assertion — computed via the `get_intelligence` edges); **untested** = neither. Coverage % shown
+  = asserted / formula-components. Inputs/constants are excluded from the % but listed as
+  "never referenced by any asserted formula" when applicable. Pure metadata — computing coverage
+  NEVER evaluates a formula.
+- **D-G2 (W83 surfaces)** — one new engine-free studio RPC `get_test_coverage(config_id)` returning
+  `{pct, asserted:[...], exercised:[...], untested:[{rule_id, col, code, name}], orphan_inputs}`.
+  Two renderings: (a) a coverage strip at the top of the Tests view (pct + count chips + expandable
+  untested list; clicking a row jumps to the component in the grid — reuse `findJump`); (b) a
+  problems-rail lens: `kind='untested'`, `severity='hint'`, one row per untested formula component
+  (hint tier — absence of a test is a smell, not an error).
+- **D-G3 (generated samples cannot inflate the chip)** — schema: `source_type` gains
+  `('generated', 'Generated')` via `selection_add` **with `ondelete='set default'`** (safe here:
+  the base field defines `default='manual'` — C9), plus new Boolean `expected_confirmed`
+  (default **True** so every existing sample keeps its current standing; generated rows are created
+  with **False**). `run_sample_tests` gains ONE rule: a testable sample with
+  `expected_confirmed=False` counts as `pending`, never `passed`/`failed` — characterization
+  expectations are hypotheses until a human confirms them. `_sample_row` / `get_sample_detail`
+  expose `expected_confirmed`; the Tests view shows a "needs confirmation" pill, a per-sample
+  **Confirm baseline** button and a confirm-all; confirm RPC `confirm_sample_expected(sample_id)`
+  (manager-gated like other studio writes) flips the flag and re-runs the chip.
+- **D-G4 (W84 extraction is deterministic, honest about reach)** — boundary candidates come from
+  two sources, both engine-side (`models/formula_boundary.py`, new file, methods on
+  `hr.formula.config`):
+  1. **Rate tables**: every bracket `lower` of every `rate_table_ids` table. The generation
+     dimension is the `BRACKET(code, expr)` call's `expr` ONLY when it resolves to a single
+     input-type component ref/code; otherwise the candidate is still LISTED but marked
+     `reachable=False` ("operand is computed — set inputs to hit this edge manually"). C7: shown,
+     never silently dropped.
+  2. **Comparison thresholds**: regex over each formula's `excel_formula` for
+     `<ref> op <number>` / `<number> op <ref>` (op ∈ `> >= < <= =`), where `<ref>` resolves
+     (letter-first-then-code, same as `_normalized_dep_cols`) to an **input** component →
+     candidate `(input_code, threshold)`; refs resolving to formula/constant components →
+     `reachable=False` listing.
+  For each reachable pick, generate up to 3 samples at edge−1 / edge / edge+1 (deduped against
+  existing ACTIVE generated samples via a `boundary_key` Char stamped `CODE=VALUE`; skip existing,
+  report skips). Base inputs are cloned from a picker-chosen existing sample (default: first),
+  overriding only the boundary dimension. Expected values are seeded from current engine output
+  through `_evaluate_rules_with_dependencies` (characterization; C5 path) and the sample is created
+  `source_type='generated'`, `expected_confirmed=False`, name `Edge CODE=VALUE (−1|0|+1)`,
+  description recording the source (table/bracket or formula/threshold). Cap one generation run at
+  60 created samples with a loud "N candidates not generated" remainder (C7/C8).
+- **D-G5 (W49 = LLM proposes inputs, engine computes truth)** — studio RPC
+  `ai_propose_samples(config_id)` calls `_llm_chat(json_mode=True)` with the input schema
+  (codes, names, defaults, min/max observed across existing samples) asking for ≤8 realistic
+  profiles `{name, inputs, rationale}`. Hard validation before ANY create: unknown input codes →
+  row rejected; non-numeric → rejected; |value| > 1e12 → rejected; rejects reported in the
+  response. Accepted rows become samples exactly like W84's (generated + unconfirmed + engine-
+  computed expected; rationale → `description`). The LLM NEVER supplies an expected value — the
+  number-invention class of bug is excluded by construction, no output guard needed. No API key /
+  LLM error → `{ok: False, reason}` and the UI shows it plainly next to the still-working W84
+  entry (C1 fallback).
+- **D-G6 (schema/deploy)** — the only schema change is D-G3's field + selection_add ⇒ ONE engine
+  `-u pb_hr_payroll_formula`; both manifests bump (C2).
+- **D-G7** — `docs/FORMULA_ENGINE_TOUR.html` stays untouched.
+
+## Tasks
+
+**TG.1 — W83 coverage engine + RPC** *(~1 d)*
+`get_test_coverage` in the studio facade (graph from `get_intelligence`, asserted set from sample
+JSONs — reuse `_load`-style tolerant parsing) + the `untested` problems-rail lens in
+`get_problems`.
+AC: on a demo config, hand-verify 2 components in each bucket; coverage never evaluates formulas
+(no `_compute_results` calls in the path); rail shows hint rows with working jump; empty-sample
+config → pct 0, no crash.
+
+**TG.2 — W83 Tests-view strip** *(~1 d)*
+Coverage strip + expandable untested list + grid jump; loads with `loadTestData` (one extra RPC,
+not per-sample).
+AC: strip matches TG.1 numbers; jump lands + flashes the column (existing `findJump` behaviour);
+zero console errors.
+
+**TG.3 — W84 engine** *(~2 d)*
+Schema (D-G3) + `boundary_candidates()` + `generate_boundary_samples(picks, base_sample_id)`
+(D-G4) + the `run_sample_tests` unconfirmed→pending rule + `confirm_sample_expected` +
+`_sample_row`/detail exposure.
+AC: on the demo config with the PIT BRACKET table, candidates include every bracket lower with
+correct reachable flags; generating one trio creates 3 `generated` samples whose expected==computed
+(all-pass once confirmed); W82 chip counts UNCHANGED before confirmation, move after; re-running
+generation dedupes (0 new, N skipped reported); C10 anchor zero-drift.
+
+**TG.4 — W84 Tests-view UI** *(~1.5 d)*
+"Boundary tests…" panel in the existing Generate dropdown: candidate list (reachable pick-boxes,
+unreachable greyed with the reason), base-sample picker, generate button with created/skipped/
+capped summary; "needs confirmation" pill + Confirm/Confirm-all wired.
+AC: full flow drivable in the browser; unreachable candidates visibly listed; confirm-all flips
+the chip in one round-trip.
+
+**TG.5 — W49 AI proposals** *(~1.5 d)*
+`ai_propose_samples` + validation + "AI suggest profiles…" entry in the same dropdown (proposal
+list with rationale, accept-selected).
+AC: with no API key the entry reports unavailability cleanly and W84 still works; with a key,
+proposals with an unknown code or absurd magnitude are rejected and REPORTED; accepted rows arrive
+unconfirmed and chip-neutral.
+
+**TG.6 — package validation sweep** *(~1 d)*
+Chrome-MCP drive of W83 strip → W84 generate/confirm → W49 propose on the pb_demo VN world
+(throwaway clone for anything that mutates formulas; generated samples on the REAL demo config are
+fine — they're the feature — but delete the ones created purely for drive-testing); C10 anchor;
+zero console errors.
+
+### Skeleton S-G1 — threshold extraction (the risky spot: resolve like the engine, stay honest)
+
+```python
+# formula_boundary.py — comparison-threshold candidates (D-G4.2)
+_CMP_RE = re.compile(
+    r'(?<![\w.])([A-Za-z][A-Za-z0-9]*)\s*(>=|<=|<>|>|<|=)\s*(-?\d+(?:\.\d+)?)'
+    r'|(-?\d+(?:\.\d+)?)\s*(>=|<=|<>|>|<|=)\s*([A-Za-z][A-Za-z0-9]*)(?![\w.])')
+
+def _threshold_candidates(self, rules):
+    by_col = {r.column_letter: r for r in rules if r.column_letter}
+    by_code = {r.code: r for r in rules if r.code}
+    out = []
+    for r in rules.filtered(lambda x: x.column_type == 'formula'):
+        # IMPORTANT: scan the ORIGINAL excel_formula, not python_formula, and
+        # strip cell-row digits first (A2 -> A) so 'A2>26' resolves ref=A, not A2.
+        f = re.sub(r'(?<![\w])([A-Za-z]{1,3})\d+(?![\w])', r'\1', r.excel_formula or '')
+        for m in _CMP_RE.finditer(f):
+            ref, num = (m.group(1), m.group(3)) if m.group(1) else (m.group(6), m.group(4))
+            dep = by_col.get(ref) or by_code.get(ref)      # letter first, then code —
+            if not dep:                                    # same order as _normalized_dep_cols
+                continue
+            out.append({
+                'source': 'threshold', 'rule_id': r.id, 'formula_code': r.code,
+                'input_code': dep.code, 'edge': float(num),
+                'reachable': dep.column_type == 'input',   # computed operand -> listed, not generated
+            })
+    return out
+# GOTCHA: BRACKET(...) calls are still literal in excel_formula (expansion happens at
+#   conversion) — handle them in the rate-table source, and SKIP thresholds found inside
+#   a BRACKET call's argument span to avoid double-counting the same edges.
+# GOTCHA: the cell-row strip regex must not eat function names (SUM2 is not a thing, but
+#   guard with the 1-3 letter cap anyway); run candidates against the demo config and
+#   eyeball before wiring generation.
+```
+
+## WP-G verification (Chrome MCP on pb_demo VN world)
+
+1. W83: strip pct + buckets hand-checked (2 components per bucket); rail hints jump correctly.
+2. W84: PIT bracket lowers all listed; reachable/unreachable split correct; edge trio generates,
+   dedupes on re-run, expected==computed; chip pending-gating before confirm, counts move after.
+3. W49: no-key fallback clean; with key — rejected rows reported, accepted rows chip-neutral.
+4. `run_sample_tests` regression: existing (confirmed) samples' pass/fail counts identical to
+   pre-WP-G on the demo configs.
+5. C10 batch-recompute anchor: zero drift. 6. Console clean; drive-test artifacts deleted.
+
+Report back per the **Report-back items** section (deviations from D-G1..D-G7 must be flagged).
