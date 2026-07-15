@@ -79,6 +79,25 @@ def post_init_demo(env):
     _logger.info('pb_demo: demo sidebar wired — %s shown, %s locked.', shown, locked)
     _ensure_analytics_menu(env)
     _hide_salary_structures(env)
+    _feature_demo_config(env)
+
+
+# The division config the studio / tutorial should land on by default — a real,
+# richly-named config (named components, full VN gross→net story) rather than the
+# 250-column scale-test. _pick_config orders by sequence, so a low one wins.
+_FEATURED_CONFIG_CODE = 'DEMO_RETAIL_END'
+
+
+def _feature_demo_config(env):
+    """Give the featured demo config the lowest sequence so it is the default
+    landing config. Runs on install AND on every upgrade (via the <function> in
+    data/pb_demo_sidebar_access.xml), so it takes effect on `-u pb_demo` without a
+    full regen. Idempotent."""
+    Config = env['hr.formula.config'].sudo().with_context(active_test=False)
+    cfg = Config.search([('code', '=', _FEATURED_CONFIG_CODE)], limit=1)
+    if cfg and cfg.sequence != 1:
+        cfg.sequence = 1
+        _logger.info('pb_demo: featured %s as the default studio config.', cfg.code)
 
 
 def _hide_salary_structures(env):
