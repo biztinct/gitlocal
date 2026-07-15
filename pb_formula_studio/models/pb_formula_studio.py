@@ -102,12 +102,17 @@ class PbFormulaStudio(models.AbstractModel):
             c = Config.browse(int(config_id))
             if c.exists():
                 return c
-        # prefer an active config with rules, else newest with rules, else newest
-        c = Config.search([('state', '=', 'active'), ('rule_ids', '!=', False)], order='id desc', limit=1)
+        # prefer an active config with rules, else newest with rules, else newest.
+        # Order by sequence FIRST so a "featured" config (low sequence — e.g. the
+        # demo's Retail division) lands by default instead of whatever has the
+        # highest id (a 250-column scale-test would otherwise win). Ties fall back
+        # to newest id — bit-identical to the old behaviour when no sequence is set.
+        c = Config.search([('state', '=', 'active'), ('rule_ids', '!=', False)],
+                          order='sequence, id desc', limit=1)
         if c:
             return c
-        c = Config.search([('rule_ids', '!=', False)], order='id desc', limit=1)
-        return c or Config.search([], order='id desc', limit=1)
+        c = Config.search([('rule_ids', '!=', False)], order='sequence, id desc', limit=1)
+        return c or Config.search([], order='sequence, id desc', limit=1)
 
     # ------------------------------------------------------------------
     # formula tokenizing (for the friendly chip view + plain-language)

@@ -244,7 +244,12 @@ class PbDemoGenerator(models.TransientModel):
             cvals = {'name': name_en, 'code': code, 'country_code': cat.COUNTRY_CODE,
                      'cycle_type': 'end_cycle' if cycle == 'end' else 'mid_cycle',
                      'company_id': company.id, 'state': 'active', 'structure_id': False,
-                     'is_demo': True, 'pb_division': division}
+                     'is_demo': True, 'pb_division': division,
+                     # Feature the Retail End config (low sequence) so the studio /
+                     # tutorial lands on a real, richly-named division config by
+                     # default rather than the highest-id scale-test (_pick_config
+                     # orders by sequence first). Mirrored in hooks._feature_demo_config.
+                     'sequence': 1 if code == 'DEMO_RETAIL_END' else 10}
             if cfg:
                 cfg.rule_ids.unlink()
                 cfg.write(cvals)
