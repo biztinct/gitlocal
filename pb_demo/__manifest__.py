@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Demo Environment',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'summary': 'World-class, regenerable demo world: multilingual component library, '
                'division schemes, thousands of realistic employees and months of payroll history.',
@@ -39,6 +39,9 @@ can be extended without changing payroll logic.
         'security/ir.model.access.csv',
         'data/pb_demo_data.xml',
         'views/pb_demo_views.xml',
+        # Loaded last: re-applies the Demo User sidebar/access wiring on every
+        # upgrade (post_init hook is install-only; a cascade resets it).
+        'data/pb_demo_sidebar_access.xml',
     ],
     'assets': {
         'web.assets_backend': [
