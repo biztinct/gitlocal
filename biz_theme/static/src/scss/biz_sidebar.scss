@@ -12,9 +12,13 @@
 //   .biz-sidebar-toggle   — pin/collapse button (styled by the owner module)
 //
 // State machine (body classes, set via @biz_theme/js/biz_sidebar_state):
-//   (no mode class)                         — AUTO: expanded ≥ md, rail < md
+//   (no mode class)                         — AUTO: expanded ≥ xl, rail < xl
 //   body.biz-sb-collapsed                   — rail at every width (user pinned)
 //   body.biz-sb-expanded                    — expanded at every width
+//
+// AUTO rails below xl (1440px) so laptops / medium screens reclaim the space by
+// default; only wide desktops keep the sidebar expanded. A user can still pin it
+// expanded at any width (biz-sb-expanded).
 //
 // Rail mode = absolute overlay that hover-expands OVER content (no reflow).
 // ============================================================================
@@ -35,8 +39,9 @@ body.biz-sb-collapsed .biz-layout-wrapper:has(> .biz-sidebar) {
     @include biz-rail-mode;
 }
 
-// Auto rail below md unless the user explicitly pinned expanded
-@include biz-down($biz-bp-md) {
+// Auto rail below xl (large/wide desktop) unless the user explicitly pinned
+// expanded — laptops and medium screens collapse to the icon rail by default.
+@include biz-down($biz-bp-xl) {
     body:not(.biz-sb-expanded):not(.biz-sb-collapsed) .biz-layout-wrapper:has(> .biz-sidebar) {
         @include biz-rail-mode;
     }
