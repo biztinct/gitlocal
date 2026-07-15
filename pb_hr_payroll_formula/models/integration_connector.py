@@ -545,6 +545,10 @@ class HrIntegrationConnector(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('API Data Store — %s') % self.name,
             'res_model': 'hr.api.data.store',
+            # Odoo 19's web client reads action.views.map(...) in _preprocessAction,
+            # so a bare view_mode (no views) crashes with "action.views is undefined".
+            # Provide the views pairs explicitly (view_mode kept for completeness).
+            'views': [(False, 'list'), (False, 'form')],
             'view_mode': 'list,form',
             'domain': [('connector_id', '=', self.id)],
             'context': {
