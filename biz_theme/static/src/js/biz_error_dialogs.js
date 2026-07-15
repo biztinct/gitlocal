@@ -20,8 +20,15 @@
 import { browser } from "@web/core/browser/browser";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
+import { patch } from "@web/core/utils/patch";
 import { registry } from "@web/core/registry";
-import { standardErrorDialogProps } from "@web/core/errors/error_dialogs";
+import {
+    standardErrorDialogProps,
+    ErrorDialog as CoreErrorDialog,
+    RPCErrorDialog,
+    ClientErrorDialog,
+    NetworkErrorDialog,
+} from "@web/core/errors/error_dialogs";
 import { Component, useState } from "@odoo/owl";
 
 const VARIANTS = {
@@ -189,3 +196,35 @@ for (const exceptionName of Object.keys(EXCEPTION_VARIANT)) {
     errorDialogRegistry.add(exceptionName, BizErrorDialog, { force: true });
 }
 errorDialogRegistry.add("504", BizErrorDialog, { force: true });
+
+// ---------------------------------------------------------------------------
+// Generic (unnamed) error dialogs. An uncaught server/client/network traceback
+// that matches no named exception above falls through to Odoo's core
+// ErrorDialog family, whose titles are the literal English SOURCE strings
+// "Odoo Error / Odoo Server Error / Odoo Client Error / Odoo Network Error".
+// web_debranding cannot reach these — source-language terms aren't in the
+// translation catalog, so `_t()` returns them verbatim. Strip the "Odoo" brand
+// at the component level here (language-independent), consistent with the calm
+// titles above. Brand-neutral by design so the reusable base stays portable.
+// ---------------------------------------------------------------------------
+const stripOdoo = (s) => (typeof s === "string" ? s.replace(/\bOdoo\s+/g, "").trim() : s);
+
+// The template renders the INSTANCE `this.title` (the static class titles are
+// getters we can't reassign). Normalize it in setup — covers the static
+// fallback (ErrorDialog "Odoo Error", Client/Network) for typeless errors...
+patch(CoreErrorDialog.prototype, {
+    setup() {
+        super.setup(...arguments);
+        this.title = stripOdoo(this.title ?? this.constructor.title);
+    },
+});
+
+// ...and RPCErrorDialog.inferTitle() sets a DYNAMIC title from the error type
+// (_t("Odoo Server Error") for a 500, "Odoo Client Error" for a script error,
+// etc.) AFTER super.setup() — so strip it right after it runs too.
+patch(RPCErrorDialog.prototype, {
+    inferTitle() {
+        super.inferTitle(...arguments);
+        this.title = stripOdoo(this.title);
+    },
+});
