@@ -5,7 +5,7 @@
  * Persists a per-user preference in localStorage and mirrors it as body
  * classes consumed by biz_sidebar.scss:
  *
- *   mode "auto"      → (no class)          expanded ≥ md, icon rail < md
+ *   mode "auto"      → (no class)          expanded ≥ xl, icon rail < xl
  *   mode "collapsed" → body.biz-sb-collapsed   rail at every width
  *   mode "expanded"  → body.biz-sb-expanded    expanded at every width
  *
@@ -45,7 +45,8 @@ export function clearSidebarMode() {
  * if it renders as a rail → expand (pinned, so it survives small screens).
  */
 export function toggleSidebarMode(uid) {
-    const belowAutoBp = window.matchMedia("(max-width: 1099px)").matches;
+    // Matches the SCSS auto-rail breakpoint in biz_sidebar.scss (biz-down xl).
+    const belowAutoBp = window.matchMedia("(max-width: 1439px)").matches;
     const mode = getSidebarMode(uid);
     const effectivelyCollapsed =
         mode === "collapsed" || (mode === "auto" && belowAutoBp);

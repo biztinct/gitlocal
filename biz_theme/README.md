@@ -11,7 +11,7 @@ brand overlay module (see `pb_theme`) supplies the palette.
 | Design tokens | `scss/biz_variables.scss` | `$vu-*` SCSS palette (all `!default`) + `:root { --vu-* }` custom properties + `[data-theme='dark']` block + `vu-card` mixins |
 | Breakpoints | `scss/biz_breakpoints.scss` | `$biz-bp-xl/lg/md/sm` (1440/1280/1100/768) + `biz-down()/biz-up()` mixins + `biz-rail-mode` sidebar mixin — visible to SCSS in **every** bundle |
 | Utilities | `scss/biz_utilities.scss` | `.biz-truncate`, `.biz-scroll-x`, `.biz-hide-{xl,lg,md,sm}`, `.biz-only-{lg,md}`, `.biz-icon-only-lg` (+`.biz-keep`), `.biz-cockpit-head`, `.biz-more-menu`, `.biz-skeleton--{text,title,row,card}`, `.biz-empty` |
-| Sidebar behavior | `scss/biz_sidebar.scss`, `js/biz_sidebar_state.js` | manual pin/collapse + auto icon-rail (<1100px) with hover-expand overlay; per-user persistence (`biz.sidebar.mode.<uid>`) |
+| Sidebar behavior | `scss/biz_sidebar.scss`, `js/biz_sidebar_state.js` | manual pin/collapse + auto icon-rail (<1440px, i.e. everything below wide desktop) with hover-expand overlay; per-user persistence (`biz.sidebar.mode.<uid>`) |
 | Menu-driven sidebar | `js/biz_sidebar_menu.js` | zero-config left sidebar built from `ir.ui.menu` (group-filtered by Odoo) — enable per app via `biz_theme.menu_sidebar_apps` |
 | Runtime theming | `models/biz_theme.py`, `controllers/theme_tokens.py`, `studio/` | `biz.theme` + presets, `/biz_theme/tokens.css` endpoint, Theme Studio (Settings → Theme Engine): live preview, WCAG checks, publish without redeploy |
 | VU Form Engine | `js/vu_form_*.js`, `scss/vu_form_engine.scss` | hero/card re-skin of native form views (kill-switch `biz_theme.vu_form_engine = off`) |
