@@ -9,3 +9,4 @@ from . import demo_payrun
 from . import demo_extras
 from . import demo_integrations
 from . import demo_analytics
+from . import demo_sidebar_access
