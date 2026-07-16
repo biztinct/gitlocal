@@ -135,6 +135,10 @@
               </div>
             </div>
             <div class="pbfs-top-actions">
+              <button class="pbfs-btn pbfs-cmdbtn" data-coach="fs-command" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Command Center","desc":"Every tool in one place. Press Ctrl or Cmd + K"}' t-on-click="openCommand" title="Command Center — every tool in one place (Ctrl/Cmd K)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+                <span>Tools</span>
+              </button>
               <button class="pbfs-btn soft pbfs-replaybtn biz-icon-only-lg biz-hide-lg" data-coach="fs-replay" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Execution replay","desc":"Watch a payslip compute step by step"}' t-on-click="openReplay" title="Execution replay — watch a payslip compute step by step">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <span>Replay</span>
@@ -164,7 +168,7 @@
               <div class="pbfs-more biz-more-menu biz-only-lg">
                 <button class="pbfs-btn soft" t-on-click="toggleMore" title="More tools">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                  <span class="biz-keep">Tools</span>
+                  <span class="biz-keep">More</span>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
                 <div t-if="state.moreOpen" class="biz-more-menu__panel">
@@ -3117,6 +3121,53 @@
         </div>
       </div>
 
+      <!-- Command Center (visual tool launcher) -->
+      <div t-if="state.cmdOpen" class="pbfs-cmd-scrim" t-on-click="closeCommand">
+        <div class="pbfs-cmd" t-on-click.stop="">
+          <div class="pbfs-cmd-head">
+            <div class="pbfs-cmd-kbd"><span class="pbfs-kbd">esc</span></div>
+            <div class="eyebrow">
+              <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+              <div>
+                <h2>Command Center</h2>
+                <div class="sub">Every tool for <b t-esc="state.config.name"/> · score <b t-esc="state.config.score"/></div>
+              </div>
+            </div>
+            <div class="pbfs-cmd-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input t-ref="cmdInput" type="text" placeholder="Search tools…" t-att-value="state.cmdQuery" t-on-input="setCmdQuery" t-on-keydown="onCmdKey"/>
+            </div>
+          </div>
+          <div class="pbfs-cmd-body">
+            <t t-foreach="commandView.lanes" t-as="lane" t-key="lane.id">
+              <div class="pbfs-cmd-lane">
+                <div class="lane-h"><span t-esc="lane.label"/><span class="n" t-esc="lane.tools.length"/></div>
+                <div class="pbfs-cmd-grid">
+                  <t t-foreach="lane.tools" t-as="tool" t-key="tool.key">
+                    <button t-attf-class="pbfs-cmd-card a-{{ tool.accent }} {{ tool.fi === state.cmdActive ? 'active' : '' }}"
+                            t-attf-style="animation-delay: {{ tool.fi * 28 }}ms"
+                            t-on-click="() => this.runCommand(tool)"
+                            t-on-mouseenter="() => this.state.cmdActive = tool.fi">
+                      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="tool.icon"/><t t-call="pb_formula_studio.CmdIco"/></svg></span>
+                      <span class="tx">
+                        <span class="nm"><span t-esc="tool.name"/><span t-if="tool.stat" class="stat" t-esc="tool.stat"/></span>
+                        <span class="dc" t-esc="tool.desc"/>
+                      </span>
+                      <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                    </button>
+                  </t>
+                </div>
+              </div>
+            </t>
+            <div t-if="!commandView.flat.length" class="pbfs-cmd-empty">No tools match “<t t-esc="state.cmdQuery"/>”.</div>
+          </div>
+          <div class="pbfs-cmd-foot">
+            <div class="hints"><span><b>↑↓</b> navigate</span><span><b>↵</b> open</span><span><b>esc</b> close</span></div>
+            <button class="searchall" t-on-click="cmdToPalette">Search everything <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+
       <!-- PayAI slide-in -->
       <div t-attf-class="pbfs-ai-scrim {{ state.aiOpen ? 'open' : '' }}" t-on-click="closeAI"/>
       <aside t-attf-class="pbfs-ai-panel {{ state.aiOpen ? 'open' : '' }}">
@@ -3618,6 +3669,25 @@
       <b t-esc="name"/>
       <span class="d" t-esc="desc"/>
     </div>
+  </t>
+
+  <!-- Command Center card icons, keyed by tool.icon (inner SVG shapes only;
+       the wrapping <svg> with stroke settings lives in the card template). -->
+  <t t-name="pb_formula_studio.CmdIco">
+    <t t-if="icon === 'replay'"><polygon points="5 3 19 12 5 21 5 3"/></t>
+    <t t-elif="icon === 'whatif'"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></t>
+    <t t-elif="icon === 'depmap'"><circle cx="5" cy="6" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="12" r="2.4"/><path d="M7.3 6.6 16.7 11M7.3 17.4 16.7 13"/></t>
+    <t t-elif="icon === 'offer'"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h4M8 18h.01M12 18h.01"/></t>
+    <t t-elif="icon === 'payslip'"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></t>
+    <t t-elif="icon === 'mapping'"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></t>
+    <t t-elif="icon === 'rates'"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></t>
+    <t t-elif="icon === 'problems'"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></t>
+    <t t-elif="icon === 'branches'"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></t>
+    <t t-elif="icon === 'variants'"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></t>
+    <t t-elif="icon === 'legislation'"><path d="M12 3v18M4 7l8-4 8 4M6 21h12M5 7l-2 6a4 4 0 0 0 8 0L9 7M19 7l-2 6a4 4 0 0 0 8 0l-2-6"/></t>
+    <t t-elif="icon === 'releases'"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></t>
+    <t t-elif="icon === 'share'"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></t>
+    <t t-elif="icon === 'payai'"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></t>
   </t>
 
 </templates>
