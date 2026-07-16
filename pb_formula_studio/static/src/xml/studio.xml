@@ -135,28 +135,28 @@
               </div>
             </div>
             <div class="pbfs-top-actions">
-              <button class="pbfs-btn soft pbfs-replaybtn biz-icon-only-lg biz-hide-lg" data-coach="fs-replay" t-on-click="openReplay" title="Execution replay — watch a payslip compute step by step">
+              <button class="pbfs-btn soft pbfs-replaybtn biz-icon-only-lg biz-hide-lg" data-coach="fs-replay" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Execution replay","desc":"Watch a payslip compute step by step"}' t-on-click="openReplay" title="Execution replay — watch a payslip compute step by step">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 <span>Replay</span>
               </button>
-              <button class="pbfs-btn soft pbfs-whatifbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-whatif" t-on-click="openWhatif" title="What-if — slide a rate and project the payroll cost">
+              <button class="pbfs-btn soft pbfs-whatifbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-whatif" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"What-if","desc":"Slide a rate and project the payroll cost"}' t-on-click="openWhatif" title="What-if — slide a rate and project the payroll cost">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
                 <span>What-if</span>
               </button>
-              <button class="pbfs-btn soft pbfs-psbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-payslip" t-on-click="openPayslip" title="Payslip Studio — design the payslip layout">
+              <button class="pbfs-btn soft pbfs-psbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-payslip" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Payslip Studio","desc":"Design the payslip layout"}' t-on-click="openPayslip" title="Payslip Studio — design the payslip layout">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
                 <span>Payslip</span>
               </button>
-              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-mapping" t-on-click="openMapping" title="Mapping canvas — wire mid-cycle components to end-cycle">
+              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-mapping" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Mapping canvas","desc":"Wire mid-cycle components to end-cycle"}' t-on-click="openMapping" title="Mapping canvas — wire mid-cycle components to end-cycle">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></svg>
                 <span>Mapping</span>
               </button>
-              <button class="pbfs-btn soft pbfs-ratebtn biz-icon-only-lg biz-hide-lg" data-coach="fs-rates" t-on-click="openRates" title="Rate &amp; bracket tables (PIT, etc.)">
+              <button class="pbfs-btn soft pbfs-ratebtn biz-icon-only-lg biz-hide-lg" data-coach="fs-rates" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Rate tables","desc":"PIT brackets and other rate tables"}' t-on-click="openRates" title="Rate &amp; bracket tables (PIT, etc.)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
                 <span>Tables</span>
                 <span t-if="state.rateTables.length" class="pbfs-ratecount biz-keep" t-esc="state.rateTables.length"/>
               </button>
-              <button class="pbfs-btn soft pbfs-offerbtn biz-icon-only-lg biz-hide-lg" t-on-click="openOfferCalc" title="Offer calculator — type hypothetical inputs, see the full breakdown">
+              <button class="pbfs-btn soft pbfs-offerbtn biz-icon-only-lg biz-hide-lg" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Offer calculator","desc":"Type hypothetical inputs, see the full breakdown"}' t-on-click="openOfferCalc" title="Offer calculator — type hypothetical inputs, see the full breakdown">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h4M8 18h.01M12 18h.01"/></svg>
                 <span>Offer</span>
               </button>
@@ -178,35 +178,35 @@
                   <button t-on-click="openOfferCalc">Offer calculator</button>
                 </div>
               </div>
-              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-depmap" t-on-click="openDepMap" title="Dependency map — the whole configuration as a graph">
+              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-depmap" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Dependency map","desc":"The whole configuration as a graph"}' t-on-click="openDepMap" title="Dependency map — the whole configuration as a graph">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="12" r="2.4"/><path d="M7.3 6.6 16.7 11M7.3 17.4 16.7 13"/></svg>
                 <span>Map</span>
               </button>
-              <button t-attf-class="pbfs-btn soft pbfs-probbtn biz-icon-only-lg {{ problemLevel }}" data-coach="fs-problems" t-on-click="openProblems" title="Problems, lint &amp; rename-refactor">
+              <button t-attf-class="pbfs-btn soft pbfs-probbtn biz-icon-only-lg {{ problemLevel }}" data-coach="fs-problems" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Problems","desc":"Lint checks and rename-refactor"}' t-on-click="openProblems" title="Problems, lint &amp; rename-refactor">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
                 <span>Problems</span>
                 <span t-if="problemCount" class="pbfs-probcount biz-keep" t-esc="problemCount"/>
                 <svg t-else="" class="pbfs-probok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
               </button>
-              <button class="pbfs-btn soft pbfs-branchbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-branches" t-on-click="openBranches" title="Branches — fork this config, trial a change safely, merge back">
+              <button class="pbfs-btn soft pbfs-branchbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-branches" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Branches","desc":"Fork this config, trial a change, merge back"}' t-on-click="openBranches" title="Branches — fork this config, trial a change safely, merge back">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
                 <span>Branches</span>
                 <span t-if="state.config.branch_count" class="pbfs-branchn" t-esc="state.config.branch_count"/>
               </button>
-              <button class="pbfs-btn soft pbfs-variantbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-variants" t-on-click="openVariants" title="Variants — one master scheme, many synced variants">
+              <button class="pbfs-btn soft pbfs-variantbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-variants" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Variants","desc":"One master scheme, many synced variants"}' t-on-click="openVariants" title="Variants — one master scheme, many synced variants">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 <span>Variants</span>
                 <span t-if="state.config.variant_count" class="pbfs-branchn" t-esc="state.config.variant_count"/>
               </button>
-              <button class="pbfs-btn soft pbfs-legisbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-legislation" t-on-click="openLegislation" title="Legislation — roll a statutory change across every configuration">
+              <button class="pbfs-btn soft pbfs-legisbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-legislation" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Legislation","desc":"Roll a statutory change across every configuration"}' t-on-click="openLegislation" title="Legislation — roll a statutory change across every configuration">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M4 7l8-4 8 4M6 21h12M5 7l-2 6a4 4 0 0 0 8 0L9 7M19 7l-2 6a4 4 0 0 0 8 0l-2-6"/></svg>
                 <span>Legislation</span>
               </button>
-              <button class="pbfs-btn soft pbfs-releasebtn" data-coach="fs-releases" t-on-click="openReleases" title="Releases — review and sign off formula changes">
+              <button class="pbfs-btn soft pbfs-releasebtn" data-coach="fs-releases" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Releases","desc":"Review and sign off formula changes"}' t-on-click="openReleases" title="Releases — review and sign off formula changes">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                 <span>Releases</span>
               </button>
-              <button class="pbfs-btn soft pbfs-sharebtn biz-icon-only-lg biz-hide-lg" data-coach="fs-share" t-on-click="openShare" title="Share for review — a read-only link for your client">
+              <button class="pbfs-btn soft pbfs-sharebtn biz-icon-only-lg biz-hide-lg" data-coach="fs-share" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Share for review","desc":"A read-only link for your client"}' t-on-click="openShare" title="Share for review — a read-only link for your client">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
                 <span>Share</span>
               </button>
@@ -3610,6 +3610,16 @@
       <t t-foreach="flow.labels" t-as="l" t-key="l_index">
         <div t-attf-class="edge-label {{ l.cls }}" t-attf-style="left:{{ l.x }}px;top:{{ l.y }}px;" t-esc="l.text"/>
       </t>
+    </div>
+  </t>
+
+  <!-- Rich hover tooltip for the cockpit toolbar icons (name + brief description).
+       Rendered by the web tooltip service via data-tooltip-template; `info` keys
+       (name, desc) are spread into the render context. -->
+  <t t-name="pb_formula_studio.BtnTip">
+    <div class="pbfs-btntip">
+      <b t-esc="name"/>
+      <span class="d" t-esc="desc"/>
     </div>
   </t>
 
