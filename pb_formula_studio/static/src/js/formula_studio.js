@@ -985,8 +985,16 @@ export class PbFormulaStudio extends Component {
     }
     closeCommand() { this.state.cmdOpen = false; }
     setCmdQuery(ev) { this.state.cmdQuery = ev.target.value; this.state.cmdActive = 0; }
-    // Run a tool then close — every run() calls an existing method (no new RPC).
-    runCommand(tool) { this.closeCommand(); if (tool && tool.run) tool.run(); }
+    // Run a tool then close. The run() is deferred to the next frame so the
+    // Command Center overlay fully unmounts FIRST — launching in the same tick
+    // raced the closing overlay against the tool's own overlay render, and some
+    // tools set non-reactive instance state in their open* method (e.g. the
+    // dep-map's _depByCol) that the combined render then read before it applied.
+    // Deferring makes a card-launch behave exactly like a direct toolbar click.
+    runCommand(tool) {
+        this.closeCommand();
+        if (tool && tool.run) requestAnimationFrame(() => tool.run());
+    }
     // Hand off to the full text palette (components, configs, snippets…).
     cmdToPalette() { this.closeCommand(); this.openPalette(); }
     onCmdKey(ev) {
@@ -2261,7 +2269,8 @@ export class PbFormulaStudio extends Component {
     }
     depEdgeCls(e) {
         const cls = ["dep-edge"];
-        const a = this._depByCol[e[0]], b = this._depByCol[e[1]];
+        const m = this._depByCol || {};
+        const a = m[e[0]], b = m[e[1]];
         if (this._depCycleCols && this._depCycleCols.has(e[0]) && this._depCycleCols.has(e[1])) cls.push("cycle");
         if (this.state.depCriticalOn && this._depCritEdge(e[0], e[1])) cls.push("crit");
         if (this.state.depHidden.includes(a && a.group) || this.state.depHidden.includes(b && b.group)) cls.push("ghost");
@@ -2272,7 +2281,9 @@ export class PbFormulaStudio extends Component {
         return cls.join(" ");
     }
     depEdgePath(e) {
-        const a = this._depByCol[e[0]], b = this._depByCol[e[1]];
+        const m = this._depByCol;
+        if (!m) return "";
+        const a = m[e[0]], b = m[e[1]];
         if (!a || !b) return "";
         const x1 = a.x + a.w, y1 = a.y + a.h / 2;
         const x2 = b.x, y2 = b.y + b.h / 2;
