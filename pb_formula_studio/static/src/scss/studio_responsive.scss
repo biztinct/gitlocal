@@ -134,6 +134,39 @@
 
         .pbfs-id-right .pbfs-ring { display: none; }
     }
+
+    /* ---- toolbar never clips (sidebar-aware) ----
+       The header ladder above keys off *viewport* width, but the left sidebar
+       is expanded (~256px) at ≥xl and rails to ~60px below it — so ≥xl with the
+       sidebar expanded is actually the *tightest* layout (widest buttons, least
+       free width) and the right-hand actions (Legislation, Releases, Share, Ask
+       PayAI) get clipped by the panel's `overflow:hidden`. Backstop: let the
+       actions cluster shrink and scroll instead of overflowing. The Tools ▾
+       popover only exists ≤lg, so restore visible overflow there. */
+    .pbfs-top-actions {
+        min-width: 0;
+        flex-shrink: 1;
+        overflow-x: auto;
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+        > * { flex-shrink: 0; }
+
+        @include biz-down($biz-bp-lg) { overflow-x: visible; }
+    }
+}
+
+/* Keep the secondary toolbar buttons icon-only at ≥xl too. biz_utilities'
+   `.biz-icon-only-lg` only fires below xl, which left this 14-button toolbar
+   showing full labels on wide desktops — and with the sidebar expanded (its ≥xl
+   default) they never fit, so the right-hand actions were clipped. Icon-only
+   here (Releases + Ask PayAI keep their labels — they're the primary CTAs, not
+   tagged `.biz-icon-only-lg`) lands every action on screen at any ≥xl width,
+   sidebar expanded or railed, and matches the compact look used below xl. */
+@include biz-up($biz-bp-xl) {
+    .pbfs .pbfs-top-actions {
+        .biz-icon-only-lg > span:not(.biz-keep) { display: none; }
+        .biz-icon-only-lg { gap: 0 !important; }
+    }
 }
 
 @keyframes pbfs-jump-flash {
