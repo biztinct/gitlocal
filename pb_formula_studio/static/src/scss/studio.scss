@@ -1108,6 +1108,98 @@
 
     .pbfs-sim .sm-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 6px; }
     .pbfs-sim .sm-note { font-size: 12px; color: var(--muted); }
+
+    /* ===================== Command Center ===================== */
+    /* Master "Tools" button — soft-indigo, distinct from the ghost actions */
+    .pbfs-cmdbtn {
+        background: var(--i-soft); border-color: var(--i-border); color: var(--i600); font-weight: 700;
+        span { font-weight: 700; }
+        svg { color: var(--i); }
+        &:hover { background: var(--i-soft2); border-color: var(--i); color: var(--i600); }
+    }
+
+    .pbfs-cmd-scrim {
+        position: fixed; inset: 0; z-index: 1500;
+        background: rgba(36, 31, 82, .48);
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        display: flex; align-items: flex-start; justify-content: center;
+        padding: 7vh 20px 24px;
+        animation: pbfs-cmd-fade .18s ease;
+    }
+    .pbfs-cmd {
+        width: 100%; max-width: 920px; max-height: 84vh;
+        display: flex; flex-direction: column;
+        background: #fff; border-radius: 22px; border: 1px solid var(--line);
+        box-shadow: 0 40px 120px rgba(20, 15, 55, .5), 0 8px 30px rgba(20, 15, 55, .28);
+        overflow: hidden;
+        animation: pbfs-cmd-pop .24s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    .pbfs-cmd-head { position: relative; padding: 22px 24px 18px; background: var(--i-soft); border-bottom: 1px solid var(--line-soft); }
+    .pbfs-cmd-head .eyebrow { display: flex; align-items: center; gap: 12px; }
+    .pbfs-cmd-head .eyebrow .badge { width: 36px; height: 36px; border-radius: 11px; background: var(--i); color: #fff; display: grid; place-items: center; box-shadow: 0 6px 18px rgba(90, 75, 176, .42); }
+    .pbfs-cmd-head .eyebrow .badge svg { width: 19px; height: 19px; }
+    .pbfs-cmd-head h2 { font-size: 19px; font-weight: 800; color: var(--ink); letter-spacing: -.01em; }
+    .pbfs-cmd-head .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+    .pbfs-cmd-head .sub b { color: var(--i600); font-weight: 700; }
+    .pbfs-cmd-kbd { position: absolute; top: 20px; right: 22px; }
+    .pbfs-kbd { font-size: 11px; font-weight: 700; color: var(--muted); background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; box-shadow: 0 1px 0 var(--line); }
+
+    .pbfs-cmd-search { position: relative; margin-top: 15px; }
+    .pbfs-cmd-search > svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--muted); }
+    .pbfs-cmd-search input { width: 100%; height: 46px; border-radius: 12px; border: 1px solid var(--i-border); background: #fff; padding: 0 14px 0 41px; font-family: inherit; font-size: 14px; color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s; }
+    .pbfs-cmd-search input:focus { border-color: var(--i); box-shadow: 0 0 0 4px var(--i-soft); }
+    .pbfs-cmd-search input::placeholder { color: #A6ABBD; }
+
+    .pbfs-cmd-body { padding: 18px 24px 10px; overflow-y: auto; }
+    .pbfs-cmd-lane { margin-bottom: 18px; }
+    .pbfs-cmd-lane:last-child { margin-bottom: 6px; }
+    .pbfs-cmd-lane .lane-h { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #94A3B8; margin: 0 2px 10px; }
+    .pbfs-cmd-lane .lane-h .n { color: #CBD5E1; }
+    .pbfs-cmd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(214px, 1fr)); gap: 10px; }
+
+    .pbfs-cmd-card {
+        display: flex; align-items: flex-start; gap: 12px; text-align: left;
+        padding: 13px 14px; border-radius: 14px; border: 1px solid var(--line);
+        background: #fff; cursor: pointer; font-family: inherit; position: relative;
+        transition: border-color .14s, box-shadow .14s, transform .14s;
+        opacity: 0; animation: pbfs-cmd-rise .34s ease forwards;
+    }
+    .pbfs-cmd-card:hover { border-color: var(--i-border); box-shadow: 0 12px 30px rgba(20, 15, 55, .12); transform: translateY(-2px); }
+    .pbfs-cmd-card.active { border-color: var(--i); box-shadow: 0 0 0 3px var(--i-soft), 0 12px 30px rgba(20, 15, 55, .12); transform: translateY(-2px); }
+    .pbfs-cmd-card .ic { flex-shrink: 0; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; }
+    .pbfs-cmd-card .ic svg { width: 20px; height: 20px; }
+    .pbfs-cmd-card .tx { min-width: 0; flex: 1; }
+    .pbfs-cmd-card .nm { font-size: 13.5px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+    .pbfs-cmd-card .dc { font-size: 11.5px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+    .pbfs-cmd-card .stat { flex-shrink: 0; font-size: 10.5px; font-weight: 800; color: var(--i600); background: var(--i-soft); border-radius: 999px; padding: 1px 7px; }
+    .pbfs-cmd-card .go { position: absolute; right: 12px; top: 14px; color: var(--i); opacity: 0; transform: translateX(-4px); transition: opacity .14s, transform .14s; }
+    .pbfs-cmd-card .go svg { width: 16px; height: 16px; }
+    .pbfs-cmd-card:hover .go, .pbfs-cmd-card.active .go { opacity: 1; transform: none; }
+
+    /* semantic accent badges (colored Lucide tiles) */
+    .pbfs-cmd-card.a-indigo .ic { background: #EDEAF8; color: #5A4BB0; }
+    .pbfs-cmd-card.a-blue   .ic { background: #E5EDFD; color: #2563EB; }
+    .pbfs-cmd-card.a-green  .ic { background: #E3F2E9; color: #2E7D4F; }
+    .pbfs-cmd-card.a-amber  .ic { background: #FEF3C7; color: #B7791F; }
+    .pbfs-cmd-card.a-rose   .ic { background: #FEE4E9; color: #E11D48; }
+    .pbfs-cmd-card.a-teal   .ic { background: #E0F4F9; color: #0E7490; }
+    .pbfs-cmd-card.a-pink   .ic { background: #FCE7F3; color: #DB2777; }
+
+    .pbfs-cmd-empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 13px; }
+
+    .pbfs-cmd-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-top: 1px solid var(--line); background: var(--bg); }
+    .pbfs-cmd-foot .hints { display: flex; gap: 16px; font-size: 11.5px; color: var(--muted); }
+    .pbfs-cmd-foot .hints b { color: var(--ink); font-weight: 700; }
+    .pbfs-cmd-foot .searchall { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--i600); background: none; border: none; cursor: pointer; font-family: inherit; }
+    .pbfs-cmd-foot .searchall svg { width: 13px; height: 13px; }
+    .pbfs-cmd-foot .searchall:hover { color: var(--i); }
+
+    @media (max-width: 620px) {
+        .pbfs-cmd-scrim { padding: 4vh 12px 12px; }
+        .pbfs-cmd-grid { grid-template-columns: 1fr; }
+        .pbfs-cmd-foot .hints span:first-child { display: none; }
+    }
 }
 
 /* Cockpit toolbar hover tooltips (name + brief description). The web tooltip
@@ -1123,4 +1215,13 @@
 
     b { font-size: 12px; font-weight: 800; color: #fff; letter-spacing: .01em; }
     .d { font-size: 11px; font-weight: 500; color: rgba(255, 255, 255, .74); line-height: 1.35; }
+}
+
+/* Command Center entrance animations (keyframes are global regardless of scope) */
+@keyframes pbfs-cmd-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pbfs-cmd-pop { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes pbfs-cmd-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .pbfs-cmd-scrim, .pbfs-cmd, .pbfs-cmd-card { animation: none !important; opacity: 1 !important; transform: none !important; }
 }

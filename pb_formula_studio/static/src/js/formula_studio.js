@@ -115,6 +115,8 @@ export class PbFormulaStudio extends Component {
             view: "cards",
             config: {},
             configs: [],
+            // Command Center — visual tool launcher ("Tools" button / ⌘K)
+            cmdOpen: false, cmdQuery: "", cmdActive: 0,
             components: [],
             samples: [],
             scenarios: [],              // F14 — what-if overlays per component
@@ -429,6 +431,8 @@ export class PbFormulaStudio extends Component {
         useHotkey("escape", () => {
             if (this.state.shortcutsOpen) {          // W18 — front of the Escape ladder (D-F1)
                 this.state.shortcutsOpen = false;
+            } else if (this.state.cmdOpen) {          // Command Center overlay
+                this.closeCommand();
             } else if (this.state.offerOpen) {        // W98 — offer calculator overlay
                 this.closeOfferCalc();
             } else if (this.state.budgetEditOpen) {  // W95 — budget editor overlay
@@ -447,6 +451,11 @@ export class PbFormulaStudio extends Component {
                 this.state.moreOpen = false;
             }
         }, { global: true, bypassEditableProtection: false });
+        // Command Center — autofocus its search box whenever it opens
+        this.cmdInputRef = useRef("cmdInput");
+        useEffect(() => {
+            if (this.state.cmdOpen && this.cmdInputRef.el) this.cmdInputRef.el.focus();
+        }, () => [this.state.cmdOpen]);
         this._setupCommandLayer();   // WP-A: ⌘K palette, ⌘F find, hover-card listeners
         onWillStart(async () => {
             await this.load();
@@ -965,6 +974,81 @@ export class PbFormulaStudio extends Component {
         return cmds;
     }
 
+    // ---- Command Center (visual tool launcher; "Tools" button / ⌘K) ----
+    openCommand() {
+        if (this.state.empty) return;
+        this.state.paletteOpen = false;
+        this.state.findOpen = false;
+        this.state.cmdQuery = "";
+        this.state.cmdActive = 0;
+        this.state.cmdOpen = true;
+    }
+    closeCommand() { this.state.cmdOpen = false; }
+    setCmdQuery(ev) { this.state.cmdQuery = ev.target.value; this.state.cmdActive = 0; }
+    // Run a tool then close — every run() calls an existing method (no new RPC).
+    runCommand(tool) { this.closeCommand(); if (tool && tool.run) tool.run(); }
+    // Hand off to the full text palette (components, configs, snippets…).
+    cmdToPalette() { this.closeCommand(); this.openPalette(); }
+    onCmdKey(ev) {
+        const flat = this.commandView.flat;
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            if (flat.length) this.runCommand(flat[Math.min(this.state.cmdActive, flat.length - 1)]);
+            return;
+        }
+        if (!flat.length) return;
+        if (ev.key === "ArrowDown" || ev.key === "ArrowRight") {
+            ev.preventDefault();
+            this.state.cmdActive = (this.state.cmdActive + 1) % flat.length;
+        } else if (ev.key === "ArrowUp" || ev.key === "ArrowLeft") {
+            ev.preventDefault();
+            this.state.cmdActive = (this.state.cmdActive - 1 + flat.length) % flat.length;
+        }
+    }
+    // Lanes of tools rendered as cards. Live stats come straight from state.
+    get commandLanes() {
+        const cfg = this.state.config || {};
+        const T = (key, name, desc, icon, accent, run, stat) => ({ key, name, desc, icon, accent, run, stat: stat || null });
+        return [
+            { id: "analyze", label: "Analyze", tools: [
+                T("replay", "Execution replay", "Watch a payslip compute step by step", "replay", "blue", () => this.openReplay()),
+                T("whatif", "What-if", "Slide a rate and project the payroll cost", "whatif", "teal", () => this.openWhatif()),
+                T("depmap", "Dependency map", "The whole configuration as a graph", "depmap", "blue", () => this.openDepMap()),
+                T("offer", "Offer calculator", "Type hypothetical inputs, see the full breakdown", "offer", "green", () => this.openOfferCalc()),
+            ] },
+            { id: "design", label: "Design", tools: [
+                T("payslip", "Payslip Studio", "Design the payslip layout", "payslip", "indigo", () => this.openPayslip()),
+                T("mapping", "Mapping canvas", "Map cycle carryover, API, import and scheme fields onto your components", "mapping", "pink", () => this.openMapping()),
+                T("rates", "Rate tables", "PIT brackets and other rate tables", "rates", "amber", () => this.openRates(), this.state.rateTables.length || null),
+            ] },
+            { id: "govern", label: "Govern", tools: [
+                T("problems", "Problems", "Lint checks and rename-refactor", "problems", "rose", () => this.openProblems(), this.problemCount || null),
+                T("branches", "Branches", "Fork this config, trial a change, merge back", "branches", "blue", () => this.openBranches(), cfg.branch_count || null),
+                T("variants", "Variants", "One master scheme, many synced variants", "variants", "teal", () => this.openVariants(), cfg.variant_count || null),
+                T("legislation", "Legislation", "Roll a statutory change across every configuration", "legislation", "amber", () => this.openLegislation()),
+                T("releases", "Releases", "Review and sign off formula changes", "releases", "green", () => this.openReleases()),
+            ] },
+            { id: "collab", label: "Collaborate", tools: [
+                T("share", "Share for review", "A read-only link for your client", "share", "blue", () => this.openShare()),
+                T("payai", "Ask PayAI", "Describe a rule in plain English and let AI draft it", "payai", "indigo", () => this.openAI()),
+            ] },
+        ];
+    }
+    // Query-filtered lanes + a flat list carrying a global index (fi) for keyboard nav.
+    get commandView() {
+        const q = (this.state.cmdQuery || "").trim().toLowerCase();
+        const lanes = [];
+        let i = 0;
+        for (const l of this.commandLanes) {
+            const tools = (q ? l.tools.filter(t => (t.name + " " + t.desc).toLowerCase().includes(q)) : l.tools)
+                .map(t => ({ ...t, fi: i++ }));
+            if (tools.length) lanes.push({ ...l, tools });
+        }
+        const flat = [];
+        lanes.forEach(l => l.tools.forEach(t => flat.push(t)));
+        return { lanes, flat };
+    }
+
     // ---- W100 hover cards (pure client-side, zero RPC) ----
     _hoverTargetEl(el) {
         return el && el.closest && el.closest(
@@ -1018,7 +1102,9 @@ export class PbFormulaStudio extends Component {
 
     // Registered once from setup() (hooks must run synchronously in setup).
     _setupCommandLayer() {
-        useHotkey("control+k", () => this.openPalette(), { global: true, bypassEditableProtection: true });
+        useHotkey("control+k", () => this.openCommand(), { global: true, bypassEditableProtection: true });
+        // ⌘⇧K keeps the full text palette (components, configs, snippets…) one chord away.
+        useHotkey("control+shift+k", () => this.openPalette(), { global: true, bypassEditableProtection: true });
         useHotkey("control+f", () => this.openFind(), { global: true, bypassEditableProtection: true });
         // Odoo folds Cmd(meta) into the "control" token on macOS (hotkey_service
         // lines 76-77), so a single registration covers ⌘K/⌘F and Ctrl+K/Ctrl+F.
