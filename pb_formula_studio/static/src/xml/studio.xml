@@ -147,7 +147,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg>
                 <span>Payslip</span>
               </button>
-              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-mapping" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Mapping canvas","desc":"Wire mid-cycle components to end-cycle"}' t-on-click="openMapping" title="Mapping canvas — wire mid-cycle components to end-cycle">
+              <button class="pbfs-btn soft pbfs-mapbtn biz-icon-only-lg biz-hide-lg" data-coach="fs-mapping" data-tooltip-template="pb_formula_studio.BtnTip" data-tooltip-position="bottom" data-tooltip-info='{"name":"Mapping canvas","desc":"Map cycle carryover, API, import and scheme fields onto your components"}' t-on-click="openMapping" title="Mapping canvas — map cycle carryover, API, import and scheme fields onto your components">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 6.5C13 8 12 12 15.6 12M8.5 17.5C13 16 12 12 15.6 12"/></svg>
                 <span>Mapping</span>
               </button>
@@ -3122,10 +3122,7 @@
       <aside t-attf-class="pbfs-ai-panel {{ state.aiOpen ? 'open' : '' }}">
         <div class="ai-top">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></div>
-          <div><b>PayAI Formula Assistant</b><small>
-            <t t-if="state.aiLlm">Powered by <t t-esc="state.aiModel"/></t>
-            <t t-else="">Describe a rule in plain English</t>
-          </small></div>
+          <div><b>PayAI Formula Assistant</b><small>Describe a rule in plain English</small></div>
           <button class="x" t-on-click="closeAI"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
         </div>
         <div class="ai-body">
