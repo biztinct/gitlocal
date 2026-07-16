@@ -225,20 +225,13 @@
     </record>
 
     <!-- ============ Setup · payroll configuration extras ============ -->
-    <record id="item_payslip_config" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_setup"/><field name="name">Payslip Configuration</field>
-        <field name="icon">settings</field><field name="sequence">60</field>
-        <field name="action_xmlid">pb_hr_payroll_formula.action_payslip_config_wizard</field>
-    </record>
+    <!-- Payslip Configuration & Mid-Cycle Mapping intentionally omitted: both are
+         fully covered (as visual, in-context supersets over the same models) by
+         the Formula Engine cockpit's "Payslip" and "Mapping" toolbar buttons. -->
     <record id="item_emp_mapping" model="pb.sidebar.item">
         <field name="section_id" ref="sec_setup"/><field name="name">Employee/Contract Mapping</field>
         <field name="icon">database</field><field name="sequence">70</field>
         <field name="action_xmlid">pb_hr_payroll_formula.action_payslip_import_mapping_wizard</field>
-    </record>
-    <record id="item_midcycle_mapping" model="pb.sidebar.item">
-        <field name="section_id" ref="sec_setup"/><field name="name">Mid-Cycle Mapping</field>
-        <field name="icon">compass</field><field name="sequence">80</field>
-        <field name="action_xmlid">pb_hr_payroll_formula.action_payroll_cycle_component_mapping_wizard</field>
     </record>
 
     <!-- ============ Workforce (existing pb_hr_workforce cockpits) ============ -->
