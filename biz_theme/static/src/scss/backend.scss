@@ -10,6 +10,19 @@ body {
     line-height: var(--vu-line-height-normal);
 }
 
+// Dialogs / popovers / tooltips / notifications must sit above EVERY in-app
+// overlay. Some cockpits (e.g. pb_formula_studio) use fixed full-screen
+// overlays up to z-index 1500, but Odoo's overlay layer defaults to a static
+// container (modals land at ~1049) — so a demo-gate / confirm dialog opened
+// from *inside* such an overlay rendered BEHIND it, hiding why an action was
+// blocked. Lift the whole overlay container into its own stacking context above
+// those overlays. Internal ordering (a popover opened over a dialog) is kept,
+// since it stays DOM-ordered within this one context.
+.o-overlay-container {
+    position: relative;
+    z-index: 1600;
+}
+
 .o_action_manager .o_view_controller .o_content {
     background-color: var(--vu-surface-panel);
     padding: var(--vu-space-md);
