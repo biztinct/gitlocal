@@ -16,33 +16,32 @@ export class PbPayrunResults extends Component {
             runId: false,
             filters: { department_id: "", search: "", with_variance: false, page: 1 },
             exporting: false,
-            // F112b — pay-run picker overlay. Opens on entry (no silent "newest"
-            // default) and is re-openable from the grid header.
+            // "Payruns" picker overlay. Opens on entry (no silent "newest"
+            // default) and is re-openable from the grid header. All runs are
+            // loaded once; faceting/sort/search happen client-side (à la the
+            // Config Switcher) so the chips can show live counts.
             picker: {
                 open: true, loading: false, view: "cards",
-                runs: [], total: 0, grandTotal: 0,
-                options: { states: [], divisions: [], companies: [] },
-                filters: { search: "", date_from: "", date_to: "", state: "", division: "", company_id: "", sort: "newest" },
+                all: [], activeCompany: "", multiCompany: false,
+                f: { search: "", status: "", cycle: "", division: "", company: "",
+                     year: "", range: "", from: "", to: "", sort: "newest" },
             },
         });
         this._searchTimer = null;
-        this._pickerTimer = null;
         // Land on the picker, not on an arbitrary run's grid.
         onWillStart(async () => { await this.loadPicker(); });
     }
 
-    // ---- pay-run picker ----
+    // ---- pay-run picker (loads once, then all-client-side) ----
     async loadPicker() {
         this.state.picker.loading = true;
         try {
-            const r = await this.orm.call("pb.payrun.results", "list_runs",
-                [this.state.picker.filters]);
-            this.state.picker.runs = (r && r.runs) || [];
-            this.state.picker.total = (r && r.total) || 0;
-            this.state.picker.grandTotal = (r && r.grand_total) || 0;
-            if (r && r.options) this.state.picker.options = r.options;
+            const r = await this.orm.call("pb.payrun.results", "list_runs", []);
+            this.state.picker.all = (r && r.runs) || [];
+            this.state.picker.activeCompany = (r && r.active_company) || "";
+            this.state.picker.multiCompany = !!(r && r.multi_company);
         } catch (e) {
-            this.state.picker.runs = [];
+            this.state.picker.all = [];
             this.notif.add("Could not load pay runs", { type: "danger" });
         } finally {
             this.state.picker.loading = false;
@@ -51,22 +50,31 @@ export class PbPayrunResults extends Component {
     openPicker() { this.state.picker.open = true; this.loadPicker(); }
     closePicker() { this.state.picker.open = false; }
     setView(v) { this.state.picker.view = v; }
-    onPickerSearch(ev) {
-        this.state.picker.filters.search = ev.target.value || "";
-        clearTimeout(this._pickerTimer);
-        this._pickerTimer = setTimeout(() => this.loadPicker(), 250);
+    onPickerSearch(ev) { this.state.picker.f.search = ev.target.value || ""; }
+
+    // toggle a facet chip: click to select, click again to clear
+    toggleFacet(key, v) {
+        const f = this.state.picker.f;
+        f[key] = (String(f[key]) === String(v)) ? "" : v;
     }
-    setPFilter(key, ev) {
-        this.state.picker.filters[key] = ev.target.value || "";
-        this.loadPicker();
+    setSort(v) { this.state.picker.f.sort = v; }
+    setRange(key) {
+        const f = this.state.picker.f;
+        f.range = (f.range === key) ? "" : key;
+        if (f.range) { f.from = ""; f.to = ""; }   // a quick range clears custom
     }
-    resetPicker() {
-        this.state.picker.filters = { search: "", date_from: "", date_to: "", state: "", division: "", company_id: "", sort: "newest" };
-        this.loadPicker();
+    setCustom(which, ev) {
+        this.state.picker.f[which] = ev.target.value || "";
+        this.state.picker.f.range = "";            // a custom date clears the quick range
+    }
+    clearFilters() {
+        this.state.picker.f = { search: "", status: "", cycle: "", division: "", company: "",
+                                year: "", range: "", from: "", to: "", sort: "newest" };
     }
     get pickerDirty() {
-        const f = this.state.picker.filters;
-        return !!(f.search || f.date_from || f.date_to || f.state || f.division || f.company_id || (f.sort && f.sort !== "newest"));
+        const f = this.state.picker.f;
+        return !!(f.search || f.status || f.cycle || f.division || f.company || f.year
+                  || f.range || f.from || f.to || (f.sort && f.sort !== "newest"));
     }
     async chooseRun(id) {
         this.state.runId = id;
@@ -75,11 +83,92 @@ export class PbPayrunResults extends Component {
         await this.load();
     }
 
+    // ---- facets (counts over the full set, like the Config Switcher) ----
+    _facet(valKey, labelKey, extraKey) {
+        const m = {};
+        for (const c of this.state.picker.all) {
+            const v = c[valKey];
+            if (v === "" || v === false || v === undefined || v === null) continue;
+            const k = String(v);
+            if (!m[k]) m[k] = { v, label: c[labelKey] || k, n: 0, extra: extraKey ? c[extraKey] : "" };
+            m[k].n++;
+        }
+        return Object.values(m).sort((a, b) => b.n - a.n || String(a.label).localeCompare(String(b.label)));
+    }
+    get statusFacets() {
+        const order = ["draft", "verify", "level1", "level2", "done", "close", "paid"];
+        return this._facet("state", "state_label", "state_tone")
+            .sort((a, b) => order.indexOf(a.v) - order.indexOf(b.v));
+    }
+    get cycleFacets() { return this._facet("cycle_type", "cycle_label"); }
+    get divisionFacets() { return this._facet("division", "division_label"); }
+    get companyFacets() { return this.state.picker.multiCompany ? this._facet("company_id", "company") : []; }
+    get yearFacets() { return this._facet("year", "year").sort((a, b) => String(b.v).localeCompare(String(a.v))); }
+    get quickRanges() {
+        return [
+            { key: "tm", label: "This month" }, { key: "lm", label: "Last month" },
+            { key: "tq", label: "This quarter" }, { key: "ty", label: "This year" },
+            { key: "ly", label: "Last year" },
+        ];
+    }
+
+    // ---- filtered + sorted list, and the KPI roll-up over it ----
+    _rangeBounds() {
+        const f = this.state.picker.f;
+        if (f.from || f.to) return { lo: f.from || "", hi: f.to || "" };
+        if (!f.range) return null;
+        const d = new Date(), y = d.getFullYear(), m = d.getMonth();
+        const pad = (n) => String(n).padStart(2, "0");
+        const iso = (yy, mm, dd) => `${yy}-${pad(mm + 1)}-${pad(dd)}`;
+        const last = (yy, mm) => new Date(yy, mm + 1, 0).getDate();
+        if (f.range === "tm") return { lo: iso(y, m, 1), hi: iso(y, m, last(y, m)) };
+        if (f.range === "lm") { const pm = m === 0 ? 11 : m - 1, py = m === 0 ? y - 1 : y; return { lo: iso(py, pm, 1), hi: iso(py, pm, last(py, pm)) }; }
+        if (f.range === "tq") { const q = Math.floor(m / 3) * 3; return { lo: iso(y, q, 1), hi: iso(y, q + 2, last(y, q + 2)) }; }
+        if (f.range === "ty") return { lo: iso(y, 0, 1), hi: iso(y, 11, 31) };
+        if (f.range === "ly") return { lo: iso(y - 1, 0, 1), hi: iso(y - 1, 11, 31) };
+        return null;
+    }
+    get pRuns() {
+        const f = this.state.picker.f;
+        let out = this.state.picker.all.slice();
+        const q = (f.search || "").trim().toLowerCase();
+        if (q) out = out.filter((c) => (c.name || "").toLowerCase().includes(q));
+        if (f.status) out = out.filter((c) => c.state === f.status);
+        if (f.cycle) out = out.filter((c) => c.cycle_type === f.cycle);
+        if (f.division) out = out.filter((c) => c.division === f.division);
+        if (f.company) out = out.filter((c) => String(c.company_id) === String(f.company));
+        if (f.year) out = out.filter((c) => c.year === String(f.year));
+        const b = this._rangeBounds();
+        if (b) {
+            if (b.lo) out = out.filter((c) => c.date_end && c.date_end >= b.lo);
+            if (b.hi) out = out.filter((c) => c.date_start && c.date_start <= b.hi);
+        }
+        if (f.sort === "oldest") out.sort((a, z) => (a.date_start || "").localeCompare(z.date_start || "") || a.id - z.id);
+        else if (f.sort === "emp") out.sort((a, z) => (z.employees || 0) - (a.employees || 0));
+        else if (f.sort === "net") out.sort((a, z) => (Number(z.net) || 0) - (Number(a.net) || 0));
+        else out.sort((a, z) => (z.date_start || "").localeCompare(a.date_start || "") || z.id - a.id);
+        return out;
+    }
+    get pSummary() {
+        const rows = this.pRuns;
+        let emp = 0, net = 0, approved = 0;
+        for (const c of rows) { emp += c.employees || 0; net += Number(c.net) || 0; if (c.state === "done") approved++; }
+        return { runs: rows.length, employees: emp, net, approved,
+                 currency: (rows[0] && rows[0].currency) || "₫" };
+    }
+
     // ---- picker formatting ----
     pNum(n) { return Number(n || 0).toLocaleString("en-US"); }
-    // Net/Gross come from stored salary-category roll-ups, which are 0 for
-    // formula runs whose lines are all filed under "Other" — so money is shown
-    // only when it genuinely exists; employees is the always-reliable hero.
+    pMoneyShort(n, cur) {
+        n = Number(n) || 0; cur = cur || "₫";
+        if (n >= 1e9) return cur + (n / 1e9).toFixed(1).replace(/\.0$/, "") + "B";
+        if (n >= 1e6) return cur + (n / 1e6).toFixed(1).replace(/\.0$/, "") + "M";
+        if (n >= 1e3) return cur + Math.round(n / 1e3) + "K";
+        return cur + Math.round(n).toLocaleString("en-US");
+    }
+    // Net/Gross come from stored salary-category roll-ups; shown only when they
+    // genuinely exist (the tiny JSON-import runs file everything under "Other"
+    // → 0). Employees is the always-reliable hero.
     pRunMoney(card) {
         const cur = card.currency || "₫";
         if (Number(card.net) > 0) return cur + Math.round(card.net).toLocaleString("en-US");
@@ -119,12 +208,7 @@ export class PbPayrunResults extends Component {
         }
     }
 
-    // ---- run switcher + filters ----
-    async selectRun(ev) {
-        this.state.runId = parseInt(ev.target.value) || false;
-        this.state.filters.page = 1;
-        await this.load();
-    }
+    // ---- grid filters ----
     async selectDept(ev) {
         this.state.filters.department_id = ev.target.value || "";
         this.state.filters.page = 1;
