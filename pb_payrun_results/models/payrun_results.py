@@ -11,7 +11,6 @@ import base64
 import io
 import json
 import logging
-from datetime import date
 
 from odoo import _, api, models
 from odoo.exceptions import AccessError
@@ -83,11 +82,20 @@ class PayrunResults(models.AbstractModel):
     # ------------------------------------------------------------------
     # run discovery + filtering
     # ------------------------------------------------------------------
+    def _companies(self):
+        # active/selected companies (survives sudo — sudo changes user, not the
+        # company context). hr.payslip.run has no company_id in this build, so
+        # every run/slip query scopes via hr.payslip.company_id instead.
+        return self.env.companies.ids or [self.env.company.id]
+
     def _formula_runs(self):
-        """Pay-slip runs that have at least one formula-calculated slip, newest
+        """Pay-slip runs that have at least one formula-computed slip (any run
+        whose slips carry a formula_config_id — not just the ones with a
+        formula_computed_values JSON blob), scoped to the active company, newest
         first. One grouped query — not a per-run probe."""
         groups = self.env['hr.payslip'].read_group(
-            [('formula_computed_values', '!=', False), ('payslip_run_id', '!=', False)],
+            [('formula_config_id', '!=', False), ('payslip_run_id', '!=', False),
+             ('company_id', 'in', self._companies())],
             ['payslip_run_id'], ['payslip_run_id'],
             orderby='payslip_run_id desc', limit=60)
         out = []
@@ -113,7 +121,22 @@ class PayrunResults(models.AbstractModel):
         return slips
 
     def _slips_for(self, run):
-        return run.slip_ids.filtered(lambda s: s.formula_computed_values)
+        return run.slip_ids.filtered(lambda s: s.formula_config_id)
+
+    def _slip_values(self, slip):
+        """One value dict per slip, keyed by component code. Two sources, one
+        contract: the imported/VPTQ runs stash every computed code in the
+        `formula_computed_values` JSON blob; the runs actually produced by the
+        engine (the demo world, ~all live runs) leave that empty and store their
+        figures on `hr.payslip.line` instead — whose `code` matches the config
+        rule codes 1:1 (BASIC…GROSS…NET). Prefer the blob, else read the lines,
+        so the grid renders every already-run payrun, not just the JSON ones."""
+        if slip.formula_computed_values:
+            try:
+                return json.loads(slip.formula_computed_values or '{}')
+            except Exception:
+                return {}
+        return {ln.code: ln.total for ln in slip.line_ids if ln.code}
 
     # ------------------------------------------------------------------
     # variance (D112.4): previous slip = latest earlier, same employee + cycle
@@ -131,7 +154,7 @@ class PayrunResults(models.AbstractModel):
         dom = [('employee_id', 'in', emp_ids),
                ('formula_config_id', 'in', cfg_ids),
                ('date_to', '<', min_from),
-               ('formula_computed_values', '!=', False),
+               ('formula_config_id', '!=', False),
                ('state', 'not in', ('cancel',))]
         prev = self.env['hr.payslip'].search(
             dom, order='employee_id, formula_config_id, date_to desc')
@@ -143,10 +166,7 @@ class PayrunResults(models.AbstractModel):
             p = latest.get((s.employee_id.id, s.formula_config_id.id))
             if not p:
                 continue
-            try:
-                pv = json.loads(p.formula_computed_values or '{}')
-            except Exception:
-                pv = {}
+            pv = self._slip_values(p)
             cv = parsed.get(s.id, {})
             row = {}
             for c in codes:
@@ -185,24 +205,35 @@ class PayrunResults(models.AbstractModel):
         codes = [c['code'] for c in cols]
         slips = self._apply_filters(slips, f)
 
-        # totals + parse over the FULL filtered set (before paging)
+        # Totals over the FULL filtered set (before paging). Line-based runs (the
+        # engine-produced ones) sum in ONE grouped SQL query instead of parsing
+        # every slip — a 900-employee run would otherwise walk ~23k lines. The
+        # JSON-blob runs (tiny imports) keep the per-slip coercion path, since
+        # their values are strings ("₫ 2,405,236", "12%") only `_num` decodes.
+        use_fcv = bool(slips and slips[0].formula_computed_values)
         totals = dict.fromkeys(codes, 0.0)
-        parsed = {}
-        for s in slips:
-            try:
-                v = json.loads(s.formula_computed_values or '{}')
-            except Exception:
-                v = {}
-            parsed[s.id] = v
-            for c in codes:
-                n = self._num(v.get(c))
-                if n is not None:
-                    totals[c] += n
+        if use_fcv:
+            for s in slips:
+                v = self._slip_values(s)
+                for c in codes:
+                    n = self._num(v.get(c))
+                    if n is not None:
+                        totals[c] += n
+        elif slips:
+            code_set = set(codes)
+            for g in self.env['hr.payslip.line'].read_group(
+                    [('slip_id', 'in', slips.ids), ('code', 'in', codes)],
+                    ['total:sum'], ['code']):
+                if g.get('code') in code_set:
+                    totals[g['code']] = g.get('total') or 0.0
 
         row_count = len(slips)
         page = max(1, int(f.get('page') or 1))
         ordered = slips.sorted(key=lambda s: (s.employee_id.name or '').lower())
         page_slips = ordered[(page - 1) * self.PAGE: page * self.PAGE]
+
+        # Values only for the current page (not the whole filtered set).
+        parsed = {s.id: self._slip_values(s) for s in page_slips}
 
         deltas = self._pair_variance(page_slips, codes, parsed) if f.get('with_variance') else {}
         prev_run_label = None
@@ -260,22 +291,26 @@ class PayrunResults(models.AbstractModel):
         'close':  ('Closed', 'done'),
         'paid':   ('Paid', 'done'),
     }
+    _CYCLE_LABELS = {
+        'end_cycle': 'End-cycle', 'mid_cycle': 'Mid-cycle',
+        'end': 'End-cycle', 'mid': 'Mid-cycle',
+    }
 
     def _state_label(self, st):
         return self._STATE_META.get(st, (st and st.replace('_', ' ').title() or '', 'draft'))
 
-    def _run_card(self, r):
+    def _run_card(self, r, cycle_type='', comp=None, symbol=u'₫'):
         label, tone = self._state_label(r.state)
-        symbol = (r.pb_currency_id.symbol or u'₫') if r.pb_currency_id else u'₫'
-        comp = getattr(r, 'company_id', False)   # hr.payslip.run has no company_id in this build
+        ds = str(r.date_start) if r.date_start else ''
         return {
             'id': r.id,
             'name': r.name or _('Run #%s') % r.id,
             'state': r.state or '',
             'state_label': label,
             'state_tone': tone,
-            'date_start': str(r.date_start) if r.date_start else '',
+            'date_start': ds,
             'date_end': str(r.date_end) if r.date_end else '',
+            'year': ds[:4] if ds else '',
             'employees': r.pb_employee_count or 0,
             'net': r.pb_total_net or 0.0,
             'gross': r.pb_total_gross or 0.0,
@@ -283,80 +318,71 @@ class PayrunResults(models.AbstractModel):
             'currency': symbol,
             'division': r.pb_division or '',
             'division_label': r.pb_division_label or '',
-            'company': comp.name if comp else '',
-            'company_id': comp.id if comp else False,
+            'cycle_type': cycle_type or '',
+            'cycle_label': self._CYCLE_LABELS.get(
+                cycle_type, cycle_type.replace('_', ' ').title() if cycle_type else ''),
+            'company': comp[1] if comp else '',
+            'company_id': comp[0] if comp else False,
         }
 
     @api.model
     def list_runs(self, filters=None):
-        """Feed the picker: every formula-calculated pay run as a rich card,
-        with the filter controls' own option lists built from the full
-        (pre-filter) candidate set so the dropdowns never hide a valid choice."""
+        """Feed the picker: EVERY formula-computed pay run of the active company
+        as a rich card, in one shot. Filtering/sorting/faceting all happen
+        client-side (like the Config Switcher), so the payload is just the cards
+        plus the run→cycle and run→company maps the facet chips need."""
         self._check_access()
         self = self.sudo()
-        f = filters or {}
+        companies = self._companies()
         groups = self.env['hr.payslip'].read_group(
-            [('formula_computed_values', '!=', False), ('payslip_run_id', '!=', False)],
+            [('formula_config_id', '!=', False), ('payslip_run_id', '!=', False),
+             ('company_id', 'in', companies)],
             ['payslip_run_id'], ['payslip_run_id'],
             orderby='payslip_run_id desc', limit=300)
         run_ids = [g['payslip_run_id'][0] for g in groups if g.get('payslip_run_id')]
         runs = self.env['hr.payslip.run'].browse(run_ids).exists()
 
-        # option lists from the full set (order: states by workflow, rest A-Z)
-        state_seen, div_opts, comp_opts = [], {}, {}
+        # run -> representative config + company, in ONE grouped query. The run
+        # model has no company_id in this build, so company comes from the slips.
+        run_cfg, run_comp = {}, {}
+        for g in self.env['hr.payslip'].read_group(
+                [('payslip_run_id', 'in', run_ids), ('formula_config_id', '!=', False),
+                 ('company_id', 'in', companies)],
+                [], ['payslip_run_id', 'formula_config_id', 'company_id'], lazy=False):
+            rid = g['payslip_run_id'][0] if g.get('payslip_run_id') else False
+            if not rid:
+                continue
+            if rid not in run_cfg and g.get('formula_config_id'):
+                run_cfg[rid] = g['formula_config_id'][0]
+            if rid not in run_comp and g.get('company_id'):
+                run_comp[rid] = (g['company_id'][0], g['company_id'][1])
+        cfg_cycle = {}
+        if run_cfg:
+            configs = self.env['hr.formula.config'].browse(list(set(run_cfg.values()))).exists()
+            cfg_cycle = {c.id: (getattr(c, 'cycle_type', '') or '') for c in configs}
+
+        # currency symbol per run comes from the run's COMPANY currency (the run
+        # has no company_id, and its stored pb_currency_id can be stale — some
+        # demo runs computed under a different company context), so a single VN
+        # company shows ₫ consistently and multi-company shows each currency.
+        comp_sym = {}
+        comp_ids = list({c[0] for c in run_comp.values() if c})
+        if comp_ids:
+            for co in self.env['res.company'].browse(comp_ids).exists():
+                comp_sym[co.id] = (co.currency_id.symbol or u'₫')
+        default_sym = self.env.company.currency_id.symbol or u'₫'
+
+        cards = []
         for r in runs:
-            if r.state and r.state not in state_seen:
-                state_seen.append(r.state)
-            if r.pb_division and r.pb_division not in div_opts:
-                div_opts[r.pb_division] = r.pb_division_label or r.pb_division.replace('_', ' ').title()
-            comp = getattr(r, 'company_id', False)
-            if comp and comp.id not in comp_opts:
-                comp_opts[comp.id] = comp.name
-        _order = ['draft', 'verify', 'level1', 'level2', 'done', 'close', 'paid']
-        state_seen.sort(key=lambda s: _order.index(s) if s in _order else 99)
-
-        # filters
-        q = (f.get('search') or '').strip().lower()
-        if q:
-            runs = runs.filtered(lambda r: q in (r.name or '').lower())
-        if f.get('state'):
-            runs = runs.filtered(lambda r: r.state == f['state'])
-        if f.get('division'):
-            runs = runs.filtered(lambda r: (r.pb_division or '') == f['division'])
-        if f.get('company_id'):
-            cid = int(f['company_id'])
-            runs = runs.filtered(lambda r: getattr(r, 'company_id', False) and r.company_id.id == cid)
-        if f.get('date_from'):
-            runs = runs.filtered(lambda r: r.date_end and str(r.date_end) >= f['date_from'])
-        if f.get('date_to'):
-            runs = runs.filtered(lambda r: r.date_start and str(r.date_start) <= f['date_to'])
-
-        # sort
-        sort = f.get('sort') or 'newest'
-        keyed = list(runs)
-        if sort == 'oldest':
-            keyed.sort(key=lambda r: (r.date_start or date.min, r.id))
-        elif sort == 'net_desc':
-            keyed.sort(key=lambda r: r.pb_total_net or 0.0, reverse=True)
-        elif sort == 'net_asc':
-            keyed.sort(key=lambda r: r.pb_total_net or 0.0)
-        elif sort == 'emp_desc':
-            keyed.sort(key=lambda r: r.pb_employee_count or 0, reverse=True)
-        else:  # newest
-            keyed.sort(key=lambda r: (r.date_start or date.min, r.id), reverse=True)
-
+            comp = run_comp.get(r.id)
+            sym = comp_sym.get(comp[0], default_sym) if comp else default_sym
+            cards.append(self._run_card(r, cfg_cycle.get(run_cfg.get(r.id), ''), comp, sym))
         return {
             'ok': True,
-            'runs': [self._run_card(r) for r in keyed],
-            'total': len(keyed),
-            'grand_total': len(run_ids),
-            'options': {
-                'states': [{'value': s, 'label': self._state_label(s)[0]} for s in state_seen],
-                'divisions': [{'value': k, 'label': v}
-                              for k, v in sorted(div_opts.items(), key=lambda kv: kv[1] or '')],
-                'companies': [{'value': k, 'label': v}
-                              for k, v in sorted(comp_opts.items(), key=lambda kv: kv[1] or '')],
-            },
+            'runs': cards,
+            'total': len(cards),
+            'active_company': self.env.company.name,
+            'multi_company': len(companies) > 1,
         }
 
     # ------------------------------------------------------------------
@@ -403,10 +429,7 @@ class PayrunResults(models.AbstractModel):
         totals = dict.fromkeys(codes, 0.0)
         i = 2
         for s in slips.sorted(key=lambda s: (s.employee_id.name or '').lower()):
-            try:
-                v = json.loads(s.formula_computed_values or '{}')
-            except Exception:
-                v = {}
+            v = self._slip_values(s)
             ws.cell(i, 1, s.employee_id.name or '')
             ws.cell(i, 2, s.employee_id.department_id.name or '')
             for j, col in enumerate(cols, start=3):
