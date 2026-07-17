@@ -29,6 +29,7 @@
             'pb_formula_studio/static/src/scss/whatif.scss',
             'pb_formula_studio/static/src/scss/release.scss',
             'pb_formula_studio/static/src/scss/bureau.scss',
+            'pb_formula_studio/static/src/scss/cfgsw.scss',
             'pb_formula_studio/static/src/scss/legislation.scss',
             'pb_formula_studio/static/src/scss/branch.scss',
             'pb_formula_studio/static/src/scss/variant.scss',
