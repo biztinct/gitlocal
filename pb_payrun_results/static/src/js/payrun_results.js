@@ -16,9 +16,92 @@ export class PbPayrunResults extends Component {
             runId: false,
             filters: { department_id: "", search: "", with_variance: false, page: 1 },
             exporting: false,
+            // F112b — pay-run picker overlay. Opens on entry (no silent "newest"
+            // default) and is re-openable from the grid header.
+            picker: {
+                open: true, loading: false, view: "cards",
+                runs: [], total: 0, grandTotal: 0,
+                options: { states: [], divisions: [], companies: [] },
+                filters: { search: "", date_from: "", date_to: "", state: "", division: "", company_id: "", sort: "newest" },
+            },
         });
         this._searchTimer = null;
-        onWillStart(async () => { await this.load(); });
+        this._pickerTimer = null;
+        // Land on the picker, not on an arbitrary run's grid.
+        onWillStart(async () => { await this.loadPicker(); });
+    }
+
+    // ---- pay-run picker ----
+    async loadPicker() {
+        this.state.picker.loading = true;
+        try {
+            const r = await this.orm.call("pb.payrun.results", "list_runs",
+                [this.state.picker.filters]);
+            this.state.picker.runs = (r && r.runs) || [];
+            this.state.picker.total = (r && r.total) || 0;
+            this.state.picker.grandTotal = (r && r.grand_total) || 0;
+            if (r && r.options) this.state.picker.options = r.options;
+        } catch (e) {
+            this.state.picker.runs = [];
+            this.notif.add("Could not load pay runs", { type: "danger" });
+        } finally {
+            this.state.picker.loading = false;
+        }
+    }
+    openPicker() { this.state.picker.open = true; this.loadPicker(); }
+    closePicker() { this.state.picker.open = false; }
+    setView(v) { this.state.picker.view = v; }
+    onPickerSearch(ev) {
+        this.state.picker.filters.search = ev.target.value || "";
+        clearTimeout(this._pickerTimer);
+        this._pickerTimer = setTimeout(() => this.loadPicker(), 250);
+    }
+    setPFilter(key, ev) {
+        this.state.picker.filters[key] = ev.target.value || "";
+        this.loadPicker();
+    }
+    resetPicker() {
+        this.state.picker.filters = { search: "", date_from: "", date_to: "", state: "", division: "", company_id: "", sort: "newest" };
+        this.loadPicker();
+    }
+    get pickerDirty() {
+        const f = this.state.picker.filters;
+        return !!(f.search || f.date_from || f.date_to || f.state || f.division || f.company_id || (f.sort && f.sort !== "newest"));
+    }
+    async chooseRun(id) {
+        this.state.runId = id;
+        this.state.filters.page = 1;
+        this.state.picker.open = false;
+        await this.load();
+    }
+
+    // ---- picker formatting ----
+    pNum(n) { return Number(n || 0).toLocaleString("en-US"); }
+    // Net/Gross come from stored salary-category roll-ups, which are 0 for
+    // formula runs whose lines are all filed under "Other" — so money is shown
+    // only when it genuinely exists; employees is the always-reliable hero.
+    pRunMoney(card) {
+        const cur = card.currency || "₫";
+        if (Number(card.net) > 0) return cur + Math.round(card.net).toLocaleString("en-US");
+        if (Number(card.gross) > 0) return cur + Math.round(card.gross).toLocaleString("en-US");
+        return "";
+    }
+    pRunMoneyLabel(card) {
+        if (Number(card.net) > 0) return "Net pay";
+        if (Number(card.gross) > 0) return "Gross";
+        return "";
+    }
+    pDate(iso) {
+        if (!iso) return "";
+        const p = iso.split("-");
+        if (p.length !== 3) return iso;
+        const M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        return `${parseInt(p[2], 10)} ${M[parseInt(p[1], 10) - 1]} ${p[0]}`;
+    }
+    pPeriod(card) {
+        const a = this.pDate(card.date_start), b = this.pDate(card.date_end);
+        if (a && b) return `${a} – ${b}`;
+        return a || b || "";
     }
 
     async load() {
