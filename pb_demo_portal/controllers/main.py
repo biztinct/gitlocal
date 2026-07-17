@@ -64,12 +64,49 @@ class DemoPortal(http.Controller):
 
         # --- create the demo user + send the verification / set-password email ---
         try:
-            self._create_demo_user(values, email)
+            user = self._create_demo_user(values, email)
         except Exception as e:  # pragma: no cover - keep the portal resilient
             _logger.exception("Demo registration failed: %s", e)
             return self._render_form(values, _(
                 "Something went wrong creating your demo account. Please try again."))
+        # Drop a CRM lead into the pipeline so Sales can track / follow up every
+        # signup. Non-fatal: never blocks the demo account if crm is absent.
+        self._create_demo_lead(values, email, user.partner_id)
         return request.render('pb_demo_portal.register_done', {'email': email, 'already': False})
+
+    def _create_demo_lead(self, values, email, partner=None):
+        """Create a ``crm.lead`` for a self-service demo signup so it surfaces in
+        the CRM pipeline for follow-up. No-op if the crm module isn't installed,
+        and never raises into the signup flow (lead capture must not break the
+        demo account)."""
+        env = request.env
+        if 'crm.lead' not in env:
+            return
+        try:
+            country_id = int(values['country_id']) if values.get('country_id') else False
+            source = env['utm.source'].sudo().search(
+                [('name', '=', 'Demo Signup')], limit=1)
+            if not source:
+                source = env['utm.source'].sudo().create({'name': 'Demo Signup'})
+            lead_vals = {
+                'name': u"Demo signup — %s" % (values.get('company') or values.get('name')),
+                'type': 'lead',
+                'contact_name': values.get('name'),
+                'partner_name': values.get('company'),
+                'email_from': email,
+                'phone': values.get('mobile'),
+                'country_id': country_id,
+                'source_id': source.id,
+                'description': (
+                    u"Self-service demo signup via payobook.com/demo/register\n"
+                    u"Industry: %s\nCompany size: %s"
+                    % (values.get('industry') or u'—', values.get('company_size') or u'—')),
+            }
+            if partner:
+                lead_vals['partner_id'] = partner.id
+            env['crm.lead'].sudo().create(lead_vals)
+        except Exception as e:  # pragma: no cover - lead capture is best-effort
+            _logger.warning("Demo signup lead not created for %s: %s", email, e)
 
     # ------------------------------------------------------------------ #
     #  Private-demo enquiry  (WOW landing → lead email, no account made)  #
