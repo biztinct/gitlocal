@@ -299,6 +299,13 @@ export class PbFormulaStudio extends Component {
             wizardTemplates: [],
             wizardBusy: false,
             configPickerOpen: false,
+            // Config Switcher — WOW gallery selector (replaces the top-left dropdown)
+            configSwitcherOpen: false,
+            csQuery: "",
+            csCountry: "",
+            csState: "",
+            csCycle: "",
+            csSort: "recent",   // recent | name | health
             confirmDel: null,
             // responsive header: Tools ▾ overflow (visible ≤1280 via CSS)
             moreOpen: false,
@@ -3561,6 +3568,66 @@ export class PbFormulaStudio extends Component {
     // ---- config picker ----
     toggleConfigPicker() { this.state.configPickerOpen = !this.state.configPickerOpen; }
     async pickConfig(id) { this.state.configPickerOpen = false; this.state.selectedId = null; await this.load(id); }
+
+    // ---- Config Switcher (WOW gallery selector with filters) ----
+    openConfigSwitcher() { this.state.configPickerOpen = false; this.state.configSwitcherOpen = true; }
+    closeConfigSwitcher() { this.state.configSwitcherOpen = false; }
+    async chooseConfig(id) {
+        this.state.configSwitcherOpen = false;
+        if (id === (this.state.config && this.state.config.id)) return;
+        this.state.selectedId = null;
+        await this.load(id);
+    }
+    onCsSearch(ev) { this.state.csQuery = ev.target.value; }
+    csClearQuery() { this.state.csQuery = ""; }
+    csSetCountry(v) { this.state.csCountry = this.state.csCountry === v ? "" : v; }
+    csSetState(v) { this.state.csState = this.state.csState === v ? "" : v; }
+    csSetCycle(v) { this.state.csCycle = this.state.csCycle === v ? "" : v; }
+    csSetSort(v) { this.state.csSort = v; }
+    csClearFilters() { this.state.csQuery = ""; this.state.csCountry = ""; this.state.csState = ""; this.state.csCycle = ""; }
+    get csHasFilters() { return !!(this.state.csQuery || this.state.csCountry || this.state.csState || this.state.csCycle); }
+    csCountryLabel(cc) {
+        return { VN: "Vietnam", ID: "Indonesia", IN: "India", SG: "Singapore",
+                 MY: "Malaysia", TH: "Thailand", KH: "Cambodia", PH: "Philippines" }[cc] || cc;
+    }
+    csCycleLabel(ct) {
+        return { regular: "Regular", mid_cycle: "Mid-cycle", end_cycle: "End-cycle",
+                 full_final: "Full & Final" }[ct] || ct;
+    }
+    csStateLabel(s) {
+        return { draft: "Draft", testing: "Testing", validated: "Validated",
+                 active: "Active", archived: "Archived" }[s] || s;
+    }
+    csRingStroke(score) { return (score >= 80) ? "#059669" : (score >= 50 ? "#D97706" : (score > 0 ? "#DC2626" : "#CBD5E1")); }
+    _csFacet(key, labeler) {
+        const m = {};
+        for (const c of (this.state.configs || [])) { const v = c[key] || ""; if (v) m[v] = (m[v] || 0) + 1; }
+        return Object.keys(m).map(v => ({ v, n: m[v], label: labeler ? labeler.call(this, v) : v }))
+                     .sort((a, b) => b.n - a.n || String(a.label).localeCompare(String(b.label)));
+    }
+    get csCountryFacets() { return this._csFacet("country", this.csCountryLabel); }
+    get csStateFacets() { return this._csFacet("state", this.csStateLabel); }
+    get csCycleFacets() { return this._csFacet("cycle_type", this.csCycleLabel); }
+    get csFiltered() {
+        let cfgs = (this.state.configs || []).slice();
+        const q = (this.state.csQuery || "").trim().toLowerCase();
+        if (q) cfgs = cfgs.filter(c => (c.name || "").toLowerCase().includes(q) || (c.code || "").toLowerCase().includes(q));
+        if (this.state.csCountry) cfgs = cfgs.filter(c => c.country === this.state.csCountry);
+        if (this.state.csState) cfgs = cfgs.filter(c => c.state === this.state.csState);
+        if (this.state.csCycle) cfgs = cfgs.filter(c => c.cycle_type === this.state.csCycle);
+        if (this.state.csSort === "name") cfgs.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+        else if (this.state.csSort === "health") cfgs.sort((a, b) => (b.score || 0) - (a.score || 0));
+        return cfgs;   // "recent" keeps the server order (sequence, id desc)
+    }
+    get csSummary() {
+        const cfgs = this.state.configs || [];
+        return {
+            total: cfgs.length,
+            active: cfgs.filter(c => c.state === "active").length,
+            countries: new Set(cfgs.map(c => c.country).filter(Boolean)).size,
+            shown: this.csFiltered.length,
+        };
+    }
     async openConfigSettings(id, ev) {
         if (ev) ev.stopPropagation();
         this.state.configPickerOpen = false;

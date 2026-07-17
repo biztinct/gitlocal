@@ -83,17 +83,43 @@ class PbFormulaStudio(models.AbstractModel):
     # ------------------------------------------------------------------
     # config selection / list
     # ------------------------------------------------------------------
+    # validation_status (stored) → a coarse health score for the switcher rings,
+    # so the config gallery stays a single cheap query (no per-config recompute).
+    # A real validation verdict wins; when it's still 'pending' we fall back on the
+    # lifecycle state so an active, working config doesn't read as 0/unhealthy.
+    _VSTATUS_SCORE = {'passed': 96, 'warning': 70, 'failed': 34}
+    _STATE_SCORE = {'active': 90, 'validated': 84, 'testing': 55, 'draft': 22, 'archived': 12}
+
+    @api.model
+    def _config_score(self, config):
+        return (self._VSTATUS_SCORE.get(config.validation_status)
+                or self._STATE_SCORE.get(config.state, 0))
+
     @api.model
     def get_config_list(self):
         configs = self.env['hr.formula.config'].search([], order='sequence, id desc')
-        return [{
-            'id': c.id,
-            'name': c.name,
-            'code': c.code or '',
-            'country': c.country_code or '',
-            'state': c.state,
-            'rule_count': len(c.rule_ids),
-        } for c in configs]
+        out = []
+        for c in configs:
+            out.append({
+                'id': c.id,
+                'name': c.name,
+                'code': c.code or '',
+                'country': c.country_code or '',
+                'state': c.state,
+                'rule_count': len(c.rule_ids),
+                # --- richer fields for the Config Switcher gallery ---
+                'currency': c.currency_id.name or '',
+                'cycle_type': c.cycle_type or 'regular',
+                'active': bool(c.active),
+                'validation_status': c.validation_status or 'pending',
+                'score': self._config_score(c),
+                'sample_count': len(c.sample_data_ids),
+                'is_branch': bool(c.parent_branch_id),
+                'is_variant': bool(c.master_config_id),
+                'is_master': bool(c.variant_ids),
+                'updated': fields.Date.to_string(c.write_date) if c.write_date else '',
+            })
+        return out
 
     @api.model
     def _pick_config(self, config_id=None):
