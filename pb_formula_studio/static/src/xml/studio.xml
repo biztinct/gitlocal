@@ -45,9 +45,6 @@
                 <span class="nm" t-esc="state.config.name"/>
                 <span class="pbfs-cfg-switch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
               </button>
-              <button class="pbfs-bureaubtn" data-coach="fs-bureau" t-on-click="openBureau" title="Bureau cockpit — all configurations at a glance">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-              </button>
               <span t-if="state.config.country" class="pbfs-chip biz-hide-md" t-esc="state.config.country"/>
               <span class="pbfs-chip cur biz-hide-md" t-esc="'Currency ' + (state.config.currency || '')"/>
               <span t-attf-class="pbfs-state {{ stageCls() }}"><span class="d"/><t t-esc="stageLabel()"/></span>
@@ -2393,74 +2390,6 @@
         </div>
       </div>
 
-      <!-- Bureau cockpit overlay (B6) -->
-      <div t-if="state.bureauOpen" class="pbfs-bureau-scrim" t-on-click="closeBureau">
-        <div class="pbfs-bureau" t-on-click="(ev) => ev.stopPropagation()">
-          <div class="bu-head">
-            <div class="bu-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-              <div>
-                <b>Bureau cockpit</b>
-                <small t-if="state.bureauData"><t t-esc="state.bureauData.company"/> · every configuration at a glance</small>
-              </div>
-            </div>
-            <div class="bu-summary" t-if="state.bureauData and state.bureauData.cards.length">
-              <div class="bu-stat"><b t-esc="bureauSummary.configs"/><span>configs</span></div>
-              <div class="bu-stat"><b t-esc="bureauSummary.active"/><span>active</span></div>
-              <div t-attf-class="bu-stat {{ bureauSummary.withErrors ? 'err' : '' }}"><b t-esc="bureauSummary.withErrors"/><span>with errors</span></div>
-              <div t-attf-class="bu-stat {{ bureauSummary.withPending ? 'warn' : '' }}"><b t-esc="bureauSummary.withPending"/><span>unreleased</span></div>
-              <div class="bu-stat"><b t-esc="bureauSummary.employees.toLocaleString('en-US')"/><span>employees</span></div>
-            </div>
-            <button class="hs-x" t-on-click="closeBureau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
-          </div>
-
-          <div class="bu-body">
-            <div t-if="state.bureauBusy and !state.bureauData" class="bu-loading">Gathering health across all configurations…</div>
-            <div t-elif="state.bureauData and state.bureauData.cards.length" class="bu-grid">
-              <t t-foreach="state.bureauData.cards" t-as="c" t-key="c.id">
-              <div t-attf-class="bu-card {{ (c.problem_counts.error || 0) ? 'attn-err' : (c.pending_changes ? 'attn-warn' : '') }}">
-                <div class="bu-card-top">
-                  <div class="bu-card-nm" t-esc="c.name"/>
-                  <span t-attf-class="bu-state {{ c.state }}" t-esc="bureauStateLabel(c.state)"/>
-                </div>
-                <div class="bu-card-chips">
-                  <span t-if="c.division" class="bu-chip" t-esc="c.division"/>
-                  <span class="bu-chip cyc" t-esc="bureauCycleLabel(c.cycle_type)"/>
-                </div>
-                <div class="bu-card-mid">
-                  <div class="bu-ring">
-                    <svg width="60" height="60" viewBox="0 0 42 42">
-                      <circle cx="21" cy="21" r="19" fill="none" stroke="#EEF1F5" stroke-width="4"/>
-                      <circle cx="21" cy="21" r="19" fill="none" t-attf-stroke="{{ c.score >= 80 ? '#059669' : (c.score >= 50 ? '#D97706' : '#DC2626') }}" stroke-width="4" stroke-linecap="round"
-                              t-att-stroke-dasharray="ring(c.score).dash" t-att-stroke-dashoffset="ring(c.score).offset" transform="rotate(-90 21 21)"/>
-                    </svg>
-                    <span class="bu-ring-val" t-esc="c.score"/>
-                  </div>
-                  <div class="bu-metrics">
-                    <div class="bu-metric"><span class="bu-m-val" t-esc="c.rule_count"/><span class="bu-m-lbl">components</span></div>
-                    <div class="bu-metric"><span class="bu-m-val" t-esc="c.employees.toLocaleString('en-US')"/><span class="bu-m-lbl">employees</span></div>
-                  </div>
-                </div>
-                <div class="bu-flags">
-                  <span t-if="(c.problem_counts.error || 0)" class="bu-flag err"><t t-esc="c.problem_counts.error"/> error<t t-if="c.problem_counts.error !== 1">s</t></span>
-                  <span t-if="(c.problem_counts.warning || 0)" class="bu-flag warn"><t t-esc="c.problem_counts.warning"/> warning<t t-if="c.problem_counts.warning !== 1">s</t></span>
-                  <span t-if="(c.problem_counts.hint || 0)" class="bu-flag hint"><t t-esc="c.problem_counts.hint"/> hint<t t-if="c.problem_counts.hint !== 1">s</t></span>
-                  <span t-if="c.pending_changes" class="bu-flag pending"><t t-esc="c.pending_changes"/> unreleased</span>
-                  <span t-if="c.release_count" class="bu-flag rel"><t t-esc="c.release_count"/> release<t t-if="c.release_count !== 1">s</t></span>
-                  <span t-if="!(c.problem_counts.error || 0) and !c.pending_changes" class="bu-flag ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>clean</span>
-                </div>
-                <div class="bu-card-actions">
-                  <button class="pbfs-btn soft sm" t-on-click="() => this.bureauOpenConfig(c)">Open</button>
-                  <button t-if="state.bureauData.can_edit" class="pbfs-btn ghost sm" t-on-click="() => this.bureauClone(c)">Clone</button>
-                </div>
-              </div>
-              </t>
-            </div>
-            <div t-else="" class="bu-loading">No configurations found.</div>
-          </div>
-        </div>
-      </div>
-
       <!-- ============ CONFIG SWITCHER — WOW gallery selector ============ -->
       <div t-if="state.configSwitcherOpen" class="pbfs-cfgsw-scrim" t-on-click="closeConfigSwitcher">
         <div class="pbfs-cfgsw" t-on-click="(ev) => ev.stopPropagation()">
@@ -2469,13 +2398,15 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
               <div>
                 <b>Payroll configurations</b>
-                <small>Pick a configuration to open in the studio</small>
+                <small><t t-if="state.csBoard and state.csBoard.company"><t t-esc="state.csBoard.company"/> · </t>every configuration at a glance</small>
               </div>
             </div>
-            <div class="cs-summary">
+            <div class="cs-summary" t-if="csCards.length">
               <div class="cs-stat"><b t-esc="csSummary.total"/><span>configs</span></div>
               <div class="cs-stat"><b t-esc="csSummary.active"/><span>active</span></div>
-              <div class="cs-stat"><b t-esc="csSummary.countries"/><span>countries</span></div>
+              <div t-attf-class="cs-stat {{ csSummary.withErrors ? 'err' : '' }}"><b t-esc="csSummary.withErrors"/><span>with errors</span></div>
+              <div t-attf-class="cs-stat {{ csSummary.unreleased ? 'warn' : '' }}"><b t-esc="csSummary.unreleased"/><span>unreleased</span></div>
+              <div class="cs-stat"><b t-esc="csSummary.employees.toLocaleString('en-US')"/><span>employees</span></div>
             </div>
             <button class="hs-x" t-on-click="closeConfigSwitcher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
           </div>
@@ -2483,17 +2414,18 @@
           <div class="cs-filters">
             <div class="cs-search">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="text" placeholder="Search by name or code…" t-att-value="state.csQuery" t-on-input="onCsSearch"/>
+              <input type="text" placeholder="Search by name, code or division…" t-att-value="state.csQuery" t-on-input="onCsSearch"/>
               <button t-if="state.csQuery" class="cs-search-x" t-on-click="csClearQuery" title="Clear search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
             </div>
             <div class="cs-sort">
+              <button t-attf-class="{{ state.csSort === 'attention' ? 'on' : '' }}" t-on-click="() => this.csSetSort('attention')" title="Configs needing attention first">Attention</button>
               <button t-attf-class="{{ state.csSort === 'recent' ? 'on' : '' }}" t-on-click="() => this.csSetSort('recent')">Recent</button>
               <button t-attf-class="{{ state.csSort === 'name' ? 'on' : '' }}" t-on-click="() => this.csSetSort('name')">Name</button>
               <button t-attf-class="{{ state.csSort === 'health' ? 'on' : '' }}" t-on-click="() => this.csSetSort('health')">Health</button>
             </div>
           </div>
 
-          <div class="cs-facets" t-if="csCountryFacets.length > 1 or csStateFacets.length > 1 or csCycleFacets.length > 1 or csHasFilters">
+          <div class="cs-facets" t-if="csCountryFacets.length > 1 or csStateFacets.length > 1 or csCycleFacets.length > 1 or csDivisionFacets.length > 1 or csHasFilters">
             <div class="cs-facet-grp" t-if="csCountryFacets.length > 1">
               <span class="cs-facet-lbl">Country</span>
               <button t-foreach="csCountryFacets" t-as="f" t-key="f.v" t-attf-class="cs-fchip {{ state.csCountry === f.v ? 'on' : '' }}" t-on-click="() => this.csSetCountry(f.v)">
@@ -2512,6 +2444,12 @@
                 <t t-esc="f.label"/><i t-esc="f.n"/>
               </button>
             </div>
+            <div class="cs-facet-grp" t-if="csDivisionFacets.length > 1">
+              <span class="cs-facet-lbl">Division</span>
+              <button t-foreach="csDivisionFacets" t-as="f" t-key="f.v" t-attf-class="cs-fchip {{ state.csDivision === f.v ? 'on' : '' }}" t-on-click="() => this.csSetDivision(f.v)">
+                <t t-esc="f.label"/><i t-esc="f.n"/>
+              </button>
+            </div>
             <button t-if="csHasFilters" class="cs-reset" t-on-click="csClearFilters">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.4 2.6L3 8"/><path d="M3 3v5h5"/></svg>
               Clear filters
@@ -2519,41 +2457,56 @@
           </div>
 
           <div class="cs-body">
-            <div t-if="csFiltered.length" class="cs-grid">
+            <div t-if="state.csBusy and !csCards.length" class="cs-loading"><div class="pbfs-spinner"/><span>Gathering health across all configurations…</span></div>
+            <div t-elif="csFiltered.length" class="cs-grid">
               <t t-foreach="csFiltered" t-as="c" t-key="c.id">
-                <button t-attf-class="cs-card {{ state.config and c.id === state.config.id ? 'current' : '' }}" t-on-click="() => this.chooseConfig(c.id)">
-                  <div class="cs-card-top">
-                    <span class="cs-card-nm" t-esc="c.name"/>
-                    <span t-if="state.config and c.id === state.config.id" class="cs-badge-cur">Current</span>
-                  </div>
-                  <div class="cs-card-code" t-if="c.code" t-esc="c.code"/>
-                  <div class="cs-card-chips">
-                    <span t-if="c.country" class="cs-chip" t-esc="c.country"/>
-                    <span t-if="c.currency" class="cs-chip cur" t-esc="c.currency"/>
-                    <span t-attf-class="cs-state {{ c.state }}" t-esc="csStateLabel(c.state)"/>
-                    <span class="cs-chip cyc" t-esc="csCycleLabel(c.cycle_type)"/>
-                  </div>
-                  <div class="cs-card-mid">
-                    <div class="cs-ring">
-                      <svg width="52" height="52" viewBox="0 0 42 42">
-                        <circle cx="21" cy="21" r="19" fill="none" stroke="#EEF1F5" stroke-width="4"/>
-                        <circle cx="21" cy="21" r="19" fill="none" t-att-stroke="csRingStroke(c.score)" stroke-width="4" stroke-linecap="round"
-                                t-att-stroke-dasharray="ring(c.score).dash" t-att-stroke-dashoffset="ring(c.score).offset" transform="rotate(-90 21 21)"/>
-                      </svg>
-                      <span class="cs-ring-val" t-esc="c.score"/>
+                <div t-attf-class="cs-card attn-{{ csAttention(c) }} {{ state.config and c.id === state.config.id ? 'current' : '' }}">
+                  <button class="cs-card-open" t-on-click="() => this.chooseConfig(c.id)" t-att-title="'Open ' + c.name">
+                    <div class="cs-card-top">
+                      <span class="cs-card-nm" t-esc="c.name"/>
+                      <span t-if="state.config and c.id === state.config.id" class="cs-badge-cur">Current</span>
                     </div>
-                    <div class="cs-metrics">
-                      <div class="cs-metric"><span class="cs-m-val" t-esc="c.rule_count"/><span class="cs-m-lbl">components</span></div>
-                      <div class="cs-metric"><span class="cs-m-val" t-esc="c.sample_count"/><span class="cs-m-lbl">samples</span></div>
+                    <div class="cs-card-code" t-if="c.code" t-esc="c.code"/>
+                    <div class="cs-card-chips">
+                      <span t-if="c.division" class="cs-chip div" t-esc="c.division"/>
+                      <span t-if="c.country" class="cs-chip" t-esc="c.country"/>
+                      <span t-if="c.currency" class="cs-chip cur" t-esc="c.currency"/>
+                      <span t-attf-class="cs-state {{ c.state }}" t-esc="csStateLabel(c.state)"/>
+                      <span class="cs-chip cyc" t-esc="csCycleLabel(c.cycle_type)"/>
                     </div>
+                    <div class="cs-card-mid">
+                      <div class="cs-ring">
+                        <svg width="52" height="52" viewBox="0 0 42 42">
+                          <circle cx="21" cy="21" r="19" fill="none" stroke="#EEF1F5" stroke-width="4"/>
+                          <circle cx="21" cy="21" r="19" fill="none" t-att-stroke="csRingStroke(c.score)" stroke-width="4" stroke-linecap="round"
+                                  t-att-stroke-dasharray="ring(c.score).dash" t-att-stroke-dashoffset="ring(c.score).offset" transform="rotate(-90 21 21)"/>
+                        </svg>
+                        <span class="cs-ring-val" t-esc="c.score"/>
+                      </div>
+                      <div class="cs-metrics">
+                        <div class="cs-metric"><span class="cs-m-val" t-esc="c.rule_count"/><span class="cs-m-lbl">components</span></div>
+                        <div class="cs-metric"><span class="cs-m-val" t-esc="(c.employees || 0).toLocaleString('en-US')"/><span class="cs-m-lbl">employees</span></div>
+                      </div>
+                    </div>
+                    <div class="cs-flags">
+                      <span t-if="(c.problem_counts.error || 0)" class="cs-flag err"><t t-esc="c.problem_counts.error"/> error<t t-if="c.problem_counts.error !== 1">s</t></span>
+                      <span t-if="(c.problem_counts.warning || 0)" class="cs-flag warn"><t t-esc="c.problem_counts.warning"/> warning<t t-if="c.problem_counts.warning !== 1">s</t></span>
+                      <span t-if="(c.problem_counts.hint || 0)" class="cs-flag hint"><t t-esc="c.problem_counts.hint"/> hint<t t-if="c.problem_counts.hint !== 1">s</t></span>
+                      <span t-if="c.pending_changes" class="cs-flag pending"><t t-esc="c.pending_changes"/> unreleased</span>
+                      <span t-if="c.release_count" class="cs-flag rel"><t t-esc="c.release_count"/> release<t t-if="c.release_count !== 1">s</t></span>
+                      <span t-if="!(c.problem_counts.error || 0) and !c.pending_changes" class="cs-flag ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>clean</span>
+                      <span t-if="c.is_master" class="cs-tag master">Master</span>
+                      <span t-if="c.is_variant" class="cs-tag variant">Variant</span>
+                      <span t-if="c.is_branch" class="cs-tag branch">Branch</span>
+                    </div>
+                  </button>
+                  <div class="cs-card-actions">
+                    <button class="pbfs-btn soft sm" t-on-click="() => this.chooseConfig(c.id)">Open</button>
+                    <button t-if="csCanEdit" class="pbfs-btn ghost sm" t-att-disabled="state.csCloningId === c.id" t-on-click="(ev) => this.csClone(c, ev)">
+                      <t t-if="state.csCloningId === c.id">Cloning…</t><t t-else="">Clone</t>
+                    </button>
                   </div>
-                  <div class="cs-tags" t-if="c.is_master or c.is_variant or c.is_branch or !c.active">
-                    <span t-if="c.is_master" class="cs-tag master">Master</span>
-                    <span t-if="c.is_variant" class="cs-tag variant">Variant</span>
-                    <span t-if="c.is_branch" class="cs-tag branch">Branch</span>
-                    <span t-if="!c.active" class="cs-tag archived">Archived</span>
-                  </div>
-                </button>
+                </div>
               </t>
             </div>
             <div t-else="" class="cs-empty">
