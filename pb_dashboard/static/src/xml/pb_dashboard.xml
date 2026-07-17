@@ -80,7 +80,7 @@
                         <div><div class="mv" t-esc="state.d.formula.count"/><div class="ml">Configs</div></div>
                         <div><div class="mv" t-esc="state.d.formula.tests"/><div class="ml">Tests</div></div>
                     </div>
-                    <button class="pbd-link" t-on-click="() => this.open('pb_hr_payroll_formula.action_formula_config')">Open formula engine →</button>
+                    <button class="pbd-link" t-on-click="() => this.open('pb_formula_studio.action_pb_formula_studio')">Open formula engine →</button>
                 </div>
             </div>
         </t>
