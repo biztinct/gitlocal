@@ -4,3 +4,4 @@ from . import models
 from . import formula_engine
 from . import integrations
 from . import wizards
+from . import controllers

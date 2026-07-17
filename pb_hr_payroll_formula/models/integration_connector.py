@@ -36,6 +36,7 @@ class HrIntegrationConnector(models.Model):
         ('sap', 'SAP SuccessFactors'),
         ('workday', 'Workday'),
         ('oracle', 'Oracle HCM'),
+        ('darwin', 'DarwinHR (Darwinbox)'),
         ('demo', 'Demo / Stub (Testing)')
     ], string='Connector Type', required=True, tracking=True)
 
@@ -925,6 +926,7 @@ class HrIntegrationConnector(models.Model):
             WorkdayConnector,
             OracleConnector,
             DemoConnector,
+            DarwinHRConnector,
         )
 
         connector_map = {
@@ -933,6 +935,7 @@ class HrIntegrationConnector(models.Model):
             'sap': SAPConnector,
             'workday': WorkdayConnector,
             'oracle': OracleConnector,
+            'darwin': DarwinHRConnector,
             'demo': DemoConnector,
         }
 
@@ -971,6 +974,32 @@ class HrIntegrationConnector(models.Model):
         self.ensure_one()
         connector = self._get_connector_instance()
         return connector.transform_data(raw_data, self._sync_mapping_ids())
+
+    # ==========================================
+    # INBOUND WEBHOOK (push ingestion)
+    # ==========================================
+    MAX_WEBHOOK_RECORDS = 5000
+
+    def webhook_ingest(self, data_type, records):
+        """Store records pushed by an external system (DarwinHR) as raw
+        hr.api.data.store rows. Validation of the caller happens in the
+        controller; this only runs for an active connector that supports push.
+        Raw-only — never transforms/posts. Returns a small summary dict."""
+        self.ensure_one()
+        if not self.active:
+            raise UserError(_('Connector %s is inactive.') % self.name)
+        connector = self._get_connector_instance()
+        if not hasattr(connector, 'ingest_records'):
+            raise UserError(_('Connector type %s does not accept pushed data.')
+                            % self.connector_type)
+        records = records or []
+        if len(records) > self.MAX_WEBHOOK_RECORDS:
+            raise UserError(_('Too many records in one push (max %d).')
+                            % self.MAX_WEBHOOK_RECORDS)
+        res = connector.ingest_records(data_type or 'employee', records)
+        self.sudo().write({'last_sync': fields.Datetime.now(),
+                           'last_sync_status': 'success'})
+        return res
 
     # ==========================================
     # EXCEL IMPORT

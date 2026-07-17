@@ -23,6 +23,7 @@ _SYSTEMS = [
     ('Oracle ERP Cloud', 'oracle', 'oauth2', 'ERP', 'ALL'),
     ('Oracle NetSuite', 'oracle', 'bearer', 'ERP', 'ALL'),
     ('Microsoft Dynamics 365', 'demo', 'oauth2', 'ERP', 'ALL'),
+    ('DarwinHR (Darwinbox)', 'darwin', 'api_key', 'HRIS', 'ALL'),
     ('Zoho People', 'zoho', 'oauth2', 'HRIS', 'VN'),
     ('Zoho Payroll', 'zoho', 'oauth2', 'Payroll', 'VN'),
     ('BambooHR', 'demo', 'api_key', 'HRIS', 'ALL'),

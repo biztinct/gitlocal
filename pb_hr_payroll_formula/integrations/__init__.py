@@ -7,3 +7,4 @@ from .sap_connector import SAPConnector
 from .workday_connector import WorkdayConnector
 from .oracle_connector import OracleConnector
 from .demo_connector import DemoConnector
+from .darwin_connector import DarwinHRConnector
