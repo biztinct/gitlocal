@@ -138,6 +138,8 @@
             </div>
           </div>
 
+          <!-- scrollable region: KPI + facets + results -->
+          <div class="pbp-scroll">
           <!-- KPI strip -->
           <div class="pbp-kpis" t-if="state.picker.all.length">
             <div class="pbp-kpi"><b t-esc="pNum(pSummary.runs)"/><span>payruns</span></div>
@@ -301,6 +303,7 @@
                 </tbody>
               </table>
             </div>
+          </div>
           </div>
         </div>
       </div>

@@ -131,8 +131,12 @@
     .pbp-close svg { width: 18px; height: 18px; }
     .pbp-close:hover { color: var(--ink); border-color: #CBC2EE; }
 
-    /* KPI strip */
-    .pbp-kpis { display: flex; gap: 26px; padding: 13px 22px; background: #fff; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+    /* everything below the fixed header scrolls as one region (so the cards are
+       always reachable no matter how many facet rows the viewport has to fit) */
+    .pbp-scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; }
+
+    /* KPI strip — pinned to the top of the scroll region so the headline persists */
+    .pbp-kpis { position: sticky; top: 0; z-index: 3; display: flex; gap: 26px; padding: 13px 22px; background: #fff; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
     .pbp-kpi { display: flex; flex-direction: column; line-height: 1.1; }
     .pbp-kpi b { font-size: 20px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
     .pbp-kpi span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-top: 3px; }
@@ -172,8 +176,8 @@
     }
     .pbp-clear svg { width: 13px; height: 13px; }
 
-    /* body */
-    .pbp-body { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 22px; }
+    /* body (scrolls via the .pbp-scroll wrapper, not itself) */
+    .pbp-body { flex: 1; padding: 20px 22px; }
     .pbp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 14px; }
 
     .pbp-card {
