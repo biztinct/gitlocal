@@ -6,11 +6,11 @@ _logger = logging.getLogger(__name__)
 
 TYPE_LABEL = {
     'zoho': 'Zoho People', 'excel': 'Excel File', 'sap': 'SAP SuccessFactors',
-    'workday': 'Workday', 'oracle': 'Oracle HCM', 'demo': 'Demo / Stub',
+    'workday': 'Workday', 'oracle': 'Oracle HCM', 'darwin': 'DarwinHR', 'demo': 'Demo / Stub',
 }
 TYPE_ICON = {
     'zoho': 'cloud', 'excel': 'table', 'sap': 'server',
-    'workday': 'briefcase', 'oracle': 'database', 'demo': 'beaker',
+    'workday': 'briefcase', 'oracle': 'database', 'darwin': 'zap', 'demo': 'beaker',
 }
 STATUS_LABEL = {'disconnected': 'Disconnected', 'connecting': 'Connecting',
                 'connected': 'Connected', 'error': 'Error'}

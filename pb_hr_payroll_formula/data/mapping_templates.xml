@@ -264,5 +264,66 @@
             <field name="target_code">TAXID</field><field name="target_label">Tax ID</field><field name="sequence">120</field>
         </record>
 
+        <!-- ============ DarwinHR / Darwinbox (masterapi employeedirectory + compensation) ============ -->
+        <record id="mt_dbx_empid" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">employee_no</field>
+            <field name="target_code">EMPID</field><field name="target_label">Employee ID</field>
+            <field name="is_required" eval="True"/><field name="sequence">10</field>
+            <field name="note">Darwinbox employeedirectory record key</field>
+        </record>
+        <record id="mt_dbx_name" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">full_name</field>
+            <field name="target_code">FULLNAME</field><field name="target_label">Full name</field><field name="sequence">20</field>
+        </record>
+        <record id="mt_dbx_email" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">office_email_id</field>
+            <field name="target_code">EMAIL</field><field name="target_label">Email</field><field name="sequence">30</field>
+        </record>
+        <record id="mt_dbx_dept" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">department</field>
+            <field name="target_code">DEPT</field><field name="target_label">Department</field><field name="sequence">40</field>
+        </record>
+        <record id="mt_dbx_job" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">designation</field>
+            <field name="target_code">JOBTITLE</field><field name="target_label">Job title</field><field name="sequence">50</field>
+        </record>
+        <record id="mt_dbx_join" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">date_of_joining</field>
+            <field name="target_code">JOINDATE</field><field name="target_label">Join date</field>
+            <field name="verify" eval="True"/><field name="sequence">60</field>
+            <field name="note">Darwinbox date format yyyy-mm-dd — verify parse</field>
+        </record>
+        <record id="mt_dbx_basic" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">basic</field>
+            <field name="target_code">BASIC</field><field name="target_label">Basic salary</field><field name="sequence">70</field>
+            <field name="note">From compensation API — verify it is monthly gross</field><field name="verify" eval="True"/>
+        </record>
+        <record id="mt_dbx_allow" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">special_allowance</field>
+            <field name="target_code">ALLOWFIX</field><field name="target_label">Fixed allowance</field><field name="sequence">80</field>
+        </record>
+        <record id="mt_dbx_ot" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">overtime_hours</field>
+            <field name="target_code">OTHOURS</field><field name="target_label">Overtime hours</field><field name="sequence">90</field>
+        </record>
+        <record id="mt_dbx_wdays" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">working_days</field>
+            <field name="target_code">WDAYS</field><field name="target_label">Working days</field><field name="sequence">100</field>
+        </record>
+        <record id="mt_dbx_deps" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">dependents_count</field>
+            <field name="target_code">DEPS</field><field name="target_label">Dependents</field>
+            <field name="transformation_type">python</field><field name="verify" eval="True"/><field name="sequence">110</field>
+            <field name="note">Count of dependents from the dependents API</field>
+        </record>
+        <record id="mt_dbx_bank" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">bank_account_number</field>
+            <field name="target_code">BANKACC</field><field name="target_label">Bank account</field><field name="sequence">120</field>
+        </record>
+        <record id="mt_dbx_tax" model="hr.integration.mapping.template">
+            <field name="connector_type">darwin</field><field name="source_path">pan</field>
+            <field name="target_code">TAXID</field><field name="target_label">Tax ID</field><field name="sequence">130</field>
+        </record>
+
     </data>
 </odoo>

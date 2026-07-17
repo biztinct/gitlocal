@@ -16,6 +16,7 @@ _VENDORS = [
     ('workday', 'Workday'),
     ('sap', 'SAP SuccessFactors'),
     ('oracle', 'Oracle HCM'),
+    ('darwin', 'DarwinHR (Darwinbox)'),
 ]
 
 
