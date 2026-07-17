@@ -11,6 +11,7 @@ import base64
 import io
 import json
 import logging
+from datetime import date
 
 from odoo import _, api, models
 from odoo.exceptions import AccessError
@@ -242,6 +243,121 @@ class PayrunResults(models.AbstractModel):
             if d and d.id not in seen:
                 seen[d.id] = d.name
         return [{'id': k, 'name': v} for k, v in sorted(seen.items(), key=lambda kv: kv[1] or '')]
+
+    # ------------------------------------------------------------------
+    # F112b — pay-run picker (rich, filterable gallery that replaces the
+    # silent "newest run" default). One grouped query for the candidate set,
+    # then everything the cards show is read from STORED hr.payslip.run fields
+    # (pb_employee_count / pb_total_* / pb_currency_id / pb_division_label) —
+    # zero per-slip aggregation, so opening the picker is as cheap as a kanban.
+    # ------------------------------------------------------------------
+    _STATE_META = {
+        'draft':  ('Draft', 'draft'),
+        'verify': ('Waiting', 'review'),
+        'level1': ('HR Review', 'review'),
+        'level2': ('GM Review', 'review'),
+        'done':   ('Approved', 'done'),
+        'close':  ('Closed', 'done'),
+        'paid':   ('Paid', 'done'),
+    }
+
+    def _state_label(self, st):
+        return self._STATE_META.get(st, (st and st.replace('_', ' ').title() or '', 'draft'))
+
+    def _run_card(self, r):
+        label, tone = self._state_label(r.state)
+        symbol = (r.pb_currency_id.symbol or u'₫') if r.pb_currency_id else u'₫'
+        comp = getattr(r, 'company_id', False)   # hr.payslip.run has no company_id in this build
+        return {
+            'id': r.id,
+            'name': r.name or _('Run #%s') % r.id,
+            'state': r.state or '',
+            'state_label': label,
+            'state_tone': tone,
+            'date_start': str(r.date_start) if r.date_start else '',
+            'date_end': str(r.date_end) if r.date_end else '',
+            'employees': r.pb_employee_count or 0,
+            'net': r.pb_total_net or 0.0,
+            'gross': r.pb_total_gross or 0.0,
+            'deductions': r.pb_total_deductions or 0.0,
+            'currency': symbol,
+            'division': r.pb_division or '',
+            'division_label': r.pb_division_label or '',
+            'company': comp.name if comp else '',
+            'company_id': comp.id if comp else False,
+        }
+
+    @api.model
+    def list_runs(self, filters=None):
+        """Feed the picker: every formula-calculated pay run as a rich card,
+        with the filter controls' own option lists built from the full
+        (pre-filter) candidate set so the dropdowns never hide a valid choice."""
+        self._check_access()
+        self = self.sudo()
+        f = filters or {}
+        groups = self.env['hr.payslip'].read_group(
+            [('formula_computed_values', '!=', False), ('payslip_run_id', '!=', False)],
+            ['payslip_run_id'], ['payslip_run_id'],
+            orderby='payslip_run_id desc', limit=300)
+        run_ids = [g['payslip_run_id'][0] for g in groups if g.get('payslip_run_id')]
+        runs = self.env['hr.payslip.run'].browse(run_ids).exists()
+
+        # option lists from the full set (order: states by workflow, rest A-Z)
+        state_seen, div_opts, comp_opts = [], {}, {}
+        for r in runs:
+            if r.state and r.state not in state_seen:
+                state_seen.append(r.state)
+            if r.pb_division and r.pb_division not in div_opts:
+                div_opts[r.pb_division] = r.pb_division_label or r.pb_division.replace('_', ' ').title()
+            comp = getattr(r, 'company_id', False)
+            if comp and comp.id not in comp_opts:
+                comp_opts[comp.id] = comp.name
+        _order = ['draft', 'verify', 'level1', 'level2', 'done', 'close', 'paid']
+        state_seen.sort(key=lambda s: _order.index(s) if s in _order else 99)
+
+        # filters
+        q = (f.get('search') or '').strip().lower()
+        if q:
+            runs = runs.filtered(lambda r: q in (r.name or '').lower())
+        if f.get('state'):
+            runs = runs.filtered(lambda r: r.state == f['state'])
+        if f.get('division'):
+            runs = runs.filtered(lambda r: (r.pb_division or '') == f['division'])
+        if f.get('company_id'):
+            cid = int(f['company_id'])
+            runs = runs.filtered(lambda r: getattr(r, 'company_id', False) and r.company_id.id == cid)
+        if f.get('date_from'):
+            runs = runs.filtered(lambda r: r.date_end and str(r.date_end) >= f['date_from'])
+        if f.get('date_to'):
+            runs = runs.filtered(lambda r: r.date_start and str(r.date_start) <= f['date_to'])
+
+        # sort
+        sort = f.get('sort') or 'newest'
+        keyed = list(runs)
+        if sort == 'oldest':
+            keyed.sort(key=lambda r: (r.date_start or date.min, r.id))
+        elif sort == 'net_desc':
+            keyed.sort(key=lambda r: r.pb_total_net or 0.0, reverse=True)
+        elif sort == 'net_asc':
+            keyed.sort(key=lambda r: r.pb_total_net or 0.0)
+        elif sort == 'emp_desc':
+            keyed.sort(key=lambda r: r.pb_employee_count or 0, reverse=True)
+        else:  # newest
+            keyed.sort(key=lambda r: (r.date_start or date.min, r.id), reverse=True)
+
+        return {
+            'ok': True,
+            'runs': [self._run_card(r) for r in keyed],
+            'total': len(keyed),
+            'grand_total': len(run_ids),
+            'options': {
+                'states': [{'value': s, 'label': self._state_label(s)[0]} for s in state_seen],
+                'divisions': [{'value': k, 'label': v}
+                              for k, v in sorted(div_opts.items(), key=lambda kv: kv[1] or '')],
+                'companies': [{'value': k, 'label': v}
+                              for k, v in sorted(comp_opts.items(), key=lambda kv: kv[1] or '')],
+            },
+        }
 
     # ------------------------------------------------------------------
     # xlsx export (D112.6) — full filtered set, blob pattern
