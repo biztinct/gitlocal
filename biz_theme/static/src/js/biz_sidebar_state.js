@@ -45,8 +45,8 @@ export function clearSidebarMode() {
  * if it renders as a rail → expand (pinned, so it survives small screens).
  */
 export function toggleSidebarMode(uid) {
-    // Matches the SCSS auto-rail breakpoint in biz_sidebar.scss (biz-down xl).
-    const belowAutoBp = window.matchMedia("(max-width: 1439px)").matches;
+    // Matches the SCSS auto-rail breakpoint in biz_sidebar.scss ($biz-sb-auto-bp).
+    const belowAutoBp = window.matchMedia("(max-width: 1919px)").matches;
     const mode = getSidebarMode(uid);
     const effectivelyCollapsed =
         mode === "collapsed" || (mode === "auto" && belowAutoBp);

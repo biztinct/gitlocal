@@ -39,9 +39,10 @@ body.biz-sb-collapsed .biz-layout-wrapper:has(> .biz-sidebar) {
     @include biz-rail-mode;
 }
 
-// Auto rail below xl (large/wide desktop) unless the user explicitly pinned
-// expanded — laptops and medium screens collapse to the icon rail by default.
-@include biz-down($biz-bp-xl) {
+// Auto rail below the sidebar auto-expand threshold (external-monitor width)
+// unless the user explicitly pinned expanded — every laptop collapses to the
+// icon rail by default; only genuinely large screens start expanded.
+@include biz-down($biz-sb-auto-bp) {
     body:not(.biz-sb-expanded):not(.biz-sb-collapsed) .biz-layout-wrapper:has(> .biz-sidebar) {
         @include biz-rail-mode;
     }

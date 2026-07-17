@@ -16,6 +16,12 @@ $biz-bp-lg: 1280px !default;
 $biz-bp-md: 1100px !default;
 $biz-bp-sm: 768px !default;
 
+// Sidebar auto-expand threshold — kept SEPARATE from $biz-bp-xl (which also drives
+// the .biz-hide-xl utilities). In "auto" mode the sidebar rails below this and only
+// expands on genuinely large screens (external monitors); every laptop rails by
+// default. Keep in sync with the matchMedia() in biz_sidebar_state.js.
+$biz-sb-auto-bp: 1920px !default;
+
 @mixin biz-down($bp) {
     @media (max-width: $bp - 1px) { @content; }
 }

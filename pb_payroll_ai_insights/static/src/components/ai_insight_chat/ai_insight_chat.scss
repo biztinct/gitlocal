@@ -100,8 +100,10 @@ $smooth-ease: cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1050;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 18px 10px 12px;
+    // Resting state = compact circle (avatar only). Hover expands it back to the
+    // full "PayAI · Online" pill, so the bottom-right footprint stays minimal.
+    gap: 0;
+    padding: 10px;
     background: #2d2a6e;
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -116,7 +118,10 @@ $smooth-ease: cubic-bezier(0.4, 0, 0.2, 1);
     &:hover {
         transform: translateY(-3px) scale(1.03);
         box-shadow: 0 8px 32px rgba($primary-color, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+        gap: 10px;
+        padding: 10px 18px 10px 12px;
     }
+    &:hover .payai-pill-text { max-width: 140px; opacity: 1; }
 
     &:active {
         transform: translateY(-1px) scale(0.98);
@@ -128,6 +133,13 @@ $smooth-ease: cubic-bezier(0.4, 0, 0.2, 1);
         transform: scale(0.8);
     }
 }
+
+// Yield to focused task surfaces: hide the orb while any Odoo dialog
+// (body.modal-open) or a full-view cockpit wizard (import .iw-root / payrun
+// .pw-root) is open, so it never covers the wizard's bottom-right action button.
+body.modal-open .payai-floating-pill,
+body:has(.iw-root) .payai-floating-pill,
+body:has(.pw-root) .payai-floating-pill { display: none; }
 
 .payai-pill-avatar {
     position: relative;
@@ -172,6 +184,12 @@ $smooth-ease: cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     line-height: 1.2;
+    // collapsed by default; the pill's :hover reveals it
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.28s $smooth-ease, opacity 0.2s ease;
 }
 
 .payai-pill-title {

@@ -195,9 +195,18 @@ body.pb-coach-active .o_loading { display: none !important; }
 }
 
 // -------------------------------------------------------------- launcher FAB
-// Top-right, just below the control-panel row ("Active" button), so it's always
-// visible instead of buried at the bottom of the sidebar.
-.pbc-launcher { position: fixed; z-index: 1990; right: 188px; bottom: 26px; }
+// Bottom-right, STACKED above the PayAI orb (a single narrow right-edge column)
+// instead of side-by-side, so the cluster no longer spans the primary-action band.
+.pbc-launcher { position: fixed; z-index: 1990; right: 28px; bottom: 92px; }
+
+// Yield to focused task surfaces: while any Odoo dialog (body.modal-open) or a
+// full-view cockpit wizard (import .iw-root / payrun .pw-root — these are client
+// actions, so they never set modal-open) is open, get out of the way so the
+// wizard's bottom-right action button is never covered. Add new footer-wizard
+// roots here as they appear.
+body.modal-open .pbc-launcher,
+body:has(.iw-root) .pbc-launcher,
+body:has(.pw-root) .pbc-launcher { display: none; }
 .pbc-fab {
     display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%;
     background: var(--pbc-primary); color: #fff; border: none; cursor: pointer;
