@@ -1842,6 +1842,15 @@ class PbFormulaStudio(models.AbstractModel):
                 'pending_changes': pending,
                 'release_count': Rel.search_count([('config_id', '=', c.id)]),
                 'employees': self._config_employee_count(c),
+                # --- identity fields the Config Switcher gallery also renders ---
+                'code': c.code or '',
+                'country': c.country_code or '',
+                'currency': c.currency_id.name or '',
+                'active': bool(c.active),
+                'sample_count': len(c.sample_data_ids),
+                'is_branch': bool(c.parent_branch_id),
+                'is_variant': bool(c.master_config_id),
+                'is_master': bool(c.variant_ids),
             })
         # rank so the boards needing attention (errors, pending, low score) float up
         cards.sort(key=lambda k: (

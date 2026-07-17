@@ -221,10 +221,6 @@ export class PbFormulaStudio extends Component {
             rollbackSimResult: null,
             rollbackSimId: null,
             rollbackApplying: false,
-            // B6 — bureau cockpit
-            bureauOpen: false,
-            bureauBusy: false,
-            bureauData: null,
             // B4 — legislation packs
             legisOpen: false,
             legisBusy: false,
@@ -299,13 +295,18 @@ export class PbFormulaStudio extends Component {
             wizardTemplates: [],
             wizardBusy: false,
             configPickerOpen: false,
-            // Config Switcher — WOW gallery selector (replaces the top-left dropdown)
+            // Config Switcher — WOW gallery selector + health board
+            // (supersedes both the old dropdown AND the Bureau cockpit)
             configSwitcherOpen: false,
+            csBoard: null,       // {cards, can_edit, company} from bureau_board
+            csBusy: false,
+            csCloningId: null,
             csQuery: "",
             csCountry: "",
             csState: "",
             csCycle: "",
-            csSort: "recent",   // recent | name | health
+            csDivision: "",
+            csSort: "attention",   // attention | recent | name | health
             confirmDel: null,
             // responsive header: Tools ▾ overflow (visible ≤1280 via CSS)
             moreOpen: false,
@@ -477,11 +478,18 @@ export class PbFormulaStudio extends Component {
             }
             // arriving from a config row → open that config's Settings surface
             const cfgId = (a.params && a.params.config_id) || (a.context && a.context.config_id);
+            const openWiz = (a.params && a.params.open_wizard) || (a.context && a.context.open_wizard);
             if (cfgId) {
                 if (!this.state.config || this.state.config.id !== cfgId) await this.load(cfgId);
                 if ((a.params && a.params.open_settings) || (a.context && a.context.open_settings)) {
                     await this.openSettings();
                 }
+            } else if (!openWiz && !this.state.empty) {
+                // Fresh entry (left-menu "Formula Engine" / dashboard) with no target
+                // config → land on the Payroll-configurations picker so the user
+                // chooses which scheme to open. Skip the option for the wizard flow
+                // and when there are no configs yet (the build panel shows instead).
+                this.openConfigSwitcher();
             }
         });
         onMounted(() => { this._bindArrowEvents(); this.redrawArrows(); });
@@ -1743,47 +1751,24 @@ export class PbFormulaStudio extends Component {
         } finally { this.state.rollbackApplying = false; }
     }
 
-    // ---- Bureau cockpit (B6) ----
-    openBureau() {
-        this.state.bureauOpen = true;
-        this.state.bureauData = null;
-        this._loadBureau();
-    }
-    closeBureau() { this.state.bureauOpen = false; }
-    async _loadBureau() {
-        this.state.bureauBusy = true;
+    // ---- Config Switcher health board (folds in the old Bureau cockpit) ----
+    async _loadCsBoard() {
+        this.state.csBusy = true;
         try {
-            this.state.bureauData = await this.orm.call("pb.formula.studio", "bureau_board", []);
-        } catch (e) { this.state.bureauData = { ok: false, cards: [] }; }
-        finally { this.state.bureauBusy = false; }
+            this.state.csBoard = await this.orm.call("pb.formula.studio", "bureau_board", []);
+        } catch (e) { this.state.csBoard = { ok: false, cards: [], can_edit: false, company: "" }; }
+        finally { this.state.csBusy = false; }
     }
-    async bureauOpenConfig(card) {
-        this.state.bureauOpen = false;
-        await this.load(card.id);
-        this.state.view = "cards";
-    }
-    async bureauClone(card) {
+    async csClone(card, ev) {
+        if (ev) ev.stopPropagation();
         if (this._lockedNotice()) return;
-        const r = await this.orm.call("pb.formula.studio", "bureau_clone", [card.id]);
-        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Clone failed", { type: "warning" }); return; }
-        this.notif.add(`Cloned as “${r.name}”`, { type: "success" });
-        await this._loadBureau();
-    }
-    bureauCycleLabel(ct) {
-        return { mid_cycle: "Mid-cycle", end_cycle: "End-cycle", full_final: "Full & Final", regular: "Regular" }[ct] || ct;
-    }
-    bureauStateLabel(s) {
-        return { draft: "Draft", testing: "Testing", validated: "Validated", active: "Active", archived: "Archived" }[s] || s;
-    }
-    get bureauSummary() {
-        const cards = (this.state.bureauData && this.state.bureauData.cards) || [];
-        return {
-            configs: cards.length,
-            active: cards.filter(c => c.state === "active").length,
-            withErrors: cards.filter(c => (c.problem_counts.error || 0) > 0).length,
-            withPending: cards.filter(c => c.pending_changes > 0).length,
-            employees: cards.reduce((a, c) => a + (c.employees || 0), 0),
-        };
+        this.state.csCloningId = card.id;
+        try {
+            const r = await this.orm.call("pb.formula.studio", "bureau_clone", [card.id]);
+            if (!r || !r.ok) { this.notif.add((r && r.msg) || "Clone failed", { type: "warning" }); return; }
+            this.notif.add(`Cloned as “${r.name}”`, { type: "success" });
+            await this._loadCsBoard();
+        } finally { this.state.csCloningId = null; }
     }
 
     // ---- Legislation packs (B4) ----
@@ -3569,23 +3554,32 @@ export class PbFormulaStudio extends Component {
     toggleConfigPicker() { this.state.configPickerOpen = !this.state.configPickerOpen; }
     async pickConfig(id) { this.state.configPickerOpen = false; this.state.selectedId = null; await this.load(id); }
 
-    // ---- Config Switcher (WOW gallery selector with filters) ----
-    openConfigSwitcher() { this.state.configPickerOpen = false; this.state.configSwitcherOpen = true; }
+    // ---- Config Switcher (gallery selector + health board with filters) ----
+    openConfigSwitcher() {
+        this.state.configPickerOpen = false;
+        this.state.configSwitcherOpen = true;
+        if (!this.state.csBoard) this._loadCsBoard();   // lazy — refetched on clone
+    }
     closeConfigSwitcher() { this.state.configSwitcherOpen = false; }
+    async refreshCsBoard() { await this._loadCsBoard(); }
     async chooseConfig(id) {
         this.state.configSwitcherOpen = false;
         if (id === (this.state.config && this.state.config.id)) return;
         this.state.selectedId = null;
         await this.load(id);
+        this.state.view = "cards";
     }
     onCsSearch(ev) { this.state.csQuery = ev.target.value; }
     csClearQuery() { this.state.csQuery = ""; }
     csSetCountry(v) { this.state.csCountry = this.state.csCountry === v ? "" : v; }
     csSetState(v) { this.state.csState = this.state.csState === v ? "" : v; }
     csSetCycle(v) { this.state.csCycle = this.state.csCycle === v ? "" : v; }
+    csSetDivision(v) { this.state.csDivision = this.state.csDivision === v ? "" : v; }
     csSetSort(v) { this.state.csSort = v; }
-    csClearFilters() { this.state.csQuery = ""; this.state.csCountry = ""; this.state.csState = ""; this.state.csCycle = ""; }
-    get csHasFilters() { return !!(this.state.csQuery || this.state.csCountry || this.state.csState || this.state.csCycle); }
+    csClearFilters() { this.state.csQuery = ""; this.state.csCountry = ""; this.state.csState = ""; this.state.csCycle = ""; this.state.csDivision = ""; }
+    get csHasFilters() { return !!(this.state.csQuery || this.state.csCountry || this.state.csState || this.state.csCycle || this.state.csDivision); }
+    get csCards() { return (this.state.csBoard && this.state.csBoard.cards) || []; }
+    get csCanEdit() { return !!(this.state.csBoard && this.state.csBoard.can_edit); }
     csCountryLabel(cc) {
         return { VN: "Vietnam", ID: "Indonesia", IN: "India", SG: "Singapore",
                  MY: "Malaysia", TH: "Thailand", KH: "Cambodia", PH: "Philippines" }[cc] || cc;
@@ -3599,32 +3593,42 @@ export class PbFormulaStudio extends Component {
                  active: "Active", archived: "Archived" }[s] || s;
     }
     csRingStroke(score) { return (score >= 80) ? "#059669" : (score >= 50 ? "#D97706" : (score > 0 ? "#DC2626" : "#CBD5E1")); }
+    // a card wants attention if it has hard errors or unreleased changes
+    csAttention(c) { return ((c.problem_counts && c.problem_counts.error) || 0) > 0 ? "err" : (c.pending_changes ? "warn" : ""); }
     _csFacet(key, labeler) {
         const m = {};
-        for (const c of (this.state.configs || [])) { const v = c[key] || ""; if (v) m[v] = (m[v] || 0) + 1; }
+        for (const c of this.csCards) { const v = c[key] || ""; if (v) m[v] = (m[v] || 0) + 1; }
         return Object.keys(m).map(v => ({ v, n: m[v], label: labeler ? labeler.call(this, v) : v }))
                      .sort((a, b) => b.n - a.n || String(a.label).localeCompare(String(b.label)));
     }
     get csCountryFacets() { return this._csFacet("country", this.csCountryLabel); }
     get csStateFacets() { return this._csFacet("state", this.csStateLabel); }
     get csCycleFacets() { return this._csFacet("cycle_type", this.csCycleLabel); }
+    get csDivisionFacets() { return this._csFacet("division"); }
     get csFiltered() {
-        let cfgs = (this.state.configs || []).slice();
+        let cfgs = this.csCards.slice();
         const q = (this.state.csQuery || "").trim().toLowerCase();
-        if (q) cfgs = cfgs.filter(c => (c.name || "").toLowerCase().includes(q) || (c.code || "").toLowerCase().includes(q));
+        if (q) cfgs = cfgs.filter(c => (c.name || "").toLowerCase().includes(q) || (c.code || "").toLowerCase().includes(q) || (c.division || "").toLowerCase().includes(q));
         if (this.state.csCountry) cfgs = cfgs.filter(c => c.country === this.state.csCountry);
         if (this.state.csState) cfgs = cfgs.filter(c => c.state === this.state.csState);
         if (this.state.csCycle) cfgs = cfgs.filter(c => c.cycle_type === this.state.csCycle);
+        if (this.state.csDivision) cfgs = cfgs.filter(c => c.division === this.state.csDivision);
         if (this.state.csSort === "name") cfgs.sort((a, b) => String(a.name).localeCompare(String(b.name)));
         else if (this.state.csSort === "health") cfgs.sort((a, b) => (b.score || 0) - (a.score || 0));
-        return cfgs;   // "recent" keeps the server order (sequence, id desc)
+        else if (this.state.csSort === "attention") cfgs.sort((a, b) =>
+            ((b.problem_counts && b.problem_counts.error || 0) - (a.problem_counts && a.problem_counts.error || 0))
+            || (b.pending_changes - a.pending_changes) || (a.score - b.score));
+        // "recent" keeps the server order
+        return cfgs;
     }
     get csSummary() {
-        const cfgs = this.state.configs || [];
+        const cfgs = this.csCards;
         return {
             total: cfgs.length,
             active: cfgs.filter(c => c.state === "active").length,
-            countries: new Set(cfgs.map(c => c.country).filter(Boolean)).size,
+            withErrors: cfgs.filter(c => ((c.problem_counts && c.problem_counts.error) || 0) > 0).length,
+            unreleased: cfgs.filter(c => c.pending_changes > 0).length,
+            employees: cfgs.reduce((a, c) => a + (c.employees || 0), 0),
             shown: this.csFiltered.length,
         };
     }
