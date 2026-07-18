@@ -114,6 +114,37 @@ class HrFullFinalSettlement(models.Model):
         currency_field='currency_id',
     )
 
+    # ---- display-only breakdown (parsed from the summary JSON) for the WOW form ----
+    c_basic = fields.Monetary(string='Basic salary', compute='_compute_breakdown', currency_field='currency_id')
+    c_allow = fields.Monetary(string='Allowances', compute='_compute_breakdown', currency_field='currency_id')
+    c_ot = fields.Monetary(string='Overtime', compute='_compute_breakdown', currency_field='currency_id')
+    c_bonus = fields.Monetary(string='Bonus', compute='_compute_breakdown', currency_field='currency_id')
+    c_leave = fields.Monetary(string='Unused leave', compute='_compute_breakdown', currency_field='currency_id')
+    c_other_earn = fields.Monetary(string='Other earnings', compute='_compute_breakdown', currency_field='currency_id')
+    c_pit = fields.Monetary(string='Personal income tax', compute='_compute_breakdown', currency_field='currency_id')
+    c_si = fields.Monetary(string='Social insurance', compute='_compute_breakdown', currency_field='currency_id')
+    c_hi = fields.Monetary(string='Health insurance', compute='_compute_breakdown', currency_field='currency_id')
+    c_ui = fields.Monetary(string='Unemployment insurance', compute='_compute_breakdown', currency_field='currency_id')
+    c_loan = fields.Monetary(string='Loan / advance', compute='_compute_breakdown', currency_field='currency_id')
+    c_other_ded = fields.Monetary(string='Other deductions', compute='_compute_breakdown', currency_field='currency_id')
+
+    _BREAKDOWN_KEYS = {
+        'c_basic': 'basic_salary', 'c_allow': 'allowances', 'c_ot': 'overtime', 'c_bonus': 'bonus',
+        'c_leave': 'unused_leave', 'c_other_earn': 'other_earnings', 'c_pit': 'personal_income_tax',
+        'c_si': 'social_insurance', 'c_hi': 'health_insurance', 'c_ui': 'unemployment_insurance',
+        'c_loan': 'loan_advance', 'c_other_ded': 'other_deductions',
+    }
+
+    @api.depends('component_summary_json')
+    def _compute_breakdown(self):
+        for rec in self:
+            try:
+                s = json.loads(rec.component_summary_json or '{}')
+            except (json.JSONDecodeError, TypeError):
+                s = {}
+            for fname, key in self._BREAKDOWN_KEYS.items():
+                rec[fname] = s.get(key, 0.0)
+
     def action_download_full_and_final(self):
         self.ensure_one()
         return self.env.ref('pb_hr_fullandfinal.action_report_full_and_final').report_action(self)
