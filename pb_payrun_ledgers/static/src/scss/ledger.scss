@@ -1,0 +1,33 @@
+/* Pay-run ledger cockpits — builds on the shared pb_import_kit tokens/classes
+   (.pbim-*, .ppl-*). Only the ledger-specific facet rows + metric columns live
+   here so the screens sit flush with Employees/Contracts. */
+.pbl-ledger {
+    .pbl-facetwrap { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 10px 18px; flex: 1; min-width: 0; }
+    .pbl-facet { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pbl-flabel { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--pbim-muted); }
+
+    .pbl-select {
+        height: 30px; border: 1px solid var(--pbim-line); border-radius: 999px; background: #fff;
+        color: var(--pbim-text); font-family: inherit; font-size: 12px; font-weight: 700;
+        padding: 0 28px 0 12px; cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 10px center; -webkit-appearance: none; appearance: none;
+    }
+    .pbl-select:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-soft); }
+
+    .pbl-clear { color: var(--pbim-rose); border-color: #F2D6DE; }
+
+    /* row: metric columns (old → new → strong) + optional action button */
+    .pbl-code { font-family: ui-monospace, Menlo, monospace; font-size: 10px; font-weight: 700; color: var(--pbim-primary-strong, var(--pbim-primary)); background: var(--pbim-soft); border-radius: 6px; padding: 1px 6px; margin-left: 4px; }
+    .pbl-badges { min-width: 108px; }
+    .pbl-metrics { display: flex; align-items: center; gap: 18px; flex: none; margin-left: auto; }
+    .pbl-metric { text-align: right; min-width: 78px; }
+    .pbl-metric .v { font-size: 13.5px; font-weight: 700; display: block; color: var(--pbim-text); font-variant-numeric: tabular-nums; }
+    .pbl-metric .k { font-size: 10px; color: var(--pbim-muted); text-transform: uppercase; letter-spacing: .03em; }
+    .pbl-metric.strong .v { font-size: 15px; font-weight: 800; }
+    .pbl-metric.ok .v { color: var(--pbim-green); }
+    .pbl-metric.warn .v { color: var(--pbim-amber); }
+
+    .pbl-rowact { flex: none; margin-left: 4px; }
+    .pbl-card:hover .pbl-rowact .pbim-btn { border-color: var(--pbim-primary); }
+}

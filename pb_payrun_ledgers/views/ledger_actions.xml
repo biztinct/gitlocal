@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_pb_fullfinal" model="ir.actions.client">
+        <field name="name">Full &amp; Final</field>
+        <field name="tag">pb_fullfinal</field>
+    </record>
+    <record id="action_pb_proration" model="ir.actions.client">
+        <field name="name">Proration Audit</field>
+        <field name="tag">pb_proration</field>
+    </record>
+    <record id="action_pb_retro" model="ir.actions.client">
+        <field name="name">Retro Adjustments</field>
+        <field name="tag">pb_retro</field>
+    </record>
+</odoo>
