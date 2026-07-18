@@ -40,6 +40,11 @@
    of stretch. align-items:stretch on auto-height items is what does the work.
    Applied to the paired groups on the Full&Final / Proration / Retro forms. */
 .o_group.row.pbl-eqrow { align-items: stretch !important; }
-/* keep each stretched grid card's content packed at the top (filler at the
-   bottom) — otherwise the grid's title row absorbs the extra height. */
-.o_group.row.pbl-eqrow > .o_inner_group.vu-sec { align-content: start !important; }
+/* Pack each stretched grid card's content at the TOP with filler at the bottom.
+   Odoo declares a flexible grid-template-rows whose first (title) row absorbs the
+   extra height when the card is stretched — reset it to auto rows and align-content
+   to start so fields stay top-aligned and the free space collects at the bottom. */
+.o_group.row.pbl-eqrow > .o_inner_group.vu-sec {
+    grid-template-rows: none !important;
+    align-content: start !important;
+}
