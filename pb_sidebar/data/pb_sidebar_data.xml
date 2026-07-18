@@ -211,17 +211,23 @@
     <record id="item_full_final" model="pb.sidebar.item">
         <field name="section_id" ref="sec_payrun"/><field name="name">Full &amp; Final</field>
         <field name="icon">file</field><field name="sequence">60</field>
-        <field name="action_xmlid">pb_hr_fullandfinal.action_full_and_final_employees</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_fullfinal</field>
+        <field name="match_action_xmlids">pb_hr_fullandfinal.action_full_and_final_employees</field>
     </record>
     <record id="item_proration" model="pb.sidebar.item">
         <field name="section_id" ref="sec_payrun"/><field name="name">Proration Audit</field>
         <field name="icon">calculator</field><field name="sequence">70</field>
-        <field name="action_xmlid">pb_hr_payroll_formula.action_payroll_proration_line</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_proration</field>
+        <field name="match_action_xmlids">pb_hr_payroll_formula.action_payroll_proration_line</field>
     </record>
     <record id="item_retro" model="pb.sidebar.item">
         <field name="section_id" ref="sec_payrun"/><field name="name">Retro Adjustments</field>
         <field name="icon">percent</field><field name="sequence">80</field>
-        <field name="action_xmlid">pb_hr_payroll_formula.action_payroll_retro_adjustment</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_retro</field>
+        <field name="match_action_xmlids">pb_hr_payroll_formula.action_payroll_retro_adjustment</field>
     </record>
 
     <!-- ============ Setup · payroll configuration extras ============ -->

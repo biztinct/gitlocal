@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_payrun_ledgers.Ledger">
+    <div class="pbim pbim-page ppl-people pbl-ledger">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+        <!-- header -->
+        <div class="ppl-head">
+          <div>
+            <h1 class="pbim-h1" t-esc="state.data.title"/>
+            <p class="pbim-sub" t-esc="state.data.subtitle"/>
+          </div>
+        </div>
+
+        <!-- KPI band -->
+        <div class="ppl-kpis">
+          <t t-foreach="state.data.kpis or []" t-as="k" t-key="k_index">
+            <div t-attf-class="pbim-stat {{ k.tone === 'ok' ? 'ok' : '' }} {{ k.tone === 'err' ? 'err' : '' }}">
+              <span t-attf-class="pbim-stat-ic {{ k.ic_tone or '' }}"><t t-out="ic(k.icon, 21)"/></span>
+              <div class="pbim-stat-tx"><span t-attf-class="n {{ k.money ? 'money' : '' }}" t-esc="kpiVal(k)"/><span class="l" t-esc="k.label"/></div>
+            </div>
+          </t>
+        </div>
+
+        <!-- filters -->
+        <div class="pbim-panel ppl-filters">
+          <div class="ppl-filter-row">
+            <div class="pbl-facetwrap">
+              <t t-foreach="state.data.facets or []" t-as="fac" t-key="fac.key">
+                <div t-if="fac.chips.length > 1" class="pbl-facet">
+                  <span class="pbl-flabel" t-esc="fac.label"/>
+                  <t t-if="fac.kind === 'chips'">
+                    <div class="pbim-chips">
+                      <button t-foreach="fac.chips" t-as="c" t-key="c.id"
+                              t-attf-class="pbim-fchip {{ state.f[fac.key] === c.id ? 'on' : '' }}"
+                              t-on-click="() => this.setFacet(fac.key, c.id)">
+                        <t t-esc="c.label"/> <span class="c" t-esc="chipCount(fac.key, c.id)"/>
+                      </button>
+                    </div>
+                  </t>
+                  <t t-else="">
+                    <select class="pbl-select" t-on-change="(ev) => this.onFacetSelect(fac.key, ev)">
+                      <option value="">All</option>
+                      <option t-foreach="fac.chips" t-as="c" t-key="c.id" t-att-value="c.id"
+                              t-att-selected="state.f[fac.key] === c.id" t-esc="c.label"/>
+                    </select>
+                  </t>
+                </div>
+              </t>
+            </div>
+            <div class="ppl-search">
+              <span class="ic"><t t-out="ic('search', 15)"/></span>
+              <input t-att-placeholder="state.data.search_ph or 'Search…'" t-on-input="onSearch"/>
+            </div>
+          </div>
+
+          <div t-if="state.data.date" class="ppl-filter-row">
+            <div class="pbim-chips ppl-dates">
+              <button t-foreach="dateChips" t-as="d" t-key="d.id"
+                      t-attf-class="pbim-fchip {{ state.dateFilter === d.id ? 'on' : '' }}" t-on-click="() => this.setDate(d.id)">
+                <t t-out="ic('calendar', 13)"/> <t t-esc="d.label"/>
+              </button>
+              <t t-if="state.dateFilter === 'custom'">
+                <input type="date" class="ppl-date-in" t-on-change="onFrom"/>
+                <span class="ppl-dash">→</span>
+                <input type="date" class="ppl-date-in" t-on-change="onTo"/>
+              </t>
+              <button t-if="dirty" class="pbim-fchip pbl-clear" t-on-click="clearFilters"><t t-out="ic('x', 13)"/> Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- rows -->
+        <div t-if="rows.length" class="ppl-roster">
+          <div t-foreach="rows" t-as="r" t-key="r.id" class="ppl-card pbl-card" t-on-click="() => this.openRow(r)">
+            <div class="ppl-av" t-attf-style="background-image:url({{ r.avatar }})"><span t-if="!r.avatar" t-esc="r.initials"/></div>
+            <div class="ppl-id">
+              <div class="nm" t-esc="r.title"/>
+              <div class="jb"><t t-esc="r.subtitle"/> <span t-if="r.code" class="pbl-code" t-esc="r.code"/></div>
+            </div>
+            <div class="ppl-meta pbl-badges">
+              <t t-foreach="r.badges or []" t-as="b" t-key="b_index">
+                <span t-attf-class="pbim-badge {{ b.tone or 'muted' }}"><span class="d"/><t t-esc="b.label"/></span>
+              </t>
+            </div>
+            <div class="pbl-metrics">
+              <t t-foreach="r.metrics or []" t-as="m" t-key="m_index">
+                <div t-attf-class="pbl-metric {{ m.tone or '' }} {{ m.strong ? 'strong' : '' }}">
+                  <span class="v money" t-esc="metricVal(m)"/>
+                  <span class="k" t-esc="m.label"/>
+                </div>
+              </t>
+            </div>
+            <div t-if="r.action" class="pbl-rowact">
+              <button class="pbim-btn outline pbim-btn-sm" t-on-click="(ev) => this.rowAction(r, ev)">
+                <t t-out="ic(r.action.icon or 'download', 14)"/> <t t-esc="r.action.label"/>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div t-else="" class="pbim-panel"><div class="pbim-empty" t-esc="state.data.empty or 'Nothing matches these filters.'"/></div>
+
+        <div class="ppl-foot">
+          Showing <t t-esc="rows.length"/> of <t t-esc="state.data.total"/>
+          <t t-if="state.data.list_action"> · <button class="ppl-link" t-on-click="openFullList">Open full list →</button></t>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
