@@ -4313,6 +4313,17 @@ class PbFormulaStudio(models.AbstractModel):
         }
 
     @api.model
+    def ec_search_fields(self, query, config_id=None):
+        """Autocomplete for the Employee/Contract tab: any writable scalar
+        hr.employee / hr.contract field matching the query, so a user can append
+        a field beyond the curated set and wire it. Metadata read via _ec_right_items
+        (sudo'd)."""
+        q = (query or '').strip().lower()
+        if len(q) < 2:
+            return {'ok': True, 'fields': []}
+        return {'ok': True, 'fields': self._ec_right_items(q)[:40]}
+
+    @api.model
     def employee_mapping_create(self, config_id, context_id, component_id, target_spec):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}

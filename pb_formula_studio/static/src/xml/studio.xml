@@ -1763,7 +1763,15 @@
               </div>
             </div>
             <div class="pm-head-actions">
-              <input t-if="state.mapMode === 'employee'" type="search" class="pm-ctx" placeholder="Search employee/contract fields…" t-on-input="onMapEmpSearch"/>
+              <div t-if="state.mapMode === 'employee'" class="pm-empfield">
+                <input type="search" class="pm-ctx" placeholder="Add a field to map…" t-att-value="state.mapEmpQuery" t-on-input="onMapEmpSearch"/>
+                <div t-if="state.mapEmpResults and state.mapEmpResults.length" class="pm-empfield-menu">
+                  <button t-foreach="state.mapEmpResults" t-as="f" t-key="f.id" class="pm-empfield-opt" t-on-click="() => this.addEmpField(f)">
+                    <span class="lbl" t-esc="f.label"/>
+                    <span class="sub" t-esc="f.sublabel"/>
+                  </button>
+                </div>
+              </div>
               <select t-if="state.mapData and state.mapData.contexts and state.mapData.contexts.length" class="pm-ctx" t-on-change="setMapContext">
                 <option t-foreach="state.mapData.contexts" t-as="ctx" t-key="ctx.id" t-att-value="ctx.id" t-att-selected="ctx.id === state.mapContextId" t-esc="ctx.name"/>
               </select>
@@ -1812,7 +1820,7 @@
 
             <!-- the canvas -->
             <MappingCanvas t-if="state.mapData and state.mapData.ok"
-                           leftItems="state.mapData.left" rightItems="state.mapData.right"
+                           leftItems="state.mapData.left" rightItems="mapRightItems"
                            wires="mapWires"
                            leftTitle="state.mapData.left_title" rightTitle="state.mapData.right_title"
                            canEdit="state.mapData.can_edit" busy="state.mapBusy"
