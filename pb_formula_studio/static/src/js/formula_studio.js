@@ -4099,12 +4099,46 @@ export class PbFormulaStudio extends Component {
     }
     // adapters that share the generic create/delete/draw dispatch; cycle is bespoke
     get _mapPrefix() { return { api: "api", import: "import", scheme: "scheme", employee: "employee" }[this.state.mapMode] || null; }
-    // Employee/Contract tab: the RIGHT column is a curated field set + on-demand
-    // search; the query rides on mapContextId (unused as a context there).
+    // Employee/Contract tab: the RIGHT column shows a curated field set; this
+    // autocomplete lets the user pick ANY writable employee/contract field and
+    // append it (mapEmpExtras) so it becomes wireable. Once wired it persists and
+    // the backend returns it in mapData.right on the next load.
     onMapEmpSearch(ev) {
         const q = ev.target.value || "";
+        this.state.mapEmpQuery = q;
         clearTimeout(this._mapEmpTimer);
-        this._mapEmpTimer = setTimeout(() => { this.state.mapContextId = q || null; this._loadMapping(); }, 250);
+        if (q.trim().length < 2) { this.state.mapEmpResults = []; return; }
+        this._mapEmpTimer = setTimeout(async () => {
+            try {
+                const r = await this.orm.call("pb.formula.studio", "ec_search_fields", [q, this.state.config.id]);
+                this.state.mapEmpResults = (r && r.fields) || [];
+            } catch (e) { this.state.mapEmpResults = []; }
+        }, 220);
+    }
+    addEmpField(item) {
+        const base = (this.state.mapData && this.state.mapData.right) || [];
+        const extras = this.state.mapEmpExtras || [];
+        if (!extras.some(x => x.id === item.id) && !base.some(x => x.id === item.id)) {
+            this.state.mapEmpExtras = [...extras, item];
+        }
+        this.state.mapEmpQuery = "";
+        this.state.mapEmpResults = [];
+    }
+    get mapEmpRight() {
+        const base = (this.state.mapData && this.state.mapData.right) || [];
+        const seen = new Set(base.map(i => i.id));
+        return [...base, ...((this.state.mapEmpExtras || []).filter(i => !seen.has(i.id)))];
+    }
+    // the canvas' RIGHT items: employee tab merges the pinned extras
+    get mapRightItems() {
+        return this.state.mapMode === "employee"
+            ? this.mapEmpRight
+            : ((this.state.mapData && this.state.mapData.right) || []);
+    }
+    _resetEmpPicker() {
+        this.state.mapEmpQuery = "";
+        this.state.mapEmpResults = [];
+        this.state.mapEmpExtras = [];
     }
     openMapping(mode) {
         this.state.mapMode = mode || this.state.mapMode || "cycle";
@@ -4112,6 +4146,7 @@ export class PbFormulaStudio extends Component {
         this.state.mapData = null;
         this.state.mapContextId = null;
         this.state.mapDismissed = [];
+        this._resetEmpPicker();
         this._loadMapping();
     }
     setMapMode(mode) {
@@ -4120,6 +4155,7 @@ export class PbFormulaStudio extends Component {
         this.state.mapData = null;
         this.state.mapContextId = null;
         this.state.mapDismissed = [];
+        this._resetEmpPicker();
         this._loadMapping();
     }
     setMapContext(ev) {
