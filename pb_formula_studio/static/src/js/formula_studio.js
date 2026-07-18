@@ -4094,10 +4094,18 @@ export class PbFormulaStudio extends Component {
             { key: "api", label: "API fields" },
             { key: "import", label: "Import columns" },
             { key: "scheme", label: "Schemes" },
+            { key: "employee", label: "Employee/Contract" },
         ];
     }
     // adapters that share the generic create/delete/draw dispatch; cycle is bespoke
-    get _mapPrefix() { return { api: "api", import: "import", scheme: "scheme" }[this.state.mapMode] || null; }
+    get _mapPrefix() { return { api: "api", import: "import", scheme: "scheme", employee: "employee" }[this.state.mapMode] || null; }
+    // Employee/Contract tab: the RIGHT column is a curated field set + on-demand
+    // search; the query rides on mapContextId (unused as a context there).
+    onMapEmpSearch(ev) {
+        const q = ev.target.value || "";
+        clearTimeout(this._mapEmpTimer);
+        this._mapEmpTimer = setTimeout(() => { this.state.mapContextId = q || null; this._loadMapping(); }, 250);
+    }
     openMapping(mode) {
         this.state.mapMode = mode || this.state.mapMode || "cycle";
         this.state.mapOpen = true;

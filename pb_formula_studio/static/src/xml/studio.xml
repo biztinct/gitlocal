@@ -1763,6 +1763,7 @@
               </div>
             </div>
             <div class="pm-head-actions">
+              <input t-if="state.mapMode === 'employee'" type="search" class="pm-ctx" placeholder="Search employee/contract fields…" t-on-input="onMapEmpSearch"/>
               <select t-if="state.mapData and state.mapData.contexts and state.mapData.contexts.length" class="pm-ctx" t-on-change="setMapContext">
                 <option t-foreach="state.mapData.contexts" t-as="ctx" t-key="ctx.id" t-att-value="ctx.id" t-att-selected="ctx.id === state.mapContextId" t-esc="ctx.name"/>
               </select>
