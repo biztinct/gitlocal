@@ -43,29 +43,58 @@
                 <header>
                     <button name="action_download_full_and_final"
                             type="object"
-                            string="Download Full and Final"
-                            class="oe_highlight"
+                            string="Download settlement"
+                            class="btn-primary"
                             icon="fa-download"/>
                 </header>
                 <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="employee_id" string="Employee"/>
+                        <h1><field name="employee_id" placeholder="Select employee…"/></h1>
+                        <field name="name" class="text-muted" readonly="1"/>
+                    </div>
                     <group>
-                        <field name="employee_id"/>
-                        <field name="employee_code"/>
-                        <field name="department_id"/>
-                        <field name="job_id"/>
-                        <field name="contract_id"/>
+                        <group string="Employee">
+                            <field name="employee_code"/>
+                            <field name="department_id"/>
+                            <field name="job_id"/>
+                            <field name="contract_id"/>
+                        </group>
+                        <group string="Settlement">
+                            <field name="settlement_date"/>
+                            <field name="settlement_month"/>
+                            <field name="formula_config_id"/>
+                            <field name="source"/>
+                            <field name="import_batch_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
                     </group>
                     <group>
-                        <field name="settlement_date"/>
-                        <field name="settlement_month"/>
-                        <field name="formula_config_id"/>
-                        <field name="import_batch_id"/>
-                        <field name="source"/>
+                        <group string="Settlement summary">
+                            <field name="total_earnings"/>
+                            <field name="total_deductions"/>
+                            <field name="net_payable" class="oe_subtotal_footer_separator"/>
+                        </group>
                     </group>
                     <group>
-                        <field name="total_earnings"/>
-                        <field name="total_deductions"/>
-                        <field name="net_payable"/>
+                        <group string="Earnings breakdown">
+                            <field name="c_basic" invisible="not c_basic"/>
+                            <field name="c_allow" invisible="not c_allow"/>
+                            <field name="c_ot" invisible="not c_ot"/>
+                            <field name="c_bonus" invisible="not c_bonus"/>
+                            <field name="c_leave" invisible="not c_leave"/>
+                            <field name="c_other_earn" invisible="not c_other_earn"/>
+                        </group>
+                        <group string="Deductions breakdown">
+                            <field name="c_pit" invisible="not c_pit"/>
+                            <field name="c_si" invisible="not c_si"/>
+                            <field name="c_hi" invisible="not c_hi"/>
+                            <field name="c_ui" invisible="not c_ui"/>
+                            <field name="c_loan" invisible="not c_loan"/>
+                            <field name="c_other_ded" invisible="not c_other_ded"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
