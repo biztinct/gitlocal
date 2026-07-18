@@ -33,7 +33,7 @@
                         <label for="employee_id" string="Employee"/>
                         <h1><field name="employee_id" placeholder="Select employee…"/></h1>
                     </div>
-                    <group>
+                    <group class="pbl-eqrow">
                         <group string="Amounts">
                             <field name="old_amount"/>
                             <field name="new_amount"/>
