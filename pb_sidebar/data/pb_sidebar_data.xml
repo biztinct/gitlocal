@@ -234,10 +234,14 @@
     <!-- Payslip Configuration & Mid-Cycle Mapping intentionally omitted: both are
          fully covered (as visual, in-context supersets over the same models) by
          the Formula Engine cockpit's "Payslip" and "Mapping" toolbar buttons. -->
+    <!-- Employee/Contract Mapping retired from the sidebar: it now lives as the
+         "Employee/Contract" tab of the Formula Engine → Mapping canvas (same
+         two-column+connector surface as the other mappings). -->
     <record id="item_emp_mapping" model="pb.sidebar.item">
         <field name="section_id" ref="sec_setup"/><field name="name">Employee/Contract Mapping</field>
         <field name="icon">database</field><field name="sequence">70</field>
         <field name="action_xmlid">pb_hr_payroll_formula.action_payslip_import_mapping_wizard</field>
+        <field name="active">False</field>
     </record>
 
     <!-- ============ Workforce (existing pb_hr_workforce cockpits) ============ -->

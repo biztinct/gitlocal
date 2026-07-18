@@ -4243,6 +4243,108 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True}
 
     # ------------------------------------------------------------------
+    # Employee/Contract field mapping adapter — folds the old standalone
+    # "Employee/Contract Mapping" list into the canvas. LEFT = the config's
+    # components; RIGHT = a curated set of writable, scalar employee/contract
+    # fields (+ on-demand search); wires persist to hr.payslip.import.mapping.
+    # ------------------------------------------------------------------
+    _EC_TTYPES = ('char', 'text', 'float', 'monetary', 'integer', 'boolean', 'date', 'datetime', 'selection')
+    _EC_MODEL_LABEL = {'hr.contract': 'Contract', 'hr.employee': 'Employee'}
+    _EC_CURATED = {
+        'hr.contract': ['wage', 'wage_type', 'hourly_wage', 'date_start', 'date_end', 'trial_date_end', 'notes'],
+        'hr.employee': ['barcode', 'identification_id', 'passport_id', 'registration_number', 'job_title',
+                        'work_email', 'work_phone', 'mobile_phone', 'marital', 'children', 'km_home_work',
+                        'account_number', 'bank_name'],
+    }
+
+    @api.model
+    def _ec_field_item(self, fld):
+        return {'id': 'f:%s:%s' % (fld.model, fld.name),
+                'label': fld.field_description or fld.name, 'sublabel': self._EC_MODEL_LABEL.get(fld.model, fld.model),
+                'meta': {'model': fld.model, 'field': fld.name, 'ttype': fld.ttype}}
+
+    @api.model
+    def _ec_right_items(self, q=''):
+        # field metadata is model schema (no employee PII); sudo so non-admin
+        # payroll staff can see the target field list. Writes stay _can_edit-gated.
+        IMF = self.env['ir.model.fields'].sudo()
+        items = []
+        for model in ('hr.contract', 'hr.employee'):
+            dom = [('model', '=', model), ('store', '=', True), ('readonly', '=', False),
+                   ('ttype', 'in', list(self._EC_TTYPES))]
+            if q:
+                dom += ['|', ('name', 'ilike', q), ('field_description', 'ilike', q)]
+            else:
+                dom += [('name', 'in', self._EC_CURATED.get(model, []))]
+            for f in IMF.search(dom, order='field_description', limit=60):
+                items.append(self._ec_field_item(f))
+        return items
+
+    @api.model
+    def employee_mapping_data(self, config_id=None, context_id=None):
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False, 'reason': 'no_config'}
+        q = context_id.strip().lower() if isinstance(context_id, str) else ''
+        left = [self._mc_item(r) for r in config.rule_ids.sorted(key=lambda r: r.sequence)]
+        right = self._ec_right_items(q)
+        present = {i['id'] for i in right}
+        Mapping = self.env['hr.payslip.import.mapping'].sudo()
+        wires = []
+        for m in Mapping.search([('salary_structure_id', '=', config.id)]):
+            if not (m.component_id and m.target_model_id and m.target_field_id):
+                continue
+            rid = 'f:%s:%s' % (m.target_model_id.model, m.target_field_id.name)
+            wires.append({'id': 'em%s' % m.id, 'kind': 'mapping', 'ref': m.id,
+                          'leftId': m.component_id.id, 'rightId': rid, 'state': 'accepted'})
+            # a wired field must appear in RIGHT even when not in the curated/search set
+            if rid not in present:
+                fld = self.env['ir.model.fields'].sudo().search(
+                    [('model', '=', m.target_model_id.model), ('name', '=', m.target_field_id.name)], limit=1)
+                if fld:
+                    right.append(self._ec_field_item(fld))
+                    present.add(rid)
+        return {
+            'ok': True, 'left': left, 'right': right, 'wires': wires,
+            'left_title': config.name, 'right_title': 'Employee / contract fields',
+            'subtitle': _("Copy component results onto employee & contract fields"),
+            'supports_suggest': False, 'contexts': [], 'context_id': False,
+            'can_edit': self._can_edit(),
+        }
+
+    @api.model
+    def employee_mapping_create(self, config_id, context_id, component_id, target_spec):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        config = self._pick_config(config_id)
+        parts = (target_spec or '').split(':')
+        if not config or len(parts) != 3 or parts[0] != 'f':
+            return {'ok': False}
+        model, fname = parts[1], parts[2]
+        comp = self.env['hr.formula.rule'].browse(int(component_id))
+        mdl = self.env['ir.model'].sudo().search([('model', '=', model)], limit=1)
+        fld = self.env['ir.model.fields'].sudo().search([('model', '=', model), ('name', '=', fname)], limit=1)
+        if not (comp.exists() and mdl and fld):
+            return {'ok': False}
+        Mapping = self.env['hr.payslip.import.mapping'].sudo()
+        # 1:1 on both sides within this config — drop any existing on either end
+        Mapping.search(['&', ('salary_structure_id', '=', config.id),
+                        '|', ('component_id', '=', comp.id),
+                        '&', ('target_model_id', '=', mdl.id), ('target_field_id', '=', fld.id)]).unlink()
+        Mapping.create({'salary_structure_id': config.id, 'component_id': comp.id,
+                        'target_model_id': mdl.id, 'target_field_id': fld.id})
+        return {'ok': True}
+
+    @api.model
+    def employee_mapping_delete(self, mapping_id):
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("No permission.")}
+        m = self.env['hr.payslip.import.mapping'].sudo().browse(int(mapping_id))
+        if m.exists():
+            m.unlink()
+        return {'ok': True}
+
+    # ------------------------------------------------------------------
     # B1 — Execution replay (step through a payslip's computation)
     # ------------------------------------------------------------------
     @api.model
