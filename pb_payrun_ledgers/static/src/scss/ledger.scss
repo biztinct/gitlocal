@@ -31,3 +31,15 @@
     .pbl-rowact { flex: none; margin-left: 4px; }
     .pbl-card:hover .pbl-rowact .pbim-btn { border-color: var(--pbim-primary); }
 }
+
+/* Equal-height paired VU-form cards: Odoo lays a two-<group> row out as a flex
+   .o_group.row with align-items:flex-start, so the two .vu-sec cards take their
+   own content height. On rows tagged .pbl-eqrow, switch to align-items:stretch
+   so both cards match the taller one (filler space fills the shorter card).
+   NOTE: do NOT also set height:100% — an explicit height opts the flex item out
+   of stretch. align-items:stretch on auto-height items is what does the work.
+   Applied to the paired groups on the Full&Final / Proration / Retro forms. */
+.o_group.row.pbl-eqrow { align-items: stretch !important; }
+/* keep each stretched grid card's content packed at the top (filler at the
+   bottom) — otherwise the grid's title row absorbs the extra height. */
+.o_group.row.pbl-eqrow > .o_inner_group.vu-sec { align-content: start !important; }

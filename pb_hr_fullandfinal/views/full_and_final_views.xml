@@ -54,7 +54,7 @@
                         <h1><field name="employee_id" placeholder="Select employee…"/></h1>
                         <field name="name" class="text-muted" readonly="1"/>
                     </div>
-                    <group>
+                    <group class="pbl-eqrow">
                         <group string="Employee">
                             <field name="employee_code"/>
                             <field name="department_id"/>
@@ -78,7 +78,7 @@
                             <field name="net_payable" class="oe_subtotal_footer_separator"/>
                         </group>
                     </group>
-                    <group>
+                    <group class="pbl-eqrow">
                         <group string="Earnings breakdown">
                             <field name="c_basic" invisible="not c_basic"/>
                             <field name="c_allow" invisible="not c_allow"/>
