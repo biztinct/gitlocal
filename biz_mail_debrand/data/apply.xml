@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of biz_mail_debrand — portable outgoing-email white-label layer.
+     License LGPL-3. Re-runs the data scrub on every install AND upgrade. -->
+<odoo>
+    <function model="res.config.settings" name="_biz_mail_debrand_apply"/>
+</odoo>
