@@ -1786,6 +1786,31 @@ Report back per the **Report-back items** section (deviations from D-I1..D-I8 mu
 
 # WP-J — Formula Refactoring Intelligence — W52 → W54 → W42
 
+> **✅ IMPLEMENTED 2026-07-19** (Opus) — `75e69ff9` TJ.1 detector · `b049aaf0` W52 lens ·
+> `433ede23` W54 · `fc4ea654` W42 · `6babfe51`+`f64fcbdd` TJ.5/batteries/C16 (6 commits — the
+> report said 7). Deviations accepted in review: 8-branch/7-bracket guard fold (T=0 only — see
+> below) and D-J3 "single input component" read as single-token reference (computed driver TXBASE
+> probed; ruled SOUND — `_run_formula` never recomputes dependencies, injected values are
+> authoritative). Undisclosed second deviation: D-J7 "no new models" — TJ.4 added transient
+> `hr.formula.import.rate.proposal` + 2 ACLs (accepted).
+>
+> **✅ REVIEWED 2026-07-19** (Fable auto-review: bulk subagent — full-diff read vs D-J1..D-J8 + live
+> psql/JSON-RPC verification incl. an E2E throwaway-clone suggestion cycle, 24/24 probes Δ≈7e-9,
+> clone deleted+verified; all four batteries independently re-run green; demo PIT formulas confirmed
+> unmutated, zero leftover clones/tables). Verdict FIX-FIRST → 2 Majors fixed by Fable:
+> **M1** guard fold was accepted for ANY threshold but is only exact at T=0 (chain taxes full driver,
+> BRACKET taxes marginal — empirically 100k vs 50k at x=2M) and W42 rewrites with no equivalence
+> gate → detector now returns None for non-zero guard thresholds (battery case 14). **M2** the
+> "read-only" detection RPC stamped write_date on ALL rules of the config on every Problems-panel
+> open (`_evaluate_rules_with_dependencies` → `_compute_dependencies()` + `write_diagnostics=True`)
+> → new `readonly=True` mode (skips dependency refresh, evaluates via non-writing `_run_formula`
+> overlay), wired into `_equivalence_check`. Minors fixed: Apply button now `canEdit`-gated;
+> no-evidence failures no longer claim "max Δ 0.0000"; `_slot_formula` tokenizer `[A-Z][A-Z0-9]*`
+> (interior-digit codes like T2X no longer mis-split); C16 corrected. Deferred: D-J6 suppression is
+> token-set-wide (a literal both inside and outside the span suppresses everywhere in that rule);
+> failing sample rows silently skipped in equivalence (clone ACs pass on probes alone);
+> `_can_edit` fails open on exception (pre-existing pattern).
+
 **Designed 2026-07-14 (Fable), after WP-I shipped.** Fifth Medium batch: deterministic refactoring
 intelligence over formulas. **W52 duplicate-logic detection** — "these N formulas are identical
 modulo references" as a problems-rail lens. **W54 simplification suggestions** — detect progressive

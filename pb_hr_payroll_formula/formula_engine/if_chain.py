@@ -217,6 +217,13 @@ def parse_progressive_chain(expr):
         if i == 0 and kind == 'const':
             if band[1] != 0.0:
                 return None  # a non-zero constant floor is not a progressive table
+            if thr != 0.0:
+                # Only the T=0 guard folds into BRACKET's own MAX(0,…). With a
+                # non-zero threshold the chain's first rate band taxes the FULL
+                # driver (v*rate) while compile_brackets_excel emits marginal
+                # rate*(v−lower) — they diverge for every v above the guard, and
+                # W42 rewrites staged text with no equivalence gate to catch it.
+                return None
             wrapper_ok = True         # zero guard → below-floor evaluates to 0
             prev_threshold = thr
             continue

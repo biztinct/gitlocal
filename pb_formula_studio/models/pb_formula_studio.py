@@ -3006,7 +3006,9 @@ class PbFormulaStudio(models.AbstractModel):
                 order.append(key)
             return '\xa7%d' % slots[key]
 
-        slotted = re.sub(r'[A-Z]+\d*', _rep, f)
+        # [A-Z][A-Z0-9]* (not [A-Z]+\d*) so an interior-digit code like T2X
+        # stays ONE token instead of mis-splitting into T2 + X.
+        slotted = re.sub(r'[A-Z][A-Z0-9]*', _rep, f)
         return slotted, len(order)
 
     @api.model
@@ -3310,7 +3312,11 @@ class PbFormulaStudio(models.AbstractModel):
         samples_total = samples_matched = 0
         for smp in rule.config_id.sample_data_ids:
             try:
-                vals = smp._evaluate_rules_with_dependencies(smp.get_input_values())
+                # readonly=True — this runs from the Problems rail on every
+                # panel open; sample-value acquisition must never stamp
+                # write_date on production rules (M2, WP-J review).
+                vals = smp._evaluate_rules_with_dependencies(
+                    smp.get_input_values(), readonly=True)
             except Exception:
                 continue
             d = self._eq_delta(rule, vals, original, draft)
@@ -3399,9 +3405,13 @@ class PbFormulaStudio(models.AbstractModel):
                           'reuse': bool(reuse),
                           'reuse_of': reuse.code if reuse else None},
                 'after': after,
-                'reason': None if eq['ok'] else
-                _("Could not prove the rewrite is equivalent (max Δ %.4f) — not offered.")
-                % eq['max_delta'],
+                'reason': None if eq['ok'] else (
+                    _("No evidence to prove equivalence — the config has no "
+                      "usable samples and the driver is not probeable — not "
+                      "offered.")
+                    if (eq['samples_total'] + eq['probes_total']) == 0 else
+                    _("Could not prove the rewrite is equivalent (max Δ %.4f) "
+                      "— not offered.") % eq['max_delta']),
             })
             suggestions.append(item)
         return {'ok': True, 'suggestions': suggestions}

@@ -315,7 +315,20 @@ caller (D-J1). `detect(expr)` returns `None` for a non-chain, else a dict with `
   bracket — `BRACKET()`'s own `MAX(0,…)` reproduces it — so the rate table has **7** brackets
   (0/5%…80M/35%), and the rewrite is `=-MAX(0,BRACKET(<code>,TXBASE))` with the guard folded away. The
   design's "8 brackets" prose (TJ.1/TJ.3 AC) counts branches; the table is 7 (matches the explicit
-  statutory list at design:1892). Flagged as the one D-J deviation.
+  statutory list at design:1892). (WP-J's other deviation: D-J7 said "no new models", but TJ.4 added the
+  transient `hr.formula.import.rate.proposal` + 2 ACLs for the wizard proposal list — accepted in review.)
+- **The guard fold is exact ONLY at threshold 0.** A leading `IF(D<=T,0,…)` with `T>0` must NOT fold
+  into the first bracket's lower bound: the chain's first rate band taxes the FULL driver (`v*rate`)
+  while `compile_brackets_excel` emits marginal `rate*(v−lower)` — divergent for every `v>T` (at T=1M,
+  x=2M: chain 100k vs BRACKET 50k). W54's probes would catch it, but **W42 rewrites staged text with no
+  evaluation gate**, so the detector itself returns `None` for non-zero guard thresholds (WP-J review
+  M1; battery case 14).
+- **Detection RPCs must be write-free — sample evaluation included.** `_evaluate_rules_with_dependencies`
+  by default stamps `write_date` on EVERY rule of the config (`_compute_dependencies()` compute-field
+  assignment + `evaluate()`'s `write_diagnostics=True`). Any read-only path (the W54 rail detection runs
+  on every Problems-panel open) must call it with `readonly=True`, which skips the dependency refresh and
+  evaluates via the `_run_formula(…, write_diagnostics=False)` overlay (WP-J review M2 — live-proven:
+  one rail open bumped write_date on all 50 rules of a production config).
 - **Equivalence is proven, never assumed.** W54 offers a rewrite only after `_run_formula` overlays
   match (|Δ|<0.005) on every sample PLUS edge probes at each bracket boundary −1/0/+1. Probes inject
   `{driver_code: x}` and work for ANY **single-token** driver — computed helper included (demo TXBASE

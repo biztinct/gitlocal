@@ -1595,7 +1595,7 @@
                     </div>
                     <div class="pp-simp-act">
                       <button class="pbfs-btn soft sm" t-on-click="() => this.gotoProblem({rule_id: s.rule_id, col: s.col})">View</button>
-                      <button class="pbfs-btn primary sm" t-att-disabled="state.simplifyBusy === s.rule_id" t-on-click="() => this.applySimplify(s)">
+                      <button t-if="state.canEdit" class="pbfs-btn primary sm" t-att-disabled="state.simplifyBusy === s.rule_id" t-on-click="() => this.applySimplify(s)">
                         <t t-esc="state.simplifyBusy === s.rule_id ? 'Applying…' : (s.table.reuse ? 'Use ' + s.table.code : 'Create table &amp; simplify')"/>
                       </button>
                     </div>
