@@ -4121,13 +4121,30 @@ export class PbFormulaStudio extends Component {
         if (!extras.some(x => x.id === item.id) && !base.some(x => x.id === item.id)) {
             this.state.mapEmpExtras = [...extras, item];
         }
+        // if it had been session-hidden, un-hide it so the add takes effect
+        this.state.mapEmpHidden = (this.state.mapEmpHidden || []).filter(x => x !== item.id);
         this.state.mapEmpQuery = "";
         this.state.mapEmpResults = [];
     }
+    // Remove an UNWIRED field from the right column (session-scoped, per plan):
+    // a pinned extra is dropped; a curated/base field is hidden until the tab
+    // reloads. Mapped fields never reach here (the ✕/toggle are gated on wires).
+    removeRightField(id) {
+        const extras = this.state.mapEmpExtras || [];
+        if (extras.some(x => x.id === id)) {
+            this.state.mapEmpExtras = extras.filter(x => x.id !== id);
+        } else if (!(this.state.mapEmpHidden || []).includes(id)) {
+            this.state.mapEmpHidden = [...(this.state.mapEmpHidden || []), id];
+        }
+    }
     get mapEmpRight() {
         const base = (this.state.mapData && this.state.mapData.right) || [];
+        const hidden = new Set(this.state.mapEmpHidden || []);
         const seen = new Set(base.map(i => i.id));
-        return [...base, ...((this.state.mapEmpExtras || []).filter(i => !seen.has(i.id)))];
+        return [
+            ...base.filter(i => !hidden.has(i.id)),
+            ...((this.state.mapEmpExtras || []).filter(i => !seen.has(i.id) && !hidden.has(i.id))),
+        ];
     }
     // the canvas' RIGHT items: employee tab merges the pinned extras
     get mapRightItems() {
@@ -4135,10 +4152,53 @@ export class PbFormulaStudio extends Component {
             ? this.mapEmpRight
             : ((this.state.mapData && this.state.mapData.right) || []);
     }
+    // ---- Employee/Contract browse dropdowns (Employee ▾ / Contract ▾) --------
+    // Toggle a per-model popover listing ALL writable scalar fields; lazy-load
+    // once per model into mapEmpMenuAll.
+    async toggleEmpMenu(model) {
+        if (this.state.mapEmpMenu === model) { this.closeEmpMenu(); return; }
+        this.state.mapEmpMenu = model;
+        this.state.mapEmpMenuFilter = "";
+        const cache = this.state.mapEmpMenuAll || {};
+        if (!cache[model]) {
+            try {
+                const r = await this.orm.call("pb.formula.studio", "ec_model_fields", [model]);
+                this.state.mapEmpMenuAll = { ...cache, [model]: (r && r.fields) || [] };
+            } catch (e) { this.state.mapEmpMenuAll = { ...cache, [model]: [] }; }
+        }
+    }
+    closeEmpMenu() { this.state.mapEmpMenu = null; this.state.mapEmpMenuFilter = ""; }
+    onEmpMenuFilter(ev) { this.state.mapEmpMenuFilter = ev.target.value || ""; }
+    get empMenuFields() {
+        const model = this.state.mapEmpMenu;
+        if (!model) return [];
+        const all = (this.state.mapEmpMenuAll || {})[model] || [];
+        const q = (this.state.mapEmpMenuFilter || "").trim().toLowerCase();
+        if (!q) return all;
+        return all.filter(f =>
+            (f.label || "").toLowerCase().includes(q) ||
+            ((f.meta && f.meta.field) || "").toLowerCase().includes(q));
+    }
+    get empMenuLabel() { return this.state.mapEmpMenu === "hr.contract" ? "Contract" : "Employee"; }
+    isFieldAdded(id) { return this.mapRightItems.some(i => i.id === id); }
+    isFieldMapped(id) {
+        const wires = (this.state.mapData && this.state.mapData.wires) || [];
+        return wires.some(w => w.rightId === id && w.state === "accepted");
+    }
+    // Row click in a browse dropdown: toggle add/remove for unmapped fields.
+    pickEmpMenuField(f) {
+        if (this.isFieldMapped(f.id)) return;           // locked — unwire first
+        if (this.isFieldAdded(f.id)) this.removeRightField(f.id);
+        else this.addEmpField(f);
+    }
     _resetEmpPicker() {
         this.state.mapEmpQuery = "";
         this.state.mapEmpResults = [];
         this.state.mapEmpExtras = [];
+        this.state.mapEmpHidden = [];
+        this.state.mapEmpMenu = null;
+        this.state.mapEmpMenuFilter = "";
+        this.state.mapEmpMenuAll = {};
     }
     openMapping(mode) {
         this.state.mapMode = mode || this.state.mapMode || "cycle";

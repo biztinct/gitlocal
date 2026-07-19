@@ -50,6 +50,10 @@
                   <div class="mc-item-label" t-esc="it.label"/>
                   <div class="mc-item-sub"><span t-if="it.meta and it.meta.col" class="mc-col-tag" t-esc="it.meta.col"/><t t-esc="it.sublabel"/></div>
                 </div>
+                <button t-if="props.onRemoveRight and !isRightWired(it.id)" class="mc-item-x" title="Remove field"
+                        t-on-click="(ev) => this.removeRight(it.id, ev)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                </button>
               </div>
             </t>
           </div>

@@ -1772,6 +1772,44 @@
                   </button>
                 </div>
               </div>
+              <!-- browse-by-model field dropdowns (employee mode only) -->
+              <t t-if="state.mapMode === 'employee'">
+                <div class="pm-empadd">
+                  <button class="pm-empadd-btn" t-att-class="{ on: state.mapEmpMenu === 'hr.employee' }" t-on-click="() => this.toggleEmpMenu('hr.employee')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                    Employee
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <button class="pm-empadd-btn" t-att-class="{ on: state.mapEmpMenu === 'hr.contract' }" t-on-click="() => this.toggleEmpMenu('hr.contract')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+                    Contract
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <div t-if="state.mapEmpMenu" class="pm-empadd-menu">
+                    <div class="pm-empadd-head">
+                      <b t-esc="empMenuLabel"/>
+                      <span class="cnt"><t t-esc="empMenuFields.length"/> fields</span>
+                    </div>
+                    <div class="pm-empadd-filter">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                      <input type="search" t-attf-placeholder="Filter {{ empMenuLabel }} fields…" t-att-value="state.mapEmpMenuFilter" t-on-input="onEmpMenuFilter"/>
+                    </div>
+                    <div class="pm-empadd-list">
+                      <button t-foreach="empMenuFields" t-as="f" t-key="f.id" type="button"
+                              class="pm-empadd-opt"
+                              t-att-class="{ added: isFieldAdded(f.id), locked: isFieldMapped(f.id) }"
+                              t-att-disabled="isFieldMapped(f.id)"
+                              t-on-click="() => this.pickEmpMenuField(f)">
+                        <span class="lbl" t-esc="f.label"/>
+                        <span class="sub" t-esc="f.meta and f.meta.field"/>
+                        <svg t-if="isFieldAdded(f.id)" class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
+                      </button>
+                      <div t-if="!empMenuFields.length" class="pm-empadd-empty">No fields match</div>
+                    </div>
+                  </div>
+                </div>
+                <div t-if="state.mapEmpMenu" class="pm-empadd-scrim" t-on-click="closeEmpMenu"/>
+              </t>
               <select t-if="state.mapData and state.mapData.contexts and state.mapData.contexts.length" class="pm-ctx" t-on-change="setMapContext">
                 <option t-foreach="state.mapData.contexts" t-as="ctx" t-key="ctx.id" t-att-value="ctx.id" t-att-selected="ctx.id === state.mapContextId" t-esc="ctx.name"/>
               </select>
@@ -1830,7 +1868,8 @@
                            onDraw="(l, r) => this.mapDraw(l, r)"
                            onSuggest="() => this.mapSuggest()"
                            onTransformPreview="(ref, d) => this.mapTransformPreview(ref, d)"
-                           onTransformSave="(ref, v) => this.mapTransformSave(ref, v)"/>
+                           onTransformSave="(ref, v) => this.mapTransformSave(ref, v)"
+                           onRemoveRight="state.mapMode === 'employee' ? ((id) => this.removeRightField(id)) : undefined"/>
 
             <!-- W65 — mapping template panel (save / apply) -->
             <t t-if="state.tmplMode">

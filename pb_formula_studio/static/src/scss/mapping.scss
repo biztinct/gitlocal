@@ -186,3 +186,61 @@
 .pbfs-map .pm-empfield-opt:hover { background: var(--i-soft, #EDEAF8); }
 .pbfs-map .pm-empfield-opt .lbl { font-size: 12.5px; font-weight: 700; color: var(--ink, #1E1B2E); }
 .pbfs-map .pm-empfield-opt .sub { font-size: 10.5px; font-weight: 700; color: var(--muted, #6B7280); text-transform: uppercase; letter-spacing: .03em; flex: none; }
+
+/* browse-by-model field dropdowns (Employee ▾ / Contract ▾) */
+.pbfs-map .pm-empadd { position: relative; display: flex; align-items: center; gap: 6px; }
+.pbfs-map .pm-empadd-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 1px solid var(--line, #E8E9F3); background: #fff; color: var(--ink, #1E1B2E);
+    border-radius: 8px; padding: 6px 9px; font-family: inherit; font-size: 12.5px; font-weight: 700;
+    cursor: pointer; transition: border-color .13s, background .13s, box-shadow .13s;
+}
+.pbfs-map .pm-empadd-btn svg { width: 15px; height: 15px; flex: none; }
+.pbfs-map .pm-empadd-btn .chev { width: 13px; height: 13px; color: var(--muted, #6B7280); transition: transform .15s; }
+.pbfs-map .pm-empadd-btn:hover { border-color: var(--i-border, #CBC2EE); box-shadow: 0 3px 10px rgba(90, 75, 176, .12); }
+.pbfs-map .pm-empadd-btn.on { border-color: var(--i, #5A4BB0); background: var(--i-soft, #EDEAF8); color: var(--i600, #4A3D96); }
+.pbfs-map .pm-empadd-btn.on .chev { transform: rotate(180deg); color: var(--i600, #4A3D96); }
+
+.pbfs-map .pm-empadd-menu {
+    position: absolute; top: calc(100% + 6px); right: 0; z-index: 40;
+    width: 320px; background: #fff; border: 1px solid var(--line, #E8E9F3); border-radius: 12px;
+    box-shadow: 0 18px 46px rgba(20, 16, 50, .2); overflow: hidden;
+    animation: pmEmpAddIn .14s ease-out;
+}
+@keyframes pmEmpAddIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.pbfs-map .pm-empadd-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    padding: 10px 13px 8px; background: var(--i-soft, #EDEAF8); border-bottom: 1px solid var(--line, #E8E9F3);
+}
+.pbfs-map .pm-empadd-head b { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--i600, #4A3D96); }
+.pbfs-map .pm-empadd-head .cnt { font-size: 11px; font-weight: 700; color: var(--muted, #6B7280); }
+.pbfs-map .pm-empadd-filter { display: flex; align-items: center; gap: 7px; padding: 8px 12px; border-bottom: 1px solid var(--line, #E8E9F3); }
+.pbfs-map .pm-empadd-filter svg { width: 14px; height: 14px; color: var(--muted, #6B7280); flex: none; }
+.pbfs-map .pm-empadd-filter input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font-family: inherit; font-size: 12.5px; color: var(--ink, #1E1B2E); }
+.pbfs-map .pm-empadd-list { max-height: 300px; overflow-y: auto; padding: 5px; }
+.pbfs-map .pm-empadd-opt {
+    display: flex; align-items: baseline; gap: 9px; width: 100%; text-align: left;
+    border: 0; background: none; cursor: pointer; padding: 7px 9px; border-radius: 7px; font-family: inherit;
+}
+.pbfs-map .pm-empadd-opt:hover { background: var(--i-soft, #EDEAF8); }
+.pbfs-map .pm-empadd-opt .lbl { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 700; color: var(--ink, #1E1B2E); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pbfs-map .pm-empadd-opt .sub { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; font-weight: 700; color: var(--muted, #6B7280); flex: none; }
+.pbfs-map .pm-empadd-opt .tick { width: 15px; height: 15px; flex: none; color: var(--i, #5A4BB0); }
+.pbfs-map .pm-empadd-opt.added { background: rgba(90, 75, 176, .06); }
+.pbfs-map .pm-empadd-opt.added .lbl { color: var(--i600, #4A3D96); }
+.pbfs-map .pm-empadd-opt.locked { cursor: default; opacity: .6; }
+.pbfs-map .pm-empadd-opt.locked:hover { background: none; }
+.pbfs-map .pm-empadd-empty { padding: 18px 12px; text-align: center; font-size: 12px; color: var(--muted, #6B7280); }
+.pbfs-map .pm-empadd-scrim { position: fixed; inset: 0; z-index: 30; }
+
+/* remove ✕ on an unwired right card (Employee/Contract tab) */
+.mapping-canvas .mc-item-x {
+    position: absolute; top: -7px; left: -7px; z-index: 3;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; border: 1px solid var(--line, #E8E9F3); background: #fff; color: #94A3B8;
+    box-shadow: 0 2px 6px rgba(15, 12, 40, .14); cursor: pointer; padding: 0;
+    opacity: 0; transform: scale(.7); transition: opacity .12s, transform .12s, background .12s, color .12s;
+}
+.mapping-canvas .mc-item-x svg { width: 12px; height: 12px; }
+.mapping-canvas .mc-item:hover .mc-item-x { opacity: 1; transform: scale(1); }
+.mapping-canvas .mc-item-x:hover { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }

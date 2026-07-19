@@ -4324,6 +4324,19 @@ class PbFormulaStudio(models.AbstractModel):
         return {'ok': True, 'fields': self._ec_right_items(q)[:40]}
 
     @api.model
+    def ec_model_fields(self, model):
+        """All writable scalar fields for ONE model (hr.employee | hr.contract),
+        for the Employee/Contract browse dropdowns. Metadata only — sudo'd like
+        _ec_right_items; writes still go through employee_mapping_create/delete."""
+        if model not in ('hr.employee', 'hr.contract'):
+            return {'ok': False, 'fields': []}
+        IMF = self.env['ir.model.fields'].sudo()
+        dom = [('model', '=', model), ('store', '=', True), ('readonly', '=', False),
+               ('ttype', 'in', list(self._EC_TTYPES))]
+        flds = IMF.search(dom, order='field_description')
+        return {'ok': True, 'fields': [self._ec_field_item(f) for f in flds]}
+
+    @api.model
     def employee_mapping_create(self, config_id, context_id, component_id, target_spec):
         if not self._can_edit():
             return {'ok': False, 'msg': _("No permission.")}

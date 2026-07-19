@@ -24,6 +24,7 @@ export class MappingCanvas extends Component {
         onSuggest: { type: Function, optional: true },  // ()
         onTransformPreview: { type: Function, optional: true },  // (ref, draft) → Promise
         onTransformSave: { type: Function, optional: true },     // (ref, vals) → Promise
+        onRemoveRight: { type: Function, optional: true },       // (rightId) — remove an UNWIRED right item
     };
 
     setup() {
@@ -120,6 +121,9 @@ export class MappingCanvas extends Component {
     accept(w) { if (this.props.onAccept) this.props.onAccept(w); }
     reject(w) { if (this.props.onReject) this.props.onReject(w); }
     del(w) { if (this.props.onDelete) this.props.onDelete(w); }
+    // remove a right item from the board (adapter decides what that means).
+    // The template only renders the ✕ on UNWIRED items, so this never unmaps.
+    removeRight(id, ev) { if (ev) ev.stopPropagation(); if (this.props.onRemoveRight) this.props.onRemoveRight(id); }
     confidencePct(w) { return Math.round((w.confidence || 0) * 100); }
 
     // ---- W62 transforms on the wire (API adapter only) ----------------
