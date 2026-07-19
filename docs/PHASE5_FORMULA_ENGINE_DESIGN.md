@@ -726,6 +726,9 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 **WP-J:**
 > Implement WP-J (Formula Refactoring Intelligence: W52 duplicate-logic detection, W54 simplification suggestions, W42 import-time rate-table extraction) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-J, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C4, C5, C6, C7, C10, C12 are load-bearing here). Build TJ.1→TJ.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world using THROWAWAY CLONES only — never mutate demo formulas — and report back per the Report-back items section. Three binding rules above all: one pure detector module shared by W54 and W42 (formula_engine/if_chain.py + its battery — no logic duplication); a rewrite may only be OFFERED after proven equivalence through the real evaluator on samples + edge probes (D-J3 — irregular chains are listed, never rewritten); and the rewrite is span-surgical so surrounding expression text survives verbatim (D-J4). Do not touch docs/FORMULA_ENGINE_TOUR.html.
 
+**WP-K:**
+> Implement WP-K (Explanation & Collaboration: W50 auto-documentation, W74 slip-linked explainers, W89 @mentions, plus the capture-phase-Escape debt pass) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-K, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C3, C7, C10, C11, C14, C15, C16 are load-bearing here). Build TK.1→TK.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world (throwaway clones for the drift case; handbook attachments on demo configs may stay), and report back per the Report-back items section. Four binding rules above all: the handbook's every number/formula/name comes from the ORM — the LLM polishes section prose only and the deterministic skeleton IS the fallback (D-K1); the slip explainer is write-free end-to-end — every tier-2 reconstruction passes readonly=True and the C16 exact write_date probe must prove zero writes (D-K3); reconstruction honesty — cross-check reconstructed values against stored line totals and surface drift, never paper over it (D-K3); and mentions ride config.message_post with a runtime-resolved deep link — no custom notifier, no hardcoded /odoo prefix (D-K5). Do not touch docs/FORMULA_ENGINE_TOUR.html.
+
 ---
 
 # WP-E — Import Resolution Integrity (`pb_hr_payroll_formula` wizard) — converter-audit follow-up
@@ -1979,3 +1982,211 @@ def verify_consistency(brackets, deductions, eps=0.5):
    spans. 6. C10 parity + batteries; clones/tables deleted, verified; console clean.
 
 Report back per the **Report-back items** section (deviations from D-J1..D-J8 must be flagged).
+
+
+---
+
+# WP-K — Explanation & Collaboration — W50 → W74 → W89
+
+**Designed 2026-07-19 (Fable), after WP-J shipped.** Sixth Medium batch: make configs and payslips
+*explain themselves*, and let teams talk about them. **W50 auto-documentation** — a bilingual
+handbook generated from a config (deterministic skeleton + optional AI prose polish), exported as
+PDF, with a staleness stamp. **W74 slip-linked explainers** — a manager opens a payslip and every
+line explains itself with THIS slip's numbers woven in. **W89 @mentions** — the F15 note composer
+learns @mentions that notify via the config's chatter with a deep link back to the component.
+Plus one small debt task: the standing capture-phase-Escape pass. Engine owns report/fields;
+studio owns RPCs/UI (C1). Effort ≈ 10–10.5 d.
+
+## Verified plumbing facts (do not re-derive)
+
+*Explanation machinery (studio):* deterministic per-component explainer `_explain(rule, by_col)`
+(`pb_formula_studio.py:216`); language router `_explain_localized(rule, by_col, lang)` (`:6190` —
+routes to `_explain_vi` for 'vi'); AI polish `explain_formula_ai(rule_id, lang)` (`:6149`) shows
+the C1 pattern exactly: compute the deterministic floor FIRST, then try `_llm_chat(messages,
+json_mode=False)` (`:6023`, raises `LLMUnavailable` pre-network when unconfigured), fall back to
+the floor with `source:'deterministic'`. Component display names resolve
+`salary_rule_id.name or name` (`:291`) — `salary_rule_id.name` is a translated field, so EN/VI
+labels come free per reader lang.
+
+*Execution order:* `FormulaEvaluator()._topological_sort(rules)` (`formula_engine/evaluator.py:322`,
+Kahn's over `formula_dependencies`, graceful on cycles) — the same order production uses
+(`hr_payslip_formula.py:140`).
+
+*W50 rendering seams:* rate brackets = `hr.formula.rate.bracket` (`formula_rate_table.py:187-198`;
+`lower`, `rate` fraction, `_order='lower, id'`). Staleness anchor: milestones carry `version_hwm`
+(Integer, `formula_rule_version.py:61-87`) — **C14: boundaries are version-id, not timestamp**.
+PDF precedent: `ir.actions.report` `qweb-pdf` at `pb_hr_payroll_formula/report/shadow_certificate.xml:4-14`
+(template `shadow_certificate`, `t-call="web.external_layout"`) — the F6 certificate rendered
+HTTP 200 live, so the wkhtmltopdf stack works. Attachment precedent: `shadow_run.py:69`
+(`certificate_attachment_id` M2o to ir.attachment).
+
+*W74 payslip seams:* `hr.payslip.formula_computed_values` (Text JSON, `hr_payslip_formula.py:45-49`,
+readonly) stores the engine output **keyed by BOTH code and column letter** (F6 lesson);
+`formula_input_values` (`:40-43`); `report_visible_string_payload` builder at `:197`. Real formulas
+reference components by COLUMN LETTER, never code (F13 verified insight) — weaving substitutes
+`<letter>2` cell refs. The live payslip form = `om_hr_payroll.view_hr_payslip_form` + the pb
+notebook extension `view_hr_payslip_form_json_tabs`
+(`pb_hr_payroll_formula/views/hr_payslip_formula_views.xml:3-51`) — extend THAT inherit chain.
+Slip→config link = `formula_config_id`; line→rule = match `hr.payslip.line.code` to
+`hr.formula.rule.code` within the slip's config (lines were created FROM the rules).
+
+*W89 seams:* notes model `hr.formula.rule.note` (`formula_rule_note.py`: rule_id cascade,
+config_id related+stored, body, author_id, is_review, resolved…), **no mail.thread**;
+`hr.formula.config` DOES inherit `['mail.thread','mail.activity.mixin']` (`formula_config.py:19`)
+— the notification channel exists, unused. post_note create site `pb_formula_studio.py:4656`.
+Deep-link plumbing: the cockpit action parses `action.params || action.context` for `config_id` /
+`open_wizard` / `open_settings` on mount (`formula_studio.js:475-484`); `selectComponent(id)`
+(`:1248`) selects + scrolls; `gotoProblem` (`:3901`) is the jump precedent. Security groups for
+mentionables: `pb_hr_payroll_formula.group_formula_user/manager/admin`
+(`security/formula_security.xml:21-50`). **Backend URL prefix is `/bizapp`** (biz_deroute
+white-label; `/odoo` 301s) — build deep links from `web.base.url` + the `/bizapp` router, never
+hardcode `/odoo`.
+
+## Locked decisions
+
+- **D-K1 (the handbook IS the skeleton; AI polishes prose only)** — W50 generates a deterministic
+  document: config header (name, country, currency, component/table counts, latest milestone),
+  per-GROUP sections listing every component (letter, code, localized name, type, number_format,
+  formula text, `_explain_localized` sentence), a parameters table (constants with values), rate
+  tables (brackets rendered `from / rate%`), and the execution order (topo sort). `_llm_chat` MAY
+  rewrite each section's intro prose (2-3 sentences) — **it never produces a number, formula, or
+  component name**; on `LLMUnavailable` the skeleton text ships as-is (C1). Every number in the
+  document comes from the ORM. Bilingual: `lang in ('en','vi')` renders via `_explain_localized` +
+  `salary_rule_id.with_context(lang=…).name`.
+- **D-K2 (storage + staleness, C14-correct)** — one QWeb `qweb-pdf` report in
+  `pb_hr_payroll_formula/report/` (clone the shadow-certificate wiring). Generation stores an
+  `ir.attachment` on the config plus two new config fields: `handbook_attachment_id` (M2o) and
+  `handbook_version_hwm` (Integer = max `hr.formula.rule.version` id for the config at generation).
+  **Stale iff a newer version row exists** (`version_id > hwm`) — version-id comparison, never
+  timestamps (C14). Studio RPC `handbook_status` returns {exists, stale, generated_date, url};
+  `generate_handbook(config_id, lang)` is manager-gated (write path: attachment + stamp). UI: a
+  "Handbook" entry (settings/lifecycle rail) with a stale badge + Regenerate + Download.
+- **D-K3 (W74 value source = three honest tiers; ALWAYS write-free)** — live coverage facts
+  (verified 2026-07-19 by psql): only **28/26,607** formula slips store `formula_computed_values`;
+  **13,353/26,579** demo slips store `formula_input_values` (code-keyed, e.g.
+  `{"BASIC": 8900000.0, "OTWD": 0, …}`). So a stored-JSON-only explainer would degrade on
+  essentially every slip. Tiers: **(1)** `formula_computed_values` present → weave from it
+  directly (it carries code AND letter keys — F6). **(2)** else if `formula_input_values` present
+  → RECONSTRUCT all intermediates via the write-free path shipped this cycle:
+  `Sample.new({'config_id'})._evaluate_rules_with_dependencies(inputs, readonly=True)` (C16 —
+  zero writes, zero persistence; results are CODE-keyed, map code→letter via by_col yourself),
+  then CROSS-CHECK reconstructed values against the slip's stored line totals: if every line
+  matches within its `default_tolerance(number_format)` (comparison.py), weave with a
+  "reconstructed from stored inputs" note; if ANY line drifts, the formulas have changed since
+  the slip was computed → show the drift banner ("config formulas changed since this slip — N
+  lines differ") and weave only the lines that match, degrade the rest (C7: drift is surfaced,
+  never papered over). **(3)** neither JSON → line values + raw formula text, labeled
+  "no stored computation — imported/legacy slip". Constants always come from the config. The RPC
+  is read-only end-to-end; prove with the exact write_date probe (C16 ritual).
+- **D-K4 (W74 surface = wizard on the payslip form; portal is a non-goal)** — a transient
+  `hr.payslip.explain.wizard` (engine module) opened from a header button on the payslip form
+  (extend the existing pb inherit view), rendering a server-built HTML field: one row per payslip
+  line (localized name, formatted value, woven explanation), EN/VI toggle re-opens with the other
+  lang. Manager/officer-only (payroll user group on the button). Per-line AI polish is ON DEMAND
+  only (a small "AI explain" per row would need JS in a wizard — SKIP; v1 is deterministic-only,
+  the studio's existing explain_formula_ai already covers ad-hoc AI asks). Employee portal
+  rendering is a BINDING NON-GOAL (separate privacy/exposure decision).
+- **D-K5 (W89 = mentions ride the config chatter; no new models)** — the note composer gains
+  @mention autocomplete: typing `@` opens a popover listing mentionable users (new read-only RPC
+  `list_mentionables(config_id)` = users in `group_formula_user`+, company-scoped); selection
+  inserts `@Name` in the body and collects the user id client-side. `post_note` gains
+  `mention_user_ids=[]`: server validates each id IS mentionable (silently-dropped ids are
+  returned in a `skipped` list — C7 loud), then `config.message_post(partner_ids=…)` with a body =
+  note excerpt + component name + a **deep link** `web.base.url + /bizapp/action-…?config_id=X&
+  select_rule_id=Y` (or the `/odoo`-router equivalent resolved at runtime — never hardcode the
+  prefix). Odoo's standard message_post notification (inbox + email per user prefs) does the
+  delivery — build NO custom notifier. The note body stores plain text (`@Name` inline); no HTML.
+- **D-K6 (deep-link param)** — the cockpit mount handler learns `select_rule_id` alongside the
+  existing `config_id` param (`formula_studio.js:475-484`): after `load()`, call
+  `selectComponent(select_rule_id)` (cards view). One param, one call — reuse `gotoProblem`'s
+  select+scroll behavior. This is the generic anchor W91 will reuse later.
+- **D-K7 (Escape debt paid)** — the deferred capture-phase-Escape items (WP-G Generate dropdown,
+  WP-I transform popover + template panel) get the C3 capture-phase window-listener treatment in
+  this package, and the NEW mention popover is born with it. One pattern, four surfaces.
+- **D-K8 (schema/deploy)** — new: 2 config fields + 1 transient wizard + 1 QWeb report + report
+  action (engine `-u` required); `post_note`/RPC changes are studio-only. Manifests bump (C2).
+  `docs/FORMULA_ENGINE_TOUR.html` stays untouched.
+
+## Tasks
+
+**TK.1 — W50 handbook generator + report** *(~2.5 d)*
+Engine: report XML + QWeb template (clone shadow-certificate wiring; `web.external_layout`),
+config fields `handbook_attachment_id`/`handbook_version_hwm`. Studio: `generate_handbook
+(config_id, lang)` (builds section data: groups via `_group_for`, explains via
+`_explain_localized`, params table, rate tables, topo order; optional `_llm_chat` intro polish
+with C1 fallback; renders PDF via the report, stores attachment, stamps hwm), `handbook_status`.
+AC: generate on a demo config → PDF downloads (HTTP 200), contains every component of the config
+grouped, the PIT rate table brackets, and the execution order; VI variant renders VI names/
+sentences; with no AI key the doc still generates (source deterministic); after editing one
+formula, `handbook_status.stale` flips true (version-id, not date — prove by generating, editing,
+checking); regenerate clears stale. Zero writes to rules.
+
+**TK.2 — W74 slip explainer wizard** *(~2.5 d)*
+Engine: transient `hr.payslip.explain.wizard` (+access rows) with HTML field + lang toggle;
+payslip form button (manager-gated) on the pb inherit view. Weave helper shared server-side (one
+function: tokenize → substitute letter refs → format by number_format).
+AC: open on a demo End-cycle slip WITH stored inputs (tier 2 — the dominant case, 13,353 slips) →
+every line shows name, formatted value, and a woven sentence; reconstructed values cross-check
+green vs line totals; spot-check GROSS and PIT by hand against the stored lines; DRIFT case: on a
+throwaway CLONE, alter one formula, point a copied slip at it → drift banner + only matching lines
+woven; tier-3 (a slip with neither JSON) → honest degrade message, no zeros invented; EN/VI toggle
+swaps names+sentences; RPC path makes ZERO writes (write_date probe on slip + config rules
+before/after — the C16 exact-probe ritual).
+
+**TK.3 — W89 mentions + chatter notify + deep link** *(~2.5 d)*
+Studio: `list_mentionables`, `post_note(…, mention_user_ids)` validation + `config.message_post`
+with deep link; composer popover (@-trigger, keyboard up/down/enter, capture-phase Escape);
+mount-param `select_rule_id` (D-K6).
+AC: mention a formula-manager user in a note on a demo config → that user's inbox shows the
+notification whose link opens the studio ON that config WITH the component selected (drive the
+link in Chrome as that user); mentioning a non-formula user → returned in `skipped`, no
+notification; note body renders `@Name` inline; Escape closes the popover from any focus state;
+notification body contains NO formula internals beyond the note text + component name.
+
+**TK.4 — capture-phase Escape pass (debt)** *(~0.5 d)*
+Apply the C3 capture-phase pattern to: WP-G Generate dropdown, WP-I transform popover, WP-I
+template panel. AC: each closes on Escape with grid-scroller focus (the exact WP-F failure mode),
+verified live per surface.
+
+**TK.5 — package validation sweep** *(~1 d)*
+All checks live on pb_demo (throwaway where anything is created; handbook attachments on demo
+configs may STAY — they're regenerable, but note them in the report); batteries green (no engine
+eval changes expected — confirm if_chain + excel_semantics + import_resolution + w42 all still
+exit 0); C10 small-scale recompute parity; console clean; fixture deletions verified by count.
+
+### Skeleton S-K1 — the weave (the risky spot: substitution must be exact, not regex-loose)
+
+```python
+# studio (or a small shared helper in the engine — either side is fine, ONE copy)
+CELL_RE = re.compile(r'(?<![A-Z0-9$])(\$?)([A-Z]{1,3})\$?(\d+)(?![A-Z0-9(])')
+def _weave(self, rule, computed, by_col, lang):
+    """'=A2+AB2*X2' -> 'Basic Salary (10,100,000) + Overtime (825,000) x Rate (5%)'.
+    computed carries BOTH code and letter keys (F6) — read the LETTER key first
+    (formulas reference letters, F13), fall back to the code key, then to an
+    honest '?' (never 0 — C7). Skip substitution inside string literals (mask
+    them first, same trick as _strip_for_lint). The (?![A-Z0-9(]) tail guard
+    keeps function names (MAX() / IF() ) and longer letters intact."""
+    ...
+# GOTCHA: format by the REFERENCED rule's number_format (percentage -> x100 '%'),
+#   not the explained rule's — a PIT explanation cites both currency and rates.
+# GOTCHA: formula_input_values is CODE-keyed ({"BASIC": 8900000.0, …} — verified
+#   live); _evaluate_rules_with_dependencies returns CODE-keyed results too. The
+#   letter-key duplication only exists inside stored formula_computed_values
+#   (tier 1). Build ONE {letter: value} view from by_col + the code-keyed dict
+#   and weave from that — do not assume letter keys exist in tiers 2/3.
+# GOTCHA: readonly=True is MANDATORY on every tier-2 reconstruction call — the
+#   default path stamps write_date on all config rules (WP-J review M2).
+```
+
+## WP-K verification (Chrome MCP on pb_demo VN world)
+
+1. Handbook: generate EN+VI on a demo config, PDF 200, content spot-checks (components/brackets/
+   order), no-AI-key fallback, stale flip on version-id (edit → stale → regenerate → fresh).
+2. Slip explainer: woven values hand-checked vs formula_computed_values on one End slip; legacy
+   degrade; EN/VI; zero-write probe (exact write_date before/after).
+3. Mentions: end-to-end inbox → deep link → component selected, as the mentioned user; skipped
+   list for non-formula users; popover Escape (capture-phase) from grid focus.
+4. Escape debt: all three older surfaces close from grid-scroller focus.
+5. Batteries + C10 parity; fixtures deleted (verified by count); console clean.
+
+Report back per the **Report-back items** section (deviations from D-K1..D-K8 must be flagged).
