@@ -1801,7 +1801,6 @@
                               t-att-disabled="isFieldMapped(f.id)"
                               t-on-click="() => this.pickEmpMenuField(f)">
                         <span class="lbl" t-esc="f.label"/>
-                        <span class="sub" t-esc="f.meta and f.meta.field"/>
                         <svg t-if="isFieldAdded(f.id)" class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>
                       </button>
                       <div t-if="!empMenuFields.length" class="pm-empadd-empty">No fields match</div>
