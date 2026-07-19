@@ -191,6 +191,21 @@ def t_verify_unit():
 case("verify_consistency cumulative-base math + eps window", t_verify_unit)
 
 
+# ---- 14. NON-ZERO guard threshold → None (WP-J review M1) --------------------
+# A leading IF(D<=T,0,…) guard with T>0 must NOT fold: the chain's first rate
+# band taxes the FULL driver (v*rate) while compile_brackets_excel emits
+# marginal rate*(v−lower). At x=2M this chain pays 100,000 but the BRACKET
+# rewrite would pay 50,000 — and W42 rewrites staged text with no equivalence
+# gate, so the detector itself must refuse.
+def t_nonzero_guard():
+    r = if_chain.detect("=IF(X<=1000000,0,IF(X<=5000000,X*0.05,X*0.1-300000))")
+    assert r is None, "non-zero guard threshold must not fold: %s" % r
+    # the T=0 guard (the demo shape) still folds
+    assert if_chain.detect(
+        "IF(X<=0,0,IF(X<=5000000,X*0.05,X*0.1-250000))") is not None
+case("non-zero guard threshold → None (fold only exact at T=0)", t_nonzero_guard)
+
+
 def main():
     failures = []
     for name, fn in CASES:

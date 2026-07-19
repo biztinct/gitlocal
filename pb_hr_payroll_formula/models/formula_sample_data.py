@@ -566,15 +566,23 @@ class HrFormulaSampleData(models.Model):
             _logger.error(f"Error computing formula results: {e}", exc_info=True)
             return {'error': str(e)}
 
-    def _evaluate_rules_with_dependencies(self, input_values):
-        """Evaluate rules using dependency order to handle forward references."""
+    def _evaluate_rules_with_dependencies(self, input_values, readonly=False):
+        """Evaluate rules using dependency order to handle forward references.
+
+        ``readonly=True`` guarantees ZERO writes: the dependency-metadata
+        refresh (a compute-field assignment that stamps write_date on every
+        rule) is skipped, and formulas run through the ``_run_formula`` overlay
+        with ``write_diagnostics=False`` instead of ``evaluate()``. Required
+        for read-only RPC paths (the W54 Problems-rail detection runs on every
+        panel open — it must never touch production rules)."""
         self.ensure_one()
         rules = self.config_id.rule_ids
         if not rules:
             return input_values.copy()
 
         # Refresh dependency metadata to include recent parsing changes.
-        rules._compute_dependencies()
+        if not readonly:
+            rules._compute_dependencies()
         try:
             from ..formula_engine import FormulaEvaluator
             evaluator = FormulaEvaluator()
@@ -603,7 +611,9 @@ class HrFormulaSampleData(models.Model):
             elif rule.column_type == 'formula':
                 try:
                     _logger.debug("  Evaluating formula: %s", rule.excel_formula)
-                    value = rule.evaluate(results)
+                    value = (rule._run_formula(results, rule.excel_formula,
+                                               write_diagnostics=False)
+                             if readonly else rule.evaluate(results))
                     results[rule.code] = value
                     _logger.debug("  Result: %s", value)
                 except Exception as e:
@@ -616,7 +626,9 @@ class HrFormulaSampleData(models.Model):
                 if rule.column_type != 'formula':
                     continue
                 try:
-                    value = rule.evaluate(results)
+                    value = (rule._run_formula(results, rule.excel_formula,
+                                               write_diagnostics=False)
+                             if readonly else rule.evaluate(results))
                 except Exception as e:
                     _logger.warning("Formula re-evaluation error for %s: %s", rule.code, e)
                     value = 0.0
