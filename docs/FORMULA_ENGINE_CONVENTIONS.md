@@ -348,3 +348,42 @@ caller (D-J1). `detect(expr)` returns `None` for a non-chain, else a dict with `
   new `from ..formula_engine import X` in a shimmed file must be mirrored in the battery's fake package
   (`import_resolution_battery`), and the `excel_semantics_battery` odoo shim needs `models.Constraint`
   (class-attribute constraints since the C9 conversion).
+
+## C17 — Excel bridge & payslip branding (WP-L / W41·W17·W73)
+
+The row machinery and the live-validation lessons hit building the export/paste/theme trio:
+
+- **One row helper, two directions.** `formula_engine/cell_refs.shift_rows(formula, to_row)` is the ONLY
+  place cell-ref row digits move — W41 shifts stored row-2 formulas OUT to the sheet data row at export,
+  W17 normalizes any pasted row back IN to the canonical row 2. Same `_CELL` regex, same string-literal
+  mask (mask FIRST so `IF(A2="X2",…)` keeps its literal). Never a second regex (S-I1 / D-J1). Battery:
+  `tools/cell_refs_battery.py` (pure, 20 cases incl. the OUT→IN round-trip invariant). The studio wraps it
+  as `_shift_rows`.
+- **W41 places by LETTER, not sequence.** The xlsx column position MUST equal `_col_num(column_letter)`
+  (A→1, AB→28) so a stored `=A2+AB2` is a real Excel formula in the sheet; letters are frozen identities
+  that no longer track sequence (F111). A reordered/gap-lettered config leaves blank xlsx columns — fine,
+  the refs still land. A leading meta column would break the 1:1 map — the "Sample" name column trails the
+  last letter. **openpyxl number formats are openpyxl's, not Odoo's:** currency/integer ⇒ `#,##0` (VND has
+  no minor units), percentage ⇒ `0.00%` and our values are FRACTIONS (0.05) so do NOT pre-multiply.
+  `wb.defined_names[name] = DefinedName(name, attr_text=ref)` on openpyxl ≥3.1 (`DefinedNameDict`).
+- **QWeb widgets never on `<td>`.** `t-field` directly on a `<td>` raises `AssertionError: QWeb widgets do
+  not work correctly on 'td' elements` (only surfaces at PDF render, not `-u`). Wrap: `<td><span t-field=…/></td>`.
+- **The themed payslip is a NEW report; the legacy one is byte-untouched.** Clone the shadow-certificate
+  wiring (explicit `<record model="ir.actions.report">`, binding_model hr.payslip, NEVER the removed
+  `<report>` shortcut — see [[payobook-deploy]]). Render data comes from a WRITE-FREE model helper
+  (`hr.payslip._themed_payslip_render`) reading line totals + the F9 scheme; `om_hr_payroll.report_payslip`
+  and the portal binding stay put (binding swap is a separate product decision).
+- **Live-validation gotchas (cost me real time — read before Chrome-MCP'ing an edit UI):**
+  - **can_edit gates every edit affordance.** The default studio session user in pb_demo is `ash@ashsohani.com`
+    (uid 20) — NOT a formula manager/system admin, so `_can_edit()` is False and the grid paste handler, the
+    Theme panel button, Add/Delete, drag-fill, etc. are ALL hidden/short-circuited. Validate editor UIs as
+    **`ash@biztinct.com` / `admin1234` (Mitchell Admin, uid 2, system)** — authenticate via a
+    `/web/session/authenticate` fetch, then reload. (`get_session_info` tells you who you are.)
+  - **OWL `t-on-paste` can't be driven headlessly.** A scripted `ClipboardEvent('paste', {clipboardData})`
+    does NOT invoke OWL's paste handler (it needs a *trusted* event — even though synthetic `keydown` DOES
+    route through OWL), and CDP `press_key("Meta+v"/"Control+v")` doesn't run the browser's clipboard-paste
+    pipeline on a non-editable focused `<div>`. So paste-driven features (W17) can't be exercised via Chrome
+    MCP — validate the server ladder (`stage_paste` + the bulk commit) directly and confirm the client is
+    wired + in the loaded bundle, then leave the ghost UI to a real Cmd+V smoke-test.
+  - Prod Odoo strips `__owl__` off DOM nodes — you can't read a component's props/state from the page;
+    verify wiring by grepping the loaded `web.assets_web.min.js` (via `fetch`) and by calling the RPCs.
