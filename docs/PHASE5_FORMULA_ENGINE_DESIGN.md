@@ -729,6 +729,9 @@ sign-off and rollback dialogs at 1024×768 via Chrome MCP emulation. Honest phon
 **WP-K:**
 > Implement WP-K (Explanation & Collaboration: W50 auto-documentation, W74 slip-linked explainers, W89 @mentions, plus the capture-phase-Escape debt pass) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-K, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C3, C7, C10, C11, C14, C15, C16 are load-bearing here). Build TK.1→TK.5 in order, one feature-scoped commit per W-feature, validate on the pb_demo VN world (throwaway clones for the drift case; handbook attachments on demo configs may stay), and report back per the Report-back items section. Four binding rules above all: the handbook's every number/formula/name comes from the ORM — the LLM polishes section prose only and the deterministic skeleton IS the fallback (D-K1); the slip explainer is write-free end-to-end — every tier-2 reconstruction passes readonly=True and the C16 exact write_date probe must prove zero writes (D-K3); reconstruction honesty — cross-check reconstructed values against stored line totals and surface drift, never paper over it (D-K3); and mentions ride config.message_post with a runtime-resolved deep link — no custom notifier, no hardcoded /odoo prefix (D-K5). Do not touch docs/FORMULA_ENGINE_TOUR.html.
 
+**WP-L:**
+> Implement WP-L (Excel Bridge & Payslip Branding: W41 living-workbook export, W17 smart paste, W73 payslip themes) exactly as specified in docs/PHASE5_FORMULA_ENGINE_DESIGN.md §WP-L, honoring docs/FORMULA_ENGINE_CONVENTIONS.md (C1, C2, C3, C4, C5, C7, C10, C11 are load-bearing here). Build TL.1→TL.5 in order — W41 before W17 (smart paste's round-trip AC eats W41's own exported workbook) — one feature-scoped commit per W-feature, validate on the pb_demo VN world with throwaway configs/files only (deleted and count-verified), and report back per the Report-back items section. Four binding rules above all: exported formula cells are Excel-evaluable (BRACKET expands out via expand_brackets; the TL.2 round-trip through the multisheet wizard incl. the W42 re-promotion offer is the binding contract, D-L1/D-L2); one server ladder normalizes AND validates pasted formulas — the ghost shows exactly what commits (D-L5, the S-I1 lesson); smart-paste commit is all-or-nothing through one bulk_save_formulas(reason='bulk') call (D-L6, C4); and the themed print is a NEW report cloning the shadow-certificate wiring — om_hr_payroll's report_payslip and the portal binding stay byte-untouched (D-L8, and never the removed <report> shortcut tag). Do not touch docs/FORMULA_ENGINE_TOUR.html — the tour refresh is Fable's wrap-up act after this package's review.
+
 ---
 
 # WP-E — Import Resolution Integrity (`pb_hr_payroll_formula` wizard) — converter-audit follow-up
@@ -2190,3 +2193,225 @@ def _weave(self, rule, computed, by_col, lang):
 5. Batteries + C10 parity; fixtures deleted (verified by count); console clean.
 
 Report back per the **Report-back items** section (deviations from D-K1..D-K8 must be flagged).
+
+
+---
+
+# WP-L — Excel Bridge & Payslip Branding — W41 → W17 → W73 (final Medium batch)
+
+**Designed 2026-07-20 (Fable), after WP-K was designed.** Seventh and FINAL planned Medium batch —
+the wrap-up package. **W41 Excel round-trip export** — a config becomes a *living* `.xlsx`: one
+row per sample employee, real Excel formulas that evaluate in Excel, rate tables on a reference
+sheet; re-importable through the multisheet wizard. **W17 smart paste** — paste a run of formulas
+from Excel straight into the grid as a validated ghost preview, committed as ONE bulk save.
+**W73 payslip themes** — brand tokens (accent, typography, logo) on the F9 payslip scheme,
+rendered in the live preview AND a new themed QWeb print. Build order is W41 → W17 → W73: the
+export gives smart-paste its natural round-trip fixture; themes are independent. Engine owns the
+themed report + theme fields; studio owns RPCs/UI (C1). Effort ≈ 12–13 d.
+
+## Verified plumbing facts (do not re-derive)
+
+*Export precedent (D112.6, reuse verbatim):* `export_test_template(config_id)`
+(`pb_formula_studio.py:5503-5534`) — `openpyxl.Workbook()` → base64 in the RPC response
+(`file_b64`/`filename`/`mimetype`); client `exportTestTemplate` (`formula_studio.js:3456-3467`)
+does atob → Blob → `<a download>`. No controller, no ir.attachment. openpyxl is a declared
+external dependency (`pb_hr_payroll_formula/__manifest__.py:52`) with a loud no-lib fallback
+(`:5510`). The reverse path `import_test_samples` reads via
+`openpyxl.load_workbook(io.BytesIO(raw), data_only=True)` (`:5537-5603`). No
+`defined_names` usage exists yet anywhere in the repo.
+
+*Formula/column model:* `hr.formula.rule.column_letter` (computed from sequence order,
+`formula_rule.py:66-72`, `_compute_column_letter` `:395-451`), `excel_formula` (`:175-178`),
+`constant_value` (`:242-247`), `default_value` (`:233-237`), `number_format`
+(number/currency/percentage/integer, `:258-263`). Formulas are row-2 canonical (`=A2+AB2`) and
+reference components by COLUMN LETTER only (F13 verified insight). Samples:
+`hr.formula.sample.data.input_values_json` (code-keyed), `get_input_values()`
+(`formula_sample_data.py:304-307`). Rate tables: `expand_brackets(formula, config)`
+(`formula_rate_table.py:128-164`) compiles `BRACKET(code, v)` → a plain nested-IF Excel string —
+i.e. the exact Excel-evaluable form.
+
+*Drag-fill machinery (W17 clones this UX):* fill state
+`ui.fill = {active, pending, srcId, hoverCol, targets: [{col, id, proposed_formula, valid}]}`
+(`grid_studio.js:74-75`, init `:722`); ghost render `grid_studio.xml:157`
+(`g2-ghost` + `invalid` class); commit `_commitFill()` (`:776-794`) →
+`props.onBulkSaveFormulas(items, 'fill')`. Server `bulk_save_formulas(items, reason='fill',
+note=False)` (`pb_formula_studio.py:780-819`) — items `[{rule_id, formula}]`, reasons limited to
+`('fill','bulk')`, shared `formula_version_seen` set ⇒ exactly N version rows (C4).
+Ref machinery: `_translate_formula_horizontal(formula, offset)` (`:724-741`, regex
+`(\$?)([A-Za-z]+)(\$?\d+)`, $-column-absolute preserved); `_expand_refs(formula, by_col)`
+(`:170-184`) returns the set of referenced columns with ranges expanded. Grid keyboard: all keys
+route through `onKeydown` (`grid_studio.js:527-567`); there is NO paste handler today; selection
+= array of col ids (`:64`).
+
+*F9 payslip scheme (W73 extends, never forks — the brief's binding rule):* sections =
+`hr.payslip.config` (`payslip_config.py:6-64`: `salary_structure_id`→config, `identifier`,
+`label`, `label_vi`, `color_key` default 'slate', `collapse_when_empty`); per-rule
+`payslip_identifier` (M2o section, `formula_rule.py:101-105`), `payslip_sequence` (`:330`),
+`visibility_rule` always/when_nonzero/never (`:335-340`). Client preview `.ps-slip`
+(`studio.xml:2015-2029`, section class `sc-{{color_key}}`), palette tokens in `payslip.scss:98+`
+(`.sc-slate{--sc:#64748B}` etc.), handlers `psToggleLang`/`psVisible`/`psNet`
+(`formula_studio.js:4380/4388/4403`). **The PRINTED payslip today is
+`om_hr_payroll.report_payslip`** (`report_payslip_templates.xml:1-22`, `web.external_layout`,
+company logo via `image_data_uri(o.company_id.logo)`) — it knows NOTHING of F9 sections/
+visibility/label_vi, and no pb_* module overrides it. The employee portal page
+(`payslip_portal_templates.xml:76-131`) embeds the HTML report via
+`payslip.get_portal_url(report_type='html')` in an iframe — whatever report is bound flows to
+the portal. PDF stack proven live (F6 shadow certificate, HTTP 200).
+
+*Toolbar:* new studio tools register in the `commandLanes` getter (the ⌘K Command Center picks
+tools up from there — standing convention).
+
+## Locked decisions
+
+- **D-L1 (W41 layout: letters ARE the columns; one row per sample)** — Sheet 1 "Payroll":
+  xlsx column A = config column_letter A, 1:1, in sequence order (this is what makes the stored
+  formulas real Excel). Row 1 = localized component name; row 2 = code (a second header row —
+  human-readable AND machine-matchable; if the multisheet importer's header parsing requires a
+  single header row, drop to name-only and flag the deviation — the TL.2 round-trip AC is the
+  binding contract, not the header cosmetics); data rows follow, one per
+  `hr.formula.sample.data`. The sample name lives in a trailing meta column AFTER the last
+  component letter (a LEADING column would break the 1:1 letter mapping — never do that).
+  Input cells = the sample's input value (else
+  `default_value`); constant cells = `constant_value`; formula cells = the REAL formula with row
+  digits shifted 2→N (S-L1). Number formats per `number_format` (currency → VND format),
+  header row styled per group, `freeze_panes` on the first data cell. If a config has zero
+  samples, export one row from `default_value`s (loud note in the sheet) — never an empty
+  workbook (C7).
+- **D-L2 (BRACKET compiles out; rate tables ship as a reference sheet)** — exported formula
+  cells carry the `expand_brackets`-compiled nested-IF (Excel-evaluable — Excel has no BRACKET).
+  Sheet 2 "Rate Tables" renders each table (code, name, bracket rows `from / rate`) and gets an
+  openpyxl `defined_names` named range per table (cosmetic/reference — formulas do NOT use it).
+  Round-trip synergy is a FEATURE: re-importing the expanded chain makes the W42 detector offer
+  re-promotion to a rate table — the AC proves this loop.
+- **D-L3 (W41 is a studio RPC on the D112.6 blob pattern)** — `export_living_workbook(config_id)`
+  read-only, manager-not-required (read access suffices), returns file_b64/filename/mimetype;
+  client handler clones `exportTestTemplate`; toolbar entry via `commandLanes`. No engine schema
+  change for W41.
+- **D-L4 (W17 clipboard = the `paste` DOM event, never the async clipboard API)** — a `t-on-paste`
+  /addEventListener on the grid scroller reading `ev.clipboardData.getData('text/plain')`
+  (no permission prompt, works under Cmd/Ctrl+V). TSV shapes accepted: single row → horizontal
+  run starting at the focused column; single column → transposed to a horizontal run; a 2-D
+  block → loud reject toast ("paste one row or one column of formulas") (C7). Only base formula
+  columns are valid targets; a run crossing an input/constant/scenario column marks that ghost
+  invalid.
+- **D-L5 (W17: ONE server ladder normalizes + validates)** — new read-only RPC
+  `stage_paste(config_id, entries=[{col, text}])` → per-entry `{col, normalized, valid, msg}`.
+  Normalization (server-side, shared helper with W41's row-shift — same CELL_RE + string-literal
+  mask): strip `=`? no — keep leading `=`; rewrite EVERY row digit to the canonical row 2
+  (`B5*C5` → `B2*C2`, `$`-row-absolutes too — the grid has exactly one formula row), then
+  validate via the existing validate path + `_expand_refs` against by_col (unknown letters →
+  invalid with the letter named). The ghost shows the NORMALIZED text — what you see is what
+  commits (the S-I1 one-ladder rule; preview divergence was a live-proven bug class in WP-I).
+  Values that are plain numbers (no letters, no `=`) → invalid with "constants are edited in
+  their own row" (v1 scope: formulas only).
+- **D-L6 (W17 commit = one bulk, all-or-nothing)** — Enter commits ONLY when every ghost is
+  valid (else the toast names the failing columns); commit calls
+  `bulk_save_formulas(items, reason='bulk', note='smart paste')` — N version rows, one reason
+  (C4), restorable per rule. Escape cancels the ghost state (fill-state Escape already routes
+  through `onKeydown` — verify it fires with the ghosts up, C3).
+- **D-L7 (W73 theme = lean fields on hr.formula.config; palette is LOCKED)** — engine fields:
+  `theme_accent` (Selection over the EXISTING `sc-*` palette keys — slate/indigo/emerald/amber/
+  rose/sky/violet; no free hex — compliance/brand bounds per the design system, C11),
+  `theme_font` (Selection: 'system' | 'serif' | 'mono' — three safe stacks), `theme_logo`
+  (Binary, fallback `company_id.logo`), `theme_show_logo` (Boolean, default True). No new model.
+  The F9 canvas gains a "Theme" panel (swatch row + font picker + logo upload, canEdit-gated);
+  the `.ps-slip` preview applies tokens via CSS vars (`--ps-accent`, font class) — preview and
+  print read the SAME fields.
+- **D-L8 (W73 print = a NEW themed QWeb report; the legacy report is untouched)** — a new
+  `qweb-pdf` `ir.actions.report` in `pb_hr_payroll_formula/report/` ("Print Payslip (Themed)",
+  binding_model hr.payslip — clone the shadow-certificate wiring incl. the Odoo-19 explicit
+  `<record model="ir.actions.report">` form, NEVER the removed `<report>` shortcut tag). It
+  renders the F9 scheme faithfully from slip LINE data (write-free by construction): sections by
+  `payslip_identifier` ordered by sequence, lines by `payslip_sequence`, `visibility_rule`
+  honored against line totals, `collapse_when_empty` honored, `label_vi` when lang='vi', theme
+  tokens applied (accent on section headers/net card, font stack, logo per
+  theme_logo/theme_show_logo). Unsectioned appears_on_payslip lines render in a default
+  "Payslip" section (C7 — never silently dropped). `om_hr_payroll.report_payslip` and the portal
+  binding stay UNTOUCHED (binding swap/portal adoption is a separate product decision — binding
+  non-goal).
+- **D-L9 (schema/deploy)** — engine `-u` (4 config fields + report XML); studio asset bump (C2).
+  W41/W17 are studio-only. `docs/FORMULA_ENGINE_TOUR.html` stays untouched by Opus — the tour
+  refresh happens AFTER this package's review, by Fable, as the wrap-up act.
+
+## Tasks
+
+**TL.1 — W41 living workbook export** *(~3 d)*
+`export_living_workbook` (sheet build per D-L1/D-L2, row-shift helper per S-L1), client download
++ toolbar/commandLanes entry.
+AC: export a demo config → workbook opens (openpyxl re-read in the battery-style check): letters
+1:1, per-sample rows, formula cells are real formulas (spot-check GROSS on row 3 = `=A3+…`),
+BRACKET-free (expanded), Rate Tables sheet + named ranges present, currency formats set; a
+config with 0 samples exports the default row with the loud note.
+
+**TL.2 — W41 round-trip proof** *(~1.5 d)*
+Nothing new built — the AC drives the loop: export the demo-clone config → import the file
+through the multisheet wizard into a THROWAWAY config → every component matches (letter, code,
+type, formula text modulo the expand/letterize normalizations the importer already applies) and
+sample values recompute identically through the engine (C10-style parity); the re-imported PIT
+chain triggers the W42 promotion proposal (the D-L2 synergy, proving the whole loop). Throwaway
+config deleted, verified by count.
+
+**TL.3 — W17 smart paste** *(~4 d)*
+`stage_paste` RPC (D-L5 ladder + tests in the paste path of the semantics battery if any pure
+helper is extracted), grid paste listener + shape detection (D-L4), ghost staging on the fill
+machinery, all-or-nothing commit (D-L6).
+AC: copy 3 formula cells from a W41-exported workbook (row 5, e.g. `=A5+AB5` forms) → paste on
+the grid → 3 ghosts show row-2-normalized text, all valid → Enter → 3 formulas saved, 3 version
+rows reason='bulk' note='smart paste', values recompute; paste with an unknown letter → that
+ghost red + commit blocked + toast names the column; paste a 2-D block → loud reject; paste
+plain numbers → rejected with the constants message; Escape clears ghosts; C10 recompute parity
+after the session.
+
+**TL.4 — W73 themes (panel + preview + themed print)** *(~3 d)*
+Engine fields + themed report (D-L7/D-L8); studio Theme panel + `.ps-slip` token application;
+save RPC manager-gated.
+AC: set accent=emerald, font=serif, upload a logo on a demo config → `.ps-slip` preview shows
+all three; Print Themed on a demo End slip → PDF renders the F9 sections (order, visibility
+when_nonzero hides zero lines, collapse_when_empty, VI labels under lang=vi) with the theme;
+a config with NO theme set → neutral slate/system/company-logo defaults; om_hr_payroll's
+default Print action output is byte-unchanged; unsectioned lines appear in the default section.
+
+**TL.5 — package validation sweep** *(~1 d)*
+Batteries green (if_chain/excel_semantics/import_resolution/w42 — no evaluator changes expected);
+C10 small-scale recompute parity; throwaway configs/files deleted, verified; console clean;
+report-back with deviations from D-L1..D-L9 flagged.
+
+### Skeleton S-L1 — the row machinery (the risky spot: refs must survive both directions)
+
+```python
+# ONE helper pair next to _translate_formula_horizontal (pb_formula_studio.py) —
+# W41 shifts OUT (2→N at export), W17 normalizes IN (any→2 at paste). Same
+# regex, same mask, two thin wrappers. Never two regexes (S-I1 / D-J1 lesson).
+_CELL = re.compile(r'(\$?)([A-Za-z]{1,3})(\$?)(\d+)')
+def _shift_rows(self, formula, to_row):
+    """'=A2+MAX(AB2,5000)*X2' -> row 7 -> '=A7+MAX(AB7,5000)*X7'.
+    Mask string literals FIRST (same trick as _strip_for_lint) so 'IF(A2=\"X2\",'
+    keeps its literal. Function names never match (no trailing digit-group
+    without a preceding letter run is touched; MAX( has no row digit)."""
+    ...
+# GOTCHA (W41): the sheet's FIRST data row must equal the row the formulas cite.
+#   With two header rows (name, code), data starts at row 3 — shift 2→3 for the
+#   first sample, 2→4 for the second… off-by-one here silently corrupts EVERY
+#   formula; the TL.1 AC's openpyxl re-read must assert the exact cell text.
+# GOTCHA (W17): normalization rewrites row digits to 2 INCLUDING $-row-absolute
+#   ($B$5 -> $B$2) — the grid has one formula row; keeping $5 would reference a
+#   nonexistent sample row after commit.
+# GOTCHA (W41 formats): openpyxl number_format strings, not Odoo's — currency ⇒
+#   '#,##0' (VND has no decimals), percentage ⇒ '0.00%' BUT our percentage
+#   values are FRACTIONS (0.05) so Excel's % format displays 5.00% correctly —
+#   do NOT pre-multiply by 100.
+```
+
+## WP-L verification (Chrome MCP on pb_demo VN world — throwaways only)
+
+1. W41: export → openpyxl re-read assertions (letters, rows, formulas, formats, named ranges);
+   0-sample config path.
+2. Round-trip: export → multisheet re-import → component/value parity + W42 re-promotion offer;
+   throwaway deleted, count-verified.
+3. W17: paste-from-export happy path (normalized ghosts → one bulk commit → version rows);
+   unknown-letter block; block-paste reject; number reject; Escape; recompute parity.
+4. W73: panel → preview tokens → themed PDF (sections/visibility/VI/theme); no-theme defaults;
+   legacy print unchanged.
+5. Batteries + C10 parity; fixtures deleted (verified by count); console clean.
+
+Report back per the **Report-back items** section (deviations from D-L1..D-L9 must be flagged).
