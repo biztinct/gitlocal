@@ -1043,6 +1043,7 @@ export class PbFormulaStudio extends Component {
                 T("payslip", "Payslip Studio", "Design the payslip layout", "payslip", "indigo", () => this.openPayslip()),
                 T("mapping", "Mapping canvas", "Map cycle carryover, API, import and scheme fields onto your components", "mapping", "pink", () => this.openMapping()),
                 T("rates", "Rate tables", "PIT brackets and other rate tables", "rates", "amber", () => this.openRates(), this.state.rateTables.length || null),
+                T("export", "Export workbook", "Download the config as a living Excel file with real formulas", "export", "teal", () => this.exportLivingWorkbook()),
             ] },
             { id: "govern", label: "Govern", tools: [
                 T("problems", "Problems", "Lint checks and rename-refactor", "problems", "rose", () => this.openProblems(), this.problemCount || null),
@@ -3465,6 +3466,22 @@ export class PbFormulaStudio extends Component {
         a.href = url; a.download = r.filename; a.click();
         URL.revokeObjectURL(url);
         this.notif.add("Template downloaded", { type: "success" });
+    }
+    // W41 — export the whole config as a *living* .xlsx (real Excel formulas,
+    // one row per sample, rate tables on a reference sheet). Clones the
+    // exportTestTemplate blob-download path (D-L3).
+    async exportLivingWorkbook() {
+        if (this.state.empty) return;
+        const r = await this.orm.call("pb.formula.studio", "export_living_workbook", [this.state.config.id]);
+        if (!r || !r.ok) { this.notif.add((r && r.msg) || "Could not export workbook", { type: "warning" }); return; }
+        const bin = atob(r.file_b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const url = URL.createObjectURL(new Blob([bytes], { type: r.mimetype }));
+        const a = document.createElement("a");
+        a.href = url; a.download = r.filename; a.click();
+        URL.revokeObjectURL(url);
+        this.notif.add(r.note || "Workbook downloaded", { type: r.note ? "info" : "success" });
     }
     triggerImport() { if (this.testFileRef.el) this.testFileRef.el.click(); }
     async onImportFile(ev) {
