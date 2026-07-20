@@ -169,8 +169,11 @@ class PbFormulaStudio(models.AbstractModel):
     @api.model
     def _expand_refs(self, formula, by_col):
         """Set of referenced columns in a formula, expanding A#:B# ranges to
-        every existing member column (matches the engine's range expansion)."""
-        f = formula or ''
+        every existing member column (matches the engine's range expansion).
+        String literals are masked first so '=IF(D2="X2",…)' never reports a
+        phantom X reference (WP-L review: stage_paste false-rejected such
+        formulas as 'Unknown column(s): X')."""
+        f = re.sub(r'"[^"]*"', ' ', formula or '')
         out = set()
         for s, e in re.findall(r'([A-Za-z]+)\d+:([A-Za-z]+)\d+', f):
             lo, hi = sorted((self._col_num(s), self._col_num(e)))
@@ -4623,10 +4626,18 @@ class PbFormulaStudio(models.AbstractModel):
             return {'ok': False}
         vals = vals or {}
         clean = {}
+        # Loud reject, never silent coercion (C7): a client sending '#ff0000'
+        # has a bug — quietly saving 'slate' would hide it.
         if 'accent' in vals:
-            clean['theme_accent'] = vals['accent'] if vals['accent'] in self._ACCENT_HEX else 'slate'
+            if vals['accent'] not in self._ACCENT_HEX:
+                return {'ok': False,
+                        'msg': _("Unknown accent %r — the palette is locked.") % vals['accent']}
+            clean['theme_accent'] = vals['accent']
         if 'font' in vals:
-            clean['theme_font'] = vals['font'] if vals['font'] in ('system', 'serif', 'mono') else 'system'
+            if vals['font'] not in ('system', 'serif', 'mono'):
+                return {'ok': False,
+                        'msg': _("Unknown font %r — choose system, serif or mono.") % vals['font']}
+            clean['theme_font'] = vals['font']
         if 'show_logo' in vals:
             clean['theme_show_logo'] = bool(vals['show_logo'])
         if 'logo' in vals:
@@ -5689,8 +5700,6 @@ class PbFormulaStudio(models.AbstractModel):
         # xlsx column index = the frozen letter's ordinal (D-L1: 1:1, never by
         # sequence — a reordered config keeps letters as identities, F111).
         col_of = {r.id: self._col_num(r.column_letter) for r in placed}
-        last_col = max(col_of.values())
-        meta_col = last_col + 1                     # trailing "Sample" column
 
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -5711,11 +5720,9 @@ class PbFormulaStudio(models.AbstractModel):
             h2.fill = head_fill
             h2.font = code_font
             ws.column_dimensions[get_column_letter(col)].width = 16
-        mh1 = ws.cell(row=1, column=meta_col, value='Sample')
-        mh1.fill = head_fill
-        mh1.font = head_font
-        ws.cell(row=2, column=meta_col, value='(name)').font = code_font
-        ws.column_dimensions[get_column_letter(meta_col)].width = 22
+        # Sample names + notes live on the Info SHEET, never on Payroll — a
+        # trailing meta column re-imports as a phantom SAMPLE component and the
+        # 0-sample note as a phantom header (WP-L review Minor 3).
 
         # ---- data rows: one per sample (row 3 = first sample) -------------
         samples = list(c.sample_data_ids)
@@ -5747,8 +5754,9 @@ class PbFormulaStudio(models.AbstractModel):
                 cell.number_format = self._XLSX_NUMFMT.get(r.number_format or 'currency', '#,##0.00')
                 if r.column_type != 'formula':
                     cell.alignment = right
-            ws.cell(row=sheet_row, column=meta_col, value=sample_name)
+            row_names.append((sheet_row, sample_name))
 
+        row_names = []
         if samples:
             for i, s in enumerate(samples):
                 _emit_row(3 + i, s.get_input_values(), s.name or ('Sample %d' % (i + 1)))
@@ -5756,8 +5764,18 @@ class PbFormulaStudio(models.AbstractModel):
             _emit_row(3, {}, '(defaults — no samples)')
 
         ws.freeze_panes = 'A3'                      # header + code rows frozen
+
+        # ---- Info sheet: sample names per data row + loud notes ------------
+        info = wb.create_sheet('Info')
+        info.cell(row=1, column=1, value='Payroll row').font = head_font
+        info.cell(row=1, column=2, value='Sample').font = head_font
+        info.column_dimensions['A'].width = 12
+        info.column_dimensions['B'].width = 30
+        for i, (sheet_row, sample_name) in enumerate(row_names):
+            info.cell(row=2 + i, column=1, value=sheet_row)
+            info.cell(row=2 + i, column=2, value=sample_name)
         if note:
-            ws.cell(row=1, column=meta_col + 1, value=note).font = Font(
+            info.cell(row=len(row_names) + 3, column=1, value=note).font = Font(
                 bold=True, color='B45309')
 
         # ---- Sheet 2: Rate Tables (reference) + named ranges (D-L2) --------

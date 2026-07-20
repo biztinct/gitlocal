@@ -666,7 +666,16 @@ class HrPayslipFormula(models.Model):
                 'subtotal': sum(l['total'] for l in default_lines),
             })
 
-        net = sum(s['subtotal'] for s in out_sections)
+        # The slip's own NET line is the only trustworthy net — summing visible
+        # section subtotals double-counts totals (GROSS, NET itself) and adds
+        # positive employer contributions (WP-L review M1: 42.2M printed vs the
+        # real 12.1M). No NET line and no NET-category line → hide the card
+        # rather than print a derived number on an employee-facing PDF.
+        net = dsal.get('NET')
+        if net is None:
+            net_lines = self.line_ids.filtered(
+                lambda l: l.category_id and l.category_id.code == 'NET')
+            net = sum(net_lines.mapped('total')) if net_lines else None
         currency = (config.currency_id.symbol if (config and config.currency_id)
                     else (self.company_id.currency_id.symbol if self.company_id else ''))
         return {
@@ -676,5 +685,6 @@ class HrPayslipFormula(models.Model):
             'logo': logo,
             'sections': out_sections,
             'net': net,
+            'has_net': net is not None,
             'currency': currency,
         }

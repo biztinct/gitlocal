@@ -828,7 +828,7 @@ export class GridStudio extends Component {
             this._toast("Paste one row or one column of formulas, not a block", "warning");
             return;
         }
-        if (!cells.length) return;                       // nothing useful → native
+        if (!cells.length || !cells.some(s => s.length)) return;   // nothing useful → native
         ev.preventDefault();
         const cols = this.baseCols;
         const start = cols.findIndex(c => c.id === this.ui.focus.colId);
@@ -837,7 +837,9 @@ export class GridStudio extends Component {
             this._toast("That paste runs past the last column", "warning");
             return;
         }
-        const run = cells.map((text, i) => ({ col: cols[start + i].col, id: cols[start + i].id, text }));
+        const run = cells
+            .map((text, i) => ({ col: cols[start + i].col, id: cols[start + i].id, text }))
+            .filter(r => r.text.length);   // empty cells consume their column, stage nothing
         this._teardownFill();                            // drop any drag-fill state first
         let staged;
         try {
@@ -860,9 +862,15 @@ export class GridStudio extends Component {
         let text = (raw || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n$/, "");
         if (!text.trim()) return [];
         const rows = text.split("\n").map(l => l.split("\t"));
-        if (rows.length === 1) return rows[0].map(s => s.trim()).filter(s => s.length);
-        if (rows.every(r => r.length === 1)) return rows.map(r => r[0].trim()).filter(s => s.length);
-        return null;   // multi-row AND multi-col → block
+        let cells;
+        if (rows.length === 1) cells = rows[0].map(s => s.trim());
+        else if (rows.every(r => r.length === 1)) cells = rows.map(r => r[0].trim());
+        else return null;   // multi-row AND multi-col → block
+        // Interior empties KEEP their position (an empty source cell must not
+        // shift the rest of the run one column left — WP-L review); only
+        // trailing blanks are dropped.
+        while (cells.length && !cells[cells.length - 1].length) cells.pop();
+        return cells;
     }
     _onPasteKey(ev) {
         if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); this._commitPaste(); }

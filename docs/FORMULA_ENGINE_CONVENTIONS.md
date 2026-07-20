@@ -379,11 +379,30 @@ The row machinery and the live-validation lessons hit building the export/paste/
     Theme panel button, Add/Delete, drag-fill, etc. are ALL hidden/short-circuited. Validate editor UIs as
     **`ash@biztinct.com` / `admin1234` (Mitchell Admin, uid 2, system)** — authenticate via a
     `/web/session/authenticate` fetch, then reload. (`get_session_info` tells you who you are.)
-  - **OWL `t-on-paste` can't be driven headlessly.** A scripted `ClipboardEvent('paste', {clipboardData})`
-    does NOT invoke OWL's paste handler (it needs a *trusted* event — even though synthetic `keydown` DOES
-    route through OWL), and CDP `press_key("Meta+v"/"Control+v")` doesn't run the browser's clipboard-paste
-    pipeline on a non-editable focused `<div>`. So paste-driven features (W17) can't be exercised via Chrome
-    MCP — validate the server ladder (`stage_paste` + the bulk commit) directly and confirm the client is
-    wired + in the loaded bundle, then leave the ghost UI to a real Cmd+V smoke-test.
+  - **OWL `t-on-paste` IS drivable headlessly — build the event correctly.** (The original WP-L claim
+    that it needs a trusted event was WRONG; the reviewer drove the whole ghost flow in Chrome MCP.)
+    `new ClipboardEvent('paste', {clipboardData: new DataTransfer(), bubbles: true})` with
+    `ev.clipboardData.setData('text/plain', tsv)` dispatched on the grid scroller invokes the OWL handler
+    end-to-end (ghosts, invalid states, Escape, Enter commit). What does NOT work is CDP
+    `press_key("Meta+v")` (no clipboard pipeline on a non-editable `<div>`) or a ClipboardEvent without a
+    real `DataTransfer`. Never mark a UI path "unvalidatable" without trying the synthetic-event route
+    first — a false "can't drive" claim skips real validation for every future session.
   - Prod Odoo strips `__owl__` off DOM nodes — you can't read a component's props/state from the page;
     verify wiring by grepping the loaded `web.assets_web.min.js` (via `fetch`) and by calling the RPCs.
+- **Review lessons (WP-L, 2026-07-21):**
+  - **Never re-derive money the slip already states.** The themed print originally summed visible section
+    subtotals for "Net pay" — double-counting GROSS/NET and adding employer contributions (printed 42.2M
+    vs the real 12.1M on an employee-facing PDF). The slip's own NET line (code, then category `NET`) is
+    the only trustworthy figure; with neither, HIDE the card — never print a derived number. Any rendered
+    money must be traced to a stored line, and "the PDF renders" is NOT validation — check the figures.
+  - **Round-trip fidelity includes VALUES, not just formulas.** The multisheet importer used to drop
+    uniform value columns to `input`/default 0 — a re-imported config recomputed 28/53 letters wrong while
+    every formula matched. Uniform columns now seed `default_value` (varying columns stay 0: seeding a
+    first-row value would silently pay it to employees missing the input). When an AC says "recompute
+    identically", verify on a config whose samples actually EXERCISE the constant-driven branches.
+  - **`if_chain.detect` recognizes BOTH canonical forms:** the hand-written progressive `v*rate − ded`
+    ascending-`<=` chain AND the marginal `base + rate*(v−lower)` descending-`>=` form that
+    `compile_brackets_excel` itself emits (`form: 'progressive'|'marginal'`). Without the second, a W41
+    export (BRACKET expanded) could never re-earn its rate-table offer on re-import. The WP-J M1 zero-guard
+    conservatism applies to the PROGRESSIVE fold only — a marginal chain with a non-zero first lower is
+    exact by construction (battery cases 15-18).

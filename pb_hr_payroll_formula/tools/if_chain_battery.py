@@ -206,6 +206,68 @@ def t_nonzero_guard():
 case("non-zero guard threshold → None (fold only exact at T=0)", t_nonzero_guard)
 
 
+# ---- 15-18. MARGINAL form (WP-L review M3): the exact compile_brackets_excel
+# output must round-trip back through the detector, or a W41-exported
+# rate-table config can never re-earn its BRACKET offer on re-import.
+
+# The VERBATIM compile_brackets_excel output for brackets
+# [(0,0.05),(5000000,0.1),(10000000,0.15)] (bases 0/250000/750000), driver AQ2
+# — cross-checked against a line-for-line replica of the emitter (integral
+# floats print WITHOUT '.0' via _num).
+MARGINAL = ("MAX(0,IF((AQ2)>=10000000,750000+0.15*((AQ2)-10000000),"
+            "IF((AQ2)>=5000000,250000+0.1*((AQ2)-5000000),0.05*((AQ2)-0))))")
+
+
+def t_marginal():
+    r = if_chain.detect(MARGINAL)
+    assert r is not None, "marginal compile output must parse"
+    assert r['form'] == 'marginal'
+    assert r['driver'] == 'AQ2', r['driver']        # outer parens stripped
+    assert r['consistent'] is True, r.get('reason')
+    assert [(b['lower'], b['rate']) for b in r['brackets']] == \
+        [(0, 0.05), (5000000, 0.1), (10000000, 0.15)]
+    assert r['deductions'] == [0.0, 250000.0, 750000.0]
+    s, e = r['span']
+    assert MARGINAL[s:e] == MARGINAL, "span covers the whole MAX(0,…)"
+    assert r['wrapper_ok'] is True
+case("marginal compile output → parsed, consistent, span=MAX(0,…)", t_marginal)
+
+
+def t_marginal_wrapped():
+    # The W41 export shape: expand_brackets wraps in parens under the =- wrapper.
+    wrapped = "=-(%s)" % MARGINAL
+    r = if_chain.detect(wrapped)
+    assert r is not None and r['form'] == 'marginal'
+    s, e = r['span']
+    assert wrapped[:s] == '=-(' and wrapped[e:] == ')', repr((wrapped[:s], wrapped[e:]))
+    rewritten = wrapped[:s] + "BRACKET(PIT,AQ2)" + wrapped[e:]
+    assert rewritten == "=-(BRACKET(PIT,AQ2))", rewritten
+case("wrapped export form =-(MAX(0,…)) → span surgical", t_marginal_wrapped)
+
+
+def t_marginal_corrupt_base():
+    bad = MARGINAL.replace("250000+", "999999+")
+    r = if_chain.detect(bad)
+    assert r is not None, "still shaped — must be LISTED, not dropped"
+    assert r['consistent'] is False and r['bad_band'] == 1, (r['consistent'], r['bad_band'])
+    assert '999999' in r['reason'], r['reason']
+case("marginal corrupted base → irregular, band named", t_marginal_corrupt_base)
+
+
+def t_marginal_nonzero_first_lower():
+    # lowers[0] > 0 is legit in the marginal form (MAX(0,…) clamps below the
+    # floor) — unlike the progressive guard fold (case 14), nothing diverges.
+    m2 = ("MAX(0,IF((X2)>=5000000,200000+0.1*((X2)-5000000),"
+          "0.05*((X2)-1000000)))")
+    r = if_chain.detect(m2)
+    assert r is not None and r['form'] == 'marginal'
+    assert r['consistent'] is True, r.get('reason')   # base_1 = 0.05*(5M-1M) = 200k
+    assert [(b['lower'], b['rate']) for b in r['brackets']] == \
+        [(1000000, 0.05), (5000000, 0.1)]
+case("marginal with non-zero first lower → consistent (M1 rule is progressive-only)",
+     t_marginal_nonzero_first_lower)
+
+
 def main():
     failures = []
     for name, fn in CASES:

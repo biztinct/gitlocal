@@ -281,16 +281,219 @@ def verify_consistency(brackets, deductions, eps=0.5):
     return True, -1
 
 
+_MAX_RE = re.compile(r'\bMAX\s*\(', re.IGNORECASE)
+
+
+def _strip_outer_parens(s):
+    s = (s or '').strip()
+    while s.startswith('(') and _match_paren(s, 0) == len(s) - 1:
+        s = s[1:-1].strip()
+    return s
+
+
+def _parse_cond_ge(cond, driver_norm):
+    """``<driver> >= <number>`` (or ``>``) — the descending direction
+    ``compile_brackets_excel`` emits. Mirror of ``_parse_cond``."""
+    m = re.match(r'^(.*?)(>=|>)\s*(%s)\s*$' % _NUM, cond.strip())
+    if not m:
+        return None
+    lhs = m.group(1).strip()
+    thr = _as_number(m.group(3))
+    if not lhs or thr is None:
+        return None
+    lhs_norm = _norm(lhs)
+    if driver_norm is not None and lhs_norm != driver_norm:
+        return None
+    return lhs, lhs_norm, thr
+
+
+def _split_top_level_last(s, op):
+    """Index of the LAST top-level occurrence of ``op`` in ``s`` (paren- and
+    string-aware), or -1."""
+    depth = 0
+    in_str = None
+    cut = -1
+    for i, ch in enumerate(s):
+        if in_str:
+            if ch == in_str:
+                in_str = None
+        elif ch in '"\'':
+            in_str = ch
+        elif ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+        elif ch == op and depth == 0 and i > 0:
+            cut = i
+    return cut
+
+
+def _parse_marginal_band(value, driver_norm):
+    """Parse ``[base+]rate*(<driver>-lower)`` — the exact band shape
+    ``compile_brackets_excel`` emits. Returns ``(base, rate, lower, driver_text,
+    driver_norm)`` or None."""
+    s = (value or '').strip()
+    base = 0.0
+    # Optional leading 'base+' — the base seam is the FIRST top-level '+' whose
+    # left side is a bare number (rate*… also starts with a number, but then
+    # there is no top-level '+' before the '*').
+    depth = 0
+    in_str = None
+    for i, ch in enumerate(s):
+        if in_str:
+            if ch == in_str:
+                in_str = None
+        elif ch in '"\'':
+            in_str = ch
+        elif ch == '(':
+            depth += 1
+        elif ch == ')':
+            depth -= 1
+        elif ch == '+' and depth == 0:
+            lhs = s[:i]
+            if _as_number(lhs) is not None:
+                base = float(lhs)
+                s = s[i + 1:].strip()
+            break
+    m = re.match(r'^(%s)\s*\*\s*\(' % _NUM, s)
+    if not m:
+        return None
+    rate = float(m.group(1))
+    open_idx = s.index('(', len(m.group(1)))
+    close = _match_paren(s, open_idx)
+    if close != len(s.rstrip()) - 1:
+        return None
+    inner = s[open_idx + 1:close]
+    cut = _split_top_level_last(inner, '-')
+    if cut < 0:
+        return None
+    dtext = inner[:cut].strip()
+    lower = _as_number(inner[cut + 1:])
+    if not dtext or lower is None:
+        return None
+    dnorm = _norm(dtext)
+    if driver_norm is not None and dnorm != driver_norm:
+        return None
+    return base, rate, lower, dtext, dnorm
+
+
+def parse_marginal_chain(expr, eps=0.5):
+    """WP-L review M3: recognize the marginal-band form that
+    ``compile_brackets_excel`` itself emits (a W41 export expands ``BRACKET``
+    into exactly this, so without this parser a rate-table config could never
+    round-trip back to a rate-table offer)::
+
+        MAX(0, IF((v)>=l_n, base_n+r_n*((v)-l_n), … , r_0*((v)-l_0)))
+
+    Descending ``>=`` ladder, innermost ELSE = band 0, explicit cumulative
+    bases. Same return contract as ``parse_progressive_chain`` PLUS
+    ``consistent``/``bad_band``/``reason`` (the consistency check here is that
+    each parsed base equals the cumulative base the bracket table implies —
+    checked directly; the progressive form's quick-deduction rule does not
+    apply to marginal bands). ``deductions`` carries the equivalent
+    quick-deductions for display. The span covers the whole ``MAX(0,…)`` —
+    ``BRACKET()`` compiles to exactly that, so the rewrite replaces it 1:1."""
+    if not expr or 'MAX' not in expr.upper():
+        return None
+    for m in _MAX_RE.finditer(expr):
+        open_idx = m.end() - 1
+        end = _match_paren(expr, open_idx)
+        if end == -1:
+            continue
+        args = _split_top_commas(expr[open_idx + 1:end])
+        if len(args) != 2 or _as_number(args[0]) != 0.0:
+            continue
+
+        # Walk the descending IF ladder.
+        bands_desc = []          # [(lower, rate, base)] as encountered (top first)
+        driver_text = driver_norm = None
+        s = args[1].strip()
+        ok = True
+        guard = 200
+        while guard > 0:
+            guard -= 1
+            mif = _IF_RE.match(s)
+            if mif and _match_paren(s, mif.end() - 1) == len(s) - 1:
+                ifargs = _split_top_commas(s[mif.end():len(s) - 1])
+                if len(ifargs) != 3:
+                    ok = False
+                    break
+                pc = _parse_cond_ge(ifargs[0], driver_norm)
+                if not pc:
+                    ok = False
+                    break
+                dtext, dnorm, thr = pc
+                if driver_norm is None:
+                    driver_text, driver_norm = dtext, dnorm
+                band = _parse_marginal_band(ifargs[1], driver_norm)
+                if band is None or abs(band[2] - thr) > 1e-9:
+                    ok = False   # band's lower must equal its own >= threshold
+                    break
+                bands_desc.append((band[2], band[1], band[0]))
+                s = ifargs[2].strip()
+                continue
+            band = _parse_marginal_band(s, driver_norm)
+            if band is None:
+                ok = False
+                break
+            if driver_norm is None:
+                driver_text, driver_norm = band[3], band[4]
+            bands_desc.append((band[2], band[1], band[0]))
+            break
+        else:
+            ok = False
+        if not ok or len(bands_desc) < 2:
+            continue
+
+        bands = list(reversed(bands_desc))     # ascending
+        lowers = [b[0] for b in bands]
+        if any(not (b > a) for a, b in zip(lowers, lowers[1:])):
+            continue
+
+        # Consistency: parsed bases must equal the cumulative bases the
+        # (lowers, rates) table implies — irregular bases are LISTED (C7).
+        consistent, bad, reason = True, -1, None
+        expected = 0.0
+        for i in range(1, len(bands)):
+            expected += bands[i - 1][1] * (bands[i][0] - bands[i - 1][0])
+            if abs(bands[i][2] - expected) > eps:
+                consistent, bad = False, i
+                reason = ("band %d base %s ≠ the cumulative-table value %s"
+                          % (i + 1, _fmt(bands[i][2]), _fmt(expected)))
+                break
+        if consistent and abs(bands[0][2]) > eps:
+            consistent, bad = False, 0
+            reason = "band 1 must have no base (found %s)" % _fmt(bands[0][2])
+
+        driver_clean = _strip_outer_parens(driver_text)
+        return {
+            'driver': driver_clean,
+            'driver_norm': _norm(driver_clean),
+            'brackets': [{'lower': lo, 'rate': r} for lo, r, _ in bands],
+            'deductions': [lo * r - b for lo, r, b in bands],
+            'span': (m.start(), end + 1),
+            'wrapper_ok': True,      # BRACKET() compiles to this exact MAX(0,…)
+            'bands': len(bands),
+            'form': 'marginal',
+            'consistent': consistent,
+            'bad_band': bad,
+            'reason': reason,
+        }
+    return None
+
+
 def detect(expr, eps=0.5):
-    """Shared entry point for W54 and W42. Runs ``parse_progressive_chain`` then
-    ``verify_consistency`` and returns the merged result, or None if ``expr`` is
-    not a progressive chain at all. The dict carries ``consistent`` (bool),
-    ``bad_band`` (int, -1 if consistent) and a human ``reason`` for irregular
-    chains — so callers list irregular chains identically, with zero re-derivation
-    (D-J1)."""
+    """Shared entry point for W54 and W42. Tries ``parse_progressive_chain``
+    (+ ``verify_consistency``), then ``parse_marginal_chain`` (which carries
+    its own base-consistency verdict), or None if ``expr`` is neither form.
+    The dict carries ``consistent`` (bool), ``bad_band`` (int, -1 if
+    consistent), ``form`` ('progressive'|'marginal') and a human ``reason``
+    for irregular chains — so callers list irregular chains identically, with
+    zero re-derivation (D-J1)."""
     parsed = parse_progressive_chain(expr)
     if not parsed:
-        return None
+        return parse_marginal_chain(expr, eps=eps)
+    parsed['form'] = 'progressive'
     brackets = [(b['lower'], b['rate']) for b in parsed['brackets']]
     ok, bad = verify_consistency(brackets, parsed['deductions'], eps=eps)
     parsed['consistent'] = ok
