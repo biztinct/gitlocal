@@ -759,11 +759,11 @@ export class PbFormulaStudio extends Component {
     // to the canonical row-2 form AND validates it (D-L5). The ghost shows
     // exactly what a commit will store — no preview/commit divergence (S-I1).
     async gridStagePaste(entries) {
-        try {
-            const r = await this.orm.call("pb.formula.studio", "stage_paste",
-                [this.state.config.id, entries]);
-            return (r && r.entries) || [];
-        } catch (e) { return []; }
+        // A thrown RPC must surface as an error, not as "n of n can't be
+        // pasted" (C7) — rethrow so the grid's catch shows its danger toast.
+        const r = await this.orm.call("pb.formula.studio", "stage_paste",
+            [this.state.config.id, entries]);
+        return (r && r.entries) || [];
     }
     // All-or-nothing commit through ONE bulk_save_formulas (reason='bulk',
     // note='smart paste') — N formulas → N version rows, one reason (C4/D-L6).
@@ -777,7 +777,8 @@ export class PbFormulaStudio extends Component {
             r = await this.orm.call("pb.formula.studio", "bulk_save_formulas",
                 [items, "bulk", "smart paste"]);
         } catch (e) { this.notif.add("Paste failed", { type: "warning" }); return; }
-        this.notif.add(`Pasted ${items.length} formula${items.length === 1 ? "" : "s"}`, { type: "success" });
+        const saved = (r && r.saved) != null ? r.saved : items.length;
+        this.notif.add(`Pasted ${saved} formula${saved === 1 ? "" : "s"}`, { type: "success" });
         await this.load(cfgId);
         this._applyTests(r && r.tests);
         if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);

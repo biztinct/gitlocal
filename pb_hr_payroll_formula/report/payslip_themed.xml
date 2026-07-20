@@ -69,8 +69,8 @@
                             </div>
                         </t>
 
-                        <!-- accent net card -->
-                        <div t-attf-style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding:14px 18px; background:{{ ps['accent_hex'] }}; color:#fff; border-radius:10px; font-size:16px; font-weight:800;">
+                        <!-- accent net card — only when the slip carries a real NET line -->
+                        <div t-if="ps['has_net']" t-attf-style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding:14px 18px; background:{{ ps['accent_hex'] }}; color:#fff; border-radius:10px; font-size:16px; font-weight:800;">
                             <span>Net pay</span>
                             <span><t t-esc="'{:,.0f}'.format(ps['net'])"/> <t t-esc="ps['currency']"/></span>
                         </div>

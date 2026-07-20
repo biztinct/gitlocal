@@ -685,6 +685,11 @@ class MultiSheetImportWizard(models.TransientModel):
                     sample = self._get_sample_value(
                         sheet_data, data_sheet, formula_sheet, header_info['value'], col_letter
                     )
+                    is_uniform = (
+                        col_letter not in formula_columns
+                        and self._column_is_uniform(
+                            sheet_data, data_sheet, header_info['value'], col_letter)
+                    )
 
                     column_lines.append({
                         'wizard_id': self.id,
@@ -702,6 +707,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         'column_type': 'input' if is_red_data_column else
                                        ('formula' if col_letter in formula_columns else 'input'),
                         'sample_value': sample,
+                        'is_uniform_value': is_uniform,
                         'has_cross_sheet_ref': has_cross_ref,
                         'cross_sheet_formula': cross_formula,
                         'is_referenced_by_main': is_referenced,
@@ -1155,6 +1161,7 @@ class MultiSheetImportWizard(models.TransientModel):
                         'excel_formula': excel_formula,
                         'resolved_formula': '',  # Will be filled during resolution
                         'sample_value': col_sel.sample_value,
+                        'is_uniform_value': bool(col_sel.is_uniform_value),
                         'is_duplicate': False,
                         'include_in_import': True,
                         'is_in_excel': True,
@@ -1657,6 +1664,42 @@ class MultiSheetImportWizard(models.TransientModel):
                     return formula_value[:50]
 
         return ''
+
+    def _column_is_uniform(self, sheet_data, data_sheet, header_value, col_letter):
+        """True when every non-empty data cell of the column holds the same
+        value (numeric-coerced when possible). A uniform value column is a
+        parameter in practice — W41 exports constants exactly this way — so
+        import seeds ``default_value`` from it and the round-tripped config
+        recomputes faithfully (WP-L review M2: constants degraded to input 0
+        broke 28 letters on recompute). A VARYING column must stay at default
+        0: seeding a first-row value would silently pay that value to any
+        employee missing the input in a future payrun."""
+        values = []
+        rows = sheet_data.get('data_rows') or []
+        if rows:
+            for row in rows:
+                v = row.get(header_value)
+                if v is not None and str(v).strip() != '':
+                    values.append(v)
+        elif data_sheet is not None:
+            from openpyxl.utils import column_index_from_string
+            col_idx = column_index_from_string(col_letter)
+            data_start_row = sheet_data.get('data_start_row') or (
+                sheet_data.get('header_row', 1) + 1)
+            scan_end = min(data_start_row + 500, data_sheet.max_row)
+            for row_num in range(data_start_row, scan_end + 1):
+                v = data_sheet.cell(row=row_num, column=col_idx).value
+                if v is not None and str(v).strip() != '':
+                    values.append(v)
+        if not values:
+            return False
+
+        def _norm(v):
+            n = excel_semantics.coerce_number(str(v))
+            return round(n, 6) if n is not None else str(v).strip()
+
+        first = _norm(values[0])
+        return all(_norm(v) == first for v in values[1:])
 
     def _detect_empty_columns_between_valid(self, headers, sheet, header_row):
         """
@@ -2787,6 +2830,16 @@ class MultiSheetImportWizard(models.TransientModel):
                 if comp.column_type == 'formula' and comp.excel_formula:
                     rule_vals['excel_formula'] = comp.excel_formula
 
+                # Uniform value column → seed default_value so a round-tripped
+                # config recomputes faithfully (WP-L review M2: W41-exported
+                # constants re-imported as input 0.0 broke 28 letters). Varying
+                # columns keep default 0 — seeding a first-row value would
+                # silently pay it to any employee missing the input later.
+                if comp.column_type == 'input' and comp.is_uniform_value and comp.sample_value:
+                    number = excel_semantics.coerce_number(comp.sample_value)
+                    if number is not None:
+                        rule_vals['default_value'] = number
+
                 # Handle constant components (from colored cell pairs).
                 # D-E5: parse via the shared Excel coercion (handles "8%",
                 # "1.234,50", thousands separators) instead of a bare float().
@@ -3427,6 +3480,14 @@ class MultiSheetComponentPreview(models.TransientModel):
         string='Sample'
     )
 
+    is_uniform_value = fields.Boolean(
+        string='Uniform Value',
+        default=False,
+        help="Every non-empty data cell in the source column holds the same "
+             "value — a parameter in practice; its value seeds default_value "
+             "on import so round-tripped configs recompute faithfully."
+    )
+
     is_in_excel = fields.Boolean(
         string='In Excel',
         default=True,
@@ -3599,6 +3660,12 @@ class MultiSheetColumnSelection(models.TransientModel):
 
     sample_value = fields.Char(
         string='Sample',
+        readonly=True
+    )
+
+    is_uniform_value = fields.Boolean(
+        string='Uniform Value',
+        default=False,
         readonly=True
     )
 
