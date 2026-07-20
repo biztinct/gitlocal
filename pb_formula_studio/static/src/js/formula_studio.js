@@ -194,6 +194,8 @@ export class PbFormulaStudio extends Component {
             psOverComp: null,        // rule id being hovered during a drag (insert-before)
             psOverZone: null,        // section id or 'tray' currently hovered
             psEditSec: null,         // section id whose title is inline-editing
+            psThemeOpen: false,      // W73 — theme panel open
+            psLogoV: 0,              // W73 — logo cache-buster (bumped on upload/clear)
             // F12 — raw-Excel mode on the card (per-user preference)
             rawMode: (typeof localStorage !== "undefined" && localStorage.getItem("pbfs_raw_mode") === "1"),
             rawBuffer: "",
@@ -4452,6 +4454,59 @@ export class PbFormulaStudio extends Component {
         let net = 0;
         for (const s of this.state.psData.sections) net += this.psSectionTotal(s);
         return net;
+    }
+
+    // ---- W73 payslip theme (accent / font / logo; preview + print share fields) ----
+    get psTheme() {
+        return (this.state.psData && this.state.psData.theme)
+            || { accent: "slate", font: "system", show_logo: true, has_logo: false };
+    }
+    get psAccentHex() {
+        const map = (this.state.psData && this.state.psData.accent_hex) || {};
+        return map[this.psTheme.accent] || "#64748B";
+    }
+    get psFontStack() {
+        return {
+            system: "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+            serif: "Georgia, 'Times New Roman', Times, serif",
+            mono: "'SF Mono', 'Cascadia Code', Consolas, monospace",
+        }[this.psTheme.font] || "inherit";
+    }
+    // The .ps-slip preview reads the SAME four fields the print does (D-L7).
+    get psSlipStyle() {
+        return `--ps-accent: ${this.psAccentHex}; font-family: ${this.psFontStack};`;
+    }
+    get psLogoUrl() {
+        if (!this.psTheme.show_logo || !this.psTheme.has_logo) return null;
+        return `/web/image/hr.formula.config/${this.state.config.id}/theme_logo?v=${this.state.psLogoV}`;
+    }
+    get psAccentSwatches() { return (this.state.psData && this.state.psData.colors) || []; }
+    async _saveTheme(vals) {
+        if (!this.state.psData || !this.state.psData.can_edit) return;
+        const r = await this.orm.call("pb.formula.studio", "save_payslip_theme",
+            [this.state.config.id, vals]);
+        if (r && r.ok && r.theme) this.state.psData.theme = r.theme;
+        else if (r && r.msg) this.notif.add(r.msg, { type: "warning" });
+    }
+    psSetAccent(key) { this._saveTheme({ accent: key }); }
+    psSetFont(ev) { this._saveTheme({ font: ev.target.value }); }
+    psToggleLogo() { this._saveTheme({ show_logo: !this.psTheme.show_logo }); }
+    togglePsTheme() { this.state.psThemeOpen = !this.state.psThemeOpen; }
+    async psUploadLogo(ev) {
+        const file = ev.target.files && ev.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const b64 = String(e.target.result).split(",")[1] || "";
+            ev.target.value = "";
+            await this._saveTheme({ logo: b64 });
+            this.state.psLogoV++;             // bust the preview img cache
+        };
+        reader.readAsDataURL(file);
+    }
+    async psClearLogo() {
+        await this._saveTheme({ logo: "" });
+        this.state.psLogoV++;
     }
 
     // ---- drag & drop (native HTML5) ----

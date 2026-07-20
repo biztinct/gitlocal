@@ -402,6 +402,31 @@ class HrFormulaConfig(models.Model):
     )
 
     # ==========================================
+    # W73 — PAYSLIP THEME (brand tokens within compliance bounds; D-L7)
+    # ==========================================
+    # Accent is a LOCKED palette key over the existing sc-* section colours (no
+    # free hex — brand/compliance bounds, C11). Preview and print read these same
+    # four fields; the themed QWeb report (D-L8) is the only new report.
+    theme_accent = fields.Selection([
+        ('slate', 'Slate'),
+        ('indigo', 'Indigo'),
+        ('emerald', 'Emerald'),
+        ('amber', 'Amber'),
+        ('rose', 'Rose'),
+        ('sky', 'Sky'),
+        ('violet', 'Violet'),
+    ], string='Payslip Accent', default='slate')
+    theme_font = fields.Selection([
+        ('system', 'System (sans-serif)'),
+        ('serif', 'Serif'),
+        ('mono', 'Monospace'),
+    ], string='Payslip Font', default='system')
+    theme_logo = fields.Binary(
+        string='Payslip Logo',
+        help="Brand logo for the themed payslip. Falls back to the company logo.")
+    theme_show_logo = fields.Boolean(string='Show Logo on Payslip', default=True)
+
+    # ==========================================
     # DISPLAY NAME
     # ==========================================
     display_name = fields.Char(

@@ -546,3 +546,135 @@ class HrPayslipFormula(models.Model):
             ).id,
             'target': 'new',
         }
+
+    # ==========================================
+    # W73 — themed payslip render data (WRITE-FREE by construction, D-L8)
+    # ==========================================
+    # Accent palette hex — the LOCKED sc-* keys, same values the studio preview
+    # and payslip.scss section variants use (C11; no free hex).
+    _THEME_ACCENT_HEX = {
+        'slate': '#64748B', 'indigo': '#5A4BB0', 'emerald': '#059669',
+        'amber': '#D97706', 'rose': '#E11D48', 'sky': '#0284C7', 'violet': '#7C3AED',
+    }
+    _THEME_FONT_STACK = {
+        'system': "-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+        'serif': "Georgia, 'Times New Roman', Times, serif",
+        'mono': "'SF Mono', 'Cascadia Code', Consolas, monospace",
+    }
+
+    def _themed_payslip_render(self):
+        """Build the F9-scheme render tree for the themed QWeb report, read-only:
+        sections by ``payslip_identifier`` ordered by sequence, lines by
+        ``payslip_sequence``, ``visibility_rule`` honored against LINE totals,
+        ``collapse_when_empty`` honored, ``label_vi`` under a Vietnamese reader,
+        theme tokens applied. Pure reads — the report never writes (D-L8/C16).
+
+        A slip with no formula config still renders (all appears-on lines fall
+        into a default 'Payslip' section) so the action never crashes (C7)."""
+        self.ensure_one()
+        lang = self.env.context.get('lang') or 'en_US'
+        is_vi = str(lang).startswith('vi')
+
+        # Line totals summed by code (mirrors the legacy report's dsal helper).
+        dsal = {}
+        for line in self.line_ids:
+            if line.code:
+                dsal[line.code] = dsal.get(line.code, 0.0) + line.total
+
+        config = self.formula_config_id
+        rules_by_code = {}
+        if config:
+            for r in config.rule_ids:
+                if r.code:
+                    rules_by_code[r.code] = r
+
+        # Accent / font / logo — theme fields with safe fallbacks.
+        accent_key = (config.theme_accent if config else False) or 'slate'
+        font_key = (config.theme_font if config else False) or 'system'
+        show_logo = bool(config.theme_show_logo) if config else True
+        logo = False
+        if show_logo:
+            logo = (config.theme_logo if config else False) or (
+                self.company_id.logo if self.company_id else False)
+
+        def _line_name(r, code):
+            if r:
+                nm = (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code
+                return nm or code
+            return code
+
+        def _visible(r, total):
+            rule_vis = r.visibility_rule if r else 'always'
+            if rule_vis == 'never':
+                return False
+            if rule_vis == 'when_nonzero':
+                return abs(total) > 0.0000001
+            return True
+
+        Section = self.env['hr.payslip.config']
+        sections = Section.search(
+            [('salary_structure_id', '=', config.id)], order='sequence, id'
+        ) if config else Section.browse()
+
+        # Which config rules belong to each section; the rest (appears_on_payslip
+        # but unsectioned) fall into a synthetic default section (C7).
+        sectioned_codes = set()
+        out_sections = []
+        for s in sections:
+            comps = [r for r in config.rule_ids
+                     if r.payslip_identifier.id == s.id and r.appears_on_payslip]
+            comps.sort(key=lambda r: (r.payslip_sequence or 0, r.sequence))
+            lines = []
+            for r in comps:
+                sectioned_codes.add(r.code)
+                total = dsal.get(r.code, 0.0)
+                if not _visible(r, total):
+                    continue
+                lines.append({'name': _line_name(r, r.code), 'total': total,
+                              'is_deduction': total < 0})
+            if not lines and s.collapse_when_empty:
+                continue
+            title = (s.label_vi if (is_vi and s.label_vi) else False) or s.label or s.identifier or ''
+            out_sections.append({
+                'title': title,
+                'color_hex': self._THEME_ACCENT_HEX.get(s.color_key or 'slate', '#64748B'),
+                'lines': lines,
+                'subtotal': sum(l['total'] for l in lines),
+            })
+
+        # Default 'Payslip' section: config rules that appear on the payslip but
+        # carry no section (never silently dropped).
+        default_lines = []
+        for r in config.rule_ids if config else []:
+            if r.code in sectioned_codes or not r.appears_on_payslip or r.payslip_identifier:
+                continue
+            total = dsal.get(r.code, 0.0)
+            if not _visible(r, total):
+                continue
+            default_lines.append({'name': _line_name(r, r.code), 'total': total,
+                                  'is_deduction': total < 0})
+        # No config at all → every coded line is a default line.
+        if not config:
+            for code, total in dsal.items():
+                default_lines.append({'name': code, 'total': total,
+                                      'is_deduction': total < 0})
+        if default_lines:
+            out_sections.append({
+                'title': _('Payslip'),
+                'color_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
+                'lines': default_lines,
+                'subtotal': sum(l['total'] for l in default_lines),
+            })
+
+        net = sum(s['subtotal'] for s in out_sections)
+        currency = (config.currency_id.symbol if (config and config.currency_id)
+                    else (self.company_id.currency_id.symbol if self.company_id else ''))
+        return {
+            'accent_hex': self._THEME_ACCENT_HEX.get(accent_key, '#64748B'),
+            'font_stack': self._THEME_FONT_STACK.get(font_key, self._THEME_FONT_STACK['system']),
+            'show_logo': show_logo and bool(logo),
+            'logo': logo,
+            'sections': out_sections,
+            'net': net,
+            'currency': currency,
+        }
