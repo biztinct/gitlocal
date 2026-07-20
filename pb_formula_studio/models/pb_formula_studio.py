@@ -4594,8 +4594,52 @@ class PbFormulaStudio(models.AbstractModel):
             'tray': [self._payslip_comp(r, values) for r in tray_sorted],
             'samples': samples, 'sample_id': sid,
             'colors': self._SECTION_COLORS,
+            'theme': {
+                'accent': config.theme_accent or 'slate',
+                'font': config.theme_font or 'system',
+                'show_logo': bool(config.theme_show_logo),
+                'has_logo': bool(config.theme_logo),
+            },
+            'accent_hex': self._ACCENT_HEX,
             'can_edit': self._can_edit(),
         }
+
+    # W73 — accent palette hex (the LOCKED sc-* keys; mirrors payslip.scss +
+    # hr_payslip_formula._THEME_ACCENT_HEX so preview and print never drift).
+    _ACCENT_HEX = {
+        'slate': '#64748B', 'indigo': '#5A4BB0', 'emerald': '#059669',
+        'amber': '#D97706', 'rose': '#E11D48', 'sky': '#0284C7', 'violet': '#7C3AED',
+    }
+
+    @api.model
+    def save_payslip_theme(self, config_id, vals):
+        """W73 (D-L7) — persist payslip theme fields (manager-gated). Only the
+        four whitelisted brand tokens are writable; accent/font are validated
+        against the LOCKED selections so no free hex/font ever lands."""
+        if not self._can_edit():
+            return {'ok': False, 'msg': _("You do not have permission to edit this configuration.")}
+        config = self._pick_config(config_id)
+        if not config:
+            return {'ok': False}
+        vals = vals or {}
+        clean = {}
+        if 'accent' in vals:
+            clean['theme_accent'] = vals['accent'] if vals['accent'] in self._ACCENT_HEX else 'slate'
+        if 'font' in vals:
+            clean['theme_font'] = vals['font'] if vals['font'] in ('system', 'serif', 'mono') else 'system'
+        if 'show_logo' in vals:
+            clean['theme_show_logo'] = bool(vals['show_logo'])
+        if 'logo' in vals:
+            # '' / False clears the brand logo (falls back to company logo).
+            clean['theme_logo'] = vals['logo'] or False
+        if clean:
+            config.write(clean)
+        return {'ok': True, 'theme': {
+            'accent': config.theme_accent or 'slate',
+            'font': config.theme_font or 'system',
+            'show_logo': bool(config.theme_show_logo),
+            'has_logo': bool(config.theme_logo),
+        }}
 
     @api.model
     def move_component(self, rule_id, section_id, ordered_ids):

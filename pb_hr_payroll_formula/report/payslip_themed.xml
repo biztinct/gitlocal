@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- W73 · D-L8 — Themed payslip print. A NEW report; om_hr_payroll.report_payslip
+         and the portal binding stay byte-untouched. Odoo 19 explicit
+         <record model="ir.actions.report"> form (NEVER the removed <report> shortcut),
+         cloning the F6 shadow-certificate wiring. -->
+    <record id="action_report_payslip_themed" model="ir.actions.report">
+        <field name="name">Print Payslip (Themed)</field>
+        <field name="model">hr.payslip</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_payroll_formula.payslip_themed</field>
+        <field name="report_file">pb_hr_payroll_formula.payslip_themed</field>
+        <field name="binding_model_id" ref="model_hr_payslip"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="payslip_themed">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="ps" t-value="o._themed_payslip_render()"/>
+                <t t-call="web.external_layout">
+                    <div class="page" t-attf-style="font-family:{{ ps['font_stack'] }}; color:#1E1B2E;">
+                        <!-- brand header: logo (theme_logo/theme_show_logo) + accent rule -->
+                        <div t-attf-style="display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid {{ ps['accent_hex'] }}; padding-bottom:10px; margin-bottom:16px;">
+                            <div>
+                                <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:#6B7280;">Payslip / Phiếu lương</div>
+                                <h2 style="margin:4px 0; font-size:20px;" t-field="o.employee_id"/>
+                                <div style="color:#6B7280; font-size:12px;">
+                                    <span t-field="o.date_from" t-options="{'format': 'dd/MM/yyyy'}"/> —
+                                    <span t-field="o.date_to" t-options="{'format': 'dd/MM/yyyy'}"/>
+                                </div>
+                            </div>
+                            <t t-if="ps['show_logo'] and ps['logo']">
+                                <img t-att-src="image_data_uri(ps['logo'])" style="max-height:70px; max-width:200px;" alt="Logo"/>
+                            </t>
+                        </div>
+
+                        <!-- employee meta -->
+                        <table style="width:100%; border-collapse:collapse; font-size:12px; margin-bottom:14px;">
+                            <tr>
+                                <td style="padding:3px 0; color:#6B7280;">Employee ID</td>
+                                <td style="padding:3px 0; text-align:right;"><span t-field="o.employee_id.employee_id"/></td>
+                                <td style="padding:3px 0; color:#6B7280; padding-left:24px;">Department</td>
+                                <td style="padding:3px 0; text-align:right;"><span t-field="o.employee_id.department_id"/></td>
+                            </tr>
+                        </table>
+
+                        <!-- F9 sections, each in its own colour; visibility + collapse honored server-side -->
+                        <t t-foreach="ps['sections']" t-as="sec">
+                            <div style="margin-bottom:16px;">
+                                <div t-attf-style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:{{ sec['color_hex'] }}; border-bottom:1px solid #E8E9F3; padding-bottom:4px; margin-bottom:6px;">
+                                    <t t-esc="sec['title']"/>
+                                </div>
+                                <table style="width:100%; border-collapse:collapse; font-size:12.5px;">
+                                    <t t-foreach="sec['lines']" t-as="ln">
+                                        <tr>
+                                            <td style="padding:3px 0; color:#334155;"><t t-esc="ln['name']"/></td>
+                                            <td t-attf-style="padding:3px 0; text-align:right; font-weight:700; white-space:nowrap; {{ 'color:#B91C1C;' if ln['is_deduction'] else '' }}">
+                                                <t t-if="ln['is_deduction']">−<t t-esc="'{:,.0f}'.format(abs(ln['total']))"/></t>
+                                                <t t-else="" t-esc="'{:,.0f}'.format(ln['total'])"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td style="padding-top:5px; border-top:1px dashed #E8E9F3; font-weight:700; color:#6B7280; font-size:11.5px;">Subtotal</td>
+                                        <td style="padding-top:5px; border-top:1px dashed #E8E9F3; text-align:right; font-weight:700; color:#6B7280; font-size:11.5px;" t-esc="'{:,.0f}'.format(sec['subtotal'])"/>
+                                    </tr>
+                                </table>
+                            </div>
+                        </t>
+
+                        <!-- accent net card -->
+                        <div t-attf-style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding:14px 18px; background:{{ ps['accent_hex'] }}; color:#fff; border-radius:10px; font-size:16px; font-weight:800;">
+                            <span>Net pay</span>
+                            <span><t t-esc="'{:,.0f}'.format(ps['net'])"/> <t t-esc="ps['currency']"/></span>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
