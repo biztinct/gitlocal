@@ -752,6 +752,36 @@ export class PbFormulaStudio extends Component {
         await this._refreshPinned(cfgId);   // W4
     }
 
+    // ==== WP-L · W17 — smart paste from Excel ==============================
+    // The grid sends the raw pasted run; ONE server ladder normalizes each cell
+    // to the canonical row-2 form AND validates it (D-L5). The ghost shows
+    // exactly what a commit will store — no preview/commit divergence (S-I1).
+    async gridStagePaste(entries) {
+        try {
+            const r = await this.orm.call("pb.formula.studio", "stage_paste",
+                [this.state.config.id, entries]);
+            return (r && r.entries) || [];
+        } catch (e) { return []; }
+    }
+    // All-or-nothing commit through ONE bulk_save_formulas (reason='bulk',
+    // note='smart paste') — N formulas → N version rows, one reason (C4/D-L6).
+    async gridPasteCommit(items) {
+        if (!items || !items.length) return;
+        if (this._lockedNotice()) return;
+        const cfgId = this.state.config.id;
+        const sampleId = this.state.preview.sample_id;
+        let r;
+        try {
+            r = await this.orm.call("pb.formula.studio", "bulk_save_formulas",
+                [items, "bulk", "smart paste"]);
+        } catch (e) { this.notif.add("Paste failed", { type: "warning" }); return; }
+        this.notif.add(`Pasted ${items.length} formula${items.length === 1 ? "" : "s"}`, { type: "success" });
+        await this.load(cfgId);
+        this._applyTests(r && r.tests);
+        if (sampleId) this.state.preview = await this.orm.call("pb.formula.studio", "compute_preview", [cfgId, sampleId]);
+        await this._refreshPinned(cfgId);   // W4
+    }
+
     // ==== WP-F · W4 — pinned sample rows ====================================
     // Extra display-only value rows in the grid: 2–3 samples side by side. Client
     // state only (D-F4); every formula save recomputes them alongside the active

@@ -828,6 +828,60 @@ class PbFormulaStudio(models.AbstractModel):
         tests = self._run_tests_after_save(config, changed_codes)
         return {'ok': True, 'saved': saved, 'tests': tests}
 
+    # ------------------------------------------------------------------
+    # W17 smart paste — the ONE server ladder (D-L5): normalize + validate
+    # ------------------------------------------------------------------
+    @api.model
+    def stage_paste(self, config_id, entries=None):
+        """W17 (D-L5) — read-only. ``entries`` = ``[{col, text}]`` (a horizontal
+        run mapped from the pasted clipboard). Returns
+        ``{ok, entries:[{col, normalized, valid, msg}]}``. NOTHING is written; the
+        client stages ``normalized`` as the ghost, so what you see is exactly what
+        a later ``bulk_save_formulas`` commits — one ladder, no preview/commit
+        divergence (the S-I1 live-proven bug class)."""
+        config = self.env['hr.formula.config'].browse(int(config_id))
+        if not config.exists():
+            return {'ok': False}
+        by_col = {r.column_letter: r for r in config.rule_ids if r.column_letter}
+        out = []
+        for e in (entries or []):
+            col = (e.get('col') or '').upper()
+            text = (e.get('text') or '').strip()
+            norm, valid, msg = self._normalize_paste_entry(col, text, config, by_col)
+            out.append({'col': col, 'normalized': norm, 'valid': valid, 'msg': msg})
+        return {'ok': True, 'entries': out}
+
+    @api.model
+    def _normalize_paste_entry(self, col, text, config, by_col):
+        """Normalize + validate ONE pasted cell. Returns ``(normalized, valid,
+        msg)``. Only base FORMULA columns are valid targets; a plain number is
+        refused (constants live in their own row — v1 formulas-only); row digits
+        are rewritten to the canonical row 2 (``B5*C5`` → ``B2*C2``, S-L1); then
+        unknown column letters are named and the formula is run through the
+        existing validate path (BRACKET-expanded)."""
+        target = by_col.get(col)
+        if not target or target.column_type != 'formula':
+            return text, False, _("%s is not a formula column.") % (col or '?')
+        if not text:
+            return text, False, _("Empty cell.")
+        # A plain number (no letters, no leading '=') — constants aren't pasted.
+        if not text.startswith('=') and not re.search(r'[A-Za-z]', text):
+            return text, False, _("Constants are edited in their own row.")
+        # Normalize every row digit to the single grid formula row (row 2),
+        # keeping the leading '=' (add one if the paste dropped it).
+        norm = self._shift_rows(text, 2)
+        if norm and not norm.startswith('='):
+            norm = '=' + norm
+        # Unknown letters → invalid, named (mirrors the drag-fill validity gate).
+        refs = self._expand_refs(norm, by_col)
+        unknown = sorted(c for c in refs if c not in by_col)
+        if unknown:
+            return norm, False, _("Unknown column(s): %s") % ', '.join(unknown)
+        ok, vmsg = self._check_formula(config, norm, exclude_id=target.id)
+        if not ok:
+            return norm, False, vmsg or _("Invalid formula.")
+        return norm, True, ''
+
     @api.model
     def save_formula(self, rule_id, excel_formula):
         rule = self.env['hr.formula.rule'].browse(int(rule_id))

@@ -35,6 +35,10 @@ export class GridStudio extends Component {
         onBulkUpdate: { type: Function, optional: true },   // (ruleIds, vals) => bulk RPC + refresh
         onTranslateFormula: { type: Function, optional: true }, // (ruleId, cols) => [{col,proposed_formula,valid}]
         onBulkSaveFormulas: { type: Function, optional: true }, // (items) => save + refresh
+        // W17 smart paste: normalize+validate a pasted run, commit as one bulk save
+        onStagePaste: { type: Function, optional: true },       // (entries) => [{col,normalized,valid,msg}]
+        onPasteCommit: { type: Function, optional: true },      // (items) => bulk_save reason='bulk'
+        onToast: { type: Function, optional: true },            // (msg, type) => parent notification
         // F14 — scenario columns (what-if overlays; ghost columns next to their base)
         scenarios: { type: Array, optional: true },
         onScenarioCreate: { type: Function, optional: true },   // (ruleId) => new scenario payload
@@ -800,7 +804,83 @@ export class GridStudio extends Component {
         this._stopEdgeScroll();
         this._clearFill();
     }
-    _clearFill() { this.ui.fill = { active: false, pending: false, srcId: null, hoverCol: null, targets: [] }; }
+    _clearFill() { this.ui.fill = { active: false, pending: false, srcId: null, hoverCol: null, targets: [], paste: false }; }
+
+    // ---- W17 smart paste (D-L4/D-L5/D-L6) --------------------------------
+    // Paste a run of Excel formulas straight onto the grid: parse the clipboard,
+    // map it to a horizontal run of columns starting at the focused cell, send
+    // it through the ONE server ladder (stage_paste — normalize + validate), and
+    // stage the returned NORMALIZED text as fill-style ghosts. Enter commits
+    // all-or-nothing through a single bulk_save (reason='bulk').
+    get pasteValidCount() {
+        if (!this.ui.fill.paste) return 0;
+        return this.ui.fill.targets.filter(t => t.valid).length;
+    }
+    async onGridPaste(ev) {
+        // Editing a cell → let the native paste land inside the <input>.
+        if (this.ui.editing || this.ui.composing) return;
+        if (!this.props.canEdit || !this.props.onStagePaste) return;
+        const dt = ev.clipboardData || window.clipboardData;
+        const raw = dt ? dt.getData("text/plain") : "";
+        const cells = this._parseClipboardRun(raw);
+        if (cells === null) {   // 2-D block
+            ev.preventDefault();
+            this._toast("Paste one row or one column of formulas, not a block", "warning");
+            return;
+        }
+        if (!cells.length) return;                       // nothing useful → native
+        ev.preventDefault();
+        const cols = this.baseCols;
+        const start = cols.findIndex(c => c.id === this.ui.focus.colId);
+        if (start < 0) { this._toast("Select a formula cell first, then paste", "warning"); return; }
+        if (start + cells.length > cols.length) {
+            this._toast("That paste runs past the last column", "warning");
+            return;
+        }
+        const run = cells.map((text, i) => ({ col: cols[start + i].col, id: cols[start + i].id, text }));
+        this._teardownFill();                            // drop any drag-fill state first
+        let staged;
+        try {
+            staged = await this.props.onStagePaste(run.map(r => ({ col: r.col, text: r.text })));
+        } catch (e) { this._toast("Could not read the pasted formulas", "danger"); return; }
+        const byCol = {};
+        (staged || []).forEach(s => { byCol[s.col] = s; });
+        const targets = run.map(r => {
+            const s = byCol[r.col] || {};
+            return { col: r.col, id: r.id, proposed_formula: s.normalized || r.text,
+                     valid: !!s.valid, msg: s.msg || "" };
+        });
+        this.ui.fill = { active: false, pending: true, srcId: null, hoverCol: null, targets, paste: true };
+        this._fillKey = this._onPasteKey.bind(this);
+        document.addEventListener("keydown", this._fillKey, true);  // capture Enter/Escape
+    }
+    // Returns an array of cell strings (a horizontal run), or null for a 2-D
+    // block. A single column is transposed to a horizontal run (D-L4).
+    _parseClipboardRun(raw) {
+        let text = (raw || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n$/, "");
+        if (!text.trim()) return [];
+        const rows = text.split("\n").map(l => l.split("\t"));
+        if (rows.length === 1) return rows[0].map(s => s.trim()).filter(s => s.length);
+        if (rows.every(r => r.length === 1)) return rows.map(r => r[0].trim()).filter(s => s.length);
+        return null;   // multi-row AND multi-col → block
+    }
+    _onPasteKey(ev) {
+        if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); this._commitPaste(); }
+        else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); this._discardFill(); }
+    }
+    async _commitPaste() {
+        const targets = this.ui.fill.targets;
+        const bad = targets.filter(t => !t.valid);
+        if (bad.length) {
+            this._toast("Can't paste: " + bad.map(t => t.col).join(", "), "warning");
+            return;   // all-or-nothing: keep ghosts up so the user can cancel (D-L6)
+        }
+        const items = targets.map(t => ({ rule_id: t.id, formula: t.proposed_formula }));
+        this._teardownFill();
+        if (!items.length || !this.props.onPasteCommit) return;
+        await this.props.onPasteCommit(items);
+    }
+    _toast(msg, type) { if (this.props.onToast) this.props.onToast(msg, type); }
     onCompositionStart() { this.ui.composing = true; }
     onCompositionEnd(ev) { this.ui.composing = false; this.onEditorInput(ev); }
     _onEditorKeydown(ev) {

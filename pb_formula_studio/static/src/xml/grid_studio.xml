@@ -40,7 +40,7 @@
       <button class="g2-bulk-clear" t-on-click="clearSelection">Clear</button>
     </div>
     <div class="pbfs-grid2" data-coach="grid-canvas" t-ref="scroller" tabindex="0"
-         t-on-keydown="onKeydown" t-on-focus="onScrollerFocus" t-on-blur="onScrollerBlur">
+         t-on-keydown="onKeydown" t-on-paste="onGridPaste" t-on-focus="onScrollerFocus" t-on-blur="onScrollerBlur">
       <table t-attf-class="g2-table {{ vcols.on ? 'g2-virt' : '' }}">
         <thead>
           <tr class="g2-hrow">
@@ -154,7 +154,7 @@
                          t-on-compositionstart="onCompositionStart" t-on-compositionend="onCompositionEnd"
                          t-att-class="ui.editing.valid === false ? 'invalid' : ''"/>
                   <t t-elif="ghostFor(c)">
-                    <span t-attf-class="g2-ghost {{ ghostFor(c).valid ? '' : 'invalid' }}" t-esc="ghostFor(c).proposed_formula"/>
+                    <span t-attf-class="g2-ghost {{ ghostFor(c).valid ? '' : 'invalid' }}" t-att-title="ghostFor(c).msg or ''" t-esc="ghostFor(c).proposed_formula"/>
                   </t>
                   <span t-else="" t-esc="formulaText(c)"/>
                   <span t-if="canFillFrom(c)" class="g2-fillhandle" title="Drag right to fill this formula" t-on-mousedown="onFillDown"/>
@@ -243,9 +243,15 @@
         </tbody>
       </table>
       <div class="g2-editmsg" t-if="ui.editing and ui.editing.valid === false" t-esc="ui.editing.message || 'Invalid formula'"/>
-      <div class="g2-fillbar" t-if="ui.fill.pending">
+      <div class="g2-fillbar" t-if="ui.fill.pending and !ui.fill.paste">
         <span>Fill <b t-esc="ui.fill.targets.length"/> column<t t-if="ui.fill.targets.length !== 1">s</t> with the translated formula?</span>
         <button class="pbfs-btn primary sm" t-on-click="_commitFill">Enter to fill</button>
+        <button class="pbfs-btn ghost sm" t-on-click="_discardFill">Esc to cancel</button>
+      </div>
+      <div class="g2-fillbar" t-if="ui.fill.pending and ui.fill.paste">
+        <span t-if="pasteValidCount === ui.fill.targets.length">Paste <b t-esc="ui.fill.targets.length"/> formula<t t-if="ui.fill.targets.length !== 1">s</t> from Excel?</span>
+        <span t-else="" class="g2-paste-bad"><b t-esc="ui.fill.targets.length - pasteValidCount"/> of <t t-esc="ui.fill.targets.length"/> can't be pasted — fix or cancel</span>
+        <button class="pbfs-btn primary sm" t-att-disabled="pasteValidCount !== ui.fill.targets.length" t-on-click="_commitPaste">Enter to paste</button>
         <button class="pbfs-btn ghost sm" t-on-click="_discardFill">Esc to cancel</button>
       </div>
       <div class="g2-statusmsg" t-if="focusedError">
