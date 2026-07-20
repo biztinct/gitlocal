@@ -2,6 +2,8 @@
 
 from . import excel_semantics
 from . import if_chain
+from . import cell_refs
+from .cell_refs import shift_rows
 from .column_manager import ColumnManager
 from .parser import FormulaParser
 from .converter import FormulaConverter

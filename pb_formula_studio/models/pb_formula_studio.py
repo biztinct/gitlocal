@@ -741,6 +741,16 @@ class PbFormulaStudio(models.AbstractModel):
         return re.sub(r'(\$?)([A-Za-z]+)(\$?\d+)', repl, formula)
 
     @api.model
+    def _shift_rows(self, formula, to_row):
+        """WP-L / S-L1 — rewrite every cell-ref ROW digit in ``formula`` to
+        ``to_row`` (column letters + $ absolutes preserved). Thin wrapper over
+        the pure engine helper so W41 (shift OUT: row 2 → sheet row N at export)
+        and W17 (normalize IN: any row → 2 at paste) share ONE regex + literal
+        mask — never two (S-I1 / D-J1). String literals are masked first."""
+        from odoo.addons.pb_hr_payroll_formula.formula_engine import cell_refs
+        return cell_refs.shift_rows(formula, to_row)
+
+    @api.model
     def translate_formula(self, rule_id, target_column_letters):
         """Drag-fill preview: translate the source rule's formula to each target
         column. Returns ``[{col, proposed_formula, valid}]`` — nothing is written."""
@@ -5531,6 +5541,175 @@ class PbFormulaStudio(models.AbstractModel):
             'file_b64': base64.b64encode(out.read()).decode(),
             'filename': '%s_test_template.xlsx' % code,
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }
+
+    # openpyxl number formats (S-L1 gotcha): openpyxl format strings, NOT Odoo's.
+    # VND currency has no minor units ⇒ '#,##0'; percentage values are stored as
+    # FRACTIONS (0.05) so Excel's '0.00%' displays 5.00% correctly — never
+    # pre-multiply by 100.
+    _XLSX_NUMFMT = {
+        'currency': '#,##0',
+        'integer': '#,##0',
+        'percentage': '0.00%',
+        'number': '#,##0.00',
+    }
+
+    @api.model
+    def export_living_workbook(self, config_id):
+        """W41 — a config becomes a *living* ``.xlsx`` (D-L1/D-L2/D-L3).
+
+        Sheet 1 "Payroll": xlsx column position = the component's frozen
+        ``column_letter`` (1:1 — this is what makes the stored ``=A2+AB2``
+        formulas real, Excel-evaluable formulas). Row 1 = localized component
+        name, row 2 = code (a second header row, machine-matchable), data rows
+        from row 3 = one per sample. Input cells carry the sample's input value
+        (else ``default_value``); constant cells carry ``constant_value``;
+        formula cells carry the REAL formula — ``BRACKET(...)`` expanded out via
+        ``expand_brackets`` (Excel has no BRACKET) and the row digits shifted
+        2 → the data row (S-L1). A trailing "Sample" meta column follows the last
+        component letter (a leading column would break the 1:1 letter mapping).
+        Sheet 2 "Rate Tables" renders each table + a named range per table.
+        Read-only; read access suffices (no manager gate, D-L3)."""
+        import base64
+        import io
+        try:
+            import openpyxl
+            from openpyxl.styles import Font, PatternFill, Alignment
+            from openpyxl.utils import get_column_letter
+            from openpyxl.workbook.defined_name import DefinedName
+        except Exception:
+            return {'ok': False, 'msg': 'openpyxl is not available on the server.'}
+        c = self.env['hr.formula.config'].browse(int(config_id))
+        if not c.exists():
+            return {'ok': False, 'msg': 'Configuration not found'}
+        RateTable = self.env['hr.formula.rate.table']
+
+        rules = c.rule_ids.sorted(key=lambda r: r.sequence)
+        placed = [r for r in rules if r.column_letter]
+        if not placed:
+            return {'ok': False, 'msg': 'This configuration has no components to export.'}
+        # xlsx column index = the frozen letter's ordinal (D-L1: 1:1, never by
+        # sequence — a reordered config keeps letters as identities, F111).
+        col_of = {r.id: self._col_num(r.column_letter) for r in placed}
+        last_col = max(col_of.values())
+        meta_col = last_col + 1                     # trailing "Sample" column
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = 'Payroll'
+        head_fill = PatternFill('solid', fgColor='EEF0FB')
+        head_font = Font(bold=True, color='241F52')
+        code_font = Font(italic=True, color='6B7280', size=9)
+        right = Alignment(horizontal='right')
+
+        # ---- two header rows (name / code) + meta header ------------------
+        for r in placed:
+            col = col_of[r.id]
+            name = (r.salary_rule_id.name if r.salary_rule_id else False) or r.name or r.code or ''
+            h1 = ws.cell(row=1, column=col, value=name)
+            h1.fill = head_fill
+            h1.font = head_font
+            h2 = ws.cell(row=2, column=col, value=r.code or '')
+            h2.fill = head_fill
+            h2.font = code_font
+            ws.column_dimensions[get_column_letter(col)].width = 16
+        mh1 = ws.cell(row=1, column=meta_col, value='Sample')
+        mh1.fill = head_fill
+        mh1.font = head_font
+        ws.cell(row=2, column=meta_col, value='(name)').font = code_font
+        ws.column_dimensions[get_column_letter(meta_col)].width = 22
+
+        # ---- data rows: one per sample (row 3 = first sample) -------------
+        samples = list(c.sample_data_ids)
+        note = ''
+        if not samples:
+            # C7 — a 0-sample config still exports a usable, LOUD row of defaults.
+            note = 'No samples configured — one row of Default Values shown.'
+
+        def _emit_row(sheet_row, input_by_code, sample_name):
+            for r in placed:
+                col = col_of[r.id]
+                cell = ws.cell(row=sheet_row, column=col)
+                if r.column_type == 'formula':
+                    expanded = RateTable.expand_brackets(r.excel_formula or '', c)
+                    text = (expanded or '').strip()
+                    if text:
+                        if not text.startswith('='):
+                            text = '=' + text
+                        cell.value = self._shift_rows(text, sheet_row)
+                    else:
+                        cell.value = 0
+                elif r.column_type == 'constant':
+                    cell.value = r.constant_value or 0.0
+                else:  # input
+                    raw = input_by_code.get(r.code) if r.code else None
+                    if raw is None or raw == '':
+                        raw = r.default_value or 0.0
+                    cell.value = raw
+                cell.number_format = self._XLSX_NUMFMT.get(r.number_format or 'currency', '#,##0.00')
+                if r.column_type != 'formula':
+                    cell.alignment = right
+            ws.cell(row=sheet_row, column=meta_col, value=sample_name)
+
+        if samples:
+            for i, s in enumerate(samples):
+                _emit_row(3 + i, s.get_input_values(), s.name or ('Sample %d' % (i + 1)))
+        else:
+            _emit_row(3, {}, '(defaults — no samples)')
+
+        ws.freeze_panes = 'A3'                      # header + code rows frozen
+        if note:
+            ws.cell(row=1, column=meta_col + 1, value=note).font = Font(
+                bold=True, color='B45309')
+
+        # ---- Sheet 2: Rate Tables (reference) + named ranges (D-L2) --------
+        tables = [t for t in c.rate_table_ids if t.code]
+        if tables:
+            rs = wb.create_sheet('Rate Tables')
+            rs.cell(row=1, column=1, value='Code').font = head_font
+            rs.cell(row=1, column=2, value='Name').font = head_font
+            rs.cell(row=1, column=3, value='From').font = head_font
+            rs.cell(row=1, column=4, value='Rate').font = head_font
+            for cc in ('A', 'B', 'C', 'D'):
+                rs.column_dimensions[cc].width = 18
+            row = 2
+            for t in tables:
+                brackets = t.line_ids.sorted(key=lambda b: b.lower)
+                first_row = row
+                for b in brackets:
+                    rs.cell(row=row, column=1, value=t.code)
+                    rs.cell(row=row, column=2, value=t.name or '')
+                    fc = rs.cell(row=row, column=3, value=b.lower or 0.0)
+                    fc.number_format = '#,##0'
+                    rc = rs.cell(row=row, column=4, value=b.rate or 0.0)
+                    rc.number_format = '0.00%'
+                    row += 1
+                if not brackets:
+                    rs.cell(row=row, column=1, value=t.code)
+                    rs.cell(row=row, column=2, value=t.name or '')
+                    row += 1
+                # Named range over this table's From/Rate block (cosmetic/
+                # reference — the compiled formulas do NOT use it, D-L2).
+                safe = re.sub(r'[^A-Za-z0-9]', '', (t.code or '')) or 'TABLE'
+                ref = "'Rate Tables'!$C$%d:$D$%d" % (first_row, max(first_row, row - 1))
+                try:
+                    wb.defined_names[safe] = DefinedName(safe, attr_text=ref)
+                except Exception:  # pragma: no cover — older openpyxl API
+                    try:
+                        wb.defined_names.append(DefinedName(safe, attr_text=ref))
+                    except Exception:
+                        pass
+
+        out = io.BytesIO()
+        wb.save(out)
+        out.seek(0)
+        code = (c.code or c.name or 'config').strip().replace(' ', '_')
+        return {
+            'ok': True,
+            'file_b64': base64.b64encode(out.read()).decode(),
+            'filename': '%s_living.xlsx' % code,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'note': note,
         }
 
     @api.model
