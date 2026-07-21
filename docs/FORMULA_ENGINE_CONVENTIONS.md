@@ -400,6 +400,11 @@ The row machinery and the live-validation lessons hit building the export/paste/
     every formula matched. Uniform columns now seed `default_value` (varying columns stay 0: seeding a
     first-row value would silently pay it to employees missing the input). When an AC says "recompute
     identically", verify on a config whose samples actually EXERCISE the constant-driven branches.
+    Trap inside the trap: the W41 two-header layout puts the CODE row where the importer sees the first
+    data row, so a constant column reads `['DAYSTD', 26, 26, …]` — `_column_uniform_value` tolerates
+    exactly ONE leading non-numeric cell and the seed is the detected `uniform_value`, NEVER
+    `sample_value` (which IS that code string). The first fix attempt seeded from sample_value and
+    silently seeded nothing; only re-driving the exact wizard round-trip caught it (53/53 parity after).
   - **`if_chain.detect` recognizes BOTH canonical forms:** the hand-written progressive `v*rate − ded`
     ascending-`<=` chain AND the marginal `base + rate*(v−lower)` descending-`>=` form that
     `compile_brackets_excel` itself emits (`form: 'progressive'|'marginal'`). Without the second, a W41

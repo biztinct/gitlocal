@@ -2199,6 +2199,35 @@ Report back per the **Report-back items** section (deviations from D-K1..D-K8 mu
 
 # WP-L — Excel Bridge & Payslip Branding — W41 → W17 → W73 (final Medium batch)
 
+> **✅ IMPLEMENTED 2026-07-21** (Opus) — `5544c2a0` W41 (cell_refs.py + battery + export) ·
+> `55b0cc4e` W17 smart paste · `5ef2f160` W73 themes · `72cd2bd8` C17 ledger. One flagged open
+> item (the TL.2 wizard re-import, honestly disclosed as un-driven).
+>
+> **✅ REVIEWED 2026-07-21** (Fable auto-review: bulk subagent — full-diff read vs D-L1..D-L9 +
+> live verification that CLOSED both flagged gaps: the TL.2 round-trip was driven twice through
+> the real wizard UI (two-header layout ruled harmless: names-row wins, code row ignored; W42
+> re-promotion fires on the re-imported PIT chain) and W17's paste UI proven drivable end-to-end
+> (C17's "needs trusted event" claim was WRONG — a synthetic ClipboardEvent with a real
+> DataTransfer drives the OWL handler). Verdict FIX-FIRST → 3 Majors fixed by Fable
+> (`c5d61cea` + seeding amendment): **M1** the themed print derived "Net pay" from visible
+> section subtotals — 42.2M printed vs the real 12.1M on slip 138268; now reads the slip's NET
+> line (code → category NET → card hidden), live probe = 12,107,031 exact. **M2** the importer
+> dropped uniform value columns to input/0.0 (28/53 letters diverged on recompute) — new
+> `uniform_value` detection threads column→preview→creation and seeds default_value; the first
+> fix attempt seeded from sample_value and was defeated by the code-header row read as data
+> (caught ONLY by re-driving the exact round-trip); final state proven live: DAYSTD 26 / EESI
+> 0.08 / CAPLO 46.8M / MULTWD 1.5 seeded, BASIC stays 0, **53/53 recompute parity, 0 diffs**.
+> **M3** `if_chain.detect` couldn't recognize the marginal-band form `compile_brackets_excel`
+> itself emits, so BRACKET-expanded exports could never re-earn a rate-table offer — new
+> `parse_marginal_chain` (battery 15-18), deployed-module probe returns form=marginal. Minors
+> fixed: `_expand_refs` masks string literals; interior empty clipboard cells keep position;
+> sample names/notes → Info sheet (phantom SAMPLE/note components gone, proven); stage_paste RPC
+> failure → error toast; toast reports r.saved; theme accent/font loud-reject (live-probed).
+> Engine `19.0.1.48.0` · studio `19.0.1.68.0`. Deferred: header-per-group styling (D-L1
+> cosmetic); imported formulas are row-3 canonical (pre-existing importer trait, engine
+> row-agnostic); pre-existing stray draft config `DEMO_CONSTRUCTION_END_V` (id 103, pre-WP-L)
+> flagged for a user cleanup decision.
+
 **Designed 2026-07-20 (Fable), after WP-K was designed.** Seventh and FINAL planned Medium batch —
 the wrap-up package. **W41 Excel round-trip export** — a config becomes a *living* `.xlsx`: one
 row per sample employee, real Excel formulas that evaluate in Excel, rate tables on a reference
