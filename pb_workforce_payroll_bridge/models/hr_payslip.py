@@ -33,7 +33,11 @@ class HrPayslip(models.Model):
         if not wanted:
             return values
 
-        Req = self.env['hr.overtime.request']
+        # sudo: payslip access already gates the caller, and the officer
+        # record rule on hr.overtime.request is own-records-only — without su
+        # a non-manager payroll user would silently compute 0 OT hours for
+        # every other employee (review F1, money path).
+        Req = self.env['hr.overtime.request'].sudo()
         for code in wanted:
             recs = Req.search([
                 ('employee_id', '=', self.employee_id.id),

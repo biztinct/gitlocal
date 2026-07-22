@@ -179,7 +179,12 @@ class AttendanceWeekEntry(models.TransientModel):
         # --- batch read: attendances for the week (1 query) ---
         ws_dt = datetime.combine(week_start, time.min)
         we_dt = datetime.combine(week_end, time.max)
-        atts = self.env['hr.attendance'].search([
+        # sudo: reads must live in the same permission world as the sudo write
+        # path — the officer record rules are own-only, so a plain officer
+        # would otherwise see blank/locked cells and zeroed ceilings for every
+        # other employee (review F2). Access is gated by _require_officer and
+        # employees are company-scoped in _employees().
+        atts = self.env['hr.attendance'].sudo().search([
             ('employee_id', 'in', emps.ids),
             ('check_in', '>=', ws_dt), ('check_in', '<=', we_dt),
         ])
@@ -190,7 +195,7 @@ class AttendanceWeekEntry(models.TransientModel):
             att_by_cell[key] |= a
 
         # --- batch read: existing OT requests for the week (1 query) ---
-        reqs = self.env['hr.overtime.request'].search([
+        reqs = self.env['hr.overtime.request'].sudo().search([
             ('employee_id', 'in', emps.ids),
             ('date', '>=', week_start), ('date', '<=', week_end),
         ])
@@ -255,7 +260,10 @@ class AttendanceWeekEntry(models.TransientModel):
                     req = req_by_cell.get((emp.id, iso, t))
                     if req:
                         val = req.actual_hours or req.approved_hours or 0.0
-                        locked = req.state in ('submitted', 'approved')
+                        # refused is locked too — _save_ot refuses it, so the
+                        # grid must not invite an edit that will fail (review F6);
+                        # re-entry after refusal goes through the OT request form.
+                        locked = req.state in ('submitted', 'approved', 'refused')
                         cell_measures[t] = {
                             'value': round(val, 2),
                             'editable': not locked,
@@ -309,6 +317,7 @@ class AttendanceWeekEntry(models.TransientModel):
 
     @api.model
     def get_departments(self):
+        self._require_officer()
         deps = self.env['hr.department'].search([], order='name')
         return [{'id': d.id, 'name': d.name} for d in deps]
 
@@ -321,6 +330,7 @@ class AttendanceWeekEntry(models.TransientModel):
         approved_hours). Caps come from pb.ot.ceiling config; special-sector
         employees get the higher annual cap.
         """
+        self._require_officer()
         employee_ids = [int(e) for e in (employee_ids or [])]
         if not employee_ids:
             return {}
@@ -335,11 +345,19 @@ class AttendanceWeekEntry(models.TransientModel):
             month_end = date(ref.year, ref.month + 1, 1) - timedelta(days=1)
 
         emps = self.env['hr.employee'].browse(employee_ids)
-        company = emps[:1].company_id or self.env.company
-        ceil = self.env['pb.ot.ceiling']._for_company(company)
+        # caps are resolved PER EMPLOYEE COMPANY (review F8) — a mixed-company
+        # grid must not inherit the first employee's caps for everyone
+        Ceil = self.env['pb.ot.ceiling']
+        ceil_by_co = {}
+        emp_by_id = {e.id: e for e in emps}
+        for e in emps:
+            co = e.company_id or self.env.company
+            if co.id not in ceil_by_co:
+                ceil_by_co[co.id] = Ceil._for_company(co)
 
-        # one search_read over the year's submitted/approved requests; fold in py
-        rows = self.env['hr.overtime.request'].search_read(
+        # one search_read over the year's submitted/approved requests; fold in
+        # py (sudo — same permission world as the write path, review F2)
+        rows = self.env['hr.overtime.request'].sudo().search_read(
             [('employee_id', 'in', employee_ids),
              ('date', '>=', year_start), ('date', '<=', year_end),
              ('state', 'in', ('submitted', 'approved'))],
@@ -358,6 +376,9 @@ class AttendanceWeekEntry(models.TransientModel):
         special = {e.id: e.pb_ot_special_sector for e in emps}
         out = {}
         for eid in employee_ids:
+            e = emp_by_id.get(eid)
+            co = (e.company_id if e else False) or self.env.company
+            ceil = ceil_by_co.get(co.id) or Ceil._for_company(co)
             cap_year = ceil.annual_cap_special if special.get(eid) else ceil.annual_cap
             out[eid] = {
                 'mtd': round(agg[eid]['mtd'], 2),
@@ -417,6 +438,7 @@ class AttendanceWeekEntry(models.TransientModel):
 
         cfgs = {c.overtime_type: c for c in
                 self.env['hr.overtime.config'].search([('active', '=', True)])}
+        holidays = self._holidays(d_min, d_max)
 
         for c in cells:
             emp_id = int(c['rowId'])
@@ -439,7 +461,8 @@ class AttendanceWeekEntry(models.TransientModel):
                         ok, err = self._save_reg(emp, d, value, c.get('token'),
                                                  att_map, shift_map)
                     elif measure in OT_TYPES:
-                        ok, err = self._save_ot(emp, d, measure, value, cfgs)
+                        ok, err = self._save_ot(emp, d, measure, value, cfgs,
+                                                holidays)
                     else:
                         ok, err = False, 'badmeasure'
                 results.append({**res, 'ok': ok, 'error': err})
@@ -452,10 +475,13 @@ class AttendanceWeekEntry(models.TransientModel):
             return False, 'bounds'
         Att = self.env['hr.attendance'].sudo()
         recs = att_map.get((emp.id, d), Att.browse())
-        # stale detection: compare fetched token vs current write_date max
-        if token is not None:
-            if token and token != self._att_token(recs):
-                return False, 'stale'
+        # stale detection: the fetched token must match the cell's CURRENT
+        # token EXACTLY — including the empty case (no attendance at fetch
+        # time: if a record has appeared meanwhile, refuse rather than
+        # silently mutate it). An omitted token never bypasses the check
+        # (review F5).
+        if (token or '') != self._att_token(recs):
+            return False, 'stale'
         n = len(recs)
         if n >= 2:
             return False, 'multi'
@@ -488,9 +514,15 @@ class AttendanceWeekEntry(models.TransientModel):
         att_map[(emp.id, d)] = new
         return True, None
 
-    def _save_ot(self, emp, d, ot_type, hours, cfgs):
+    def _save_ot(self, emp, d, ot_type, hours, cfgs, holidays):
         if hours < 0 or hours > 24:
             return False, 'bounds'
+        # rail 1: the type must have an active config and be applicable on this
+        # day — the grid greys these cells, but a crafted RPC must not file
+        # weekend OT on a Tuesday (review F7)
+        cfg = cfgs.get(ot_type)
+        if not cfg or not self._config_applies(cfg, d, holidays):
+            return False, 'notapplicable'
         Req = self.env['hr.overtime.request'].sudo()
         req = Req.search([
             ('employee_id', '=', emp.id), ('date', '=', d),
@@ -514,6 +546,9 @@ class AttendanceWeekEntry(models.TransientModel):
             'planned_hours': hours,
             'actual_hours': hours,
             'reason': _('Entered via Weekly Entry grid'),
+            # explicit: the model default is env.company, which can mismatch
+            # the employee's company in a multi-company grid (review F8)
+            'company_id': emp.company_id.id or self.env.company.id,
         })
         return True, None
 
@@ -525,7 +560,9 @@ class AttendanceWeekEntry(models.TransientModel):
         week_start = self._monday(week_start_str)
         week_end = week_start + timedelta(days=6)
         emps = self._employees(department_id, search)[:_MAX_ROWS]
-        drafts = self.env['hr.overtime.request'].search([
+        # sudo: same permission world as the sudo create path — an officer must
+        # be able to submit the drafts the grid just created (review F2)
+        drafts = self.env['hr.overtime.request'].sudo().search([
             ('employee_id', 'in', emps.ids),
             ('date', '>=', week_start), ('date', '<=', week_end),
             ('state', '=', 'draft'),
