@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Company scoping (global — AND'd with every group's rules) -->
+    <record id="trip_rule_company" model="ir.rule">
+        <field name="name">Business Trip: company</field>
+        <field name="model_id" ref="model_pb_business_trip"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- A plain internal user sees/edits their OWN trips and their reports'
+         trips (so a line manager who holds no special group can still approve
+         a direct report — safety rail 4). -->
+    <record id="trip_rule_user_own_and_reports" model="ir.rule">
+        <field name="name">Business Trip: own + direct reports</field>
+        <field name="model_id" ref="model_pb_business_trip"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Approver tiers (attendance officer, payroll manager, HR manager) see all
+         company trips so finance/HR stages are actionable. -->
+    <record id="trip_rule_approvers_all" model="ir.rule">
+        <field name="name">Business Trip: approvers (all)</field>
+        <field name="model_id" ref="model_pb_business_trip"/>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_officer')), (4, ref('om_hr_payroll.group_hr_payroll_manager')), (4, ref('hr.group_hr_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Lines mirror the trip's visibility -->
+    <record id="trip_line_rule_user_own_and_reports" model="ir.rule">
+        <field name="name">Trip line: own + direct reports</field>
+        <field name="model_id" ref="model_pb_business_trip_line"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('trip_id.employee_id.user_id', '=', user.id), ('trip_id.employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    <record id="trip_line_rule_approvers_all" model="ir.rule">
+        <field name="name">Trip line: approvers (all)</field>
+        <field name="model_id" ref="model_pb_business_trip_line"/>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_officer')), (4, ref('om_hr_payroll.group_hr_payroll_manager')), (4, ref('hr.group_hr_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

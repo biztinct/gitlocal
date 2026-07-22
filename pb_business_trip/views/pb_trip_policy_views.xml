@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pb_trip_policy_list" model="ir.ui.view">
+        <field name="name">pb.trip.policy.list</field>
+        <field name="model">pb.trip.policy</field>
+        <field name="arch" type="xml">
+            <list string="Per-Diem Policies" editable="bottom">
+                <field name="name"/>
+                <field name="country_id"/>
+                <field name="city_tier"/>
+                <field name="per_diem_rate"/>
+                <field name="currency_id"/>
+                <field name="per_diem_channel"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="sequence"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_trip_policy" model="ir.actions.act_window">
+        <field name="name">Per-Diem Policies</field>
+        <field name="res_model">pb.trip.policy</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_pb_trip_expense_category_list" model="ir.ui.view">
+        <field name="name">pb.trip.expense.category.list</field>
+        <field name="model">pb.trip.expense.category</field>
+        <field name="arch" type="xml">
+            <list string="Expense Categories" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_trip_expense_category" model="ir.actions.act_window">
+        <field name="name">Trip Expense Categories</field>
+        <field name="res_model">pb.trip.expense.category</field>
+        <field name="view_mode">list</field>
+    </record>
+</odoo>
