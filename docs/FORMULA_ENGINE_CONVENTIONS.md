@@ -495,3 +495,12 @@ number from the handovers — keep the numbering stable.
     inactive seed route sims but a test harness `search([...])` must set `active_test=False`. Also: Odoo's
     `ir.attachment` image post-processing (Pillow) rejects a hand-crafted 1×1 PNG with
     `OSError: Truncated File Read` — generate a real ≥2×2 PNG for any attachment-create test.
+14. **NEVER ship a `<field name="password">` on a `res.users` record in a manifest `data` file** (Phase-A
+    review Major). Seed users that must resolve by xmlid (demo drivers for `toggle_demo`/route sims) ride
+    `data`, so a literal password becomes a live internal-user credential on EVERY production install —
+    documented in the repo, guessable, and grants a backend RPC session, not just the PWA. Ship such users
+    with NO password field (login stays impossible until an admin sets one at demo time, and clears it
+    after). If a record does not need xmlid resolution from product code, put it under the manifest `demo`
+    key instead. Related data-quality rule from the same review: never default missing GPS to `0,0` —
+    build the `geo_information` dict with only the keys you actually have (`{'mode': 'gps'}` alone is a
+    valid punch); a null-island coordinate is worse than no coordinate.

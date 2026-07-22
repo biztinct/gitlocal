@@ -317,7 +317,7 @@
     function doCheckOut() {
         var sheet = openSheet(_t("checking_out"), '<div class="pbdrv-spin"></div>');
         var f = S.lastFix;
-        var go = f ? Promise.resolve(f) : getOnce().catch(function () { return { lat: 0, lon: 0, acc: 0 }; });
+        var go = f ? Promise.resolve(f) : getOnce().catch(function () { return { lat: null, lon: null, acc: null }; });
         go.then(function (fix) {
             return rpc("/driver/check_in_out", { latitude: fix.lat, longitude: fix.lon, accuracy: fix.acc });
         }).then(function (st) {

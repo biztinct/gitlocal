@@ -2,10 +2,14 @@
 <odoo noupdate="1">
 
     <!-- ============ Demo driver users + employees ============ -->
+    <!-- SECURITY: no password field — these are ACTIVE internal users shipped
+         in `data` (xmlids must resolve for toggle_demo/route sims), so a
+         hardcoded password would be a live credential on every install. They
+         ship with no usable password; set one from Settings > Users just
+         before a phone demo, and clear it afterwards. -->
     <record id="demo_user_driver_hanoi" model="res.users">
         <field name="name">Nguyễn Văn Tài (Driver)</field>
         <field name="login">driver.hanoi@payobook.com</field>
-        <field name="password">driver1234</field>
         <field name="group_ids" eval="[(4, ref('group_pb_driver'))]"/>
     </record>
     <record id="demo_emp_driver_hanoi" model="hr.employee">
@@ -17,7 +21,6 @@
     <record id="demo_user_driver_hcmc" model="res.users">
         <field name="name">Trần Thị Mai (Driver)</field>
         <field name="login">driver.hcmc@payobook.com</field>
-        <field name="password">driver1234</field>
         <field name="group_ids" eval="[(4, ref('group_pb_driver'))]"/>
     </record>
     <record id="demo_emp_driver_hcmc" model="hr.employee">

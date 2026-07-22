@@ -94,15 +94,18 @@ class DriverApp(http.Controller, GeoPwaShell):
     @http.route('/driver/check_in_out', type='jsonrpc', auth='user')
     def driver_check_in_out(self, latitude=None, longitude=None, accuracy=None, **kw):
         emp = self._require_driver_employee()
-        tracker = request.env['biz.geo.tracker']
-        lat = tracker._coerce_float(latitude, 'latitude')
-        lon = tracker._coerce_float(longitude, 'longitude')
-        if not (-90.0 <= lat <= 90.0) or not (-180.0 <= lon <= 180.0):
-            raise UserError("Invalid GPS coordinates.")
-        # geo_information keys map to in_<key>/out_<key>; 'mode' → in_mode/out_mode
-        emp._attendance_action_change({
-            'latitude': lat, 'longitude': lon, 'mode': 'gps',
-        })
+        # geo_information keys map to in_<key>/out_<key>; 'mode' → in_mode/out_mode.
+        # A checkout with no GPS fix sends null coords — record the punch with
+        # no location rather than 0,0 (null island).
+        geo = {'mode': 'gps'}
+        if latitude not in (None, False, '') and longitude not in (None, False, ''):
+            tracker = request.env['biz.geo.tracker']
+            lat = tracker._coerce_float(latitude, 'latitude')
+            lon = tracker._coerce_float(longitude, 'longitude')
+            if not (-90.0 <= lat <= 90.0) or not (-180.0 <= lon <= 180.0):
+                raise UserError("Invalid GPS coordinates.")
+            geo.update({'latitude': lat, 'longitude': lon})
+        emp._attendance_action_change(geo)
         return self._state_payload(emp)
 
     @http.route('/driver/ping', type='jsonrpc', auth='user')
@@ -141,6 +144,7 @@ class DriverApp(http.Controller, GeoPwaShell):
         if len(raw) > _MAX_SELFIE_BYTES:
             return {'error': 'too_large'}
         ext = {'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp'}[mimetype]
+        old = att.pb_selfie_attachment_id
         attach = request.env['ir.attachment'].sudo().create({
             'name': 'driver_selfie_%s.%s' % (att.id, ext),
             'datas': image_b64,
@@ -149,4 +153,6 @@ class DriverApp(http.Controller, GeoPwaShell):
             'res_id': att.id,
         })
         att.sudo().pb_selfie_attachment_id = attach.id
+        if old:
+            old.sudo().unlink()
         return {'ok': True, 'attachment_id': attach.id}
