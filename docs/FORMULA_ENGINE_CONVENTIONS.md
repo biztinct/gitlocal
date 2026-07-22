@@ -546,3 +546,38 @@ number from the handovers — keep the numbering stable.
     a company-1 employee is invisible to an `allowed_company_ids=[5]` search). Seed/validate against the VN
     operating company, and the demo employees carry a single `Europe/Brussels` resource calendar (no VN tz
     anywhere), so synthesized punches land at Brussels-local 08:00 — a demo-data limitation, not a code bug.
+
+### Phase-C findings (business trips + virtual attendance — 2026-07-22, WP-Sudima-C). Numbering continues C18.
+
+19. **Trip presence is ONE virtual overlay helper, read sudo.** `pb.business.trip.get_trip_day_map`
+    (`pb_business_trip/models/pb_business_trip.py`) is the single source every presence surface reads —
+    the Timecards Gantt inherit, the Weekly-Entry grid inherit (row `flags.trip_days` + REG lock +
+    server-side `'trip'` refusal in `_save_reg`), the Workforce dashboard KPI, and the payroll bridge.
+    It searches `state='approved'` trips **sudo** (trip presence is system-derived and must be visible to
+    whoever is looking — the C18.17 one-permission-world rail). Never materialize `hr.attendance` rows for
+    trip days (C18.4): a day the traveller ALSO punched keeps its real bars + a `is_trip` tag; an empty
+    trip day gets a full-width violet (`#7c3aed`) bar injected at read time.
+20. **A "company-specific else global" resolver must do TWO searches, never `order='company_id desc'`.**
+    Postgres sorts NULLs **FIRST** on `DESC`, so a single ordered `search([... '|' company=X, company=False],
+    order='company_id desc', limit=1)` returns the GLOBAL (`company_id` NULL) fallback row AHEAD of the
+    company-specific one — every company silently gets the fallback caps. `pb.ot.ceiling._for_company` had
+    this latent bug (masked in the demo, which ships only a global ceiling, and by a Phase-B test whose
+    global cap happened to equal the company cap); the F8 per-company ceiling test exposed it. Fix: search
+    `company_id = X` first, then `company_id = False`. Applies to any per-diem-policy / ceiling / rate
+    fallback resolver.
+21. **Odoo 19 search-view group-by container must be `<group name="group_by">`** — NOT `<group expand="0"
+    string="Group By">`. The `expand`/`string` combo fails RNG validation with a *generic*
+    `ValidationError: Invalid view <name> definition` (no field/attribute named, '-no context-'), which
+    aborts the whole module install. Match the existing working pattern (`overtime_request_views.xml`).
+    Surfaces only at load, and even `--log-handler odoo.tools.convert:DEBUG` gives only the generic message
+    — diff against a known-good search view rather than hunting the RNG detail.
+22. **`hr.leave.type.requires_allocation` is a Boolean in Odoo 19** (default `True`), not a Selection —
+    pass `False` to create a leave with no allocation; a truthy string like `'no'` is `True` and
+    `hr.leave.create` raises `ValidationError: You do not have any allocation for this time off type`
+    (via `_check_validity`, through the `hr_work_entry_holidays` / `hr_holidays_attendance` create stack).
+23. **Deploy: a `-u` dies with `LockNotAvailable: … updating tuple … in ir_ui_view`** when a stale detached
+    `odoo-bin` worker still holds the `access_roles._update_role_groups_view` row (the C2 role-groups view
+    rebuild). `service odoo-server stop` + a 2 s sleep is NOT enough — leftover worker PIDs survive. Before
+    any `-u`: stop the service, `pgrep -af odoo-bin`, and `sudo kill <PID>` each leftover BY PID (never
+    `pkill -f odoo-bin` — it self-matches), confirm zero, THEN run. `--stop-after-init` test runs cause
+    `EXIT=255` (registry init failure) on this lock, distinct from `EXIT=1` (a genuine test failure).
