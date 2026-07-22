@@ -1,0 +1,325 @@
+/** @odoo-module **/
+/**
+ * Weekly Entry cockpit — WOW overtime + regular-hours grid for the HR/manager
+ * persona. Composes the generic <WeekGrid/> with a live OT-ceiling rail and a
+ * submit/approve tray. pbim-tokenized (.pbim.wfg). No employee self-entry.
+ */
+import { Component, useState, onWillStart } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { rpc } from "@web/core/network/rpc";
+import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { WeekGrid } from "@biz_week_grid/js/week_grid";
+
+const MODEL = "hr.attendance.weekentry";
+const OT_TYPES = ["weekday", "weekend", "holiday", "night"];
+
+function monday(d) {
+    const dt = new Date(d);
+    const day = dt.getDay();
+    const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
+    const m = new Date(dt.setDate(diff));
+    return m.toISOString().slice(0, 10);
+}
+
+export class AttendanceWeekGrid extends Component {
+    static template = "pb_hr_workforce.AttendanceWeekGrid";
+    static components = { WeekGrid };
+    static props = { action: { type: Object, optional: true }, "*": true };
+
+    setup() {
+        this.actionService = useService("action");
+        this.notif = useService("notification");
+        this.dialog = useService("dialog");
+
+        this.state = useState({
+            weekStart: monday(new Date()),
+            departmentId: false,
+            departments: [],
+            railOpen: true,
+            focusEmp: null,
+            reloadNonce: 0,
+            // fetched context used by the rail + tray (reactive → drives live bars)
+            ceilings: {},
+            liveDelta: {},   // empId -> {mtd, ytd} unsaved OT deltas
+            summary: { draft_count: 0, draft_hours: 0, draft_ids: [], pending_count: 0, pending_ids: [] },
+            truncated: 0,
+            weekLabel: "",
+            saving: false,
+        });
+
+        this._rowsById = {};   // empId -> {label, sublabel}
+        this._tokenMap = {};   // "empId|dayISO" -> attendance write_date token
+        this._lastDeltaStr = "{}";
+        this._bootstrap = null; // payload pre-fetched by the cockpit for the child's first load
+        this._monthKey = new Date().toISOString().slice(0, 7);
+        this._yearKey = String(new Date().getFullYear());
+
+        // adapter bridges the generic grid to the weekentry RPCs. The FIRST call
+        // (the child's onWillStart) is served the payload the cockpit already
+        // fetched — so no parent-state mutation happens during child mount (which
+        // would remount the child in a fetch loop). Later reloads hit the RPC.
+        this.adapter = {
+            fetch: () => {
+                if (this._bootstrap) { const d = this._bootstrap; this._bootstrap = null; return Promise.resolve(d); }
+                return this._doFetch();
+            },
+            save: (payload) => this._save(payload),
+            validate: (cell) => this._validate(cell),
+        };
+        // STABLE prop references — passing fresh inline arrows / {} each render
+        // makes OWL treat the child's props as changed every time and recreate
+        // it, which restarts its onWillStart fetch (an infinite loop). Bind once.
+        this._gridParams = {};
+        this._h = {
+            onData: this.onGridData.bind(this),
+            onDirty: this.onDirty.bind(this),
+            onFocus: this.onFocusRow.bind(this),
+            onSaved: this.onGridSaved.bind(this),
+        };
+
+        onWillStart(async () => {
+            try { this.state.departments = await this._rpc("get_departments"); } catch (_e) { /* */ }
+            // cockpit fetches its own bootstrap (own lifecycle → safe to set state)
+            this._bootstrap = await this._doFetch();
+        });
+    }
+
+    // ------------------------------------------------------------------ rpc
+    async _rpc(method, args = []) {
+        return rpc(`/web/dataset/call_kw/${MODEL}/${method}`, {
+            model: MODEL, method, args, kwargs: {},
+        });
+    }
+
+    get paramsKey() {
+        return `${this.state.weekStart}|${this.state.departmentId || ""}|${this.state.reloadNonce}`;
+    }
+
+    async _doFetch() {
+        const data = await this._rpc("get_week_entries", [
+            this.state.weekStart, this.state.departmentId || false, false,
+        ]);
+        // capture context for the rail / tray / token map
+        this.state.ceilings = data.ceilings || {};
+        this.state.summary = data.summary || this.state.summary;
+        this.state.truncated = data.truncated || 0;
+        this.state.weekLabel = this._fmtWeek(data.week_start, data.week_end);
+        this.state.liveDelta = {};
+        this._lastDeltaStr = "{}";
+        this._rowsById = {};
+        this._tokenMap = {};
+        this._monthKey = new Date().toISOString().slice(0, 7);  // ceiling reflects current month
+        for (const row of data.rows || []) {
+            this._rowsById[row.id] = { label: row.label, sublabel: row.sublabel };
+            for (const [iso, cell] of Object.entries(row.cells || {})) {
+                const reg = (cell.measures || {}).reg;
+                if (reg && reg.token !== undefined) {
+                    this._tokenMap[`${row.id}|${iso}`] = reg.token || "";
+                }
+            }
+        }
+        if (this.state.truncated) {
+            this.notif.add(
+                _t("Showing the first 200 employees. Narrow by department to see the rest."),
+                { type: "warning" });
+        }
+        return data;
+    }
+
+    async _save(payload) {
+        // enrich REG cells with their fetched concurrency token (rail 7)
+        const cells = (payload.cells || []).map((c) => {
+            if (c.measure === "reg") {
+                return { ...c, token: this._tokenMap[`${c.rowId}|${c.dayISO}`] ?? "" };
+            }
+            return c;
+        });
+        // ceiling over-cap confirm before committing OT that breaches a cap (rail 5)
+        const breach = this._overCapAfterSave();
+        if (breach) {
+            const msg = breach.name + " " + _t("exceeds the monthly overtime cap of")
+                + " " + breach.cap + " h. " + _t("Submit anyway?");
+            const ok = await this._confirm(msg);
+            if (!ok) { return { results: [] }; }  // user cancelled → nothing saved
+        }
+        this.state.saving = true;
+        let res;
+        try {
+            res = await this._rpc("save_week_entries", [{ cells }]);
+        } finally {
+            this.state.saving = false;
+        }
+        const results = (res && res.results) || [];
+        const fails = results.filter((r) => !r.ok);
+        if (fails.length) {
+            this.notif.add(fails.length + " " + _t("cell(s) could not be saved — see the highlighted cells."),
+                { type: "danger" });
+        } else if (results.length) {
+            this.notif.add(_t("Saved."), { type: "success" });
+        }
+        return res;
+    }
+
+    _validate(cell) {
+        // client-side warn only (server is authoritative). Warn when an OT edit
+        // pushes the employee's live month total past the cap.
+        if (!OT_TYPES.includes(cell.measureKey)) { return { ok: true }; }
+        const base = this.state.ceilings[cell.rowId];
+        if (!base) { return { ok: true }; }
+        return { ok: true };
+    }
+
+    // -------------------------------------------------------- live ceilings
+    onDirty(list) {
+        // recompute per-employee unsaved OT deltas → drives the live rail bars.
+        // Only commit to reactive state when it actually changed (the empty-list
+        // call fired during the child's mount must NOT setState — that would
+        // remount the grid, C-gotcha).
+        const delta = {};
+        for (const d of list) {
+            if (!OT_TYPES.includes(d.measureKey)) { continue; }
+            const diff = Number(d.value) - Number(d.prevValue || 0);
+            if (!diff) { continue; }
+            const inMonth = (d.dayISO || "").slice(0, 7) === this._monthKey;
+            const inYear = (d.dayISO || "").slice(0, 4) === this._yearKey;
+            delta[d.rowId] = delta[d.rowId] || { mtd: 0, ytd: 0 };
+            if (inMonth) { delta[d.rowId].mtd += diff; }
+            if (inYear) { delta[d.rowId].ytd += diff; }
+        }
+        const s = JSON.stringify(delta);
+        if (s !== this._lastDeltaStr) {
+            this._lastDeltaStr = s;
+            this.state.liveDelta = delta;
+        }
+    }
+
+    onFocusRow(empId) { this.state.focusEmp = empId; }
+
+    onGridData(data) {
+        // ceilings/summary already captured in _fetch; nothing extra needed
+    }
+
+    async onGridSaved() {
+        // grid reloads itself on full success; refresh rail/tray context too
+    }
+
+    liveCeiling(empId) {
+        const base = this.state.ceilings[empId] || { mtd: 0, ytd: 0, cap_month: 40, cap_year: 200 };
+        const dl = this.state.liveDelta[empId] || { mtd: 0, ytd: 0 };
+        return {
+            mtd: Math.max(0, base.mtd + dl.mtd),
+            ytd: Math.max(0, base.ytd + dl.ytd),
+            cap_month: base.cap_month,
+            cap_year: base.cap_year,
+        };
+    }
+
+    _overCapAfterSave() {
+        // returns {name, cap} if any employee's live month total breaches its cap
+        for (const [empId, dl] of Object.entries(this.state.liveDelta)) {
+            if (!dl.mtd) { continue; }
+            const c = this.liveCeiling(empId);
+            if (c.mtd > c.cap_month) {
+                return { name: (this._rowsById[empId] || {}).label || _t("employee"), cap: c.cap_month };
+            }
+        }
+        return null;
+    }
+
+    // ------------------------------------------------------------ rail data
+    get focusCeiling() {
+        if (!this.state.focusEmp) { return null; }
+        const c = this.liveCeiling(this.state.focusEmp);
+        const meta = this._rowsById[this.state.focusEmp] || {};
+        return { ...c, name: meta.label || "", sub: meta.sublabel || "" };
+    }
+    get leaderboard() {
+        const rows = [];
+        for (const [empId, base] of Object.entries(this.state.ceilings)) {
+            const c = this.liveCeiling(empId);
+            const pct = c.cap_month ? c.mtd / c.cap_month : 0;
+            rows.push({
+                id: empId,
+                name: (this._rowsById[empId] || {}).label || "",
+                mtd: c.mtd, cap: c.cap_month, pct,
+            });
+        }
+        rows.sort((a, b) => b.pct - a.pct);
+        return rows.slice(0, 6).filter((r) => r.mtd > 0);
+    }
+    barPct(v, cap) { return cap ? Math.min(100, Math.round((v / cap) * 100)) : 0; }
+    barTone(v, cap) {
+        const p = cap ? v / cap : 0;
+        if (p >= 0.9) { return "danger"; }
+        if (p >= 0.75) { return "warn"; }
+        return "ok";
+    }
+    fmtH(v) { return (Math.round((v || 0) * 10) / 10); }
+
+    // -------------------------------------------------------- toolbar / tray
+    _fmtWeek(startISO, endISO) {
+        const s = new Date(startISO), e = new Date(endISO);
+        const o = { day: "numeric", month: "short" };
+        return `${s.toLocaleDateString("en-US", o)} – ${e.toLocaleDateString("en-US", o)}, ${e.getFullYear()}`;
+    }
+    prevWeek() { this._shiftWeek(-7); }
+    nextWeek() { this._shiftWeek(7); }
+    goToday() { this.state.weekStart = monday(new Date()); }
+    _shiftWeek(days) {
+        const d = new Date(this.state.weekStart);
+        d.setDate(d.getDate() + days);
+        this.state.weekStart = d.toISOString().slice(0, 10);
+    }
+    onDeptChange(ev) {
+        this.state.departmentId = ev.target.value ? parseInt(ev.target.value) : false;
+    }
+    toggleRail() { this.state.railOpen = !this.state.railOpen; }
+
+    async submitAll() {
+        try {
+            const r = await this._rpc("submit_week", [
+                this.state.weekStart, this.state.departmentId || false, false]);
+            this.notif.add((r.submitted || 0) + " " + _t("overtime request(s) submitted."),
+                { type: "success" });
+            await this._reloadContext();
+        } catch (e) {
+            this.notif.add(e.data ? e.data.message : (e.message || _t("Submit failed.")),
+                { type: "danger" });
+        }
+    }
+    async approvePending() {
+        const ids = this.state.summary.pending_ids || [];
+        if (!ids.length) { return; }
+        try {
+            const r = await this._rpc("approve_requests", [ids]);
+            this.notif.add((r.approved || 0) + " " + _t("overtime request(s) approved."),
+                { type: "success" });
+            await this._reloadContext();
+        } catch (e) {
+            this.notif.add(e.data ? e.data.message : (e.message || _t("Approval failed.")),
+                { type: "danger" });
+        }
+    }
+    _reloadContext() {
+        // bump the nonce → paramsKey changes → <WeekGrid> refetches via the
+        // adapter (which refreshes our ceilings/summary in _fetch).
+        this.state.reloadNonce += 1;
+    }
+
+    _confirm(message) {
+        return new Promise((resolve) => {
+            this.dialog.add(ConfirmationDialog, {
+                title: _t("Overtime ceiling exceeded"),
+                body: message,
+                confirmLabel: _t("Submit anyway"),
+                cancelLabel: _t("Cancel"),
+                confirm: () => resolve(true),
+                cancel: () => resolve(false),
+            });
+        });
+    }
+}
+
+registry.category("actions").add("pb_attendance_weekgrid", AttendanceWeekGrid);

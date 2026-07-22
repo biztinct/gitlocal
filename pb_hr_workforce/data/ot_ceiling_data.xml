@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Global default OT ceilings (Vietnam labour-law figures). company_id
+         blank = fallback for every company; a company-specific record can be
+         added to override. Engine reads these — no cap constants in code. -->
+    <record id="ot_ceiling_default" model="pb.ot.ceiling">
+        <field name="name">Overtime Ceilings (VN default)</field>
+        <field name="company_id" eval="False"/>
+        <field name="monthly_cap">40.0</field>
+        <field name="annual_cap">200.0</field>
+        <field name="annual_cap_special">300.0</field>
+    </record>
+
+</odoo>

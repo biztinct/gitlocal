@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- Weekly Entry cockpit — Workforce section, right after Timecards.
+         Officer-and-up (HR/manager persona; no ESS/self-entry this phase). -->
+    <record id="item_wf_weekentry" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Weekly Entry</field>
+        <field name="icon">table</field>
+        <field name="sequence">35</field>
+        <field name="action_xmlid">pb_hr_workforce.action_pb_attendance_weekgrid</field>
+        <field name="action_tag">pb_attendance_weekgrid</field>
+        <field name="match_action_tags">pb_attendance_weekgrid</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
+    </record>
+
+</odoo>

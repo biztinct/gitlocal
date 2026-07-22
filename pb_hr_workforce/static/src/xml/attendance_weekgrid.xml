@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_hr_workforce.AttendanceWeekGrid">
+    <div class="pbim wfg">
+
+      <!-- toolbar -->
+      <div class="wfg-toolbar">
+        <div class="wfg-tb__left">
+          <div class="wfg-title">
+            <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>
+            </svg>
+            <span>Weekly Entry</span>
+          </div>
+          <select class="wfg-select" t-on-change="onDeptChange">
+            <option value="">All departments</option>
+            <t t-foreach="state.departments" t-as="dep" t-key="dep.id">
+              <option t-att-value="dep.id" t-esc="dep.name"/>
+            </t>
+          </select>
+        </div>
+
+        <div class="wfg-tb__center">
+          <button class="wfg-navbtn" t-on-click="() => this.prevWeek()" title="Previous week">
+            <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <button class="wfg-todaybtn" t-on-click="() => this.goToday()">Today</button>
+          <span class="wfg-weeklabel" t-esc="state.weekLabel"/>
+          <button class="wfg-navbtn" t-on-click="() => this.nextWeek()" title="Next week">
+            <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <div class="wfg-tb__right">
+          <button class="wfg-railtoggle" t-att-class="{ 'is-on': state.railOpen }"
+                  t-on-click="() => this.toggleRail()" title="Toggle overtime ceilings">
+            <svg class="wfg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
+            </svg>
+            Ceilings
+          </button>
+        </div>
+      </div>
+
+      <!-- body: grid + ceiling rail -->
+      <div class="wfg-body">
+        <div class="wfg-main">
+          <WeekGrid t-key="'wg'" adapter="adapter" params="_gridParams" paramsKey="paramsKey"
+                    showFilter="true"
+                    emptyText="'No employees with entries this week — adjust the department or week.'"
+                    onData="_h.onData"
+                    onDirty="_h.onDirty"
+                    onFocus="_h.onFocus"
+                    onSaved="_h.onSaved"/>
+        </div>
+
+        <div class="wfg-rail" t-if="state.railOpen">
+          <div class="wfg-rail__head">
+            <span>Overtime ceilings</span>
+          </div>
+
+          <!-- selected employee bars -->
+          <div class="wfg-focus" t-if="focusCeiling">
+            <div class="wfg-focus__name" t-esc="focusCeiling.name"/>
+            <div class="wfg-focus__sub" t-esc="focusCeiling.sub"/>
+
+            <div class="wfg-bar">
+              <div class="wfg-bar__top">
+                <span>This month</span>
+                <span><t t-esc="fmtH(focusCeiling.mtd)"/> / <t t-esc="focusCeiling.cap_month"/> h</span>
+              </div>
+              <div class="wfg-bar__track">
+                <div t-attf-class="wfg-bar__fill wfg-bar__fill--{{ barTone(focusCeiling.mtd, focusCeiling.cap_month) }}"
+                     t-attf-style="width: {{ barPct(focusCeiling.mtd, focusCeiling.cap_month) }}%;"/>
+              </div>
+            </div>
+
+            <div class="wfg-bar">
+              <div class="wfg-bar__top">
+                <span>This year</span>
+                <span><t t-esc="fmtH(focusCeiling.ytd)"/> / <t t-esc="focusCeiling.cap_year"/> h</span>
+              </div>
+              <div class="wfg-bar__track">
+                <div t-attf-class="wfg-bar__fill wfg-bar__fill--{{ barTone(focusCeiling.ytd, focusCeiling.cap_year) }}"
+                     t-attf-style="width: {{ barPct(focusCeiling.ytd, focusCeiling.cap_year) }}%;"/>
+              </div>
+            </div>
+          </div>
+          <div class="wfg-focus wfg-focus--empty" t-else="">
+            Click a cell to see an employee's overtime budget.
+          </div>
+
+          <!-- leaderboard -->
+          <div class="wfg-lead" t-if="leaderboard.length">
+            <div class="wfg-lead__head">Closest to the monthly cap</div>
+            <t t-foreach="leaderboard" t-as="l" t-key="l.id">
+              <div class="wfg-lead__row" t-on-click="() => this.onFocusRow(l.id)">
+                <span class="wfg-lead__name" t-esc="l.name"/>
+                <span class="wfg-lead__track">
+                  <span t-attf-class="wfg-lead__fill wfg-lead__fill--{{ barTone(l.mtd, l.cap) }}"
+                        t-attf-style="width: {{ barPct(l.mtd, l.cap) }}%;"/>
+                </span>
+                <span class="wfg-lead__v"><t t-esc="fmtH(l.mtd)"/>/<t t-esc="l.cap"/></span>
+              </div>
+            </t>
+          </div>
+        </div>
+      </div>
+
+      <!-- submit / approve tray -->
+      <div class="wfg-tray" t-if="state.summary.draft_count > 0 or state.summary.pending_count > 0">
+        <div class="wfg-tray__info" t-if="state.summary.draft_count > 0">
+          <strong t-esc="state.summary.draft_count"/> OT request<t t-if="state.summary.draft_count != 1">s</t>
+          · <t t-esc="fmtH(state.summary.draft_hours)"/> h drafted
+        </div>
+        <div class="wfg-tray__info wfg-tray__info--muted" t-if="state.summary.pending_count > 0">
+          <t t-esc="state.summary.pending_count"/> awaiting approval
+        </div>
+        <div class="wfg-tray__spacer"/>
+        <button class="wfg-btn wfg-btn--ghost" t-if="state.summary.pending_count > 0"
+                t-on-click="() => this.approvePending()">
+          Approve <t t-esc="state.summary.pending_count"/>
+        </button>
+        <button class="wfg-btn wfg-btn--primary" t-if="state.summary.draft_count > 0"
+                t-on-click="() => this.submitAll()">
+          Submit all
+        </button>
+      </div>
+    </div>
+  </t>
+
+</templates>

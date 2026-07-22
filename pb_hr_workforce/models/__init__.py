@@ -7,3 +7,6 @@ from . import workforce_dashboard
 from . import attendance_live
 from . import payroll_report
 from . import attendance_timecard
+from . import hr_attendance
+from . import ot_ceiling
+from . import attendance_weekentry
