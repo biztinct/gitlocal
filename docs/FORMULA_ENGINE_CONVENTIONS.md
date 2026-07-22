@@ -504,3 +504,33 @@ number from the handovers — keep the numbering stable.
     key instead. Related data-quality rule from the same review: never default missing GPS to `0,0` —
     build the `geo_information` dict with only the keys you actually have (`{'mode': 'gps'}` alone is a
     valid punch); a null-island coordinate is worse than no coordinate.
+
+### Phase-B findings (OT weekly-entry grid — 2026-07-22, WP-Sudima-B). Numbering continues C18.
+
+15. **Odoo 19 `hr.attendance.worked_hours` SUBTRACTS the calendar lunch interval** (unless the resource
+    `_is_flexible()`) — `_get_worked_hours_in_range` does `Intervals([(ci,co)]) - lunch_intervals`. So
+    writing `check_out = check_in + hours` stores a `worked_hours` LESS than the entered figure whenever
+    the span crosses the schedule's lunch window (enter 8 → `worked_hours` 7). Any grid that treats the
+    entered number as the net figure must READ BACK the wall-clock span (`check_out − check_in`), NOT
+    `worked_hours`, or the round-trip is lossy and looks like data loss. The Weekly Entry grid displays the
+    span (`_att_hours`) and its "no lunch arithmetic" write rule (§3.2) is exactly this convention.
+16. **A parent cockpit that mutates its OWN reactive state inside a child's adapter `fetch()` remounts the
+    child in an infinite fetch loop.** Pattern: an adapter-driven OWL child fetches in `onWillStart`; the
+    adapter closure sets the PARENT `useState` (ceilings/summary). Parent re-render → child RECREATED (not
+    patched) → onWillStart → fetch → parent state → … a fetch storm that renders the action BLANK with NO
+    console error (invisible to `-u`; only a pile of repeated notifications hints at it). Fixes, all three:
+    (a) the parent pre-fetches in its own `onWillStart` and serves the child a cached bootstrap on the first
+    `fetch`; (b) pass STABLE prop references — bind handlers once in setup, a stable `params` object — and an
+    explicit `t-key` so OWL reuses the child; (c) guard any live-delta state write behind a change check so
+    the empty mount-time `onDirty([])` emit doesn't setState. ALWAYS Chrome-MCP an adapter-driven cockpit.
+17. **Concurrency/stale tokens must be MICROSECOND-precise.** A per-cell snapshot token from
+    `fields.Datetime.to_string(write_date)` is SECOND precision (the C14 trap in another guise), so a
+    fetch+edit inside the same wall-clock second slips past stale detection. Use `str(write_date)` (keeps
+    microseconds) for the token compared on save (`_att_token`).
+18. **Company-scoped OWL cockpits render EVERY selected company** (the read side of C18.11). The grid shows
+    company-1 "Your Company" demo employees (Abigail Peterson &c., English names sorting first under
+    `order='name'`) alongside VN whenever the browser's `cids` cookie has more than the VN company selected.
+    Verification RPCs must use the SAME company scope the cockpit used, or saved records "vanish" (a save to
+    a company-1 employee is invisible to an `allowed_company_ids=[5]` search). Seed/validate against the VN
+    operating company, and the demo employees carry a single `Europe/Brussels` resource calendar (no VN tz
+    anywhere), so synthesized punches land at Brussels-local 08:00 — a demo-data limitation, not a code bug.
