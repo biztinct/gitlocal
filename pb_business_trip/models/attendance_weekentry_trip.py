@@ -18,7 +18,7 @@ class AttendanceWeekEntryTrip(models.TransientModel):
         rows = data.get('rows') or []
         if not rows:
             return data
-        trip_map = self.env['pb.business.trip'].get_trip_day_map(
+        trip_map = self.env['pb.business.trip']._get_trip_day_map(
             [r['id'] for r in rows], data['week_start'], data['week_end'])
         if not trip_map:
             return data
@@ -39,7 +39,7 @@ class AttendanceWeekEntryTrip(models.TransientModel):
     def _save_reg(self, emp, d, hours, token, att_map, shift_map):
         # a REG write on an approved trip day is refused (the grid already locks
         # the cell; a crafted RPC must not hand-enter attendance over a trip)
-        trip_days = self.env['pb.business.trip'].get_trip_day_map([emp.id], d, d)
+        trip_days = self.env['pb.business.trip']._get_trip_day_map([emp.id], d, d)
         if d.isoformat() in trip_days.get(emp.id, set()):
             return False, 'trip'
         return super()._save_reg(emp, d, hours, token, att_map, shift_map)

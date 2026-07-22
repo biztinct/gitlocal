@@ -166,8 +166,8 @@ class TestBusinessTrip(TransactionCase):
         self._drive_to_approved(approved)
         draft = self._trip(employee=self.mgr, d_from=self.d1, d_to=self.d3)  # not approved
         Trip = self.env['pb.business.trip']
-        m = Trip.get_trip_day_map([self.emp.id, self.mgr.id],
-                                  self.monday, self.monday + timedelta(days=6))
+        m = Trip._get_trip_day_map([self.emp.id, self.mgr.id],
+                                   self.monday, self.monday + timedelta(days=6))
         self.assertEqual(m.get(self.emp.id),
                          {self.d1.isoformat(),
                           (self.d1 + timedelta(days=1)).isoformat(),

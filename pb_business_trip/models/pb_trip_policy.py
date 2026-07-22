@@ -41,19 +41,27 @@ class PbTripPolicy(models.Model):
     @api.model
     def _match(self, country, company, city_tier=False):
         """Best policy for a destination: most-specific first (country + tier),
-        then country, then a global fallback. Company-scoped."""
-        co_ids = [company.id, False] if company else [False]
-        base = [('active', '=', True), ('company_id', 'in', co_ids)]
-        candidates = [
-            base + [('country_id', '=', country.id if country else False),
-                    ('city_tier', '=', city_tier or False)],
-            base + [('country_id', '=', country.id if country else False)],
-            base + [('country_id', '=', False)],
+        then country, then a global fallback. Within each tier the company
+        policy wins over the global one — as two explicit searches, never a
+        single ``order='company_id desc'`` query (C18.20: Postgres sorts NULLs
+        FIRST on DESC, which would hand every company the global rate)."""
+        company_leaves = []
+        if company:
+            company_leaves.append(('company_id', '=', company.id))
+        company_leaves.append(('company_id', '=', False))
+        specificity = [
+            [('country_id', '=', country.id if country else False),
+             ('city_tier', '=', city_tier or False)],
+            [('country_id', '=', country.id if country else False)],
+            [('country_id', '=', False)],
         ]
-        for dom in candidates:
-            rec = self.search(dom, order='company_id desc, sequence', limit=1)
-            if rec:
-                return rec
+        for spec in specificity:
+            for co_leaf in company_leaves:
+                rec = self.search(
+                    [('active', '=', True), co_leaf] + spec,
+                    order='sequence', limit=1)
+                if rec:
+                    return rec
         return self.browse()
 
 

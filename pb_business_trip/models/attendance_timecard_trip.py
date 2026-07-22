@@ -23,7 +23,7 @@ class AttendanceTimecardTrip(models.TransientModel):
         emps = data.get('employees') or []
         if not emps:
             return data
-        trip_map = self.env['pb.business.trip'].get_trip_day_map(
+        trip_map = self.env['pb.business.trip']._get_trip_day_map(
             [e['id'] for e in emps], data.get('week_start'), data.get('week_end'))
         if not trip_map:
             return data

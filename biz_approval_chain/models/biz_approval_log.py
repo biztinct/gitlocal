@@ -29,6 +29,17 @@ class BizApprovalStepLog(models.Model):
     note = fields.Text(string='Note')
     company_id = fields.Many2one('res.company', string='Company', index=True)
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Authenticity: every internal user may CREATE (the mixin logs as the
+        # clicking user, no sudo), so who/when must always be the server's
+        # idea — a crafted call_kw create must not be able to forge a trail
+        # row in another user's name or back-date one.
+        for vals in vals_list:
+            vals['user_id'] = self.env.uid
+            vals.pop('stamp', None)
+        return super().create(vals_list)
+
     @api.model
     def _for_record(self, record):
         """Ordered trail for a single record (helper for the stepper JSON)."""
