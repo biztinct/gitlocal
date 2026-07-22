@@ -48,7 +48,7 @@
         <div class="wfg-main">
           <WeekGrid t-key="'wg'" adapter="adapter" params="_gridParams" paramsKey="paramsKey"
                     showFilter="true"
-                    emptyText="'No employees with entries this week — adjust the department or week.'"
+                    emptyText="emptyText"
                     onData="_h.onData"
                     onDirty="_h.onDirty"
                     onFocus="_h.onFocus"

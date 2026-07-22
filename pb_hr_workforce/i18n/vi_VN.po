@@ -192,3 +192,174 @@ msgstr "Sao chép thất bại"
 #, python-format
 msgid "With hours only"
 msgstr "Chỉ hiển thị giờ"
+
+# --- Weekly Entry cockpit (Phase B) ---
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "Showing the first 200 employees. Narrow by department to see the rest."
+msgstr "Đang hiển thị 200 nhân viên đầu tiên. Lọc theo phòng ban để xem thêm."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "%(name)s exceeds the monthly overtime cap of %(cap)s h. Submit anyway?"
+msgstr "%(name)s vượt mức trần làm thêm giờ hằng tháng là %(cap)s giờ. Vẫn gửi?"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "%(name)s exceeds the annual overtime cap of %(cap)s h. Submit anyway?"
+msgstr "%(name)s vượt mức trần làm thêm giờ hằng năm là %(cap)s giờ. Vẫn gửi?"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "cell(s) could not be saved — see the highlighted cells."
+msgstr "ô không thể lưu — xem các ô được đánh dấu."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "Saved."
+msgstr "Đã lưu."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "employee"
+msgstr "nhân viên"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "overtime request(s) submitted."
+msgstr "yêu cầu làm thêm giờ đã được gửi."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "Submit failed."
+msgstr "Gửi thất bại."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "overtime request(s) approved."
+msgstr "yêu cầu làm thêm giờ đã được duyệt."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "Approval failed."
+msgstr "Duyệt thất bại."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "Overtime ceiling exceeded"
+msgstr "Vượt mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "Submit anyway"
+msgstr "Vẫn gửi"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/attendance_weekgrid.js:0
+#, python-format
+msgid "No employees with entries this week — adjust the department or week."
+msgstr "Không có nhân viên nào có dữ liệu trong tuần này — điều chỉnh phòng ban hoặc tuần."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Weekly Entry"
+msgstr "Nhập liệu theo tuần"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "All departments"
+msgstr "Tất cả phòng ban"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Previous week"
+msgstr "Tuần trước"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Today"
+msgstr "Hôm nay"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Next week"
+msgstr "Tuần sau"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Toggle overtime ceilings"
+msgstr "Bật/tắt mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Ceilings"
+msgstr "Mức trần"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Overtime ceilings"
+msgstr "Mức trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "This year"
+msgstr "Năm nay"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Click a cell to see an employee's overtime budget."
+msgstr "Nhấp vào một ô để xem hạn mức làm thêm giờ của nhân viên."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Closest to the monthly cap"
+msgstr "Gần chạm trần hằng tháng nhất"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "OT request"
+msgstr "Yêu cầu OT"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "h drafted"
+msgstr "giờ nháp"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "awaiting approval"
+msgstr "đang chờ duyệt"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Approve"
+msgstr "Duyệt"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
+msgid "Submit all"
+msgstr "Gửi tất cả"
