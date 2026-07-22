@@ -1,0 +1,244 @@
+# Part of Payobook. See LICENSE file for full copyright and licensing details.
+"""Server tests for Phase D — AI Bank Account Validation (§6 cases 1–10)."""
+
+import base64
+import json
+from unittest.mock import patch
+
+from odoo.exceptions import AccessError, UserError
+from odoo.tests import TransactionCase, tagged
+
+from odoo.addons.pb_payroll_ai_insights.ai_providers.base_provider import BaseAIProvider
+from odoo.addons.pb_bank_ocr.models import vn_bank_dictionary as vnd
+
+_FAKE_PDF = base64.b64encode(b'%PDF-1.4 fake bank letter').decode()
+
+
+class _FakeProvider(BaseAIProvider):
+    def __init__(self, raw='', vision=True, pdf=True, raise_exc=False):
+        super().__init__({})
+        self._raw, self._vision, self._pdf, self._raise = raw, vision, pdf, raise_exc
+
+    def supports_vision(self):
+        return self._vision
+
+    def accepts_pdf(self):
+        return self._pdf
+
+    def is_available(self):
+        return True
+
+    def generate_text(self, *a, **k):
+        return self._raw
+
+    def generate_vision(self, prompt, images, max_tokens=1500, **k):
+        if self._raise:
+            raise RuntimeError("boom")
+        return self._raw
+
+
+_GP = 'odoo.addons.pb_payroll_ai_insights.models.payroll_ai_config.PayrollAIConfig.get_provider'
+
+
+@tagged('post_install', '-at_install')
+class TestBankOcr(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company = cls.env.company
+        Users = cls.env['res.users'].with_context(no_reset_password=True)
+        g_user = cls.env.ref('base.group_user')
+        g_hr = cls.env.ref('om_hr_payroll.group_hr_payroll_user')
+        g_mgr = cls.env.ref('om_hr_payroll.group_hr_payroll_manager')
+
+        cls.emp_user = Users.create({'name': 'Owner', 'login': 'bnk_owner',
+                                     'group_ids': [(6, 0, [g_user.id])]})
+        cls.hr_user = Users.create({'name': 'HR', 'login': 'bnk_hr',
+                                    'group_ids': [(6, 0, [g_hr.id])]})
+        cls.fin_user = Users.create({'name': 'Finance', 'login': 'bnk_fin',
+                                     'group_ids': [(6, 0, [g_mgr.id, g_hr.id])]})
+        Emp = cls.env['hr.employee']
+        cls.emp = Emp.create({'name': 'Nguyễn Văn Á', 'user_id': cls.emp_user.id,
+                              'company_id': cls.company.id})
+
+        # isolate from any config already present on the live DB (rolled back)
+        cls.env['payroll.ai.config'].search([]).write({'is_active': False})
+        # active doc_ocr config so extract() resolves a provider (patched)
+        cls.cfg = cls.env['payroll.ai.config'].create({
+            'provider_type': 'openai', 'purpose': 'doc_ocr',
+            'api_key': 'x', 'is_active': True, 'company_id': cls.company.id})
+
+    # ------------------------------------------------------------ helpers
+    def _attachment(self):
+        return self.env['ir.attachment'].create({
+            'name': 'letter.pdf', 'datas': _FAKE_PDF, 'mimetype': 'application/pdf'})
+
+    def _request(self, **vals):
+        base = {'employee_id': self.emp.id, 'attachment_id': self._attachment().id}
+        base.update(vals)
+        return self.env['pb.bank.change.request'].create(base)
+
+    # ---------------------------------------------------- §6.1 resolver
+    def test_01_provider_resolution_and_degrade(self):
+        Cfg = self.env['payroll.ai.config']
+        self.assertEqual(Cfg.get_config_for_purpose('doc_ocr'), self.cfg)
+        # no purposed config → any active config
+        self.cfg.purpose = 'insights'
+        self.assertEqual(Cfg.get_config_for_purpose('doc_ocr'), self.cfg)
+        self.cfg.purpose = 'doc_ocr'
+        # None-safe: no provider at all → degraded result, no traceback
+        self.cfg.is_active = False
+        res = self.env['biz.doc.ocr'].extract(
+            {'fields': [{'name': 'x_account_number', 'type': 'digits'}]}, [])
+        self.assertEqual(res['provider'], 'none')
+        self.assertTrue(res['error'])
+        self.assertEqual(res['fields'], {})
+        self.cfg.is_active = True
+
+    # ---------------------------------------------------- §6.2 vision contract
+    def test_02_vision_contract_and_retry(self):
+        raw = ('```json\n{"doc_kind": "confirmation_letter", "fields": '
+               '{"x_account_number": {"value": "123456789012", "confidence": 0.95},'
+               ' "x_bank_name": {"value": "Vietcombank", "confidence": 0.9}}}\n```')
+        req = self._request()
+        with patch(_GP, return_value=_FakeProvider(raw=raw)):
+            req.action_run_ocr()
+        self.assertEqual(req.ocr_state, 'done')
+        self.assertEqual(req.x_account_number, '123456789012')
+        conf = json.loads(req.confidence_json)
+        self.assertAlmostEqual(conf['x_account_number'], 0.95, places=2)
+
+        # malformed JSON → failed job; cron re-attempts, capped at 3
+        req2 = self._request()
+        with patch(_GP, return_value=_FakeProvider(raw='not json at all')):
+            req2.action_run_ocr()
+            self.assertEqual(req2.ocr_state, 'failed')
+            job = self.env['biz.doc.ocr.job'].search(
+                [('res_model', '=', req2._name), ('res_id', '=', req2.id)], limit=1)
+            self.assertEqual(job.state, 'failed')
+            for _i in range(5):
+                self.env['biz.doc.ocr.job'].cron_retry()
+        self.assertEqual(job.attempts, 3)  # never past the cap
+
+    # ---------------------------------------------------- §6.3 tesseract path
+    def test_03_tesseract_post_processor(self):
+        # exercise the deterministic post-processor over OCR-style prose (the
+        # Tesseract branch leaves fields for it); no binary needed here
+        result = {'fields': {}, 'doc_kind': False, 'provider': 'tesseract',
+                  'raw_text': 'NGAN HANG TMCP NGOAI THUONG VN\n'
+                              'So tai khoan: 0123456789\nChu tai khoan: NGUYEN VAN A',
+                  'error': False}
+        req = self._request()
+        out = req._ocr_post_process(result)
+        self.assertEqual(out['fields']['x_account_number']['value'], '0123456789')
+        self.assertTrue(out.get('resolved_bank_id'))
+        bank = self.env['pb.bank.registry'].browse(out['resolved_bank_id'])
+        self.assertEqual(bank.short_name, 'Vietcombank')
+
+    # ---------------------------------------------------- §6.4 deterministic
+    def test_04_deterministic_layer(self):
+        self.assertEqual(vnd.fold('Nguyễn Văn Á'), 'NGUYEN VAN A')
+        self.assertEqual(vnd.name_similarity('Nguyễn Văn Á', 'NGUYEN VAN A'), 100.0)
+        self.assertLess(vnd.name_similarity('Tran Thi Bich', 'Nguyen Van A'), 60)
+        self.assertEqual(vnd.extract_account_number('ref 12 acct 0123456789 end'),
+                         '0123456789')
+        self.assertTrue(vnd.account_ok('123456789012'))
+        self.assertFalse(vnd.account_ok('12345'))
+        self.assertTrue(vnd.swift_ok('BFTVVNVX'))
+        self.assertFalse(vnd.swift_ok('BFTV1234'))
+
+    # ---------------------------------------------------- §6.5 duplicates
+    def test_05_duplicate_blocks_submit(self):
+        other = self.env['hr.employee'].create({
+            'name': 'Someone Else', 'company_id': self.company.id,
+            'vietnam_bank_name': 'Vietcombank',
+            'vietnam_bank_account_number': '123456789012'})
+        req = self._request()
+        req.write({'x_account_name': 'Nguyễn Văn Á', 'x_bank_name': 'Vietcombank',
+                   'x_account_number': '123456789012'})
+        req.action_validate()
+        self.assertIn(other, req.duplicate_ids)
+        # submit blocked until HR acks the duplicate
+        with self.assertRaises(UserError):
+            req.with_user(self.emp_user).action_submit()
+        req.duplicate_ack = True
+        req.with_user(self.emp_user).action_submit()
+        self.assertEqual(req.state, 'hr_review')
+
+    # ---------------------------------------------------- §6.6 format
+    def test_06_format_validation(self):
+        req = self._request()
+        req.write({'x_account_number': '12345', 'x_account_name': 'Nguyễn Văn Á'})
+        req.action_validate()
+        self.assertFalse(req.v_format_ok)
+        req.write({'x_account_number': '123456789012', 'x_swift': 'BFTVVNVX'})
+        req.action_validate()
+        self.assertTrue(req.v_format_ok)
+        self.assertEqual(req.name_match_band, 'green')  # holder == employee
+
+    # ---------------------------------------------------- §6.7 chain + master
+    def test_07_chain_writes_master_atomically(self):
+        req = self._request()
+        req.write({'x_bank_name': 'Vietcombank', 'x_bank_branch': 'Hoan Kiem',
+                   'x_account_name': 'Nguyễn Văn Á',
+                   'x_account_number': '123456789012'})
+        # draft → hr_review by the owner
+        req.with_user(self.emp_user).action_submit()
+        self.assertEqual(req.state, 'hr_review')
+        # a random user cannot move HR→finance; HR can
+        with self.assertRaises(AccessError):
+            req.with_user(self.emp_user).action_hr_approve()
+        req.with_user(self.hr_user).action_hr_approve()
+        self.assertEqual(req.state, 'finance_review')
+        # HR (no finance group) cannot finance-approve; finance can
+        with self.assertRaises(AccessError):
+            req.with_user(self.hr_user).action_finance_approve()
+        req.with_user(self.fin_user).action_finance_approve()
+        self.assertEqual(req.state, 'approved')
+        # master updated + exactly ONE ocr_request history row
+        self.emp.invalidate_recordset()
+        self.assertEqual(self.emp.vietnam_bank_account_number, '123456789012')
+        self.assertEqual(self.emp.vietnam_bank_name, 'Vietcombank')
+        hist = self.env['pb.employee.bank.history'].search([
+            ('request_id', '=', req.id)])
+        self.assertEqual(len(hist), 1)
+        self.assertEqual(hist.change_source, 'ocr_request')
+
+    def test_07b_refuse_leaves_master_untouched(self):
+        self.emp.vietnam_bank_account_number = '999999999999'
+        req = self._request()
+        req.write({'x_account_name': 'Nguyễn Văn Á', 'x_account_number': '111122223333'})
+        req.with_user(self.emp_user).action_submit()
+        req.with_user(self.hr_user).action_refuse_chain(note='not clear')
+        self.assertEqual(req.state, 'refused')
+        self.emp.invalidate_recordset()
+        self.assertEqual(self.emp.vietnam_bank_account_number, '999999999999')
+
+    # ---------------------------------------------------- §6.8 manual audit
+    def test_08_manual_edit_logged(self):
+        emp = self.env['hr.employee'].create({
+            'name': 'Manual Guy', 'company_id': self.company.id})
+        emp.write({'vietnam_bank_account_number': '5555666677'})
+        rows = self.env['pb.employee.bank.history'].search([
+            ('employee_id', '=', emp.id)])
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows.change_source, 'manual')
+        self.assertEqual(rows.new_account_number, '5555666677')
+        # a non-bank write logs nothing
+        emp.write({'name': 'Renamed'})
+        self.assertEqual(len(self.env['pb.employee.bank.history'].search(
+            [('employee_id', '=', emp.id)])), 1)
+
+    # ---------------------------------------------------- §6.10 insights safe
+    def test_10_insights_factory_unchanged(self):
+        from odoo.addons.pb_payroll_ai_insights.ai_providers.provider_factory import (
+            PROVIDER_REGISTRY, get_provider)
+        from odoo.addons.pb_payroll_ai_insights.ai_providers.openai_provider import (
+            OpenAIProvider)
+        self.assertIs(PROVIDER_REGISTRY['openai'], OpenAIProvider)
+        prov = get_provider('openai', {'api_key': 'x'})
+        self.assertIsInstance(prov, OpenAIProvider)
+        # the three new providers are registered and vision-capable
+        for key in ('anthropic', 'ollama', 'tesseract'):
+            self.assertIn(key, PROVIDER_REGISTRY)

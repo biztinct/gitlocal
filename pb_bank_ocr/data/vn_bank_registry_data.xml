@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Vietnam bank registry — the deterministic normalization dictionary.
+         Editable: aliases feed the folded containment match. -->
+    <record id="bank_vcb" model="pb.bank.registry">
+        <field name="name">Joint Stock Commercial Bank for Foreign Trade of Vietnam</field>
+        <field name="short_name">Vietcombank</field>
+        <field name="swift_prefix">BFTV</field>
+        <field name="aliases">VCB,Vietcombank,Ngan hang Ngoai thuong,Ngoai thuong Viet Nam,NH Ngoai thuong</field>
+    </record>
+    <record id="bank_tcb" model="pb.bank.registry">
+        <field name="name">Vietnam Technological and Commercial Joint Stock Bank</field>
+        <field name="short_name">Techcombank</field>
+        <field name="swift_prefix">VTCB</field>
+        <field name="aliases">TCB,Techcombank,Ky thuong,NH Ky thuong</field>
+    </record>
+    <record id="bank_bidv" model="pb.bank.registry">
+        <field name="name">Bank for Investment and Development of Vietnam</field>
+        <field name="short_name">BIDV</field>
+        <field name="swift_prefix">BIDV</field>
+        <field name="aliases">BIDV,Dau tu va Phat trien,Ngan hang Dau tu</field>
+    </record>
+    <record id="bank_ctg" model="pb.bank.registry">
+        <field name="name">Vietnam Joint Stock Commercial Bank for Industry and Trade</field>
+        <field name="short_name">VietinBank</field>
+        <field name="swift_prefix">ICBV</field>
+        <field name="aliases">CTG,VietinBank,Cong thuong,NH Cong thuong</field>
+    </record>
+    <record id="bank_acb" model="pb.bank.registry">
+        <field name="name">Asia Commercial Bank</field>
+        <field name="short_name">ACB</field>
+        <field name="swift_prefix">ASCB</field>
+        <field name="aliases">ACB,A Chau,Ngan hang A Chau</field>
+    </record>
+    <record id="bank_mb" model="pb.bank.registry">
+        <field name="name">Military Commercial Joint Stock Bank</field>
+        <field name="short_name">MB Bank</field>
+        <field name="swift_prefix">MSCB</field>
+        <field name="aliases">MB,MBBank,MB Bank,Quan doi,Ngan hang Quan doi</field>
+    </record>
+    <record id="bank_agribank" model="pb.bank.registry">
+        <field name="name">Vietnam Bank for Agriculture and Rural Development</field>
+        <field name="short_name">Agribank</field>
+        <field name="swift_prefix">VBAA</field>
+        <field name="aliases">Agribank,Nong nghiep,Nong nghiep va Phat trien Nong thon</field>
+    </record>
+    <record id="bank_vpbank" model="pb.bank.registry">
+        <field name="name">Vietnam Prosperity Joint Stock Commercial Bank</field>
+        <field name="short_name">VPBank</field>
+        <field name="swift_prefix">VPBK</field>
+        <field name="aliases">VPB,VPBank,Viet Nam Thinh Vuong</field>
+    </record>
+    <record id="bank_sacombank" model="pb.bank.registry">
+        <field name="name">Saigon Thuong Tin Commercial Joint Stock Bank</field>
+        <field name="short_name">Sacombank</field>
+        <field name="swift_prefix">SGTT</field>
+        <field name="aliases">STB,Sacombank,Sai Gon Thuong Tin</field>
+    </record>
+    <record id="bank_tpbank" model="pb.bank.registry">
+        <field name="name">Tien Phong Commercial Joint Stock Bank</field>
+        <field name="short_name">TPBank</field>
+        <field name="swift_prefix">TPBV</field>
+        <field name="aliases">TPB,TPBank,Tien Phong</field>
+    </record>
+    <record id="bank_shb" model="pb.bank.registry">
+        <field name="name">Saigon Hanoi Commercial Joint Stock Bank</field>
+        <field name="short_name">SHB</field>
+        <field name="swift_prefix">SHBA</field>
+        <field name="aliases">SHB,Sai Gon Ha Noi</field>
+    </record>
+    <record id="bank_hdbank" model="pb.bank.registry">
+        <field name="name">Ho Chi Minh City Development Joint Stock Commercial Bank</field>
+        <field name="short_name">HDBank</field>
+        <field name="swift_prefix">HDBC</field>
+        <field name="aliases">HDB,HDBank,Phat trien TP HCM</field>
+    </record>
+    <record id="bank_ocb" model="pb.bank.registry">
+        <field name="name">Orient Commercial Joint Stock Bank</field>
+        <field name="short_name">OCB</field>
+        <field name="swift_prefix">ORCO</field>
+        <field name="aliases">OCB,Phuong Dong</field>
+    </record>
+    <record id="bank_seabank" model="pb.bank.registry">
+        <field name="name">Southeast Asia Commercial Joint Stock Bank</field>
+        <field name="short_name">SeABank</field>
+        <field name="swift_prefix">SEAV</field>
+        <field name="aliases">SeABank,Dong Nam A</field>
+    </record>
+    <record id="bank_vib" model="pb.bank.registry">
+        <field name="name">Vietnam International Commercial Joint Stock Bank</field>
+        <field name="short_name">VIB</field>
+        <field name="swift_prefix">VNIB</field>
+        <field name="aliases">VIB,Quoc te,Ngan hang Quoc te</field>
+    </record>
+    <record id="bank_eximbank" model="pb.bank.registry">
+        <field name="name">Vietnam Export Import Commercial Joint Stock Bank</field>
+        <field name="short_name">Eximbank</field>
+        <field name="swift_prefix">EBVI</field>
+        <field name="aliases">EIB,Eximbank,Xuat nhap khau</field>
+    </record>
+    <record id="bank_msb" model="pb.bank.registry">
+        <field name="name">Vietnam Maritime Commercial Joint Stock Bank</field>
+        <field name="short_name">MSB</field>
+        <field name="swift_prefix">MCOB</field>
+        <field name="aliases">MSB,Hang Hai,Maritime Bank</field>
+    </record>
+    <record id="bank_lpbank" model="pb.bank.registry">
+        <field name="name">Loc Phat Vietnam Joint Stock Commercial Bank</field>
+        <field name="short_name">LPBank</field>
+        <field name="swift_prefix">LVBK</field>
+        <field name="aliases">LPB,LPBank,Loc Phat,LienVietPostBank,Buu dien Lien Viet</field>
+    </record>
+    <record id="bank_pvcombank" model="pb.bank.registry">
+        <field name="name">Vietnam Public Joint Stock Commercial Bank</field>
+        <field name="short_name">PVcomBank</field>
+        <field name="swift_prefix">WBVN</field>
+        <field name="aliases">PVcomBank,PVCB,Dai chung</field>
+    </record>
+    <record id="bank_bacabank" model="pb.bank.registry">
+        <field name="name">Bac A Commercial Joint Stock Bank</field>
+        <field name="short_name">BacABank</field>
+        <field name="swift_prefix">NASC</field>
+        <field name="aliases">BacABank,Bac A</field>
+    </record>
+    <record id="bank_namabank" model="pb.bank.registry">
+        <field name="name">Nam A Commercial Joint Stock Bank</field>
+        <field name="short_name">NamABank</field>
+        <field name="swift_prefix">NAMA</field>
+        <field name="aliases">NamABank,Nam A</field>
+    </record>
+    <record id="bank_abbank" model="pb.bank.registry">
+        <field name="name">An Binh Commercial Joint Stock Bank</field>
+        <field name="short_name">ABBank</field>
+        <field name="swift_prefix">ABBK</field>
+        <field name="aliases">ABBank,An Binh</field>
+    </record>
+    <record id="bank_vietabank" model="pb.bank.registry">
+        <field name="name">Vietnam Asia Commercial Joint Stock Bank</field>
+        <field name="short_name">VietABank</field>
+        <field name="swift_prefix">VNACB</field>
+        <field name="aliases">VietABank,Viet A</field>
+    </record>
+    <record id="bank_kienlongbank" model="pb.bank.registry">
+        <field name="name">Kien Long Commercial Joint Stock Bank</field>
+        <field name="short_name">KienlongBank</field>
+        <field name="swift_prefix">KLBK</field>
+        <field name="aliases">KienlongBank,Kien Long</field>
+    </record>
+    <record id="bank_ncb" model="pb.bank.registry">
+        <field name="name">National Citizen Commercial Joint Stock Bank</field>
+        <field name="short_name">NCB</field>
+        <field name="swift_prefix">NVBA</field>
+        <field name="aliases">NCB,Quoc Dan</field>
+    </record>
+    <record id="bank_pgbank" model="pb.bank.registry">
+        <field name="name">Prosperity and Growth Commercial Joint Stock Bank</field>
+        <field name="short_name">PGBank</field>
+        <field name="swift_prefix">PGBL</field>
+        <field name="aliases">PGBank,Xang dau Petrolimex</field>
+    </record>
+    <record id="bank_saigonbank" model="pb.bank.registry">
+        <field name="name">Saigon Bank for Industry and Trade</field>
+        <field name="short_name">SaigonBank</field>
+        <field name="swift_prefix">SBITVN</field>
+        <field name="aliases">SaigonBank,Sai Gon Cong Thuong</field>
+    </record>
+    <record id="bank_scb" model="pb.bank.registry">
+        <field name="name">Saigon Commercial Bank</field>
+        <field name="short_name">SCB</field>
+        <field name="swift_prefix">SACL</field>
+        <field name="aliases">SCB,Sai Gon</field>
+    </record>
+    <record id="bank_dongabank" model="pb.bank.registry">
+        <field name="name">Dong A Commercial Joint Stock Bank</field>
+        <field name="short_name">DongABank</field>
+        <field name="swift_prefix">EACB</field>
+        <field name="aliases">DongABank,Dong A</field>
+    </record>
+    <record id="bank_baovietbank" model="pb.bank.registry">
+        <field name="name">Bao Viet Joint Stock Commercial Bank</field>
+        <field name="short_name">BaoVietBank</field>
+        <field name="swift_prefix">BVBV</field>
+        <field name="aliases">BaoVietBank,Bao Viet</field>
+    </record>
+    <record id="bank_vietbank" model="pb.bank.registry">
+        <field name="name">Vietnam Thuong Tin Commercial Joint Stock Bank</field>
+        <field name="short_name">VietBank</field>
+        <field name="swift_prefix">VNTT</field>
+        <field name="aliases">VietBank,Viet Nam Thuong Tin</field>
+    </record>
+    <record id="bank_cimb" model="pb.bank.registry">
+        <field name="name">CIMB Bank Vietnam</field>
+        <field name="short_name">CIMB VN</field>
+        <field name="swift_prefix">CIBB</field>
+        <field name="aliases">CIMB</field>
+    </record>
+    <record id="bank_uob" model="pb.bank.registry">
+        <field name="name">United Overseas Bank Vietnam</field>
+        <field name="short_name">UOB VN</field>
+        <field name="swift_prefix">UOVB</field>
+        <field name="aliases">UOB</field>
+    </record>
+    <record id="bank_shinhan" model="pb.bank.registry">
+        <field name="name">Shinhan Bank Vietnam</field>
+        <field name="short_name">Shinhan VN</field>
+        <field name="swift_prefix">SHBK</field>
+        <field name="aliases">Shinhan</field>
+    </record>
+    <record id="bank_woori" model="pb.bank.registry">
+        <field name="name">Woori Bank Vietnam</field>
+        <field name="short_name">Woori VN</field>
+        <field name="swift_prefix">HVBK</field>
+        <field name="aliases">Woori</field>
+    </record>
+    <record id="bank_hsbc" model="pb.bank.registry">
+        <field name="name">HSBC Bank Vietnam</field>
+        <field name="short_name">HSBC VN</field>
+        <field name="swift_prefix">HSBC</field>
+        <field name="aliases">HSBC</field>
+    </record>
+    <record id="bank_publicbank" model="pb.bank.registry">
+        <field name="name">Public Bank Vietnam</field>
+        <field name="short_name">Public Bank VN</field>
+        <field name="swift_prefix">VIDP</field>
+        <field name="aliases">Public Bank</field>
+    </record>
+    <record id="bank_cbbank" model="pb.bank.registry">
+        <field name="name">Construction Commercial One Member Limited Liability Bank</field>
+        <field name="short_name">CBBank</field>
+        <field name="swift_prefix">GTBA</field>
+        <field name="aliases">CBBank,Xay dung</field>
+    </record>
+    <record id="bank_gpbank" model="pb.bank.registry">
+        <field name="name">Global Petro Commercial One Member Limited Liability Bank</field>
+        <field name="short_name">GPBank</field>
+        <field name="swift_prefix">GBNK</field>
+        <field name="aliases">GPBank,Dau khi Toan cau</field>
+    </record>
+    <record id="bank_oceanbank" model="pb.bank.registry">
+        <field name="name">Ocean Commercial One Member Limited Liability Bank</field>
+        <field name="short_name">OceanBank</field>
+        <field name="swift_prefix">OJBA</field>
+        <field name="aliases">OceanBank,Dai Duong</field>
+    </record>
+</odoo>

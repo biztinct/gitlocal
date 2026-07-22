@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Company scoping (global — AND'd with every group rule) -->
+    <record id="bcr_rule_company" model="ir.rule">
+        <field name="name">Bank request: company</field>
+        <field name="model_id" ref="model_pb_bank_change_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- A plain internal user sees/edits only their OWN requests -->
+    <record id="bcr_rule_user_own" model="ir.rule">
+        <field name="name">Bank request: own</field>
+        <field name="model_id" ref="model_pb_bank_change_request"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- HR / finance reviewers see all company requests -->
+    <record id="bcr_rule_reviewers_all" model="ir.rule">
+        <field name="name">Bank request: reviewers (all)</field>
+        <field name="model_id" ref="model_pb_bank_change_request"/>
+        <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user')), (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- History: own rows visible to the employee; HR/finance see all -->
+    <record id="bank_hist_rule_user_own" model="ir.rule">
+        <field name="name">Bank history: own</field>
+        <field name="model_id" ref="model_pb_employee_bank_history"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+    </record>
+    <record id="bank_hist_rule_reviewers_all" model="ir.rule">
+        <field name="name">Bank history: reviewers (all)</field>
+        <field name="model_id" ref="model_pb_employee_bank_history"/>
+        <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user')), (4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+    </record>
+</odoo>
