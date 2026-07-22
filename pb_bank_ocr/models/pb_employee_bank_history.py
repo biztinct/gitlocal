@@ -12,6 +12,11 @@ from odoo import api, fields, models
 _BANK_FIELDS = ('vietnam_bank_name', 'vietnam_bank_branch',
                 'vietnam_bank_account_name', 'vietnam_bank_account_number')
 
+# C18.24: the audit skip must not be forgeable — a client can send
+# {'from_bank_request': true} in the call_kw context, but only server code can
+# put THIS object in it. A forged truthy flag still logs a 'manual' row.
+_BANK_AUDIT_TOKEN = object()
+
 
 class PbEmployeeBankHistory(models.Model):
     _name = 'pb.employee.bank.history'
@@ -49,9 +54,10 @@ class HrEmployeeBankAudit(models.Model):
 
     def write(self, vals):
         touched = [f for f in _BANK_FIELDS if f in vals]
-        # The approval path writes with from_bank_request=True and logs its own
+        # The approval path writes with the sentinel token and logs its own
         # 'ocr_request' row — skip the manual audit there to avoid double rows.
-        if not touched or self.env.context.get('from_bank_request'):
+        if (not touched or self.env.context.get('from_bank_request')
+                is _BANK_AUDIT_TOKEN):
             return super().write(vals)
 
         before = {rec.id: {f: rec[f] for f in _BANK_FIELDS} for rec in self}

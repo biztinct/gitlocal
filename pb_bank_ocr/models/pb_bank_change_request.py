@@ -14,8 +14,9 @@ import json
 import logging
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
+from .pb_employee_bank_history import _BANK_AUDIT_TOKEN
 from .vn_bank_dictionary import (
     fold, name_similarity, extract_account_number, swift_ok, account_ok,
 )
@@ -34,6 +35,26 @@ _MASTER_FIELDS = (
     ('x_account_name', 'vietnam_bank_account_name'),
     ('x_account_number', 'vietnam_bank_account_number'),
 )
+
+# C18.24: readonly=True does NOT block call_kw writes, and the approvers
+# approve exactly what these fields show — every system-derived field is
+# sentinel-gated (a Python object() identity a JSON client cannot forge).
+_BANK_SYS_TOKEN = object()
+
+# System-computed: writable only via _sys_write (or su / admin).
+_SYS_FIELDS = frozenset({
+    'name', 'ocr_state', 'ocr_provider', 'ocr_raw', 'confidence_json',
+    'cur_bank_name', 'cur_bank_branch', 'cur_account_name',
+    'cur_account_number', 'v_format_ok', 'v_format_msg', 'name_match_score',
+    'name_match_band', 'duplicate_ids', 'resolved_bank_id',
+})
+# What the approvers review: frozen to the owner once the request leaves
+# draft (HR/finance may still correct the extraction during review), and
+# immutable for everyone once decided.
+_REVIEW_FIELDS = frozenset({
+    'x_bank_name', 'x_bank_branch', 'x_account_name', 'x_account_number',
+    'x_iban', 'x_swift', 'doc_kind', 'attachment_id', 'employee_id',
+})
 
 
 class PbBankChangeRequest(models.Model):
@@ -153,7 +174,45 @@ class PbBankChangeRequest(models.Model):
                 continue
         return False
 
-    def _approval_can(self, from_state, to_state):
+    def _is_reviewer(self):
+        return self._user_in_any(
+            (_HR_GROUP, 'hr.group_hr_user') + _FINANCE_GROUPS)
+
+    # --------------------------------------------- forgery rails (C18.24)
+    def _sys_allowed(self):
+        return (self.env.su or self.env.user._is_admin()
+                or self.env.context.get('bank_sys_write') is _BANK_SYS_TOKEN)
+
+    def _sys_write(self, vals):
+        return self.with_context(bank_sys_write=_BANK_SYS_TOKEN).write(vals)
+
+    def write(self, vals):
+        if not self._sys_allowed():
+            forged = _SYS_FIELDS.intersection(vals)
+            if forged:
+                raise AccessError(_(
+                    "The verification results of a bank change request are "
+                    "system-computed and cannot be edited: %s.",
+                    ', '.join(sorted(forged))))
+            if 'duplicate_ack' in vals and not self._is_reviewer():
+                raise AccessError(_(
+                    "Only HR or Finance can confirm a duplicate account."))
+            touched = _REVIEW_FIELDS.intersection(vals)
+            if touched:
+                is_reviewer = self._is_reviewer()
+                for rec in self:
+                    if rec.state in ('approved', 'refused'):
+                        raise AccessError(_(
+                            "A decided bank change request is immutable."))
+                    if rec.state != 'draft' and not is_reviewer:
+                        raise AccessError(_(
+                            "This request is under review — only HR or Finance "
+                            "may edit the submitted details now."))
+                    if ('employee_id' in vals and not is_reviewer
+                            and rec.employee_id.id != vals['employee_id']):
+                        raise AccessError(_(
+                            "Only HR can re-target a bank change request."))
+        return super().write(vals)
         self.ensure_one()
         if self.env.su or self.env.user._is_admin():
             return True
@@ -186,6 +245,19 @@ class PbBankChangeRequest(models.Model):
                     "'Duplicate Verified' before this request can be submitted."))
             if not rec.x_account_number:
                 raise UserError(_("An account number is required to submit."))
+        if to_state == 'approved':
+            # TOCTOU rail: re-derive every advisory against the FINAL field
+            # values, then re-raise the hard gates — the approver must never
+            # apply numbers the validation no longer describes.
+            rec = self.sudo()
+            rec.action_validate()
+            if not account_ok(rec.x_account_number):
+                raise UserError(_(
+                    "The account number must be 6-19 digits before approval."))
+            if rec.duplicate_ids and not rec.duplicate_ack:
+                raise UserError(_(
+                    "This account collides with another employee. HR must tick "
+                    "'Duplicate Verified' before approval."))
 
     def _after_approval_transition(self, to_state):
         if to_state == 'approved':
@@ -226,9 +298,11 @@ class PbBankChangeRequest(models.Model):
             'vietnam_bank_account_number': emp.vietnam_bank_account_number or '',
         }
         new = {emp_field: (self[x_field] or '') for x_field, emp_field in _MASTER_FIELDS}
-        # the context flag routes AROUND the manual-audit override — this path
-        # writes its OWN 'ocr_request' history row (no double-logging)
-        emp.with_context(from_bank_request=True).write(new)
+        # the sentinel routes AROUND the manual-audit override — this path
+        # writes its OWN 'ocr_request' history row (no double-logging). A
+        # client-sent truthy from_bank_request must NOT skip the audit (C18.24),
+        # hence the object() identity, not a boolean.
+        emp.with_context(from_bank_request=_BANK_AUDIT_TOKEN).write(new)
         self.env['pb.employee.bank.history'].sudo().create({
             'employee_id': emp.id,
             'change_source': 'ocr_request',
@@ -300,8 +374,8 @@ class PbBankChangeRequest(models.Model):
     def _biz_doc_ocr_run(self, job):
         """biz.doc.ocr.job hook — extract, apply to x_* fields, return result."""
         self.ensure_one()
-        self.write({'ocr_state': 'running'})
-        res = self.env['biz.doc.ocr'].extract(
+        self._sys_write({'ocr_state': 'running'})
+        res = self.env['biz.doc.ocr']._extract(
             self._ocr_schema(), [self.attachment_id.id],
             post_processor=self._ocr_post_process)
         vals = {
@@ -319,12 +393,14 @@ class PbBankChangeRequest(models.Model):
             vals['doc_kind'] = res['doc_kind']
         failed = bool(res.get('error')) and not res.get('fields')
         vals['ocr_state'] = 'failed' if failed else 'done'
-        self.write(vals)
+        self._sys_write(vals)
         return res
 
     def action_run_ocr(self):
         """Synchronous run with a job wrapper (scan-shimmer covers the wait)."""
         self.ensure_one()
+        if self.state in ('approved', 'refused'):
+            raise UserError(_("A decided request cannot be re-scanned."))
         if not self.attachment_id:
             raise UserError(_("Upload a document first."))
         job = self.env['biz.doc.ocr.job'].create({
@@ -359,18 +435,24 @@ class PbBankChangeRequest(models.Model):
             band = 'green' if score >= 85 else ('amber' if score >= 60 else 'red')
             # duplicate detection: same normalized account + bank on another emp
             dups = rec._find_duplicates(bank)
-            rec.write({
+            vals = {
                 'v_format_ok': ok,
                 'v_format_msg': ' '.join(msgs) or _("All format checks passed."),
                 'name_match_score': score,
                 'name_match_band': band,
                 'resolved_bank_id': bank.id if bank else False,
                 'duplicate_ids': [(6, 0, dups.ids)],
-            })
+            }
+            # an HR ack covers a SPECIFIC duplicate set — a changed set voids it
+            if rec.duplicate_ack and set(dups.ids) != set(rec.duplicate_ids.ids):
+                vals['duplicate_ack'] = False
+            rec._sys_write(vals)
         return True
 
     def _find_duplicates(self, bank):
-        """Other employees sharing this normalized account number (+ bank)."""
+        """Other employees of THIS company sharing the normalized account
+        number (+ bank) — company-scoped so the duplicate card never leaks
+        another company's employees."""
         self.ensure_one()
         digits = ''.join(ch for ch in (self.x_account_number or '') if ch.isdigit())
         if not digits:
@@ -378,6 +460,7 @@ class PbBankChangeRequest(models.Model):
         Emp = self.env['hr.employee'].sudo()
         candidates = Emp.search([
             ('id', '!=', self.employee_id.id),
+            ('company_id', '=', self.company_id.id),
             ('vietnam_bank_account_number', '!=', False),
         ])
         want_bank = fold(bank.short_name) if bank else fold(self.x_bank_name)
@@ -395,7 +478,13 @@ class PbBankChangeRequest(models.Model):
     # ---------------------------------------------------- create / defaults
     @api.model_create_multi
     def create(self, vals_list):
+        sys_ok = self._sys_allowed()
         for vals in vals_list:
+            if not sys_ok:
+                for f in _SYS_FIELDS.intersection(vals):
+                    vals.pop(f)
+                if 'duplicate_ack' in vals and not self._is_reviewer():
+                    vals.pop('duplicate_ack')
             if not vals.get('name') or vals['name'] == _('New'):
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'pb.bank.change.request') or _('New')

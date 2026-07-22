@@ -107,6 +107,8 @@ class PbBankOcr(models.AbstractModel):
 
     @api.model
     def test_provider(self):
+        if not (self._is_hr() or self._is_finance()):
+            raise AccessError(_("Only HR or Finance can test the OCR provider."))
         cfg = self.env['payroll.ai.config'].get_config_for_purpose('doc_ocr')
         if not cfg:
             return {'success': False, 'message': _('No OCR provider configured.')}
@@ -148,8 +150,10 @@ class PbBankOcr(models.AbstractModel):
     def save_fields(self, request_id, vals):
         req = self._req(request_id)
         allowed = {'x_bank_name', 'x_bank_branch', 'x_account_name',
-                   'x_account_number', 'x_iban', 'x_swift', 'doc_kind',
-                   'duplicate_ack'}
+                   'x_account_number', 'x_iban', 'x_swift', 'doc_kind'}
+        # the duplicate ack is HR/finance testimony, never the requester's
+        if self._is_hr() or self._is_finance():
+            allowed.add('duplicate_ack')
         req.write({k: v for k, v in (vals or {}).items() if k in allowed})
         return {'ok': True}
 
