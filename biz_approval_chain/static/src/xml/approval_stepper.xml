@@ -42,7 +42,7 @@
           <circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>
         </svg>
         <div class="bac-refusal__body">
-          <span class="bac-refusal__title" t-esc="refusal and refusal.to_state === 'cancelled' ? 'Cancelled' : 'Refused'"/>
+          <span class="bac-refusal__title" t-esc="refusalTitle"/>
           <span class="bac-refusal__meta" t-if="refusal and refusal.user">
             <t t-esc="refusal.user"/> · <t t-esc="fmtStamp(refusal.stamp)"/>
           </span>
