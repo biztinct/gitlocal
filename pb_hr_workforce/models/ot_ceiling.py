@@ -29,15 +29,19 @@ class PbOtCeiling(models.Model):
     @api.model
     def _for_company(self, company):
         """Resolve the ceiling config for a company (company-specific first,
-        then a global fallback, then a transient default record)."""
-        rec = self.search([
-            ('active', '=', True),
-            '|', ('company_id', '=', company.id), ('company_id', '=', False),
-        ], order='company_id desc', limit=1)
-        if rec:
-            return rec
+        then a global fallback, then a transient default record).
+
+        Two explicit searches — NOT one ``order='company_id desc'`` search:
+        Postgres sorts NULLs FIRST on DESC, so a single ordered query returns the
+        GLOBAL (company_id NULL) row ahead of a company-specific one, silently
+        giving every company the fallback caps (caught by the F8 per-company
+        ceiling test)."""
+        base = [('active', '=', True)]
+        rec = self.search(base + [('company_id', '=', company.id)], limit=1)
+        if not rec:
+            rec = self.search(base + [('company_id', '=', False)], limit=1)
         # never None: hand back a NewId with the field defaults
-        return self.new({})
+        return rec or self.new({})
 
 
 class HrEmployeeOtSector(models.Model):
