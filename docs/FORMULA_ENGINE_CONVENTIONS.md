@@ -526,7 +526,19 @@ number from the handovers — keep the numbering stable.
 17. **Concurrency/stale tokens must be MICROSECOND-precise.** A per-cell snapshot token from
     `fields.Datetime.to_string(write_date)` is SECOND precision (the C14 trap in another guise), so a
     fetch+edit inside the same wall-clock second slips past stale detection. Use `str(write_date)` (keeps
-    microseconds) for the token compared on save (`_att_token`).
+    microseconds) for the token compared on save (`_att_token`). AND the comparison must be
+    unconditional: `if token and token != current` lets an EMPTY token (cell had no record at fetch) or an
+    omitted key bypass the check entirely — a record created concurrently then gets silently mutated
+    (Phase-B review F5). Compare `(token or '') != current` so "no record at fetch, record exists now" is
+    stale too.
+    **Companion rail (review F1/F2): every RPC facade must keep its reads and writes in ONE permission
+    world.** The weekentry cockpit wrote via `sudo()` (gated by `_require_officer` + company scope) while
+    reading WITHOUT sudo — but the officer record rule on `hr.overtime.request` is own-records-only, so a
+    plain officer saw blank editable chips over other people's locked requests, zeroed ceilings, and
+    `submit_week` couldn't find the drafts its own sudo path created. Same trap in the payroll bridge: a
+    non-sudo `hr.overtime.request` search inside `_get_formula_input_values` silently computed **0 OT
+    hours** for every other employee when a non-manager ran payroll (money path). If the facade gate is
+    the auth model, sudo BOTH sides; never mix.
 18. **Company-scoped OWL cockpits render EVERY selected company** (the read side of C18.11). The grid shows
     company-1 "Your Company" demo employees (Abigail Peterson &c., English names sorting first under
     `order='name'`) alongside VN whenever the browser's `cids` cookie has more than the VN company selected.
