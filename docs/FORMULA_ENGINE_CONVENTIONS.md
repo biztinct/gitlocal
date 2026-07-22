@@ -598,3 +598,37 @@ number from the handovers — keep the numbering stable.
     `attachment.copy()` in the authorization hook raises AccessError mid-transition (works in tests, which
     create receipt and approve as the same superuser env). `pb_trip_expense_bridge` sudo's the copy and the
     line-link writes (the line is rail-2-locked by then).
+
+### Phase-D findings (AI bank-account validation — 2026-07-22, WP-Sudima-D). Numbering continues C18.
+
+26. **`res.users.employee_id` is COMPANY-DEPENDENT — a cockpit that defaults to it fails cross-company.**
+    `self.env.user.employee_id` resolves through the user's *active* company (the `cids`/`allowed_company_ids`
+    context), so a create that defaults `employee_id = self.env.user.employee_id.id` returns `False` — and
+    raises "No employee is linked to your user." — whenever the browser is in a company where the user has no
+    employee (Mitchell Admin's employee lives in "Your Company"/1; the web client opened company 2). Same
+    root as C18.11. Pass `allowed_company_ids` explicitly, or resolve the employee with `active_test`/company
+    context, before relying on `env.user.employee_id`.
+27. **An own-only CREATE record rule blocks create-on-behalf; reviewer groups need their own create grant.**
+    `pb.bank.change.request`'s employee rule is `perm_create` with `employee_id.user_id = user.id`, and the
+    HR/finance reviewer rules ship `perm_create=False` (least privilege). Net effect: the request must be
+    created by the EMPLOYEE themself — HR cannot upload on an employee's behalf, and even a payroll-manager
+    (who holds the ACL create) is blocked by the row rule for another employee's record. This is the intended
+    self-serve flow (handover §3.3), but any "HR uploads for the worker" variant needs an explicit
+    create rule keyed to the reviewer groups.
+28. **Deterministic bank-name matching must be token-SUBSET, not substring.** A real VN document reads
+    "NGAN HANG TMCP NGOAI THUONG VIET NAM"; the registry alias "Ngan hang Ngoai thuong" is NOT a contiguous
+    substring (the interposed "TMCP" breaks it), so a `folded_alias in folded_target` test returns no match.
+    `pb.bank.registry.match` folds + splits into word tokens and matches when ALL alias tokens are present in
+    the target set (most-letters-matched wins) — order-independent and robust to interposed legal-form words.
+    Whitespace tokenization keeps "SAIGON" distinct from "SAI GON" so short aliases don't over-match.
+29. **`payroll.ai.config` resolver name collision.** The handover asked for an `@api.model get_provider(purpose)`
+    returning a *config*, but the module already has an instance `get_provider()` returning a *provider*. Adding
+    the classmethod would shadow the existing insights call path. Named the resolver `get_config_for_purpose`
+    instead (insights byte-untouched). Rule: never overload an existing provider-layer method name with a
+    different return type; pick a distinct name and note the deviation.
+30. **`pytesseract` (pip) ≠ the `tesseract` binary (apt).** `is_available()` must probe the binary
+    (`get_tesseract_version()` in a try/except), not just the import — the pip package installs cleanly while
+    `tesseract` is absent from PATH, and only the binary probe distinguishes "provider ready" from
+    "keyless-but-unusable" on the settings card (C18.6 guarded-import doctrine, extended to the runtime).
+    Provider PDF handling: Anthropic reads PDFs natively (`accepts_pdf()==True`); OpenAI / Ollama / Tesseract
+    gate PDFs on `accepts_pdf()==False` and return a clear "upload an image" message rather than half-working.
