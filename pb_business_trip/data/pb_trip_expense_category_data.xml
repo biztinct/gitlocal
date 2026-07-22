@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cat_lodging" model="pb.trip.expense.category">
+        <field name="name">Lodging</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="cat_transport" model="pb.trip.expense.category">
+        <field name="name">Transport</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="cat_meals" model="pb.trip.expense.category">
+        <field name="name">Meals</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="cat_other" model="pb.trip.expense.category">
+        <field name="name">Other</field>
+        <field name="sequence">40</field>
+    </record>
+</odoo>

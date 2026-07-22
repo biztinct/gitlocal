@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WORKFORCE › Business Trips (after Weekly Entry, seq 35) -->
+    <record id="item_wf_trips" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Business Trips</field>
+        <field name="icon">plane</field>
+        <field name="sequence">37</field>
+        <field name="action_xmlid">pb_business_trip.action_pb_trips</field>
+        <field name="action_tag">pb_trips</field>
+        <field name="match_action_tags">pb_trips</field>
+    </record>
+</odoo>
