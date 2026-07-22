@@ -15,12 +15,27 @@ import { WeekGrid } from "@biz_week_grid/js/week_grid";
 const MODEL = "hr.attendance.weekentry";
 const OT_TYPES = ["weekday", "weekend", "holiday", "night"];
 
+// Local-date helpers. NEVER round-trip a wall-clock day through toISOString()
+// — that converts to UTC and slips the date in any non-UTC timezone (a Monday
+// picked at 06:00 in UTC+7 serializes to the previous Sunday, fetching the
+// wrong week). Format and parse using LOCAL date parts so the week the officer
+// sees is the week the server is asked for.
+function isoLocal(dt) {
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, "0");
+    const d = String(dt.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+function parseLocal(str) {
+    const [y, m, d] = String(str).split("-").map(Number);
+    return new Date(y, (m || 1) - 1, d || 1);
+}
 function monday(d) {
-    const dt = new Date(d);
+    const dt = d instanceof Date ? new Date(d) : parseLocal(d);
     const day = dt.getDay();
     const diff = dt.getDate() - day + (day === 0 ? -6 : 1);
-    const m = new Date(dt.setDate(diff));
-    return m.toISOString().slice(0, 10);
+    dt.setDate(diff);
+    return isoLocal(dt);
 }
 
 export class AttendanceWeekGrid extends Component {
@@ -53,7 +68,7 @@ export class AttendanceWeekGrid extends Component {
         this._tokenMap = {};   // "empId|dayISO" -> attendance write_date token
         this._lastDeltaStr = "{}";
         this._bootstrap = null; // payload pre-fetched by the cockpit for the child's first load
-        this._monthKey = new Date().toISOString().slice(0, 7);
+        this._monthKey = isoLocal(new Date()).slice(0, 7);
         this._yearKey = String(new Date().getFullYear());
 
         // adapter bridges the generic grid to the weekentry RPCs. The FIRST call
@@ -66,7 +81,11 @@ export class AttendanceWeekGrid extends Component {
                 return this._doFetch();
             },
             save: (payload) => this._save(payload),
-            validate: (cell) => this._validate(cell),
+            // No client-side validate hook: precise per-cell cap warnings would
+            // need the grid's per-cell edit ledger duplicated here, and the two
+            // authoritative cap surfaces already cover it — the live rail bars
+            // (aggregate, reactive) and the save-time month+year over-cap
+            // confirm. The server re-validates every write regardless (rail 1).
         };
         // STABLE prop references — passing fresh inline arrows / {} each render
         // makes OWL treat the child's props as changed every time and recreate
@@ -97,6 +116,12 @@ export class AttendanceWeekGrid extends Component {
         return `${this.state.weekStart}|${this.state.departmentId || ""}|${this.state.reloadNonce}`;
     }
 
+    // translatable empty-state text handed to the generic <WeekGrid/> (a plain
+    // string prop, so it must come through _t here rather than the template).
+    get emptyText() {
+        return _t("No employees with entries this week — adjust the department or week.");
+    }
+
     async _doFetch() {
         const data = await this._rpc("get_week_entries", [
             this.state.weekStart, this.state.departmentId || false, false,
@@ -110,7 +135,7 @@ export class AttendanceWeekGrid extends Component {
         this._lastDeltaStr = "{}";
         this._rowsById = {};
         this._tokenMap = {};
-        this._monthKey = new Date().toISOString().slice(0, 7);  // ceiling reflects current month
+        this._monthKey = isoLocal(new Date()).slice(0, 7);  // ceiling reflects current month
         for (const row of data.rows || []) {
             this._rowsById[row.id] = { label: row.label, sublabel: row.sublabel };
             for (const [iso, cell] of Object.entries(row.cells || {})) {
@@ -139,8 +164,11 @@ export class AttendanceWeekGrid extends Component {
         // ceiling over-cap confirm before committing OT that breaches a cap (rail 5)
         const breach = this._overCapAfterSave();
         if (breach) {
-            const msg = breach.name + " " + _t("exceeds the monthly overtime cap of")
-                + " " + breach.cap + " h. " + _t("Submit anyway?");
+            const msg = breach.kind === "year"
+                ? _t("%(name)s exceeds the annual overtime cap of %(cap)s h. Submit anyway?",
+                     { name: breach.name, cap: breach.cap })
+                : _t("%(name)s exceeds the monthly overtime cap of %(cap)s h. Submit anyway?",
+                     { name: breach.name, cap: breach.cap });
             const ok = await this._confirm(msg);
             if (!ok) { return { results: [] }; }  // user cancelled → nothing saved
         }
@@ -160,15 +188,6 @@ export class AttendanceWeekGrid extends Component {
             this.notif.add(_t("Saved."), { type: "success" });
         }
         return res;
-    }
-
-    _validate(cell) {
-        // client-side warn only (server is authoritative). Warn when an OT edit
-        // pushes the employee's live month total past the cap.
-        if (!OT_TYPES.includes(cell.measureKey)) { return { ok: true }; }
-        const base = this.state.ceilings[cell.rowId];
-        if (!base) { return { ok: true }; }
-        return { ok: true };
     }
 
     // -------------------------------------------------------- live ceilings
@@ -217,12 +236,18 @@ export class AttendanceWeekGrid extends Component {
     }
 
     _overCapAfterSave() {
-        // returns {name, cap} if any employee's live month total breaches its cap
+        // returns {name, kind, cap} if any employee's live total breaches its
+        // MONTHLY or ANNUAL cap (the annual cap must gate too — a burst of OT
+        // can clear the month budget yet blow the yearly statutory ceiling).
         for (const [empId, dl] of Object.entries(this.state.liveDelta)) {
-            if (!dl.mtd) { continue; }
+            if (!dl.mtd && !dl.ytd) { continue; }
             const c = this.liveCeiling(empId);
-            if (c.mtd > c.cap_month) {
-                return { name: (this._rowsById[empId] || {}).label || _t("employee"), cap: c.cap_month };
+            const name = (this._rowsById[empId] || {}).label || _t("employee");
+            if (dl.mtd && c.cap_month && c.mtd > c.cap_month) {
+                return { name, kind: "month", cap: c.cap_month };
+            }
+            if (dl.ytd && c.cap_year && c.ytd > c.cap_year) {
+                return { name, kind: "year", cap: c.cap_year };
             }
         }
         return null;
@@ -260,7 +285,7 @@ export class AttendanceWeekGrid extends Component {
 
     // -------------------------------------------------------- toolbar / tray
     _fmtWeek(startISO, endISO) {
-        const s = new Date(startISO), e = new Date(endISO);
+        const s = parseLocal(startISO), e = parseLocal(endISO);
         const o = { day: "numeric", month: "short" };
         return `${s.toLocaleDateString("en-US", o)} – ${e.toLocaleDateString("en-US", o)}, ${e.getFullYear()}`;
     }
@@ -268,9 +293,9 @@ export class AttendanceWeekGrid extends Component {
     nextWeek() { this._shiftWeek(7); }
     goToday() { this.state.weekStart = monday(new Date()); }
     _shiftWeek(days) {
-        const d = new Date(this.state.weekStart);
+        const d = parseLocal(this.state.weekStart);
         d.setDate(d.getDate() + days);
-        this.state.weekStart = d.toISOString().slice(0, 10);
+        this.state.weekStart = isoLocal(d);
     }
     onDeptChange(ev) {
         this.state.departmentId = ev.target.value ? parseInt(ev.target.value) : false;
