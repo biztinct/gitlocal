@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============ Driver group ============ -->
+    <!-- Odoo 19 res.groups has no category_id (replaced by privilege_id); a
+         plain technical group is fine here. -->
+    <record id="group_pb_driver" model="res.groups">
+        <field name="name">Driver</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">Field driver: can check in/out with GPS and stream location
+            pings from the Payobook Driver PWA. No other Payobook access.</field>
+    </record>
+
+    <data noupdate="1">
+
+        <!-- ============ biz.geo.ping record rules ============ -->
+        <!-- Every internal user sees only their OWN pings (append-only: read +
+             create, never write/unlink). The engine ACL grants base.group_user
+             read/create; this rule scopes it to self (spec §3.1). -->
+        <record id="rule_geo_ping_own" model="ir.rule">
+            <field name="name">Geo ping: own only</field>
+            <field name="model_id" ref="biz_geo_tracking.model_biz_geo_ping"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- System administrators manage all pings (GC, debugging, demo
+             seeding). The own-rule above is on base.group_user, which admins
+             also carry — without this escape hatch admins could only create
+             their OWN pings (rules are OR'd, so this broadens, never narrows). -->
+        <record id="rule_geo_ping_system_all" model="ir.rule">
+            <field name="name">Geo ping: system admin all</field>
+            <field name="model_id" ref="biz_geo_tracking.model_biz_geo_ping"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Attendance officers (and up) read ALL pings for the live map. -->
+        <record id="rule_geo_ping_officer_all" model="ir.rule">
+            <field name="name">Geo ping: officers see all</field>
+            <field name="model_id" ref="biz_geo_tracking.model_biz_geo_ping"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_officer'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ============ Driver own-attendance ============ -->
+        <!-- Drivers manage their OWN attendance (check in/out). Scoped to self;
+             no unlink (audit integrity). -->
+        <record id="rule_driver_own_attendance" model="ir.rule">
+            <field name="name">Driver: own attendance</field>
+            <field name="model_id" ref="hr_attendance.model_hr_attendance"/>
+            <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_pb_driver'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

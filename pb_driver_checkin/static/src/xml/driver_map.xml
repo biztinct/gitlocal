@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_driver_checkin.DriverMap">
+    <div class="pbim dm-cockpit">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Loading driver map…</span>
+      </div>
+
+      <div t-else="" class="dm-wrap">
+
+        <!-- KPI strip -->
+        <div class="dm-kpis">
+          <div class="dm-kpi">
+            <div class="dm-kpi__v" t-esc="state.kpis.active or 0"/>
+            <div class="dm-kpi__l">Active now</div>
+          </div>
+          <div class="dm-kpi">
+            <div class="dm-kpi__v dm-kpi__v--warn" t-esc="state.kpis.idle_5m or 0"/>
+            <div class="dm-kpi__l">Idle &gt; 5 min</div>
+          </div>
+          <div class="dm-kpi">
+            <div class="dm-kpi__v dm-kpi__v--muted" t-esc="state.kpis.checked_out or 0"/>
+            <div class="dm-kpi__l">Off duty</div>
+          </div>
+          <div class="dm-kpi">
+            <div class="dm-kpi__v" t-esc="(state.kpis.avg_hours or 0) + 'h'"/>
+            <div class="dm-kpi__l">Avg hours</div>
+          </div>
+          <div class="dm-kpi__spacer"/>
+          <button t-if="state.isAdmin"
+                  t-att-class="'dm-demo ' + (state.demoActive ? 'is-on' : '')"
+                  t-on-click="() => this.toggleDemo()">
+            <span class="dm-demo__dot"/>
+            <span t-esc="state.demoActive ? 'Demo mode ON' : 'Demo mode'"/>
+          </button>
+        </div>
+
+        <!-- body: rail + map -->
+        <div class="dm-body">
+          <div class="dm-rail">
+            <div class="dm-rail__head">
+              Drivers <span class="dm-rail__count" t-esc="state.drivers.length"/>
+            </div>
+
+            <div t-if="!state.drivers.length" class="dm-empty">
+              <div class="dm-empty__icon">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+              </div>
+              <div class="dm-empty__title">No drivers yet</div>
+              <div class="dm-empty__sub">Assign the Driver role to an employee's user, then
+                they check in from the Payobook Driver app at <b>/driver</b>.</div>
+            </div>
+
+            <div class="dm-list">
+              <t t-foreach="state.drivers" t-as="dvr" t-key="dvr.id">
+                <div t-att-class="'dm-card ' + (state.selectedId === dvr.id ? 'is-sel' : '')"
+                     t-on-click="() => this.selectDriver(dvr)">
+                  <div class="dm-card__avatar" t-att-style="'background-image:url(' + dvr.avatar_url + ')'">
+                    <span t-att-class="'dm-fresh dm-fresh--' + freshness(dvr)"/>
+                  </div>
+                  <div class="dm-card__main">
+                    <div class="dm-card__name">
+                      <span t-esc="dvr.name"/>
+                      <span t-if="dvr.source === 'sim'" class="dm-simchip">SIM</span>
+                    </div>
+                    <div class="dm-card__meta">
+                      <t t-if="dvr.checked_in">
+                        since <t t-esc="sinceTime(dvr.since)"/> ·
+                        <t t-esc="fmtAge(dvr.last_ping_age_s)"/> ago
+                      </t>
+                      <t t-else="">Off duty</t>
+                    </div>
+                  </div>
+                  <button class="dm-card__play"
+                          t-att-title="state.trailFor === dvr.id ? 'Hide route' : 'Show route'"
+                          t-on-click.stop="() => this.togglePlayback(dvr)">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                  </button>
+                </div>
+              </t>
+            </div>
+          </div>
+
+          <div class="dm-mapwrap">
+            <div class="dm-map" t-ref="map"/>
+            <div t-if="state.demoActive" class="dm-simbanner">SIMULATED DEMO DATA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>
