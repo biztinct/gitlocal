@@ -20,6 +20,7 @@
                     </div>
                     <group>
                         <group string="AI Provider Settings">
+                            <field name="purpose"/>
                             <field name="provider_type"/>
                             <field name="model_name"/>
                             <field name="api_key" password="True"/>
@@ -59,6 +60,7 @@
         <field name="model">payroll.ai.config</field>
         <field name="arch" type="xml">
             <list string="PayAI Configurations">
+                <field name="purpose"/>
                 <field name="provider_type"/>
                 <field name="model_name"/>
                 <field name="is_active"/>

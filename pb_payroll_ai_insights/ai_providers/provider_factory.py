@@ -2,12 +2,18 @@
 
 import logging
 from .openai_provider import OpenAIProvider
+from .anthropic_provider import AnthropicProvider
+from .ollama_provider import OllamaProvider
+from .tesseract_provider import TesseractProvider
 
 _logger = logging.getLogger(__name__)
 
 # Registry of available providers
 PROVIDER_REGISTRY = {
     'openai': OpenAIProvider,
+    'anthropic': AnthropicProvider,
+    'ollama': OllamaProvider,
+    'tesseract': TesseractProvider,
 }
 
 

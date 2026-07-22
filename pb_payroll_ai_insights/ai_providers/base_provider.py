@@ -75,6 +75,31 @@ class BaseAIProvider(ABC):
         """Check if provider is available and configured."""
         return True
 
+    # --- Vision (document OCR) — additive, C18.6 -------------------------
+    def supports_vision(self):
+        """Whether this provider can read images / documents. Default False."""
+        return False
+
+    def accepts_pdf(self):
+        """Whether generate_vision can take an application/pdf image directly
+        (without page-to-image rasterization). Default False — only providers
+        with native PDF support override to True."""
+        return False
+
+    def generate_vision(self, prompt, images, max_tokens=1500, **kwargs):
+        """Vision completion over one or more document images.
+
+        Args:
+            prompt (str): the extraction instruction.
+            images (list): ``[{'mime': 'image/png'|'image/jpeg'|'application/pdf',
+                              'data_b64': str}]``.
+
+        Returns:
+            str: raw model text (the caller parses it — e.g. via
+            ``_parse_json_response``).
+        """
+        raise NotImplementedError
+
     def test_connection(self):
         """
         Test connection to AI service.
