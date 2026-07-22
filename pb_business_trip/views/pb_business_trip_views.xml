@@ -54,22 +54,24 @@
                         </group>
                         <group string="Money">
                             <field name="currency_id" invisible="1"/>
-                            <field name="policy_id"/>
-                            <field name="per_diem_rate"/>
-                            <field name="per_diem_total"/>
+                            <field name="policy_id" readonly="state != 'draft'"/>
+                            <field name="per_diem_rate" readonly="state != 'draft'"/>
+                            <field name="per_diem_total" widget="biz_perdiem_panel" nolabel="1"/>
                             <field name="advance_amount"/>
                             <field name="estimated_total"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Expense Lines" name="lines">
-                            <field name="line_ids">
+                            <field name="line_ids" readonly="state == 'approved'">
                                 <list editable="bottom">
                                     <field name="date"/>
                                     <field name="category_id"/>
                                     <field name="description"/>
                                     <field name="amount"/>
-                                    <field name="receipt_attachment_id"/>
+                                    <field name="receipt_attachment_id" string="Receipt"
+                                           widget="biz_receipt_drop"
+                                           readonly="parent.state == 'approved'"/>
                                     <field name="currency_id" column_invisible="1"/>
                                 </list>
                             </field>
