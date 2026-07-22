@@ -89,7 +89,7 @@ class TestBankOcr(TransactionCase):
         self.cfg.purpose = 'doc_ocr'
         # None-safe: no provider at all → degraded result, no traceback
         self.cfg.is_active = False
-        res = self.env['biz.doc.ocr'].extract(
+        res = self.env['biz.doc.ocr']._extract(
             {'fields': [{'name': 'x_account_number', 'type': 'digits'}]}, [])
         self.assertEqual(res['provider'], 'none')
         self.assertTrue(res['error'])
@@ -229,6 +229,82 @@ class TestBankOcr(TransactionCase):
         emp.write({'name': 'Renamed'})
         self.assertEqual(len(self.env['pb.employee.bank.history'].search(
             [('employee_id', '=', emp.id)])), 1)
+
+    # ------------------------------------- review-fix guards (C18.24 rails)
+    def test_11_verification_fields_forgery_locked(self):
+        """readonly=True doesn't stop call_kw — the sentinel guard must."""
+        from odoo.addons.pb_bank_ocr.models.pb_bank_change_request import (
+            _SYS_FIELDS)
+        req = self._request()
+        as_owner = req.with_user(self.emp_user)
+        for vals in ({'name_match_band': 'green'}, {'name_match_score': 100.0},
+                     {'v_format_ok': True}, {'cur_account_number': '000'},
+                     {'ocr_state': 'done'}, {'confidence_json': '{}'}):
+            with self.assertRaises(AccessError):
+                as_owner.write(vals)
+        with self.assertRaises(AccessError):
+            as_owner.write({'duplicate_ack': True})
+        # forged system values in CREATE are silently stripped
+        forged = self.env['pb.bank.change.request'].with_user(
+            self.emp_user).create({
+                'employee_id': self.emp.id,
+                'attachment_id': self._attachment().id,
+                'name_match_band': 'green', 'name_match_score': 100.0,
+                'duplicate_ack': True})
+        self.assertFalse(forged.name_match_band)
+        self.assertFalse(forged.duplicate_ack)
+        self.assertTrue(_SYS_FIELDS)  # import is real, not a stale symbol
+
+    def test_12_post_submit_swap_blocked(self):
+        """The TOCTOU: no owner edit of reviewed fields after submit."""
+        req = self._request()
+        req.write({'x_account_name': 'Nguyễn Văn Á',
+                   'x_account_number': '123456789012'})
+        req.with_user(self.emp_user).action_submit()
+        with self.assertRaises(AccessError):
+            req.with_user(self.emp_user).write(
+                {'x_account_number': '999988887777'})
+        with self.assertRaises(AccessError):
+            req.with_user(self.emp_user).write(
+                {'attachment_id': self._attachment().id})
+        # HR may still correct the extraction during review
+        req.with_user(self.hr_user).write({'x_bank_branch': 'Ba Dinh'})
+        self.assertEqual(req.x_bank_branch, 'Ba Dinh')
+
+    def test_13_forged_audit_context_still_logs(self):
+        """A client-forged truthy from_bank_request must not skip the audit."""
+        emp = self.env['hr.employee'].create({
+            'name': 'Forged Ctx', 'company_id': self.company.id})
+        emp.with_context(from_bank_request=True).write(
+            {'vietnam_bank_account_number': '4444555566'})
+        rows = self.env['pb.employee.bank.history'].search(
+            [('employee_id', '=', emp.id)])
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows.change_source, 'manual')
+
+    def test_14_ocr_job_own_only(self):
+        """Job results carry extracted PII — visible to their creator only."""
+        Job = self.env['biz.doc.ocr.job']
+        job_hr = Job.with_user(self.hr_user).create({
+            'res_model': 'pb.bank.change.request', 'res_id': 1,
+            'result': '{"fields": {"x_account_number": "SECRET"}}'})
+        seen = Job.with_user(self.emp_user).search([('id', '=', job_hr.id)])
+        self.assertFalse(seen)
+        self.assertEqual(
+            Job.with_user(self.hr_user).browse(job_hr.id).result,
+            '{"fields": {"x_account_number": "SECRET"}}')
+
+    def test_15_approve_revalidates_final_values(self):
+        """Approval re-derives validation against the FINAL field values."""
+        req = self._request()
+        req.write({'x_bank_name': 'Vietcombank',
+                   'x_account_name': 'Nguyễn Văn Á',
+                   'x_account_number': '123456789012'})
+        req.with_user(self.emp_user).action_submit()
+        req.with_user(self.hr_user).action_hr_approve()
+        req.write({'x_account_number': '12345'})  # admin-forced bad value
+        with self.assertRaises(UserError):
+            req.with_user(self.fin_user).action_finance_approve()
 
     # ---------------------------------------------------- §6.10 insights safe
     def test_10_insights_factory_unchanged(self):

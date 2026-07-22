@@ -22,8 +22,13 @@ class BizDocOcr(models.AbstractModel):
 
     # ------------------------------------------------------------- service
     @api.model
-    def extract(self, schema, attachment_ids, post_processor=None):
+    def _extract(self, schema, attachment_ids, post_processor=None):
         """Extract fields from document images per a schema.
+
+        Underscore-PRIVATE on purpose: this sudo-reads the given attachments and
+        returns their content to the caller — as a public method it would be an
+        arbitrary-attachment exfiltration endpoint over call_kw. Python-only
+        (C18.24/25); consumers gate access on their own record before calling.
 
         schema = {'fields': [{'name','label','type':'char|digits|code','hint'}],
                   'doc_kinds': [...]}

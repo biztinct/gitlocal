@@ -15,7 +15,7 @@ raw_text, provider}. A deterministic post-processor callable always runs last
 Payobook deps). Reusable for invoices, ID cards, contracts — the bank overlay is
 pb_bank_ocr.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Tools',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -23,6 +23,7 @@ pb_bank_ocr.
     'depends': ['base', 'web', 'pb_payroll_ai_insights'],
     'data': [
         'security/ir.model.access.csv',
+        'security/biz_doc_ocr_security.xml',
         'data/cron.xml',
     ],
     'assets': {

@@ -632,3 +632,25 @@ number from the handovers — keep the numbering stable.
     "keyless-but-unusable" on the settings card (C18.6 guarded-import doctrine, extended to the runtime).
     Provider PDF handling: Anthropic reads PDFs natively (`accepts_pdf()==True`); OpenAI / Ollama / Tesseract
     gate PDFs on `accepts_pdf()==False` and return a clear "upload an image" message rather than half-working.
+
+### Phase-D review findings (2026-07-23, Fable review of WP-Sudima-D). Numbering continues C18.
+
+31. **The approver approves what the FIELDS show — every system-derived verification field needs the C18.24
+    sentinel, not just `state`.** `readonly=True` on an Odoo field does NOT block `call_kw write`; with an
+    own-record `perm_write` rule, a requester could forge `name_match_score/band`, `v_format_ok`, the `cur_*`
+    diff snapshot, `confidence_json`, clear `duplicate_ids`, self-tick `duplicate_ack` — and swap
+    `x_account_number` between HR review and finance approval (TOCTOU), redirecting the master write to a
+    fraudulent account. Rails (pb.bank.change.request): `_SYS_FIELDS` writable only via a module-level
+    `object()` token (`_sys_write`); `_REVIEW_FIELDS` (x_*, attachment, employee) frozen to the owner once
+    out of draft, immutable for all once decided; `duplicate_ack` = HR/finance testimony only; and the
+    approve transition RE-RUNS `action_validate()` against the final values plus the hard gates, so a stale
+    green gauge can never authorize the write. Corollary: the audit-skip context (`from_bank_request`) is
+    also an `object()` sentinel — a client-forged truthy flag still logs the 'manual' history row.
+32. **A generic service that sudo-reads attachments (or any record) and RETURNS their content must be
+    underscore-private.** `biz.doc.ocr.extract` as a public `@api.model` method was an
+    arbitrary-attachment-exfiltration endpoint over call_kw (pass any attachment id → get its OCR text back);
+    renamed `_extract` (Python-only; consumers gate access on their own record first — same class as
+    Phase C's `_get_trip_day_map`). And the JOB rows that persist extraction results are PII: they need an
+    own-only (`create_uid`) record rule, or any employee `search_read`s every colleague's extracted bank
+    account — proven live with a leftover test job. Test residue rule: an end-to-end test on the live DB must
+    clean up EVERY row it created, including engine-side job/log rows, not just the domain records.
