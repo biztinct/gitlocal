@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client Action: Weekly Entry grid (WOW overtime + regular hours) -->
+    <record id="action_pb_attendance_weekgrid" model="ir.actions.client">
+        <field name="name">Weekly Entry</field>
+        <field name="tag">pb_attendance_weekgrid</field>
+    </record>
+
+    <!-- Overtime Ceilings config (labour-law caps; engine reads these) -->
+    <record id="view_pb_ot_ceiling_list" model="ir.ui.view">
+        <field name="name">pb.ot.ceiling.list</field>
+        <field name="model">pb.ot.ceiling</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="monthly_cap"/>
+                <field name="annual_cap"/>
+                <field name="annual_cap_special"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_ot_ceiling_form" model="ir.ui.view">
+        <field name="name">pb.ot.ceiling.form</field>
+        <field name="model">pb.ot.ceiling</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="company_id"/>
+                        <field name="active"/>
+                    </group>
+                    <group string="Overtime Caps (hours)">
+                        <field name="monthly_cap"/>
+                        <field name="annual_cap"/>
+                        <field name="annual_cap_special"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_ot_ceiling" model="ir.actions.act_window">
+        <field name="name">Overtime Ceilings</field>
+        <field name="res_model">pb.ot.ceiling</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

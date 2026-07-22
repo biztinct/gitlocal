@@ -29,6 +29,13 @@
               action="action_attendance_timecard"
               sequence="6"/>
 
+    <!-- Weekly Entry (WOW overtime + regular-hours grid) -->
+    <menuitem id="menu_attendance_weekgrid"
+              name="Weekly Entry"
+              parent="menu_workforce_root"
+              action="action_pb_attendance_weekgrid"
+              sequence="6"/>
+
     <!-- Payroll Report -->
     <menuitem id="menu_payroll_report"
               name="Payroll Report"
@@ -111,5 +118,11 @@
               parent="menu_workforce_config"
               action="action_shift_template"
               sequence="2"/>
+
+    <menuitem id="menu_ot_ceiling_config"
+              name="Overtime Ceilings"
+              parent="menu_workforce_config"
+              action="action_pb_ot_ceiling"
+              sequence="3"/>
 
 </odoo>

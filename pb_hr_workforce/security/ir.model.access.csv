@@ -17,3 +17,7 @@ access_payroll_report_manager,hr.payroll.report.api.manager,model_hr_payroll_rep
 access_payroll_report_user,hr.payroll.report.api.user,model_hr_payroll_report_api,om_hr_payroll.group_hr_payroll_user,1,1,1,0
 access_attendance_timecard_manager,hr.attendance.timecard.manager,model_hr_attendance_timecard,hr_attendance.group_hr_attendance_manager,1,1,1,1
 access_attendance_timecard_user,hr.attendance.timecard.user,model_hr_attendance_timecard,hr_attendance.group_hr_attendance_officer,1,1,1,0
+access_attendance_weekentry_manager,hr.attendance.weekentry.manager,model_hr_attendance_weekentry,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_attendance_weekentry_user,hr.attendance.weekentry.user,model_hr_attendance_weekentry,hr_attendance.group_hr_attendance_officer,1,1,1,0
+access_ot_ceiling_manager,pb.ot.ceiling.manager,model_pb_ot_ceiling,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_ot_ceiling_user,pb.ot.ceiling.user,model_pb_ot_ceiling,hr_attendance.group_hr_attendance_officer,1,0,0,0
