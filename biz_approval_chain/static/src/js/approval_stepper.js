@@ -14,6 +14,7 @@
  */
 import { Component } from "@odoo/owl";
 import { registry } from "@web/core/registry";
+import { _t } from "@web/core/l10n/translation";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
 export class ApprovalStepper extends Component {
@@ -71,6 +72,12 @@ export class ApprovalStepper extends Component {
             }
             return { ...s, status, actor };
         });
+    }
+
+    get refusalTitle() {
+        // translatable — the template can't wrap a literal ternary in _t
+        const r = this.refusal;
+        return r && r.to_state === "cancelled" ? _t("Cancelled") : _t("Refused");
     }
 
     fmtStamp(s) {
