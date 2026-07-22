@@ -1,0 +1,43 @@
+# Vietnamese translation for biz_doc_ocr.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: biz_doc_ocr
+#. openerp-web
+#: code:addons/biz_doc_ocr/static/src/js/doc_drop.js:0
+msgid "Drop a document here, or click to browse"
+msgstr "Thả tài liệu vào đây, hoặc bấm để chọn tệp"
+
+#: code:addons/biz_doc_ocr/static/src/js/doc_drop.js:0
+msgid "Unsupported file type — use JPG, PNG or PDF."
+msgstr "Định dạng tệp không được hỗ trợ — dùng JPG, PNG hoặc PDF."
+
+#: code:addons/biz_doc_ocr/static/src/js/doc_drop.js:0
+msgid "Could not read the file."
+msgstr "Không thể đọc tệp."
+
+#. module: biz_doc_ocr
+#: code:addons/biz_doc_ocr/models/biz_doc_ocr.py:0
+msgid "No document-OCR provider configured."
+msgstr "Chưa cấu hình nhà cung cấp OCR tài liệu."
+
+#: code:addons/biz_doc_ocr/models/biz_doc_ocr.py:0
+msgid "No document to read."
+msgstr "Không có tài liệu để đọc."
+
+#: code:addons/biz_doc_ocr/models/biz_doc_ocr.py:0
+msgid ""
+"This provider cannot read PDFs directly — upload a JPG or PNG image of the "
+"document."
+msgstr ""
+"Nhà cung cấp này không đọc trực tiếp PDF — hãy tải lên ảnh JPG hoặc PNG của "
+"tài liệu."
