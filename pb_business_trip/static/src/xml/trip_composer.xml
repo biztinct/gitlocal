@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_business_trip.PerDiemPanel">
+    <div class="pbtr-perdiem">
+      <div class="pbtr-perdiem__eq" t-if="days and rate">
+        <span class="pbtr-perdiem__days"><t t-esc="days"/> <t t-esc="days === 1 ? 'day' : 'days'"/></span>
+        <span class="pbtr-perdiem__x">×</span>
+        <span class="pbtr-perdiem__rate" t-esc="money(rate)"/>
+        <span class="pbtr-perdiem__eqsign">=</span>
+        <span class="pbtr-perdiem__total" t-esc="money(total)"/>
+      </div>
+      <div class="pbtr-perdiem__hint" t-else="">
+        Set the dates and a per-diem rate to see the trip allowance.
+      </div>
+    </div>
+  </t>
+
+  <t t-name="pb_business_trip.ReceiptDrop">
+    <div class="pbtr-receipt">
+      <!-- has a receipt: thumbnail + name + clear -->
+      <div class="pbtr-receipt__has" t-if="att">
+        <img class="pbtr-receipt__thumb" t-if="!isPdf" t-att-src="thumbUrl" alt=""/>
+        <span class="pbtr-receipt__pdf" t-if="isPdf">
+          <i class="fa fa-file-pdf-o"/>
+        </span>
+        <span class="pbtr-receipt__name" t-esc="att.name"/>
+        <button class="pbtr-receipt__x" t-if="!readonly" type="button"
+                t-on-click.stop="() => this.clear()" title="Remove receipt">
+          <i class="fa fa-times"/>
+        </button>
+      </div>
+
+      <!-- no receipt: drop zone -->
+      <div class="pbtr-receipt__drop"
+           t-if="!att"
+           t-att-class="{ 'pbtr-receipt__drop--over': state.over, 'pbtr-receipt__drop--ro': readonly }"
+           t-on-dragover="onDragOver" t-on-dragleave="onDragLeave" t-on-drop="onDrop"
+           t-on-click="() => this.browse()">
+        <t t-if="state.busy">
+          <i class="fa fa-circle-o-notch fa-spin"/> <span>Uploading…</span>
+        </t>
+        <t t-else="">
+          <i class="fa fa-cloud-upload"/>
+          <span class="pbtr-receipt__cta" t-if="!readonly">Drop receipt or click</span>
+          <span class="pbtr-receipt__cta" t-else="">No receipt</span>
+        </t>
+      </div>
+
+      <input type="file" t-ref="file" class="d-none"
+             accept="image/png,image/jpeg,application/pdf" t-on-change="onPick"/>
+    </div>
+  </t>
+
+</templates>

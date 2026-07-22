@@ -295,12 +295,21 @@ class PbBusinessTrip(models.Model):
         # {'trip_bypass_lock': 1} and edited an authorized trip.
         if not self.env.su:
             protected = _LOCKED_FIELDS & set(vals)
-            if protected:
-                for rec in self:
-                    if rec.state == 'approved':
-                        raise UserError(_(
-                            "An authorized trip is immutable. Cancel it to make "
-                            "changes (field: %s).", ', '.join(sorted(protected))))
+            rate_change = 'per_diem_rate' in vals
+            for rec in self:
+                # The per-diem rate is fixed the moment the trip is submitted:
+                # it is the money every downstream tier approves against, so it
+                # must NOT drift after the request leaves the owner's hands
+                # (safety rail 2 — "editable until submit"). A change requires
+                # reset-to-draft (legal only from submitted/refused).
+                if rate_change and rec.state != 'draft':
+                    raise UserError(_(
+                        "The per-diem rate is locked once a trip is submitted. "
+                        "Reset it to draft to change the rate."))
+                if protected and rec.state == 'approved':
+                    raise UserError(_(
+                        "An authorized trip is immutable. Cancel it to make "
+                        "changes (field: %s).", ', '.join(sorted(protected))))
         return super().write(vals)
 
     # ---------------------------------------------------- create / defaults
