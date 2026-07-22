@@ -20,13 +20,13 @@
                 <title>Payobook Driver</title>
                 <link rel="manifest" href="/driver/manifest.webmanifest"/>
                 <link rel="apple-touch-icon" href="/pb_driver_checkin/static/description/icon-192.png"/>
-                <link rel="stylesheet" href="/biz_geo_tracking/static/lib/leaflet/leaflet.css?v=1001"/>
-                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1001"/>
+                <link rel="stylesheet" href="/biz_geo_tracking/static/lib/leaflet/leaflet.css?v=1002"/>
+                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1002"/>
             </head>
             <body class="pbdrv-body">
                 <div id="pbdrv-root" t-att-data-user-name="user_name"/>
-                <script type="text/javascript" src="/biz_geo_tracking/static/lib/leaflet/leaflet.js?v=1001"></script>
-                <script type="text/javascript" src="/pb_driver_checkin/static/src/js/driver_app.js?v=1001"></script>
+                <script type="text/javascript" src="/biz_geo_tracking/static/lib/leaflet/leaflet.js?v=1002"></script>
+                <script type="text/javascript" src="/pb_driver_checkin/static/src/js/driver_app.js?v=1002"></script>
                 <script type="text/javascript">
                     if ('serviceWorker' in navigator) {
                         window.addEventListener('load', function () {
@@ -46,7 +46,7 @@
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <title>Payobook Driver</title>
-                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1001"/>
+                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1002"/>
             </head>
             <body class="pbdrv-body">
                 <div class="pbdrv-gate">
@@ -66,7 +66,7 @@
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <title>Payobook Driver</title>
-                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1001"/>
+                <link rel="stylesheet" href="/pb_driver_checkin/static/src/css/driver_app.css?v=1002"/>
             </head>
             <body class="pbdrv-body">
                 <div class="pbdrv-gate">

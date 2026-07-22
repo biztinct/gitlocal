@@ -88,9 +88,11 @@ class PbDriverMap(models.AbstractModel):
                 checked_in = e.attendance_state == 'checked_in'
                 age = pos.get('age_s')
                 if checked_in:
+                    # mutually exclusive KPIs: a stale driver is idle, not active
                     if age is None or age > _IDLE_S:
                         idle += 1
-                    active += 1
+                    else:
+                        active += 1
                 else:
                     checked_out += 1
                 th = self._safe(lambda e=e: e.hours_today, 0.0) or 0.0
@@ -168,8 +170,9 @@ class PbDriverMap(models.AbstractModel):
                 [('user_id', '=', sim.user_id.id)], limit=1)
             if not emp:
                 continue
-            geo = {'latitude': 0.0, 'longitude': 0.0, 'mode': 'gps'}
-            # seed at the route's first point so check-in lands near the sim
+            # seed at the route's first point so check-in lands near the sim;
+            # if the route can't be parsed, punch with no location (never 0,0)
+            geo = {'mode': 'gps'}
             try:
                 coords = sim._coords()
                 geo['longitude'], geo['latitude'] = coords[0][0], coords[0][1]
