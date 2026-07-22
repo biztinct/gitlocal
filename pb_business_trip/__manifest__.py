@@ -20,7 +20,7 @@ without payroll or hr_expense): per-diem/trip-days → formula inputs
 (pb_trip_payroll_bridge), and receipted lines → draft expenses
 (pb_trip_expense_bridge). Per-diem is paid via payroll XOR expense, never both.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.0.3',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

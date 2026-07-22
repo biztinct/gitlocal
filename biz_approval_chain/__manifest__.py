@@ -21,7 +21,7 @@ Consumers (e.g. pb_business_trip, and later a bank-change flow) define the state
 field, the transition map and any owner/specific-approver overrides of
 `_approval_can`. This module never references payroll, HR, or a country.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.0.3',
     'category': 'Extra Tools',
     'license': 'LGPL-3',
     'author': 'Payobook',
