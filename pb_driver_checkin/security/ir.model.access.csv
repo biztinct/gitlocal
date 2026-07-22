@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_attendance_driver,hr.attendance driver own,hr_attendance.model_hr_attendance,group_pb_driver,1,1,1,0

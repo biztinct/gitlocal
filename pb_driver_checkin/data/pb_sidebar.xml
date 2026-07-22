@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- Driver Tracking cockpit — Workforce section, gated to attendance
+         officers and up (drivers themselves see NO Payobook sidebar). -->
+    <record id="item_driver_tracking" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Driver Tracking</field>
+        <field name="icon">map-pin</field>
+        <field name="sequence">80</field>
+        <field name="action_xmlid">pb_driver_checkin.action_pb_driver_map</field>
+        <field name="action_tag">pb_driver_map</field>
+        <field name="match_action_tags">pb_driver_map</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
+    </record>
+
+</odoo>
