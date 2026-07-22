@@ -15,7 +15,7 @@ policy channel is 'expense' — otherwise the per-diem is paid through payroll
 (pb_trip_payroll_bridge), never both. Cancelling an authorized trip unlinks its
 DRAFT expenses; a posted expense blocks the cancel with a clear error.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

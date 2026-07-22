@@ -20,7 +20,7 @@ class WorkforceDashboardTrip(models.TransientModel):
             employees = self.env['hr.employee'].search(rec._get_employee_domain())
             if not employees:
                 continue
-            trip_map = self.env['pb.business.trip'].get_trip_day_map(
+            trip_map = self.env['pb.business.trip']._get_trip_day_map(
                 employees.ids, today, today)
             trip_set = {eid for eid, days in trip_map.items() if days}
             if not trip_set:
@@ -34,6 +34,7 @@ class WorkforceDashboardTrip(models.TransientModel):
             if not extra:
                 continue
             present = rec.present_today + len(extra)
+            rec.present_today = present  # keep the KPI trio consistent
             rec.absent_today = max(0, rec.total_employees - present)
             rec.presence_rate = (present / rec.total_employees * 100
                                  ) if rec.total_employees else 0

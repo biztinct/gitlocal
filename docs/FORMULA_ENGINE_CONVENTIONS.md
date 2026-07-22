@@ -549,7 +549,7 @@ number from the handovers — keep the numbering stable.
 
 ### Phase-C findings (business trips + virtual attendance — 2026-07-22, WP-Sudima-C). Numbering continues C18.
 
-19. **Trip presence is ONE virtual overlay helper, read sudo.** `pb.business.trip.get_trip_day_map`
+19. **Trip presence is ONE virtual overlay helper, read sudo.** `pb.business.trip._get_trip_day_map`
     (`pb_business_trip/models/pb_business_trip.py`) is the single source every presence surface reads —
     the Timecards Gantt inherit, the Weekly-Entry grid inherit (row `flags.trip_days` + REG lock +
     server-side `'trip'` refusal in `_save_reg`), the Workforce dashboard KPI, and the payroll bridge.
@@ -581,3 +581,20 @@ number from the handovers — keep the numbering stable.
     any `-u`: stop the service, `pgrep -af odoo-bin`, and `sudo kill <PID>` each leftover BY PID (never
     `pkill -f odoo-bin` — it self-matches), confirm zero, THEN run. `--stop-after-init` test runs cause
     `EXIT=255` (registry init failure) on this lock, distinct from `EXIT=1` (a genuine test failure).
+24. **A state machine is decorative unless `write()` enforces it — and client context is FORGEABLE.**
+    (Phase-C review C1/C2.) Server-side `_approval_can` gates mean nothing while any ACL+rule-writable user
+    can `call_kw write({'state': 'approved'})` and skip every tier (the payroll bridge pays on `state`
+    alone). `biz.approval.chain.mixin` now blocks `state` in `create`/`write` unless the context carries a
+    **module-level Python `object()` sentinel** set only by `_chain_state_write()` (used by
+    `_advance_state`, `action_refuse_chain`, and consumer reset/cancel actions); su/admin exempt. NEVER gate
+    a rail on a plain boolean context key — `call_kw` merges the CLIENT-supplied context, so
+    `{'trip_bypass_lock': 1}` from a browser would have unlocked an authorized trip (that escape is now
+    su-only). Corollaries: lock child LINES too, not just the header (rail-2 "dates/rate/lines"); a no-sudo
+    audit log still needs `create()` to force `user_id`/`stamp` server-side or any user can forge a trail
+    row in someone else's name; a sudo `@api.model` helper is a call_kw endpoint — underscore-prefix it
+    (`_get_trip_day_map`) unless it is deliberately public and gated.
+25. **`ir.attachment` orphans are creator-only readable — sudo cross-user copies.** An employee-uploaded
+    receipt bound via a plain `Many2one('ir.attachment')` has no `res_model`, so an HR approver's
+    `attachment.copy()` in the authorization hook raises AccessError mid-transition (works in tests, which
+    create receipt and approve as the same superuser env). `pb_trip_expense_bridge` sudo's the copy and the
+    line-link writes (the line is rail-2-locked by then).

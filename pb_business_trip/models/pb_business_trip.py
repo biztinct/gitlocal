@@ -229,7 +229,7 @@ class PbBusinessTrip(models.Model):
                     "A trip can only be reset to draft from Submitted or "
                     "Refused. An authorized trip must be cancelled."))
             frm = rec.state
-            rec.write({'state': 'draft'})
+            rec._chain_state_write('draft')
             rec._log_transition(frm, 'draft', _('Reset to draft'))
         return True
 
@@ -239,7 +239,7 @@ class PbBusinessTrip(models.Model):
                 raise UserError(_("This trip is already closed."))
             frm = rec.state
             rec._before_cancel()
-            rec.write({'state': 'cancelled'})
+            rec._chain_state_write('cancelled')
             rec._log_transition(frm, 'cancelled', _('Cancelled'))
         return True
 
@@ -272,21 +272,28 @@ class PbBusinessTrip(models.Model):
     def _leave_overlap_warning(self):
         self.ensure_one()
         Leave = self.env['hr.leave'].sudo()
+        # date_to is an inclusive DATE; leaves carry datetimes — compare
+        # against the end of that day or a leave starting later on the trip's
+        # last day is missed.
+        end_dt = fields.Datetime.to_datetime(self.date_to) + timedelta(days=1)
         leaves = Leave.search([
             ('employee_id', '=', self.employee_id.id),
             ('state', 'in', ('validate', 'validate1')),
-            ('date_from', '<=', fields.Datetime.to_datetime(self.date_to)),
+            ('date_from', '<', end_dt),
             ('date_to', '>=', fields.Datetime.to_datetime(self.date_from)),
         ], limit=1)
         if leaves:
             return _(
-                "⚠ This trip overlaps an approved leave (%s). Submitted anyway — "
+                "This trip overlaps an approved leave (%s). Submitted anyway — "
                 "HR should reconcile the overlap.", leaves.holiday_status_id.name)
         return False
 
     # ---------------------------------------------------- immutability rail 2
     def write(self, vals):
-        if not self.env.context.get('trip_bypass_lock'):
+        # su-only bypass: a context flag here would be forgeable — call_kw
+        # merges the CLIENT-supplied context, so any browser could have sent
+        # {'trip_bypass_lock': 1} and edited an authorized trip.
+        if not self.env.su:
             protected = _LOCKED_FIELDS & set(vals)
             if protected:
                 for rec in self:
@@ -329,13 +336,15 @@ class PbBusinessTrip(models.Model):
 
     # -------------------------------------------- THE integration helper
     @api.model
-    def get_trip_day_map(self, employee_ids, date_from, date_to):
+    def _get_trip_day_map(self, employee_ids, date_from, date_to):
         """{employee_id: set(ISO dates)} of APPROVED trip days in [from, to].
 
         The single source every presence overlay (timecard, weekly-entry grid,
         workforce dashboard) and the payroll bridge reads. sudo — trip presence
         is system-derived and must be visible regardless of who is looking
-        (same one-permission-world rail as C18.17)."""
+        (same one-permission-world rail as C18.17). Underscore-private: the
+        sudo search makes this a cross-company enumeration oracle, so it must
+        NOT be a call_kw-reachable RPC endpoint — server-side callers only."""
         employee_ids = [int(e) for e in (employee_ids or [])]
         if not employee_ids:
             return {}
@@ -374,3 +383,36 @@ class PbBusinessTripLine(models.Model):
     receipt_attachment_id = fields.Many2one(
         'ir.attachment', string='Receipt')
     # expense_id lives in pb_trip_expense_bridge (core must not depend on hr_expense)
+
+    # ------------------------------------------------ immutability rail 2
+    # Rail 2 freezes "dates/rate/LINES" on an authorized trip; without this
+    # guard the trip header is locked but its lines stay fully editable and
+    # deletable for the owner. su-only bypass (the expense bridge links
+    # expense_id via sudo during the authorization hook).
+    def _check_trip_open(self):
+        for line in self:
+            if line.trip_id.state == 'approved':
+                raise UserError(_(
+                    "Expense lines of an authorized trip are immutable — "
+                    "cancel the trip to make changes."))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        if not (self.env.su or self.env.user._is_admin()):
+            lines._check_trip_open()
+        return lines
+
+    def write(self, vals):
+        exempt = self.env.su or self.env.user._is_admin()
+        if not exempt:
+            self._check_trip_open()
+        res = super().write(vals)
+        if 'trip_id' in vals and not exempt:
+            self._check_trip_open()  # no re-parenting lines INTO a locked trip
+        return res
+
+    def unlink(self):
+        if not (self.env.su or self.env.user._is_admin()):
+            self._check_trip_open()
+        return super().unlink()

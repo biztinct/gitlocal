@@ -86,9 +86,13 @@ class PbBusinessTrip(models.Model):
                 'company_id': self.company_id.id,
                 'pb_trip_id': self.id,
             })
-            line.expense_id = exp.id
+            # sudo: the line is locked once the trip hits 'approved' (rail 2),
+            # and the receipt is often an ORPHAN attachment uploaded by the
+            # EMPLOYEE — creator-only readable, so an HR approver copying it
+            # without su would AccessError mid-authorization.
+            line.sudo().expense_id = exp.id
             if line.receipt_attachment_id:
-                line.receipt_attachment_id.copy({
+                line.receipt_attachment_id.sudo().copy({
                     'res_model': 'hr.expense', 'res_id': exp.id})
 
         # per-diem via the EXPENSE channel (exclusive with the payroll bridge)
@@ -122,8 +126,9 @@ class PbBusinessTrip(models.Model):
             raise UserError(_(
                 "Cannot cancel this trip — linked expenses are already "
                 "submitted or posted: %s.", ', '.join(non_draft.mapped('name'))))
-        # all draft → drop them and clear the links
-        self.line_ids.filtered('expense_id').write({'expense_id': False})
+        # all draft → drop them and clear the links (sudo: the trip is still
+        # 'approved' at this point, so the lines are write-locked for the user)
+        self.line_ids.filtered('expense_id').sudo().write({'expense_id': False})
         self.per_diem_expense_id = False
         exps.unlink()
 

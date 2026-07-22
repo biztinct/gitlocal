@@ -5,6 +5,12 @@ import json
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError
 
+# Server-only sentinel for sanctioned state writes. A JSON-RPC client can
+# inject arbitrary context KEYS but can never produce this Python object
+# IDENTITY, so the guard below cannot be forged from outside — unlike a plain
+# boolean context flag, which call_kw would happily accept from the browser.
+_CHAIN_WRITE_TOKEN = object()
+
 
 class BizApprovalChainMixin(models.AbstractModel):
     """A small generic multi-tier approval state machine.
@@ -67,7 +73,7 @@ class BizApprovalChainMixin(models.AbstractModel):
             raise AccessError(
                 _("You are not allowed to perform this approval step."))
         self._before_approval_transition(to_state)
-        self.write({'state': to_state})
+        self._chain_state_write(to_state)
         self._after_approval_transition(to_state)
         self._log_transition(frm, to_state, note)
         return True
@@ -81,10 +87,40 @@ class BizApprovalChainMixin(models.AbstractModel):
             if not rec._approval_can_refuse(frm):
                 raise AccessError(_("You are not allowed to refuse this step."))
             rec._before_approval_transition('refused')
-            rec.write({'state': 'refused'})
+            rec._chain_state_write('refused')
             rec._after_approval_transition('refused')
             rec._log_transition(frm, 'refused', note)
         return True
+
+    # ---------------------------------------------------- state-write guard
+    # Without this, the whole chain is decorative: any user with ACL+rule
+    # write access could call_kw write({'state': 'approved'}) and skip every
+    # tier (the money path pays on state alone). ALL sanctioned state changes
+    # — mixin transitions AND consumer actions like reset/cancel — must go
+    # through _chain_state_write.
+    def _chain_state_write(self, to_state):
+        """The only sanctioned way to change ``state`` on a chain consumer."""
+        return self.with_context(
+            biz_chain_state_write=_CHAIN_WRITE_TOKEN).write({'state': to_state})
+
+    def _chain_write_allowed(self):
+        return (self.env.su or self.env.user._is_admin()
+                or self.env.context.get('biz_chain_state_write')
+                is _CHAIN_WRITE_TOKEN)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        if not self._chain_write_allowed():
+            for vals in vals_list:
+                vals.pop('state', None)  # state is chain-driven from birth
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if 'state' in vals and not self._chain_write_allowed():
+            raise AccessError(_(
+                "The status of %s is driven by its approval chain — use the "
+                "approval actions.", self._description))
+        return super().write(vals)
 
     # --------------------------------------------------------------- hooks
     def _before_approval_transition(self, to_state):
