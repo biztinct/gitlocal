@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="biz_week_grid.WeekGrid">
+    <div class="bwg" t-att-class="{ 'bwg--saving': state.saving }"
+         t-on-keydown="onGridKeydown" tabindex="0" t-ref="grid">
+
+      <!-- header: local filter + dirty state + Save -->
+      <div class="bwg-head">
+        <div class="bwg-head__left" t-if="props.showFilter !== false">
+          <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input type="text" class="bwg-filter" placeholder="Filter rows…"
+                 t-att-value="state.filter" t-on-input="setFilter"/>
+        </div>
+        <div class="bwg-head__spacer"/>
+        <div class="bwg-head__right">
+          <span class="bwg-dirty" t-if="dirtyCount > 0">
+            <span class="bwg-dot"/> <t t-esc="dirtyCount"/> unsaved
+          </span>
+          <button class="bwg-btn bwg-btn--ghost" t-if="dirtyCount > 0"
+                  t-on-click="() => this.undo()" title="Undo (Ctrl/Cmd+Z)">
+            <svg class="bwg-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+            </svg>
+            Undo
+          </button>
+          <button class="bwg-btn bwg-btn--primary" t-att-disabled="dirtyCount === 0 || state.saving"
+                  t-on-click="() => this.save()">
+            <span t-if="state.saving">Saving…</span>
+            <span t-else="">Save <t t-if="dirtyCount > 0">(<t t-esc="dirtyCount"/>)</t></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- loading -->
+      <div class="bwg-loading" t-if="state.loading">
+        <span class="bwg-spin"/> <span>Loading…</span>
+      </div>
+
+      <!-- grid -->
+      <div class="bwg-scroll" t-if="!state.loading">
+        <div class="bwg-grid" t-att-style="'grid-template-columns: var(--bwg-namecol) repeat(' + state.days.length + ', minmax(var(--bwg-daymin), 1fr));'">
+
+          <!-- header row -->
+          <div class="bwg-hcell bwg-hcell--corner bwg-sticky-left bwg-sticky-top"/>
+          <t t-foreach="state.days" t-as="day" t-key="day.iso">
+            <div class="bwg-hcell bwg-sticky-top"
+                 t-att-class="{ 'bwg-hcell--today': day.is_today, 'bwg-hcell--weekend': day.is_weekend }">
+              <div class="bwg-hcell__d" t-esc="day.label"/>
+              <div class="bwg-hcell__s" t-esc="day.sublabel"/>
+            </div>
+          </t>
+
+          <!-- body rows -->
+          <t t-foreach="filteredRows" t-as="row" t-key="row.id">
+            <!-- sticky name cell -->
+            <div class="bwg-name bwg-sticky-left">
+              <img class="bwg-name__av" t-if="row.avatar_url" t-att-src="row.avatar_url" loading="lazy"/>
+              <div class="bwg-name__txt">
+                <div class="bwg-name__l" t-esc="row.label"/>
+                <div class="bwg-name__s" t-esc="row.sublabel"/>
+              </div>
+              <button class="bwg-name__revert" t-if="anyRowDirty(row)"
+                      t-on-click="() => this.revertRow(row)" title="Revert this row">
+                <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- day cells -->
+            <t t-foreach="state.days" t-as="day" t-key="day.iso">
+              <div class="bwg-cell"
+                   t-att-class="{
+                       'bwg-cell--weekend': day.is_weekend,
+                       'bwg-cell--today': day.is_today,
+                       'bwg-cell--focus': isFocused(row, day.iso),
+                       'bwg-cell--dirty': isDirtyCell(row, day.iso, primaryKey),
+                       'bwg-cell--error': !!cellError(row, day.iso, primaryKey),
+                       'bwg-cell--locked': !isEditable(row, day.iso, primaryKey),
+                   }"
+                   t-on-mousedown="() => this.onCellMouseDown(row, day.iso)">
+
+                <!-- dirty / error markers -->
+                <span class="bwg-mark bwg-mark--dirty" t-if="isDirtyCell(row, day.iso, primaryKey)"/>
+                <span class="bwg-mark bwg-mark--lock" t-if="!isEditable(row, day.iso, primaryKey)"
+                      t-att-title="lockReason(row, day.iso, primaryKey) or 'Locked'">
+                  <svg class="bwg-ic bwg-ic--sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </span>
+
+                <!-- primary measure -->
+                <div class="bwg-prim">
+                  <input t-if="isEditing(row, day.iso, primaryKey)"
+                         class="bwg-input" type="text" inputmode="decimal"
+                         t-att-value="state.editing.buffer"
+                         t-on-input="onEditInput" t-on-keydown="onEditKeydown"
+                         t-on-blur="() => this.commitEditing(false)"
+                         t-on-mousedown="(ev) => ev.stopPropagation()"
+                         t-ref="activeInput"/>
+                  <span t-else="" class="bwg-prim__v"
+                        t-att-class="{ 'bwg-prim__v--zero': !displayed(row, day.iso, primaryKey) }">
+                    <t t-esc="fmtVal(displayed(row, day.iso, primaryKey))"/>
+                  </span>
+                </div>
+
+                <!-- OT chip measures -->
+                <div class="bwg-chips" t-if="chipMeasures.length">
+                  <t t-foreach="chipMeasures" t-as="m" t-key="m.key">
+                    <t t-set="mc" t-value="measureCell(row, day.iso, m.key)"/>
+                    <t t-if="mc">
+                      <div class="bwg-chip"
+                           t-att-class="{
+                               'bwg-chip--dirty': isDirtyCell(row, day.iso, m.key),
+                               'bwg-chip--error': !!cellError(row, day.iso, m.key),
+                               'bwg-chip--locked': !isEditable(row, day.iso, m.key),
+                           }"
+                           t-attf-style="--bwg-chip-c: {{ m.color or 'var(--bwg-primary)' }};"
+                           t-att-title="chipTitle(row, day.iso, m)"
+                           t-on-mousedown="(ev) => this.onChipMouseDown(ev, row, day.iso, m.key)">
+                        <input t-if="isEditing(row, day.iso, m.key)"
+                               class="bwg-input bwg-input--chip" type="text" inputmode="decimal"
+                               t-att-value="state.editing.buffer"
+                               t-on-input="onEditInput" t-on-keydown="onEditKeydown"
+                               t-on-blur="() => this.commitEditing(false)"
+                               t-on-mousedown="(ev) => ev.stopPropagation()"
+                               t-ref="activeInput"/>
+                        <span t-else="" class="bwg-chip__txt">
+                          <span class="bwg-chip__lbl" t-esc="m.label"/>
+                          <span class="bwg-chip__v" t-esc="fmtVal(displayed(row, day.iso, m.key))"/>
+                          <span class="bwg-chip__st" t-if="mc.state" t-esc="mc.state"/>
+                        </span>
+                      </div>
+                    </t>
+                  </t>
+                </div>
+              </div>
+            </t>
+          </t>
+        </div>
+
+        <!-- empty state -->
+        <div class="bwg-empty" t-if="filteredRows.length === 0">
+          <svg class="bwg-empty__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>
+          </svg>
+          <div class="bwg-empty__t" t-esc="props.emptyText || 'No rows to show'"/>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

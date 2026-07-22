@@ -1,0 +1,270 @@
+// =====================================================================
+//  WeekGrid — generic editable weekly grid. Self-contained, no product deps.
+//  Themeable ONLY through --bwg-* custom properties (defaults below); a host
+//  overrides them on the .bwg element (or an ancestor). No Payobook imports.
+// =====================================================================
+
+.bwg {
+    // ---- default theme tokens (overridable by consumers) ----
+    --bwg-primary:      #4f46e5;
+    --bwg-ink:          #1b1733;
+    --bwg-muted:        #64748b;
+    --bwg-bg:           #f5f6fa;
+    --bwg-surface:      #ffffff;
+    --bwg-line:         #e2e8f0;
+    --bwg-line-2:       #f1f5f9;
+    --bwg-primary-soft: #eef0fe;
+    --bwg-amber:        #d97706;
+    --bwg-amber-soft:   #fef3c7;
+    --bwg-rose:         #dc2668;
+    --bwg-rose-soft:    #fce7ef;
+    --bwg-radius:       12px;
+    --bwg-namecol:      248px;
+    --bwg-daymin:       104px;
+    --bwg-cellh:        72px;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    outline: none;
+    color: var(--bwg-ink);
+    font-size: 13px;
+
+    // ---------------------------------------------------------- header bar
+    .bwg-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line);
+    }
+    .bwg-head__spacer { flex: 1; }
+    .bwg-head__left { display: flex; align-items: center; gap: 8px; }
+    .bwg-head__right { display: flex; align-items: center; gap: 10px; }
+
+    .bwg-filter {
+        border: 1px solid var(--bwg-line);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13px;
+        width: 200px;
+        max-width: 40vw;
+        outline: none;
+        &:focus { border-color: var(--bwg-primary); }
+    }
+
+    .bwg-dirty {
+        display: inline-flex; align-items: center; gap: 6px;
+        color: var(--bwg-amber); font-weight: 600; font-size: 12.5px;
+    }
+    .bwg-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--bwg-amber);
+    }
+
+    .bwg-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        border: 1px solid var(--bwg-line);
+        border-radius: 8px;
+        padding: 6px 13px;
+        font-size: 13px; font-weight: 600;
+        background: var(--bwg-surface); color: var(--bwg-ink);
+        cursor: pointer;
+        &:disabled { opacity: .5; cursor: default; }
+    }
+    .bwg-btn--primary {
+        background: var(--bwg-primary); border-color: var(--bwg-primary); color: #fff;
+        &:not(:disabled):hover { filter: brightness(.94); }
+    }
+    .bwg-btn--ghost:hover { background: var(--bwg-line-2); }
+
+    // ------------------------------------------------------------- loading
+    .bwg-loading {
+        flex: 1; display: flex; align-items: center; justify-content: center;
+        gap: 10px; color: var(--bwg-muted);
+    }
+    .bwg-spin {
+        width: 22px; height: 22px; border-radius: 50%;
+        border: 3px solid var(--bwg-line); border-top-color: var(--bwg-primary);
+        animation: bwg-spin .8s linear infinite;
+    }
+    @keyframes bwg-spin { to { transform: rotate(360deg); } }
+
+    // -------------------------------------------------------------- scroller
+    .bwg-scroll {
+        flex: 1; min-height: 0;
+        overflow: auto;
+        background: var(--bwg-bg);
+    }
+
+    .bwg-grid {
+        display: grid;
+        // grid-template-columns is set inline from the day count
+        position: relative;
+        width: max-content;
+        min-width: 100%;
+    }
+
+    // sticky primitives
+    .bwg-sticky-top { position: sticky; top: 0; z-index: 3; }
+    .bwg-sticky-left { position: sticky; left: 0; z-index: 2; }
+    .bwg-hcell--corner { z-index: 4; }
+
+    // ----- header cells -----
+    .bwg-hcell {
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line);
+        border-right: 1px solid var(--bwg-line-2);
+        padding: 9px 12px;
+        text-align: center;
+    }
+    .bwg-hcell--corner {
+        background: var(--bwg-surface);
+        border-right: 1px solid var(--bwg-line);
+        min-width: var(--bwg-namecol);
+    }
+    .bwg-hcell__d { font-weight: 700; font-size: 12.5px; }
+    .bwg-hcell__s { font-size: 11px; color: var(--bwg-muted); margin-top: 1px; }
+    .bwg-hcell--weekend { background: var(--bwg-line-2); }
+    .bwg-hcell--today {
+        box-shadow: inset 0 -3px 0 var(--bwg-primary);
+        .bwg-hcell__d { color: var(--bwg-primary); }
+    }
+
+    // ----- name (first) column -----
+    .bwg-name {
+        display: flex; align-items: center; gap: 9px;
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line-2);
+        border-right: 1px solid var(--bwg-line);
+        padding: 8px 12px;
+        min-width: var(--bwg-namecol);
+    }
+    .bwg-name__av {
+        width: 30px; height: 30px; border-radius: 50%;
+        object-fit: cover; flex: 0 0 auto; background: var(--bwg-line-2);
+    }
+    .bwg-name__txt { min-width: 0; flex: 1; }
+    .bwg-name__l {
+        font-weight: 600; font-size: 13px; line-height: 1.2;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bwg-name__s {
+        font-size: 11px; color: var(--bwg-muted);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .bwg-name__revert {
+        border: none; background: transparent; color: var(--bwg-amber);
+        cursor: pointer; padding: 3px; border-radius: 6px; flex: 0 0 auto;
+        &:hover { background: var(--bwg-amber-soft); }
+    }
+
+    // ----- data cells -----
+    .bwg-cell {
+        position: relative;
+        background: var(--bwg-surface);
+        border-bottom: 1px solid var(--bwg-line-2);
+        border-right: 1px solid var(--bwg-line-2);
+        padding: 7px 9px 8px;
+        min-height: var(--bwg-cellh);
+        cursor: text;
+        transition: box-shadow .12s ease, background .12s ease;
+    }
+    .bwg-cell--weekend { background: #fbfbfe; }
+    .bwg-cell--today { background: var(--bwg-primary-soft); }
+    .bwg-cell--focus {
+        box-shadow: inset 0 0 0 2px var(--bwg-primary);
+        z-index: 1;
+    }
+    .bwg-cell--error {
+        box-shadow: inset 0 0 0 2px var(--bwg-rose);
+        background: var(--bwg-rose-soft);
+        animation: bwg-pulse-rose 1.4s ease-in-out;
+    }
+    .bwg-cell--locked { cursor: default; }
+
+    @keyframes bwg-pulse-rose {
+        0%, 100% { box-shadow: inset 0 0 0 2px var(--bwg-rose); }
+        50% { box-shadow: inset 0 0 0 2px var(--bwg-rose), 0 0 0 3px var(--bwg-rose-soft); }
+    }
+
+    // markers
+    .bwg-mark { position: absolute; top: 5px; }
+    .bwg-mark--dirty {
+        right: 6px; width: 7px; height: 7px; border-radius: 50%;
+        background: var(--bwg-amber);
+        box-shadow: 0 0 0 2px var(--bwg-surface);
+    }
+    .bwg-mark--lock { right: 6px; color: var(--bwg-muted); line-height: 0; }
+
+    // primary measure
+    .bwg-prim { min-height: 22px; }
+    .bwg-prim__v { font-size: 18px; font-weight: 700; line-height: 1.1; }
+    .bwg-prim__v--zero { color: #cbd5e1; font-weight: 500; }
+    .bwg-prim__v--zero::before { content: "–"; }
+
+    .bwg-input {
+        width: 100%;
+        border: 1px solid var(--bwg-primary);
+        border-radius: 6px;
+        padding: 2px 6px;
+        font-size: 16px; font-weight: 700;
+        outline: none;
+        background: #fff;
+    }
+    .bwg-input--chip { font-size: 12px; font-weight: 600; padding: 1px 4px; }
+
+    // OT chips
+    .bwg-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .bwg-chip {
+        --bwg-chip-c: var(--bwg-primary);
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 11px; font-weight: 600;
+        line-height: 1.7;
+        color: var(--bwg-chip-c);
+        // fallbacks first — a browser without color-mix keeps a readable chip
+        background: #fff;
+        border: 1px solid var(--bwg-chip-c);
+        background: color-mix(in srgb, var(--bwg-chip-c) 12%, #fff);
+        border: 1px solid color-mix(in srgb, var(--bwg-chip-c) 30%, #fff);
+        cursor: pointer;
+        max-width: 100%;
+    }
+    .bwg-chip__lbl { opacity: .85; }
+    .bwg-chip__v { font-weight: 800; }
+    .bwg-chip__st {
+        text-transform: uppercase; font-size: 8.5px; letter-spacing: .04em;
+        opacity: .8; margin-left: 2px;
+    }
+    .bwg-chip--dirty {
+        box-shadow: 0 0 0 2px var(--bwg-amber-soft);
+        border-color: var(--bwg-amber);
+    }
+    .bwg-chip--error {
+        color: var(--bwg-rose);
+        background: var(--bwg-rose-soft);
+        border-color: var(--bwg-rose);
+    }
+    .bwg-chip--locked { cursor: default; opacity: .9; }
+
+    // saving pulse on dirty cells
+    &.bwg--saving .bwg-cell--dirty { animation: bwg-pulse 1s ease-in-out infinite; }
+    @keyframes bwg-pulse { 50% { background: var(--bwg-primary-soft); } }
+
+    // empty state
+    .bwg-empty {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 12px;
+        padding: 60px 20px; color: var(--bwg-muted); text-align: center;
+    }
+    .bwg-empty__ic { width: 46px; height: 46px; opacity: .6; }
+    .bwg-empty__t { font-size: 14px; font-weight: 600; }
+
+    // icons
+    .bwg-ic { width: 16px; height: 16px; }
+    .bwg-ic--sm { width: 13px; height: 13px; }
+}
