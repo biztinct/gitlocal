@@ -1,5 +1,14 @@
 # PHASE 5 — Formula Engine Design: the Not-Built Backlog, High-Priority First
 
+> **⏸ PHASE 5 ON HOLD — 2026-07-22 (user decision).** All shipped packages (WP-A…WP-J, WP-L) are
+> implemented, reviewed, and live (engine `19.0.1.48.0` / studio `19.0.1.68.0`). **WP-K
+> (W50/W74/W89) is DESIGNED but NOT BUILT** — its kickoff line at the top of this doc is still
+> valid; re-verify the §WP-K "Verified plumbing facts" file:line refs against the live code
+> before reusing it after the hold. The wrap-up act (refresh `docs/FORMULA_ENGINE_TOUR.html`
+> through WP-L + icebox Part II/III remainders) is deferred until pickup. Open flag: stray draft
+> config `DEMO_CONSTRUCTION_END_V` (id 103, created 2026-07-14) on live awaits a user
+> keep/delete decision. Branch `19.1`, never pushed.
+
 **Source of sequence:** `docs/FORMULA_ENGINE_VISION.html` §11 catalogue, filtered **Not built**, sorted
 **High priority first**, Moonshot tier excluded. Feature IDs below are the catalogue numbers (W14 = row #14),
 so this doc maps 1:1 to the vision table.
@@ -1990,6 +1999,12 @@ Report back per the **Report-back items** section (deviations from D-J1..D-J8 mu
 ---
 
 # WP-K — Explanation & Collaboration — W50 → W74 → W89
+
+> **⏸ DESIGNED, NOT BUILT — on hold 2026-07-22 (user decision).** No Opus session was ever run
+> for this package. The kickoff line above remains the entry point; before using it, spot-check
+> the plumbing facts below (designed against engine `19.0.1.4x` / studio `19.0.1.6x` — later
+> work may have moved lines). The W74 coverage numbers (28 slips with computed JSON /
+> 13,353 with inputs) were measured 2026-07-19 and should be re-counted at pickup.
 
 **Designed 2026-07-19 (Fable), after WP-J shipped.** Sixth Medium batch: make configs and payslips
 *explain themselves*, and let teams talk about them. **W50 auto-documentation** — a bilingual
