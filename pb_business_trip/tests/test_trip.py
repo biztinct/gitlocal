@@ -229,3 +229,65 @@ class TestBusinessTrip(TransactionCase):
         self.assertNotIn('hr_expense', deps)
         self.assertNotIn('pb_trip_payroll_bridge', deps)
         self.assertNotIn('pb_trip_expense_bridge', deps)
+
+    # ============================================================
+    # ea775321 review-finding guards (C18.24-25)
+    # ============================================================
+
+    # ---------- C1: state is chain-driven, direct write is refused ----------
+    def test_11_direct_state_write_blocked(self):
+        """A rights-holding user cannot skip the chain via write({'state':…})."""
+        trip = self._trip()
+        # emp_user OWNS this trip (ACL+rule grant write) — yet the mixin guard
+        # refuses a raw state write: the payroll bridge pays on state alone.
+        with self.assertRaises(AccessError):
+            trip.with_user(self.emp_user).write({'state': 'approved'})
+        self.assertEqual(trip.state, 'draft')
+        # the sanctioned exemptions (su / the chain-write token) still work
+        trip.write({'state': 'approved'})  # su env
+        self.assertEqual(trip.state, 'approved')
+
+    def test_11b_create_cannot_seed_state(self):
+        """A non-privileged create cannot birth a record already 'approved'."""
+        trip = self.env['pb.business.trip'].with_user(self.emp_user).create({
+            'employee_id': self.emp.id,
+            'date_from': self.d1, 'date_to': self.d3,
+            'purpose': 'x', 'currency_id': self.vnd.id,
+            'company_id': self.company.id,
+            'state': 'approved',  # stripped by the mixin create guard
+        })
+        self.assertEqual(trip.state, 'draft')
+
+    # ---------- rail 2: authorized-trip LINES are immutable ----------
+    def test_12_authorized_trip_lines_immutable(self):
+        trip = self._trip()
+        line = self.env['pb.business.trip.line'].create({
+            'trip_id': trip.id, 'description': 'Taxi', 'amount': 100000.0})
+        self._drive_to_approved(trip)
+        # the line owner (emp_user) can no longer edit / delete / add lines
+        with self.assertRaises(UserError):
+            line.with_user(self.emp_user).write({'amount': 5.0})
+        with self.assertRaises(UserError):
+            line.with_user(self.emp_user).unlink()
+        with self.assertRaises(UserError):
+            self.env['pb.business.trip.line'].with_user(self.emp_user).create({
+                'trip_id': trip.id, 'description': 'Late add', 'amount': 1.0})
+        # su still may (the expense bridge links expense_id at authorization)
+        line.write({'amount': 7.0})
+        self.assertEqual(line.amount, 7.0)
+
+    # ---------- C18.20: policy resolver is company-first, NOT NULLS-first ----
+    def test_13_policy_company_beats_global(self):
+        Policy = self.env['pb.trip.policy']
+        country = self.env.ref('base.fr')  # no VN-seed collision
+        glob = Policy.create({
+            'name': 'FR global', 'country_id': country.id,
+            'per_diem_rate': 100.0, 'company_id': False})
+        comp = Policy.create({
+            'name': 'FR company', 'country_id': country.id,
+            'per_diem_rate': 200.0, 'company_id': self.company.id})
+        # within the same specificity tier the company policy wins over global
+        self.assertEqual(Policy._match(country, self.company), comp)
+        # with only the global row present, the global fallback resolves
+        comp.active = False
+        self.assertEqual(Policy._match(country, self.company), glob)
