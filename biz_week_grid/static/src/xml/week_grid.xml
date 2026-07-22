@@ -83,6 +83,14 @@
                    }"
                    t-on-mousedown="() => this.onCellMouseDown(row, day.iso)">
 
+                <!-- optional generic day badge (e.g. a consumer status chip) -->
+                <t t-set="badge" t-value="dayBadge(row, day.iso)"/>
+                <span class="bwg-badge" t-if="badge"
+                      t-attf-style="--bwg-badge-c: {{ badge.color or 'var(--bwg-primary)' }};"
+                      t-att-title="badge.title or badge.label">
+                  <t t-esc="badge.label"/>
+                </span>
+
                 <!-- dirty / error markers -->
                 <span class="bwg-mark bwg-mark--dirty" t-if="isDirtyCell(row, day.iso, primaryKey)"/>
                 <span class="bwg-mark bwg-mark--lock" t-if="!isEditable(row, day.iso, primaryKey)"

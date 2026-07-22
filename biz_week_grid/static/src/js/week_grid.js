@@ -184,6 +184,12 @@ export class WeekGrid extends Component {
         const meas = this.measureCell(row, dayISO, mKey);
         return (meas && meas.lock_reason) || (meas && meas.note) || "";
     }
+    /** Optional per-day cell badge (generic — the consumer supplies label/color/
+     *  title on `row.flags.day_badges[dayISO]`; the grid stays product-neutral). */
+    dayBadge(row, dayISO) {
+        const b = row.flags && row.flags.day_badges;
+        return (b && b[dayISO]) || null;
+    }
 
     original(row, dayISO, mKey) {
         const k = cellKey(row.id, dayISO, mKey);

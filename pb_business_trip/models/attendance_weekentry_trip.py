@@ -22,18 +22,25 @@ class AttendanceWeekEntryTrip(models.TransientModel):
             [r['id'] for r in rows], data['week_start'], data['week_end'])
         if not trip_map:
             return data
+        badge_title = _('On authorized trip — attendance is automatic.')
         for r in rows:
             days = trip_map.get(r['id'])
             if not days:
                 continue
-            r.setdefault('flags', {})['trip_days'] = sorted(days)
+            flags = r.setdefault('flags', {})
+            flags['trip_days'] = sorted(days)
+            # violet "BT" chip on each trip day — the generic WeekGrid renders
+            # a consumer-supplied day badge from flags.day_badges (C18.1: the
+            # engine stays product-neutral, the trip meaning lives here).
+            badges = flags.setdefault('day_badges', {})
             for iso in days:
+                badges[iso] = {'label': _('BT'), 'color': '#7c3aed',
+                               'title': badge_title}
                 cell = (r.get('cells') or {}).get(iso)
                 reg = (cell or {}).get('measures', {}).get('reg') if cell else None
                 if reg:
                     reg['editable'] = False
-                    reg['lock_reason'] = _(
-                        'On authorized trip — attendance is automatic.')
+                    reg['lock_reason'] = badge_title
         return data
 
     def _save_reg(self, emp, d, hours, token, att_map, shift_map):
