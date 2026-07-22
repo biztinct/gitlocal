@@ -229,6 +229,12 @@
     border: 1px solid #dc262620;
 }
 
+/* Business trip — violet (virtual presence overlay, C18.4) */
+.tc-swatch-trip {
+    background: linear-gradient(135deg, #ede9fe, #a78bfa);
+    border: 1px solid #7c3aed40;
+}
+
 /* Scrollable body — VERTICAL SCROLLBAR */
 .tc-body {
     padding: 12px 16px;
@@ -545,6 +551,20 @@
 
 .tc-bar-holiday .tc-bar-text {
     color: #9a3412;
+}
+
+/* Business trip — violet full-day bar (virtual overlay, C18.4) */
+.tc-bar-trip {
+    background: linear-gradient(135deg, #ede9fe, #c4b5fd);
+    border: 1px solid #7c3aed55;
+    justify-content: center;
+}
+
+.tc-bar-trip .tc-bar-text {
+    color: #5b21b6;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 /* Active (still clocked in) */

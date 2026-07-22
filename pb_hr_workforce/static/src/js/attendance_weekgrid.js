@@ -180,10 +180,33 @@ export class AttendanceWeekGrid extends Component {
             this.state.saving = false;
         }
         const results = (res && res.results) || [];
+        // translate the server's terse reason CODES into human cell messages
+        // (the grid surfaces r.error verbatim in the cell tooltip/ring) — a
+        // trip day refusal must read as a sentence, not the bare token "trip".
+        const REASONS = {
+            trip: _t("On an authorized business trip — attendance is automatic here."),
+            bounds: _t("Hours must be between 0 and 24."),
+            stale: _t("This cell changed since you loaded it — refresh and retry."),
+            multi: _t("Multiple attendance records — edit on the attendance form."),
+            notgrid: _t("Not a grid entry — edit on the attendance form."),
+            notapplicable: _t("This overtime type doesn't apply on this day."),
+            locked: _t("Already submitted or approved — locked."),
+            noemp: _t("Employee not found."),
+            badmeasure: _t("Unknown measure."),
+            exc: _t("Could not be saved."),
+        };
         const fails = results.filter((r) => !r.ok);
+        for (const r of fails) {
+            if (r.error && REASONS[r.error]) { r.error = REASONS[r.error]; }
+        }
         if (fails.length) {
-            this.notif.add(fails.length + " " + _t("cell(s) could not be saved — see the highlighted cells."),
-                { type: "danger" });
+            // if the only failures are trip-day refusals, say so plainly
+            const allTrip = fails.every((r) => r.error === REASONS.trip);
+            this.notif.add(
+                allTrip
+                    ? REASONS.trip
+                    : fails.length + " " + _t("cell(s) could not be saved — see the highlighted cells."),
+                { type: allTrip ? "warning" : "danger" });
         } else if (results.length) {
             this.notif.add(_t("Saved."), { type: "success" });
         }

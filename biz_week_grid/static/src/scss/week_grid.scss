@@ -199,6 +199,16 @@
     }
     .bwg-mark--lock { right: 6px; color: var(--bwg-muted); line-height: 0; }
 
+    // generic per-day badge (consumer-supplied label/color) — top-left so it
+    // never collides with the top-right dirty/lock markers
+    .bwg-badge {
+        position: absolute; top: 4px; left: 6px; z-index: 1;
+        padding: 1px 6px; border-radius: 999px;
+        font-size: 10px; font-weight: 700; letter-spacing: .03em;
+        color: #fff; background: var(--bwg-badge-c, var(--bwg-primary));
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .18);
+    }
+
     // primary measure
     .bwg-prim { min-height: 22px; }
     .bwg-prim__v { font-size: 18px; font-weight: 700; line-height: 1.1; }

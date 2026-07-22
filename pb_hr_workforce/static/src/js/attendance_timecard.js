@@ -134,7 +134,10 @@ class AttendanceTimecard extends Component {
                                         <span class="tc-bar-text" t-if="entry.check_in">
                                             <t t-esc="entry.check_in"/> - <t t-esc="entry.check_out"/>
                                         </span>
-                                        <span class="tc-bar-text" t-if="!entry.check_in">
+                                        <span class="tc-bar-text" t-if="!entry.check_in and entry.is_trip">
+                                            <i class="fa fa-plane"/> <t t-esc="entry.label"/>
+                                        </span>
+                                        <span class="tc-bar-text" t-if="!entry.check_in and !entry.is_trip">
                                             OT <t t-esc="entry.worked"/>h
                                         </span>
                                     </div>
