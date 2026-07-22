@@ -88,6 +88,40 @@ class OpenAIProvider(BaseAIProvider):
         """Check if OpenAI is available."""
         return bool(self.api_key)
 
+    # --- Vision (document OCR) — additive, C18.6 -------------------------
+    def supports_vision(self):
+        return True
+
+    def generate_vision(self, prompt, images, max_tokens=1500, **kwargs):
+        """Vision via Chat Completions image_url data-URI content parts.
+
+        OpenAI's chat endpoint does not read application/pdf directly — the
+        caller (biz.doc.ocr) gates PDFs on accepts_pdf() (False here) and
+        surfaces a clear message rather than half-working (§5.6)."""
+        try:
+            client = self._get_client()
+            content = [{"type": "text", "text": prompt}]
+            for img in images or []:
+                mime = img.get('mime', 'image/png')
+                if mime == 'application/pdf':
+                    raise ValueError(
+                        "OpenAI vision cannot read PDFs directly — supply page images.")
+                content.append({
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:{mime};base64,{img.get('data_b64', '')}",
+                    },
+                })
+            response = client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "user", "content": content}],
+                max_tokens=max_tokens,
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            _logger.error(f"OpenAI vision error: {e}")
+            raise
+
     def transcribe_audio(self, audio_bytes, language='en'):
         """
         Transcribe audio to text using OpenAI Whisper API.

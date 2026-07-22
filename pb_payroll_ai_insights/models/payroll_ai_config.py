@@ -17,7 +17,18 @@ class PayrollAIConfig(models.Model):
 
     provider_type = fields.Selection([
         ('openai', 'OpenAI (GPT-4o / GPT-4o-mini)'),
+        ('anthropic', 'Anthropic Claude'),
+        ('ollama', 'Ollama (local)'),
+        ('tesseract', 'Tesseract OCR'),
     ], string='AI Provider', default='openai', required=True)
+
+    # what this config is FOR — insights chat vs document OCR (the engine is
+    # generic: 'doc_ocr', not 'bank_ocr'). A purposed lookup lets one company
+    # keep an OpenAI insights key AND a Tesseract offline OCR config side by side.
+    purpose = fields.Selection([
+        ('insights', 'AI Insights'),
+        ('doc_ocr', 'Document OCR'),
+    ], string='Purpose', default='insights', required=True)
 
     api_key = fields.Char(
         string='API Key',
@@ -100,6 +111,27 @@ class PayrollAIConfig(models.Model):
             ], limit=1)
 
         return config
+
+    @api.model
+    def get_config_for_purpose(self, purpose):
+        """Resolve the active config for a purpose ('insights' | 'doc_ocr').
+
+        Named distinctly from the instance ``get_provider()`` to avoid shadowing
+        it (deviation from the handover's ``get_provider(purpose)`` label — kept
+        so the existing insights call path stays byte-untouched). Returns a
+        config record with that purpose, else any active config, else empty.
+        """
+        Cfg = self.sudo()
+        company = self.env.company
+        domain = [('is_active', '=', True), ('purpose', '=', purpose)]
+        cfg = Cfg.search(domain + [('company_id', '=', company.id)], limit=1)
+        if not cfg:
+            cfg = Cfg.search(domain, limit=1)
+        if not cfg:  # fall back to ANY active config
+            cfg = Cfg.search([('is_active', '=', True),
+                              ('company_id', '=', company.id)], limit=1) \
+                or Cfg.search([('is_active', '=', True)], limit=1)
+        return cfg
 
     def get_provider_config_dict(self):
         """Return config as dict for provider factory."""
