@@ -411,3 +411,87 @@ The row machinery and the live-validation lessons hit building the export/paste/
     export (BRACKET expanded) could never re-earn its rate-table offer on re-import. The WP-J M1 zero-guard
     conservatism applies to the PROGRESSIVE fold only — a marginal chain with a non-zero first lower is
     exact by construction (battery cases 15-18).
+
+## C18 — Sudima field-HR program (Phases A–E: driver GPS, OT grid, trips, bank OCR, young workers)
+
+Binding for every `docs/handovers/SUDIMA_PHASE_*.md` implementation session. Sub-points are cited by
+number from the handovers — keep the numbering stable.
+
+1. **Engine/overlay split.** Reusable engines are `biz_*` modules with ZERO Payobook deps (no
+   `pb_sidebar`, no `--pbim-*` scss imports, no Vietnam fields) — `biz_geo_tracking`, `biz_week_grid`,
+   `biz_approval_chain`, `biz_doc_ocr`. All cockpit UI, sidebar items, theme tints, VN/payroll
+   bindings live in the consuming `pb_*` overlay (same convention as [[biz-theme-base]] → pb_theme).
+   Widgets in `biz_*` style themselves through their own CSS custom props (`--bwg-*`, `--bac-*`,
+   `--bdo-*`) with defaults; overlays override.
+2. **Formula-input override convention + code registry.** New payroll inputs do NOT ride the
+   `WD_`/`HOURS_` worked-days branch (`hr_payslip_formula.py:305-306` strips only underscored
+   prefixes — an underscore-free code never matches it). Instead: `_inherit` `hr.payslip` in a GLUE
+   module (`pb_workforce_payroll_bridge`, `pb_trip_payroll_bridge`), override
+   `_get_formula_input_values`, call super, inject ONLY codes present in the config's input rules.
+   Codes must be underscore-free + pairwise non-substring (see [[formula-converter-contract]]).
+   **Registry (check before adding any new code):** `OTHRS150 OTHRS200 OTHRS300 OTHRSNGT`
+   (approved hr.overtime.request hours by type) · `TRIPDAYS PERDIEM` (approved pb.business.trip).
+   Each bridge ships a post_init collision warning against existing `hr.formula.rule` codes.
+3. **One OT source per formula config.** The legacy Zoho path (`om_hr_payroll/hr_payslip.py:483-491`)
+   emits OT worked-day lines (`OT15/OT2/OT3/…`); the bridge feeds `OTHRS*` from approved OT requests.
+   A config may consume ONE of these, never both — double-count is silent money.
+4. **Trip presence is a virtual overlay, never materialized `hr.attendance`.** Trip days are injected
+   at read time (timecard/grid/dashboard overrides via `pb.business.trip.get_trip_day_map`) and
+   excluded from missing-punch logic by the same helper. Materialized rows would double-count payroll
+   worked days (WORK100), pollute GPS/attendance analytics, and need cancellation cleanup.
+5. **Realtime = polling, not bus.bus.** No Payobook module uses the bus; live surfaces poll
+   (driver map 5 s, other cockpits 30 s) with `{silent:true}` orm context and `clearInterval` on
+   unmount. Do not introduce websocket/bus dependencies for these features (deployment risk on
+   client boxes).
+6. **Provider-vision contract.** `BaseAIProvider.generate_vision(prompt, images, …)` +
+   `supports_vision()` (default False); `images = [{'mime', 'data_b64'}]`; providers registered in
+   `PROVIDER_REGISTRY` (`provider_factory.py`). All provider SDK imports are try/except-guarded —
+   a missing pip package must degrade to `is_available() == False`, never an ImportError at registry
+   load. `payroll.ai.config` is the ONLY AI config model (extended via selection_add + `purpose`);
+   consumers resolve by purpose with fallback. Every AI consumer ships a deterministic no-AI path (C1).
+7. **Demo tooling is quarantined.** Simulated data is always flagged at the row level
+   (`biz.geo.ping.source='sim'`), excluded from real analytics/payroll by default, labeled SIMULATED
+   in any UI that shows it, and activated only by admin-gated toggles on records shipped
+   `active=False`. The simulator must exercise the REAL pipeline (same endpoints/models) — a demo
+   that bypasses the product path validates nothing.
+
+### Phase-A findings (driver GPS PWA — 2026-07-22, WP-Sudima-A). Numbering continues C18.
+
+8. **Odoo 19 `res.groups` has NO `category_id` field** (replaced by `privilege_id` → `res.groups.privilege`).
+   A `<field name="category_id">` on a `res.groups` record aborts the registry load with
+   `ValueError: Invalid field 'category_id' in 'res.groups'`. Ship groups without it (a plain technical
+   group is fine) or set `privilege_id`. This is the concrete form of C9's "res.groups.category_id changes".
+9. **`ir.actions.client` has NO group field in Odoo 19** — neither `groups_id` nor `group_ids` exists on
+   the client-action model (only `ir.act.window`/`ir.act.server` carry `group_ids`). You cannot gate a
+   client action by group on the action record. Enforce access in the RPC facade instead (a `_require_*`
+   guard on the AbstractModel's public methods that raises `AccessError`), and hide the launcher via the
+   sidebar item's own `groups_id`. A driver hitting `/odoo/action-<tag>` then gets the themed access-error
+   dialog on data load.
+10. **A standalone page CANNOT load an Odoo asset bundle via `t-call-assets`.** Odoo wraps every compiled
+    bundle in module-loader boilerplate that references the `odoo` global; a bare page that doesn't boot
+    the webclient dies with `Uncaught ReferenceError: odoo is not defined`, and the whole bundle (Leaflet
+    included) fails to execute. For a no-webclient PWA, serve the plain library + a plain-IIFE app as
+    direct static tags: `<link href="/module/static/.../x.css?v=N">` + `<script src="/module/static/.../x.js?v=N">`.
+    Odoo serves anything under `/{module}/static/` publicly; bump the `?v=` query on change (there is no
+    bundle hash to bust). Never mark such a page "can't be built" — the static-tag route is the pattern.
+11. **Company-scoped OWL cockpits see the web client's SELECTED companies, not all allowed.** An
+    `orm.call` carries `allowed_company_ids` from the company switcher (`cids` cookie), so a cockpit that
+    scopes to `self.env.companies` shows nothing for records in a company the user hasn't selected — even
+    though a context-free `call_kw` (which defaults differently) returns them. Seed demo records into the
+    demo's OPERATING company, not the install-time default (records created by data XML with no
+    `company_id` land in "Your Company"/id 1, which the VN demo user never views). Resolve it with no
+    hard-coded id via a `post_init_hook` that assigns the seed records to the company with the most
+    employees (the real operating company; the pb_demo world runs in **Payobook Vietnam JSC**). Existing
+    records on an already-installed module need a one-off RPC/data migration — a plain `-u` with
+    `noupdate="1"` will not move them.
+12. **`_attendance_action_change(geo_information)` maps dict keys straight onto `in_<key>`/`out_<key>`.**
+    Passing `{'latitude':…, 'longitude':…, 'mode':'gps'}` writes `in_mode='gps'` on check-in and
+    `out_mode='gps'` on check-out with no post-hoc write — the ⚠ in the Phase-A handover §2 resolves to
+    "mode is a first-class key". The base field's `default='manual'` makes `selection_add=[('gps','GPS')]`
+    with `ondelete={'gps':'set default'}` valid (C9: `'set default'` only asserts when the base has no default).
+13. **Records shipped `active=False` are invisible to a plain `search`** (the ORM auto-injects
+    `active=True`); pass `context={'active_test': False}` to find them. The product path is unaffected when
+    it resolves the record by xmlid (`env.ref`) rather than searching — which is why `toggle_demo` finds the
+    inactive seed route sims but a test harness `search([...])` must set `active_test=False`. Also: Odoo's
+    `ir.attachment` image post-processing (Pillow) rejects a hand-crafted 1×1 PNG with
+    `OSError: Truncated File Read` — generate a real ≥2×2 PNG for any attachment-create test.
