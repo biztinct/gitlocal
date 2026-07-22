@@ -17,10 +17,12 @@ msgstr ""
 msgid "Drop a document here, or click to browse"
 msgstr "Thả tài liệu vào đây, hoặc bấm để chọn tệp"
 
+#. module: biz_doc_ocr
 #: code:addons/biz_doc_ocr/static/src/js/doc_drop.js:0
 msgid "Unsupported file type — use JPG, PNG or PDF."
 msgstr "Định dạng tệp không được hỗ trợ — dùng JPG, PNG hoặc PDF."
 
+#. module: biz_doc_ocr
 #: code:addons/biz_doc_ocr/static/src/js/doc_drop.js:0
 msgid "Could not read the file."
 msgstr "Không thể đọc tệp."
@@ -30,10 +32,12 @@ msgstr "Không thể đọc tệp."
 msgid "No document-OCR provider configured."
 msgstr "Chưa cấu hình nhà cung cấp OCR tài liệu."
 
+#. module: biz_doc_ocr
 #: code:addons/biz_doc_ocr/models/biz_doc_ocr.py:0
 msgid "No document to read."
 msgstr "Không có tài liệu để đọc."
 
+#. module: biz_doc_ocr
 #: code:addons/biz_doc_ocr/models/biz_doc_ocr.py:0
 msgid ""
 "This provider cannot read PDFs directly — upload a JPG or PNG image of the "

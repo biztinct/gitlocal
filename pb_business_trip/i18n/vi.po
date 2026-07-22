@@ -17,46 +17,57 @@ msgstr ""
 msgid "Approve as Manager"
 msgstr "Duyệt (Quản lý)"
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Approve as Finance"
 msgstr "Duyệt (Tài chính)"
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Authorize"
 msgstr "Phê duyệt"
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Approve"
 msgstr "Duyệt"
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Trip authorized — attendance will be marked automatically."
 msgstr "Chuyến công tác đã được phê duyệt — chấm công sẽ được ghi nhận tự động."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Approved."
 msgstr "Đã duyệt."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Action failed."
 msgstr "Thao tác thất bại."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Trip refused."
 msgstr "Chuyến công tác bị từ chối."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/pb_trips.js:0
 msgid "Refuse failed."
 msgstr "Từ chối thất bại."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
 msgid "Only JPG, PNG or PDF receipts are accepted."
 msgstr "Chỉ chấp nhận hóa đơn dạng JPG, PNG hoặc PDF."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
 msgid "Receipt is larger than 10 MB."
 msgstr "Hóa đơn lớn hơn 10 MB."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/static/src/js/trip_composer.js:0
 msgid "Upload failed."
 msgstr "Tải lên thất bại."
@@ -66,30 +77,37 @@ msgstr "Tải lên thất bại."
 msgid "Business Trip"
 msgstr "Chuyến công tác"
 
+#. module: pb_business_trip
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__destination_city
 msgid "Destination City"
 msgstr "Thành phố đến"
 
+#. module: pb_business_trip
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__purpose
 msgid "Purpose"
 msgstr "Mục đích"
 
+#. module: pb_business_trip
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__per_diem_rate
 msgid "Per-Diem / Day"
 msgstr "Phụ cấp / Ngày"
 
+#. module: pb_business_trip
 #: model:ir.model.fields,field_description:pb_business_trip.field_pb_business_trip__advance_amount
 msgid "Cash Advance"
 msgstr "Tạm ứng"
 
+#. module: pb_business_trip
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__draft
 msgid "Draft"
 msgstr "Nháp"
 
+#. module: pb_business_trip
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__submitted
 msgid "Submitted"
 msgstr "Đã gửi"
 
+#. module: pb_business_trip
 #: model:ir.model.fields.selection,name:pb_business_trip.selection__pb_business_trip__state__approved
 msgid "Authorized"
 msgstr "Đã phê duyệt"
@@ -108,6 +126,7 @@ msgstr ""
 msgid "On authorized trip — attendance is automatic."
 msgstr "Đang trong chuyến công tác đã duyệt — chấm công tự động."
 
+#. module: pb_business_trip
 #: code:addons/pb_business_trip/models/attendance_weekentry_trip.py:0
 msgid "BT"
 msgstr "CT"
