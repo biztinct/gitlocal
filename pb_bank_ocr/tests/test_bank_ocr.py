@@ -177,6 +177,18 @@ class TestBankOcr(TransactionCase):
         self.assertTrue(req.v_format_ok)
         self.assertEqual(req.name_match_band, 'green')  # holder == employee
 
+    def test_06b_name_match_amber_band(self):
+        """A close-but-not-exact holder name lands in the amber 'Review' band
+        (60 ≤ score < 85) — the reviewer is nudged, not auto-passed/auto-failed."""
+        req = self._request()
+        # 'Nguyen Thi Anh' vs employee 'Nguyễn Văn Á' scores ~69 (amber)
+        req.write({'x_account_number': '123456789012',
+                   'x_account_name': 'Nguyen Thi Anh'})
+        req.action_validate()
+        self.assertEqual(req.name_match_band, 'amber')
+        self.assertGreaterEqual(req.name_match_score, 60.0)
+        self.assertLess(req.name_match_score, 85.0)
+
     # ---------------------------------------------------- §6.7 chain + master
     def test_07_chain_writes_master_atomically(self):
         req = self._request()
@@ -214,6 +226,33 @@ class TestBankOcr(TransactionCase):
         self.assertEqual(req.state, 'refused')
         self.emp.invalidate_recordset()
         self.assertEqual(self.emp.vietnam_bank_account_number, '999999999999')
+
+    # ---------------------------------------------- §6.9 export wizard reads new
+    def test_09_export_wizard_reads_new_account(self):
+        """§6.9 — the bank-export source is the employee master; after the chain
+        approves, the Vietnam export wizard pulls the NEW account, not the old."""
+        if 'vietnam.bank.export.wizard' not in self.env:
+            self.skipTest('pb_hr_payroll_vietnam not installed')
+        # employee starts on an OLD account; the request switches it
+        self.emp.write({'vietnam_bank_name': 'BIDV',
+                        'vietnam_bank_account_number': '000011112222'})
+        req = self._request()
+        req.write({'x_bank_name': 'Vietcombank', 'x_bank_branch': 'Hoan Kiem',
+                   'x_account_name': 'Nguyễn Văn Á',
+                   'x_account_number': '123456789012'})
+        req.with_user(self.emp_user).action_submit()
+        req.with_user(self.hr_user).action_hr_approve()
+        req.with_user(self.fin_user).action_finance_approve()
+        self.assertEqual(req.state, 'approved')
+        self.emp.invalidate_recordset()
+        # the export SOURCE now carries the approved values
+        self.assertEqual(self.emp.vietnam_bank_account_number, '123456789012')
+        self.assertEqual(self.emp.vietnam_bank_name, 'Vietcombank')
+        # the wizard runs cleanly against the updated master
+        wiz = self.env['vietnam.bank.export.wizard'].create({
+            'bank_format': 'vietcombank'})
+        res = wiz.action_export_file()
+        self.assertEqual(res.get('type'), 'ir.actions.client')
 
     # ---------------------------------------------------- §6.8 manual audit
     def test_08_manual_edit_logged(self):
@@ -305,6 +344,48 @@ class TestBankOcr(TransactionCase):
         req.write({'x_account_number': '12345'})  # admin-forced bad value
         with self.assertRaises(UserError):
             req.with_user(self.fin_user).action_finance_approve()
+
+    def test_16_job_retention_vacuum(self):
+        """Terminal jobs past the retention window are purged (their
+        payload/result hold extracted PII); fresh + in-flight jobs are kept,
+        and cron_retry runs the vacuum."""
+        Job = self.env['biz.doc.ocr.job']
+        self.env['ir.config_parameter'].sudo().set_param(
+            'biz_doc_ocr.job_retention_days', '30')
+        old_done = Job.create({'res_model': 'pb.bank.change.request', 'res_id': 1,
+                               'state': 'done', 'result': '{"pii": "0123456789"}'})
+        old_failed = Job.create({'res_model': 'pb.bank.change.request', 'res_id': 1,
+                                 'state': 'failed', 'attempts': 3})
+        old_pending = Job.create({'res_model': 'pb.bank.change.request', 'res_id': 1,
+                                  'state': 'pending'})
+        fresh_done = Job.create({'res_model': 'pb.bank.change.request', 'res_id': 1,
+                                 'state': 'done'})
+        # age the three rows beyond retention (create_date is a magic column → SQL)
+        self.env.cr.execute(
+            "UPDATE biz_doc_ocr_job SET create_date = "
+            "(now() at time zone 'UTC') - interval '40 days' WHERE id IN %s",
+            (tuple([old_done.id, old_failed.id, old_pending.id]),))
+        Job.invalidate_recordset(['create_date'])
+        # direct vacuum: only aged terminal rows go; aged pending + fresh stay
+        Job._vacuum_jobs()
+        self.assertFalse(old_done.exists())
+        self.assertFalse(old_failed.exists())
+        self.assertTrue(old_pending.exists())  # in-flight is never vacuumed
+        self.assertTrue(fresh_done.exists())
+        # a non-positive config value falls back to the 30-day default (never 0)
+        self.env['ir.config_parameter'].sudo().set_param(
+            'biz_doc_ocr.job_retention_days', '0')
+        self.assertEqual(Job._retention_days(), Job._DEFAULT_RETENTION_DAYS)
+        # wiring: cron_retry also runs the vacuum
+        old_done2 = Job.create({'res_model': 'pb.bank.change.request',
+                                'res_id': 1, 'state': 'done'})
+        self.env.cr.execute(
+            "UPDATE biz_doc_ocr_job SET create_date = "
+            "(now() at time zone 'UTC') - interval '40 days' WHERE id = %s",
+            (old_done2.id,))
+        Job.invalidate_recordset(['create_date'])
+        Job.cron_retry()
+        self.assertFalse(old_done2.exists())
 
     # ---------------------------------------------------- §6.10 insights safe
     def test_10_insights_factory_unchanged(self):

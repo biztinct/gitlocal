@@ -37,6 +37,11 @@ msgid "Account Number"
 msgstr "Số tài khoản"
 
 #. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_bank_ocr
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__hr_review
 msgid "HR Review"
 msgstr "Nhân sự xét duyệt"
@@ -50,6 +55,58 @@ msgstr "Tài chính xét duyệt"
 #: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__approved
 msgid "Approved"
 msgstr "Đã duyệt"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__state__refused
+msgid "Refused"
+msgstr "Đã từ chối"
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"The verification results of a bank change request are system-computed and "
+"cannot be edited: %s."
+msgstr ""
+"Kết quả xác minh của yêu cầu thay đổi ngân hàng do hệ thống tính toán và "
+"không thể chỉnh sửa: %s."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Only HR or Finance can confirm a duplicate account."
+msgstr "Chỉ Nhân sự hoặc Tài chính mới có thể xác nhận tài khoản trùng lặp."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "A decided bank change request is immutable."
+msgstr "Yêu cầu thay đổi ngân hàng đã được quyết định thì không thể thay đổi."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This request is under review — only HR or Finance may edit the submitted "
+"details now."
+msgstr ""
+"Yêu cầu này đang được xét duyệt — chỉ Nhân sự hoặc Tài chính mới có thể chỉnh "
+"sửa thông tin đã gửi lúc này."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "Only HR can re-target a bank change request."
+msgstr "Chỉ Nhân sự mới có thể chuyển yêu cầu thay đổi ngân hàng sang nhân viên khác."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid "The account number must be 6-19 digits before approval."
+msgstr "Số tài khoản phải có 6-19 chữ số trước khi duyệt."
+
+#. module: pb_bank_ocr
+#: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0
+msgid ""
+"This account collides with another employee. HR must tick 'Duplicate "
+"Verified' before approval."
+msgstr ""
+"Tài khoản này trùng với một nhân viên khác. Nhân sự phải tích 'Đã xác minh "
+"trùng lặp' trước khi duyệt."
 
 #. module: pb_bank_ocr
 #: code:addons/pb_bank_ocr/models/pb_bank_change_request.py:0

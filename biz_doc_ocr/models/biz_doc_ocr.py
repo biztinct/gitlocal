@@ -10,6 +10,7 @@ fallback / normalization layer (C1 doctrine: every AI path degrades gracefully).
 
 import json
 import logging
+from datetime import timedelta
 
 from odoo import api, fields, models, _
 
@@ -198,6 +199,11 @@ class BizDocOcrJob(models.Model):
 
     _MAX_ATTEMPTS = 3
 
+    # Terminal jobs persist extracted PII (bank numbers, holder names) in
+    # payload/result — purge them past this window. Configurable per DB.
+    _RETENTION_PARAM = 'biz_doc_ocr.job_retention_days'
+    _DEFAULT_RETENTION_DAYS = 30
+
     def run(self):
         """Run each job inline: delegate to the consumer's OCR hook.
 
@@ -228,7 +234,8 @@ class BizDocOcrJob(models.Model):
 
     @api.model
     def cron_retry(self):
-        """Re-attempt pending jobs and failed jobs under the attempt cap."""
+        """Re-attempt pending jobs and failed jobs under the attempt cap, then
+        vacuum terminal jobs whose PII has outlived the retention window."""
         jobs = self.search([
             '|', ('state', '=', 'pending'),
             '&', ('state', '=', 'failed'), ('attempts', '<', self._MAX_ATTEMPTS),
@@ -239,4 +246,38 @@ class BizDocOcrJob(models.Model):
                     job.run()
             except Exception:
                 _logger.exception("biz.doc.ocr.job cron: job %s", job.id)
+        # a vacuum failure must never break the retry cron
+        try:
+            with self.env.cr.savepoint():
+                self._vacuum_jobs()
+        except Exception:
+            _logger.exception("biz.doc.ocr.job cron: retention vacuum")
         return True
+
+    @api.model
+    def _retention_days(self):
+        raw = self.env['ir.config_parameter'].sudo().get_param(
+            self._RETENTION_PARAM, self._DEFAULT_RETENTION_DAYS)
+        try:
+            days = int(raw)
+        except (TypeError, ValueError):
+            days = self._DEFAULT_RETENTION_DAYS
+        # a non-positive value would purge live data — fall back to the default
+        return days if days > 0 else self._DEFAULT_RETENTION_DAYS
+
+    @api.model
+    def _vacuum_jobs(self):
+        """Unlink done/failed jobs older than the retention window. Their
+        payload/result carry extracted PII, so decided jobs must not linger;
+        pending/running jobs are always kept (work still in flight)."""
+        cutoff = fields.Datetime.now() - timedelta(days=self._retention_days())
+        stale = self.search([
+            ('state', 'in', ('done', 'failed')),
+            ('create_date', '<', cutoff),
+        ])
+        count = len(stale)
+        if stale:
+            stale.unlink()
+            _logger.info("biz.doc.ocr.job: vacuumed %s terminal job(s) "
+                         "older than the retention window", count)
+        return count
