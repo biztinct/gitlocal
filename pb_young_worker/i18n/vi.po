@@ -1,0 +1,432 @@
+# Vietnamese translation for pb_young_worker.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ============================ Guard cockpit (JS) ============================
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "age unknown"
+msgstr "chưa rõ tuổi"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "adult"
+msgstr "đã đủ tuổi"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "adult in"
+msgstr "đủ 18 sau"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "Daily cap"
+msgstr "Giới hạn ngày"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "Weekly cap"
+msgstr "Giới hạn tuần"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "Night work"
+msgstr "Làm đêm"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "Missing birthday"
+msgstr "Thiếu ngày sinh"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/js/pb_young_worker.js:0
+msgid "Action failed."
+msgstr "Thao tác thất bại."
+
+# ========================= Guard cockpit (template) =========================
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Young Worker Guard"
+msgstr "Bảo vệ Lao động Chưa thành niên"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Under-18 working-time compliance — Vietnam Labor Code."
+msgstr "Tuân thủ thời giờ làm việc cho người dưới 18 tuổi — Bộ luật Lao động Việt Nam."
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Protected"
+msgstr "Được bảo vệ"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Compliant this week"
+msgstr "Tuân thủ tuần này"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Violations (30d)"
+msgstr "Vi phạm (30 ngày)"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Missing birthdays"
+msgstr "Thiếu ngày sinh"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Loading the guard…"
+msgstr "Đang tải…"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Protected roster"
+msgstr "Danh sách được bảo vệ"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "No under-18 employees in the current company scope."
+msgstr "Không có nhân viên dưới 18 tuổi trong phạm vi công ty hiện tại."
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Violation feed"
+msgstr "Dòng vi phạm"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "last 30 days"
+msgstr "30 ngày qua"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "No violations in the last 30 days."
+msgstr "Không có vi phạm trong 30 ngày qua."
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Rules"
+msgstr "Quy định"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "No young-worker rule configured for this company."
+msgstr "Chưa cấu hình quy định lao động chưa thành niên cho công ty này."
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Age"
+msgstr "Tuổi"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Week"
+msgstr "Tuần"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "OT"
+msgstr "Tăng ca"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Night"
+msgstr "Đêm"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Night window"
+msgstr "Khung giờ đêm"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "VN Labor Code defaults"
+msgstr "Mặc định theo Bộ luật Lao động VN"
+
+#. module: pb_young_worker
+#. openerp-web
+#: code:addons/pb_young_worker/static/src/xml/pb_young_worker.xml:0
+msgid "Cannot verify young-worker status — add these dates of birth."
+msgstr "Không thể xác minh tình trạng lao động chưa thành niên — hãy bổ sung ngày sinh."
+
+# ============================== Gates (Python) ==============================
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_guard.py:0
+msgid "The Young Worker Guard is restricted to HR."
+msgstr "Bảng Bảo vệ Lao động Chưa thành niên chỉ dành cho bộ phận Nhân sự."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_guard.py:0
+msgid "Only a payroll manager can edit the young-worker rules."
+msgstr "Chỉ quản lý tính lương mới có thể sửa quy định lao động chưa thành niên."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_guard.py:0
+msgid "%(a)s–%(b)s yrs"
+msgstr "%(a)s–%(b)s tuổi"
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/overtime_request.py:0
+msgid ""
+"Overtime is not permitted for workers under 18 (Vietnam Labor Code). "
+"%(name)s is in the %(lo)s–%(hi)s age band."
+msgstr ""
+"Không được phép tăng ca đối với người lao động dưới 18 tuổi (Bộ luật Lao động "
+"Việt Nam). %(name)s thuộc nhóm tuổi %(lo)s–%(hi)s."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/attendance_weekentry.py:0
+msgid "Overtime is not permitted for workers under 18."
+msgstr "Không được phép tăng ca đối với người lao động dưới 18 tuổi."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/hr_attendance.py:0
+msgid ""
+"%(name)s is under 18: daily working time is capped at %(cap).0f h (Vietnam "
+"Labor Code). This day totals %(actual).1f h."
+msgstr ""
+"%(name)s dưới 18 tuổi: thời giờ làm việc mỗi ngày tối đa %(cap).0f giờ (Bộ "
+"luật Lao động). Ngày này tổng cộng %(actual).1f giờ."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/shift_planning.py:0
+msgid ""
+"Night work is not permitted for workers under 18 (Vietnam Labor Code). "
+"%(name)s cannot be assigned the %(shift)s shift, which falls in the "
+"%(a)02.0f:00–%(b)02.0f:00 night window."
+msgstr ""
+"Không được phép làm đêm đối với người lao động dưới 18 tuổi (Bộ luật Lao động "
+"Việt Nam). %(name)s không thể được xếp ca %(shift)s, vốn nằm trong khung giờ "
+"đêm %(a)02.0f:00–%(b)02.0f:00."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+msgid "A young-worker band must have age_min < age_max (got %(lo)s–%(hi)s)."
+msgstr "Nhóm lao động chưa thành niên phải có age_min < age_max (nhận %(lo)s–%(hi)s)."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+msgid ""
+"Young-worker age bands may not overlap: %(a)s–%(b)s overlaps %(c)s–%(d)s."
+msgstr ""
+"Các nhóm tuổi lao động chưa thành niên không được chồng lấn: %(a)s–%(b)s chồng "
+"lấn %(c)s–%(d)s."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+msgid "No birthday on file — cannot verify young-worker status."
+msgstr "Chưa có ngày sinh — không thể xác minh tình trạng lao động chưa thành niên."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+msgid "%(h).1fh on %(d)s exceeds the %(cap).0fh daily cap."
+msgstr "%(h).1fh vào %(d)s vượt giới hạn %(cap).0fh mỗi ngày."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+msgid "%(h).1fh in the week of %(wk)s exceeds the %(cap).0fh cap."
+msgstr "%(h).1fh trong tuần %(wk)s vượt giới hạn %(cap).0fh."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+msgid "Overtime logged on %(d)s is not permitted under 18."
+msgstr "Tăng ca ghi nhận vào %(d)s không được phép đối với người dưới 18 tuổi."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+msgid "Night shift on %(d)s is not permitted under 18."
+msgstr "Ca đêm vào %(d)s không được phép đối với người dưới 18 tuổi."
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/payrun_wizard.py:0
+msgid "Young worker: %s"
+msgstr "Lao động chưa thành niên: %s"
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/payrun_wizard.py:0
+msgid "Young worker: …and %s more"
+msgstr "Lao động chưa thành niên: …và %s mục khác"
+
+# ============================ Rule config (fields) ==========================
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_rule__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_rule__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_rule__night_from
+msgid "Night From"
+msgstr "Giờ bắt đầu đêm"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,help:pb_young_worker.field_pb_young_worker_rule__night_from
+msgid "Start of the protected night window (24h, e.g. 22.0 = 22:00)."
+msgstr "Bắt đầu khung giờ đêm được bảo vệ (định dạng 24h, ví dụ 22.0 = 22:00)."
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_rule__night_to
+msgid "Night To"
+msgstr "Giờ kết thúc đêm"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,help:pb_young_worker.field_pb_young_worker_rule__night_to
+msgid "End of the protected night window (24h, e.g. 6.0 = 06:00)."
+msgstr "Kết thúc khung giờ đêm được bảo vệ (định dạng 24h, ví dụ 6.0 = 06:00)."
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_rule__band_ids
+#: model_terms:ir.ui.view,arch_db:pb_young_worker.view_pb_young_worker_rule_form
+msgid "Age Bands"
+msgstr "Nhóm tuổi"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_rule__note
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__rule_id
+msgid "Rule"
+msgstr "Quy định"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__age_min
+msgid "Age From"
+msgstr "Từ tuổi"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,help:pb_young_worker.field_pb_young_worker_band__age_min
+msgid "Inclusive lower bound (full years)."
+msgstr "Cận dưới bao gồm (số năm tròn)."
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__age_max
+msgid "Age To"
+msgstr "Đến tuổi"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,help:pb_young_worker.field_pb_young_worker_band__age_max
+msgid "Exclusive upper bound (full years)."
+msgstr "Cận trên không bao gồm (số năm tròn)."
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__max_hours_day
+msgid "Max Hours / Day"
+msgstr "Giờ tối đa / Ngày"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__max_hours_week
+msgid "Max Hours / Week"
+msgstr "Giờ tối đa / Tuần"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__ot_blocked
+msgid "Overtime Blocked"
+msgstr "Chặn tăng ca"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__night_blocked
+msgid "Night Work Blocked"
+msgstr "Chặn làm đêm"
+
+#. module: pb_young_worker
+#: model:ir.model.fields,field_description:pb_young_worker.field_pb_young_worker_band__note
+msgid "Label"
+msgstr "Nhãn"
+
+# ============================ Rule config (views) ===========================
+
+#. module: pb_young_worker
+#: code:addons/pb_young_worker/models/young_worker_guard.py:0
+#: code:addons/pb_young_worker/models/young_worker_rule.py:0
+#: model:ir.actions.act_window,name:pb_young_worker.action_pb_young_worker_rule
+#: model_terms:ir.ui.view,arch_db:pb_young_worker.view_pb_young_worker_rule_list
+msgid "Young Worker Rules"
+msgstr "Quy định Lao động Chưa thành niên"
+
+#. module: pb_young_worker
+#: model_terms:ir.ui.view,arch_db:pb_young_worker.view_pb_young_worker_rule_form
+msgid "Young Worker Rule"
+msgstr "Quy định Lao động Chưa thành niên"
+
+#. module: pb_young_worker
+#: model_terms:ir.ui.view,arch_db:pb_young_worker.view_pb_young_worker_rule_form
+msgid "Notes…"
+msgstr "Ghi chú…"
+
+#. module: pb_young_worker
+#: model:ir.actions.client,name:pb_young_worker.action_pb_young_worker
+msgid "Young Workers"
+msgstr "Lao động Chưa thành niên"
