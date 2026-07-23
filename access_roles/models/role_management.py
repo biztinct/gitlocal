@@ -128,7 +128,17 @@ class RoleManagement(models.Model):
             for role in record.role_ids:
                 if not role.role_management_id:
                     role.write({'role_management_id': record.id})
+        # Invalidate menu cache if menus are set during creation
+        if any('menu_ids' in v for v in vals_list):
+            self.env['ir.ui.menu']._invalidate_menu_cache()
         return records
+
+    def write(self, vals):
+        """Override write to invalidate menu cache when menus or roles change."""
+        result = super(RoleManagement, self).write(vals)
+        if 'menu_ids' in vals or 'role_ids' in vals:
+            self.env['ir.ui.menu']._invalidate_menu_cache()
+        return result
 
     def action_open_domain_form(self):
         """Opens the domain form when clicking on domain_id"""

@@ -29,7 +29,17 @@
                     </group>
                     <notebook>
                         <page name="hide_menu" string="Hide Menu">
-                            <field name="menu_ids" options="{'no_create': True, 'no_create_edit':True}"/>
+                            <field name="menu_ids"
+                                   context="{'search_default_group_app': 1, 'list_view_ref': 'access_roles.ir_ui_menu_picker_list'}"
+                                   options="{'no_create': True, 'no_create_edit':True}">
+                                <list string="Hidden Menus" delete="true" default_order="root_menu_name, parent_path">
+                                    <field name="root_menu_name" string="App"/>
+                                    <field name="complete_name" string="Full Menu Path"/>
+                                    <!-- loaded (hidden) so sorting by App can tie-break on it
+                                         without crashing the client-side compareRecords -->
+                                    <field name="parent_path" column_invisible="1"/>
+                                </list>
+                            </field>
                         </page>
                         <page name="hide_button_tab" string="Hide Any Button or Tab">
                             <field name="button_access_ids" widget="one2many">
@@ -102,5 +112,40 @@
         <field name="name">Role Management</field>
         <field name="res_model">role.management</field>
         <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Dedicated list view for the "Hide Menu" picker dialog: orders menus
+         hierarchically by parent_path so within each App group the App root and
+         section parents appear FIRST — pick the top menu to hide the whole branch
+         (one clean row). Scoped via the field's list_view_ref so the global menu
+         list (with its sequence drag-handle) is untouched. -->
+    <record id="ir_ui_menu_picker_list" model="ir.ui.view">
+        <field name="name">ir.ui.menu.picker.list</field>
+        <field name="model">ir.ui.menu</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <list string="Menus" create="false" default_order="parent_path">
+                <field name="complete_name" string="Full Menu Path"/>
+                <field name="root_menu_name" column_invisible="1"/>
+                <field name="parent_path" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Group the "Hide Menu" Add-a-line dialog by root App, with full-path search,
+         so the 600+ menus are organised by application instead of a flat list. -->
+    <record id="ir_ui_menu_search_group_app" model="ir.ui.view">
+        <field name="name">ir.ui.menu.search.group.app</field>
+        <field name="model">ir.ui.menu</field>
+        <field name="inherit_id" ref="base.edit_menu_access_search"/>
+        <field name="arch" type="xml">
+            <search position="inside">
+                <field name="complete_name" string="Full Menu Path"
+                       filter_domain="['|', ('complete_name', 'ilike', self), ('name', 'ilike', self)]"/>
+                <field name="root_menu_name" string="App"/>
+                <filter name="group_app" string="App"
+                        context="{'group_by': 'root_menu_name'}"/>
+            </search>
+        </field>
     </record>
 </odoo>

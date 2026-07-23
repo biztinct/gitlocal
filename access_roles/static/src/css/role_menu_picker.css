@@ -1,0 +1,14 @@
+/* Role Management → "Hide Menu" picker (Add-a-line dialog, grouped by App).
+ * The grouped list renders the App group name in a <th class="o_group_name">
+ * that is colspan'd over only the two narrow leading columns (selector + handle,
+ * ~69px), so long app names and their counts get clipped. Inside a dialog the
+ * cells to the right of the group name are empty, so we let the name overflow
+ * into that space — making "CRM (28)", "AI Performance Coaching (1)", etc. fully
+ * readable. Scoped to dialogs so normal grouped list views are untouched. */
+.o_dialog .o_list_renderer .o_list_table tbody > tr.o_group_header > th.o_group_name,
+.modal .o_list_renderer .o_list_table tbody > tr.o_group_header > th.o_group_name {
+    overflow: visible !important;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+}
