@@ -229,8 +229,13 @@ class TestBankOcr(TransactionCase):
 
     # ---------------------------------------------- §6.9 export wizard reads new
     def test_09_export_wizard_reads_new_account(self):
-        """§6.9 — the bank-export source is the employee master; after the chain
-        approves, the Vietnam export wizard pulls the NEW account, not the old."""
+        """§6.9 — HONEST SCOPE: the Vietnam export wizard is currently a
+        notification stub that reads no bank field (no export consumer of
+        vietnam_bank_account_number exists yet). What this proves is (a) the
+        export SOURCE of truth — the employee master — carries the approved NEW
+        values, and (b) the wizard still runs cleanly against the updated
+        master. When a real file export lands, extend this to assert the NEW
+        account appears in the generated file."""
         if 'vietnam.bank.export.wizard' not in self.env:
             self.skipTest('pb_hr_payroll_vietnam not installed')
         # employee starts on an OLD account; the request switches it
@@ -248,7 +253,7 @@ class TestBankOcr(TransactionCase):
         # the export SOURCE now carries the approved values
         self.assertEqual(self.emp.vietnam_bank_account_number, '123456789012')
         self.assertEqual(self.emp.vietnam_bank_name, 'Vietcombank')
-        # the wizard runs cleanly against the updated master
+        # the wizard (a stub today) still runs cleanly against the updated master
         wiz = self.env['vietnam.bank.export.wizard'].create({
             'bank_format': 'vietcombank'})
         res = wiz.action_export_file()
@@ -360,12 +365,13 @@ class TestBankOcr(TransactionCase):
                                   'state': 'pending'})
         fresh_done = Job.create({'res_model': 'pb.bank.change.request', 'res_id': 1,
                                  'state': 'done'})
-        # age the three rows beyond retention (create_date is a magic column → SQL)
+        # age the three rows beyond retention — the vacuum clock is write_date
+        # (time since the terminal state), a magic column → SQL
         self.env.cr.execute(
-            "UPDATE biz_doc_ocr_job SET create_date = "
+            "UPDATE biz_doc_ocr_job SET write_date = "
             "(now() at time zone 'UTC') - interval '40 days' WHERE id IN %s",
             (tuple([old_done.id, old_failed.id, old_pending.id]),))
-        Job.invalidate_recordset(['create_date'])
+        Job.invalidate_recordset(['write_date'])
         # direct vacuum: only aged terminal rows go; aged pending + fresh stay
         Job._vacuum_jobs()
         self.assertFalse(old_done.exists())
@@ -380,10 +386,10 @@ class TestBankOcr(TransactionCase):
         old_done2 = Job.create({'res_model': 'pb.bank.change.request',
                                 'res_id': 1, 'state': 'done'})
         self.env.cr.execute(
-            "UPDATE biz_doc_ocr_job SET create_date = "
+            "UPDATE biz_doc_ocr_job SET write_date = "
             "(now() at time zone 'UTC') - interval '40 days' WHERE id = %s",
             (old_done2.id,))
-        Job.invalidate_recordset(['create_date'])
+        Job.invalidate_recordset(['write_date'])
         Job.cron_retry()
         self.assertFalse(old_done2.exists())
 
