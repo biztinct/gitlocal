@@ -733,3 +733,40 @@ number from the handovers — keep the numbering stable.
     request (bank-request clone, C18.31). (f) **The audit console is read-only** — it surfaces existing logs
     (biz_audit_trail engine from Phase H), masked PII, capped-and-surfaced exports. Order F→G→H→I→J; I needs H;
     J needs H; F and G independent.
+
+### Phase-F findings (Pay & Deliver — 2026-07-24, WP-Sudima-F). Numbering continues C18.
+
+43. **`hr.payslip.run` has NO `company_id` field in this om_hr_payroll (Odoo 19).** A `create({'company_id': …})`
+    or a `run.company_id` read raises `ValueError: Invalid field 'company_id' in 'hr.payslip.run'` (it aborts the
+    whole test DB init → EXIT=255, distinct from an EXIT=1 assertion failure). Scope company via `self.env.company`,
+    never off the run. The run DOES carry `date_start`/`date_end`/`state`/`name`/`slip_ids` (the pb_payruns board
+    proves those). Verify a run field against the actual model before use — several sibling models (payslip,
+    delivery batch) DO have `company_id`, so it's an easy false assumption.
+44. **A test-fixture attribute named `run` (or any `unittest.TestCase` method name) shadows the runner and dies
+    cryptically.** `cls.run = <recordset>` in `setUpClass` overrides `TestCase.run(self, result)`, so the loader
+    calls the *recordset* → `TypeError: 'hr.payslip.run' object is not callable`, reported as `Failed to initialize
+    database` (EXIT=255) with a traceback pointing at `return self.run(*args, **kwds)` — NOT at your test. Never name
+    a fixture `run`/`id`/`subTest`/`skipTest`/`assert*`; use `payrun`, `rec`, etc. Cost real cycles here.
+45. **wkhtmltopdf can't render report assets during a `--stop-after-init` test run** — there is no HTTP server for
+    it to fetch the report CSS/layout from, so `_render_qweb_pdf` returns broken bytes and PyPDF2 chokes with
+    `EOF marker not found` (the PDF has no `%%EOF`). This is NOT a code bug; the render works with the service up.
+    Any headless test that needs real PDF bytes must **mock the render** (a valid PDF via `PdfWriter.add_blank_page`
+    → `write`) and exercise the downstream logic (encrypt / attach / queue), then validate the real wkhtmltopdf
+    render live (Chrome-MCP, service up). wkhtmltopdf on Payobook19v2 is 0.12.6 (unpatched-qt) and renders fine live.
+46. **Live `pb_hr_payroll_formula` on Payobook19v2 is FAR behind the repo** — installed `19.0.1.0.0` vs repo
+    `19.0.1.48.0`; the entire Formula-Engine WP-* body (incl. `hr.payslip._themed_payslip_render`, the connector
+    `_sync_mapping_ids`, F9 theme fields) is NOT deployed there, even though the themed-report *XML template* is
+    (a data-only artifact that loads without its Python). So `action_report_payslip_themed` is **currently broken on
+    live** (`AttributeError: 'hr.payslip' object has no attribute '_themed_payslip_render'`). Any Phase-F–J feature
+    that reuses a formula-engine surface must **degrade gracefully**: `pb_pay_delivery._report_ref()` prefers the
+    themed report only when `hasattr(env['hr.payslip'], '_themed_payslip_render')`, else falls back to
+    `om_hr_payroll.action_report_payslip` (the always-present legacy report). Deploying 48 versions of
+    `pb_hr_payroll_formula` to production is a **separate, owner-signed-off decision** — do NOT slip it into a
+    feature phase. `-u pb_hr_payroll_formula` is unblocked now (the `formulas` pip dep is installed, C-deploy),
+    but the accumulated schema/data migrations make it a deliberate release, not a side effect.
+47. **Live has a REAL Gmail SMTP server** (`smtp.gmail.com:587`, "Payobook Outgoing Server") and ~179 mails already
+    queued. A `send_payslips` with `force_send=False` only QUEUES, but the mail cron would then dispatch to real
+    addresses — so demo/validation must NEVER trigger a live send against real employees. Validate the delivery
+    lane's UI (recipient/skip/password cards) without dispatching; the send path is covered by server tests
+    (mock-rendered PDF → mail.mail queue rows + skip + idempotence + encryption round-trip). Report SMTP posture
+    on any server before any bulk-mail feature demo (handover safety-rail: no accidental demo emails).

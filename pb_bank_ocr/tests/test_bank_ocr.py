@@ -228,18 +228,37 @@ class TestBankOcr(TransactionCase):
         self.assertEqual(self.emp.vietnam_bank_account_number, '999999999999')
 
     # ---------------------------------------------- §6.9 export wizard reads new
+    def _make_done_net_slip(self, emp, net):
+        """A Done payslip with a NET line for `emp`, on a fresh run (Phase F)."""
+        company = self.company
+        calendar = (company.resource_calendar_id
+                    or self.env['resource.calendar'].search([], limit=1))
+        ctype = (self.env['hr.contract.type'].search([], limit=1)
+                 or self.env['hr.contract.type'].create({'name': 'Std'}))
+        contract = self.env['hr.contract'].create({
+            'name': 'C-%s' % emp.id, 'employee_id': emp.id, 'wage': 1000.0,
+            'resource_calendar_id': calendar.id, 'type_id': ctype.id})
+        run = self.env['hr.payslip.run'].create({'name': 'ZZ Bank Export'})
+        slip = self.env['hr.payslip'].create({
+            'employee_id': emp.id, 'contract_id': contract.id,
+            'payslip_run_id': run.id})
+        self.env['hr.payslip.line'].create({
+            'slip_id': slip.id, 'salary_rule_id': self.env.ref('om_hr_payroll.hr_rule_net').id,
+            'employee_id': emp.id, 'contract_id': contract.id,
+            'category_id': self.env.ref('om_hr_payroll.NET').id,
+            'name': 'Net', 'code': 'NET', 'amount': net, 'quantity': 1.0, 'rate': 100.0})
+        slip.write({'state': 'done'})
+        return slip
+
     def test_09_export_wizard_reads_new_account(self):
-        """§6.9 — HONEST SCOPE: the Vietnam export wizard is currently a
-        notification stub that reads no bank field (no export consumer of
-        vietnam_bank_account_number exists yet). What this proves is (a) the
-        export SOURCE of truth — the employee master — carries the approved NEW
-        values, and (b) the wizard still runs cleanly against the updated
-        master. When a real file export lands, extend this to assert the NEW
-        account appears in the generated file."""
+        """§6.9/§6.6 (Phase F) — the approved NEW account appears IN the
+        generated bank-file CONTENT. This closes the Phase-D honest-scope note:
+        the export is now real and data-driven, and consumes the employee master
+        that the approval chain wrote."""
         if 'vietnam.bank.export.wizard' not in self.env:
             self.skipTest('pb_hr_payroll_vietnam not installed')
         # employee starts on an OLD account; the request switches it
-        self.emp.write({'vietnam_bank_name': 'BIDV',
+        self.emp.write({'vietnam_bank_name': 'BIDV', 'vietnam_bank_branch': 'Hoan Kiem',
                         'vietnam_bank_account_number': '000011112222'})
         req = self._request()
         req.write({'x_bank_name': 'Vietcombank', 'x_bank_branch': 'Hoan Kiem',
@@ -253,11 +272,19 @@ class TestBankOcr(TransactionCase):
         # the export SOURCE now carries the approved values
         self.assertEqual(self.emp.vietnam_bank_account_number, '123456789012')
         self.assertEqual(self.emp.vietnam_bank_name, 'Vietcombank')
-        # the wizard (a stub today) still runs cleanly against the updated master
+
+        # Phase F: assert the NEW account is IN the generated file content.
+        if 'pb.bank.file.layout' not in self.env:
+            self.skipTest('pb_pay_delivery (real file generation) not installed')
+        slip = self._make_done_net_slip(self.emp, 11111111)
         wiz = self.env['vietnam.bank.export.wizard'].create({
-            'bank_format': 'vietcombank'})
-        res = wiz.action_export_file()
-        self.assertEqual(res.get('type'), 'ir.actions.client')
+            'payslip_run_id': slip.payslip_run_id.id, 'bank_format': 'vietcombank'})
+        result = wiz._generate()
+        layout = self.env['pb.bank.file.layout']._for_format('vietcombank')
+        text = base64.b64decode(result['file_b64']).decode(layout.encoding or 'utf-8')
+        self.assertIn('123456789012', text)          # the approved NEW account
+        self.assertNotIn('000011112222', text)        # never the old one
+        self.assertIn('Nguyễn Văn Á', text)
 
     # ---------------------------------------------------- §6.8 manual audit
     def test_08_manual_edit_logged(self):

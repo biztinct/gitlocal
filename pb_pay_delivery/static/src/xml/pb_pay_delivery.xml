@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_pay_delivery.PbPayDelivery">
+    <div class="pbpd pbim">
+
+      <!-- ============================ loading ============================ -->
+      <div t-if="!state.loaded" class="pbpd-loading">
+        <div class="pbpd-spin"/><span>Loading Pay &amp; Deliver…</span>
+      </div>
+
+      <!-- ============================ run picker ======================== -->
+      <div t-elif="state.picking" class="pbpd-picker">
+        <div class="pbpd-picker-head">
+          <h1>Pay &amp; Deliver</h1>
+          <p>Choose a pay run to send its money files and payslips.</p>
+        </div>
+        <div t-if="!state.runs.length" class="pbpd-empty">
+          <span class="i" t-out="ic('layers',26)"/>
+          <div class="t">No pay runs yet</div>
+          <div class="s">Run payroll first — completed runs appear here to pay and deliver.</div>
+        </div>
+        <div class="pbpd-run-grid">
+          <div t-foreach="state.runs" t-as="r" t-key="r.id"
+               class="pbpd-run-card" t-on-click="() => this.pickRun(r.id)">
+            <div class="nm" t-esc="r.name"/>
+            <div class="pd" t-esc="r.period"/>
+            <div class="meta">
+              <span class="hc"><t t-esc="r.headcount"/> payslips</span>
+              <span t-attf-class="badge {{ r.state === 'done' ? 'ok' : '' }}" t-esc="r.state"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ experience ======================== -->
+      <div t-elif="state.data" class="pbpd-wrap">
+
+        <!-- cinematic hero -->
+        <div class="pbpd-hero">
+          <button class="pbpd-back" t-on-click="back" t-out="ic('back',18)"/>
+          <div class="pbpd-hero-main">
+            <div class="eyebrow">Pay &amp; Deliver</div>
+            <h1 t-esc="state.data.run.name"/>
+            <div class="sub">
+              <span t-esc="state.data.run.period"/>
+              <span class="dot">•</span>
+              <span><t t-esc="state.data.run.headcount"/> payslips</span>
+            </div>
+          </div>
+          <div class="pbpd-hero-net">
+            <div class="l">Total net</div>
+            <div class="v" t-esc="money(state.netShown)"/>
+          </div>
+        </div>
+
+        <div class="pbpd-lanes">
+
+          <!-- ===================== LANE 1 · MONEY OUT ==================== -->
+          <section class="pbpd-lane money">
+            <div class="lane-h">
+              <span class="ico" t-out="ic('landmark',20)"/>
+              <div>
+                <div class="ttl">Money out</div>
+                <div class="sub">Generate the bank transfer file</div>
+              </div>
+            </div>
+
+            <!-- live counters -->
+            <div class="pbpd-counts">
+              <div class="c ok">
+                <span class="n" t-esc="state.data.validation.eligible"/>
+                <span class="l">payslips ready</span>
+              </div>
+              <div t-attf-class="c excl {{ state.data.validation.excluded_count ? 'hot' : '' }}"
+                   t-on-click="toggleExcl">
+                <span class="n" t-esc="state.data.validation.excluded_count"/>
+                <span class="l">excluded<t t-if="state.data.validation.excluded_count"> — view</t></span>
+              </div>
+            </div>
+
+            <!-- exclusion drawer -->
+            <div t-if="state.showExcl and state.data.validation.excluded_count" class="pbpd-excl">
+              <div t-foreach="state.data.validation.excluded" t-as="x" t-key="x.employee_id"
+                   class="row">
+                <span class="emp" t-esc="x.employee"/>
+                <span class="reasons">
+                  <span t-foreach="x.reasons" t-as="rs" t-key="rs_index" class="chip" t-esc="rs"/>
+                </span>
+              </div>
+            </div>
+
+            <!-- bank chips -->
+            <div class="pbpd-banks">
+              <button t-foreach="state.data.banks" t-as="b" t-key="b.key"
+                      t-attf-class="chip {{ state.bank === b.key ? 'active' : '' }}"
+                      t-on-click="() => this.selectBank(b.key)">
+                <span class="dot" t-out="ic('landmark',16)"/>
+                <span class="nm" t-esc="b.name"/>
+              </button>
+            </div>
+
+            <!-- company debit account -->
+            <label class="pbpd-field">
+              <span>Company debit account <em>(optional)</em></span>
+              <input type="text" t-att-value="state.companyAccount"
+                     t-on-input="onCompanyAccount" placeholder="e.g. 0011000123456"/>
+            </label>
+
+            <!-- generate + empty-state -->
+            <div t-if="!state.data.validation.eligible" class="pbpd-empty small">
+              <span class="i" t-out="ic('alert',22)"/>
+              <div class="t">No payable rows</div>
+              <div class="s">Every payslip failed validation — fix the excluded bank accounts, then regenerate.</div>
+            </div>
+            <button t-else="" class="pbpd-btn primary" t-att-disabled="state.busy"
+                    t-on-click="generate">
+              <span t-out="ic('download',18)"/>
+              <span>Generate <t t-esc="bankName"/> file</span>
+            </button>
+
+            <!-- download tile -->
+            <div t-if="state.generated" class="pbpd-file">
+              <div class="ico" t-out="ic('fileText',26)"/>
+              <div class="meta">
+                <div class="nm" t-esc="state.generated.filename"/>
+                <div class="sub">
+                  <t t-esc="state.generated.valid"/> rows
+                  <span class="dot">•</span>
+                  <t t-esc="fileSize(state.generated.byte_size)"/>
+                  <span class="dot">•</span>
+                  <t t-esc="money(state.generated.total_amount)"/>
+                </div>
+                <div t-if="state.generated.excluded.length" class="warn">
+                  <t t-esc="state.generated.excluded.length"/> row(s) excluded — not in file
+                </div>
+              </div>
+              <button class="pbpd-btn ghost" t-on-click="downloadFile">
+                <span t-out="ic('download',16)"/><span>Download</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ===================== LANE 2 · PAYSLIPS OUT ================= -->
+          <section class="pbpd-lane deliver">
+            <div class="lane-h">
+              <span class="ico" t-out="ic('mail',20)"/>
+              <div>
+                <div class="ttl">Payslips out</div>
+                <div class="sub">Password-protected PDFs by email</div>
+              </div>
+            </div>
+
+            <!-- recipient preview -->
+            <div class="pbpd-recips">
+              <div class="avatars">
+                <img t-foreach="state.data.recipients.avatars" t-as="a" t-key="a_index"
+                     class="av" t-att-src="a" alt=""/>
+              </div>
+              <div class="txt">
+                <strong t-esc="state.data.recipients.count"/> recipients
+                <span t-if="state.data.recipients.no_email_count" class="warn">
+                  · <t t-esc="state.data.recipients.no_email_count"/> without email
+                </span>
+              </div>
+            </div>
+
+            <!-- no-email list -->
+            <div t-if="state.data.recipients.no_email_count" class="pbpd-noemail">
+              <div class="h"><span t-out="ic('alert',14)"/> Skipped — no work email</div>
+              <div t-foreach="state.data.recipients.no_email" t-as="n" t-key="n_index"
+                   class="row" t-esc="n.employee"/>
+            </div>
+
+            <!-- password explainer -->
+            <div class="pbpd-pwd">
+              <span class="ico" t-out="ic('lock',18)"/>
+              <div>
+                <div class="t">Each PDF is locked with a per-employee password</div>
+                <code t-esc="state.data.password_pattern"/>
+                <div class="s">Resolved privately per employee — never shown, logged, or stored.</div>
+              </div>
+            </div>
+
+            <!-- send actions -->
+            <div class="pbpd-send-row">
+              <button class="pbpd-btn primary" t-att-disabled="state.busy"
+                      t-on-click="() => this.send(false)">
+                <span t-out="ic('upload',18)"/>
+                <span>Send payslips</span>
+              </button>
+              <button t-if="state.delivery and state.delivery.failed"
+                      class="pbpd-btn ghost" t-att-disabled="state.busy"
+                      t-on-click="() => this.send(false)">
+                <span t-out="ic('refresh',16)"/><span>Resend failures</span>
+              </button>
+              <button t-if="state.delivery and state.delivery.exists"
+                      class="pbpd-btn ghost subtle" t-att-disabled="state.busy"
+                      t-on-click="() => this.send(true)">
+                <span t-out="ic('rotate',16)"/><span>Resend all</span>
+              </button>
+            </div>
+
+            <!-- delivery summary + pills -->
+            <div t-if="state.delivery and state.delivery.exists" class="pbpd-result">
+              <div class="summary">
+                <div class="s ok"><b t-esc="state.delivery.sent"/><span>sent</span></div>
+                <div class="s bad"><b t-esc="state.delivery.failed"/><span>failed</span></div>
+                <div class="s warn"><b t-esc="state.delivery.skipped"/><span>skipped</span></div>
+              </div>
+              <div class="pills">
+                <div t-foreach="state.delivery.lines" t-as="l" t-key="l_index"
+                     t-attf-class="pill {{ pillClass(l.state) }}">
+                  <span class="e" t-esc="l.employee"/>
+                  <span class="st" t-esc="pillLabel(l.state)"/>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- ============================ load error ======================== -->
+      <div t-else="" class="pbpd-empty">
+        <span class="i" t-out="ic('alert',26)"/>
+        <div class="t">Couldn't open this run</div>
+        <div class="s">Go back and pick a pay run.</div>
+        <button class="pbpd-btn ghost" t-on-click="back">Back to runs</button>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -104,8 +104,9 @@ export class PbPayruns extends Component {
     }
     report(b) { this._run("action_open_payroll_report", b.id); }
     excel(b) { this._run("action_download_payslip_xlsx", b.id); }
-    email(b) { this._run("action_send_email_all", b.id, "Payslips emailed"); }
-    bankExport(b) { this._run("action_pb_bank_export", b.id); }
+    // Phase F: the bespoke Pay & Deliver experience replaces the legacy
+    // "Bank file" + "Email" launchers (bank transfer file + payslip delivery).
+    payDeliver(b) { this._run("action_pb_pay_deliver", b.id); }
     journals(b) { this._run("action_pb_journals", b.id); }
     payments(b) { this._run("action_pb_payments", b.id); }
 

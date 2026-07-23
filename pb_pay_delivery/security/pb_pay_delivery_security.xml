@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Delivery batches/lines are company-scoped (AND'd with group rules). -->
+    <record id="delivery_batch_rule_company" model="ir.rule">
+        <field name="name">Payslip delivery batch: company</field>
+        <field name="model_id" ref="model_pb_payslip_delivery_batch"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>
