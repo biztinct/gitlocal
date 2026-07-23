@@ -19,11 +19,15 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
+import difflib
+import logging
 from collections import defaultdict
 from lxml import etree
 from lxml.builder import E
 from odoo import api, models
 from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
+
+_logger = logging.getLogger(__name__)
 
 
 class ResGroups(models.Model):
@@ -187,7 +191,20 @@ class ResGroups(models.Model):
                 name="groups_ids", position="replace")
             xml.addprevious(etree.Comment("GENERATED AUTOMATICALLY BY GROUPS"))
         xml_content = etree.tostring(xml, pretty_print=True, encoding="unicode")
-        if xml_content != view.arch:
+        # Compare NORMALIZED: etree.tostring appends a trailing newline that the
+        # stored arch loses on the read-back, so a raw != is true on EVERY
+        # registry load — an eternal 1-byte rewrite whose ['templates'] cache
+        # signal made every other worker reload, i.e. the registry-reload storm.
+        if xml_content.strip() != (view.arch or '').strip():
+            # a real change: log the diff so any future regeneration
+            # instability is visible in the log, never silent
+            diff = '\n'.join(difflib.unified_diff(
+                (view.arch or '').splitlines(), xml_content.splitlines(),
+                'stored', 'generated', lineterm=''))
+            _logger.info(
+                "access_roles: role-groups view arch changed (%s -> %s chars); "
+                "diff (first 4000 chars):\n%s",
+                len(view.arch or ''), len(xml_content), diff[:4000])
             new_context = dict(self.env.context)
             new_context.pop('install_filename', None)
             new_context['lang'] = None

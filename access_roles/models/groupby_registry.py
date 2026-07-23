@@ -108,8 +108,11 @@ class GroupByRegistry(models.Model):
     def _create_or_update_groupby(self, name, model_id, view_ids, context, string):
         """Create or update a groupby registry record."""
         display_name = string if string else name
+        # search by the stored value (display_name) — searching by the
+        # technical name never matched, re-creating every labelled group_by
+        # on every sync (same defect as filter_registry)
         existing_groupby = self.search([
-            ('name', '=', name),
+            ('name', '=', display_name),
             ('model_id', '=', model_id)
         ], limit=1)
         if existing_groupby:
