@@ -654,3 +654,32 @@ number from the handovers — keep the numbering stable.
     own-only (`create_uid`) record rule, or any employee `search_read`s every colleague's extracted bank
     account — proven live with a leftover test job. Test residue rule: an end-to-end test on the live DB must
     clean up EVERY row it created, including engine-side job/log rows, not just the domain records.
+
+### Phase-E findings (young worker rules — 2026-07-23, WP-Sudima-E). Numbering continues C18.
+
+33. **An advisory wrapper around `pb.payrun.wizard` must be MRO-OUTER of `pb_demo`.** `pb_demo` REPLACES
+    `create_and_compute`/`compute_batch` for its division path and does NOT call `super()`, so a wrapper that
+    only `super()`-appends to `exceptions` runs only if it sits before `pb_demo` in the MRO. It does: `pb_young_worker`
+    (via the deep `pb_hr_workforce` chain) loads AFTER `pb_demo`, so its class is the more-derived override — a
+    test asserts `type(env['pb.payrun.wizard']).mro()` places the young-worker class before the pb_demo class, and
+    the demo path's warnings surface. **No `pb_demo` dependency was needed** (keeping the guard demo-agnostic); if a
+    future refactor changes module depths and the MRO test fails, add `pb_demo` to `depends` to force the order.
+34. **App-wide `@api.constrains` gates need a `_has_any_rule()` short-circuit + sudo birthday reads.** The under-18
+    OT/daily/night gates constrain `hr.overtime.request`/`hr.attendance`/`hr.shift.planning`, which fire on EVERY
+    write system-wide; guard the hot path with a cheap `search_count` so the general population pays ~one query,
+    and resolve the band per (employee, local-day). `birthday` IS a real readable column on `hr.employee` in
+    Odoo 19, but it's `hr.group_hr_user`-scoped — the engine reads it via `.sudo()` (never guess an age). Corollary
+    surfaced in test: the base grid's `get_ot_ceilings` reads `e.company_id`, which triggers hr's `_check_private_fields`
+    and raises AccessError for a plain attendance officer on a VN employee (many private `vietnam_*` fields) — grid
+    users need `hr.group_hr_user`, not just the attendance-officer group.
+35. **Seed country defaults via `post_init_hook` per-company, not static XML — the demo company is not
+    base.main_company.** The live demo runs under 'Payobook Vietnam JSC' (a non-main company), so a data-XML rule
+    on `base.main_company` would leave the demo employees ungated. The hook seeds an editable VN rule for every
+    company lacking one (caps stay data — a module constant — and remain deactivatable per company). Test isolation:
+    that seeded rule collides with a test's own rule, so `setUpClass` must deactivate pre-existing rules first (same
+    class as the bank test's `payroll.ai.config` isolation).
+36. **`check_period` bounds violations to ≤ `date_to`; the week gauge sums the full ISO week.** A future-dated
+    over-cap day shows on the cockpit's week-hours gauge (`check_week_hours`, whole Mon–Sun) but NOT in the 30-day
+    violation feed (`check_period`, clipped to `[from, to]`) — correct (a past-window feed must not count future
+    days). When validating the feed live, seed a fully-PAST complete week, or the gauge lights up while the feed
+    stays empty.

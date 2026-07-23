@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_young_worker.PbYoungWorker">
+    <div class="pbyw pbim">
+
+      <!-- ================================ HERO ================================ -->
+      <div class="pbyw-hero">
+        <div class="pbyw-hero__l">
+          <div class="pbyw-hero__badge"><i class="fa fa-shield"/></div>
+          <div>
+            <h1 class="pbyw-hero__title">Young Worker Guard</h1>
+            <p class="pbyw-hero__sub">Under-18 working-time compliance — Vietnam Labor Code.</p>
+          </div>
+        </div>
+        <div class="pbyw-hero__kpis" t-if="state.loaded">
+          <div class="pbyw-kpi">
+            <span class="pbyw-kpi__v" t-esc="state.data.kpis.protected || 0"/>
+            <span class="pbyw-kpi__l">Protected</span>
+          </div>
+          <div class="pbyw-kpi">
+            <span class="pbyw-kpi__v pbyw-kpi__v--ok" t-esc="state.data.kpis.compliant || 0"/>
+            <span class="pbyw-kpi__l">Compliant this week</span>
+          </div>
+          <div class="pbyw-kpi">
+            <span t-attf-class="pbyw-kpi__v {{ (state.data.kpis.violations_30d || 0) > 0 ? 'pbyw-kpi__v--rose' : '' }}" t-esc="state.data.kpis.violations_30d || 0"/>
+            <span class="pbyw-kpi__l">Violations (30d)</span>
+          </div>
+          <div class="pbyw-kpi">
+            <span t-attf-class="pbyw-kpi__v {{ (state.data.kpis.missing_birthdays || 0) > 0 ? 'pbyw-kpi__v--amber' : '' }}" t-esc="state.data.kpis.missing_birthdays || 0"/>
+            <span class="pbyw-kpi__l">Missing birthdays</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================== LOADING =============================== -->
+      <div class="pbyw-loading" t-if="!state.loaded">
+        <i class="fa fa-circle-o-notch fa-spin"/> Loading the guard…
+      </div>
+
+      <div class="pbyw-cols" t-if="state.loaded">
+        <!-- ============================== MAIN ============================== -->
+        <div class="pbyw-main">
+
+          <!-- Roster -->
+          <div class="pbyw-card">
+            <div class="pbyw-card__hd">
+              <i class="fa fa-users"/> Protected roster
+              <span class="pbyw-card__n" t-esc="state.data.roster.length"/>
+            </div>
+            <div class="pbyw-empty" t-if="!state.data.roster.length">
+              No under-18 employees in the current company scope.
+            </div>
+            <div class="pbyw-roster" t-if="state.data.roster.length">
+              <div class="pbyw-rcard" t-foreach="state.data.roster" t-as="r" t-key="r.id">
+                <img class="pbyw-rcard__av" t-att-src="r.avatar_url" alt=""/>
+                <div class="pbyw-rcard__body">
+                  <div class="pbyw-rcard__top">
+                    <span class="pbyw-rcard__name" t-esc="r.name"/>
+                    <span t-if="r.mtd_violations" class="pbyw-badge pbyw-badge--rose">
+                      <i class="fa fa-exclamation-triangle"/> <t t-esc="r.mtd_violations"/>
+                    </span>
+                  </div>
+                  <div class="pbyw-rcard__meta">
+                    <span class="pbyw-band"><i class="fa fa-shield"/> <t t-esc="r.band_label"/></span>
+                    <span t-attf-class="pbyw-chip {{ countdownClass(r) }}"><i class="fa fa-birthday-cake"/> <t t-esc="countdown(r)"/></span>
+                  </div>
+                  <!-- week-hours gauge -->
+                  <div class="pbyw-gauge">
+                    <div class="pbyw-gauge__track">
+                      <div t-attf-class="pbyw-gauge__fill pbyw-gauge__fill--{{ gaugeBand(r) }}" t-attf-style="width:{{ gaugePct(r) }}%"/>
+                    </div>
+                    <span class="pbyw-gauge__lbl">
+                      <t t-esc="r.week_hours"/>/<t t-esc="r.week_cap"/> h this week
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Violation feed -->
+          <div class="pbyw-card">
+            <div class="pbyw-card__hd">
+              <i class="fa fa-history"/> Violation feed
+              <span class="pbyw-card__sub">last 30 days</span>
+            </div>
+            <div class="pbyw-empty" t-if="!state.data.feed.length">
+              <i class="fa fa-check-circle"/> No violations in the last 30 days.
+            </div>
+            <div class="pbyw-feed" t-if="state.data.feed.length">
+              <div class="pbyw-feedrow" t-foreach="state.data.feed" t-as="v" t-key="v_index">
+                <span t-attf-class="pbyw-feedrow__ic pbyw-feedrow__ic--{{ v.kind }}">
+                  <i t-attf-class="fa {{ kindIcon(v.kind) }}"/>
+                </span>
+                <div class="pbyw-feedrow__body">
+                  <div class="pbyw-feedrow__top">
+                    <span class="pbyw-feedrow__name" t-esc="v.name"/>
+                    <span class="pbyw-feedrow__kind" t-esc="kindLabel(v.kind)"/>
+                  </div>
+                  <div class="pbyw-feedrow__detail" t-esc="v.detail"/>
+                </div>
+                <span class="pbyw-feedrow__date" t-esc="v.date"/>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================== SIDE ============================== -->
+        <aside class="pbyw-side">
+
+          <!-- Rules card -->
+          <div class="pbyw-card">
+            <div class="pbyw-card__hd">
+              <i class="fa fa-book"/> Rules
+              <button t-if="state.data.can_edit" class="pbyw-btn pbyw-btn--ghost pbyw-card__act" t-on-click="editRules">
+                <i class="fa fa-pencil"/> Edit
+              </button>
+            </div>
+            <div class="pbyw-empty" t-if="!state.data.has_rules">
+              No young-worker rule configured for this company.
+            </div>
+            <div t-foreach="state.data.rules" t-as="rule" t-key="rule.id" class="pbyw-rules">
+              <div class="pbyw-rules__co" t-if="state.data.rules.length > 1" t-esc="rule.company"/>
+              <table class="pbyw-bandtable">
+                <thead>
+                  <tr><th>Age</th><th>Day</th><th>Week</th><th>OT</th><th>Night</th></tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="rule.bands" t-as="b" t-key="b_index">
+                    <td><t t-esc="b.age_min"/>–<t t-esc="b.age_max"/></td>
+                    <td><t t-esc="b.max_hours_day"/>h</td>
+                    <td><t t-esc="b.max_hours_week"/>h</td>
+                    <td><i t-attf-class="fa {{ b.ot_blocked ? 'fa-times pbyw-x' : 'fa-check pbyw-ok' }}"/></td>
+                    <td><i t-attf-class="fa {{ b.night_blocked ? 'fa-times pbyw-x' : 'fa-check pbyw-ok' }}"/></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="pbyw-rules__night">
+                <i class="fa fa-moon-o"/> Night window
+                <t t-esc="rule.night_from"/>:00–<t t-esc="rule.night_to"/>:00
+              </div>
+            </div>
+            <div class="pbyw-rules__cap">VN Labor Code defaults</div>
+          </div>
+
+          <!-- Missing birthdays -->
+          <div class="pbyw-card" t-if="state.data.missing.length">
+            <div class="pbyw-card__hd pbyw-card__hd--amber">
+              <i class="fa fa-question-circle"/> Missing birthdays
+              <span class="pbyw-card__n pbyw-card__n--amber" t-esc="state.data.kpis.missing_birthdays"/>
+            </div>
+            <div class="pbyw-miss__hint">Cannot verify young-worker status — add these dates of birth.</div>
+            <div class="pbyw-miss">
+              <div class="pbyw-missrow" t-foreach="state.data.missing" t-as="m" t-key="m.id">
+                <img class="pbyw-missrow__av" t-att-src="m.avatar_url" alt=""/>
+                <span class="pbyw-missrow__name" t-esc="m.name"/>
+                <span class="pbyw-missrow__dep" t-esc="m.department"/>
+              </div>
+            </div>
+            <div class="pbyw-miss__more" t-if="state.data.missing_truncated">
+              …and <t t-esc="state.data.missing_truncated"/> more
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </t>
+
+</templates>
