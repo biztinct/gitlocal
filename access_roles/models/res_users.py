@@ -66,29 +66,23 @@ class ResUsers(models.Model):
         for user in users:
             if user.access_role_id:
                 user.write({
-                    'group_ids': [Command.set(user.access_role_id.groups_ids.ids)]
+                    'group_ids': [Command.link(gid) for gid in user.access_role_id.groups_ids.ids]
                 })
         return users
 
     def write(self, vals):
         """Override write to manage role-based group assignment"""
-        groups_to_remove = None
-        # Handle role removal
-        if 'access_role_id' in vals and not vals['access_role_id']:
-            if self.access_role_id:
-                groups_to_remove = self.access_role_id.groups_ids
         result = super(ResUsers, self).write(vals)
         if 'access_role_id' in vals:
+            # Invalidate menu cache when role assignment changes
+            self.env['ir.ui.menu']._invalidate_menu_cache()
             if vals['access_role_id']:
                 new_role = self.env['access.role'].browse(vals['access_role_id'])
                 self.write({
-                    'group_ids': [Command.set(new_role.groups_ids.ids)]
+                    'group_ids': [Command.link(gid) for gid in new_role.groups_ids.ids]
                 })
-            elif groups_to_remove:
-                groups_list = groups_to_remove.ids
-                if 1 in groups_list:
-                    groups_list.remove(1)
-                self.write({
-                    'group_ids': [Command.unlink(gid) for gid in groups_list]
-                })
+            # Note: When removing a role, we do NOT auto-remove groups because
+            # we cannot safely determine which groups existed before the role
+            # was assigned vs which were added by the role. Groups should be
+            # managed manually by the administrator if needed.
         return result
