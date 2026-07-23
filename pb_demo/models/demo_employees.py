@@ -7,13 +7,31 @@ payroll is computed by the formula configs, not salary structures.
 """
 import logging
 import random
+from datetime import datetime, date, time, timedelta
+
 from dateutil.relativedelta import relativedelta
+from pytz import timezone, utc
 
 from odoo import api, fields, models
 
 from . import demo_catalog as cat
+from .demo_history import _HISTORY_YEAR, _OPEN_MONTH
 
 _logger = logging.getLogger(__name__)
+
+# Two persistent under-18 demo employees for the Young Worker Guard story.
+# Ages are anchored to `today` (never absolute), so the 17- and 14-year-old
+# never age out of their VN bands. Each is seeded one over-week-cap attendance
+# week: weekly hours = days × week_hours EXCEEDS the band cap (40 h for 15–<18,
+# 20 h for <15) while every single day stays under the daily cap + grace, so the
+# hard per-day attendance constraint accepts the punches and check_period still
+# reports a `week_cap` violation.
+_YW_DEMOS = [
+    {'name': 'Demo Minor 17 (Young Worker)', 'years': 17, 'sex': 'male',
+     'wage': 5000000, 'week_hours': 7.0, 'days': 6},   # 42 h > 40 h week cap
+    {'name': 'Demo Minor 14 (Young Worker)', 'years': 14, 'sex': 'female',
+     'wage': 4000000, 'week_hours': 4.0, 'days': 6},   # 24 h > 20 h week cap
+]
 
 _SURNAMES = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Hoàng', 'Huỳnh', 'Phan', 'Vũ', 'Võ',
              'Đặng', 'Bùi', 'Đỗ', 'Hồ', 'Ngô', 'Dương', 'Lý', 'Đào', 'Đoàn', 'Vương', 'Trịnh']
@@ -148,8 +166,79 @@ class PbDemoGenerator(models.TransientModel):
             self.env.cr.commit()
             self.env.invalidate_all()
 
+        self.ensure_young_worker_demos()
+
         _logger.info('pb_demo: total ~%s employees generated.', total)
         return total
+
+    # ---------------------------------------------------- young-worker demos
+    def ensure_young_worker_demos(self):
+        """Create/adopt the two named under-18 demo employees (Retail division).
+
+        Idempotent and name-keyed: it ADOPTS any pre-existing hand-made record of
+        the same name (flipping it to is_demo=True so a regen owns and rebuilds
+        it) or creates it fresh. Each gets a running contract — so they enter the
+        Retail division run — and one seeded over-week-cap attendance week in the
+        open payroll month, which surfaces both in the Guard cockpit feed and the
+        Run Payroll advisory step. Called from generate_employees(); safe to call
+        standalone.
+        """
+        self = self.with_context(**self._GEN_CTX)
+        Employee = self.env['hr.employee'].sudo().with_context(active_test=False)
+        Contract = self.env['hr.contract'].sudo().with_context(active_test=False)
+        Att = self.env['hr.attendance'].sudo()
+        today = fields.Date.context_today(self)
+        group = self.get_group_company()
+        vn_calendar = self.get_calendar(group)
+        # tz the young-worker checker reads a punch's local day in (calendar first)
+        tz = timezone(vn_calendar.tz or 'Asia/Ho_Chi_Minh')
+        vn_country = self.env.ref('base.vn').id
+        ct = self._ensure_contract_type()
+        key = 'retail'
+        parent_dept = self.get_division_dept(group, key)
+        cc = cat.DIVISIONS[key]['cost_centres'][0]
+        dept = self.get_cost_centre_dept(parent_dept, cc) or parent_dept
+        contract_start = date(_HISTORY_YEAR, 1, 1)
+        # Monday of a fully-past complete ISO week inside the open payroll month
+        # (June 8 2026 = Monday of ISO week 24). All seeded days stay in one week.
+        week_monday = date(_HISTORY_YEAR, _OPEN_MONTH, 8)
+
+        created = Employee.browse()
+        for spec in _YW_DEMOS:
+            vals = {
+                'name': spec['name'], 'sex': spec['sex'],
+                'birthday': today - relativedelta(years=spec['years'], months=6),
+                'company_id': group.id, 'department_id': dept.id,
+                'job_title': 'Trainee', 'country_id': vn_country,
+                'is_demo': True, 'active': True, 'division': key,
+                'date_of_joining': contract_start, 'subject_to_pit': 'YES',
+            }
+            emp = Employee.search([('name', '=', spec['name'])], limit=1)
+            if emp:
+                emp.write(vals)
+            else:
+                emp = Employee.create(vals)
+            created |= emp
+
+            if not Contract.search_count([('employee_id', '=', emp.id)]):
+                Contract.create({
+                    'name': 'Contract - %s' % spec['name'], 'employee_id': emp.id,
+                    'company_id': group.id, 'wage': spec['wage'], 'struct_id': False,
+                    'date_start': contract_start, 'state': 'open',
+                    'resource_calendar_id': vn_calendar.id, 'type_id': ct.id,
+                    'schedule_pay': 'monthly', 'costcenter': cc,
+                })
+
+            # One over-week-cap week — each day legal, week total over cap.
+            for off in range(spec['days']):
+                d = week_monday + timedelta(days=off)
+                ci = tz.localize(datetime.combine(d, time(9, 0))).astimezone(utc).replace(tzinfo=None)
+                co = ci + timedelta(hours=spec['week_hours'])
+                if not Att.search_count([('employee_id', '=', emp.id), ('check_in', '=', ci)]):
+                    Att.create({'employee_id': emp.id, 'check_in': ci, 'check_out': co})
+
+        _logger.info('pb_demo: ensured %s young-worker demo employees.', len(created))
+        return created
 
     # ----------------------------------------------------------------- cleanup
     def clean_demo_employees(self):
