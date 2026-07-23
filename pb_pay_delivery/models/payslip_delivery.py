@@ -95,8 +95,9 @@ class PbPayslipDeliveryBatch(models.Model):
         pwd = pwd.replace('{account_last4}', acct[-4:] if len(acct) >= 4 else acct)
         pwd = pwd.replace('{birth_year}', birth_year)
         pwd = pwd.replace('{employee_code}', code)
-        # Never yield an empty password (would produce an unprotected PDF).
-        return pwd or (acct[-4:] or 'payslip')
+        # Never a static fallback: an underivable password means the slip FAILS
+        # (surfaced in the drawer) rather than shipping a guessably-protected PDF.
+        return pwd or acct[-4:] or code
 
     # ------------------------------------------------------------- pdf
     def _report_ref(self):
@@ -178,11 +179,17 @@ class PbPayslipDeliveryBatch(models.Model):
                             'mail_id': False})
                 continue
 
+            password = self._resolve_password(emp)  # in memory only
+            if not password:
+                line.write({'state': 'failed', 'mail_id': False, 'error': _(
+                    'Cannot derive a PDF password for this employee '
+                    '(no bank account, birthday or employee code on file).')})
+                continue
+
             # One savepoint per slip — a single bad payslip never kills the run.
             try:
                 with self.env.cr.savepoint():
                     pdf = self._render_pdf(slip)
-                    password = self._resolve_password(emp)  # in memory only
                     enc = self._encrypt_pdf(pdf, password)
                     attachment = self.env['ir.attachment'].create({
                         'name': '%s.pdf' % (slip.number or slip.name or 'payslip'),

@@ -281,3 +281,18 @@ class TestPayDelivery(TransactionCase):
         joined = ' '.join(fields).lower()
         self.assertNotIn('password', joined)
         self.assertNotIn('pwd', joined)
+
+    def test_13_underivable_password_fails_surfaced(self):
+        """Rail 4 hardening: no static-fallback password — a slip whose password
+        cannot be derived FAILS with a surfaced reason, never ships guessable."""
+        emp = self._employee('No Secrets', '', email='f@ex.com')
+        emp.write({'birthday': False, 'barcode': False, 'identification_id': False})
+        slip = self._slip(emp, 5000000)
+        batch = self.env['pb.payslip.delivery.batch'].create({'run_id': self.payrun.id})
+        before = self.env['mail.mail'].search_count([])
+        with patch(_RENDER, return_value=_valid_pdf_bytes()):
+            batch.action_send()
+        line = batch.line_ids.filtered(lambda l: l.slip_id == slip)
+        self.assertEqual(line.state, 'failed')
+        self.assertIn('password', (line.error or '').lower())
+        self.assertEqual(self.env['mail.mail'].search_count([]), before)  # nothing queued

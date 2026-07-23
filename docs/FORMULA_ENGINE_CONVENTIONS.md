@@ -772,9 +772,18 @@ number from the handovers — keep the numbering stable.
     survived from a half-applied earlier upgrade, so it looked present but the class was absent →
     `KeyError` at `get_studio_data`). Post-deploy: model registered, `get_studio_data` clean, themed
     payslip report live (so `pb_pay_delivery` now auto-renders THEMED PDFs via its `hasattr` switch).
-47. **Live has a REAL Gmail SMTP server** (`smtp.gmail.com:587`, "Payobook Outgoing Server") and ~179 mails already
-    queued. A `send_payslips` with `force_send=False` only QUEUES, but the mail cron would then dispatch to real
+47. **Live has a REAL Gmail SMTP server** (`smtp.gmail.com:587`, "Payobook Outgoing Server") and ~179 mails sitting
+    in `exception` state (dead — not dispatchable; the cron ignores them). A `send_payslips` with `force_send=False`
+    only QUEUES, but the "Mail: Email Queue Manager" cron is ACTIVE and would then dispatch to real
     addresses — so demo/validation must NEVER trigger a live send against real employees. Validate the delivery
     lane's UI (recipient/skip/password cards) without dispatching; the send path is covered by server tests
     (mock-rendered PDF → mail.mail queue rows + skip + idempotence + encryption round-trip). Report SMTP posture
     on any server before any bulk-mail feature demo (handover safety-rail: no accidental demo emails).
+48. **Clicking a live bulk-send is never a validation step** (Phase-F review, 2026-07-24). During Phase-F
+    validation, "Send payslips" was clicked on a live 500-slip run; it was mail-safe only by luck (every demo
+    employee lacked `work_email` → 500 `skipped_no_email`, 0 queued). Binding rule: exercise a live send lane
+    ONLY on a run first VERIFIED email-free (`SELECT count(*) FROM hr_employee ... work_email IS NOT NULL` over
+    its slips = 0), or with the mail queue cron paused for the demo window — and delete the residue batch
+    afterwards (demo-pristine). The password fallback is hardened too: an underivable password (no account
+    digits, no birthday, no employee code) now FAILS the slip with a surfaced reason — a static fallback
+    password is never acceptable on an encrypted payslip.
