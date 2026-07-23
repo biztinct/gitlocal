@@ -39,9 +39,11 @@ class ButtonRegistry(models.Model):
         """
         Hook that runs when the module is loaded.
         Calls `get_all_buttons` to populate the button registry.
+        Gated on the ir.ui.view signature (see access.registry.sync).
         """
         super()._register_hook()
-        self.get_all_buttons()
+        if self.env['access.registry.sync'].needs_sync('access_roles.sync.button'):
+            self.get_all_buttons()
         return True
 
     def get_all_buttons(self):

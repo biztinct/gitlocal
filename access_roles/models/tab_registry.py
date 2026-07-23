@@ -35,9 +35,11 @@ class TabRegistry(models.Model):
 
     @api.model
     def _register_hook(self):
-        """Triggers filter extraction during module initialization."""
+        """Triggers tab extraction during module initialization.
+        Gated on the ir.ui.view signature (see access.registry.sync)."""
         super()._register_hook()
-        self.get_all_tabs()
+        if self.env['access.registry.sync'].needs_sync('access_roles.sync.tab'):
+            self.get_all_tabs()
         return True
 
     def get_all_tabs(self):

@@ -19,6 +19,7 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
+from . import registry_sync
 from . import access_role
 from . import button_registry
 from . import domain_model

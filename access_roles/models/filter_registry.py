@@ -38,9 +38,15 @@ class FilterRegistry(models.Model):
 
     @api.model
     def _register_hook(self):
-        """Triggers filter extraction during module initialization."""
+        """Triggers filter extraction during module initialization.
+
+        Gated: the full view scan runs only when ir.ui.view actually changed
+        since the last sync (see access.registry.sync) — on an unchanged
+        database a registry load pays one SELECT instead of parsing every
+        search view."""
         super()._register_hook()
-        self.get_all_filters()
+        if self.env['access.registry.sync'].needs_sync('access_roles.sync.filter'):
+            self.get_all_filters()
         return True
 
     def _get_filter_elements_from_arch(self, arch):
@@ -111,20 +117,32 @@ class FilterRegistry(models.Model):
         return filter_model
 
     def _create_or_update_filter(self, name, model_id, view_ids, domain, string):
-        """Create or update a filter registry record."""
+        """Create or update a filter registry record. Diff-aware: an
+        unconditional write here used to re-touch every filter row on every
+        sync, re-signaling cache invalidations for no change."""
         display_name = string if string else name
         existing_filter = self.search([
             ('name', '=', name),
             ('model_id', '=', model_id)
         ], limit=1)
-        vals = {
-            'name': display_name,
-            'model_id': model_id,
-            'view_ids': [Command.link(view) for view in view_ids],
-            'domain': domain,
-            'string': string
-        }
         if existing_filter:
-            existing_filter.write(vals)
+            updates = {}
+            if existing_filter.name != display_name:
+                updates['name'] = display_name
+            if (existing_filter.domain or '') != (domain or ''):
+                updates['domain'] = domain
+            if (existing_filter.string or '') != (string or ''):
+                updates['string'] = string
+            missing = set(view_ids) - set(existing_filter.view_ids.ids)
+            if missing:
+                updates['view_ids'] = [Command.link(v) for v in missing]
+            if updates:
+                existing_filter.write(updates)
         else:
-            self.create(vals)
+            self.create({
+                'name': display_name,
+                'model_id': model_id,
+                'view_ids': [Command.link(view) for view in view_ids],
+                'domain': domain,
+                'string': string
+            })
