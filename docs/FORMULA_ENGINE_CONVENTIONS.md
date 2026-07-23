@@ -683,3 +683,25 @@ number from the handovers — keep the numbering stable.
     violation feed (`check_period`, clipped to `[from, to]`) — correct (a past-window feed must not count future
     days). When validating the feed live, seed a fully-PAST complete week, or the gauge lights up while the feed
     stays empty.
+
+### Phase-E review findings (2026-07-23, Fable review of WP-Sudima-E). Numbering continues C18.
+
+37. **Overlays sharing a payload dict must MERGE, never REPLACE.** Two independent `get_week_entries` overlays
+    (trip badges, young-worker locks) both populate the per-row `flags` dict; the MRO-outer one ran last and did
+    `row['flags'] = {...}`, wiping the trip overlay's keys for a minor on a business trip. Rule: any inherit that
+    contributes to a shared payload key uses `row.setdefault('flags', {}).update(...)` — assume you are not alone
+    in the chain. Same doctrine as override-and-super for formula inputs (C18 code registry).
+38. **"Report, don't retro-enforce" means corrective REDUCTIONS must always pass.** The grid week-cap check gated
+    every non-zero REG write, so an over-cap week seeded before the rule existed could not be walked down (10→8
+    still failed the cap). Gate only a POSITIVE delta (`new > current`); a reduction commits even when the week
+    stays over cap. Applies to any cap-style guard over historical data.
+39. **Config seeded per-company at install needs a `res.company` create hook too** — otherwise a company created
+    after install has no rule, no gates, and nothing hints at the gap (the rule lookup is deliberately
+    company-only, no global fallback). Pair every per-company `post_init_hook` seed with a `res.company.create`
+    override calling the same idempotent `_seed_*` helper, and make its has-one check `active_test=False` so a
+    manager's deliberate deactivation survives a reinstall.
+40. **Retention vacuums key on `write_date` (terminal date), not `create_date`** — a job created 31 days ago but
+    decided yesterday must not be purged on day one. And on live: NEVER run `--test-tags` without a scoping `-u` —
+    a bare test run imports the test packages of EVERY installed module, and legacy `om_hr_payroll`'s own tests
+    import a misspelled `odoo.addons.om_om_hr_payroll`, crashing the whole DB init (EXIT=255,
+    "Failed to initialize database"). The `-u`-scoped form only imports the updated modules' tests.
