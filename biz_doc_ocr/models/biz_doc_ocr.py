@@ -269,11 +269,13 @@ class BizDocOcrJob(models.Model):
     def _vacuum_jobs(self):
         """Unlink done/failed jobs older than the retention window. Their
         payload/result carry extracted PII, so decided jobs must not linger;
-        pending/running jobs are always kept (work still in flight)."""
+        pending/running jobs are always kept (work still in flight). The clock
+        runs from write_date — retention counts from when the job REACHED its
+        terminal state, not from when it was created."""
         cutoff = fields.Datetime.now() - timedelta(days=self._retention_days())
         stale = self.search([
             ('state', 'in', ('done', 'failed')),
-            ('create_date', '<', cutoff),
+            ('write_date', '<', cutoff),
         ])
         count = len(stale)
         if stale:
