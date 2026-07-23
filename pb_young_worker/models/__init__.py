@@ -6,3 +6,4 @@ from . import hr_attendance
 from . import shift_planning
 from . import attendance_weekentry
 from . import payrun_wizard
+from . import res_company

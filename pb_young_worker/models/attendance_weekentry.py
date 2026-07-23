@@ -38,7 +38,10 @@ class AttendanceWeekEntry(models.TransientModel):
             band = Eng.get_band(emp, week_date)
             if not band:
                 continue
-            row['flags'] = {'is_minor': True, 'band': band._caps()}
+            # merge, never replace: other overlays (e.g. the trip badge flags)
+            # populate the same dict below us in the MRO
+            row.setdefault('flags', {}).update(
+                {'is_minor': True, 'band': band._caps()})
             # lock every OT chip measure in every cell (REG stays editable, the
             # weekly cap is enforced on save)
             for cell in row.get('cells', {}).values():
@@ -57,7 +60,10 @@ class AttendanceWeekEntry(models.TransientModel):
         if band and hours and hours > 0:
             Att = self.env['hr.attendance'].sudo()
             cur_day = sum(Eng._att_hours(a) for a in att_map.get((emp.id, d), Att.browse()))
-            chk = Eng.check_week_hours(emp, d, extra=hours - cur_day)
-            if not chk['ok']:
-                return False, 'week_cap'
+            # only a positive delta is gated: an already-over-cap week (historic
+            # data, pre-rule) must stay reducible — report, don't retro-enforce
+            if hours > cur_day:
+                chk = Eng.check_week_hours(emp, d, extra=hours - cur_day)
+                if not chk['ok']:
+                    return False, 'week_cap'
         return super()._save_reg(emp, d, hours, token, att_map, shift_map)
