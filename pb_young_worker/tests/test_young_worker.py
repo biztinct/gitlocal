@@ -182,6 +182,36 @@ class TestYoungWorker(TransactionCase):
             'measure': 'reg', 'value': 5.0, 'token': ftoken}]})
         self.assertTrue(res2['results'][0]['ok'])
 
+    def test_05b_over_cap_week_stays_reducible(self):
+        """Review fix F2 — an already-over-cap week (historic, pre-rule) must be
+        walkable DOWN through the grid: only a positive delta is gated."""
+        Grid = self.env['hr.attendance.weekentry'].with_user(self.officer)
+        for i in range(5):
+            self._att(self.emp17, self.monday + timedelta(days=i), 7.0)
+        sat = self.monday + timedelta(days=5)
+        # seed the breach with the gate off: Sat 10 h → week 45 h (cap 40)
+        self.rule.active = False
+        self._att(self.emp17, sat, 10.0)
+        self.rule.active = True
+        data = Grid.get_week_entries(self.monday.isoformat())
+        row = next(r for r in data['rows'] if r['id'] == self.emp17.id)
+        token = row['cells'][sat.isoformat()]['measures']['reg']['token']
+        # reducing Sat 10 → 8 leaves the week over cap (43 h) but MUST commit
+        res = Grid.save_week_entries({'cells': [{
+            'rowId': self.emp17.id, 'dayISO': sat.isoformat(),
+            'measure': 'reg', 'value': 8.0, 'token': token}]})
+        self.assertTrue(res['results'][0]['ok'],
+                        "a corrective reduction may never be week_cap-blocked")
+        # while a further INCREASE on the over-cap week is still refused
+        data2 = Grid.get_week_entries(self.monday.isoformat())
+        row2 = next(r for r in data2['rows'] if r['id'] == self.emp17.id)
+        token2 = row2['cells'][sat.isoformat()]['measures']['reg']['token']
+        res2 = Grid.save_week_entries({'cells': [{
+            'rowId': self.emp17.id, 'dayISO': sat.isoformat(),
+            'measure': 'reg', 'value': 8.4, 'token': token2}]})
+        self.assertFalse(res2['results'][0]['ok'])
+        self.assertEqual(res2['results'][0]['error'], 'week_cap')
+
     # ---------------------------------------------------- §6.6 check_period feed
     def test_06_check_period(self):
         # week_cap: 6 × 7 h = 42 h (each day passes the daily gate)
@@ -247,8 +277,15 @@ class TestYoungWorker(TransactionCase):
                 'name': 'Bad2', 'company_id': self.company.id,
                 'band_ids': [(0, 0, {'age_min': 18, 'age_max': 15,
                                      'max_hours_day': 8, 'max_hours_week': 40})]})
-        # per-company isolation: a company with no rule = no gates
+        # a company created after install is auto-seeded (never silently ungated)
         co_b = self.env['res.company'].create({'name': 'CoB'})
+        Rule = self.env['pb.young.worker.rule'].sudo().with_context(active_test=False)
+        seeded = Rule.search([('company_id', '=', co_b.id)])
+        self.assertTrue(seeded, "a new company must get the VN default rule")
+        # re-seeding respects a deliberate opt-out: deactivate → seed creates nothing
+        seeded.write({'active': False})
+        self.assertFalse(Rule._seed_vn_defaults(co_b))
+        # per-company isolation: with its rule deactivated, CoB has no gates
         emp_b = self.env['hr.employee'].create({
             'name': 'Minor B', 'company_id': co_b.id, 'tz': 'UTC',
             'birthday': self.today - relativedelta(years=16)})

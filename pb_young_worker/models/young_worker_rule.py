@@ -17,10 +17,39 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
+# Vietnam Labor Code (Arts. 143–147): under-15 and 15-to-under-18 protections.
+# Seeded per company (hooks.py + res_company.py) — ordinary editable config.
+VN_BANDS = [
+    {'age_min': 0, 'age_max': 15, 'max_hours_day': 4.0, 'max_hours_week': 20.0,
+     'ot_blocked': True, 'night_blocked': True, 'note': 'Under 15'},
+    {'age_min': 15, 'age_max': 18, 'max_hours_day': 8.0, 'max_hours_week': 40.0,
+     'ot_blocked': True, 'night_blocked': True, 'note': '15 to under 18'},
+]
+
+
 class PbYoungWorkerRule(models.Model):
     _name = 'pb.young.worker.rule'
     _description = 'Young Worker Rule Set'
     _order = 'company_id, id'
+
+    @api.model
+    def _seed_vn_defaults(self, companies):
+        """Create the VN default rule for each of `companies` that has none —
+        including a deactivated one (a manager's deliberate opt-out must
+        survive a module reinstall untouched)."""
+        seeded = self.browse()
+        Rule = self.sudo().with_context(active_test=False)
+        for co in companies:
+            if Rule.search_count([('company_id', '=', co.id)]):
+                continue
+            seeded |= Rule.create({
+                'name': 'Young Worker Rules (VN)',
+                'company_id': co.id,
+                'night_from': 22.0,
+                'night_to': 6.0,
+                'band_ids': [(0, 0, dict(b)) for b in VN_BANDS],
+            })
+        return seeded
 
     name = fields.Char(string='Name', required=True, default=lambda self: _('Young Worker Rules'))
     company_id = fields.Many2one(
