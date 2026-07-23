@@ -705,3 +705,17 @@ number from the handovers — keep the numbering stable.
     a bare test run imports the test packages of EVERY installed module, and legacy `om_hr_payroll`'s own tests
     import a misspelled `odoo.addons.om_om_hr_payroll`, crashing the whole DB init (EXIT=255,
     "Failed to initialize database"). The `-u`-scoped form only imports the updated modules' tests.
+
+### F4 ops closure (2026-07-23, access_roles registry-reload storm — root causes). Numbering continues C18.
+
+41. **Generated-view writers must compare NORMALIZED, and store-what-you-search.** The F4 storm was two bugs
+    compounding in `access_roles`: (a) `_update_role_groups_view` compared `etree.tostring(...)` (which appends a
+    trailing newline) against the stored arch (which loses it on read-back) — a guaranteed-true `!=` meant a 1-byte
+    view rewrite on EVERY registry load, whose `['templates']` signal reloaded every other process, forever;
+    (b) the filter/groupby registries searched rows by technical name but stored the display name — labelled
+    filters were re-created on every sync (live reached 1.49M junk rows / 210 MB, and searching those tables was
+    ~215s of every 217s load). Fixes: `.strip()` both sides + log a real-change diff; search by the stored value;
+    gate all view-scan `_register_hook`s behind an ir_ui_view signature (`access.registry.sync`). Live result:
+    registry load 217s → 1.9s steady (4.1s with full resync), no self-signaling, stable single process. Lesson for
+    any module: a `_register_hook` that WRITES must be provably idempotent byte-for-byte, or it becomes a
+    self-sustaining reload storm; and a create-or-update helper must search by exactly what it stores.
