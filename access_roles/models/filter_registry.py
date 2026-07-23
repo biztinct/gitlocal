@@ -121,8 +121,11 @@ class FilterRegistry(models.Model):
         unconditional write here used to re-touch every filter row on every
         sync, re-signaling cache invalidations for no change."""
         display_name = string if string else name
+        # search by the SAME value we store: the row keeps display_name in
+        # `name`, so searching by the technical name never matched and every
+        # sync re-created every labelled filter — millions of junk rows
         existing_filter = self.search([
-            ('name', '=', name),
+            ('name', '=', display_name),
             ('model_id', '=', model_id)
         ], limit=1)
         if existing_filter:
