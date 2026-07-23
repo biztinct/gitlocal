@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- PAY RUN › Pay & Deliver. Primary launch is the "Pay & Deliver" button on
+         a Done run card; this sidebar item opens the experience directly (it asks
+         for a run inside when launched without one). Gated to the pay tier. -->
+    <record id="item_pay_deliver" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="name">Pay &amp; Deliver</field>
+        <field name="icon">send</field>
+        <field name="sequence">55</field>
+        <field name="action_xmlid">pb_pay_delivery.action_pb_pay_delivery</field>
+        <field name="action_tag">pb_pay_delivery</field>
+        <field name="match_action_tags">pb_pay_delivery</field>
+        <field name="groups_id" eval="[(6, 0, [ref('om_hr_payroll.group_hr_payroll_manager')])]"/>
+    </record>
+</odoo>

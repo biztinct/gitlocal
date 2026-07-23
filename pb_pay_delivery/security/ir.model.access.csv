@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bank_file_layout_user,pb.bank.file.layout user,model_pb_bank_file_layout,base.group_user,1,0,0,0
+access_bank_file_layout_mgr,pb.bank.file.layout mgr,model_pb_bank_file_layout,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_bank_file_layout_system,pb.bank.file.layout system,model_pb_bank_file_layout,base.group_system,1,1,1,1
+access_bank_file_column_user,pb.bank.file.column user,model_pb_bank_file_column,base.group_user,1,0,0,0
+access_bank_file_column_mgr,pb.bank.file.column mgr,model_pb_bank_file_column,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_bank_file_column_system,pb.bank.file.column system,model_pb_bank_file_column,base.group_system,1,1,1,1
+access_delivery_batch_hr,pb.payslip.delivery.batch hr,model_pb_payslip_delivery_batch,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_delivery_batch_mgr,pb.payslip.delivery.batch mgr,model_pb_payslip_delivery_batch,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_delivery_batch_system,pb.payslip.delivery.batch system,model_pb_payslip_delivery_batch,base.group_system,1,1,1,1
+access_delivery_line_hr,pb.payslip.delivery hr,model_pb_payslip_delivery,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_delivery_line_mgr,pb.payslip.delivery mgr,model_pb_payslip_delivery,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_delivery_line_system,pb.payslip.delivery system,model_pb_payslip_delivery,base.group_system,1,1,1,1
+access_vn_bank_export_wizard_user,vietnam.bank.export.wizard user,pb_hr_payroll_vietnam.model_vietnam_bank_export_wizard,base.group_user,1,1,1,0
+access_vn_bank_export_wizard_system,vietnam.bank.export.wizard system,pb_hr_payroll_vietnam.model_vietnam_bank_export_wizard,base.group_system,1,1,1,1
