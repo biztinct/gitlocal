@@ -764,6 +764,14 @@ number from the handovers — keep the numbering stable.
     `pb_hr_payroll_formula` to production is a **separate, owner-signed-off decision** — do NOT slip it into a
     feature phase. `-u pb_hr_payroll_formula` is unblocked now (the `formulas` pip dep is installed, C-deploy),
     but the accumulated schema/data migrations make it a deliberate release, not a side effect.
+    **RESOLVED 2026-07-24:** the engine was deployed to Payobook19v2 — `-u pb_hr_payroll_formula,
+    pb_formula_studio,pb_sidebar,pb_pack_*` (1.0.0→1.48.0 / 1.65.0→1.68.0), the sole F111 migration
+    (`19.0.1.19.0` freeze-letters, idempotent) ran, registry loaded in 26s, EXIT=0. Root cause of the
+    live Formula-Engine crash was exactly this drift: `pb_formula_studio` (1.65.0) called
+    `env['hr.formula.rule.note']` which the 1.0.0 engine did not register (an orphan `ir.model` row
+    survived from a half-applied earlier upgrade, so it looked present but the class was absent →
+    `KeyError` at `get_studio_data`). Post-deploy: model registered, `get_studio_data` clean, themed
+    payslip report live (so `pb_pay_delivery` now auto-renders THEMED PDFs via its `hasattr` switch).
 47. **Live has a REAL Gmail SMTP server** (`smtp.gmail.com:587`, "Payobook Outgoing Server") and ~179 mails already
     queued. A `send_payslips` with `force_send=False` only QUEUES, but the mail cron would then dispatch to real
     addresses — so demo/validation must NEVER trigger a live send against real employees. Validate the delivery
