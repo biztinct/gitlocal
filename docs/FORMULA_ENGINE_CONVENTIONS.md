@@ -719,3 +719,17 @@ number from the handovers — keep the numbering stable.
     registry load 217s → 1.9s steady (4.1s with full resync), no self-signaling, stable single process. Lesson for
     any module: a `_register_hook` that WRITES must be provably idempotent byte-for-byte, or it becomes a
     self-sustaining reload storm; and a create-or-update helper must search by exactly what it stores.
+
+### Sudima F–J program rules (2026-07-24 design phase). Numbering continues C18.
+
+42. **F–J cross-phase rails** (full detail in each `docs/handovers/SUDIMA_PHASE_[F-J]_*.md`): (a) **WOW-or-upgrade**
+    — every touched surface is bespoke design-system UI, and any LEGACY screen a phase builds on (stock export
+    wizard form, stock /my portal pages, native lists on menus) is redesigned as part of that phase; native views
+    survive only off-menu as admin fallbacks (admin CONFIG forms exempt). (b) **Bank-file layouts are DATA**
+    (`pb.bank.file.layout` column vocabulary) — a new bank is a data file; generation validates via `account_ok`
+    and NEVER silently drops a row. (c) **PDF passwords are resolved in memory per employee and never logged or
+    stored.** (d) **MSS never writes state** — the My-Team facade calls each model's own gated actions as the real
+    user (C18.17/24). (e) **ESS never writes the employee master** — profile edits ride a sentinel-guarded change
+    request (bank-request clone, C18.31). (f) **The audit console is read-only** — it surfaces existing logs
+    (biz_audit_trail engine from Phase H), masked PII, capped-and-surfaced exports. Order F→G→H→I→J; I needs H;
+    J needs H; F and G independent.
