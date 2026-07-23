@@ -22,7 +22,7 @@ full-screen experience on the Pay Runs cockpit:
 Reads the employee master (vietnam_bank_*); never writes it — the only master
 write path stays pb.bank.change.request._apply_to_master.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
