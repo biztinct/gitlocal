@@ -9,15 +9,17 @@ import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { ic } from "@pb_young_worker/js/pbyw_icons";
 
 const MODEL = "pb.young.worker.guard";
 
+// Violation kind → Lucide icon key (see pbyw_icons.js). No Font Awesome glyphs.
 const KIND_ICON = {
-    day_cap: "fa-clock-o",
-    week_cap: "fa-calendar",
-    night: "fa-moon-o",
-    ot: "fa-ban",
-    no_birthday: "fa-question-circle-o",
+    day_cap: "clock",
+    week_cap: "calendar",
+    night: "moon",
+    ot: "ban",
+    no_birthday: "help",
 };
 
 export class PbYoungWorker extends Component {
@@ -72,8 +74,9 @@ export class PbYoungWorker extends Component {
         return "";
     }
 
-    // ------------------------------------------------------------- feed
-    kindIcon(kind) { return KIND_ICON[kind] || "fa-exclamation-circle"; }
+    // ------------------------------------------------------------- icons
+    ic(name, size = 16) { return ic(name, size); }
+    kindIcon(kind, size = 15) { return ic(KIND_ICON[kind] || "alertCircle", size); }
     kindLabel(kind) {
         return {
             day_cap: _t("Daily cap"), week_cap: _t("Weekly cap"),

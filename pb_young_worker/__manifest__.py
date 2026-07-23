@@ -21,7 +21,7 @@ Missing birthday ≠ minor: treated as adult for the gates (no false blocks) and
 surfaced in the cockpit as a data-quality task. Nothing is hardcoded — all ages
 and caps are config records.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -48,6 +48,7 @@ and caps are config records.
     'assets': {
         'web.assets_backend': [
             'pb_young_worker/static/src/scss/pb_young_worker.scss',
+            'pb_young_worker/static/src/js/pbyw_icons.js',
             'pb_young_worker/static/src/js/pb_young_worker.js',
             'pb_young_worker/static/src/xml/pb_young_worker.xml',
         ],

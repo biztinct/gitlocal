@@ -12,6 +12,10 @@
     position: relative;
     height: 100%;
     overflow: auto;
+
+    // Inline Lucide SVGs (pbyw_icons.js) — flush-baseline, never squashed by flex.
+    .pbyw-ic { display: inline-block; vertical-align: middle; flex: 0 0 auto; }
+    .pbyw-loading .pbyw-ic { animation: pbyw-spin 1s linear infinite; }
     background: var(--pbim-bg, #f8fafc);
     color: var(--pbyw-ink);
     font-size: 14px;
@@ -59,7 +63,7 @@
     .pbyw-card__n--amber { background: #fffbeb; color: var(--pbyw-amber); }
     .pbyw-card__sub { color: var(--pbyw-muted); font-weight: 400; font-size: .78rem; }
     .pbyw-card__act { margin-left: auto; }
-    .pbyw-empty { color: var(--pbyw-muted); padding: 10px 2px; i { color: var(--pbyw-ok); } }
+    .pbyw-empty { color: var(--pbyw-muted); padding: 10px 2px; .pbyw-ic { color: var(--pbyw-ok); } }
 
     // ---- roster ----
     .pbyw-roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
@@ -120,7 +124,7 @@
     }
     .pbyw-ok { color: var(--pbyw-ok); }
     .pbyw-x { color: var(--pbyw-rose); }
-    .pbyw-rules__night { font-size: .78rem; color: var(--pbyw-muted); margin-top: 8px; i { color: var(--pbyw-primary); } }
+    .pbyw-rules__night { font-size: .78rem; color: var(--pbyw-muted); margin-top: 8px; .pbyw-ic { color: var(--pbyw-primary); } }
     .pbyw-rules__cap { font-size: .72rem; color: var(--pbyw-muted); font-style: italic; margin-top: 6px; }
 
     // ---- missing birthdays ----
@@ -136,3 +140,5 @@
     .pbyw-btn { border: 1px solid var(--pbyw-line); background: #fff; border-radius: 10px; padding: 4px 10px; font-size: .8rem; cursor: pointer; color: var(--pbyw-ink); }
     .pbyw-btn--ghost:hover { border-color: var(--pbyw-primary); color: var(--pbyw-primary); }
 }
+
+@keyframes pbyw-spin { to { transform: rotate(360deg); } }
