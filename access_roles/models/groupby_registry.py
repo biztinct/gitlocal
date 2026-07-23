@@ -38,9 +38,11 @@ class GroupByRegistry(models.Model):
 
     @api.model
     def _register_hook(self):
-        """Triggers group_by extraction during module initialization."""
+        """Triggers group_by extraction during module initialization.
+        Gated on the ir.ui.view signature (see access.registry.sync)."""
         super()._register_hook()
-        self.get_all_groupby()
+        if self.env['access.registry.sync'].needs_sync('access_roles.sync.groupby'):
+            self.get_all_groupby()
         return True
 
     def _extract_groupby_attributes(self, filter_tag):
@@ -110,14 +112,25 @@ class GroupByRegistry(models.Model):
             ('name', '=', name),
             ('model_id', '=', model_id)
         ], limit=1)
-        vals = {
-            'name': display_name,
-            'model_id': model_id,
-            'view_ids': [Command.link(view) for view in view_ids],
-            'context': context,
-            'string': string
-        }
         if existing_groupby:
-            existing_groupby.write(vals)
+            # diff-aware: only touch the row when something actually changed
+            updates = {}
+            if existing_groupby.name != display_name:
+                updates['name'] = display_name
+            if (existing_groupby.context or '') != (context or ''):
+                updates['context'] = context
+            if (existing_groupby.string or '') != (string or ''):
+                updates['string'] = string
+            missing = set(view_ids) - set(existing_groupby.view_ids.ids)
+            if missing:
+                updates['view_ids'] = [Command.link(v) for v in missing]
+            if updates:
+                existing_groupby.write(updates)
         else:
-            self.create(vals)
+            self.create({
+                'name': display_name,
+                'model_id': model_id,
+                'view_ids': [Command.link(view) for view in view_ids],
+                'context': context,
+                'string': string
+            })

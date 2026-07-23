@@ -21,7 +21,7 @@
 #############################################################################
 {
     'name': 'Access Roles',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category':'Security',
     'sequence': 1,
     'summary': 'Access Roles for users',
@@ -48,6 +48,7 @@
             'access_roles/static/src/js/views/form_controller.js',
             'access_roles/static/src/js/x2many.js',
             'access_roles/static/src/js/form_cog_menu.js',
+            'access_roles/static/src/css/role_menu_picker.css',
         ],
     },
     'images': ['static/description/banner.jpg'],
