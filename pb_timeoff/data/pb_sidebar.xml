@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WORKFORCE › Leave (Leave Command Center — HR/officer persona). -->
+    <record id="item_leave_center" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Leave</field>
+        <field name="icon">calendar</field>
+        <field name="sequence">30</field>
+        <field name="action_xmlid">pb_timeoff.action_pb_timeoff</field>
+        <field name="action_tag">pb_timeoff</field>
+        <field name="match_action_tags">pb_timeoff</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_holidays.group_hr_holidays_user'), ref('hr.group_hr_manager'), ref('om_hr_payroll.group_hr_payroll_manager')])]"/>
+    </record>
+</odoo>
