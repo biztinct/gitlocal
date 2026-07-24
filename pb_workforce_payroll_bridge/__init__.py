@@ -2,18 +2,19 @@
 import logging
 
 from . import models
-from .models.hr_payslip import OT_INPUT_MAP
+from .models.hr_payslip import OT_INPUT_MAP, BONUS_INPUT_CODE
 
 _logger = logging.getLogger(__name__)
 
 
 def post_init_hook(env):
     """Warn (per C18.2) about any existing formula rule whose code collides
-    with — or is a substring-conflict of — the four OT input codes we own.
-    Substring collisions do not break the converter (C13), but a code equal to
-    or containing one of ours would shadow the injected value, so we surface it.
+    with — or is a substring-conflict of — the input codes we own (the four
+    OTHRS* codes plus BONHRS). Substring collisions do not break the converter
+    (C13), but a code equal to or containing one of ours would shadow the
+    injected value, so we surface it.
     """
-    codes = list(OT_INPUT_MAP)
+    codes = list(OT_INPUT_MAP) + [BONUS_INPUT_CODE]
     try:
         rules = env['hr.formula.rule'].sudo().search([])
     except Exception as e:  # pragma: no cover - engine may be absent mid-install

@@ -12,6 +12,14 @@ OT_INPUT_MAP = {
     'OTHRSNGT': 'night',
 }
 
+# Bonus Hours input (Phase K): Σ bonus_hours of APPROVED requests in the slip
+# period — the OT overflow beyond the pb.ot.ceiling caps. Underscore-free and
+# pairwise non-substring vs every registry code (OTHRS*, TRIPDAYS, PERDIEM) and
+# vs demo input codes (BONPROD). Registry (C18.2/C18.55b): OTHRS150 OTHRS200
+# OTHRS300 OTHRSNGT · TRIPDAYS PERDIEM · BONHRS. The client authors the bonus
+# formula themselves; we only expose the stream.
+BONUS_INPUT_CODE = 'BONHRS'
+
 
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
@@ -28,9 +36,10 @@ class HrPayslip(models.Model):
         values = super()._get_formula_input_values(config)
         self.ensure_one()
 
-        wanted = {r.code for r in config.rule_ids
-                  if r.column_type == 'input'} & set(OT_INPUT_MAP)
-        if not wanted:
+        input_codes = {r.code for r in config.rule_ids if r.column_type == 'input'}
+        wanted = input_codes & set(OT_INPUT_MAP)
+        want_bonus = BONUS_INPUT_CODE in input_codes
+        if not wanted and not want_bonus:
             return values
 
         # sudo: payslip access already gates the caller, and the officer
@@ -47,5 +56,17 @@ class HrPayslip(models.Model):
                 ('overtime_type', '=', OT_INPUT_MAP[code]),
             ])
             values[code] = sum(r.approved_hours or 0.0 for r in recs)
+
+        # BONHRS — the Bonus-Hours overflow stream (all types), approved only.
+        # Same sudo posture + period windowing as OTHRS* (rail 2: this is a
+        # SEPARATE stream — OTHRS* still count only approved_hours within caps).
+        if want_bonus:
+            recs = Req.search([
+                ('employee_id', '=', self.employee_id.id),
+                ('date', '>=', self.date_from),
+                ('date', '<=', self.date_to),
+                ('state', '=', 'approved'),
+            ])
+            values[BONUS_INPUT_CODE] = sum(r.bonus_hours or 0.0 for r in recs)
 
         return values
