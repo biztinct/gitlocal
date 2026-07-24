@@ -10,3 +10,4 @@ from . import attendance_timecard
 from . import hr_attendance
 from . import ot_ceiling
 from . import attendance_weekentry
+from . import ot_desk

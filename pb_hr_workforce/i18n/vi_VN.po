@@ -363,3 +363,125 @@ msgstr "Duyệt"
 #: code:addons/pb_hr_workforce/static/src/xml/attendance_weekgrid.xml:0
 msgid "Submit all"
 msgstr "Gửi tất cả"
+
+# ==== Phase K — Overtime Desk (pb_ot_desk) ====
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Overtime Desk"
+msgstr "Bàn Làm Thêm Giờ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Approve overtime &amp; manage limits"
+msgstr "Duyệt làm thêm giờ & quản lý hạn mức"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "pending approvals"
+msgstr "chờ duyệt"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "near/over ceiling"
+msgstr "gần/vượt trần"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "bonus hours this month"
+msgstr "giờ thưởng tháng này"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Approval queue"
+msgstr "Hàng chờ duyệt"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Queue clear"
+msgstr "Hàng chờ trống"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Bonus Hours"
+msgstr "Giờ Thưởng"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Bonus Hours review"
+msgstr "Rà soát Giờ Thưởng"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Overtime beyond the ceilings — payroll-manager view"
+msgstr "Làm thêm vượt trần — chế độ xem cho quản lý bảng lương"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Export CSV"
+msgstr "Xuất CSV"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Group by"
+msgstr "Nhóm theo"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Overtime rules &amp; ceilings"
+msgstr "Quy tắc & trần làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/xml/pb_ot_desk.xml:0
+msgid "Refuse overtime"
+msgstr "Từ chối làm thêm giờ"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Refuse"
+msgstr "Từ chối"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "approved"
+msgstr "đã duyệt"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "refused"
+msgstr "đã từ chối"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Day"
+msgstr "Ngày"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Week"
+msgstr "Tuần"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/static/src/js/pb_ot_desk.js:0
+msgid "Month"
+msgstr "Tháng"
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "The Overtime Desk is restricted to attendance managers."
+msgstr "Bàn Làm Thêm Giờ chỉ dành cho quản lý chấm công."
+
+#. module: pb_hr_workforce
+#: code:addons/pb_hr_workforce/models/ot_desk.py:0
+msgid "Bonus Hours review is restricted to payroll managers."
+msgstr "Rà soát Giờ Thưởng chỉ dành cho quản lý bảng lương."
