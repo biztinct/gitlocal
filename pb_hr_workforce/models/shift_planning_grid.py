@@ -44,8 +44,12 @@ class ShiftPlanningGrid(models.TransientModel):
             ('state', '!=', 'cancelled'),
         ])
 
-        # Leaves for this period
-        all_leaves = self.env['hr.leave'].search([
+        # Leaves for this period. sudo: the leave/leave-type presence overlay is
+        # system-derived roster context (same one-permission-world rail as the
+        # Weekly Entry grid, which also sudo-reads leaves) — without it a planner
+        # who lacks hr.leave.type read crashes the whole roster on the
+        # holiday_status_id dereference below.
+        all_leaves = self.env['hr.leave'].sudo().search([
             ('state', 'in', ('confirm', 'validate', 'validate1')),
             ('date_from', '<=', datetime.combine(week_end, datetime.max.time())),
             ('date_to', '>=', datetime.combine(week_start, datetime.min.time())),

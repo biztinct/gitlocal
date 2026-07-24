@@ -270,6 +270,11 @@
     border-radius: 12px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     overflow: hidden;
+    /* Keep each card at its content height: the parent .tc-body is a
+       fixed-height flex column, so without this the cards flex-shrink to a
+       ~1px sliver once enough employees overflow the viewport (the scrollbar
+       should absorb the overflow, not the rows). */
+    flex-shrink: 0;
 }
 
 .tc-emp-header {
