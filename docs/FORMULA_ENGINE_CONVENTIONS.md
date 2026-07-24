@@ -907,3 +907,58 @@ number from the handovers — keep the numbering stable.
     "Could not load" — while a context-free RPC succeeded (the C18.11 trap in a new guise). Demo/validation
     writes of a company-scoped relation MUST resolve the target within the record's OWN company
     (`search([('company_id','=',emp.company_id.id)])`), never a bare `search([])`.
+
+### Phase-I findings (ESS/MSS — 2026-07-24, WP-Sudima-I). Numbering continues C18.
+
+60. **`editable` is a RESERVED website render-context variable — never reuse it as a portal template
+    key.** A `website=True` portal route rendering merges a website context that sets `editable` (the
+    editor edit-mode boolean); a controller value passed as `values['editable'] = [...]` is SHADOWED to
+    that bool, so `t-if="'x' in editable"` raises `TypeError: argument of type 'bool' is not iterable`
+    → HTTP 500 on the page (only, invisible to `-u`; the portal HttpCase never hit it because tests
+    exercised the models, not the rendered page). The qweb error's compiled line number does NOT match
+    the source line — read the `Element:`/`Path:` fields in the QWeb traceback to find the real node.
+    Fix: name the key anything else (`editable_fields`). Other reserved-ish portal context names to avoid:
+    `request`, `page_name`, `pager`, `error`, `message`. Rule: prefix ESS payload keys distinctively
+    (the profile page also renamed `requests`→`pcr_requests` defensively) and ALWAYS Chrome-MCP each
+    portal route — a green model test is not a rendered-page test.
+61. **`t-key` is OWL-only — it is INVALID in server-rendered (frontend/report) QWeb.** A `t-key` on a
+    server `t-foreach` logs `Unknown directives or unused attributes: {'t-key'}` and is ignored; keep it
+    out of portal/report templates (it belongs only in `web.assets_*` OWL `.xml`). Frontend portal icons
+    are inline `<svg>` Lucide paths (a small `ess_icon` t-call ladder), never Font Awesome `<i class="fa">`
+    or emoji (C11 extends to the portal).
+62. **An employee-owned attachment BIND needs sudo when the owner has read-only on the target record.**
+    The ESS document self-upload creates the attachment as the user, creates the `pb.employee.document`
+    (own-create rule), then binds `attachment.res_model/res_id` to the doc — but Odoo re-checks attachment
+    access against the NEW linked record, and the employee's own-doc rule is READ-only (no write), so a
+    self-user `att.write({'res_model':…})` raises `AccessError` ("not allowed to access this document") →
+    HTTP 403 on the upload POST (looks exactly like a CSRF failure in the werkzeug log — it is NOT; grep
+    for the "not allowed to access" warning to tell them apart). The bind is a system op on a record they
+    already own → `att.sudo().write(...)`. The C18.25 order (attachment first, bind after the doc exists)
+    is preserved. The model test created the doc but never exercised the bind — a live upload is required
+    to catch this.
+63. **MSS is a read-and-act facade over EXISTING model actions, not a new approval engine (C18.55a made
+    concrete).** `pb.team.act(model, res_id, action, note)` is a hard whitelist `{model: {action: method}}`
+    → the target model's own gated method, called AS THE REAL USER, no sudo. A non-whitelisted model/action
+    RAISES (`res.users`, `frobnicate`); a record outside the caller's team RAISES (team-scope defense in
+    depth); a MODEL business refusal (tier lacked, decided-record no-op) is CAUGHT and returned
+    `{ok:False,error}` so the cockpit toasts the model's own words and keeps the row. Two access facts hit
+    wiring it: (a) **OT approval needs `hr_attendance.group_hr_attendance_manager`** — unlike trips /
+    attendance-corrections (which admit the specific `employee_id.parent_id.user_id` via `_approval_can`
+    with NO group), `hr.overtime.request` has ONLY an own-records officer rule + an all-records manager
+    rule, so a plain line manager cannot approve a report's OT; the facade scopes the queue to the team,
+    the model grants the write. (b) The young-worker OT gate is a CREATE/write `@api.constrains`, and
+    `action_approve` writes only `state`+`approved_hours` (NOT in the constrains trigger set), so a minor
+    OT can NEVER become a submitted-then-refused-on-approve queue item — the E-gate blocks it at
+    submission (a STRONGER guarantee than a queue refusal). The MSS refusal-surfacing path is therefore
+    validated via the trip-tier / decided-record route, not a young-worker queue item (handover §6.11
+    prose predates this finding).
+64. **A `pb.demo.generator` extension MUST inherit `models.TransientModel`** — it is a wizard-style
+    transient; a `models.Model` `_inherit` aborts registry load with "transforms the transient model … into
+    a non-transient model." The ESS/MSS demo enablement (`demo_ess.py`) re-links three PASSWORDLESS logins
+    (C18.14) to the CURRENT demo employees on every `action_generate_all` (employees are recreated each
+    run, so linkage is rebuilt), re-parents the demo minor under the demo manager for the MSS story, and
+    seeds a couple of submitted OT for adult reports so the queue is non-empty. `clean_demo_employees` now
+    also unlinks OT / profile-change-requests / documents for is_demo employees BEFORE `emps.unlink()` (a
+    required `employee_id` on `hr.overtime.request` would otherwise block the unlink). `res.users.employee_id`
+    reads `None` in a bare `odoo-bin shell` (company-dependent, C18.26) even when `employee.user_id` is set
+    — verify the link on `hr.employee.user_id`, not `res.users.employee_id`.
