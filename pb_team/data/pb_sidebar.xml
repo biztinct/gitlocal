@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <!-- "My Team" — Workforce section. Visible to every internal user (the
+         cockpit shows a friendly empty-state when the user has no direct
+         reports); managers see their queue. -->
+    <record id="item_my_team" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">My Team</field>
+        <field name="icon">users</field>
+        <field name="sequence">5</field>
+        <field name="action_xmlid">pb_team.action_pb_team</field>
+        <field name="action_tag">pb_team</field>
+        <field name="match_action_tags">pb_team</field>
+    </record>
+</odoo>
