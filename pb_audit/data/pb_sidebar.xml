@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ADMIN › Audit (gated to the Payroll Manager tier) -->
+    <record id="item_audit_console" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_admin"/>
+        <field name="name">Audit</field>
+        <field name="icon">scroll-text</field>
+        <field name="sequence">30</field>
+        <field name="action_xmlid">pb_audit.action_pb_audit</field>
+        <field name="action_tag">pb_audit</field>
+        <field name="match_action_tags">pb_audit</field>
+        <field name="groups_id" eval="[(4, ref('om_hr_payroll.group_hr_payroll_manager'))]"/>
+    </record>
+</odoo>

@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_audit.PbAudit">
+    <div class="pbau pbim">
+
+      <!-- ============================ LOADING ============================ -->
+      <div class="pbau-boot" t-if="!state.loaded">
+        <span class="pbau-boot__ring"/>
+        <span class="pbau-boot__t">Loading the compliance ledger…</span>
+      </div>
+
+      <t t-if="state.loaded">
+        <!-- ============================ HERO / KPIs ============================ -->
+        <div class="pbau-hero">
+          <div class="pbau-hero__head">
+            <div class="pbau-hero__title">
+              <span class="pbau-hero__ico" t-out="ic('scrollText', 22)"/>
+              <div>
+                <h1>Audit &amp; Compliance</h1>
+                <p>Every change, approval, delivery and login — one read-only trail.</p>
+              </div>
+            </div>
+            <div class="pbau-hero__counts">
+              <div class="pbau-count">
+                <span class="pbau-count__v" t-esc="state.kpis.events_today || 0"/>
+                <span class="pbau-count__l">Events today</span>
+              </div>
+              <div class="pbau-count">
+                <span class="pbau-count__v" t-esc="state.kpis.events_week || 0"/>
+                <span class="pbau-count__l">Last 7 days</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pbau-hero__grid">
+            <!-- Sources present -->
+            <div class="pbau-card pbau-sources">
+              <div class="pbau-card__hd">Sources <span class="pbau-card__sub" t-esc="'· ' + presentCount() + ' present'"/></div>
+              <div class="pbau-source-pills">
+                <t t-foreach="sourcePills()" t-as="s" t-key="s.key">
+                  <span t-attf-class="pbau-spill pbau-spill--{{ s.color }} {{ s.installed ? '' : 'pbau-spill--ghost' }}"
+                        t-att-title="s.installed ? (s.label + ' · ' + s.count) : (s.label + ' · not installed')">
+                    <span class="pbau-spill__i" t-out="ic(s.icon, 14)"/>
+                    <span class="pbau-spill__l" t-esc="s.label"/>
+                    <span class="pbau-spill__c" t-if="s.installed" t-esc="s.count"/>
+                    <span class="pbau-spill__c pbau-spill__c--off" t-if="!s.installed">not installed</span>
+                  </span>
+                </t>
+              </div>
+            </div>
+
+            <!-- Top actors -->
+            <div class="pbau-card pbau-actors">
+              <div class="pbau-card__hd">Top actors <span class="pbau-card__sub">· 30 days</span></div>
+              <div class="pbau-actor-list" t-if="(state.kpis.top_actors || []).length">
+                <t t-foreach="state.kpis.top_actors" t-as="a" t-key="a.id">
+                  <div class="pbau-actor">
+                    <img class="pbau-ava" t-att-src="a.avatar" t-att-alt="a.name"/>
+                    <span class="pbau-actor__n" t-esc="a.name"/>
+                    <span class="pbau-actor__c" t-esc="a.count"/>
+                  </div>
+                </t>
+              </div>
+              <div class="pbau-empty pbau-empty--sm" t-else="">No recorded activity yet.</div>
+            </div>
+
+            <!-- Retention dial -->
+            <div class="pbau-card pbau-retention">
+              <div class="pbau-card__hd">Retention</div>
+              <div class="pbau-ret__body">
+                <div class="pbau-ret__dial">
+                  <svg viewBox="0 0 80 80" width="80" height="80">
+                    <circle cx="40" cy="40" r="34" class="pbau-ret__track"/>
+                    <circle cx="40" cy="40" r="34" class="pbau-ret__fill"
+                            t-att-style="'stroke-dashoffset:' + (214 - 214 * retentionDialPct()) + 'px'"/>
+                  </svg>
+                  <div class="pbau-ret__num">
+                    <span class="pbau-ret__d" t-esc="state.kpis.retention_days"/>
+                    <span class="pbau-ret__u">days</span>
+                  </div>
+                </div>
+                <div class="pbau-ret__meta">
+                  <div class="pbau-ret__line">Oldest entry: <b t-esc="state.kpis.oldest || '—'"/></div>
+                  <div class="pbau-ret__line pbau-ret__note">Each source governs its own retention.</div>
+                  <div class="pbau-ret__edit" t-if="!state.retentionEdit">
+                    <button class="pbau-btn pbau-btn--ghost pbau-btn--sm" t-on-click="() => this.startRetention()">Change</button>
+                  </div>
+                  <div class="pbau-ret__form" t-else="">
+                    <input type="number" min="1" class="pbau-input pbau-input--sm"
+                           t-att-value="state.retentionValue" t-on-input="onRetention"/>
+                    <button class="pbau-btn pbau-btn--primary pbau-btn--sm" t-on-click="() => this.saveRetention()" t-att-disabled="state.busy">Save</button>
+                    <button class="pbau-btn pbau-btn--ghost pbau-btn--sm" t-on-click="() => this.cancelRetention()">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================ FILTER BAR ============================ -->
+        <div class="pbau-filters">
+          <div class="pbau-filters__row">
+            <div class="pbau-quick">
+              <button class="pbau-chip" t-on-click="() => this.quickToday()"><span t-out="ic('calendar', 13)"/> Today</button>
+              <button class="pbau-chip" t-on-click="() => this.quickWeek()"><span t-out="ic('calendar', 13)"/> This week</button>
+              <button t-attf-class="pbau-chip {{ isMineActive ? 'pbau-chip--on' : '' }}" t-on-click="() => this.quickByMe()"><span t-out="ic('user', 13)"/> By me</button>
+              <button t-attf-class="pbau-chip {{ state.view === 'salary' ? 'pbau-chip--on' : '' }}" t-on-click="() => this.quickSalary()"><span t-out="ic('banknote', 13)"/> Salary only</button>
+              <button t-attf-class="pbau-chip {{ state.view === 'login' ? 'pbau-chip--on' : '' }}" t-on-click="() => this.quickLogins()"><span t-out="ic('logIn', 13)"/> Logins</button>
+            </div>
+            <div class="pbau-search">
+              <span class="pbau-search__i" t-out="ic('search', 15)"/>
+              <input class="pbau-search__in" type="text" placeholder="Search actor, employee, value…"
+                     t-att-value="state.filters.text"
+                     t-on-input="onText" t-on-keydown="(ev) => ev.key === 'Enter' &amp;&amp; this.applyText()"/>
+            </div>
+          </div>
+          <div class="pbau-filters__row pbau-filters__row--2">
+            <div class="pbau-sourcefilter" t-if="state.view === 'stream'">
+              <t t-foreach="sourceChips" t-as="c" t-key="c.key">
+                <button t-attf-class="pbau-sf {{ state.filters.source === c.key ? 'pbau-sf--on' : '' }}"
+                        t-on-click="() => this.setSource(c.key)" t-esc="c.label"/>
+              </t>
+            </div>
+            <div class="pbau-dates">
+              <span class="pbau-dates__l" t-out="ic('filter', 14)"/>
+              <input type="date" class="pbau-input" t-att-value="state.filters.date_from" t-on-change="onDateFrom"/>
+              <span class="pbau-dates__sep">→</span>
+              <input type="date" class="pbau-input" t-att-value="state.filters.date_to" t-on-change="onDateTo"/>
+              <button class="pbau-btn pbau-btn--ghost pbau-btn--sm" t-on-click="() => this.applyDates()">Apply</button>
+              <button class="pbau-btn pbau-btn--ghost pbau-btn--sm" t-on-click="() => this.clearFilters()">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================ VIEW TABS ============================ -->
+        <div class="pbau-tabs">
+          <div class="pbau-tabs__l">
+            <button t-attf-class="pbau-tab {{ state.view === 'stream' ? 'pbau-tab--on' : '' }}" t-on-click="() => this.setView('stream')"><span t-out="ic('list', 15)"/> Stream</button>
+            <button t-attf-class="pbau-tab {{ state.view === 'salary' ? 'pbau-tab--on' : '' }}" t-on-click="() => this.setView('salary')"><span t-out="ic('banknote', 15)"/> Salary lens</button>
+            <button t-attf-class="pbau-tab {{ state.view === 'login' ? 'pbau-tab--on' : '' }}" t-on-click="() => this.setView('login')"><span t-out="ic('logIn', 15)"/> Login lens</button>
+          </div>
+          <button class="pbau-btn pbau-btn--primary pbau-btn--sm" t-on-click="() => this.exportView()" t-att-disabled="state.busy">
+            <span t-out="ic('download', 14)"/> Export
+          </button>
+        </div>
+
+        <!-- ============================ STREAM ============================ -->
+        <div class="pbau-view" t-if="state.view === 'stream'">
+          <div class="pbau-capnote" t-if="state.stream.capped">
+            <span t-out="ic('alert', 14)"/> Showing the most recent matches only — narrow the date range or filters to reach older events.
+          </div>
+
+          <t t-if="groupedStream.length">
+            <div class="pbau-day" t-foreach="groupedStream" t-as="g" t-key="g.day">
+              <div class="pbau-day__hd">
+                <span class="pbau-day__label" t-esc="g.label"/>
+                <span class="pbau-day__count" t-esc="g.rows.length + ' events'"/>
+              </div>
+              <div class="pbau-timeline">
+                <t t-foreach="g.rows" t-as="r" t-key="r.key">
+                  <div class="pbau-event">
+                    <div t-attf-class="pbau-event__dot pbau-event__dot--{{ r.color }}" t-att-title="r.source_label">
+                      <span t-out="ic(r.icon, 13)"/>
+                    </div>
+                    <div class="pbau-event__body">
+                      <div class="pbau-event__top">
+                        <span class="pbau-event__title" t-esc="r.title"/>
+                        <span class="pbau-event__time" t-esc="r.stamp_display"/>
+                      </div>
+                      <div class="pbau-event__diff" t-if="r.old || r.new">
+                        <span class="pbau-diff pbau-diff--old" t-if="r.old" t-esc="r.old"/>
+                        <span class="pbau-diff__arrow" t-if="r.old &amp;&amp; r.new" t-out="ic('arrow', 12)"/>
+                        <span class="pbau-diff pbau-diff--new" t-if="r.new" t-esc="r.new"/>
+                      </div>
+                      <div class="pbau-event__meta">
+                        <span class="pbau-actorchip">
+                          <img class="pbau-ava pbau-ava--xs" t-att-src="r.actor.avatar" t-if="r.actor.avatar"/>
+                          <span t-esc="r.actor.name"/>
+                        </span>
+                        <button class="pbau-empchip" t-if="r.employee" t-on-click="() => this.openEmployee(r.employee.id)">
+                          <span t-out="ic('user', 12)"/> <span t-esc="r.employee.name"/>
+                        </button>
+                        <button class="pbau-reflink" t-if="r.ref" t-on-click="() => this.openRef(r.ref)" title="Open source record">
+                          <span t-out="ic('external', 12)"/>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </t>
+              </div>
+            </div>
+
+            <div class="pbau-more" t-if="state.stream.has_more">
+              <button class="pbau-btn pbau-btn--ghost" t-on-click="() => this.loadMore()" t-att-disabled="state.stream.loading">
+                <t t-if="state.stream.loading">Loading…</t>
+                <t t-else="">Load older events</t>
+              </button>
+            </div>
+          </t>
+
+          <div class="pbau-empty" t-else="">
+            <span class="pbau-empty__i" t-out="ic('scrollText', 40)"/>
+            <div class="pbau-empty__t">No events match these filters</div>
+            <div class="pbau-empty__s">Try widening the date range, clearing filters, or a different source.</div>
+          </div>
+        </div>
+
+        <!-- ============================ SALARY LENS ============================ -->
+        <div class="pbau-view" t-if="state.view === 'salary'">
+          <t t-if="state.salary">
+            <div class="pbau-sal-head">
+              <div class="pbau-card pbau-sal-spark">
+                <div class="pbau-card__hd">Adjustments per month</div>
+                <svg class="pbau-sparkline" viewBox="0 0 220 46" preserveAspectRatio="none" t-if="state.salary.sparkline.length">
+                  <polyline t-att-points="salaryLinePoints(state.salary.sparkline)"/>
+                </svg>
+                <div class="pbau-spark-x" t-if="state.salary.sparkline.length">
+                  <span t-esc="state.salary.sparkline[0].month"/>
+                  <span t-esc="state.salary.sparkline[state.salary.sparkline.length - 1].month"/>
+                </div>
+              </div>
+              <div class="pbau-card pbau-sal-legend">
+                <div class="pbau-card__hd">Thresholds</div>
+                <div class="pbau-legend"><span class="pbau-badge pbau-badge--amber"/> ≥ <b t-esc="state.salary.thresholds.amber"/>% change</div>
+                <div class="pbau-legend"><span class="pbau-badge pbau-badge--rose"/> ≥ <b t-esc="state.salary.thresholds.rose"/>% change</div>
+                <div class="pbau-legend pbau-legend--note" t-if="!state.salary.can_see_values">Values hidden for your role.</div>
+              </div>
+            </div>
+
+            <div class="pbau-capnote" t-if="state.salary.capped">
+              <span t-out="ic('alert', 14)"/> Showing the most recent wage changes only — narrow the date range for older ones.
+            </div>
+
+            <div class="pbau-table" t-if="state.salary.rows.length">
+              <div class="pbau-tr pbau-tr--head">
+                <div class="pbau-td pbau-td--emp">Employee</div>
+                <div class="pbau-td">Old</div>
+                <div class="pbau-td">New</div>
+                <div class="pbau-td pbau-td--delta">Change</div>
+                <div class="pbau-td">Actor</div>
+                <div class="pbau-td pbau-td--when">When</div>
+              </div>
+              <t t-foreach="state.salary.rows" t-as="row" t-key="row.key">
+                <div class="pbau-tr">
+                  <div class="pbau-td pbau-td--emp">
+                    <button class="pbau-empchip" t-if="row.employee.id" t-on-click="() => this.openEmployee(row.employee.id)">
+                      <img class="pbau-ava pbau-ava--xs" t-att-src="row.employee.avatar" t-if="row.employee.avatar"/>
+                      <span t-esc="row.employee.name"/>
+                    </button>
+                    <span class="pbau-empchip pbau-empchip--dead" t-else="" t-esc="row.employee.name"/>
+                  </div>
+                  <div class="pbau-td pbau-mono" t-esc="row.old"/>
+                  <div class="pbau-td pbau-mono" t-esc="row.new"/>
+                  <div class="pbau-td pbau-td--delta">
+                    <span t-attf-class="pbau-delta pbau-delta--{{ row.band || 'none' }}" t-esc="deltaLabel(row.delta_pct)"/>
+                  </div>
+                  <div class="pbau-td pbau-td--soft" t-esc="row.actor.name"/>
+                  <div class="pbau-td pbau-td--when pbau-td--soft" t-esc="row.stamp_display"/>
+                </div>
+              </t>
+            </div>
+            <div class="pbau-empty" t-else="">
+              <span class="pbau-empty__i" t-out="ic('banknote', 40)"/>
+              <div class="pbau-empty__t">No salary adjustments in range</div>
+              <div class="pbau-empty__s">Wage changes on contracts appear here as they happen.</div>
+            </div>
+          </t>
+        </div>
+
+        <!-- ============================ LOGIN LENS ============================ -->
+        <div class="pbau-view" t-if="state.view === 'login'">
+          <t t-if="state.login">
+            <div class="pbau-loginnote"><span t-out="ic('logIn', 14)"/> <span t-esc="state.login.note"/></div>
+            <div class="pbau-login-grid" t-if="state.login.cards.length">
+              <t t-foreach="state.login.cards" t-as="c" t-key="c.user_id">
+                <div class="pbau-lcard">
+                  <div class="pbau-lcard__hd">
+                    <img class="pbau-ava" t-att-src="c.avatar" t-att-alt="c.name"/>
+                    <div class="pbau-lcard__id">
+                      <span class="pbau-lcard__n" t-esc="c.name"/>
+                      <span class="pbau-lcard__login" t-esc="c.login"/>
+                    </div>
+                    <div class="pbau-lcard__stat">
+                      <span class="pbau-lcard__v" t-esc="c.sessions"/>
+                      <span class="pbau-lcard__vl">sessions</span>
+                    </div>
+                  </div>
+                  <div class="pbau-lcard__spark">
+                    <t t-foreach="sparkBars(c.sparkline)" t-as="b" t-key="b_index">
+                      <span class="pbau-bar" t-attf-style="height:{{ Math.max(6, b.h) }}%" t-att-title="b.v + ' on day'"/>
+                    </t>
+                  </div>
+                  <div class="pbau-lcard__ft">
+                    <span>Last: <b t-esc="c.last || '—'"/></span>
+                    <span t-esc="c.sessions_30d + ' in 30d'"/>
+                  </div>
+                </div>
+              </t>
+            </div>
+            <div class="pbau-empty" t-else="">
+              <span class="pbau-empty__i" t-out="ic('logIn', 40)"/>
+              <div class="pbau-empty__t">No sessions in range</div>
+              <div class="pbau-empty__s">Login sessions appear here as users sign in.</div>
+            </div>
+          </t>
+        </div>
+      </t>
+    </div>
+  </t>
+
+</templates>

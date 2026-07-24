@@ -962,3 +962,63 @@ number from the handovers — keep the numbering stable.
     required `employee_id` on `hr.overtime.request` would otherwise block the unlink). `res.users.employee_id`
     reads `None` in a bare `odoo-bin shell` (company-dependent, C18.26) even when `employee.user_id` is set
     — verify the link on `hr.employee.user_id`, not `res.users.employee_id`.
+
+### Phase-J findings (Audit & Compliance console — 2026-07-24, WP-Sudima-J). Numbering continues C18.
+
+65. **A read-only CONSOLIDATION console over many log sources reads uniformly via `sudo()` behind a
+    single `_require_manager()` gate — the gate is the whole auth model, masking is the PII guarantee,
+    and only DEEP-LINKS enforce per-record access.** `pb.audit.console` (AbstractModel RPC facade, no
+    table) merges six sources — `biz.audit.entry` (fields), `biz.approval.step.log`, `pb.employee.bank.history`,
+    `bank.export.log` (optional), `pb.payslip.delivery` (optional), `res.users.log` (logins) — into one
+    day-grouped stream. A compliance manager must see the CONSOLIDATED trail regardless of which log model
+    they individually hold an ACL on, so every source is read `sudo()` AFTER the manager+system gate (C18.17
+    one-permission-world, applied to reads-only). The three safety nets that make sudo-reads correct here:
+    (a) bank accounts render MASKED (`•••• 1234`, the `pb_bank_ocr_cockpit._mask` pattern) in BOTH the
+    stream and the XLSX export; (b) navigation OUT of the console (employee/record chips) is plain
+    `action.doAction` act_window — NO sudo — so the target's own rules gate the drill-down (rail 6, live-
+    proven: an employee chip opened `hr.employee/<id>` form under normal access); (c) the console never
+    writes — its ONLY two writes are the export wizard's own transient Binary and the manager-gated
+    retention param. Live perf on Payobook19v2: unfiltered first page 43-46 ms, KPIs 29 ms, login lens
+    40 ms (data is small — 5 field / 7 approval / 3 bank / 16 login rows).
+66. **Write-free cockpit XLSX download = a TransientModel's own Binary + a `/web/content` URL, never a
+    persisted attachment.** `pb.audit.export` (TransientModel) builds the sheet in-memory (xlsxwriter →
+    base64, the pb_hr_workforce_planning precedent), stores it on its OWN `export_file` Binary, and the
+    facade returns `{'url': '/web/content/pb.audit.export/<id>/export_file?download=true&filename=...'}`.
+    The OWL cockpit triggers a hidden-anchor click on that URL. The transient is GC'd by core; no
+    `ir.attachment` row is created (keeps the console's read-only invariant intact — the transient Binary
+    is the sanctioned exception). The export reuses the console's `_collect_stream`/`get_*_lens` collectors
+    VERBATIM so the file carries identical rows + identical masking, and the hard cap (50k) is surfaced in
+    the return (`truncated`, `cap`) — never a silent truncation.
+67. **`res.users.log` is core-magic-fields-only and is NEVER vacuumed by core — surface logins from it,
+    honestly labelled, and expect unbounded (small) growth.** The model carries only `create_uid` (the
+    user) + `create_date` (login time); it records LOGINS ONLY (no logout row in core), so the login lens
+    labels its cards "Sessions started" and shows no duration. Odoo's "Base: Auto-vacuum internal data"
+    cron does NOT GC it (no `_gc` on the model), so it grows without bound — negligible in practice
+    (16 rows on live). Group internal users only (`user.share == False`). `biz.audit.entry` retention IS
+    handled (Phase-H's own "Audit Trail: retention vacuum" cron, keyed on write_date, C18.40) — the console
+    only READS the setting and exposes a manager-gated `set_param` for it (`biz_audit_trail.retention_days`).
+68. **Sort-key columns on the audit sources are NOT indexed — fine at current volume, recommend an index
+    at scale.** Each source is fetched `ORDER BY <stamp> DESC LIMIT <scan>`, but `biz.audit.entry.stamp` /
+    `biz.approval.step.log.stamp` / `pb.employee.bank.history.changed_at` / `res.users.log.create_date`
+    have no DB index (biz.audit.entry indexes model_name/res_id/user_id/company_id, NOT stamp). At 5-16 rows
+    it is 46 ms; at 100k+ entries the per-source `ORDER BY … LIMIT` wants a `stamp` index. The clean fix is
+    `index=True` on `biz.audit.entry.stamp` in **biz_audit_trail** (its owner) on next touch — NOT a
+    cross-module `CREATE INDEX` from `pb_audit`. Reported, not silently added (the sources live outside this
+    phase's module boundary, C18.1).
+69. **`read_group` is deprecation-warned in Odoo 19 but kept for codebase consistency.** `read_group`
+    logs `DeprecationWarning: Since 19.0, read_group is deprecated. Please use _read_group … or
+    formatted_read_group` but still works; the whole repo (pb_insights, pb_contracts, …) still uses it, so
+    the console matches surrounding code rather than being the lone migrator. The count key is read
+    defensively as `g.get('<field>_count') or g.get('__count')` (the key name differs across versions —
+    the established repo pattern). A future repo-wide migration to `_read_group`/`formatted_read_group` is a
+    separate sweep.
+70. **Deploy note (transient): a Postgres connection drop DURING the `access_roles._register_hook`
+    groupby-registry sync aborts registry init (`Failed to initialize database`), but the module install
+    itself has already committed and a plain re-`start` loads clean.** During the `-i pb_audit` run the
+    module loaded 191/191 and committed (state `installed`), then the post-load `access_roles` groupby
+    sync hit `server closed the connection unexpectedly` → CRITICAL. This is NOT an install failure — a
+    subsequent `service odoo-server start` loaded the registry in ~10-13 s with pb_audit live. Distinguish
+    it from a real crash by the psycopg `server closed the connection unexpectedly` line (infra) vs a Python
+    traceback in module code. The C18.54 background-run + kill-the-`stop-after-init`-PID + restart ritual
+    still applies; run the scoped `-u pb_audit --test-enable --test-tags /pb_audit` to a dedicated
+    `--logfile` so the test summary (`0 failed, 0 error(s) of 10 tests`) is not buried in the shared log.
