@@ -865,3 +865,45 @@ number from the handovers — keep the numbering stable.
     JSON/state contract and its level2 auto-generation hook untouched, vendors every asset locally (no CDN,
     test-asserted), and existence-checks its G/K-fed tiles so phase ORDER can never crash a board.
     Order: K, L, M mutually independent; M soft-consumes K (bonus tile) and G (pulse row); H→I→J unchanged.
+
+### Phase-H findings (Employee 360 — 2026-07-24, WP-Sudima-H). Numbering continues C18.
+
+56. **hr.employee `department_id` / `job_title` are NON-STORED related fields backed by `hr.version`** in
+    Odoo 19 (`related='version_id.department_id'` / `version_id.job_title`, `store=false` in
+    `ir_model_fields`), so a field-change audit write-hook on hr.employee NEVER captures them — the write is
+    redirected to the current version and the hr.employee override sees no old→new (proven live: after
+    `emp.write({'department_id': x})` the employee reads the new value but zero hr.employee audit rows appear;
+    parent_id / company_id / active ARE stored and audit fine). The write UPDATES the existing version in
+    place (version_id unchanged, count stays 1 — NOT a new-version create), so the correct capture point is a
+    `biz.audit.mixin` on **hr.version** watching `department_id, job_title`; the Employee 360 timeline maps
+    those entries back onto the employee via `hr.version.employee_id`. Rule of thumb before auditing ANY
+    hr.employee field: check `store` in ir_model_fields — a version/resource-related field must be audited on
+    its backing model. (`wage` on hr.contract IS stored and audits directly — contracts ≠ versions here.)
+57. **`biz.audit.mixin` on hr.employee/hr.version applies app-wide, so its rule lookup must be ormcached and
+    the entry create must never block the write.** `biz.audit.rule._watched_fields(model)` is
+    `@tools.ormcache('model_name')` (cleared via `self.env.registry.clear_cache()` on any rule create/write/
+    unlink — the only reliable Odoo-19 invalidation); an unwatched model pays one cached dict lookup +
+    empty-set intersection. Measured live: watched vs unwatched employee writes are indistinguishable
+    (Δ ≈ 0, within RPC noise). The mixin wraps its logging in try/except and swallows failures (a broken
+    audit must not break an HR write). Entries are append-only with FORCED actor/stamp — the mixin creates
+    them via `.sudo()` (it fires for any user, who may lack create rights on the entry) and `create()` sets
+    `user_id = env.uid` (sudo keeps the real uid) + pops any client stamp, so nothing client-supplied ever
+    sets who or when; write()/unlink() raise for everyone but system and the retention GC (module-level
+    `object()` sentinel). Same doctrine as the [[biz-approval-chain]] step log, hardened for a generic engine.
+58. **A soft component registry keeps a cockpit extensible without a hard dep.** The Employee 360 drawer
+    (pb_employee_vault) registers into `registry.category("pb_people_drawer")`; the People cockpit (pb_people)
+    checks `.contains("employee_360")` and mounts it via a dynamic `t-component`, else falls back to the
+    legacy full-page detail action — People stays fully installable WITHOUT the vault (same doctrine as the
+    trip `registry.category("fields")` overlay widgets). PII rails on the vault: documents are own-read for
+    employees / company-scoped for HR / manager-unlink (C18.32); `verified/verified_by/at` are HR testimony
+    behind a `_VAULT_SYS_TOKEN` sentinel (C18.31 — even HR's direct `write({'verified':True})` raises; only
+    the gated `action_verify()` sets it); the timeline RPC is HR-gated and wage VALUES are scrubbed from the
+    payload server-side for non-payroll-managers (two-tier serialization, NOT CSS hiding). Attachment upload
+    follows the C18.25 order (attachment first, bind res_model/res_id after the document exists).
+59. **A demo-seed that writes a cross-company relation crashes a company-scoped cockpit read.** Seeding an
+    employee's `department_id` from `hr.department.search([], limit=5)` grabbed a company-1 ("Your Company")
+    department onto a company-5 (VN) employee; the 360 drawer's `orm.call` carries the web client's SELECTED
+    company (`cids=5`), so reading that cross-company department raised AccessError and the drawer showed
+    "Could not load" — while a context-free RPC succeeded (the C18.11 trap in a new guise). Demo/validation
+    writes of a company-scoped relation MUST resolve the target within the record's OWN company
+    (`search([('company_id','=',emp.company_id.id)])`), never a bare `search([])`.
