@@ -259,8 +259,19 @@ class PbDemoGenerator(models.TransientModel):
             # Phase-I demo residue tied to these employees — a required
             # employee_id would otherwise block the unlink (OT requests), and
             # self-service records should not survive a regen.
+            # Phase-K workforce residue: shifts + business trips carry a REQUIRED
+            # employee_id (ondelete restrict), so they must be unlinked before
+            # the employees. Attendance cascades on the employee unlink.
             for _model in ('hr.overtime.request', 'pb.profile.change.request',
-                           'pb.employee.document'):
+                           'pb.employee.document', 'hr.shift.planning',
+                           'pb.business.trip'):
+                if _model in self.env:
+                    self.env[_model].sudo().with_context(active_test=False).search(
+                        [('employee_id', 'in', emps.ids)]).unlink()
+            # Phase-K: leaves + allocations reference a REQUIRED employee_id, so
+            # they must go before the employee unlink (hr.leave.unlink has no
+            # state guard — validated demo leaves unlink cleanly).
+            for _model in ('hr.leave', 'hr.leave.allocation'):
                 if _model in self.env:
                     self.env[_model].sudo().with_context(active_test=False).search(
                         [('employee_id', 'in', emps.ids)]).unlink()
