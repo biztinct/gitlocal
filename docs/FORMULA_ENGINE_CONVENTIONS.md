@@ -1022,3 +1022,44 @@ number from the handovers — keep the numbering stable.
     traceback in module code. The C18.54 background-run + kill-the-`stop-after-init`-PID + restart ritual
     still applies; run the scoped `-u pb_audit --test-enable --test-tags /pb_audit` to a dedicated
     `--logfile` so the test summary (`0 failed, 0 error(s) of 10 tests`) is not buried in the shared log.
+
+### Phase-K findings (Leave Command Center + OT limits/Bonus Hours — 2026-07-24, WP-Sudima-K). Numbering continues C18.
+
+71. **OWL compiles word-operator names into OPERATORS — a `t-foreach` loop var named `lt`/`gt`/`and`/
+    `or`/`not`/`in`/`eq`/`ne`/`le`/`ge` silently breaks the WHOLE template.** `t-as="lt"` made OWL's
+    expression compiler translate every `lt.id` → `<.id` (it maps `lt`→`<`, `gt`→`>`, `and`→`&&`, … in
+    expressions), so the generated component function is invalid JS and dies at first render with
+    `Failed to compile template …: Unexpected token '<'` — the ENTIRE cockpit goes to the "Oops" dialog,
+    and like the WP-I `if`-in-arrow trap this is INVISIBLE to `-u --stop-after-init` (templates compile
+    lazily in the browser) AND to server tests (they never render OWL). Same class: a bracket access with
+    a JS RESERVED WORD key — `p['return']` — also breaks the compile. Rules: never name a loop var (or any
+    template identifier) a word-operator or reserved word; read the FULL generated code from the browser
+    console (`list_console_messages type=error`) — the broken line shows the literal `<.id`/`<.name` which
+    pinpoints the offending `t-as`. Always Chrome-MCP each new OWL cockpit; a green `-u` and green server
+    tests prove nothing about whether the template renders.
+72. **A new field's data-XML default NEVER lands on an existing `noupdate="1"` record — it needs a
+    migration.** `pb.ot.ceiling` gained `daily_cap`; the seed row (`ot_ceiling_default`, shipped
+    `noupdate="1"`) already existed on the live DB, so the `daily_cap=4.0` added to the data file applied
+    ONLY to fresh installs — the live row stayed at the field default 0.0 (cap not enforced → the whole
+    overflow-to-bonus feature was silently inert, caught in Chrome-MCP: config gallery showed `DAILY —`
+    and a 6h entry previewed `6h → 6h`, no split). Fix = a `migrations/<version>/post-migrate.py` that sets
+    the value on the seed row (resolved via `ir_model_data`) *only when still 0* (so a deliberate user cap
+    survives) — idempotent. Bump the module version so the migration runs. Rule: any new field that must
+    carry a non-default value on a `noupdate` seed row needs a migration for already-installed DBs; the
+    data XML covers only fresh installs. Verify caps/defaults live after deploy, never assume the data XML
+    took.
+73. **A no-sudo "read-and-act" facade splits permission worlds: reads sudo BEHIND the gate, mutations stay
+    real-user — and server tests (superuser) will MISS the read-side ACL gap.** `pb.timeoff`'s officer set
+    (hr_holidays user | HR manager | payroll manager) includes members who lack a specific leave-model ACL
+    (a payroll manager — or Mitchell Admin uid 2 — has neither `hr.leave.type` read nor the hr_holidays
+    group). With the reads run as the real user, `get_board` died with `AccessError: … doesn't have 'read'
+    access to hr.leave.type`. The correct split (same doctrine as the audit console C18.65 and the OT desk):
+    gate on the real user (`_require_officer`), then collect the READ board via `self.sudo()` (company
+    scoping survives — `env.companies` is unchanged under sudo); keep the MUTATIONS (`act` /
+    `apply_on_behalf`) real-user so authorization + the model's own errors are genuine. This was invisible
+    to the server tests because a plain `TransactionCase` runs as SUPERUSER (uid 1), which bypasses all ACL
+    — only a non-superuser live login (Chrome-MCP as uid 2) surfaced it. Rule: a facade whose gate group set
+    is broader than the union of the underlying models' ACL groups MUST sudo its reads; and validate read
+    facades with a real non-superuser login, not just the superuser test env. (`test_15` accordingly asserts
+    only that MUTATIONS aren't sudo'd — `.sudo().action_*` / `.sudo().create` absent — not that the module
+    is sudo-free.)
