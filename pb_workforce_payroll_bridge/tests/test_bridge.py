@@ -38,6 +38,9 @@ class TestBridge(TransactionCase):
         ])
         # a config WITHOUT any OT codes (only a plain input)
         cls.config_plain = cls._make_config('ZZBRIDGE2', [('Base wage', 'WAGE')])
+        # a config declaring the Bonus-Hours input (Phase K)
+        cls.config_bonus = cls._make_config('ZZBRIDGE3', [
+            ('OT weekday', 'OTHRS150'), ('Bonus hours', 'BONHRS')])
 
         cls.slip = cls.env['hr.payslip'].create({
             'employee_id': cls.emp.id,
@@ -112,6 +115,41 @@ class TestBridge(TransactionCase):
         deps = mod.dependencies_id.mapped('name')
         self.assertNotIn('pb_hr_payroll_formula', deps)
         self.assertNotIn('pb_workforce_payroll_bridge', deps)
+
+    # ------------------------------------------------------------- §6.11 BONHRS
+    def _bonus_ot(self, approved, bonus, day):
+        return self.env['hr.overtime.request'].create({
+            'employee_id': self.emp.id, 'date': day, 'overtime_type': 'weekday',
+            'planned_hours': approved + bonus, 'approved_hours': approved,
+            'bonus_hours': bonus, 'reason': 'x', 'state': 'approved'})
+
+    def test_07_bonhrs_sums_bonus_of_approved(self):
+        # approved 4+2 and 3+1 in period → BONHRS 3.0, OTHRS150 unchanged (7.0)
+        self._bonus_ot(4.0, 2.0, date(2026, 6, 10))
+        self._bonus_ot(3.0, 1.0, date(2026, 6, 20))
+        # a draft with bonus and a refused one → contribute nothing
+        self.env['hr.overtime.request'].create({
+            'employee_id': self.emp.id, 'date': date(2026, 6, 12),
+            'overtime_type': 'weekday', 'planned_hours': 9.0,
+            'approved_hours': 4.0, 'bonus_hours': 5.0, 'reason': 'x',
+            'state': 'draft'})
+        values = self.slip._get_formula_input_values(self.config_bonus)
+        self.assertAlmostEqual(values['BONHRS'], 3.0)
+        self.assertAlmostEqual(values['OTHRS150'], 7.0)   # within-cap only
+
+    def test_08_bonhrs_absent_when_not_declared(self):
+        self._bonus_ot(4.0, 2.0, date(2026, 6, 10))
+        values = self.slip._get_formula_input_values(self.config)   # no BONHRS rule
+        self.assertNotIn('BONHRS', values)
+
+    def test_09_bonhrs_registered_no_collision(self):
+        from odoo.addons.pb_workforce_payroll_bridge.models.hr_payslip import (
+            BONUS_INPUT_CODE, OT_INPUT_MAP)
+        codes = list(OT_INPUT_MAP) + [BONUS_INPUT_CODE]
+        # underscore-free + pairwise non-substring within the registry
+        for c in codes:
+            self.assertNotIn('_', c)
+        self.assertNotIn(BONUS_INPUT_CODE, OT_INPUT_MAP)
 
     # ------------------------------------------------------------- F1 money path
     def test_06_ot_search_is_sudo_for_other_employees(self):
