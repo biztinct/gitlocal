@@ -83,7 +83,11 @@
             <div t-if="state.showExcl and state.data.validation.excluded_count" class="pbpd-excl">
               <div t-foreach="state.data.validation.excluded" t-as="x" t-key="x.employee_id"
                    class="row">
-                <span class="emp" t-esc="x.employee"/>
+                <button class="emp link" t-on-click="() => this.openEmployeeBank(x.employee_id)"
+                        title="Open the employee record to fix the bank account">
+                  <t t-esc="x.employee"/>
+                  <span class="go" t-out="ic('external',13)"/>
+                </button>
                 <span class="reasons">
                   <span t-foreach="x.reasons" t-as="rs" t-key="rs_index" class="chip" t-esc="rs"/>
                 </span>

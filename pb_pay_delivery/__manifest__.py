@@ -21,8 +21,15 @@ full-screen experience on the Pay Runs cockpit:
 
 Reads the employee master (vietnam_bank_*); never writes it — the only master
 write path stays pb.bank.change.request._apply_to_master.
+
+Launch surface: the experience is opened from the Pay Runs cockpit kanban and
+the sidebar's run picker (action_pb_pay_deliver / the client action). No
+hr.payslip.run form smart-button is shipped: it was deliberately SUPERSEDED by
+these bespoke launchers (C18.42a — a legacy form smart-button is not the WOW
+surface). The delivery_batch_ids One2many exists for data integrity/back-
+reference only, not to drive a stat button.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
