@@ -787,3 +787,55 @@ number from the handovers — keep the numbering stable.
     afterwards (demo-pristine). The password fallback is hardened too: an underivable password (no account
     digits, no birthday, no employee code) now FAILS the slip with a surfaced reason — a static fallback
     password is never acceptable on an encrypted payslip.
+
+### Phase-G findings (attendance workflow — 2026-07-24, WP-Sudima-G). Numbering continues C18.
+
+49. **The exception feed CONSUMES `compliance_status`; it never re-derives the tolerance.** Phase G made the
+    shift tolerance config-driven by OVERRIDING `hr.shift.planning._compute_compliance_status` (the base 15-min
+    hardcode) to read `pb.attendance.rule._grace_for_company` — grace_in for late, grace_out for early, branch
+    order byte-identical to the base so the default (15/15) is unchanged. The engine then reads the stored
+    `compliance_status` ('absent'→missing_punch, 'late', 'early_leave') plus a punchless-day guard (a shift can
+    read 'absent' while an UNLINKED punch exists — flag missing_punch ONLY when the day truly has no
+    `hr.attendance`, never invent an absence). `missing_checkout` is computed from OPEN punches older than the
+    config threshold (not a shift concept). Verified live: 4 seeded shifts computed absent/late(25m)/early(45m)
+    correctly and the cockpit classified all four kinds. Config resolver is company-else-GLOBAL via TWO searches
+    (C18.20) — a `company_id=False` seed row ships as data (visible to every company, so no per-company
+    post_init seed needed, unlike C18.35's company-only case).
+50. **The single guarded writer applies as SUDO; the sentinel is belt-and-braces.** `hr.attendance.correction`
+    rides `biz.approval.chain.mixin`; on approve, ONE writer `_apply()` creates/adjusts/deletes the punch. The
+    approval DECISION (state + `biz.approval.step.log`) runs as the real clicking user (truthful log,
+    `_approval_can` auth — a plain line-manager passes via `employee_id.parent_id.user_id`, the trip precedent),
+    but the hr.attendance MUTATION is `.sudo()` — a line-manager who may approve a report's correction has no
+    direct attendance write right. The module-level `object()` sentinel context still travels with it (opens the
+    device-delete guard for corrections), and su already opens that guard; the young-worker `@api.constrains`
+    fires under sudo too, so a cap-breaching correction still raises inside `_apply` and is CAUGHT by
+    `action_approve` (savepoint) → the request lands in `refused` with `apply_error` set, never a traceback
+    (test 7 live-equivalent). A device punch (blank `pb_entry_source`) is deletable ONLY through this path.
+51. **Completeness is enforced at SUBMIT, integrity at create.** A cockpit composer files a DRAFT first, then
+    the user picks the target punch / types the times. So the `@api.constrains` must hold only ALWAYS-VALID
+    integrity (target punch belongs to the employee+day; check_out ≥ check_in) — putting "create needs a
+    check-in" or "adjust needs a target" in `@api.constrains` makes the very act of opening the composer raise.
+    Move those completeness checks to a `_check_ready_to_submit()` called from `action_submit`. (Found live: the
+    File-correction button silently no-op'd because create-without-times tripped the constraint.)
+52. **A cockpit that FILES on behalf needs BOTH an ACL create grant AND a record-rule create grant for the
+    approver tiers** — the sharper edge of C18.27. The own+reports base rule (perm_create) only lets the
+    employee or their manager create; an officer/HR filing a correction for ANY employee from the exceptions
+    queue is blocked by BOTH the model ACL (`perm_create=0`) and the approver record rule (`perm_create=False`).
+    Grant `perm_create=1` on the officer/payroll ACL rows and `perm_create=True` on the approver `ir.rule`.
+    Approver≠requester still holds — `_approval_can` refuses self-approval by the filer, admin excepted.
+53. **A NEW asset FILE imported by a cockpit must be in the manifest `assets` list, or the whole component is
+    dead** (the concrete C2 symptom, cost real live-debug time). The cockpit imports a sibling
+    `pbaf_icons.js`; omitting it from `web.assets_backend` means the bundle DEFINES `@…/pb_attendance_flow` but
+    NOT its dependency `@…/pbaf_icons`, so the loader reports "modules … have unmet dependencies", the action
+    never registers, and `/action-<tag>` bounces to the home page with only a console error (invisible to
+    `-u --stop-after-init`). Grep new cockpit imports against the manifest asset list. **And: a manifest
+    asset-list change needs a full service RESTART, not `button_immediate_upgrade` / in-process `-u`** — the
+    manifest is cached per-process, so an in-process upgrade re-runs data files but keeps the OLD asset list;
+    only a fresh `odoo-bin` process re-reads it. (Always `service restart` after a manifest `assets` edit, then
+    clear `/web/assets/%` and hard-reload.)
+54. **`--stop-after-init` hangs on shutdown on Payobook19v2 (C18.23 in another guise) — never chain
+    `service start` AFTER it in the same script.** The `-i/-u --test-enable --stop-after-init` run completes
+    tests and prints "Initiating shutdown" but the process does not exit for many minutes (site stays DOWN if a
+    trailing `service start` waits on it). Deploy pattern that works: run odoo-bin in the BACKGROUND, poll the
+    log for completion, then `kill -9` the `odoo-bin.*stop-after-init` PID (never `pkill -f`) and `service
+    start` — do not rely on the test process exiting on its own.

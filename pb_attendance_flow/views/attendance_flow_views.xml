@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================= Attendance rule (admin config form) =================
+         Config forms are exempt from the bespoke-UI rule (C18.42a). -->
+    <record id="view_pb_attendance_rule_list" model="ir.ui.view">
+        <field name="name">pb.attendance.rule.list</field>
+        <field name="model">pb.attendance.rule</field>
+        <field name="arch" type="xml">
+            <list string="Attendance Rules">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="grace_in_minutes"/>
+                <field name="grace_out_minutes"/>
+                <field name="open_checkout_hours"/>
+                <field name="count_late_as"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_pb_attendance_rule_form" model="ir.ui.view">
+        <field name="name">pb.attendance.rule.form</field>
+        <field name="model">pb.attendance.rule</field>
+        <field name="arch" type="xml">
+            <form string="Attendance Rule">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id"
+                                   help="Empty = global default for every company."/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="grace_in_minutes"/>
+                            <field name="grace_out_minutes"/>
+                            <field name="open_checkout_hours"/>
+                            <field name="count_late_as"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_pb_attendance_rule" model="ir.actions.act_window">
+        <field name="name">Attendance Rules</field>
+        <field name="res_model">pb.attendance.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ============ Correction (admin/debug — the cockpit is the UI) ========= -->
+    <record id="view_hr_attendance_correction_list" model="ir.ui.view">
+        <field name="name">hr.attendance.correction.list</field>
+        <field name="model">hr.attendance.correction</field>
+        <field name="arch" type="xml">
+            <list string="Attendance Corrections">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="date"/>
+                <field name="correction_type"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state == 'submitted'"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_hr_attendance_correction_form" model="ir.ui.view">
+        <field name="name">hr.attendance.correction.form</field>
+        <field name="model">hr.attendance.correction</field>
+        <field name="arch" type="xml">
+            <form string="Attendance Correction">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_approve" type="object" string="Approve &amp; Apply"
+                            invisible="state != 'submitted'" class="btn-primary"/>
+                    <button name="action_refuse" type="object" string="Refuse"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                            invisible="state not in ('submitted','refused')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="employee_id"/>
+                            <field name="date"/>
+                            <field name="correction_type"/>
+                            <field name="attendance_id"
+                                   invisible="correction_type == 'create'"/>
+                        </group>
+                        <group>
+                            <field name="new_check_in"
+                                   invisible="correction_type == 'delete'"/>
+                            <field name="new_check_out"
+                                   invisible="correction_type == 'delete'"/>
+                            <field name="exception_kind"/>
+                            <field name="company_id"/>
+                        </group>
+                    </group>
+                    <field name="reason" placeholder="Why is this correction needed?"/>
+                    <field name="apply_error" readonly="1"
+                           invisible="not apply_error"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="action_hr_attendance_correction" model="ir.actions.act_window">
+        <field name="name">Attendance Corrections</field>
+        <field name="res_model">hr.attendance.correction</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

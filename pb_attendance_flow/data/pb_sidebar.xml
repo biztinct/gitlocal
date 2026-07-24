@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WORKFORCE › Attendance Control (exceptions + corrections + import). -->
+    <record id="item_attendance_control" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Attendance Control</field>
+        <field name="icon">clock</field>
+        <field name="sequence">25</field>
+        <field name="action_xmlid">pb_attendance_flow.action_pb_attendance_flow</field>
+        <field name="action_tag">pb_attendance_flow</field>
+        <field name="match_action_tags">pb_attendance_flow</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer'), ref('hr_attendance.group_hr_attendance_manager'), ref('om_hr_payroll.group_hr_payroll_manager'), ref('hr.group_hr_manager')])]"/>
+    </record>
+</odoo>
