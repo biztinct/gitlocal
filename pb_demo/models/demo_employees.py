@@ -256,6 +256,14 @@ class PbDemoGenerator(models.TransientModel):
             self.env['hr.loan'].sudo().search([('is_demo', '=', True)]).unlink()
             self.env['hr.contract'].sudo().with_context(active_test=False).search(
                 [('employee_id', 'in', emps.ids)]).unlink()
+            # Phase-I demo residue tied to these employees — a required
+            # employee_id would otherwise block the unlink (OT requests), and
+            # self-service records should not survive a regen.
+            for _model in ('hr.overtime.request', 'pb.profile.change.request',
+                           'pb.employee.document'):
+                if _model in self.env:
+                    self.env[_model].sudo().with_context(active_test=False).search(
+                        [('employee_id', 'in', emps.ids)]).unlink()
             emps.unlink()
             _logger.info('pb_demo: cleaned %s demo employees.', len(emps))
         # Remove the OLD (wrong) structure-based demo artefacts so they stop

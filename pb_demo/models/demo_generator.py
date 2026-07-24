@@ -308,6 +308,7 @@ class PbDemoGenerator(models.TransientModel):
         self = self.with_context(**self._GEN_CTX)
         self.action_build_foundation()
         self.generate_employees()      # demo_employees.py
+        self.ensure_ess_demo_users()   # demo_ess.py — MSS/ESS demo logins + queue
         if self.include_history:
             self.generate_history()    # demo_history.py
         self.generate_extras()         # demo_extras.py (F&F, proration, retro, insurance adj, dependents)
