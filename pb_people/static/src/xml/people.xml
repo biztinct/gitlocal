@@ -108,6 +108,11 @@
           <button class="ppl-link" t-on-click="openAllEmployees">Open full employee list →</button>
         </div>
       </div>
+
+      <!-- Employee 360 drawer — mounted only when the Employee Vault registered
+           its component into the soft "pb_people_drawer" registry. -->
+      <t t-if="state.drawerEmpId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerEmpId"/>
     </div>
   </t>
 

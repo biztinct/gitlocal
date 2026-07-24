@@ -33,9 +33,30 @@ export class PbPeople extends Component {
             search: "", dept: "", status: "all",
             dateFilter: "all", from: "", to: "",
             selectMode: false, selected: [], bulkDept: "",
+            drawerEmpId: null,
         });
         onWillStart(async () => { await this.load(); });
+        // deep-link: ?emp=<id> (or an action param) opens the 360 drawer if the
+        // Employee Vault is installed — otherwise it is simply ignored.
+        const p = (this.props.action && (this.props.action.params || this.props.action.context)) || {};
+        let emp = p.emp || p.emp_id;
+        if (!emp) {
+            try { emp = new URLSearchParams(window.location.search).get("emp"); } catch (e) { emp = null; }
+        }
+        if (emp && this.drawerCmp) { this.state.drawerEmpId = Number(emp); }
     }
+
+    // Soft component registry (C18 overlay pattern): the vault registers its
+    // drawer here. Absent (vault not installed) → null → we fall back to the
+    // legacy full-page detail action. People stays installable standalone.
+    get drawerCmp() {
+        const r = registry.category("pb_people_drawer");
+        return r.contains("employee_360") ? r.get("employee_360") : null;
+    }
+    get drawerProps() {
+        return { empId: this.state.drawerEmpId, onClose: () => this.closeDrawer() };
+    }
+    closeDrawer() { this.state.drawerEmpId = null; }
 
     async load() {
         const d = await this.orm.call("pb.people", "get_roster_data", []);
@@ -146,6 +167,7 @@ export class PbPeople extends Component {
     // ---- navigation ----
     openEmployee(id) {
         if (!id) return;
+        if (this.drawerCmp) { this.state.drawerEmpId = Number(id); return; }
         this.action.doAction({ type: "ir.actions.client", tag: "pb_employee_detail", name: "Employee", params: { emp_id: id } });
     }
     addEmployee() {
