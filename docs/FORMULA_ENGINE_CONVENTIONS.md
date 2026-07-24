@@ -839,3 +839,29 @@ number from the handovers — keep the numbering stable.
     trailing `service start` waits on it). Deploy pattern that works: run odoo-bin in the BACKGROUND, poll the
     log for completion, then `kill -9` the `odoo-bin.*stop-after-init` PID (never `pkill -f`) and `service
     start` — do not rely on the test process exiting on its own.
+
+### Sudima K–M program rules (2026-07-24 design phase). Numbering continues C18.
+
+55. **K–M cross-phase rails** (full detail in `docs/handovers/SUDIMA_PHASE_[K-M]_*.md`): (a) **K/M facades are
+    read-and-act surfaces** — they never write a state field and never sudo a mutation; every change rides the
+    target model's OWN gated action as the real clicking user (C18.17 made explicit for cockpit facades).
+    (b) **Bonus Hours doctrine** (owner-directed, Phase K): OT beyond the `pb.ot.ceiling` period caps — daily /
+    weekly / bi-weekly (ISO-odd-anchored week pairs) / monthly / annual, **tightest remaining allowance wins** —
+    is SPLIT into `hr.overtime.request.bonus_hours`, never blocked for adults and never silently dropped;
+    `bonus_hours` has exactly TWO writers (grid save + approve-time recompute) and is readonly everywhere else;
+    minors keep the Phase-E hard block (bonus is NEVER a young-worker bypass); the allowance counter and the
+    OTHRS* payroll inputs count only `approved_hours`, while the new **`BONHRS`** input carries the bonus stream —
+    the formula-input code registry is now `OTHRS150/200/300/NGT, TRIPDAYS, PERDIEM, BONHRS`. The Bonus review
+    surface is server-gated (payroll manager tier), filterable, and capped-and-surfaced on export.
+    (c) **One limit source**: `hr.overtime.config.max_hours_per_day/month` are legacy per-type metadata — never
+    enforced a second time beside `pb.ot.ceiling`.
+    (d) **Design-time finding (Phase L's mandate)**: the payroll approval chain was gated by BUTTON VISIBILITY
+    only — `pb.approval.approve_run` and the `action_payslip_run_level*_done` methods carry no group checks, and
+    the cockpit's `submit_for_approval` called `level1_done` from draft (which writes `level2` unconditionally →
+    the HR tier was skippable). Fix doctrine: model-side `_pb_require_tier` gates on every advance/cancel, chain
+    entry only via `done_payslip_run`, and **state KEYS are frozen downstream contracts** (`done` is the approved
+    signal for pay delivery/analytics — insert `level0`, rename nothing).
+    (e) **M is read-only and CDN-free**: the analytics rebuild writes nothing, leaves the `payroll.analytics`
+    JSON/state contract and its level2 auto-generation hook untouched, vendors every asset locally (no CDN,
+    test-asserted), and existence-checks its G/K-fed tiles so phase ORDER can never crash a board.
+    Order: K, L, M mutually independent; M soft-consumes K (bonus tile) and G (pulse row); H→I→J unchanged.
