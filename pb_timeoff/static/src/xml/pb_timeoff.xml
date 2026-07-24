@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_timeoff.PbTimeoff">
+    <div class="pbto pbim">
+
+      <!-- ============================ loading ============================ -->
+      <div t-if="!state.loaded" class="pbto-loading">
+        <div class="pbto-spin"/><span>Loading Leave Command Center…</span>
+      </div>
+
+      <div t-else="" class="pbto-wrap">
+
+        <!-- hero -->
+        <div class="pbto-hero">
+          <div>
+            <div class="eyebrow"><span class="i" t-out="ic('calendar',15)"/> Leave</div>
+            <h1>Leave Command Center</h1>
+            <div class="sub">Org-wide time off · approvals · balances</div>
+          </div>
+          <div class="hero-tools">
+            <div class="monthnav">
+              <button class="mbtn" t-on-click="prevMonth"><span t-out="ic('chevronL',16)"/></button>
+              <span class="ml" t-esc="d.month_label"/>
+              <button class="mbtn" t-on-click="nextMonth"><span t-out="ic('chevronR',16)"/></button>
+            </div>
+            <button class="pbto-btn primary" t-on-click="openApply">
+              <span t-out="ic('plus',16)"/><span>Apply on behalf</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI strip -->
+        <div class="pbto-kpis">
+          <div class="kpi out">
+            <div class="kh"><span class="ico" t-out="ic('plane',18)"/><span class="l">out today</span><span class="n" t-esc="kpis.out_today_count"/></div>
+            <div class="avstrip" t-if="(kpis.out_today or []).length">
+              <t t-foreach="kpis.out_today" t-as="p" t-key="p.id">
+                <img class="av" t-att-src="p.avatar_url" t-attf-title="{{ p.name }} · {{ p.type.name }} · back {{ p.return_date }}"
+                     t-attf-style="box-shadow: 0 0 0 2px {{ p.type.color }}"/>
+              </t>
+            </div>
+            <div t-else="" class="none">Everyone's in today.</div>
+          </div>
+          <div class="kpi">
+            <span class="ico" t-out="ic('inbox',18)"/>
+            <span class="n" t-esc="kpis.pending"/>
+            <span class="l">pending approvals</span>
+          </div>
+          <div class="kpi week">
+            <span class="l tt">out this week</span>
+            <div class="wbars">
+              <t t-foreach="kpis.week or []" t-as="w" t-key="w.iso">
+                <div t-attf-class="wb {{ w.is_today ? 'today' : '' }}" t-attf-title="{{ w.label }}: {{ w.count }}">
+                  <span class="bar" t-attf-style="height: {{ w.count ? (12 + Math.min(40, w.count * 6)) : 4 }}px"/>
+                  <span class="wl" t-esc="w.label"/>
+                </div>
+              </t>
+            </div>
+          </div>
+        </div>
+
+        <div class="pbto-cols">
+
+          <!-- ================== approval queue ================== -->
+          <section class="pbto-panel queue">
+            <div class="panel-h"><div class="ttl"><span t-out="ic('inbox',18)"/> Approval queue</div></div>
+
+            <div t-if="!queue.length" class="pbto-empty">
+              <span class="i" t-out="ic('checkCircle',30)"/>
+              <div class="t">Queue clear</div>
+              <div class="s">No leave requests are waiting for approval.</div>
+            </div>
+
+            <div t-else="" class="q-list">
+              <div t-foreach="queue" t-as="q" t-key="q.id" class="q-card">
+                <img class="av" t-att-src="q.employee.avatar_url" alt=""/>
+                <div class="body">
+                  <div class="r1">
+                    <span class="nm" t-esc="q.employee.name"/>
+                    <span class="tchip" t-attf-style="--c:{{ q.type.color }}" t-esc="q.type.name"/>
+                  </div>
+                  <div class="r2">
+                    <span class="span"><t t-esc="q.date_from"/> → <t t-esc="q.date_to"/></span>
+                    <span class="dur"><t t-esc="fmtDays(q.duration)"/> d</span>
+                    <span t-attf-class="st {{ q.state === 'validate1' ? 'two' : '' }}" t-esc="q.state_label"/>
+                  </div>
+                  <div t-if="q.note" class="note" t-esc="q.note"/>
+                </div>
+                <div class="acts">
+                  <button class="pbto-btn tiny primary" t-on-click="() => this.approve(q.id)" title="Approve">
+                    <span t-out="ic('check',14)"/>
+                  </button>
+                  <button class="pbto-btn tiny bad ghost" t-on-click="() => this.openRefuse(q.id)" title="Refuse">
+                    <span t-out="ic('x',14)"/>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================== month heatmap ================== -->
+          <section class="pbto-panel heat">
+            <div class="panel-h">
+              <div class="ttl"><span t-out="ic('grid',18)"/> Absence heatmap</div>
+              <span class="hint" t-if="heatmap.truncated">partial (scan capped)</span>
+            </div>
+
+            <div t-if="!heatmap.rows.length" class="pbto-empty small">
+              <span class="i" t-out="ic('sun',26)"/>
+              <div class="t">No absences</div>
+              <div class="s">Nobody is scheduled off this month.</div>
+            </div>
+
+            <div t-else="" class="heatwrap">
+              <table class="heatgrid">
+                <thead>
+                  <tr>
+                    <th class="corner"/>
+                    <th t-foreach="heatmap.days" t-as="day" t-key="day.iso"
+                        t-attf-class="dh {{ day.is_weekend ? 'we' : '' }} {{ day.is_today ? 'td' : '' }}"
+                        t-esc="day.day"/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="heatmap.rows" t-as="row" t-key="row_index">
+                    <th class="deph" t-esc="row.department"/>
+                    <td t-foreach="heatmap.days" t-as="day" t-key="day.iso"
+                        t-attf-class="hc lv{{ cellTone(row.counts[day_index]) }} {{ day.is_weekend ? 'we' : '' }} {{ day.is_today ? 'td' : '' }}"
+                        t-attf-title="{{ row.department }} · {{ day.iso }}: {{ row.counts[day_index] }}"
+                        t-on-click="() => this.openDayInLeaves(day.iso)">
+                      <t t-if="row.counts[day_index]" t-esc="row.counts[day_index]"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- ================== balance board ================== -->
+        <section class="pbto-panel balances">
+          <div class="panel-h">
+            <div class="ttl"><span t-out="ic('scale',18)"/> Leave balances</div>
+            <div class="pgr">
+              <button class="pbto-btn tiny ghost" t-att-disabled="balances.page === 0" t-on-click="prevBalance">Prev</button>
+              <span class="pg">page <t t-esc="balances.page + 1"/></span>
+              <button class="pbto-btn tiny ghost" t-att-disabled="!balances.has_more" t-on-click="nextBalance">Next</button>
+            </div>
+          </div>
+
+          <div t-if="!balances.types.length" class="pbto-empty small">
+            <span class="i" t-out="ic('scale',26)"/>
+            <div class="t">No allocation types</div>
+            <div class="s">No leave type requires an allocation.</div>
+          </div>
+
+          <div t-else="" class="baltable-wrap">
+            <table class="baltable">
+              <thead>
+                <tr>
+                  <th class="emp">Employee</th>
+                  <th t-foreach="balances.types" t-as="t" t-key="t.id" class="tcol">
+                    <span class="tchip" t-attf-style="--c:{{ t.color }}" t-esc="t.name"/>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr t-foreach="balances.rows" t-as="row" t-key="row.id">
+                  <th class="emp">
+                    <img class="av" t-att-src="row.avatar_url" alt=""/>
+                    <span><span class="nm" t-esc="row.name"/><span class="dp" t-esc="row.department"/></span>
+                  </th>
+                  <td t-foreach="balances.types" t-as="t" t-key="t.id" class="bcell">
+                    <t t-set="cell" t-value="balCell(row, t.id)"/>
+                    <span t-attf-class="bal {{ cell.low ? 'low' : '' }}"><t t-esc="fmtDays(cell.balance)"/></span>
+                    <span class="of">/ <t t-esc="fmtDays(cell.allocated)"/></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- ============================ refuse modal ======================= -->
+      <div t-if="state.refuseId" class="pbto-scrim" t-on-click="cancelRefuse">
+        <div class="pbto-modal" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="m-h">Refuse leave</div>
+          <div class="m-b">
+            <p>A reason is required.</p>
+            <textarea placeholder="Reason for refusal…" t-att-value="state.refuseNote" t-on-input="onRefuseNote"/>
+          </div>
+          <div class="m-f">
+            <button class="pbto-btn ghost" t-on-click="cancelRefuse">Cancel</button>
+            <button class="pbto-btn bad" t-on-click="confirmRefuse">Refuse</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================ apply drawer ======================= -->
+      <div t-if="state.applyOpen" class="pbto-scrim" t-on-click="closeApply">
+        <div class="pbto-modal wide" t-on-click="(ev) => ev.stopPropagation()">
+          <div class="m-h">Apply on behalf</div>
+          <div class="m-b">
+            <label class="fld emp-pick">
+              <span>Employee</span>
+              <input type="text" placeholder="Search name…" t-att-value="state.empQuery" t-on-input="onEmpQuery"/>
+              <div t-if="state.empResults.length" class="emp-drop">
+                <div t-foreach="state.empResults" t-as="e" t-key="e.id" class="emp-opt" t-on-click="() => this.pickEmployee(e)">
+                  <img class="av" t-att-src="e.avatar_url" alt=""/>
+                  <span><span class="nm" t-esc="e.name"/><span class="dp" t-esc="e.department"/></span>
+                </div>
+              </div>
+            </label>
+            <label class="fld">
+              <span>Leave type</span>
+              <select t-on-change="(ev) => this.onApplyField('type_id', ev)">
+                <option value="">Choose…</option>
+                <option t-foreach="d.leave_types or []" t-as="lvt" t-key="lvt.id" t-att-value="lvt.id" t-esc="lvt.name"/>
+              </select>
+            </label>
+            <div class="fld-row">
+              <label class="fld"><span>From</span><input type="date" t-att-value="state.apply.date_from" t-on-change="(ev) => this.onApplyField('date_from', ev)"/></label>
+              <label class="fld"><span>To</span><input type="date" t-att-value="state.apply.date_to" t-on-change="(ev) => this.onApplyField('date_to', ev)"/></label>
+            </div>
+            <label class="fld"><span>Note</span><textarea placeholder="Optional…" t-att-value="state.apply.note" t-on-input="(ev) => this.onApplyField('note', ev)"/></label>
+          </div>
+          <div class="m-f">
+            <button class="pbto-btn ghost" t-on-click="closeApply">Cancel</button>
+            <button class="pbto-btn primary" t-att-disabled="!canApply" t-on-click="submitApply">File leave</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+</templates>
