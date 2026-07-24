@@ -1,6 +1,6 @@
 {
     'name': 'Workforce Management',
-    'version': '19.0.4.6.0',
+    'version': '19.0.4.7.0',
     'category': 'Human Resources/Attendance',
     'summary': 'Deputy-style shift roster, live attendance, payroll reports, timecards, and visual dashboards',
     'description': """
@@ -41,6 +41,7 @@ Workforce Management — Deputy & Rippling-Style HR Tools
         'views/workforce_dashboard_views.xml',
         'views/shift_planning_grid_views.xml',
         'views/attendance_weekentry_views.xml',
+        'views/ot_desk_action.xml',
         'views/payroll_report_views.xml',
         'views/menu_views.xml',
         'data/pb_sidebar.xml',
@@ -63,6 +64,11 @@ Workforce Management — Deputy & Rippling-Style HR Tools
             'pb_hr_workforce/static/src/scss/attendance_weekgrid.scss',
             'pb_hr_workforce/static/src/js/attendance_weekgrid.js',
             'pb_hr_workforce/static/src/xml/attendance_weekgrid.xml',
+            # Overtime Desk cockpit (Phase K) — icons imported first (C18.53)
+            'pb_hr_workforce/static/src/scss/pb_ot_desk.scss',
+            'pb_hr_workforce/static/src/js/pbot_icons.js',
+            'pb_hr_workforce/static/src/js/pb_ot_desk.js',
+            'pb_hr_workforce/static/src/xml/pb_ot_desk.xml',
         ],
     },
     'installable': True,

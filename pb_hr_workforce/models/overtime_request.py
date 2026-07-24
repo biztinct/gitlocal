@@ -27,6 +27,18 @@ class OvertimeRequest(models.Model):
                                   tracking=True)
     actual_hours = fields.Float(string='Actual Hours', tracking=True)
     approved_hours = fields.Float(string='Approved Hours', tracking=True)
+    # Bonus Hours (Phase K): the portion of an OT entry BEYOND the pb.ot.ceiling
+    # period allowance — never blocked, never dropped (adults). readonly=True is
+    # a facade/RPC guard (it does NOT block server-side ORM writes); this field
+    # has EXACTLY TWO writers — the grid save (_save_ot) and the approve-time
+    # recompute (action_approve) — via the ORM. It feeds the BONHRS payroll input
+    # (bridge), NEVER the OTHRS* / allowance counters (rail 2, C18.55b).
+    bonus_hours = fields.Float(string='Bonus Hours', readonly=True, tracking=True,
+                                help='OT hours beyond the ceiling allowance. Paid '
+                                     'via the BONHRS input if the config uses it; '
+                                     'outside the OT caps by definition.')
+    total_hours = fields.Float(string='Total Hours', compute='_compute_total_hours',
+                                help='Approved (within cap) + bonus (overflow).')
 
     overtime_type = fields.Selection([
         ('weekday', 'Weekday'),
@@ -84,6 +96,11 @@ class OvertimeRequest(models.Model):
         for rec in self:
             rec.rate_display = f'{int(rec.rate_multiplier * 100)}%' if rec.rate_multiplier else ''
 
+    @api.depends('approved_hours', 'bonus_hours')
+    def _compute_total_hours(self):
+        for rec in self:
+            rec.total_hours = (rec.approved_hours or 0.0) + (rec.bonus_hours or 0.0)
+
     def action_submit(self):
         for rec in self.filtered(lambda r: r.state == 'draft'):
             rec.state = 'submitted'
@@ -95,10 +112,24 @@ class OvertimeRequest(models.Model):
                 )
 
     def action_approve(self):
+        Ceil = self.env['pb.ot.ceiling']
         for rec in self.filtered(lambda r: r.state == 'submitted'):
+            # Recompute the split AUTHORITATIVELY at approval (rail 4): other
+            # requests may have been approved since the grid saved this draft, so
+            # the allowance can have shrunk. Exclude this record's own id (it is
+            # 'submitted', so already counted by _allowance). The entered figure
+            # is actual_hours (grid/form), falling back to planned_hours.
+            entry = rec.actual_hours or rec.planned_hours or 0.0
+            approved, bonus = Ceil._split(rec.employee_id, rec.date, entry,
+                                          exclude_ids=[rec.id])
+            # Note: bonus_hours is written here (a sanctioned writer) — it is NOT
+            # in the young-worker @api.constrains trigger set, so approval never
+            # trips the minor gate; minors are hard-blocked at submission instead
+            # (C18.63), so a minor request can never reach this loop.
             rec.write({
                 'state': 'approved',
-                'approved_hours': rec.planned_hours if not rec.approved_hours else rec.approved_hours,
+                'approved_hours': approved,
+                'bonus_hours': bonus,
             })
             rec.activity_feedback(['mail.mail_activity_data_todo'])
 
@@ -106,6 +137,7 @@ class OvertimeRequest(models.Model):
         self.filtered(lambda r: r.state == 'submitted').write({
             'state': 'refused',
             'approved_hours': 0,
+            'bonus_hours': 0,
         })
 
     def action_reset_draft(self):

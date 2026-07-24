@@ -260,14 +260,21 @@ class AttendanceWeekEntry(models.TransientModel):
                     req = req_by_cell.get((emp.id, iso, t))
                     if req:
                         val = req.actual_hours or req.approved_hours or 0.0
+                        bonus = round(req.bonus_hours or 0.0, 2)
                         # refused is locked too — _save_ot refuses it, so the
                         # grid must not invite an edit that will fail (review F6);
                         # re-entry after refusal goes through the OT request form.
                         locked = req.state in ('submitted', 'approved', 'refused')
+                        # the generic chip renders `state` as its small suffix —
+                        # show the Bonus-Hours split there (amber `+Nb` via the
+                        # overlay SCSS); fall back to the plain state otherwise.
+                        state_txt = ('+%gb' % bonus) if bonus > 0 else req.state
                         cell_measures[t] = {
                             'value': round(val, 2),
                             'editable': not locked,
-                            'state': req.state,
+                            'state': state_txt,
+                            'bonus': bonus,
+                            'approved': round(req.approved_hours or 0.0, 2),
                             'request_id': req.id,
                             'lock_reason': (_('%s OT already %s.') % (t.title(), req.state))
                                            if locked else '',
@@ -456,16 +463,20 @@ class AttendanceWeekEntry(models.TransientModel):
             # isolate each cell in a savepoint: a genuine DB error on one cell
             # rolls back only that cell and never poisons the batch cursor.
             try:
+                extra = None
                 with self.env.cr.savepoint():
                     if measure == 'reg':
                         ok, err = self._save_reg(emp, d, value, c.get('token'),
                                                  att_map, shift_map)
                     elif measure in OT_TYPES:
-                        ok, err = self._save_ot(emp, d, measure, value, cfgs,
-                                                holidays)
+                        ok, err, extra = self._save_ot(emp, d, measure, value,
+                                                       cfgs, holidays)
                     else:
                         ok, err = False, 'badmeasure'
-                results.append({**res, 'ok': ok, 'error': err})
+                row = {**res, 'ok': ok, 'error': err}
+                if extra:  # OT split preview — grid renders the live bonus chip
+                    row.update(extra)
+                results.append(row)
             except Exception:  # never let one bad cell abort the batch
                 results.append({**res, 'ok': False, 'error': 'exc'})
         return {'results': results}
@@ -515,42 +526,57 @@ class AttendanceWeekEntry(models.TransientModel):
         return True, None
 
     def _save_ot(self, emp, d, ot_type, hours, cfgs, holidays):
+        """Persist one OT cell as a draft request, computing the Bonus-Hours
+        split (Phase K, first of the two writers). Returns
+        ``(ok, err, extra)`` where ``extra`` = {value, approved, bonus} so the
+        grid can render the live split chip (``4 + 2b``). For a minor the write
+        trips the Phase-E @api.constrains and raises — caught by the per-cell
+        savepoint, so no split and no bonus row are ever persisted (rail 3)."""
         if hours < 0 or hours > 24:
-            return False, 'bounds'
+            return False, 'bounds', None
         # rail 1: the type must have an active config and be applicable on this
         # day — the grid greys these cells, but a crafted RPC must not file
         # weekend OT on a Tuesday (review F7)
         cfg = cfgs.get(ot_type)
         if not cfg or not self._config_applies(cfg, d, holidays):
-            return False, 'notapplicable'
+            return False, 'notapplicable', None
         Req = self.env['hr.overtime.request'].sudo()
+        Ceil = self.env['pb.ot.ceiling']
         req = Req.search([
             ('employee_id', '=', emp.id), ('date', '=', d),
             ('overtime_type', '=', ot_type),
         ], limit=1)
         if req:
             if req.state in ('submitted', 'approved', 'refused'):
-                return False, 'locked'
+                return False, 'locked', None
             # draft
             if hours == 0:
                 req.unlink()
-            else:
-                req.write({'actual_hours': hours, 'planned_hours': hours})
-            return True, None
+                return True, None, {'value': 0.0, 'approved': 0.0, 'bonus': 0.0}
+            # a draft is not counted by _allowance (submitted+approved only), so
+            # excluding its own id is belt-and-braces; reducing hours re-splits
+            # and always commits (C18.38 posture carries over).
+            approved, bonus = Ceil._split(emp, d, hours, exclude_ids=[req.id])
+            req.write({'actual_hours': hours, 'planned_hours': hours,
+                       'approved_hours': approved, 'bonus_hours': bonus})
+            return True, None, {'value': hours, 'approved': approved, 'bonus': bonus}
         if hours == 0:
-            return True, None
+            return True, None, None
+        approved, bonus = Ceil._split(emp, d, hours)
         Req.create({
             'employee_id': emp.id,
             'date': d,
             'overtime_type': ot_type,
             'planned_hours': hours,
             'actual_hours': hours,
+            'approved_hours': approved,
+            'bonus_hours': bonus,
             'reason': _('Entered via Weekly Entry grid'),
             # explicit: the model default is env.company, which can mismatch
             # the employee's company in a multi-company grid (review F8)
             'company_id': emp.company_id.id or self.env.company.id,
         })
-        return True, None
+        return True, None, {'value': hours, 'approved': approved, 'bonus': bonus}
 
     # ------------------------------------------------------- bulk workflow
     @api.model

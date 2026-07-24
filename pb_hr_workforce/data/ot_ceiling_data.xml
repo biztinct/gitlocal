@@ -7,6 +7,9 @@
     <record id="ot_ceiling_default" model="pb.ot.ceiling">
         <field name="name">Overtime Ceilings (VN default)</field>
         <field name="company_id" eval="False"/>
+        <field name="daily_cap">4.0</field>
+        <field name="weekly_cap">0.0</field>
+        <field name="biweekly_cap">0.0</field>
         <field name="monthly_cap">40.0</field>
         <field name="annual_cap">200.0</field>
         <field name="annual_cap_special">300.0</field>

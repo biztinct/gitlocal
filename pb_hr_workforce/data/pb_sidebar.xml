@@ -14,4 +14,19 @@
         <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
     </record>
 
+    <!-- Overtime Desk cockpit — Workforce section (manager persona). Native OT
+         menus retired (Phase K); this is the approval queue + config gallery +
+         server-gated Bonus Hours review. Bonus viewers who are also managers
+         reach the tab here; super admin (system) sees everything. -->
+    <record id="item_wf_ot_desk" model="pb.sidebar.item">
+        <field name="section_id" ref="pb_sidebar.sec_workforce"/>
+        <field name="name">Overtime Desk</field>
+        <field name="icon">zap</field>
+        <field name="sequence">37</field>
+        <field name="action_xmlid">pb_hr_workforce.action_pb_ot_desk</field>
+        <field name="action_tag">pb_ot_desk</field>
+        <field name="match_action_tags">pb_ot_desk</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_manager'), ref('om_hr_payroll.group_hr_payroll_manager')])]"/>
+    </record>
+
 </odoo>
