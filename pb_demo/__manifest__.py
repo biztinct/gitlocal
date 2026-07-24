@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Demo Environment',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'summary': 'World-class, regenerable demo world: multilingual component library, '
                'division schemes, thousands of realistic employees and months of payroll history.',

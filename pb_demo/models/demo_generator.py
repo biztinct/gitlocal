@@ -309,6 +309,8 @@ class PbDemoGenerator(models.TransientModel):
         self.action_build_foundation()
         self.generate_employees()      # demo_employees.py
         self.ensure_ess_demo_users()   # demo_ess.py — MSS/ESS demo logins + queue
+        self.ensure_timeoff_demos()    # demo_timeoff.py — leave + OT overflow story
+        self.ensure_workforce_demos()  # demo_workforce.py — attendance, shifts, trips
         if self.include_history:
             self.generate_history()    # demo_history.py
         self.generate_extras()         # demo_extras.py (F&F, proration, retro, insurance adj, dependents)
