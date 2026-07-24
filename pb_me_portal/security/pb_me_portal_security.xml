@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ===================== Profile change request ===================== -->
+    <!-- Company scope (global — AND'd with every group rule). -->
+    <record id="profile_rule_company" model="ir.rule">
+        <field name="name">Profile Change Request: company</field>
+        <field name="model_id" ref="model_pb_profile_change_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- An employee sees and drives ONLY their own requests (PII, safety rail 3).
+         The request never accepts an employee_id parameter for another person on a
+         portal route; the model's write() also freezes the target once submitted. -->
+    <record id="profile_rule_own" model="ir.rule">
+        <field name="name">Profile Change Request: own</field>
+        <field name="model_id" ref="model_pb_profile_change_request"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('create_uid', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- HR sees and decides every company request. -->
+    <record id="profile_rule_hr" model="ir.rule">
+        <field name="name">Profile Change Request: HR (all)</field>
+        <field name="model_id" ref="model_pb_profile_change_request"/>
+        <field name="groups" eval="[(4, ref('om_hr_payroll.group_hr_payroll_user')), (4, ref('hr.group_hr_user')), (4, ref('om_hr_payroll.group_hr_payroll_manager')), (4, ref('hr.group_hr_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- ============ ESS self-upload into the Phase-H vault (C18.32) ============ -->
+    <!-- Phase H shipped employee documents READ-only for the owner (no create).
+         Phase I adds the create: an employee may create a document for THEMSELF
+         only, in a self-uploadable category. verified* stay sentinel-guarded and
+         can never be set from the portal (Phase H rail). -->
+    <record id="document_rule_own_create" model="ir.rule">
+        <field name="name">Employee Document: own (self-upload create)</field>
+        <field name="model_id" ref="pb_employee_vault.model_pb_employee_document"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+</odoo>
