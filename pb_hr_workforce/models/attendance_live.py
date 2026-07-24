@@ -101,8 +101,11 @@ class AttendanceLive(models.TransientModel):
                 card['status'] = 'not_started'
                 not_started.append(card)
 
-        # Today's leaves
-        leaves = self.env['hr.leave'].search([
+        # Today's leaves. sudo: the on-leave strip is system-derived presence
+        # context (same one-permission-world rail as the Weekly Entry grid) —
+        # without it a viewer lacking hr.leave.type read crashes the whole board
+        # on the holiday_status_id.name dereference below.
+        leaves = self.env['hr.leave'].sudo().search([
             ('employee_id', 'in', employees.ids),
             ('state', 'in', ('validate', 'validate1')),
             ('date_from', '<=', datetime.combine(today, datetime.max.time())),
