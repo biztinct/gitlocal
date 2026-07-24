@@ -95,10 +95,17 @@ class PbPayDelivery(models.AbstractModel):
     # ------------------------------------------------------------- run picker
     @api.model
     def get_recent_runs(self):
-        """Recent pay runs (newest first) for the sidebar entry's picker."""
+        """Recent pay runs (newest first) for the sidebar entry's picker.
+
+        Only runs that actually have something to pay/deliver are offered — i.e.
+        an approved run OR one carrying at least one confirmed (done) payslip.
+        A draft/empty run has zero deliverable slips (``_done_slips`` filters on
+        ``state == 'done'``), so listing it would only dead-end the picker
+        (Phase-F review debt)."""
         self._require_access()
         runs = self.env['hr.payslip.run'].search(
-            [], order='date_end desc, id desc', limit=24)
+            ['|', ('state', '=', 'done'), ('slip_ids.state', '=', 'done')],
+            order='date_end desc, id desc', limit=24)
         out = []
         for run in runs:
             done = self._done_slips(run)

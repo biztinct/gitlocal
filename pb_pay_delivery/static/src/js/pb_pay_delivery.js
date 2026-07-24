@@ -23,6 +23,7 @@ export class PbPayDelivery extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.action = useService("action");
         this.ic = ic;
         const runId = this.props.action?.params?.run_id;
         this.state = useState({
@@ -182,6 +183,18 @@ export class PbPayDelivery extends Component {
                  skipped_no_email: _t("No email") }[state] || state;
     }
     reasonList(reasons) { return (reasons || []).join(" · "); }
+    // deep-link an excluded row to the employee's record so the reviewer can go
+    // straight to the bank account that failed validation (payload carries the id)
+    openEmployeeBank(employeeId) {
+        if (!employeeId) { return; }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            res_model: "hr.employee",
+            res_id: employeeId,
+            views: [[false, "form"]],
+            target: "current",
+        });
+    }
     _err(e) {
         return (e && e.data && e.data.message) || (e && e.message) || _t("Action failed.");
     }

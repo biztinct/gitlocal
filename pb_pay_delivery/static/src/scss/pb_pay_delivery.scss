@@ -134,6 +134,13 @@
                background: rgba(252, 231, 239, .35); }
         .row:last-child { border-bottom: 0; }
         .emp { font-weight: 600; font-size: 13px; }
+        .emp.link {
+            display: inline-flex; align-items: center; gap: 5px; cursor: pointer;
+            background: none; border: 0; padding: 0; color: var(--pbim-primary, #5A4BB0);
+            font-family: inherit; font-weight: 600; font-size: 13px;
+            .go { opacity: .7; }
+            &:hover { text-decoration: underline; }
+        }
         .reasons { display: flex; gap: 5px; flex-wrap: wrap; }
         .chip { font-size: 11px; background: #fff; color: var(--pbim-rose, #DC2668);
                 border: 1px solid var(--pbim-rose, #DC2668); border-radius: var(--pbim-pill, 999px);
