@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Company scoping (global — AND'd with every group's rules). -->
+    <record id="correction_rule_company" model="ir.rule">
+        <field name="name">Attendance Correction: company</field>
+        <field name="model_id" ref="model_hr_attendance_correction"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- A plain internal user sees/edits their OWN corrections and their direct
+         reports' (so a line manager holding no special group can still approve a
+         report — safety rail 2 / the trip precedent). -->
+    <record id="correction_rule_user_own_and_reports" model="ir.rule">
+        <field name="name">Attendance Correction: own + direct reports</field>
+        <field name="model_id" ref="model_hr_attendance_correction"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Approver tiers see ALL company corrections and may FILE ON BEHALF from
+         the exceptions queue (the cockpit's core flow — an officer files a
+         correction for any employee). Approver ≠ requester still holds: the
+         model's _approval_can refuses self-approval by the filer (C18.27). -->
+    <record id="correction_rule_approvers_all" model="ir.rule">
+        <field name="name">Attendance Correction: approvers (all)</field>
+        <field name="model_id" ref="model_hr_attendance_correction"/>
+        <field name="groups" eval="[(4, ref('hr_attendance.group_hr_attendance_officer')), (4, ref('hr_attendance.group_hr_attendance_manager')), (4, ref('om_hr_payroll.group_hr_payroll_manager')), (4, ref('hr.group_hr_manager'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>
