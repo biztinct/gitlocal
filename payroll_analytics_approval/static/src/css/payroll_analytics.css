@@ -1,1301 +1,360 @@
-/* Professional Payroll Analytics CSS */
+/* =====================================================================
+   Payroll Analytics & Approval — minimal design-system sheet.
 
+   Sudima Phase M replaced the pre-design-system stylesheet (linear-gradient
+   headers, #667eea/#764ba2/#21435F hexes, lift-on-hover transforms, and — the
+   real damage — GLOBAL rules on .btn-primary, .nav-tabs .nav-link, .tooltip and
+   .o_field_monetary that bled into every screen in the app, the same class of
+   bug as the global scrollbar rule removed earlier).
 
-/* Enhanced Payroll Analytics Dashboard Styles */
+   What is left is the SAME class vocabulary the module's native views use,
+   restyled on the locked Payobook tokens: white surfaces, one indigo primary,
+   neutral hairlines, NO gradients, NO emoji. Every selector is scoped to a
+   container this module owns — nothing here can touch another screen.
 
-/* Dashboard Layout */
+   The module's model, workflow, menus and security are untouched: this file and
+   the removed CDN Chart.js loader were the whole cleanup.
+   ===================================================================== */
+
+.analytics-dashboard,
+.payroll-dashboard-tiles,
+.dashboard-cards-container {
+    --pa-primary: #5A4BB0;
+    --pa-primary-soft: #EDEAF8;
+    --pa-ink: #1B1733;
+    --pa-muted: #64748B;
+    --pa-line: #E2E8F0;
+    --pa-line-2: #F1F5F9;
+    --pa-surface: #ffffff;
+    --pa-green: #2E7D4F;
+    --pa-green-soft: #E3F2E9;
+    --pa-amber: #D97706;
+    --pa-amber-soft: #FEF3C7;
+    --pa-rose: #DC2668;
+    --pa-rose-soft: #FCE7EF;
+    --pa-blue: #2563EB;
+    --pa-blue-soft: #E5EDFD;
+    --pa-radius: 14px;
+}
+
+/* ------------------------------------------------------------- layout */
 .analytics-dashboard {
     padding: 20px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    min-height: 100vh;
+    background: #F5F6FA;
+    color: var(--pa-ink);
 }
 
-.dashboard-header {
-    margin-bottom: 30px;
-    padding: 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.dashboard-title {
-    color: #2c3e50;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.dashboard-subtitle {
-    color: #7f8c8d;
-    font-size: 16px;
-    margin: 0;
-}
-
-/* Metrics Cards */
-.metrics-section {
-    margin-bottom: 30px;
-}
-
-.metric-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.analytics-dashboard .dashboard-header,
+.dashboard-header-modern {
+    background: var(--pa-surface);
+    border: 1px solid var(--pa-line);
+    border-left: 4px solid var(--pa-primary);
+    border-radius: 18px;
+    padding: 18px 22px;
     margin-bottom: 20px;
-    border-left: 5px solid #3498db;
 }
 
-.metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+.analytics-dashboard .dashboard-title,
+.dashboard-title-modern {
+    color: var(--pa-ink);
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 4px;
 }
 
-.metric-employees { border-left-color: #3498db; }
-.metric-payroll { border-left-color: #2ecc71; }
-.metric-average { border-left-color: #f39c12; }
-.metric-variance { border-left-color: #e74c3c; }
-
-.metric-icon {
-    font-size: 2.5em;
-    color: #bdc3c7;
-    margin-bottom: 15px;
-}
-
-.metric-value {
-    font-size: 2.2em;
-    font-weight: 700;
-    color: #2c3e50;
-    margin: 10px 0;
-}
-
-.metric-label {
-    color: #7f8c8d;
+.analytics-dashboard .dashboard-subtitle,
+.dashboard-structure-name {
+    color: var(--pa-muted);
     font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
     margin: 0;
 }
 
-/* Charts Section */
-.charts-section {
-    margin-bottom: 30px;
+.analytics-dashboard .section-header {
+    margin-bottom: 12px;
 }
 
-.chart-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    transition: transform 0.3s ease;
-}
-
-.chart-card:hover {
-    transform: translateY(-2px);
-}
-
-.chart-header {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.chart-header h4 {
-    color: #2c3e50;
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.chart-header p {
-    color: #7f8c8d;
+.analytics-dashboard .section-header h4 {
     margin: 0;
-    font-size: 14px;
+    color: var(--pa-ink);
+    font-size: 15px;
+    font-weight: 800;
 }
 
-.chart-container {
-    position: relative;
-    height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* ------------------------------------------------------- metric cards */
+.analytics-dashboard .metrics-section {
+    margin-bottom: 22px;
 }
 
-.no-data-message {
-    text-align: center;
-    padding: 40px;
+.analytics-dashboard .metric-card {
+    background: var(--pa-surface);
+    border: 1px solid var(--pa-line);
+    border-left: 4px solid var(--pa-primary);
+    border-radius: var(--pa-radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
 }
 
-/* Alerts Section */
-.alerts-section {
-    margin-bottom: 30px;
-}
-
-.section-header {
-    background: white;
-    padding: 20px;
-    border-radius: 15px 15px 0 0;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.section-header h4 {
-    margin: 0;
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-#anomaly-alerts-container {
-    background: white;
-    padding: 20px;
-    border-radius: 0 0 15px 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.alert-item {
-    margin-bottom: 15px;
-    padding: 15px;
-    border-radius: 10px;
-    border-left: 5px solid;
-}
-
-.alert-high { 
-    background-color: #fdf2f2;
-    border-left-color: #e74c3c;
-}
-
-.alert-medium { 
-    background-color: #fef9e7;
-    border-left-color: #f39c12;
-}
-
-.alert-low { 
-    background-color: #f0f9ff;
-    border-left-color: #3498db;
-}
-
-/* Analysis Section */
-.analysis-section {
-    margin-bottom: 30px;
-}
-
-.analysis-table-container {
-    background: white;
-    padding: 20px;
-    border-radius: 0 0 15px 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    overflow-x: auto;
-}
-
-.analysis-table {
-    margin: 0;
-}
-
-.analysis-table th {
-    background-color: #f8f9fa;
-    color: #2c3e50;
-    font-weight: 600;
-    border: none;
-    padding: 15px 10px;
-}
-
-.analysis-table td {
-    padding: 12px 10px;
-    border: none;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.analysis-row-clickable {
-    cursor: pointer;
-}
-
-.analysis-row-clickable:hover {
-    background-color: #f8fafc;
-}
-
-.variance-positive { color: #27ae60 !important; }
-.variance-negative { color: #e74c3c !important; }
-
-/* Decision Support */
-.decision-section {
-    margin-bottom: 30px;
-}
-
-.recommendation-card, .warning-card {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-}
-
-.recommendation-card {
-    border-left: 5px solid #2ecc71;
-}
-
-.warning-card {
-    border-left: 5px solid #f39c12;
-}
-
-.recommendation-card h5,
-.warning-card h5 {
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-/* Badge Styles */
-.badge-success { background-color: #2ecc71; }
-.badge-warning { background-color: #f39c12; }
-.badge-danger { background-color: #e74c3c; }
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-}
-
-/* Dashboard Tiles (for country dashboard integration) */
-.dashboard-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    margin: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.dashboard-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-}
-
-.card-icon {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.card-content h3 {
-    color: white;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.card-description {
-    color: rgba(255,255,255,0.9);
-    font-size: 14px;
-    margin-bottom: 15px;
-}
-
-.dashboard-btn {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 25px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.dashboard-btn:hover {
-    transform: scale(1.02);
-}
-
-.analytics-btn {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
-}
-
-.export-btn {
-    background: linear-gradient(45deg, #4facfe, #00f2fe);
-    color: white;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .analytics-dashboard {
-        padding: 10px;
-    }
-    
-    .metric-card {
-        margin-bottom: 15px;
-    }
-    
-    .chart-container {
-        height: 250px;
-    }
-    
-    .dashboard-header {
-        text-align: center;
-    }
-    
-    .metric-value {
-        font-size: 1.8em;
-    }
-}
-
-/* Status Badge Styling */
-.status-badge .o_field_widget {
-    font-size: 16px;
-    padding: 8px 16px;
-    border-radius: 20px;
-}
-
-/* Form Widget Enhancements */
-.o_field_monetary,
-.o_field_percentage {
-    font-weight: 600;
-    font-size: 1.1em;
-}
-
-/* ACE Editor for JSON Fields */
-.ace_editor {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-/* Notebook Tab Styling */
-.nav-tabs .nav-link {
-    color: #2c3e50;
-    font-weight: 500;
-}
-
-.nav-tabs .nav-link.active {
-    color: #3498db;
-    border-bottom-color: #3498db;
-}
-
-
-/* Professional Dashboard Title Styling - Theme Color #21435F */
-
-/* Dashboard Header Professional Styling */
-.dashboard-header,
-.payroll-dashboard-header,
-.country-dashboard-header {
-    background: linear-gradient(135deg, #21435F 0%, #2A5073 50%, #336087 100%);
-    color: white;
-    padding: 25px 30px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 12px rgba(33, 67, 95, 0.3);
-    border-left: 4px solid #1A3A52;
-}
-
-.dashboard-header h1,
-.payroll-dashboard-header h1,
-.country-dashboard-header h1 {
-    color: white;
-    font-size: 2.2rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.dashboard-header h2,
-.payroll-dashboard-header h2,
-.country-dashboard-header h2 {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.1rem;
-    font-weight: 400;
-    margin-bottom: 0;
-    opacity: 0.95;
-}
-
-/* Dashboard Title Variations */
-.dashboard-title-primary {
-    background: linear-gradient(135deg, #21435F 0%, #2A5073 100%);
-}
-
-.dashboard-title-light {
-    background: linear-gradient(135deg, #336087 0%, #4A759B 100%);
-}
-
-.dashboard-title-dark {
-    background: linear-gradient(135deg, #1A3A52 0%, #21435F 100%);
-}
-
-/* Country Specific Styling */
-.vietnam-dashboard-header {
-    background: linear-gradient(135deg, #21435F 0%, #2A5073 100%);
-    border-left-color: #1A3A52;
-}
-
-.indonesia-dashboard-header {
-    background: linear-gradient(135deg, #2A5073 0%, #336087 100%);
-    border-left-color: #21435F;
-}
-
-.india-dashboard-header {
-    background: linear-gradient(135deg, #336087 0%, #4A759B 100%);
-    border-left-color: #2A5073;
-}
-
-
-
-/* Dashboard Layout */
-.analytics-dashboard {
-    padding: 20px;
-    background: #f8f9fa;
-    min-height: 100vh;
-}
-
-.dashboard-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 30px;
-    border-radius: 12px;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.dashboard-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.dashboard-subtitle {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 0;
-}
-
-.status-badge .badge {
-    font-size: 1rem;
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Metric Cards */
-.metrics-section {
-    margin-bottom: 30px;
-}
-
-.metric-card {
-    background: white;
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
-    position: relative;
-    overflow: hidden;
-}
-
-.metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-
-.metric-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
-    border-radius: 50%;
-    transform: translate(30px, -30px);
-}
-
-.metric-employees {
-    border-left-color: #3498db;
-}
-
-.metric-payroll {
-    border-left-color: #27ae60;
-}
-
-.metric-average {
-    border-left-color: #f39c12;
-}
-
-.metric-variance {
-    border-left-color: #e74c3c;
-}
-
-.metric-icon {
+.analytics-dashboard .metric-employees { border-left-color: var(--pa-blue); }
+.analytics-dashboard .metric-payroll { border-left-color: var(--pa-green); }
+.analytics-dashboard .metric-average { border-left-color: var(--pa-primary); }
+.analytics-dashboard .metric-variance { border-left-color: var(--pa-amber); }
+
+.analytics-dashboard .metric-icon {
     float: right;
-    font-size: 3rem;
-    color: rgba(0, 0, 0, 0.1);
-    margin-top: -10px;
+    font-size: 22px;
+    color: var(--pa-line);
 }
 
-.metric-content {
-    overflow: hidden;
+.analytics-dashboard .metric-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--pa-ink);
+    margin: 4px 0;
+    font-variant-numeric: tabular-nums;
 }
 
-.metric-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: #2c3e50;
-}
-
-.metric-label {
-    font-size: 1rem;
-    color: #7f8c8d;
-    margin-bottom: 10px;
-    font-weight: 500;
-}
-
-.metric-change {
-    font-size: 0.9rem;
-}
-
-.change-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+.analytics-dashboard .metric-label {
+    color: var(--pa-muted);
+    font-size: 12px;
     font-weight: 600;
+    margin: 0;
 }
 
-.change-indicator.positive {
-    color: #27ae60;
+.analytics-dashboard .metric-change,
+.analytics-dashboard .change-indicator {
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.change-indicator.negative {
-    color: #e74c3c;
+.analytics-dashboard .change-indicator.positive { color: var(--pa-green); }
+.analytics-dashboard .change-indicator.negative { color: var(--pa-rose); }
+.analytics-dashboard .change-indicator.neutral { color: var(--pa-muted); }
+
+/* ------------------------------------------------------------- charts */
+.analytics-dashboard .chart-card,
+.analytics-dashboard .components-table-card,
+.analytics-dashboard .recommendation-card,
+.analytics-dashboard .warning-card,
+.analytics-dashboard .action-section,
+.analytics-dashboard .analysis-table-container,
+.analytics-dashboard #anomaly-alerts-container {
+    background: var(--pa-surface);
+    border: 1px solid var(--pa-line);
+    border-radius: var(--pa-radius);
+    padding: 18px 20px;
+    margin-bottom: 18px;
 }
 
-.change-indicator.neutral {
-    color: #95a5a6;
-}
+.analytics-dashboard .recommendation-card { border-left: 4px solid var(--pa-green); }
+.analytics-dashboard .warning-card { border-left: 4px solid var(--pa-amber); }
+.analytics-dashboard .recommendation-card h5 { color: var(--pa-green); font-weight: 700; }
+.analytics-dashboard .warning-card h5 { color: var(--pa-amber); font-weight: 700; }
 
-/* Chart Cards */
-.charts-section {
-    margin-bottom: 30px;
-}
-
-.chart-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.chart-header {
+.analytics-dashboard .chart-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #ecf0f1;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--pa-line);
 }
 
-.chart-header h4 {
-    color: #2c3e50;
-    font-weight: 600;
+.analytics-dashboard .chart-header h4 {
     margin: 0;
+    color: var(--pa-ink);
+    font-size: 15px;
+    font-weight: 800;
 }
 
-.chart-controls {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+.analytics-dashboard .chart-header p {
+    margin: 0;
+    color: var(--pa-muted);
+    font-size: 12.5px;
 }
 
-.chart-controls .btn {
-    border-radius: 20px;
-    padding: 5px 15px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.chart-controls .btn.active {
-    background: #667eea;
-    border-color: #667eea;
-    color: white;
-}
-
-.chart-controls select {
-    border-radius: 20px;
-    border: 1px solid #ddd;
-    padding: 5px 10px;
-    font-size: 0.85rem;
-}
-
-.chart-body {
+/* The legacy Chart.js canvases are no longer rendered (the CDN loader was
+   removed in Phase M); the containers keep a sane height for the static
+   "no data" copy the views fall back to. */
+.analytics-dashboard .chart-container,
+.analytics-dashboard .chart-body {
     position: relative;
-    height: 300px;
-}
-
-/* Components Table */
-.components-table-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #ecf0f1;
-}
-
-.table-header h4 {
-    color: #2c3e50;
-    font-weight: 600;
-    margin: 0;
-}
-
-.table-controls input {
-    border-radius: 20px;
-    border: 1px solid #ddd;
-    padding: 8px 15px;
-    width: 250px;
-}
-
-#components-table {
-    margin-bottom: 0;
-}
-
-#components-table th {
-    background: #34495e;
-    color: white;
-    font-weight: 600;
-    border: none;
-    padding: 15px 10px;
-    font-size: 0.9rem;
-}
-
-#components-table td {
-    padding: 12px 10px;
-    vertical-align: middle;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-#components-table tr:hover {
-    background: #f8f9fa;
-}
-
-.component-status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.status-normal {
-    background: #d4edda;
-    color: #155724;
-}
-
-.status-high {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status-critical {
-    background: #f8d7da;
-    color: #721c24;
-}
-
-/* Decision Support */
-.decision-section {
-    margin-bottom: 30px;
-}
-
-.section-header {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.section-header h4 {
-    color: #2c3e50;
-    font-weight: 600;
-    font-size: 1.5rem;
-}
-
-.recommendation-card,
-.warning-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    height: 100%;
-}
-
-.recommendation-card h5 {
-    color: #27ae60;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-.warning-card h5 {
-    color: #f39c12;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-.recommendation-card ul,
-.warning-card ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.recommendation-card li,
-.warning-card li {
-    padding: 8px 0;
-    border-bottom: 1px solid #ecf0f1;
-    font-size: 0.9rem;
-}
-
-.recommendation-card li:last-child,
-.warning-card li:last-child {
-    border-bottom: none;
-}
-
-/* Anomaly Alerts */
-.anomaly-alert {
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border-left: 4px solid;
-}
-
-.anomaly-alert h5 {
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-
-.alert-warning {
-    border-left-color: #f39c12;
-}
-
-.alert-danger {
-    border-left-color: #e74c3c;
-}
-
-.alert-info {
-    border-left-color: #3498db;
-}
-
-/* Action Section */
-.action-section {
-    text-align: center;
-    padding: 30px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.btn-lg {
-    padding: 12px 30px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 25px;
-    min-width: 200px;
-    transition: all 0.3s ease;
-}
-
-.btn-success {
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
-    border: none;
-    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-}
-
-.btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #3498db, #5dade2);
-    border: none;
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
-}
-
-.btn-outline-secondary {
-    border: 2px solid #95a5a6;
-    color: #95a5a6;
-    background: transparent;
-}
-
-.btn-outline-secondary:hover {
-    background: #95a5a6;
-    color: white;
-    transform: translateY(-2px);
-}
-
-/* Dashboard Tiles */
-.payroll-dashboard-tiles {
-    display: flex;
-    gap: 20px;
-    margin: 20px 0;
-    flex-wrap: wrap;
-}
-
-.dashboard-tile {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    min-width: 250px;
-    flex: 1;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    border-left: 4px solid transparent;
-    position: relative;
-    overflow: hidden;
-}
-
-.dashboard-tile:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-
-.payroll-approval-tile {
-    border-left-color: #e74c3c;
-}
-
-.bank-export-tile {
-    border-left-color: #3498db;
-}
-
-.analytics-overview-tile {
-    border-left-color: #f39c12;
-}
-
-.tile-icon {
-    font-size: 3rem;
-    color: rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
-.tile-content h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 5px;
-}
-
-.tile-subtitle {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-}
-
-.tile-stats {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-}
-
-.stat-number {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #2c3e50;
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: #7f8c8d;
-}
-
-.tile-footer {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid #ecf0f1;
-}
-
-.tile-action {
-    color: #667eea;
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .analytics-dashboard {
-        padding: 10px;
-    }
-    
-    .dashboard-header {
-        padding: 20px;
-        text-align: center;
-    }
-    
-    .dashboard-title {
-        font-size: 2rem;
-    }
-    
-    .metrics-section .col-md-3 {
-        margin-bottom: 15px;
-    }
-    
-    .metric-card {
-        padding: 20px;
-    }
-    
-    .metric-value {
-        font-size: 2rem;
-    }
-    
-    .chart-header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-    
-    .chart-controls {
-        flex-wrap: wrap;
-    }
-    
-    .table-header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-    
-    .table-controls input {
-        width: 100%;
-    }
-    
-    .payroll-dashboard-tiles {
-        flex-direction: column;
-    }
-    
-    .dashboard-tile {
-        min-width: auto;
-    }
-    
-    .btn-lg {
-        min-width: auto;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-}
-
-/* Loading States */
-.loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
+    min-height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
 }
 
-.loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+.analytics-dashboard .no-data-message {
+    text-align: center;
+    padding: 30px 16px;
+    color: var(--pa-muted);
+    font-size: 13px;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+/* -------------------------------------------------------------- table */
+.analytics-dashboard .analysis-table th,
+.analytics-dashboard #components-table th {
+    background: var(--pa-line-2);
+    color: var(--pa-muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    border: none;
+    padding: 10px;
 }
 
-/* Tooltips and Popovers */
-.tooltip {
-    font-size: 0.8rem;
+.analytics-dashboard .analysis-table td,
+.analytics-dashboard #components-table td {
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid var(--pa-line);
+    vertical-align: middle;
 }
 
-.tooltip-inner {
-    background: #2c3e50;
-    border-radius: 6px;
-    padding: 8px 12px;
+.analytics-dashboard .analysis-row-clickable { cursor: pointer; }
+.analytics-dashboard .analysis-row-clickable:hover,
+.analytics-dashboard #components-table tr:hover { background: var(--pa-line-2); }
+
+.analytics-dashboard .variance-positive { color: var(--pa-green); }
+.analytics-dashboard .variance-negative { color: var(--pa-rose); }
+
+.analytics-dashboard .component-status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
 }
 
-/* Print Styles */
-@media print {
-    .analytics-dashboard {
-        background: white;
-        padding: 0;
-    }
-    /*
-    .dashboard-header {
-        background: #2c3e50 !important;
-        -webkit-print-color-adjust: exact;
-        color-adjust: exact;
-    }
-    */
+.analytics-dashboard .status-normal { background: var(--pa-green-soft); color: var(--pa-green); }
+.analytics-dashboard .status-high { background: var(--pa-amber-soft); color: var(--pa-amber); }
+.analytics-dashboard .status-critical { background: var(--pa-rose-soft); color: var(--pa-rose); }
 
-    .dashboard-header {
-        background: #2c3e50 !important;
-
-    }
-    
-    .btn,
-    .chart-controls,
-    .table-controls {
-        display: none !important;
-    }
-    
-    .metric-card,
-    .chart-card,
-    .components-table-card {
-        box-shadow: none;
-        border: 1px solid #ddd;
-        break-inside: avoid;
-    }
+/* ------------------------------------------------------------- alerts */
+.analytics-dashboard .alert-item,
+.analytics-dashboard .anomaly-alert {
+    border-radius: 10px;
+    border-left: 4px solid var(--pa-line);
+    padding: 12px 14px;
+    margin-bottom: 12px;
 }
 
-/* Animation Classes */
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
+.analytics-dashboard .alert-high,
+.analytics-dashboard .anomaly-alert.alert-danger {
+    background: var(--pa-rose-soft);
+    border-left-color: var(--pa-rose);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+.analytics-dashboard .alert-medium,
+.analytics-dashboard .anomaly-alert.alert-warning {
+    background: var(--pa-amber-soft);
+    border-left-color: var(--pa-amber);
 }
 
-.slide-in-left {
-    animation: slideInLeft 0.5s ease-out;
+.analytics-dashboard .alert-low,
+.analytics-dashboard .anomaly-alert.alert-info {
+    background: var(--pa-blue-soft);
+    border-left-color: var(--pa-blue);
 }
 
-@keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-.slide-in-right {
-    animation: slideInRight 0.5s ease-out;
-}
-
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-/* Scrollbars intentionally left at Odoo native shade — the previous global
-   ::-webkit-scrollbar rules (indigo #667eea thumb) bled into every dialog and
-   panel app-wide. Removed so all scrollbars use the browser/Odoo default grey. */
-
-/* Dashboard Tiles Styling - Theme Color #21435F */
-
-/* Main Dashboard Cards Container */
+/* --------------------------------------------------- tiles / launchers */
+.payroll-dashboard-tiles,
 .dashboard-cards-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
-    margin: 20px 0;
+    gap: 16px;
+    margin: 18px 0;
 }
 
-/* Dashboard Card Base Styling */
-.dashboard-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(33, 67, 95, 0.1);
-    transition: all 0.3s ease;
-    overflow: hidden;
-    min-width: 280px;
-    flex: 1;
-    max-width: 350px;
-    border-top: 4px solid transparent;
+.payroll-dashboard-tiles .dashboard-tile,
+.dashboard-cards-container .dashboard-card {
+    background: var(--pa-surface);
+    border: 1px solid var(--pa-line);
+    border-top: 3px solid var(--pa-primary);
+    border-radius: var(--pa-radius);
+    padding: 18px 20px;
+    min-width: 240px;
+    flex: 1 1 240px;
+    cursor: pointer;
 }
 
-.dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(33, 67, 95, 0.2);
+.payroll-dashboard-tiles .dashboard-tile:hover,
+.dashboard-cards-container .dashboard-card:hover {
+    border-color: #CBC2EE;
 }
 
-/* Card Header */
-.dashboard-card .card-header {
-    padding: 20px 20px 15px;
-    background: linear-gradient(135deg, #f8f9fc 0%, #f1f4f8 100%);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.payroll-dashboard-tiles .payroll-approval-tile { border-top-color: var(--pa-primary); }
+.payroll-dashboard-tiles .bank-export-tile { border-top-color: var(--pa-blue); }
+.payroll-dashboard-tiles .analytics-overview-tile { border-top-color: var(--pa-amber); }
+
+.payroll-dashboard-tiles .tile-icon,
+.dashboard-cards-container .card-icon {
+    font-size: 20px;
+    color: var(--pa-primary);
 }
 
-.dashboard-card .card-icon {
-    font-size: 2.5rem;
-    color: #21435F;
-    opacity: 0.8;
+.payroll-dashboard-tiles .tile-content h3,
+.dashboard-cards-container .card-content h4 {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--pa-ink);
+    margin-bottom: 4px;
 }
 
-.dashboard-card .card-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
+.payroll-dashboard-tiles .tile-subtitle,
+.dashboard-cards-container .card-description {
+    color: var(--pa-muted);
+    font-size: 12.5px;
+    margin-bottom: 12px;
 }
 
-.dashboard-card .card-badge .badge {
-    font-size: 0.8rem;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-weight: 600;
+.payroll-dashboard-tiles .stat-number {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--pa-ink);
+    font-variant-numeric: tabular-nums;
 }
 
-/* Card Content */
-.dashboard-card .card-content {
-    padding: 20px;
+.payroll-dashboard-tiles .stat-label,
+.dashboard-cards-container .stat-label {
+    font-size: 12px;
+    color: var(--pa-muted);
 }
 
-.dashboard-card .card-content h4 {
-    color: #21435F;
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 8px;
+.payroll-dashboard-tiles .tile-footer {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--pa-line);
 }
 
-.dashboard-card .card-description {
-    color: #6c757d;
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-    line-height: 1.4;
+.payroll-dashboard-tiles .tile-action {
+    color: var(--pa-primary);
+    font-weight: 700;
+    font-size: 12.5px;
 }
 
-.dashboard-card .card-stats {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.dashboard-card .stat-label {
-    color: #495057;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-/* Card Footer */
-.dashboard-card .card-footer {
-    padding: 15px 20px 20px;
-}
-
-.dashboard-card .btn-block {
-    width: 100%;
-    border-radius: 8px;
-    font-weight: 600;
-    padding: 10px 15px;
-    transition: all 0.3s ease;
-}
-
-/* Specific Tile Styling */
-
-/* Approval Tile */
-.dashboard-card.approval-tile {
-    border-top-color: #21435F;
-}
-
-.dashboard-card.approval-tile .card-icon {
-    color: #21435F;
-}
-
-.dashboard-card.approval-tile .btn-primary {
-    background: linear-gradient(135deg, #21435F 0%, #2A5073 100%);
-    border: none;
-    box-shadow: 0 3px 12px rgba(33, 67, 95, 0.3);
-}
-
-.dashboard-card.approval-tile .btn-primary:hover {
-    background: linear-gradient(135deg, #1A3A52 0%, #21435F 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(33, 67, 95, 0.4);
-}
-
-/* Export Tile */
-.dashboard-card.export-tile {
-    border-top-color: #336087;
-}
-
-.dashboard-card.export-tile .card-icon {
-    color: #336087;
-}
-
-.dashboard-card.export-tile .btn-success {
-    background: linear-gradient(135deg, #336087 0%, #4A759B 100%);
-    border: none;
-    box-shadow: 0 3px 12px rgba(51, 96, 135, 0.3);
-}
-
-.dashboard-card.export-tile .btn-success:hover {
-    background: linear-gradient(135deg, #2A5073 0%, #336087 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(51, 96, 135, 0.4);
-}
-
-/* Existing Tiles Styling Enhancement */
-.dashboard-card.spreadsheet-tile,
-.dashboard-card.import-tile,
-.dashboard-card.batch-tile {
-    border-top-color: #4A759B;
-}
-
-.dashboard-card.spreadsheet-tile .card-icon,
-.dashboard-card.import-tile .card-icon,
-.dashboard-card.batch-tile .card-icon {
-    color: #4A759B;
-}
-
-/* Badge Colors */
-.badge-warning {
-    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
-    color: #212529;
-}
-
-.badge-success {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-}
-
-.badge-primary {
-    background: linear-gradient(135deg, #21435F 0%, #2A5073 100%);
-    color: white;
-}
-
-/* Responsive Design */
+/* --------------------------------------------------------- responsive */
 @media (max-width: 768px) {
-    .dashboard-cards-container {
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .dashboard-card {
-        min-width: auto;
-        max-width: none;
-    }
-    
-    .dashboard-card .card-header {
-        padding: 15px;
-    }
-    
-    .dashboard-card .card-content {
-        padding: 15px;
-    }
-    
-    .dashboard-card .card-footer {
-        padding: 10px 15px 15px;
-    }
+    .analytics-dashboard { padding: 12px; }
+    .analytics-dashboard .metric-value { font-size: 22px; }
+    .analytics-dashboard .chart-header { flex-direction: column; align-items: flex-start; }
+    .payroll-dashboard-tiles,
+    .dashboard-cards-container { flex-direction: column; }
+    .payroll-dashboard-tiles .dashboard-tile,
+    .dashboard-cards-container .dashboard-card { min-width: 0; }
 }
+
+/* ------------------------------------------------------------- print */
+@media print {
+    .analytics-dashboard { background: #fff; padding: 0; }
+    .analytics-dashboard .chart-controls,
+    .analytics-dashboard .table-controls { display: none; }
+    .analytics-dashboard .metric-card,
+    .analytics-dashboard .chart-card,
+    .analytics-dashboard .components-table-card { border: 1px solid var(--pa-line); }
+}
+
+/* Scrollbars stay at the Odoo native shade — never colour a scrollbar thumb
+   (a global ::-webkit-scrollbar rule here once bled app-wide). */
