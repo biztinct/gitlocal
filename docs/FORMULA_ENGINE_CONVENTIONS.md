@@ -1119,3 +1119,73 @@ number from the handovers — keep the numbering stable.
     green tests and a passing a11y snapshot all report as present (`textContent` is correct). Write the
     solid variant as `&.danger:not(.ghost)`. Screenshot every new button variant; the DOM says nothing
     about whether a user can read it.
+
+### Phase-M findings (executive analytics rebuild — 2026-07-25, WP-Sudima-M). Numbering continues C18.
+
+79. **A read facade that swallows exceptions can hide a DEAD section for months.** The pre-M
+    `pb_insights` searched `hr.payslip.run` by `company_id` — a field that does not exist here
+    (C18.43) — inside a `try/except` that returned an empty recordset, so the latest-run headline,
+    the employees-paid count and the whole statutory panel silently rendered zeros on live, and the
+    "payroll trend" fell back to contracted wages. `_safe()`-style wrappers belong around a SECTION
+    (so the board still renders), never around a single query whose failure is indistinguishable
+    from "no data". Runs are company-scoped through their PAYSLIPS: `SELECT DISTINCT payslip_run_id
+    FROM hr_payslip WHERE payslip_run_id IN %s AND company_id IN %s` over a bounded newest-N scan.
+80. **The stored employee→department anchor is `hr_employee.current_version_id`, not `version_id`**
+    (sharpens C18.56). `hr.employee._inherits = {'hr.version': 'version_id'}`, but `version_id`
+    is a NON-stored compute (context-date aware) — there is no such column, and neither is there a
+    `hr_employee.department_id`. The stored column is `current_version_id`; SQL joins
+    `hr_version v ON v.id = e.current_version_id` then `v.department_id`. Probe the FIELD
+    (`_fields['x'].store`), never `information_schema` — a legacy DB keeps dead columns.
+81. **Classify payroll components by `hr.salary.rule.category.category_type`, not by code lists.**
+    The legacy `CONTRIB_CODES = ['SI_EMP','SI_COMP',…]` matched NOTHING in the formula world
+    (C5 forbids underscores, so the demo's codes are `SIEMP`/`SICOMP`), which is why the statutory
+    split read 0 on live. `category_type` (`social_security` / `employer_cost` / `tax`, defined in
+    `pb_hr_payroll_base`) is country-agnostic and survives any code convention; keep the code list
+    only as an untyped-category fallback.
+82. **A "last 6 months" line-level aggregate over the demo world IS a full-table scan, and no index
+    fixes it.** Employer contributions per run over a 6-month window = 39 runs = 27,961 payslips =
+    every row of the 711k-line table: measured 11.3 s (1 run 40 ms, 6 runs 1.28 s). A
+    `(category_id, slip_id)` index was built and measured — still 10.5 s, because Postgres correctly
+    keeps the sequential scan once the query touches the whole table. Charts over a long window must
+    read STORED per-run roll-ups (`pb_total_net/gross`, instant) — the fix for a third series is one
+    more CASE arm in `hr.payslip.run._compute_pb_totals` (a stored `pb_total_employer`), not a
+    cleverer query. **Open recommendation, owner decision** (a new stored field was a Phase-M
+    non-goal).
+83. **`_compute_pb_totals` aggregates with RAW SQL and does not flush** — inside a single test
+    transaction it can run before the payslip lines reach the database and store zeros. Any fixture
+    that asserts on the stored roll-ups must `env.flush_all()` → `runs._compute_pb_totals()` →
+    `flush_all()`. Production is unaffected (the payroll compute flushes long before), but the same
+    trap applies to any raw-SQL compute: SQL does not see the ORM's pending writes.
+84. **`BaseModel._fields` is a read-only `mappingproxy` in Odoo 19** — `patch.dict(type(m)._fields)`
+    raises `AttributeError: 'mappingproxy' object has no attribute 'pop'` (and then a second error
+    while unwinding). To simulate a missing field, swap the whole attribute for a filtered copy:
+    `patch.object(type(model), '_fields', {k: v for k, v in ... if k != 'x'})`. Removing a MODEL for
+    a soft-dep test is different — `registry.models` IS a plain dict, so `patch.dict` works there.
+85. **A CDN URL can hide in an asset LIST, not just in a file.** The live Chart.js request on every
+    backend page came from a literal `'https://cdnjs.cloudflare.com/…/chart.min.js'` entry inside
+    `pb_hr_payroll_base`'s `web.assets_backend` list — invisible to any grep of `static/`. It was
+    also pure waste: Odoo bundles Chart.js itself (`web/static/lib/Chart`), and `window.Chart`
+    already reported 4.4.6, i.e. Odoo's copy was winning over the CDN's 3.9.1. Removed; verified
+    zero cross-origin requests afterwards with `window.Chart` unchanged. Assert self-containment
+    over the MANIFESTS (`ast.literal_eval` each `assets` list) as well as the files.
+86. **Clearing `ir_attachment` does NOT bust the asset cache in Odoo 19 — the module VERSION does.**
+    After an SCSS edit the compiled bundle URL (`/web/assets/<hash>/web.assets_web.min.css`) kept the
+    same hash, so browsers served the stale CSS even through `Page.reload {ignoreCache:true}`, and
+    `DELETE FROM ir_attachment WHERE url LIKE '/web/assets/%'` matched ZERO rows (bundles are no
+    longer stored as attachments there). Fetching the URL with `cache:"reload"` proved the SERVER
+    had the new CSS all along. Bumping the manifest `version` changed the hash (26c8d1e → 532214e)
+    and the new rules applied immediately. This is C2's "bump the version on every asset change"
+    with teeth: without the bump, a live SCSS fix is invisible to every user with a warm cache.
+87. **`-u <base module>` cascades `--test-enable` into every reverse dependency.** `-u
+    pb_hr_payroll_base` dragged `pb_hr_payroll_formula` into the upgrade, whose
+    `tests/__init__.py` has a pre-existing circular import (`ImportError: cannot import name
+    'test_formula_engine' … partially initialized module`) — which aborts REGISTRY INIT, not just a
+    test (C18.40 in another guise: EXIT≠0, "Failed to load registry", no traceback in the module
+    under test). Keep `--test-enable` runs scoped to leaf modules, and upgrade a base module in a
+    separate test-free pass. Corollary: a manifest-only `assets` change needs a service RESTART, not
+    a `-u` at all (C18.53).
+88. **A `flex` shorthand set in a wider breakpoint changes MEANING when a later breakpoint flips the
+    axis.** `.pbin-kpi { flex: 1 1 200px }` (≤1100px, row) became a 200px HEIGHT once ≤640px turned
+    the container into a column — three KPI tiles, each half a phone tall. Both media queries match
+    at 390px. Reset the shorthand explicitly (`flex: 0 0 auto`) in the narrower block. Only the
+    screenshot showed it: every DOM assertion passed (C18.78's lesson, applied to layout).

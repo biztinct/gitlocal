@@ -2,108 +2,341 @@
 <templates xml:space="preserve">
 
   <t t-name="pb_insights.PbInsights">
-    <div class="pbi">
-      <div t-if="!state.loaded" class="pbi-loading"><div class="pbi-spinner"/><span>Loading insights…</span></div>
+    <div class="pbin pbim">
 
-      <div t-else="" class="pbi-wrap">
-        <!-- header -->
-        <div class="pbi-head">
-          <div>
+      <!-- ============================ loading ============================ -->
+      <div t-if="!state.loaded" class="pbin-loading">
+        <div class="pbin-spin"/>
+        <span>Loading the analytics board…</span>
+      </div>
+
+      <div t-else="" class="pbin-wrap">
+
+        <div t-if="state.error" class="pbin-alert">
+          <t t-out="ic('alert', 16)"/><span t-esc="state.error"/>
+        </div>
+
+        <!-- ============================= hero ============================ -->
+        <div class="pbin-hero">
+          <div class="pbin-hero-main">
+            <div class="eyebrow"><t t-out="ic('trending', 13)"/><span>Executive analytics</span></div>
             <h1>Insights</h1>
-            <p class="pbi-sub">
-              Payroll cost, statutory load and trends
-              <t t-if="state.runName"> · latest run <b t-esc="state.runName"/></t>
+            <p class="sub">
+              <span t-esc="d.company"/>
+              <b t-if="hero.run_name" t-esc="latestRunLabel"/>
             </p>
-          </div>
-        </div>
 
-        <!-- KPI strip -->
-        <div class="pbi-kpis">
-          <div class="pbi-kpi hero">
-            <span class="l">Latest payroll (net)</span>
-            <span class="v" t-esc="money(state.kpis.monthly_payroll)"/>
-            <span class="m"><t t-esc="state.kpis.employees_paid"/> employees paid</span>
-          </div>
-          <div class="pbi-kpi">
-            <span class="l">Active headcount</span>
-            <span class="v indigo" t-esc="state.kpis.headcount"/>
-            <span class="m"><t t-esc="state.kpis.active_contracts"/> running contracts</span>
-          </div>
-          <div class="pbi-kpi">
-            <span class="l">Average wage</span>
-            <span class="v" t-esc="money(state.kpis.avg_salary)"/>
-            <span class="m">per running contract</span>
-          </div>
-          <div class="pbi-kpi">
-            <span class="l">Statutory load</span>
-            <span class="v amber" t-esc="money(state.kpis.statutory_total)"/>
-            <span class="m">EE <t t-esc="money(state.kpis.statutory_emp)"/> · ER <t t-esc="money(state.kpis.statutory_comp)"/></span>
-          </div>
-        </div>
-
-        <div class="pbi-cols">
-          <!-- payroll trend -->
-          <div class="pbi-panel">
-            <div class="pbi-panel-h"><h2>Payroll trend</h2><span class="pbi-tag">last <t t-esc="state.trend.length"/> runs</span></div>
-            <div t-if="state.trend.length" class="pbi-bars">
-              <div t-foreach="state.trend" t-as="t" t-key="t_index" class="pbi-bar-col">
-                <div class="pbi-bar-val" t-esc="money(t.net)"/>
-                <div class="pbi-bar-track">
-                  <div class="pbi-bar-fill" t-attf-style="height:{{ pct(t.net, state.trendMax) }}%"/>
-                </div>
-                <div class="pbi-bar-lbl" t-esc="t.label"/>
-              </div>
-            </div>
-            <div t-else="" class="pbi-empty">No payslip runs yet.</div>
-          </div>
-
-          <!-- department cost -->
-          <div class="pbi-panel">
-            <div class="pbi-panel-h"><h2>Cost by department</h2><span class="pbi-tag">running contracts</span></div>
-            <div t-if="state.departments.length" class="pbi-deptlist">
-              <div t-foreach="state.departments" t-as="d" t-key="d_index" class="pbi-deptrow">
-                <div class="pbi-deptrow-top">
-                  <span class="nm" t-esc="d.name"/>
-                  <span class="amt"><t t-esc="money(d.wage)"/> <span class="cnt">· <t t-esc="d.count"/></span></span>
-                </div>
-                <div class="pbi-deptrow-track">
-                  <div class="pbi-deptrow-fill" t-attf-style="width:{{ pct(d.wage, state.deptMax) }}%"/>
-                </div>
-              </div>
-            </div>
-            <div t-else="" class="pbi-empty">No running contracts.</div>
-          </div>
-        </div>
-
-        <!-- statutory split -->
-        <div class="pbi-panel" t-if="state.kpis.statutory_total">
-          <div class="pbi-panel-h"><h2>Statutory split (latest run)</h2></div>
-          <div class="pbi-split">
-            <div class="pbi-split-track">
-              <div class="pbi-split-emp" t-attf-style="width:{{ pct(state.kpis.statutory_emp, state.kpis.statutory_total) }}%"/>
-              <div class="pbi-split-comp" t-attf-style="width:{{ pct(state.kpis.statutory_comp, state.kpis.statutory_total) }}%"/>
-            </div>
-            <div class="pbi-split-legend">
-              <span class="lg"><span class="sw emp"/>Employee · <b t-esc="money(state.kpis.statutory_emp)"/></span>
-              <span class="lg"><span class="sw comp"/>Employer · <b t-esc="money(state.kpis.statutory_comp)"/></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- reports & exports -->
-        <div class="pbi-panel" t-if="state.reports.length">
-          <div class="pbi-panel-h"><h2>Reports &amp; exports</h2></div>
-          <div class="pbi-reports">
-            <button t-foreach="state.reports" t-as="r" t-key="r.xmlid" class="pbi-report" t-on-click="() => this.openReport(r.xmlid)">
-              <span class="ic"><i t-attf-class="fa fa-{{ r.icon === 'bar-chart-2' ? 'bar-chart' : (r.icon === 'database' ? 'database' : 'file-text-o') }}"/></span>
-              <span class="tx">
-                <span class="lb" t-esc="r.label"/>
-                <span class="ds" t-esc="r.desc"/>
+            <div class="pbin-headline">
+              <span class="v" t-esc="money(state.heroNet)"/>
+              <span class="k">net payroll</span>
+              <span t-if="hasDelta" class="delta" t-att-class="deltaUp ? 'up' : 'down'"
+                    t-att-title="deltaTitle">
+                <t t-out="ic(deltaUp ? 'trending' : 'trendingDn', 13)"/>
+                <span t-esc="(deltaUp ? '+' : '') + hero.delta_pct + '%'"/>
               </span>
-              <span class="ar">→</span>
+            </div>
+            <div class="pbin-headline-mt">
+              <span t-if="hero.run_state_label" class="pbin-state" t-att-class="'st-' + hero.run_state">
+                <span class="dot"/><span t-esc="hero.run_state_label"/>
+              </span>
+              <span t-if="hero.employees_paid" t-esc="paidLabel"/>
+              <span t-if="hasDelta" t-esc="vsLabel"/>
+            </div>
+
+            <div class="pbin-spark" t-if="spark.line">
+              <svg viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true">
+                <path class="ar" t-att-d="spark.area"/>
+                <path class="ln" t-att-d="spark.line"/>
+              </svg>
+              <span class="cap" t-esc="sparkLabel"/>
+            </div>
+          </div>
+
+          <div class="pbin-hero-kpis">
+            <div class="pbin-kpi">
+              <span class="ico blue"><t t-out="ic('users', 18)"/></span>
+              <span class="tx"><span class="n" t-esc="num(hero.headcount)"/><span class="l">active headcount</span></span>
+            </div>
+            <div class="pbin-kpi">
+              <span class="ico green"><t t-out="ic('wallet', 18)"/></span>
+              <span class="tx"><span class="n" t-esc="money(hero.avg_cost)"/><span class="l">avg cost / employee</span></span>
+            </div>
+            <div class="pbin-kpi">
+              <span class="ico amber"><t t-out="ic('shield', 18)"/></span>
+              <span class="tx"><span class="n" t-esc="money(hero.employer_total)"/><span class="l">employer contributions</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================== cost story ========================== -->
+        <div class="pbin-panel pbin-trend">
+          <div class="pbin-panel-h">
+            <div>
+              <h2>Cost story</h2>
+              <p class="hint" t-esc="trendHint"/>
+            </div>
+            <div class="pbin-tools">
+              <div class="pbin-chips">
+                <button t-foreach="[3, 6, 12]" t-as="win" t-key="win"
+                        class="chip" t-att-class="state.months === win ? 'on' : ''"
+                        t-on-click="() => this.setMonths(win)">
+                  <t t-esc="win"/>M
+                </button>
+              </div>
+              <button class="pbin-icobtn" title="Refresh" t-on-click="() => this.refresh()">
+                <t t-out="ic('refresh', 15)"/>
+              </button>
+            </div>
+          </div>
+
+          <div t-if="points.length" class="pbin-readout">
+            <span class="rl">
+              <b t-esc="readout.name"/>
+              <span class="pbin-state" t-att-class="'st-' + readout.state">
+                <span class="dot"/><span t-esc="readout.state_label"/>
+              </span>
+            </span>
+            <span class="rv"><i class="sw net"/>Net<b t-esc="money(readout.net)"/></span>
+            <span class="rv"><i class="sw gross"/>Gross<b t-esc="money(readout.gross)"/></span>
+            <span class="rv muted" t-esc="readoutMeta"/>
+          </div>
+
+          <div t-if="points.length" class="pbin-cols" t-on-mouseleave="() => this.clearHover()">
+            <div t-foreach="points" t-as="pt" t-key="pt.id"
+                 class="pbin-col" t-att-class="state.hover === pt_index ? 'on' : ''"
+                 t-on-mouseenter="() => this.hoverPoint(pt_index)"
+                 t-on-click="() => this.openRun(pt.id)"
+                 t-att-title="pt.name">
+              <div class="track">
+                <div class="lay gross" t-attf-style="height:{{ bar(pt.gross, trend.max) }}%"/>
+                <div class="lay net" t-attf-style="height:{{ bar(pt.net, trend.max) }}%"/>
+              </div>
+              <div t-attf-class="cs st-{{ pt.state }}"/>
+              <div class="cl" t-esc="colLabel(pt_index)"/>
+            </div>
+          </div>
+          <div t-else="" class="pbin-empty">
+            <t t-out="ic('calendarOff', 22)"/>
+            <span>No pay runs in this window. Widen the range or run payroll to build the trend.</span>
+          </div>
+
+          <div t-if="points.length" class="pbin-legend">
+            <span><i class="sw net"/>Net paid</span>
+            <span><i class="sw gross"/>Gross</span>
+            <span t-if="trend.hidden" class="pbin-badge warn" t-esc="trendCapLabel"/>
+          </div>
+        </div>
+
+        <!-- ================== departments + statutory ==================== -->
+        <div class="pbin-duo">
+
+          <div class="pbin-panel">
+            <div class="pbin-panel-h">
+              <div>
+                <h2>Department leaderboard</h2>
+                <p class="hint" t-esc="deptHint"/>
+              </div>
+              <div class="pbin-tools">
+                <span t-if="departments.approx" class="pbin-badge warn">approx</span>
+                <div class="pbin-chips">
+                  <button class="chip" t-att-class="state.deptMode === 'total' ? 'on' : ''"
+                          t-on-click="() => this.setDeptMode('total')">Total</button>
+                  <button class="chip" t-att-class="state.deptMode === 'perhead' ? 'on' : ''"
+                          t-on-click="() => this.setDeptMode('perhead')">Per head</button>
+                </div>
+              </div>
+            </div>
+
+            <div t-if="departments.rows.length" class="pbin-deps">
+              <div t-foreach="departments.rows" t-as="dep" t-key="dep.id"
+                   class="dep" t-on-click="() => this.openDepartment(dep)">
+                <div class="dh">
+                  <span class="nm" t-esc="dep.name"/>
+                  <span class="am"><t t-esc="money(deptValue(dep))"/>
+                    <span class="hc">· <t t-esc="num(dep.count)"/></span></span>
+                </div>
+                <div class="tr">
+                  <div class="fl" t-attf-style="width:{{ bar(deptValue(dep), deptMax()) }}%"/>
+                </div>
+              </div>
+              <p t-if="departments.hidden" class="pbin-more" t-esc="deptMoreLabel"/>
+            </div>
+            <div t-else="" class="pbin-empty small">
+              <t t-out="ic('users', 20)"/><span>No department cost to show yet.</span>
+            </div>
+          </div>
+
+          <div class="pbin-panel">
+            <div class="pbin-panel-h">
+              <div>
+                <h2>Statutory split</h2>
+                <p class="hint" t-esc="statutoryHint"/>
+              </div>
+            </div>
+
+            <div t-if="statutory.total" class="pbin-stat">
+              <div class="ring">
+                <svg viewBox="0 0 140 140" aria-hidden="true">
+                  <circle class="bg" cx="70" cy="70" t-att-r="donut.r"/>
+                  <circle class="emp" cx="70" cy="70" t-att-r="donut.r"
+                          t-att-stroke-dasharray="donut.empDash" transform="rotate(-90 70 70)"/>
+                  <circle class="er" cx="70" cy="70" t-att-r="donut.r"
+                          t-att-stroke-dasharray="donut.erDash"
+                          t-att-stroke-dashoffset="donut.erOffset" transform="rotate(-90 70 70)"/>
+                </svg>
+                <div class="mid">
+                  <span class="v" t-esc="money(statutory.total)"/>
+                  <span class="k">contributions</span>
+                </div>
+              </div>
+              <div class="lg">
+                <div class="lgrow">
+                  <span class="sw emp"/><span class="nm">Employee</span>
+                  <b t-esc="money(statutory.employee)"/><span class="pc"><t t-esc="donut.empPct"/>%</span>
+                </div>
+                <div class="lgrow">
+                  <span class="sw er"/><span class="nm">Employer</span>
+                  <b t-esc="money(statutory.employer)"/><span class="pc"><t t-esc="donut.erPct"/>%</span>
+                </div>
+                <div class="lgrow tax" t-if="statutory.tax">
+                  <span class="sw tx"/><span class="nm">Income tax withheld</span>
+                  <b t-esc="money(statutory.tax)"/>
+                </div>
+                <div class="codes">
+                  <span t-foreach="statutory.rows.slice(0, 8)" t-as="crow" t-key="crow.code + crow.leg"
+                        t-attf-class="code lg-{{ crow.leg }}"
+                        t-att-title="money(crow.amount)">
+                    <t t-esc="crow.code"/>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div t-else="" class="pbin-empty small">
+              <t t-out="ic('shield', 20)"/><span>No statutory components on the latest run.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= workforce pulse ====================== -->
+        <div class="pbin-pulse">
+          <div class="pbin-pulse-h">
+            <h2>Workforce pulse</h2>
+            <span class="hint">this week · month to date</span>
+          </div>
+          <div class="pbin-pulse-row">
+
+            <!-- attendance exceptions -->
+            <div class="ptile" t-att-class="pulse.attendance ? '' : 'ghost'">
+              <div class="ph"><span class="ico rose"><t t-out="ic('alert', 17)"/></span>
+                <span class="tt">Attendance exceptions</span></div>
+              <t t-if="pulse.attendance">
+                <div class="pn" t-esc="num(pulse.attendance.total)"/>
+                <div class="pk">
+                  <span t-foreach="['missing_punch', 'late', 'early_leave', 'missing_checkout']"
+                        t-as="kind" t-key="kind" t-esc="excLabel(kind)"/>
+                </div>
+                <div class="pf" t-esc="excWeekLabel"/>
+              </t>
+              <div t-else="" class="pghost">Attendance workflow is not installed.</div>
+            </div>
+
+            <!-- leave -->
+            <div class="ptile" t-att-class="pulse.leave ? '' : 'ghost'">
+              <div class="ph"><span class="ico blue"><t t-out="ic('calendarOff', 17)"/></span>
+                <span class="tt">Time off</span></div>
+              <t t-if="pulse.leave">
+                <div class="pn" t-esc="num(pulse.leave.out_today)"/>
+                <div class="pk"><span t-esc="leaveLabel"/></div>
+                <div class="avs">
+                  <img t-foreach="pulse.leave.cards" t-as="card" t-key="card_index"
+                       class="av" t-att-src="card.avatar_url" t-att-alt="card.name" t-att-title="card.name"/>
+                  <span t-if="pulse.leave.overflow" class="ov">+<t t-esc="pulse.leave.overflow"/></span>
+                </div>
+              </t>
+              <div t-else="" class="pghost">Time Off is not installed.</div>
+            </div>
+
+            <!-- overtime -->
+            <div class="ptile" t-att-class="pulse.ot ? '' : 'ghost'">
+              <div class="ph"><span class="ico amber"><t t-out="ic('clock', 17)"/></span>
+                <span class="tt">Overtime MTD</span></div>
+              <t t-if="pulse.ot">
+                <div class="pn" t-esc="hours(pulse.ot.total)"/>
+                <div class="pk">
+                  <span t-foreach="pulse.ot.by_type" t-as="otrow" t-key="otrow.key"
+                        t-esc="otTypeLabel(otrow)"/>
+                </div>
+                <div class="cap" t-if="pulse.ot.cap">
+                  <div class="tr"><div class="fl" t-attf-style="width:{{ bar(pulse.ot.total, pulse.ot.cap * (pulse.ot.employees or 1)) }}%"/></div>
+                  <span class="pf" t-esc="otCeilingLabel"/>
+                </div>
+              </t>
+              <div t-else="" class="pghost">Overtime is not installed.</div>
+            </div>
+
+            <!-- bonus hours (gated) -->
+            <div class="ptile" t-if="pulse.bonus">
+              <div class="ph"><span class="ico teal"><t t-out="ic('zap', 17)"/></span>
+                <span class="tt">Bonus hours MTD</span></div>
+              <div class="pn" t-esc="hours(pulse.bonus.hours)"/>
+              <div class="pk"><span t-esc="bonusLabel"/></div>
+              <div class="pf">paid through the BONHRS input</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================== snapshots ========================= -->
+        <div class="pbin-panel" t-if="snapshots.length">
+          <div class="pbin-panel-h">
+            <div>
+              <h2>Analytics snapshots</h2>
+              <p class="hint">Generated when a run reaches Finance approval · read-only</p>
+            </div>
+          </div>
+          <div class="pbin-snaps">
+            <div t-foreach="snapshots" t-as="snap" t-key="snap.id" class="snap"
+                 t-on-click="() => this.openSnapshot(snap.id)">
+              <div class="sh">
+                <span class="pd" t-esc="snap.period"/>
+                <span t-attf-class="pbin-state st-{{ snap.state }}">
+                  <span class="dot"/><span t-esc="snap.state_label"/>
+                </span>
+              </div>
+              <div class="sv" t-esc="money(snap.total)"/>
+              <div class="sm">
+                <span t-esc="snapEmployeesLabel(snap)"/>
+                <span t-if="snap.country" class="cc" t-esc="snap.country"/>
+                <span t-if="snap.anomalies" class="an">
+                  <t t-out="ic('alert', 12)"/><span t-esc="snapAlertsLabel(snap)"/>
+                </span>
+              </div>
+              <div class="sf" t-if="snap.run_name" t-esc="snap.run_name"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================= report gallery ====================== -->
+        <div class="pbin-panel" t-if="reports.length">
+          <div class="pbin-panel-h">
+            <div>
+              <h2>Reports &amp; analysis</h2>
+              <p class="hint">Every analytics report, in one place</p>
+            </div>
+          </div>
+          <div class="pbin-gallery">
+            <button t-foreach="reports" t-as="rep" t-key="rep.xmlid" class="gcard"
+                    t-on-click="() => this.openReport(rep.xmlid)">
+              <span class="gi"><t t-out="ic(rep.icon, 18)"/></span>
+              <span class="gt">
+                <span class="gl" t-esc="rep.label"/>
+                <span class="gd" t-esc="rep.desc"/>
+              </span>
+              <span class="ga"><t t-out="ic('arrowRight', 15)"/></span>
             </button>
           </div>
         </div>
+
+        <p class="pbin-foot" t-esc="footLabel"/>
       </div>
     </div>
   </t>

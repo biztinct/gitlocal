@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payroll Base Framework - Enhanced',
-    'version': '19.0.1.0.0',
+    # 19.0.1.1.0 — Sudima Phase M: removed the CDN Chart.js entry from the
+    # web.assets_backend list (asset-list change: needs a full service
+    # RESTART, not an in-process upgrade — C18.53).
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Enhanced Multi-Country Payroll Base Framework with Professional Dashboard',
     'description': """
@@ -101,8 +104,15 @@ for all country-specific modules while maintaining clean separation of concerns.
             'pb_hr_payroll_base/static/src/js/breadcrumb_override.js',           # Breadcrumb override for country selector
             'pb_hr_payroll_base/static/src/js/control_panel_home_icon.js',       # Control panel home icon
 
-            # Chart.js for analytics
-            'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
+            # Chart.js: NO CDN. This asset list used to carry
+            # 'https://cdnjs.cloudflare.com/.../Chart.js/3.9.1/chart.min.js',
+            # which made EVERY backend page issue a cross-origin request (and
+            # broke charts entirely on an offline/air-gapped install). Odoo
+            # already bundles Chart.js locally in web.assets_backend
+            # (web/static/lib/Chart) — verified live: window.Chart.version is
+            # 4.4.6, i.e. Odoo's copy already wins over the CDN's 3.9.1, so the
+            # entry was pure waste. Removed in Sudima Phase M. Never re-add a
+            # remote URL to an asset list; vendor under static/lib/ instead.
             
             # OLD FILES REMOVED - Delete these files if they exist:
             # ❌ 'pb_hr_payroll_base/static/src/css/payroll_dashboard.css'

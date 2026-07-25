@@ -1,0 +1,651 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * pb_insights
+#
+# C18.74: every code entry MUST carry the `#. odoo-python` / `#. odoo-javascript`
+# extracted-comment marker. Without it Odoo loads the file, finds no marker, and
+# translates NOTHING — silently (msgfmt is happy, -u is green). tests/test_insights
+# test_11 asserts both dictionaries are non-empty.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_insights\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-25 00:00+0000\n"
+"PO-Revision-Date: 2026-07-25 00:00+0000\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_insights
+#: model:ir.actions.client,name:pb_insights.action_pb_insights
+msgid "Insights"
+msgstr "Phân tích"
+
+# ============================ server (odoo-python) ============================
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Insights is restricted to payroll analytics managers."
+msgstr "Phân tích chỉ dành cho quản lý phân tích tiền lương."
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Unassigned"
+msgstr "Chưa phân bổ"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Analytics Dashboard"
+msgstr "Bảng phân tích"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Headcount, cost and trend analytics"
+msgstr "Phân tích nhân sự, chi phí và xu hướng"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Personnel Costs"
+msgstr "Chi phí nhân sự"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Cost per department, period and cost centre"
+msgstr "Chi phí theo phòng ban, kỳ và trung tâm chi phí"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Statutory Contributions"
+msgstr "Các khoản đóng bắt buộc"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Employee and employer contribution ledger"
+msgstr "Sổ đóng góp của người lao động và doanh nghiệp"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Headcount Analysis"
+msgstr "Phân tích nhân sự"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Joiners, leavers and headcount movement"
+msgstr "Tuyển mới, nghỉ việc và biến động nhân sự"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Dependents & Benefits"
+msgstr "Người phụ thuộc & phúc lợi"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Registered dependents and benefit relief"
+msgstr "Người phụ thuộc đã đăng ký và mức giảm trừ"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Budget Variance"
+msgstr "Chênh lệch ngân sách"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Budget versus actual personnel spend"
+msgstr "Ngân sách so với chi phí nhân sự thực tế"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Annual HR Costs"
+msgstr "Chi phí nhân sự hằng năm"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Year-on-year total cost of employment"
+msgstr "Tổng chi phí lao động theo từng năm"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Salary Structure Analytics"
+msgstr "Phân tích cấu trúc lương"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Cost breakdown by formula configuration"
+msgstr "Phân rã chi phí theo cấu hình công thức"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Employee Cost Detail"
+msgstr "Chi tiết chi phí theo nhân viên"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Per-employee payroll cost records"
+msgstr "Bản ghi chi phí lương theo từng nhân viên"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Payslip Line Pivot"
+msgstr "Pivot dòng phiếu lương"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Pivot every payslip line by component"
+msgstr "Xoay mọi dòng phiếu lương theo thành phần"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Payroll Reports"
+msgstr "Báo cáo tiền lương"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Analytics, bank export and comparison reports"
+msgstr "Báo cáo phân tích, xuất ngân hàng và so sánh"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Period Comparison"
+msgstr "So sánh kỳ"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Month-over-month component comparison"
+msgstr "So sánh thành phần giữa các tháng"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Bank Export Log"
+msgstr "Nhật ký xuất ngân hàng"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Disbursement files produced from approved runs"
+msgstr "Tệp chi trả sinh ra từ các đợt lương đã duyệt"
+
+# ========================= cockpit (odoo-javascript) =========================
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Loading the analytics board…"
+msgstr "Đang tải bảng phân tích…"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Executive analytics"
+msgstr "Phân tích điều hành"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "net payroll"
+msgstr "lương thực chi"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "active headcount"
+msgstr "nhân sự đang làm việc"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "avg cost / employee"
+msgstr "chi phí bình quân / nhân viên"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "employer contributions"
+msgstr "đóng góp của doanh nghiệp"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Cost story"
+msgstr "Diễn biến chi phí"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Refresh"
+msgstr "Làm mới"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Net"
+msgstr "Thực lãnh"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Gross"
+msgstr "Tổng thu nhập"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Total cost"
+msgstr "Tổng chi phí"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "No pay runs in this window. Widen the range or run payroll to build the trend."
+msgstr "Không có đợt lương nào trong khoảng này. Hãy mở rộng khoảng thời gian hoặc chạy lương để tạo xu hướng."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Net paid"
+msgstr "Đã chi thực lãnh"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Total cost (gross + employer contributions)"
+msgstr "Tổng chi phí (tổng thu nhập + đóng góp doanh nghiệp)"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Department leaderboard"
+msgstr "Xếp hạng phòng ban"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "approx"
+msgstr "ước tính"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Total"
+msgstr "Tổng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Per head"
+msgstr "Bình quân đầu người"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "No department cost to show yet."
+msgstr "Chưa có chi phí phòng ban để hiển thị."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Statutory split"
+msgstr "Cơ cấu khoản đóng bắt buộc"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "contributions"
+msgstr "khoản đóng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Employee"
+msgstr "Người lao động"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Employer"
+msgstr "Doanh nghiệp"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Income tax withheld"
+msgstr "Thuế TNCN đã khấu trừ"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "No statutory components on the latest run."
+msgstr "Đợt lương gần nhất không có khoản đóng bắt buộc."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Workforce pulse"
+msgstr "Nhịp nhân sự"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "this week · month to date"
+msgstr "tuần này · từ đầu tháng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Attendance exceptions"
+msgstr "Bất thường chấm công"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Attendance workflow is not installed."
+msgstr "Chưa cài đặt quy trình chấm công."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Time off"
+msgstr "Nghỉ phép"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Time Off is not installed."
+msgstr "Chưa cài đặt phân hệ nghỉ phép."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Overtime MTD"
+msgstr "Làm thêm giờ từ đầu tháng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Overtime is not installed."
+msgstr "Chưa cài đặt phân hệ làm thêm giờ."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Bonus hours MTD"
+msgstr "Giờ thưởng từ đầu tháng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "paid through the BONHRS input"
+msgstr "chi trả qua biến BONHRS"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Analytics snapshots"
+msgstr "Ảnh chụp phân tích"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Generated when a run reaches Finance approval · read-only"
+msgstr "Được tạo khi đợt lương tới bước Tài chính duyệt · chỉ đọc"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Reports & analysis"
+msgstr "Báo cáo & phân tích"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/xml/insights.xml:0
+msgid "Every analytics report, in one place"
+msgstr "Mọi báo cáo phân tích trong một nơi"
+
+# ---- sentences built in JS (stable msgids, C18.74) ----
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Insights could not be loaded."
+msgstr "Không tải được bảng phân tích."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "That report is not available."
+msgstr "Báo cáo này hiện không khả dụng."
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Pay Run"
+msgstr "Đợt lương"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Payroll Analytics"
+msgstr "Phân tích tiền lương"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "· latest run %s"
+msgstr "· đợt gần nhất %s"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s employees paid"
+msgstr "%s nhân viên đã được chi trả"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s %s vs %s %s"
+msgstr "%s %s so với %s %s"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Month over month, all pay runs in the month"
+msgstr "So sánh theo tháng, gồm mọi đợt lương trong tháng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s-run trend"
+msgstr "xu hướng %s đợt"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s runs · net and gross per pay run"
+msgstr "%s đợt · thực lãnh và tổng thu nhập theo từng đợt"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "newest %s of %s runs in this window"
+msgstr "%s đợt mới nhất trong tổng số %s đợt của khoảng này"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s slips · %s"
+msgstr "%s phiếu lương · %s"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Approximated from running contracts — no approved run yet"
+msgstr "Ước tính từ hợp đồng đang hiệu lực — chưa có đợt lương được duyệt"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Net paid · %s"
+msgstr "Đã chi thực lãnh · %s"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "+%s more departments"
+msgstr "thêm %s phòng ban"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "No run yet"
+msgstr "Chưa có đợt lương"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s missing punch"
+msgstr "%s thiếu chấm công"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s late"
+msgstr "%s đi muộn"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s early leave"
+msgstr "%s về sớm"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s open punch"
+msgstr "%s lượt chấm công chưa đóng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "week of %s"
+msgstr "tuần từ %s"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "out today · %s awaiting approval"
+msgstr "nghỉ hôm nay · %s chờ duyệt"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s employee(s) at 90%% of the %s monthly ceiling"
+msgstr "%s nhân viên đã đạt 90%% trần %s giờ mỗi tháng"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "over the ceiling on %s request(s)"
+msgstr "vượt trần ở %s đề nghị"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s employees"
+msgstr "%s nhân viên"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "%s alert(s)"
+msgstr "%s cảnh báo"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Board built in %s ms"
+msgstr "Bảng dựng trong %s ms"
+
+#. module: pb_insights
+#. odoo-javascript
+#: code:addons/pb_insights/static/src/js/insights.js:0
+msgid "Board built in %s ms · %s companies"
+msgstr "Bảng dựng trong %s ms · %s công ty"
+
+# ---- run / snapshot state chips (translated at read time) ----
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Officer"
+msgstr "Chuyên viên"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Finance"
+msgstr "Tài chính"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Approved"
+msgstr "Đã duyệt"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Rejected"
+msgstr "Đã từ chối"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Ready for approval"
+msgstr "Sẵn sàng phê duyệt"
+
+#. module: pb_insights
+#. odoo-python
+#: code:addons/pb_insights/models/pb_insights.py:0
+msgid "Exported"
+msgstr "Đã xuất"
