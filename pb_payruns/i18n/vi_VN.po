@@ -1,0 +1,104 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# * pb_payruns
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pb_payruns\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-25 00:00+0000\n"
+"PO-Revision-Date: 2026-07-25 00:00+0000\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_payruns
+#: model:ir.model.fields.selection,name:pb_payruns.selection__hr_payslip_run__state__level0
+msgid "Payroll Officer pending"
+msgstr "Chờ chuyên viên tiền lương duyệt"
+
+#. module: pb_payruns
+#: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_reject_note
+msgid "Rejection reason"
+msgstr "Lý do từ chối"
+
+#. module: pb_payruns
+#: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_reject_uid
+msgid "Rejected by"
+msgstr "Người từ chối"
+
+#. module: pb_payruns
+#: model:ir.model.fields,field_description:pb_payruns.field_hr_payslip_run__pb_reject_date
+msgid "Rejected on"
+msgstr "Từ chối lúc"
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "This pay run is not awaiting an approval decision."
+msgstr "Đợt lương này không ở trạng thái chờ quyết định phê duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid ""
+"This pay run is waiting on the %s tier — your user does not hold that role."
+msgstr ""
+"Đợt lương này đang chờ cấp duyệt %s — tài khoản của bạn không có vai trò đó."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid ""
+"“%(name)s” is not at the %(stage)s stage (current status: %(state)s)."
+msgstr ""
+"“%(name)s” không ở bước %(stage)s (trạng thái hiện tại: %(state)s)."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid ""
+"“%(name)s” is already %(state)s — it can no longer be rejected."
+msgstr ""
+"“%(name)s” đã ở trạng thái %(state)s — không thể từ chối nữa."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid ""
+"“%(name)s” has already entered the approval chain (status: %(state)s)."
+msgstr ""
+"“%(name)s” đã vào quy trình phê duyệt (trạng thái: %(state)s)."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Only a Payroll Officer (or above) can submit a pay run for approval."
+msgstr ""
+"Chỉ Chuyên viên tiền lương (hoặc vai trò cao hơn) mới được gửi đợt lương đi "
+"phê duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid ""
+"A pay run's approval status can only change through the approval actions "
+"(Submit / Approve / Reject)."
+msgstr ""
+"Trạng thái phê duyệt của đợt lương chỉ thay đổi qua các thao tác phê duyệt "
+"(Gửi duyệt / Phê duyệt / Từ chối)."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "A pay run cannot be created in an approved state."
+msgstr "Không thể tạo đợt lương ở trạng thái đã phê duyệt."
+
+#. module: pb_payruns
+#. odoo-python
+#: code:addons/pb_payruns/models/hr_payslip_run.py:0
+msgid "Only the Finance / GM tier can reset an approved pay run to draft."
+msgstr ""
+"Chỉ cấp Tài chính / Tổng giám đốc mới được đưa đợt lương đã duyệt về nháp."

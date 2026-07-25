@@ -17,6 +17,26 @@
                 <attribute name="class" add="pb-payrun-form" separator=" "/>
             </xpath>
 
+            <!-- Phase L: the Officer tier the legacy header knows nothing about.
+                 Its label says "Submit for HR Manager" on the draft button; the
+                 run now lands on Officer review first, so relabel it and add the
+                 officer advance. (Server-side _pb_require_tier is the guard —
+                 these invisible= rules are only tidiness.) -->
+            <xpath expr="//header/button[@name='done_payslip_run']" position="attributes">
+                <attribute name="string">Submit for approval</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_payslip_run_level1_done']" position="before">
+                <button name="action_payslip_run_level0_done" type="object"
+                        string="Payroll Officer Approve" invisible="state != 'level0'"
+                        class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//header/button[@name='action_payslip_run_level2_done']" position="attributes">
+                <attribute name="string">Finance Approve</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_payslip_run_cancel']" position="attributes">
+                <attribute name="invisible">state not in ('draft', 'level0', 'level1', 'level2')</attribute>
+            </xpath>
+
             <!-- hide the cramped native statusbar; render the workflow as a
                  full-width numbered stepper (health19 vu_progress_rail) on the
                  row below the action buttons -->
@@ -25,8 +45,8 @@
             </xpath>
             <xpath expr="//sheet/label[@for='name']" position="before">
                 <widget name="vu_progress_rail"
-                        steps="draft,level1,level2,done"
-                        labels="Draft,HR review,GM review,Done"
+                        steps="draft,level0,level1,level2,done"
+                        labels="Draft,Officer review,HR review,Finance approval,Done"
                         state_field="state"/>
             </xpath>
 

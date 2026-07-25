@@ -23,6 +23,7 @@
                 <field name="pb_total_net"/>
                 <field name="pb_currency_id"/>
                 <field name="pb_can_submit"/>
+                <field name="pb_can_approve_officer"/>
                 <field name="pb_can_approve_hr"/>
                 <field name="pb_can_approve_gm"/>
                 <field name="pb_can_reject"/>
@@ -49,8 +50,9 @@
                             <div class="pbk-jnl" t-if="!record.pb_division_label.raw_value and record.journal_id.raw_value"><field name="journal_id"/></div>
                             <div class="pbk-foot">
                                 <button t-if="record.pb_can_submit.raw_value" type="object" name="done_payslip_run" class="pbk-btn primary">Submit for review</button>
+                                <button t-if="record.pb_can_approve_officer.raw_value" type="object" name="action_payslip_run_level0_done" class="pbk-btn primary">Approve (Officer)</button>
                                 <button t-if="record.pb_can_approve_hr.raw_value" type="object" name="action_payslip_run_level1_done" class="pbk-btn primary">Approve (HR)</button>
-                                <button t-if="record.pb_can_approve_gm.raw_value" type="object" name="action_payslip_run_level2_done" class="pbk-btn primary">Approve (GM)</button>
+                                <button t-if="record.pb_can_approve_gm.raw_value" type="object" name="action_payslip_run_level2_done" class="pbk-btn primary">Approve (Finance)</button>
                                 <button t-if="record.pb_can_reject.raw_value" type="object" name="action_payslip_run_cancel" class="pbk-btn ghost danger"
                                         confirm="Reject this pay run? All payslips in it will be cancelled.">Reject</button>
                                 <button t-if="record.pb_is_done.raw_value" type="object" name="action_open_payroll_report" class="pbk-btn primary">Report</button>

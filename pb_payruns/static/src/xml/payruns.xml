@@ -54,7 +54,7 @@
                     <button class="pbr-btn ghost danger" t-on-click="() => this.reject(b)">Reject</button>
                   </t>
                   <t t-elif="b.next_action and !b.can_act">
-                    <span class="pbr-await">Awaiting <t t-esc="b.state === 'level1' ? 'HR' : (b.state === 'level2' ? 'GM' : '')"/> approval</span>
+                    <span class="pbr-await">Awaiting <t t-esc="b.stage_label"/></span>
                   </t>
                   <!-- done: report / excel + Pay & Deliver (bank file + payslips) + journals / payments -->
                   <t t-if="b.state === 'done'">

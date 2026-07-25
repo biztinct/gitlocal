@@ -1063,3 +1063,59 @@ number from the handovers — keep the numbering stable.
     facades with a real non-superuser login, not just the superuser test env. (`test_15` accordingly asserts
     only that MUTATIONS aren't sudo'd — `.sudo().action_*` / `.sudo().create` absent — not that the module
     is sudo-free.)
+
+### Phase-L findings (3-tier approval chain — 2026-07-25, WP-Sudima-L). Numbering continues C18.
+
+74. **A `.po` entry needs `#. odoo-python` / `#. odoo-javascript` extracted-comment MARKERS, not just
+    `#. module:` — without them the file parses cleanly and translates NOTHING.** Odoo 19 loads code
+    translations from disk (`CodeTranslations._load_python_translations` /
+    `_load_web_translations`, `odoo/tools/translate.py:1854-1868`) with
+    `filter_func = row['value'] and PYTHON_TRANSLATION_COMMENT in row['comments']`
+    (`'odoo-python'` / `'odoo-javascript'`). A hand-written vi.po carrying only the C18-mandated
+    `#. module:` line yields `get_python_translations(module,'vi_VN') == {}` and a `_()` that silently
+    returns English — no error anywhere, `-u` is green, msgfmt is happy. Marker rules mirror the
+    exporter (`translate.py:1487-1500`): `*.py` → `odoo-python`; `static/src/**/*.js` AND
+    `static/src/**/*.xml` (OWL/QWeb templates) → `odoo-javascript`; an entry occurring in both carries
+    both. Assert it in a test (`code_translations.get_python_translations(...)` non-empty), never just
+    "the PO file is present". **Known debt: `pb_timeoff/i18n/vi_VN.po` (Phase K) has no markers and is
+    therefore inert — fix on next touch.**
+75. **The `pb_hr_payroll_base` payroll groups carry NO ACL on `hr.payslip.run` / `hr.payslip`.** Those
+    models are granted only to `om_hr_payroll.group_hr_payroll_user/manager` (+ the demo group), and the
+    pb_* ladder does NOT imply them — so a "Payroll Officer" handed the new level0 tier could not even
+    READ the board its own tier owns (live: `AccessError: … 'Payslip Batches'`), and a plain
+    `group_payroll_base_manager` is in the same position. Because the ladder is
+    `final_approver → analytics_manager → base_manager → base_officer`, ONE ACL row on
+    `group_payroll_base_officer` (read+write, never create/unlink) covers every tier. Check the ACL of
+    the model a new group-gated tier must touch — group membership in the product's own hierarchy says
+    nothing about the underlying model ACL.
+76. **C18.24 on `hr.payslip.run`: the tier gates guard the ACTIONS, `write()` must guard the STATE.**
+    Proven live as a non-superuser: `call_kw hr.payslip.run write [[id],{"state":"done"}]` jumped a
+    level1 run straight to approved, skipping every tier (and `create({'state':'done'})` likewise). The
+    seal is a module-level `object()` identity in context (`_PB_CHAIN_TOKEN`) that only the sanctioned
+    writers set via `_pb_chain_ctx()`; su/admin exempt; a client-forged `pb_chain_state_write: true`
+    cannot match an object identity. It travels ON THE RECORDSET into the legacy body
+    (`super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level1_done()`), so om_hr_payroll's
+    own `write({'state':'level2'})` passes without any edit to the legacy module. Only the FORWARD
+    states (`level0/1/2/done`) are sealed — `draft`/`cancel` stay writable because demo/cleanup paths
+    reset runs to draft right before unlinking them, and neither value can mark a run approved.
+77. **The level1→level2 advance SENDS a real mail, and om_hr_payroll_account REPLACES it without
+    `super()`.** `_notify_general_manager_for_batch_approval` (`om_hr_payroll/models/hr_payslip.py:1128`)
+    does `mail.mail.create(...).send()` — an immediate dispatch through the live Gmail server, not a
+    queue row (C18.47/48). EVERY test that crosses that tier must `patch.object(type(env['hr.payslip.run']),
+    '_notify_general_manager_for_batch_approval')`, and live validation must never click HR→Finance.
+    Separately, `om_hr_payroll_account.action_payslip_run_level1_done` fully replaces the base method
+    (no `super()`, and it inlines its own `generate_analytics` instead of calling
+    `_auto_generate_batch_analytics_on_level2`) — so a gate override only holds while pb_payruns is the
+    MORE-DERIVED class. Keep a canary test (a no-tier user must get AccessError on the level1 advance):
+    if a future load-order change puts the account module last, the gate is silently bypassed and only
+    that test says so. Corollary found in the same cascade: `pb_hr_payroll_formula.
+    _trigger_mid_cycle_carryover` searches `hr.payroll.import.batch` WITHOUT sudo, so a Finance approver
+    who lacks `group_formula_manager` cannot complete final approval (pre-existing; reported, not fixed
+    — different module, C18.1).
+78. **`.a.b` and `.b` have equal CSS specificity — a solid variant declared after a ghost variant paints
+    it.** `.pba-btn.danger { background: rose }` beat `.pba-btn.ghost { background: #fff }` (both two
+    classes, `.danger` later), while `.pba-btn.ghost.danger { color: rose }` (three classes) won the
+    colour → a "Reject" button rendered rose text on a rose fill: an INVISIBLE label that a green `-u`,
+    green tests and a passing a11y snapshot all report as present (`textContent` is correct). Write the
+    solid variant as `&.danger:not(.ghost)`. Screenshot every new button variant; the DOM says nothing
+    about whether a user can read it.

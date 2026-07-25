@@ -2,90 +2,158 @@
 <templates xml:space="preserve">
 
     <t t-name="pb_approval.PbApproval">
-        <div class="pb-appr">
-            <div t-if="!state.loaded" class="pb-appr-loading">
-                <div class="pb-appr-spinner"/>
-                <span>Loading approvals…</span>
+        <div class="pba pbim">
+
+            <!-- ============================ loading ============================ -->
+            <div t-if="!state.loaded" class="pba-loading">
+                <div class="pba-spin"/><span>Loading approvals…</span>
             </div>
 
-            <div t-else="" class="pb-appr-wrap">
-                <!-- Header -->
-                <div class="pb-appr-head">
-                    <div>
-                        <h1>Approvals</h1>
-                        <p class="pb-appr-sub">Review and approve payroll runs through the approval chain.</p>
+            <div t-else="" class="pba-wrap">
+
+                <!-- ============================= hero ============================= -->
+                <div class="pba-hero">
+                    <div class="hero-l">
+                        <div class="eyebrow"><span t-out="ic('stamp',15)"/> Payroll</div>
+                        <h1>Approval Pipeline</h1>
+                        <div class="sub">Officer review → HR review → Finance approval</div>
+                    </div>
+                    <div class="hero-r">
+                        <div class="mine-chip" t-if="summary.mine">
+                            <span t-out="ic('inbox',15)"/>
+                            <span><t t-esc="summary.mine"/> awaiting you</span>
+                        </div>
+                        <button class="pba-btn ghost" t-on-click="load" title="Refresh">
+                            <span t-out="ic('refresh',15)"/><span>Refresh</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Summary strip -->
-                <div class="pb-appr-kpis">
-                    <div class="pb-appr-kpi">
-                        <span class="pb-appr-kpi-val" t-esc="state.summary.count"/>
-                        <span class="pb-appr-kpi-lbl">Pending runs</span>
+                <!-- ============================= KPIs ============================= -->
+                <div class="pba-kpis">
+                    <div class="kpi l0">
+                        <span class="ico" t-out="ic('clock',18)"/>
+                        <span class="n" t-esc="summary.officer or 0"/>
+                        <span class="l">at Officer review</span>
                     </div>
-                    <div class="pb-appr-kpi">
-                        <span class="pb-appr-kpi-val" t-esc="vnd(state.summary.net)"/>
-                        <span class="pb-appr-kpi-lbl">Net awaiting approval</span>
+                    <div class="kpi l1">
+                        <span class="ico" t-out="ic('users',18)"/>
+                        <span class="n" t-esc="summary.hr or 0"/>
+                        <span class="l">at HR review</span>
                     </div>
-                    <div class="pb-appr-kpi">
-                        <span class="pb-appr-kpi-val amber" t-esc="state.summary.hr"/>
-                        <span class="pb-appr-kpi-lbl">At HR review</span>
+                    <div class="kpi l2">
+                        <span class="ico" t-out="ic('shield',18)"/>
+                        <span class="n" t-esc="summary.fin or 0"/>
+                        <span class="l">at Finance approval</span>
                     </div>
-                    <div class="pb-appr-kpi">
-                        <span class="pb-appr-kpi-val indigo" t-esc="state.summary.gm"/>
-                        <span class="pb-appr-kpi-lbl">At GM approval</span>
+                    <div class="kpi net">
+                        <span class="ico" t-out="ic('wallet',18)"/>
+                        <span class="n" t-esc="vnd(summary.net or 0)"/>
+                        <span class="l">net at stake</span>
                     </div>
                 </div>
 
-                <!-- Pending queue -->
-                <div class="pb-appr-section">
-                    <h2 class="pb-appr-h2">Pending approval</h2>
+                <!-- =========================== empty state ======================== -->
+                <div t-if="isEmpty" class="pba-empty">
+                    <span class="i" t-out="ic('checkCircle',30)"/>
+                    <div class="t">Nothing awaiting approval.</div>
+                    <div class="s">Submitted pay runs land here for Officer, HR and Finance sign-off.</div>
+                </div>
 
-                    <div t-if="state.pending.length === 0" class="pb-appr-empty">
-                        <div class="pb-appr-empty-badge">All caught up</div>
-                        <p>No payroll runs are waiting on you right now.</p>
-                    </div>
+                <!-- ============================= lanes ============================ -->
+                <div t-else="" class="pba-lanes">
+                    <section t-foreach="lanes" t-as="lane" t-key="lane.key"
+                             t-attf-class="pba-lane {{ laneCls(lane.key) }}">
+                        <div class="lane-h">
+                            <span class="dot"/>
+                            <span class="nm" t-esc="lane.label"/>
+                            <span class="ct" t-esc="lane.runs.length"/>
+                        </div>
 
-                    <div t-else="" class="pb-appr-cards">
-                        <div t-foreach="state.pending" t-as="run" t-key="run.id" class="pb-appr-card">
-                            <div class="pb-appr-card-main" t-on-click="() => this.openRun(run.id)">
-                                <div t-attf-class="pb-appr-stage {{ stageCls(run.state) }}">
-                                    <span class="pb-appr-dot"/>
-                                    <t t-esc="run.stage"/>
+                        <div t-if="!lane.runs.length" class="lane-empty">No runs here.</div>
+
+                        <div t-foreach="lane.runs" t-as="run" t-key="run.id"
+                             t-attf-class="pba-card {{ run.mine ? 'mine' : '' }} {{ state.busy === run.id ? 'busy' : '' }}">
+                            <div class="c-head" t-on-click="() => this.openRun(run.id)">
+                                <span class="c-nm" t-esc="run.name"/>
+                                <span class="c-open" t-out="ic('external',13)"/>
+                            </div>
+                            <div class="c-period" t-esc="run.period"/>
+
+                            <div class="c-metrics">
+                                <div class="m">
+                                    <span class="mv" t-esc="run.count"/>
+                                    <span class="ml">payslips</span>
                                 </div>
-                                <div class="pb-appr-card-name">
-                                    <span class="pb-appr-run-title" t-esc="run.name"/>
-                                    <span class="pb-appr-run-period" t-esc="run.period"/>
+                                <div class="m net">
+                                    <span class="mv" t-esc="vnd(run.net)"/>
+                                    <span class="ml">net total</span>
                                 </div>
                             </div>
-                            <div class="pb-appr-card-meta">
-                                <div class="pb-appr-metric">
-                                    <span class="pb-appr-metric-val" t-esc="run.count"/>
-                                    <span class="pb-appr-metric-lbl">payslips</span>
-                                </div>
-                                <div class="pb-appr-metric">
-                                    <span class="pb-appr-metric-val" t-esc="vnd(run.net)"/>
-                                    <span class="pb-appr-metric-lbl">net total</span>
-                                </div>
-                                <button class="pb-appr-btn" t-on-click="() => this.approve(run.id)">
-                                    Approve · <t t-esc="run.role"/>
-                                </button>
+
+                            <!-- 3-dot chain stepper: filled = tiers already cleared -->
+                            <div class="c-chain">
+                                <t t-foreach="[0,1,2]" t-as="i" t-key="i">
+                                    <span t-attf-class="cd {{ dotCls(run, i) }}"/>
+                                    <span t-if="i &lt; 2" t-attf-class="cl {{ i &lt; run.step ? 'done' : '' }}"/>
+                                </t>
+                            </div>
+
+                            <div class="c-foot">
+                                <t t-if="run.mine">
+                                    <button class="pba-btn primary" t-on-click="() => this.approve(run)">
+                                        <span t-out="ic('check',15)"/><span>Approve</span>
+                                    </button>
+                                    <button class="pba-btn ghost danger" t-on-click="() => this.openReject(run)">
+                                        Reject
+                                    </button>
+                                </t>
+                                <t t-else="">
+                                    <span class="waits">
+                                        <span t-out="ic('lock',13)"/>
+                                        <span t-esc="waitsOn(run)"/>
+                                    </span>
+                                </t>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
 
-                <!-- Recently approved -->
-                <div class="pb-appr-section" t-if="state.recent.length">
-                    <h2 class="pb-appr-h2">Recently approved</h2>
-                    <div class="pb-appr-recent">
-                        <div t-foreach="state.recent" t-as="run" t-key="run.id"
-                             class="pb-appr-recent-row" t-on-click="() => this.openRun(run.id)">
-                            <div class="pb-appr-stage green"><span class="pb-appr-dot"/>Done</div>
-                            <span class="pb-appr-recent-name" t-esc="run.name"/>
-                            <span class="pb-appr-recent-period" t-esc="run.period"/>
-                            <span class="pb-appr-recent-net" t-esc="vnd(run.net)"/>
-                        </div>
+                <!-- ========================= recently decided ===================== -->
+                <div class="pba-recent" t-if="recent.length">
+                    <div class="rec-h">Recently decided</div>
+                    <div t-foreach="recent" t-as="run" t-key="run.id"
+                         class="rec-row" t-on-click="() => this.openRun(run.id)">
+                        <span t-attf-class="rec-badge {{ run.state === 'done' ? 'ok' : 'no' }}">
+                            <span t-out="run.state === 'done' ? ic('checkCircle',13) : ic('xCircle',13)"/>
+                            <span t-esc="run.stage"/>
+                        </span>
+                        <span class="rec-nm" t-esc="run.name"/>
+                        <span class="rec-pd" t-esc="run.period"/>
+                        <span class="rec-why" t-if="run.reject_note"
+                              t-attf-title="{{ run.reject_by }}: {{ run.reject_note }}"
+                              t-esc="run.reject_note"/>
+                        <span class="rec-net" t-esc="vnd(run.net)"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================== reject popover ========================= -->
+            <div class="pba-scrim" t-if="state.rejectRun" t-on-click="closeReject">
+                <div class="pba-pop" t-on-click="(ev) => ev.stopPropagation()">
+                    <div class="pop-h">
+                        <span t-out="ic('xCircle',18)"/>
+                        <span>Reject <t t-esc="state.rejectRun.name"/></span>
+                    </div>
+                    <div class="pop-b">
+                        <label>Reason (required)</label>
+                        <textarea class="pop-ta" rows="3" t-on-input="onRejectNote"
+                                  placeholder="Why is this pay run being sent back?"/>
+                        <div class="pop-note">All payslips in this run will be cancelled.</div>
+                    </div>
+                    <div class="pop-f">
+                        <button class="pba-btn ghost" t-on-click="closeReject">Cancel</button>
+                        <button class="pba-btn danger" t-on-click="confirmReject">Reject run</button>
                     </div>
                 </div>
             </div>

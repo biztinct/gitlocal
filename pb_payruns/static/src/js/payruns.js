@@ -6,13 +6,15 @@ import { useService } from "@web/core/utils/hooks";
 
 const NEXT_METHOD = {
     submit: "done_payslip_run",
+    approve_officer: "action_payslip_run_level0_done",
     approve_hr: "action_payslip_run_level1_done",
     approve_gm: "action_payslip_run_level2_done",
 };
 const NEXT_LABEL = {
     submit: "Submit for review",
+    approve_officer: "Approve (Officer)",
     approve_hr: "Approve (HR)",
-    approve_gm: "Approve (GM)",
+    approve_gm: "Approve (Finance)",
 };
 
 export class PbPayruns extends Component {

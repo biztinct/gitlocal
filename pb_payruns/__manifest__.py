@@ -2,13 +2,20 @@
 {
     'name': 'Payobook Pay Runs Cockpit',
     'summary': 'Pay-run pipeline board + enhanced batch form (KPIs, approval pipeline)',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': ['web', 'om_hr_payroll', 'pb_hr_payroll_base', 'pb_theme', 'pb_hr_workforce'],
     'data': [
+        # Phase L: the approval tiers live on pb_* groups, but hr.payslip.run /
+        # hr.payslip carry ACLs only for om_hr_payroll.group_hr_payroll_manager —
+        # so a Payroll Officer (the new level0 tier) could not even READ the
+        # board its own tier owns. One row on group_payroll_base_officer covers
+        # the whole ladder (manager → officer, final approver → … → officer);
+        # read+write only, never create/unlink.
+        'security/ir.model.access.csv',
         'views/pb_payruns_action.xml',
         'views/hr_payslip_run_kanban.xml',
         'views/hr_payslip_run_form_enhance.xml',

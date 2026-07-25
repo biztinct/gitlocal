@@ -46,7 +46,9 @@
         <field name="action_xmlid"></field>
         <field name="action_tag">pb_approval</field>
         <field name="match_models">hr.payslip.run</field>
-        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+        <!-- Phase L: the Payroll Officer owns the first approval tier (level0),
+             so the launcher has to be visible to them too. -->
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
 
     <!-- ============ Pay Run ============ -->

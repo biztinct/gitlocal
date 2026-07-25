@@ -6,11 +6,12 @@ import { standardFieldProps } from "@web/views/fields/standard_field_props";
 
 const STAGES = [
     { key: "draft", label: "Draft" },
+    { key: "level0", label: "Officer review" },
     { key: "level1", label: "HR review" },
-    { key: "level2", label: "GM review" },
+    { key: "level2", label: "Finance approval" },
     { key: "done", label: "Done" },
 ];
-const INDEX = { draft: 0, level1: 1, level2: 2, done: 3 };
+const INDEX = { draft: 0, level0: 1, level1: 2, level2: 3, done: 4 };
 
 export class PbPipelineField extends Component {
     static template = "pb_payruns.PipelineField";
