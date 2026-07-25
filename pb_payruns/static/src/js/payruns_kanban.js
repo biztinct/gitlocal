@@ -53,7 +53,7 @@ export class PbPayrunsKanbanController extends KanbanController {
                 divisions: d.divisions || [],
                 tabCounts: {
                     draft: col.draft || 0,
-                    pending: (col.level1 || 0) + (col.level2 || 0),
+                    pending: (col.level0 || 0) + (col.level1 || 0) + (col.level2 || 0),
                     done: col.done || 0,
                     rejected: d.rejected_count || 0,
                 },
@@ -87,7 +87,7 @@ export class PbPayrunsKanbanController extends KanbanController {
     _statusDomain(id) {
         switch (id) {
             case "draft": return [["state", "=", "draft"]];
-            case "pending": return [["state", "in", ["level1", "level2"]]];
+            case "pending": return [["state", "in", ["level0", "level1", "level2"]]];
             case "done": return [["state", "=", "done"]];
             case "rejected": return [["state", "=", "cancel"]];
             default: return [["state", "!=", "cancel"]];   // all (active)

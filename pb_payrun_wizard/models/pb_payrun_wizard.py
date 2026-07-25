@@ -2,7 +2,8 @@
 import logging
 from datetime import date
 from dateutil.relativedelta import relativedelta
-from odoo import api, models
+from odoo import _, api, models
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -294,12 +295,35 @@ class PbPayrunWizard(models.AbstractModel):
 
     @api.model
     def submit_for_approval(self, run_id):
-        run = self.env['hr.payslip.run'].browse(run_id)
-        ok = False
+        """Enter the approval chain at its FIRST tier (Officer review).
+
+        Phase L fix: this used to call action_payslip_run_level1_done() on a
+        DRAFT run — and that legacy method writes 'level2' unconditionally, so a
+        submit jumped the run straight past the HR tier. done_payslip_run() is
+        the only correct draft→chain transition (it confirms the payslips, then
+        lands on level0).
+
+        It also swallowed every exception into a bare ok=False; the caller now
+        gets the server's real refusal (the tier gate's own words).
+        """
+        run = self.env['hr.payslip.run'].browse(int(run_id))
+        if not run.exists():
+            return {'ok': False, 'run_id': run_id, 'state': False,
+                    'msg': _('This pay run no longer exists.')}
+        if run.state != 'draft':
+            return {'ok': False, 'run_id': run.id, 'state': run.state,
+                    'msg': _('This pay run is already in the approval chain.')}
         try:
-            if hasattr(run, 'action_payslip_run_level1_done'):
-                run.action_payslip_run_level1_done()
-                ok = True
+            with self.env.cr.savepoint():
+                run.done_payslip_run()
+        except (AccessError, UserError) as e:
+            # a real, actionable refusal (missing tier / bad state) — surface it.
+            # invalidate: the savepoint rollback undid writes the ORM cache may
+            # still hold, so `state` below must be re-read from the DB.
+            self.env.invalidate_all()
+            return {'ok': False, 'run_id': run.id, 'state': run.state, 'msg': str(e)}
         except Exception as e:
             _logger.warning("Payrun wizard: submit failed: %s", e)
-        return {'ok': ok, 'run_id': run.id, 'state': run.state}
+            self.env.invalidate_all()
+            return {'ok': False, 'run_id': run.id, 'state': run.state, 'msg': str(e)}
+        return {'ok': True, 'run_id': run.id, 'state': run.state}

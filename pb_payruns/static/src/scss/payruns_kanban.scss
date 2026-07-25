@@ -35,6 +35,7 @@
 }
 .pbk .o_kanban_record:hover .pbk-card { box-shadow: 0 10px 26px rgba(49,46,129,.12); transform: translateY(-2px); }
 .pbk-card.pbk-st-draft { border-left-color: #64748B; }
+.pbk-card.pbk-st-level0 { border-left-color: #2563EB; }
 .pbk-card.pbk-st-level1 { border-left-color: #B45309; }
 .pbk-card.pbk-st-level2 { border-left-color: #5A4BB0; }
 .pbk-card.pbk-st-done { border-left-color: #059669; }

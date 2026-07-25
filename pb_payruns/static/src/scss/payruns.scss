@@ -38,6 +38,7 @@
     .pbr-col-h .nm { font-size: 13px; font-weight: 800; flex: 1; }
     .pbr-col-h .ct { font-size: 11px; font-weight: 800; color: var(--muted); background: var(--bg); border-radius: 999px; padding: 2px 9px; }
     .col-draft .pbr-col-h .dot { background: var(--slate); }
+    .col-level0 .pbr-col-h .dot { background: var(--cyan, #2563EB); }
     .col-level1 .pbr-col-h .dot { background: var(--amber); }
     .col-level2 .pbr-col-h .dot { background: var(--i); }
     .col-done .pbr-col-h .dot { background: var(--green); }

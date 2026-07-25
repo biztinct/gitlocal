@@ -1,10 +1,41 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError
 
 # Salary-category code buckets (mirror pb_hr_workforce payroll_report).
 NET_CODES = ('NET',)
 GROSS_CODES = ('GROSS',)
 DED_CODES = ('DED', 'DEDUCTION', 'COMP')
+
+# ---------------------------------------------------------------- Phase L
+# Approval chain: draft → level0 (Officer) → level1 (HR) → level2 (Finance/GM)
+# → done, with cancel reachable from any pending tier.
+#
+# state -> (group that may ADVANCE it, human role name). This map is the SINGLE
+# tier truth: the model-side gate (_pb_require_tier), the kanban button flags
+# and the Approvals cockpit all read it, so button visibility can never disagree
+# with enforcement — and visibility is NEVER the guard (C18.17). Every advance /
+# cancel entry point runs the gate as its first line, so a raw call_kw at
+# action_payslip_run_level1_done hits exactly the same wall as the button.
+PB_TIER = {
+    'level0': ('pb_hr_payroll_base.group_payroll_base_officer', 'Payroll Officer'),
+    'level1': ('pb_hr_payroll_base.group_payroll_base_manager', 'HR Manager'),
+    'level2': ('pb_hr_payroll_base.group_payroll_final_approver', 'Finance / GM'),
+}
+PB_PENDING_STATES = ('level0', 'level1', 'level2')
+
+# C18.24: a state machine is decorative unless write() enforces it. The tier
+# gates above guard the ACTIONS; without this, anyone holding plain write access
+# to hr.payslip.run could call_kw `write({'state': 'done'})` and skip every tier
+# (proven live before this guard existed). The key is a module-level object()
+# IDENTITY — a client-supplied context value can never equal it, whereas a plain
+# boolean flag would be forgeable through the call_kw context merge.
+_PB_CHAIN_KEY = 'pb_chain_state_write'
+_PB_CHAIN_TOKEN = object()
+# Only the FORWARD (approval) states are sealed. 'draft'/'cancel' stay writable
+# because demo/cleanup paths reset runs to draft right before unlinking them;
+# neither value can mark a run approved.
+_PB_SEALED_STATES = ('level0', 'level1', 'level2', 'done')
 
 
 class HrPayslip(models.Model):
@@ -26,13 +57,29 @@ class HrPayslipLine(models.Model):
 class HrPayslipRun(models.Model):
     _inherit = 'hr.payslip.run'
 
-    # Always show the full pipeline as columns (even empty HR/GM stages),
-    # like the old board — native kanban hides empty selection groups otherwise.
-    state = fields.Selection(group_expand='_pb_group_expand_state')
+    # Always show the full pipeline as columns (even empty Officer/HR/Finance
+    # stages), like the old board — native kanban hides empty selection groups
+    # otherwise.
+    #
+    # Phase L inserts the Payroll Officer tier through selection_add so the
+    # legacy om_hr_payroll base field stays byte-untouched; the ('level1',)
+    # anchor positions level0 immediately BEFORE the HR tier. Existing state
+    # KEYS are frozen downstream contracts ('done' is the approved signal read
+    # by pb_pay_delivery and payroll analytics) — nothing is renamed.
+    state = fields.Selection(
+        selection_add=[('level0', 'Payroll Officer pending'), ('level1',)],
+        ondelete={'level0': 'set draft'},
+        group_expand='_pb_group_expand_state')
+
+    # Rejection testimony (who refused the run, why, when) — written only by
+    # action_payslip_run_cancel below, readonly everywhere else.
+    pb_reject_note = fields.Char(string='Rejection reason', readonly=True, copy=False)
+    pb_reject_uid = fields.Many2one('res.users', string='Rejected by', readonly=True, copy=False)
+    pb_reject_date = fields.Datetime(string='Rejected on', readonly=True, copy=False)
 
     @api.model
     def _pb_group_expand_state(self, values, domain):
-        return ['draft', 'level1', 'level2', 'done']
+        return ['draft', 'level0', 'level1', 'level2', 'done']
 
     # STORED: computed once when the run's payslips change, read instantly forever.
     # Aggregating every payslip line at read time does not scale (a 600k-row
@@ -116,7 +163,10 @@ class HrPayslipRun(models.Model):
                                           + d.get('COMP', 0.0))
 
     # ---- context-aware permission flags for kanban card buttons ----
+    # NOTE: these are COSMETIC. Enforcement lives in _pb_require_tier below;
+    # both read _pb_user_roles so they can never drift apart.
     pb_can_submit = fields.Boolean(compute='_compute_pb_perms')
+    pb_can_approve_officer = fields.Boolean(compute='_compute_pb_perms')
     pb_can_approve_hr = fields.Boolean(compute='_compute_pb_perms')
     pb_can_approve_gm = fields.Boolean(compute='_compute_pb_perms')
     pb_can_reject = fields.Boolean(compute='_compute_pb_perms')
@@ -125,6 +175,12 @@ class HrPayslipRun(models.Model):
         compute='_compute_pb_awaiting_me', search='_search_pb_awaiting_me')
 
     def _pb_user_roles(self):
+        """(officer, manager, final) for the CURRENT user — the one role read.
+
+        Used by both the cosmetic button flags and the model-side tier gate, so
+        what a user can see and what a user may actually do are computed from
+        the same three booleans.
+        """
         u = self.env.user
         # Demo users drive the whole approval workflow for showcasing — granted the
         # action flags here WITHOUT joining the real payroll groups, so the upsell
@@ -134,17 +190,140 @@ class HrPayslipRun(models.Model):
             demo = u.has_group('pb_demo.group_payobook_demo')
         except Exception:
             demo = False
-        officer = (demo
+        root = demo or u._is_admin() \
+            or u.has_group('pb_hr_payroll_base.group_payroll_super_admin')
+        officer = (root
                    or u.has_group('pb_hr_payroll_base.group_payroll_base_officer')
-                   or u.has_group('pb_hr_payroll_base.group_payroll_base_manager')
-                   or u.has_group('pb_hr_payroll_base.group_payroll_super_admin'))
-        manager = (demo
-                   or u.has_group('pb_hr_payroll_base.group_payroll_base_manager')
-                   or u.has_group('pb_hr_payroll_base.group_payroll_super_admin'))
-        final = (demo
-                 or u.has_group('pb_hr_payroll_base.group_payroll_final_approver')
-                 or u.has_group('pb_hr_payroll_base.group_payroll_super_admin'))
+                   or u.has_group('pb_hr_payroll_base.group_payroll_base_manager'))
+        manager = root or u.has_group('pb_hr_payroll_base.group_payroll_base_manager')
+        final = root or u.has_group('pb_hr_payroll_base.group_payroll_final_approver')
         return officer, manager, final
+
+    # ---------------- Phase L: model-side tier enforcement ----------------
+    def _pb_chain_ctx(self):
+        """The recordset the sanctioned chain writers use (carries the sentinel)."""
+        return self.with_context(**{_PB_CHAIN_KEY: _PB_CHAIN_TOKEN})
+
+    def _pb_seal_ok(self):
+        return (self.env.context.get(_PB_CHAIN_KEY) is _PB_CHAIN_TOKEN
+                or self.env.su or self.env.user._is_admin())
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # a run is born in draft; nobody creates one already approved
+        if not self._pb_seal_ok():
+            for vals in vals_list:
+                if vals.get('state') in _PB_SEALED_STATES:
+                    raise AccessError(_(
+                        "A pay run cannot be created in an approved state."))
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if vals.get('state') in _PB_SEALED_STATES and not self._pb_seal_ok():
+            raise AccessError(_(
+                "A pay run's approval status can only change through the "
+                "approval actions (Submit / Approve / Reject)."))
+        return super().write(vals)
+
+    def _pb_tier_ok(self, state):
+        """May the current user advance a run that sits in ``state``?"""
+        officer, manager, final = self._pb_user_roles()
+        return {'level0': officer, 'level1': manager, 'level2': final}.get(state, False)
+
+    def _pb_require_tier(self, state):
+        """Raise unless the current user holds the tier that owns ``state``.
+
+        First line of EVERY advance/cancel entry point. The cockpit, the kanban
+        buttons, the native form buttons and a hand-rolled call_kw all funnel
+        through here — there is no path that only the UI guards (C18.17).
+        """
+        if state not in PB_TIER:
+            raise UserError(_("This pay run is not awaiting an approval decision."))
+        if not self._pb_tier_ok(state):
+            raise AccessError(_(
+                "This pay run is waiting on the %s tier — your user does not "
+                "hold that role.", PB_TIER[state][1]))
+
+    def _pb_guard_advance(self, expected):
+        """Tier gate + state gate for an advance.
+
+        The state check closes the second half of the found hole: the legacy
+        advance methods write their target state UNCONDITIONALLY, so calling
+        action_payslip_run_level1_done on a *draft* run used to jump it straight
+        to level2 and skip HR entirely.
+        """
+        for run in self:
+            if run.state != expected:
+                raise UserError(_(
+                    "“%(name)s” is not at the %(stage)s stage (current status: "
+                    "%(state)s).",
+                    name=run.name or '', stage=PB_TIER[expected][1],
+                    state=run.state or 'draft'))
+        self._pb_require_tier(expected)
+
+    def draft_payslip_run(self):
+        """Reset an approved run to draft.
+
+        Not a tier advance, but it UNDOES the Finance decision and re-opens the
+        whole chain — so it carries the same gate as the tier that made that
+        decision. (Found while mapping the chain: like the advances, this was
+        guarded by nothing but the native form button's invisible= rule.)
+        """
+        _officer, _manager, final = self._pb_user_roles()
+        if not final:
+            raise AccessError(_(
+                "Only the Finance / GM tier can reset an approved pay run to "
+                "draft."))
+        return super().draft_payslip_run()
+
+    def action_payslip_run_level0_done(self):
+        """Payroll Officer review → HR review.
+
+        No payslip cascade (the slips were confirmed once at chain entry, see
+        done_payslip_run) and NO mail — the Officer tier is a pure run-level
+        move (C18.47/48: no new sends on this server).
+        """
+        self._pb_guard_advance('level0')
+        self._pb_chain_ctx().write({'state': 'level1'})
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    def action_payslip_run_level1_done(self):
+        """HR review → Finance approval — gated, then the legacy body verbatim
+        (slip cascade, batch analytics, the existing GM notify).
+
+        The sentinel context travels on the recordset so the LEGACY body's own
+        `write({'state': 'level2'})` passes the seal without om_hr_payroll
+        knowing anything about it.
+        """
+        self._pb_guard_advance('level1')
+        return super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level1_done()
+
+    def action_payslip_run_level2_done(self):
+        """Finance approval → done — gated, then the legacy body verbatim."""
+        self._pb_guard_advance('level2')
+        return super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_level2_done()
+
+    def action_payslip_run_cancel(self):
+        """Reject the run from any pending tier, recording the reason.
+
+        Gated by the tier that currently OWNS the run (a draft is owned by the
+        Officer tier). The reason rides the context because the method is also
+        a plain view button with no arguments; the actor and timestamp are
+        forced server-side and are never client-supplied (C18.24/57).
+        """
+        note = (self.env.context.get('pb_reject_note') or '').strip()[:512]
+        for run in self:
+            st = run.state or 'draft'
+            if st not in ('draft',) + PB_PENDING_STATES:
+                raise UserError(_(
+                    "“%(name)s” is already %(state)s — it can no longer be "
+                    "rejected.", name=run.name or '', state=st))
+            run._pb_require_tier('level0' if st == 'draft' else st)
+        res = super().action_payslip_run_cancel()
+        self.write({'pb_reject_note': note or False,
+                    'pb_reject_uid': self.env.uid,
+                    'pb_reject_date': fields.Datetime.now()})
+        return res
 
     @api.depends_context('uid')
     @api.depends('state')
@@ -153,9 +332,13 @@ class HrPayslipRun(models.Model):
         for run in self:
             st = run.state
             run.pb_can_submit = st == 'draft' and officer
+            run.pb_can_approve_officer = st == 'level0' and officer
             run.pb_can_approve_hr = st == 'level1' and manager
             run.pb_can_approve_gm = st == 'level2' and final
-            run.pb_can_reject = st in ('draft', 'level1', 'level2') and (officer or manager or final)
+            run.pb_can_reject = ((st == 'draft' and officer)
+                                 or (st == 'level0' and officer)
+                                 or (st == 'level1' and manager)
+                                 or (st == 'level2' and final))
             run.pb_is_done = st == 'done'
 
     @api.depends_context('uid')
@@ -163,12 +346,15 @@ class HrPayslipRun(models.Model):
     def _compute_pb_awaiting_me(self):
         officer, manager, final = self._pb_user_roles()
         for run in self:
-            run.pb_awaiting_me = ((run.state == 'level1' and manager)
+            run.pb_awaiting_me = ((run.state == 'level0' and officer)
+                                  or (run.state == 'level1' and manager)
                                   or (run.state == 'level2' and final))
 
     def _search_pb_awaiting_me(self, operator, value):
-        _officer, manager, final = self._pb_user_roles()
+        officer, manager, final = self._pb_user_roles()
         states = []
+        if officer:
+            states.append('level0')
         if manager:
             states.append('level1')
         if final:
@@ -178,7 +364,11 @@ class HrPayslipRun(models.Model):
         return match if positive else (['!'] + match)
 
     def done_payslip_run(self):
-        """Submit for HR review.
+        """Chain entry: draft → level0 (Payroll Officer review).
+
+        This is the ONLY correct draft→chain transition (Phase L: the cockpit's
+        submit seam used to call the level1 advance instead, which wrote level2
+        unconditionally and skipped HR).
 
         The base method calls action_payslip_done() on every payslip, which — via
         the accounting bridge — posts journal entries (account.move). That path is
@@ -191,16 +381,34 @@ class HrPayslipRun(models.Model):
         Pay Salary step); traditional structure-based payroll keeps the standard
         accounting flow untouched via super().
         """
+        for run in self:
+            if run.state != 'draft':
+                raise UserError(_(
+                    "“%(name)s” has already entered the approval chain "
+                    "(status: %(state)s).", name=run.name or '', state=run.state))
+        if not self._pb_tier_ok('level0'):
+            raise AccessError(_(
+                "Only a Payroll Officer (or above) can submit a pay run for "
+                "approval."))
+
         def _accountless(run):
             return getattr(run, 'is_demo', False) or bool(run.slip_ids) and all(
                 getattr(s, 'calculation_method', False) == 'formula' for s in run.slip_ids)
         accountless = self.filtered(_accountless)
         standard = self - accountless
+        # Payslips are confirmed ONCE here, at chain entry (unchanged); the new
+        # Officer tier moves only the run, so slips keep landing on 'level1'.
         if accountless:
             accountless.slip_ids.filtered(lambda s: s.state == 'draft').write({'state': 'level1'})
-            accountless.write({'state': 'level1'})
+            accountless._pb_chain_ctx().write({'state': 'level0'})
         if standard:
-            return super(HrPayslipRun, standard).done_payslip_run()
+            # The legacy base cascades the slips then writes 'level1'
+            # unconditionally; we re-write the run to 'level0' straight after.
+            # Two writes on the run, ZERO edits to om_hr_payroll — and
+            # idempotent: 'level0' is the only state anyone ever observes.
+            res = super(HrPayslipRun, standard._pb_chain_ctx()).done_payslip_run()
+            standard._pb_chain_ctx().write({'state': 'level0'})
+            return res
         return True
 
     # ---- Pay Salary (post-approval disbursement) — surfaced on Done cards ----

@@ -4,11 +4,11 @@ from odoo import api, models
 
 _logger = logging.getLogger(__name__)
 
-# Approval pipeline — ordered stages + display labels.
-STAGE_ORDER = ['draft', 'level1', 'level2', 'done']
+# Approval pipeline — ordered stages + display labels (Phase L: 3 tiers).
+STAGE_ORDER = ['draft', 'level0', 'level1', 'level2', 'done']
 STAGE_LABEL = {
-    'draft': 'Draft', 'level1': 'HR review', 'level2': 'GM review',
-    'done': 'Done', 'cancel': 'Rejected',
+    'draft': 'Draft', 'level0': 'Officer review', 'level1': 'HR review',
+    'level2': 'Finance approval', 'done': 'Done', 'cancel': 'Rejected',
 }
 BOARD_LIMIT = 60
 
@@ -69,11 +69,13 @@ class PbPayruns(models.AbstractModel):
             can_act = False
             if state == 'draft':
                 next_action, can_act = 'submit', has_officer
+            elif state == 'level0':
+                next_action, can_act = 'approve_officer', has_officer
             elif state == 'level1':
                 next_action, can_act = 'approve_hr', has_manager
             elif state == 'level2':
                 next_action, can_act = 'approve_gm', has_final
-            if can_act and state in ('level1', 'level2'):
+            if can_act and state in ('level0', 'level1', 'level2'):
                 my_pending += 1
 
             net = self._safe(lambda r=run: r.pb_total_net)
@@ -139,8 +141,8 @@ class PbPayruns(models.AbstractModel):
             'kpis': {
                 'total': len(batches),
                 'done': stage_counts.get('done', 0),
-                'in_pipeline': stage_counts.get('draft', 0) + stage_counts.get('level1', 0)
-                + stage_counts.get('level2', 0),
+                'in_pipeline': stage_counts.get('draft', 0) + stage_counts.get('level0', 0)
+                + stage_counts.get('level1', 0) + stage_counts.get('level2', 0),
                 'my_pending': my_pending,
                 'period_net': period_net,
             },
