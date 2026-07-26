@@ -301,8 +301,18 @@ export class PbInsights extends Component {
     }
 
     // ------------------------------------------------------------ actions
-    openReport(xmlid) {
-        this.action.doAction(xmlid, { clearBreadcrumbs: true }).catch((e) => {
+    /**
+     * Open a gallery card. Lens cards carry a `lens` id and land in the
+     * Analytics Explorer already pointed at that question; classic cards are
+     * plain act_windows.
+     */
+    openReport(rep) {
+        const xmlid = typeof rep === "string" ? rep : rep.xmlid;
+        const opts = { clearBreadcrumbs: true };
+        if (rep && rep.lens) {
+            opts.additionalContext = { pbex_lens: rep.lens };
+        }
+        this.action.doAction(xmlid, opts).catch((e) => {
             this.notif.add(
                 (e && e.data && e.data.message) || _t("That report is not available."),
                 { type: "danger" });

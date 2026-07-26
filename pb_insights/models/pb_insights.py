@@ -73,36 +73,53 @@ _CAT_TAX = 'tax'
 _LEGACY_CONTRIB_CODES = ['SI_EMP', 'SI_COMP', 'HI_EMP', 'HI_COMP',
                          'UI_EMP', 'UI_COMP']
 
-# Report gallery — the destinations the retired menu forest used to own, plus
-# the approval module's own report/list actions. Only entries that RESOLVE at
-# runtime are surfaced; an unresolvable xmlid is skipped and logged (test 7).
+# Report gallery.
+#
+# Phase N replaced the thirteen legacy cards. Every one of them was dead:
+# hardcoded sample KPIs (hr_analytics_dashboard.py:179-240), twelve chart
+# canvases whose JS is commented out of the manifest, statutory totals that can
+# never be non-zero (hr_analytics_statutory_contrib.py:244 sums a dict holding
+# a string inside a swallowed except), generation that cannot run on Odoo 19
+# (:405 reads the removed address_home_id), a compliance flag that is literally
+# `return False` (:483), a card pointing at the wrong model, an always-empty
+# TransientModel seeded with random.randint, and `bank.export.log`, which has
+# no writer ANYWHERE in this repository and is therefore empty by construction.
+#
+# The gallery now opens the Analytics Explorer on a named LENS — each one a
+# live, editable query over the derived fact tables. The `lens` key is passed
+# to the cockpit as a context param; entries with an xmlid still resolve the
+# classic way, so genuinely useful destinations (the real payslip-line pivot)
+# keep their place.
+REPORT_LENSES = [
+    ('cost', 'Personnel Costs',
+     'Total cost of employment by department, month by month', 'wallet'),
+    ('statutory', 'Statutory Contributions',
+     'Employee and employer contributions and tax withheld', 'shield'),
+    ('movement', 'Workforce Movement',
+     'Headcount actually paid, by department and period', 'users'),
+    ('perhead', 'Cost per Head',
+     'Cost per employee by department — the fairest comparison', 'gauge'),
+    ('benefits', 'Benefits & Allowances',
+     'What the allowance budget is actually spent on', 'heart'),
+    ('yoy', 'Year on Year',
+     'Total cost of employment across years, by division', 'calendar'),
+    ('mix', 'Structure Mix',
+     'How gross pay is composed — basic versus everything else', 'layers'),
+    ('tax', 'Tax & Deductions',
+     'What is withheld, by department and period', 'target'),
+    ('components', 'Component Explorer',
+     'Every pay component, ranked — the payslip-line pivot, live', 'grid'),
+]
+
+# Classic act_window destinations still worth surfacing. Only entries that
+# RESOLVE at runtime are shown; an unresolvable xmlid is skipped and logged
+# (test 7). `pb_hr_flow.action_hr_payslip_line_analytics` is the richest
+# payslip-line pivot in the codebase and previously had ZERO entry points.
 REPORT_CANDIDATES = [
-    ('pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard',
-     'Analytics Dashboard', 'Headcount, cost and trend analytics', 'gauge'),
-    ('pb_hr_payroll_analytics.action_view_hr_analytics_personnel_costs',
-     'Personnel Costs', 'Cost per department, period and cost centre', 'wallet'),
-    ('pb_hr_payroll_analytics.action_view_hr_analytics_statutory_contrib',
-     'Statutory Contributions', 'Employee and employer contribution ledger', 'shield'),
-    ('pb_hr_payroll_analytics.action_view_hr_analytics_headcount',
-     'Headcount Analysis', 'Joiners, leavers and headcount movement', 'users'),
-    ('pb_hr_payroll_analytics.action_view_hr_analytics_dependents',
-     'Dependents & Benefits', 'Registered dependents and benefit relief', 'heart'),
-    ('pb_hr_payroll_analytics.action_view_hr_analytics_budget_variance',
-     'Budget Variance', 'Budget versus actual personnel spend', 'target'),
-    ('pb_hr_payroll_analytics.action_view_hr_analytics_annual_costs',
-     'Annual HR Costs', 'Year-on-year total cost of employment', 'calendar'),
-    ('pb_hr_payroll_analytics.action_prepare_formula_config_analytics',
-     'Salary Structure Analytics', 'Cost breakdown by formula configuration', 'layers'),
-    ('pb_hr_payroll_analytics.action_hr_payroll_employee_detail',
-     'Employee Cost Detail', 'Per-employee payroll cost records', 'user'),
-    ('pb_hr_payroll_analytics.action_payslip_line_formula_pivot',
+    ('pb_hr_flow.action_hr_payslip_line_analytics',
      'Payslip Line Pivot', 'Pivot every payslip line by component', 'grid'),
-    ('payroll_analytics_approval.action_payroll_analytics_reports',
-     'Payroll Reports', 'Analytics, bank export and comparison reports', 'file'),
     ('payroll_analytics_approval.action_payroll_analytics_comparison',
      'Period Comparison', 'Month-over-month component comparison', 'trending'),
-    ('payroll_analytics_approval.action_bank_export_log',
-     'Bank Export Log', 'Disbursement files produced from approved runs', 'bank'),
 ]
 
 
@@ -762,8 +779,20 @@ class PbInsights(models.AbstractModel):
 
     # ------------------------------------------------------------ reports
     def _reports(self):
-        """Resolve the gallery — the new path to the retired menu forest."""
+        """Resolve the gallery.
+
+        Lens cards come first — they open the Analytics Explorer on a live,
+        editable query. Classic act_window destinations follow, and only if
+        they actually resolve on this database.
+        """
         out = []
+        explorer = self.env.ref('pb_explorer.action_pb_explorer',
+                                raise_if_not_found=False)
+        if explorer:
+            for lens, label, desc, icon in REPORT_LENSES:
+                out.append({'xmlid': 'pb_explorer.action_pb_explorer',
+                            'lens': lens, 'label': _(label), 'desc': _(desc),
+                            'icon': icon})
         for xmlid, label, desc, icon in REPORT_CANDIDATES:
             action = self.env.ref(xmlid, raise_if_not_found=False)
             if not action:

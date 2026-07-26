@@ -348,10 +348,27 @@ class TestInsights(TransactionCase):
             reports = self._board(self.u_manager)['reports']
         xmlids = {r['xmlid'] for r in reports}
         self.assertNotIn(bogus[0], xmlids)
-        # the real destinations still resolve (at least the ones installed here)
+        # Classic act_window destinations: only the installed ones appear.
         installed = {x for x, _l, _d, _i in pbin.REPORT_CANDIDATES
                      if self.env.ref(x, raise_if_not_found=False)}
-        self.assertEqual(xmlids, installed)
+        self.assertLessEqual(installed, xmlids)
+
+        # Phase N: the gallery leads with Explorer LENS cards. Each carries a
+        # lens id and they all point at the one cockpit action.
+        lens_cards = [r for r in reports if r.get('lens')]
+        if self.env.ref('pb_explorer.action_pb_explorer',
+                        raise_if_not_found=False):
+            self.assertEqual(len(lens_cards), len(pbin.REPORT_LENSES))
+            self.assertEqual({r['xmlid'] for r in lens_cards},
+                             {'pb_explorer.action_pb_explorer'})
+            self.assertEqual([r['lens'] for r in lens_cards],
+                             [x[0] for x in pbin.REPORT_LENSES])
+        # The retired cards must be gone for good — these are the models whose
+        # KPIs were hardcoded and whose totals could never be non-zero.
+        for dead in ('pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard',
+                     'pb_hr_payroll_analytics.action_view_hr_analytics_statutory_contrib',
+                     'payroll_analytics_approval.action_bank_export_log'):
+            self.assertNotIn(dead, xmlids)
 
     # --------------------------------------------------- §6.8 multi-company
     def test_08_multi_company(self):
@@ -388,7 +405,7 @@ class TestInsights(TransactionCase):
         # in a file (it loaded on every backend page, this cockpit included).
         import ast as _ast
         addons = os.path.dirname(module)
-        for name in ('pb_insights', 'payroll_analytics_approval',
+        for name in ('pb_insights', 'pb_explorer', 'payroll_analytics_approval',
                      'pb_hr_payroll_analytics', 'pb_hr_payroll_base'):
             manifest = os.path.join(addons, name, '__manifest__.py')
             if not os.path.isfile(manifest):
