@@ -114,6 +114,17 @@
         <field name="match_action_tags">pb_insights</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
+    <!-- Phase N: the analytics workbench. Sits beside the Insights board —
+         the board answers the questions we anticipated, the Explorer answers
+         the ones we did not. -->
+    <record id="item_explorer" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Explorer</field>
+        <field name="icon">compass</field><field name="sequence">15</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_explorer_cockpit</field>
+        <field name="match_action_tags">pb_explorer_cockpit</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
     <record id="item_reports" model="pb.sidebar.item">
         <field name="section_id" ref="sec_insights"/><field name="name">Reports</field>
         <field name="active" eval="False"/>
@@ -284,6 +295,17 @@
     </record>
 
     <!-- ============ Planning (existing pb_hr_workforce_planning cockpits) ====== -->
+    <!-- Phase N: the Planning DASHBOARD was reachable only from a legacy menu
+         while its plain CRUD siblings below were in the sidebar — exactly
+         backwards. It leads the section now. -->
+    <record id="item_wfp_dashboard" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Planning Dashboard</field>
+        <!-- `zap` is in the sidebar's FIXED icon set (pb_sidebar.js); an
+             unknown key renders nothing at all. -->
+        <field name="icon">zap</field><field name="sequence">5</field>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_dashboard</field>
+        <field name="match_action_tags">wfp_dashboard</field>
+    </record>
     <record id="item_wfp_scenarios" model="pb.sidebar.item">
         <field name="section_id" ref="sec_planning"/><field name="name">Planning Scenarios</field>
         <field name="icon">compass</field><field name="sequence">10</field>
