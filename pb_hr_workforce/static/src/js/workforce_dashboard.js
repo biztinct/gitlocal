@@ -7,6 +7,7 @@ import { _t } from "@web/core/l10n/translation";
 
 import { whenReady } from "@odoo/owl";
 import { rpc } from "@web/core/network/rpc";
+import { loadBundle } from "@web/core/assets";
 
 let chartInstances = {};
 let chartJSLoaded = false;
@@ -188,18 +189,19 @@ const createLeavesChart = (ctx, data) => {
 
 /* ──────────── Main Setup ──────────── */
 
+// Chart.js ships with Odoo in the LAZY `web.chartjs_lib` bundle. Injecting a
+// jsDelivr <script> instead sent every dashboard visit to a third party, broke
+// on any offline/air-gapped install, and silently pinned a version we do not
+// control. loadBundle serves it from this server.
 const loadChartJS = async () => {
-    if (chartJSLoaded) return true;
-    try {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
-        document.head.appendChild(script);
-        await new Promise((ok, fail) => {
-            script.onload = ok;
-            script.onerror = fail;
-        });
+    if (chartJSLoaded || (window.Chart && window.Chart.version)) {
         chartJSLoaded = true;
         return true;
+    }
+    try {
+        await loadBundle("web.chartjs_lib");
+        chartJSLoaded = !!window.Chart;
+        return chartJSLoaded;
     } catch (e) {
         console.error('WorkforceDash: failed to load Chart.js', e);
         return false;

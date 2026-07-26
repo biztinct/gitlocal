@@ -4,6 +4,7 @@ import { registry } from "@web/core/registry";
 import { Component, useState, onWillStart, onMounted, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { loadBundle } from "@web/core/assets";
 
 // Chart.js dark-mode defaults
 const CHART_COLORS = {
@@ -126,15 +127,12 @@ class WfpDashboard extends Component {
     // ==========================================
     // INIT
     // ==========================================
+    // Chart.js ships with Odoo in the LAZY `web.chartjs_lib` bundle. Injecting
+    // a jsDelivr <script> instead sent every dashboard visit to a third party,
+    // broke on any offline install, and pinned a version we do not control.
     async _loadChartJS() {
         if (typeof Chart !== 'undefined') return;
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-        });
+        await loadBundle("web.chartjs_lib");
     }
 
     async _checkLaborModule() {
