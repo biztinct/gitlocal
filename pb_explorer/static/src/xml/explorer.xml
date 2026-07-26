@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- Loop variables are deliberately short, non-word-operator names: OWL's
+       expression compiler maps `lt`/`gt`/`and`/`or`/`in` to JS operators, so a
+       t-as="lt" compiles to `const key = <.id` (C18.71). -->
+  <t t-name="pb_explorer.PbExplorer">
+    <div class="pbex pbim">
+
+      <!-- ============================ loading ============================ -->
+      <div t-if="!state.loaded" class="pbex-loading">
+        <div class="pbex-spin"/>
+        <span>Preparing the analytics workbench…</span>
+      </div>
+
+      <div t-else="" class="pbex-wrap">
+
+        <!-- ============================ header =========================== -->
+        <div class="pbex-head">
+          <div class="pbex-head-main">
+            <div class="eyebrow"><t t-out="ic('compass', 13)"/><span>Analytics</span></div>
+            <h1>Explorer</h1>
+            <p class="sub">
+              Ask anything of your payroll — pick a measure, break it down,
+              spread it over time, then click any bar to see the people behind it.
+            </p>
+          </div>
+          <div class="pbex-head-tools">
+            <button class="pbex-btn ghost" t-on-click="() => this.run()"
+                    t-att-disabled="state.busy" title="Refresh">
+              <t t-out="ic('refresh', 15)"/><span class="lbl">Refresh</span>
+            </button>
+            <button class="pbex-btn ghost" t-on-click="() => this.exportCsv()"
+                    t-att-disabled="state.busy || !state.data" title="Export CSV">
+              <t t-out="ic('download', 15)"/><span class="lbl">Export</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============================ notices ========================== -->
+        <div t-if="state.error" class="pbex-alert danger">
+          <t t-out="ic('alert', 16)"/><span t-esc="state.error"/>
+        </div>
+
+        <div t-if="hasPending" class="pbex-alert warn">
+          <t t-out="ic('alert', 16)"/>
+          <span>
+            <b t-esc="state.data.pending.length"/> pay period(s) are still being
+            prepared and are <b>not included</b> in these figures:
+            <span t-esc="pendingNames"/>. Refresh in a moment.
+          </span>
+        </div>
+
+        <div t-if="state.data and state.data.coverage.provisional_runs"
+             class="pbex-alert info">
+          <t t-out="ic('alert', 16)"/>
+          <span>
+            <b t-esc="state.data.coverage.provisional_runs"/> of
+            <t t-esc="state.data.coverage.runs"/> periods are still in progress —
+            their figures are provisional and may change on approval.
+          </span>
+        </div>
+
+        <!-- ============================ lenses =========================== -->
+        <div t-if="lenses.length" class="pbex-lenses">
+          <button t-foreach="lenses" t-as="lens" t-key="lens.id"
+                  class="pbex-lens"
+                  t-att-class="{ active: lens.id === state.lensId }"
+                  t-on-click="() => this.openLens(lens)">
+            <span class="ico"><t t-out="ic(lens.icon, 16)"/></span>
+            <span class="txt">
+              <b t-esc="lens.name"/>
+              <i t-esc="lens.desc"/>
+            </span>
+          </button>
+        </div>
+
+        <!-- =========================== ask bar =========================== -->
+        <div class="pbex-ask">
+          <span class="ask-ico"><t t-out="ic('sparkles', 16)"/></span>
+          <input type="text" class="ask-input"
+                 placeholder="Ask in plain English — “employer cost by department last quarter, retail only”"
+                 t-model="state.ask" t-on-keydown="onAskKey"/>
+          <button t-if="state.ask" class="ask-clear" t-on-click="() => this.clearAsk()">
+            <t t-out="ic('x', 14)"/>
+          </button>
+          <button class="pbex-btn primary-btn" t-on-click="() => this.submitAsk()"
+                  t-att-disabled="state.asking || !state.ask">
+            <t t-esc="state.asking ? 'Reading…' : 'Ask'"/>
+          </button>
+        </div>
+
+        <div t-if="state.askWhy" class="pbex-askwhy">
+          <span class="lbl">
+            <t t-esc="state.askWhy.source === 'ai' ? 'Interpreted with AI' : 'Interpreted'"/>
+            — every choice is a chip below, edit any of them:
+          </span>
+          <span t-foreach="state.askWhy.matched" t-as="hit"
+                t-key="hit.chip + '|' + hit.token" class="why-tag">
+            <b t-esc="hit.chip"/><span t-esc="hit.token"/>
+          </span>
+          <span t-if="!state.askWhy.matched.length" class="why-none">
+            nothing specific matched — showing the default view
+          </span>
+        </div>
+
+        <!-- =========================== chip rail ========================= -->
+        <div class="pbex-rail">
+
+          <!-- MEASURE -->
+          <div class="pbex-chip-group">
+            <span class="grp-label"><t t-out="ic('ruler', 12)"/>Measure</span>
+            <div class="pbex-picker">
+              <button class="pbex-chip primary"
+                      t-on-click="() => this.togglePicker('measure')">
+                <span t-esc="labelOf('measures', state.spec.measure)"/>
+                <t t-out="ic('chevronDown', 13)"/>
+              </button>
+              <div t-if="state.openPicker === 'measure'" class="pbex-menu">
+                <button t-foreach="state.schema.measures" t-as="opt" t-key="opt.value"
+                        class="pbex-menu-item"
+                        t-att-class="{ active: opt.value === state.spec.measure }"
+                        t-on-click="() => this.pick('measure', opt.value)">
+                  <span t-esc="opt.label"/>
+                  <t t-if="opt.value === state.spec.measure" t-out="ic('check', 14)"/>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- BY -->
+          <div class="pbex-chip-group">
+            <span class="grp-label"><t t-out="ic('layers', 12)"/>By</span>
+            <div class="pbex-picker">
+              <button class="pbex-chip"
+                      t-on-click="() => this.togglePicker('dimension')">
+                <span t-esc="labelOf('dimensions', state.spec.dimension)"/>
+                <t t-out="ic('chevronDown', 13)"/>
+              </button>
+              <div t-if="state.openPicker === 'dimension'" class="pbex-menu">
+                <button t-foreach="state.schema.dimensions" t-as="opt" t-key="opt.value"
+                        class="pbex-menu-item"
+                        t-att-class="{ active: opt.value === state.spec.dimension }"
+                        t-on-click="() => this.pick('dimension', opt.value)">
+                  <span t-esc="opt.label"/>
+                  <t t-if="opt.value === state.spec.dimension" t-out="ic('check', 14)"/>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OVER -->
+          <div class="pbex-chip-group">
+            <span class="grp-label"><t t-out="ic('trending', 12)"/>Over</span>
+            <div class="pbex-picker">
+              <button class="pbex-chip"
+                      t-on-click="() => this.togglePicker('grain')">
+                <span t-esc="labelOf('grains', state.spec.grain)"/>
+                <t t-out="ic('chevronDown', 13)"/>
+              </button>
+              <div t-if="state.openPicker === 'grain'" class="pbex-menu">
+                <button t-foreach="state.schema.grains" t-as="opt" t-key="opt.value"
+                        class="pbex-menu-item"
+                        t-att-class="{ active: opt.value === state.spec.grain }"
+                        t-on-click="() => this.pick('grain', opt.value)">
+                  <span t-esc="opt.label"/>
+                  <t t-if="opt.value === state.spec.grain" t-out="ic('check', 14)"/>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- WHERE -->
+          <div class="pbex-chip-group grow">
+            <span class="grp-label"><t t-out="ic('filter', 12)"/>Where</span>
+            <div class="pbex-filters">
+              <span t-foreach="activeFilters" t-as="flt"
+                    t-key="flt.key + '|' + flt.value" class="pbex-tag">
+                <b t-esc="flt.keyLabel"/>
+                <span t-esc="flt.label"/>
+                <button class="tag-x" t-on-click="() => this.dropFilter(flt.key, flt.value)"
+                        title="Remove">
+                  <t t-out="ic('x', 12)"/>
+                </button>
+              </span>
+
+              <div class="pbex-picker">
+                <button class="pbex-chip dashed"
+                        t-on-click="() => this.togglePicker('filter')">
+                  <t t-out="ic('filter', 13)"/><span>Add filter</span>
+                </button>
+                <div t-if="state.openPicker === 'filter'" class="pbex-menu wide">
+                  <div t-if="!state.filterKey">
+                    <button t-foreach="filterFields" t-as="fkey" t-key="fkey"
+                            class="pbex-menu-item"
+                            t-on-click="() => { state.filterKey = fkey; }">
+                      <span t-esc="filterMeta[fkey]"/>
+                      <t t-out="ic('arrowRight', 13)"/>
+                    </button>
+                  </div>
+                  <div t-else="">
+                    <button class="pbex-menu-back"
+                            t-on-click="() => { state.filterKey = ''; }">
+                      <t t-out="ic('chevronDown', 13)"/>
+                      <span t-esc="filterMeta[state.filterKey]"/>
+                    </button>
+                    <div class="pbex-menu-scroll">
+                      <button t-foreach="state.schema.options[state.filterKey]"
+                              t-as="opt" t-key="opt.value" class="pbex-menu-item"
+                              t-on-click="() => this.addFilter(state.filterKey, opt.value)">
+                        <span t-esc="opt.label"/>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <button t-if="activeFilters.length" class="pbex-chip plain"
+                      t-on-click="() => this.clearFilters()">Clear all</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================ result =========================== -->
+        <div class="pbex-card">
+          <div class="pbex-card-head">
+            <div class="pbex-headline">
+              <span class="ttl">
+                <t t-esc="state.data ? state.data.measure_label : ''"/>
+                by <t t-esc="state.data ? state.data.dimension_label : ''"/>
+              </span>
+              <span class="val" t-esc="money(grandTotal)"/>
+              <span t-if="state.data and state.data.truncated" class="more">
+                showing top <t t-esc="state.data.series.length"/>,
+                <t t-esc="state.data.truncated"/> more not charted
+              </span>
+            </div>
+            <div class="pbex-forms">
+              <button t-foreach="state.schema.charts" t-as="form" t-key="form"
+                      class="pbex-form-btn"
+                      t-att-class="{ active: form === state.spec.chart }"
+                      t-att-title="chartMeta[form].label"
+                      t-on-click="() => this.pick('chart', form)">
+                <t t-out="ic(chartMeta[form].icon, 15)"/>
+              </button>
+              <button class="pbex-btn explain"
+                      t-att-class="{ on: state.showStory }"
+                      t-on-click="() => this.toggleStory()">
+                <t t-out="ic('sparkles', 14)"/>
+                <span class="lbl">Explain</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="pbex-viz" t-att-class="{ busy: state.busy }">
+
+            <div t-if="state.busy" class="pbex-veil"><div class="pbex-spin sm"/></div>
+
+            <div t-if="state.data and !state.data.series.length" class="pbex-empty">
+              <t t-out="ic('search', 26)"/>
+              <p>Nothing matched this combination.</p>
+              <span>Try widening the filters or picking another period.</span>
+            </div>
+
+            <!-- canvas forms: column / stacked / line -->
+            <div t-elif="isCanvasChart" class="pbex-canvas-wrap">
+              <canvas t-ref="canvas"/>
+            </div>
+
+            <!-- donut -->
+            <div t-elif="state.spec.chart === 'donut'" class="pbex-donut">
+              <svg t-att-viewBox="'0 0 240 240'" width="240" height="240">
+                <g t-foreach="donut.arcs" t-as="arc" t-key="arc.key">
+                  <path t-att-d="arc.d" t-att-fill="arc.colour"
+                        class="pbex-arc"
+                        t-att-class="{ dim: state.hover and state.hover !== arc.key }"
+                        t-on-mouseenter="() => { state.hover = arc.key; }"
+                        t-on-mouseleave="() => { state.hover = null; }"
+                        t-on-click="() => this.openDrill(arc.key, '_all', arc.label, 'All periods')"/>
+                </g>
+                <text x="120" y="114" class="pbex-donut-val" text-anchor="middle"
+                      t-esc="money(donut.total)"/>
+                <text x="120" y="134" class="pbex-donut-cap" text-anchor="middle">total</text>
+              </svg>
+              <div class="pbex-legend">
+                <button t-foreach="donut.arcs" t-as="arc" t-key="arc.key"
+                        class="pbex-leg"
+                        t-att-class="{ dim: state.hover and state.hover !== arc.key }"
+                        t-on-mouseenter="() => { state.hover = arc.key; }"
+                        t-on-mouseleave="() => { state.hover = null; }"
+                        t-on-click="() => this.openDrill(arc.key, '_all', arc.label, 'All periods')">
+                  <i t-att-style="'background:' + arc.colour"/>
+                  <span class="nm" t-esc="arc.label"/>
+                  <span class="vl" t-esc="money(arc.value)"/>
+                  <span class="pc" t-esc="arc.pct.toFixed(1) + '%'"/>
+                </button>
+                <p t-if="donut.dropped" class="pbex-note">
+                  <t t-esc="donut.dropped"/> negative series omitted — a share
+                  chart cannot represent them. Switch to Columns to see them.
+                </p>
+              </div>
+            </div>
+
+            <!-- heatmap -->
+            <div t-elif="state.spec.chart === 'heatmap'" class="pbex-heat-wrap">
+              <table class="pbex-heat">
+                <thead>
+                  <tr>
+                    <th class="rowh" t-esc="state.data.dimension_label"/>
+                    <th t-foreach="state.data.categories" t-as="cat" t-key="cat.key"
+                        t-esc="cat.label"/>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="heatmap.rows" t-as="row" t-key="row.key">
+                    <th class="rowh" t-esc="row.label"/>
+                    <td t-foreach="row.cells" t-as="cell" t-key="cell.col"
+                        class="pbex-heat-cell"
+                        t-att-style="'background:' + cell.colour + ';color:' + cell.ink"
+                        t-att-title="row.label + ' · ' + cell.colLabel"
+                        t-on-click="() => this.openDrill(row.key, cell.col, row.label, cell.colLabel)">
+                      <t t-esc="money(cell.value, true)"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="pbex-note">
+                Colour shows how far each cell sits from the typical value —
+                indigo is above, teal is below. Click any cell to see the people in it.
+              </p>
+            </div>
+
+            <!-- table -->
+            <div t-else="" class="pbex-table-wrap">
+              <table class="pbex-table">
+                <thead>
+                  <tr>
+                    <th class="rowh" t-esc="state.data.dimension_label"/>
+                    <th t-foreach="state.data.categories" t-as="cat" t-key="cat.key"
+                        class="num" t-esc="cat.label"/>
+                    <th class="num tot">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr t-foreach="state.data.series" t-as="ser" t-key="ser.key">
+                    <th class="rowh">
+                      <i class="swatch" t-att-style="'background:' + colourAt(ser_index)"/>
+                      <span t-esc="ser.label"/>
+                    </th>
+                    <td t-foreach="state.data.categories" t-as="cat" t-key="cat.key"
+                        class="num clickable"
+                        t-on-click="() => this.openDrill(ser.key, cat.key, ser.label, cat.label)"
+                        t-esc="money(ser.values[cat_index])"/>
+                    <td class="num tot" t-esc="money(ser.total)"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- coverage footer: the honesty line -->
+          <div t-if="state.data" class="pbex-foot">
+            <span><t t-esc="state.data.coverage.built_runs"/> periods ·
+                  <t t-esc="state.data.ms"/> ms</span>
+            <span t-if="state.data.coverage.asof_fallback">
+              <t t-out="ic('alert', 12)"/>
+              <t t-esc="state.data.coverage.asof_fallback"/> payslips had no
+              org history for their period — earliest known placement used
+            </span>
+            <span t-if="state.data.coverage.untyped_categories">
+              <t t-out="ic('alert', 12)"/>
+              <t t-esc="state.data.coverage.untyped_categories"/> untyped
+              component categories are counted as allowances
+            </span>
+          </div>
+        </div>
+
+        <!-- =========================== narrative ========================= -->
+        <div t-if="state.showStory" class="pbex-story">
+          <div class="pbex-story-head">
+            <div>
+              <span class="eyebrow"><t t-out="ic('sparkles', 12)"/>What changed, and why</span>
+              <h3 t-if="waterfall">
+                <t t-esc="waterfall.from_label"/>
+                <t t-out="ic('arrowRight', 14)"/>
+                <t t-esc="waterfall.to_label"/>
+              </h3>
+              <h3 t-else="">Movement analysis</h3>
+            </div>
+            <button class="pbex-btn ghost" t-on-click="() => this.toggleStory()">
+              <t t-out="ic('x', 15)"/>
+            </button>
+          </div>
+
+          <div t-if="state.storyBusy" class="pbex-drill-load"><div class="pbex-spin sm"/></div>
+
+          <div t-elif="!state.story or !waterfall" class="pbex-empty">
+            <t t-out="ic('search', 24)"/>
+            <p>Not enough to compare yet.</p>
+            <span t-esc="state.story ? state.story.reason : ''"/>
+          </div>
+
+          <div t-else="" class="pbex-story-body">
+
+            <div t-if="!waterfall.like_for_like" class="pbex-alert warn">
+              <t t-out="ic('alert', 15)"/>
+              <span>
+                These two periods are not like-for-like (different cycle or
+                division), so part of the movement is simply that difference.
+              </span>
+            </div>
+            <div t-if="waterfall.basis_note" class="pbex-alert info">
+              <t t-out="ic('alert', 15)"/><span t-esc="waterfall.basis_note"/>
+            </div>
+            <div t-foreach="waterfall.notes or []" t-as="note" t-key="note"
+                 class="pbex-alert info">
+              <t t-out="ic('alert', 15)"/><span t-esc="note"/>
+            </div>
+
+            <!-- the waterfall: bars sum EXACTLY to the delta -->
+            <div class="pbex-water">
+              <svg t-att-viewBox="'0 0 ' + (waterfall.bars.length * 92) + ' 232'"
+                   class="pbex-water-svg"
+                   t-att-style="'min-width:' + (waterfall.bars.length * 92) + 'px'">
+                <g t-foreach="waterfall.bars" t-as="bar" t-key="bar.index">
+                  <rect t-att-x="bar.index * 92 + 20" t-att-y="bar.y"
+                        width="52" t-att-height="bar.h" rx="5"
+                        t-att-fill="bar.colour" class="pbex-water-bar"/>
+                  <text t-att-x="bar.index * 92 + 46" t-att-y="bar.y - 7"
+                        text-anchor="middle" class="pbex-water-val"
+                        t-esc="money(bar.value, true)"/>
+                  <text t-att-x="bar.index * 92 + 46" y="212"
+                        text-anchor="middle" class="pbex-water-lbl"
+                        t-esc="bar.label.length > 13 ? bar.label.slice(0, 12) + '…' : bar.label"/>
+                </g>
+              </svg>
+            </div>
+
+            <div class="pbex-story-stats">
+              <div class="stat">
+                <b t-esc="money(waterfall.delta)"/>
+                <i>net movement in <t t-esc="waterfall.measure_label"/></i>
+              </div>
+              <div class="stat">
+                <b t-esc="waterfall.matched"/>
+                <i>employees in both periods</i>
+              </div>
+              <div class="stat up">
+                <b t-esc="waterfall.joiners"/><i>joined</i>
+              </div>
+              <div class="stat down">
+                <b t-esc="waterfall.leavers"/><i>left</i>
+              </div>
+              <div class="stat" t-att-class="{ bad: waterfall.residual }">
+                <b t-esc="money(waterfall.residual)"/>
+                <i>unexplained — must be zero</i>
+              </div>
+            </div>
+
+            <!-- anomaly rail -->
+            <div t-if="state.story.anomalies.length" class="pbex-anoms">
+              <h4>Worth a look</h4>
+              <button t-foreach="state.story.anomalies" t-as="anom"
+                      t-key="anom.kind + '|' + anom.title"
+                      class="pbex-anom" t-att-class="anom.severity"
+                      t-on-click="() => this.applyAnomalyLens(anom)">
+                <span class="dot"/>
+                <span class="txt">
+                  <b t-esc="anom.title"/>
+                  <i t-esc="anom.detail"/>
+                </span>
+                <t t-out="ic('arrowRight', 14)"/>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================= drill =========================== -->
+        <div t-if="state.drill" class="pbex-drill">
+          <div class="pbex-drill-head">
+            <div>
+              <span class="eyebrow"><t t-out="ic('users', 12)"/>Behind the number</span>
+              <h3>
+                <t t-esc="state.drill.seriesLabel"/>
+                <t t-if="state.drill.categoryLabel and state.drill.categoryLabel !== 'All periods'">
+                  · <t t-esc="state.drill.categoryLabel"/>
+                </t>
+              </h3>
+              <p class="sub">
+                <t t-esc="state.drill.total"/> employees ·
+                <t t-esc="state.drill.measure_label"/>
+              </p>
+            </div>
+            <button class="pbex-btn ghost" t-on-click="() => this.closeDrill()">
+              <t t-out="ic('x', 15)"/>
+            </button>
+          </div>
+
+          <div t-if="state.drill.loading" class="pbex-drill-load">
+            <div class="pbex-spin sm"/>
+          </div>
+          <table t-else="" class="pbex-table drill">
+            <thead>
+              <tr>
+                <th>Employee</th><th>Department</th>
+                <th class="num">Lines</th><th class="num">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="state.drill.rows" t-as="emp" t-key="emp.employee_id">
+                <td t-esc="emp.name"/>
+                <td class="muted" t-esc="emp.department"/>
+                <td class="num muted" t-esc="emp.lines"/>
+                <td class="num strong" t-esc="money(emp.amount)"/>
+              </tr>
+            </tbody>
+          </table>
+
+          <div t-if="state.drill.total > state.drill.page_size" class="pbex-pager">
+            <button class="pbex-btn ghost" t-att-disabled="!state.drill.page"
+                    t-on-click="() => this.drillPage(-1)">Previous</button>
+            <span t-esc="drillRange"/>
+            <button class="pbex-btn ghost" t-att-disabled="!state.drill.has_more"
+                    t-on-click="() => this.drillPage(1)">Next</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </t>
+
+</templates>
