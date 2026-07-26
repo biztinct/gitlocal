@@ -1189,3 +1189,35 @@ number from the handovers — keep the numbering stable.
     the container into a column — three KPI tiles, each half a phone tall. Both media queries match
     at 390px. Reset the shorthand explicitly (`flex: 0 0 auto`) in the narrower block. Only the
     screenshot showed it: every DOM assertion passed (C18.78's lesson, applied to layout).
+89. **`hr.payslip.line` is a prototype heir of `hr.salary.rule`, so a full aggregate over it is a
+    ~1 GB read.** `_inherit = ['hr.salary.rule']` (`om_hr_payroll/models/hr_payslip.py:883`) copies
+    every rule column onto the line table, including `condition_python` (required, ~700 B default)
+    and `amount_python_compute` (~650 B). At 711k lines that is ~1.3 KB of dead boilerplate per row,
+    which is the real reason the 39-run employer-cost aggregate measured 11.3 s (C18.82) and why no
+    index fixed it — the planner was right to seq-scan. The answer is not a better index, it is not
+    reading that table interactively: `pb_explorer` pre-aggregates it to `pb.fact.line`
+    (711,150 → 5,945 rows, 119:1, measured live 2026-07-26) and the same pivot then answers in
+    **3 ms**. Any new payroll analytics surface should read the fact tables, not the lines.
+90. **`hr_version.date_version` is stamped at record creation, not at the event it describes.** On
+    the live demo world 63% of payslips (17,675 of 27,989) have NO version dated on or before their
+    run's `date_end`, because employees were generated in July while the payroll history runs
+    Apr–Jun. A strict as-of join (`WHERE date_version <= date_end`) therefore silently DROPS most
+    history — the query looks correct and returns a third of the data. Resolve dimensions with a
+    preference, not a filter: newest version at/before the period end, else the EARLIEST version,
+    and COUNT which happened (`pb.fact.run.asof_fallback_count`, surfaced on the board). Still never
+    resolve through `hr_employee.current_version_id`, which means "today" and would restate history
+    on every rebuild (C18.80).
+91. **Odoo 19 removed `ir.cron.numbercall` and `doall`.** A `<field name="numbercall">-1</field>`
+    in a cron record fails the whole module install with `ValueError: Invalid field 'numbercall' in
+    'ir.cron'` → `ParseError` → EXIT=255. A cron now simply repeats on its interval until
+    deactivated. Also: `ir.cron.model_id` must point at a CONCRETE model — anchor a cron whose work
+    lives in an AbstractModel on a real one and call the abstract via `env[...]` in the `code` body.
+92. **Never name a test-fixture attribute after a `unittest.TestCase` method.** `cls.run = <a
+    payslip run recordset>` shadowed `TestCase.run()`, so the runner's `test(result)` call raised
+    `TypeError: 'hr.payslip.run' object is not callable` — reported as `0 failed, 0 error(s) of 0
+    tests` with EXIT=255 and no failing test named, which reads exactly like a broken module rather
+    than a broken fixture. `run`, `id`, `setUp`, `skipTest`, `subTest` and `fail` are all mines.
+93. **OWL templates resolve bare identifiers against the component, so `Math.min(...)` inline is not
+    safe.** Compute derived display strings in a getter and `t-esc` the getter. Same family as
+    C18.71 (word-operators in `t-as`): anything that looks like a plain JS expression in a template
+    is compiled, not evaluated in the browser's global scope.
