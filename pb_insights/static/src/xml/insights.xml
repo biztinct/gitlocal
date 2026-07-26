@@ -320,12 +320,13 @@
           <div class="pbin-panel-h">
             <div>
               <h2>Reports &amp; analysis</h2>
-              <p class="hint">Every analytics report, in one place</p>
+              <p class="hint">Live, drillable analytics — every card opens a question you can edit</p>
             </div>
           </div>
           <div class="pbin-gallery">
-            <button t-foreach="reports" t-as="rep" t-key="rep.xmlid" class="gcard"
-                    t-on-click="() => this.openReport(rep.xmlid)">
+            <button t-foreach="reports" t-as="rep"
+                    t-key="rep.lens ? 'lens:' + rep.lens : rep.xmlid" class="gcard"
+                    t-on-click="() => this.openReport(rep)">
               <span class="gi"><t t-out="ic(rep.icon, 18)"/></span>
               <span class="gt">
                 <span class="gl" t-esc="rep.label"/>
