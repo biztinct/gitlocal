@@ -300,8 +300,49 @@ class HrAnalyticsDashboard(models.Model):
                     _logger.warning(f'Onload generation failed: {str(e)}')
         return True
 
+    # ------------------------------------------------------------------
+    # RETIRED (Sudima Phase N). This action created FOUR analytics records —
+    # personnel costs, statutory contributions, headcount and a budget
+    # variance seeded with a literal 500,000 — on every dashboard open, and it
+    # was called from `create()`, from `action_onload_generate_data()` and from
+    # the Refresh/Apply buttons. Merely LOOKING at the dashboard therefore grew
+    # the database by four rows, which is where the stray draft records users
+    # kept finding came from.
+    #
+    # The records it produced were not usable anyway: the statutory total sums
+    # a dict containing a string and swallows the resulting TypeError
+    # (hr_analytics_statutory_contrib.py:244), generation reads the removed
+    # `address_home_id` field (:405), and the budget figure was invented.
+    #
+    # The generator is kept behind an explicit opt-in so nothing that calls it
+    # crashes, but the automatic path is closed. The live replacement is the
+    # Analytics Explorer (pb_explorer), which derives everything from payslip
+    # truth and writes no analytics records at all.
+    # ------------------------------------------------------------------
     def action_refresh_all_analytics(self):
-        """Refresh all analytics data"""
+        """Retired: no longer generates records unless explicitly forced."""
+        self.ensure_one()
+        if not self.env.context.get('pb_allow_legacy_analytics_generation'):
+            _logger.info(
+                'pb_hr_payroll_analytics: legacy generation is retired; '
+                'use the Analytics Explorer instead.')
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Replaced by the Analytics Explorer'),
+                    'message': _(
+                        'This legacy dashboard no longer generates data. Open '
+                        'Insights > Analytics Explorer for live figures read '
+                        'straight from your payslips.'),
+                    'type': 'warning',
+                    'sticky': False,
+                },
+            }
+        return self._legacy_refresh_all_analytics()
+
+    def _legacy_refresh_all_analytics(self):
+        """The original generator, retained for explicit/manual use only."""
         self.ensure_one()
 
         try:

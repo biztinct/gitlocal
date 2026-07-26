@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'HR Analytics & Reporting',
-    # 19.0.1.1.0 — Sudima Phase M: the menu forest is retired (views, actions
+    # 19.0.1.2.0 — Sudima Phase M: the menu forest is retired (views, actions
     # and models all stay, off-menu; the Insights cockpit's report gallery is
     # now the entry point). See views/hr_analytics_menus.xml.
     'version': '19.0.1.1.0',
