@@ -11,13 +11,15 @@
     </record>
 
     <!-- An employee sees and drives ONLY their own requests (PII, safety rail 3).
-         The request never accepts an employee_id parameter for another person on a
-         portal route; the model's write() also freezes the target once submitted. -->
+         OWN means the target employee is theirs — a create_uid branch would let a
+         self-authored record pass regardless of whose employee it names (review
+         I-H3); the model's create() also forces employee_id to the session's own
+         employee, and write() freezes the target once submitted. -->
     <record id="profile_rule_own" model="ir.rule">
         <field name="name">Profile Change Request: own</field>
         <field name="model_id" ref="model_pb_profile_change_request"/>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
-        <field name="domain_force">['|', ('employee_id.user_id', '=', user.id), ('create_uid', '=', user.id)]</field>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
@@ -33,6 +35,23 @@
         <field name="perm_read" eval="True"/>
         <field name="perm_write" eval="True"/>
         <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- ==================== ESS payslip access (review I-H2) ==================== -->
+    <!-- pb_hr_payroll_base ships an own-slips-only record rule for base.group_user
+         (rule_payslip_employee_self_service) but NO ACL row, so the rule was inert
+         and the ESS persona saw an empty /my/payslips. The ACL rows live in this
+         module's csv; the line-level own rule mirrors the slip rule (lines had no
+         base.group_user rule at all). -->
+    <record id="payslip_line_rule_ess_own" model="ir.rule">
+        <field name="name">Payslip Lines: employee self-service (own)</field>
+        <field name="model_id" ref="om_hr_payroll.model_hr_payslip_line"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('slip_id.employee_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
         <field name="perm_unlink" eval="False"/>
     </record>
 

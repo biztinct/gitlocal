@@ -171,6 +171,7 @@ class PbProfileChangeRequest(models.Model):
     def create(self, vals_list):
         sys_ok = self._sys_allowed()
         editable = self._editable_fields()
+        own_emp = None
         for vals in vals_list:
             if not sys_ok:
                 for f in _SYS_FIELDS.intersection(vals):
@@ -178,6 +179,25 @@ class PbProfileChangeRequest(models.Model):
                 # strip any proposed field not in the config whitelist
                 for f in (_PROPOSED_FIELDS - editable):
                     vals.pop(f, None)
+                # Review I-H3: a non-HR requester can only ever file for
+                # THEMSELF — the target employee is forced from the session,
+                # never taken from the payload (a forged employee_id would
+                # otherwise plant a request on a victim's /my/profile and
+                # bait HR into applying it).
+                if not self._is_hr():
+                    if own_emp is None:
+                        Emp = self.env['hr.employee'].sudo()
+                        own_emp = Emp.search(
+                            [('user_id', '=', self.env.uid),
+                             ('company_id', '=', self.env.company.id)],
+                            limit=1) or Emp.search(
+                            [('user_id', '=', self.env.uid)], limit=1)
+                    if not own_emp:
+                        raise AccessError(_(
+                            "No employee is linked to your user — a profile "
+                            "change request needs one."))
+                    vals['employee_id'] = own_emp.id
+                    vals['company_id'] = own_emp.company_id.id or self.env.company.id
             if not vals.get('name') or vals['name'] == _('New'):
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'pb.profile.change.request') or _('New')
@@ -195,6 +215,12 @@ class PbProfileChangeRequest(models.Model):
             editable = self._editable_fields()
             for f in (_PROPOSED_FIELDS - editable):
                 vals.pop(f, None)
+            # Review I-H3: a non-HR user may never RETARGET a request — the
+            # employee is fixed at create (forced to the session's own).
+            if 'employee_id' in vals and not self._is_hr():
+                raise AccessError(_(
+                    "A profile change request always targets your own "
+                    "employee record."))
             touched = _REVIEW_FIELDS.intersection(vals)
             if touched:
                 is_hr = self._is_hr()
@@ -219,8 +245,34 @@ class PbProfileChangeRequest(models.Model):
                     "profile — nothing to submit."))
 
     def _after_approval_transition(self, to_state):
+        if to_state == 'hr_review':
+            self._notify_hr_reviewers()
         if to_state == 'approved':
             self._apply_to_master()
+
+    def _notify_hr_reviewers(self):
+        """In-app to-dos for the HR tier on submit — activities only, never
+        mail (C18.47/48). The queue itself is the new Profile Changes menu
+        (review I-H4: the chain used to dead-end here with HR unaware)."""
+        self.ensure_one()
+        gids = []
+        for g in ('om_hr_payroll.group_hr_payroll_manager', 'hr.group_hr_manager'):
+            try:
+                gids.append(self.env.ref(g).id)
+            except ValueError:
+                continue
+        if not gids:
+            return
+        users = self.env['res.users'].sudo().search(
+            [('group_ids', 'in', gids), ('active', '=', True),
+             ('id', '!=', self.env.uid)], limit=5)
+        for u in users:
+            try:
+                self.activity_schedule(
+                    'mail.mail_activity_data_todo', user_id=u.id,
+                    summary=_('Profile change to review: %s', self.name))
+            except Exception:
+                continue  # a notification must never block the submit
 
     def action_submit(self):
         self.ensure_one()

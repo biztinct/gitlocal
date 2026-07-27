@@ -116,3 +116,62 @@ class TestPbMePortal(TransactionCase):
             'pb_me_portal.tax_codes', 'PIT,TXBASE,PIT')
         codes = Slip._ess_tax_codes()
         self.assertEqual(codes, ['PIT', 'TXBASE'], "order-preserving + de-duplicated")
+
+    # ------------------------------------ combined-review fixes (G–M pass)
+    def test_08_change_request_cannot_target_a_colleague(self):
+        """Review I-H3: a non-HR create is FORCED onto the caller's own
+        employee, and retargeting on write is refused — a forged request can
+        never bait HR into changing a victim's master data."""
+        Req = self.env['pb.profile.change.request']
+        forged = Req.with_user(self.emp_user).create({
+            'employee_id': self.colleague.id, 'x_phone': '0666'})
+        self.assertEqual(forged.employee_id, self.employee,
+                         "the target is the session's own employee, never the payload's")
+        with self.assertRaises(AccessError):
+            forged.with_user(self.emp_user).write(
+                {'employee_id': self.colleague.id})
+        # HR may file on behalf (unchanged)
+        on_behalf = Req.with_user(self.hr_user).create({
+            'employee_id': self.colleague.id, 'x_phone': '0777'})
+        self.assertEqual(on_behalf.employee_id, self.colleague)
+
+    def test_09_ess_reads_own_payslips_only(self):
+        """Review I-H2: the base.group_user ACL rows make the own-slips rule
+        live — and ONLY own slips are reachable (the id-guessing case)."""
+        Slip = self.env['hr.payslip'].sudo()
+        mine = Slip.create({
+            'name': 'ESS Own Slip', 'employee_id': self.employee.id,
+            'date_from': '2031-01-01', 'date_to': '2031-01-31',
+            'company_id': self.company.id})
+        other = Slip.create({
+            'name': 'ESS Other Slip', 'employee_id': self.colleague.id,
+            'date_from': '2031-01-01', 'date_to': '2031-01-31',
+            'company_id': self.company.id})
+        as_me = self.env['hr.payslip'].with_user(self.emp_user)
+        self.assertEqual(as_me.search([('id', 'in', (mine.id, other.id))]).ids,
+                         [mine.id], "search must see the own slip and only it")
+        self.assertTrue(as_me.browse(mine.id).read(['name']))
+        with self.assertRaises(AccessError):
+            as_me.browse(other.id).read(['name'])
+
+    def test_10_hr_review_surface_exists(self):
+        """Review I-H4: the chain no longer dead-ends — HR has an action and
+        the submit files an activity for the HR tier."""
+        action = self.env.ref('pb_me_portal.action_profile_change_requests',
+                              raise_if_not_found=False)
+        self.assertTrue(action, "the HR review action must exist")
+        menu = self.env.ref('pb_me_portal.menu_profile_change_requests',
+                            raise_if_not_found=False)
+        self.assertTrue(menu, "the HR menu must exist")
+        self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'ESS HR Mgr', 'login': 'test_ess_hr_mgr',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                  self.env.ref('hr.group_hr_manager').id])]})
+        Req = self.env['pb.profile.change.request']
+        req = Req.with_user(self.emp_user).create({
+            'employee_id': self.employee.id, 'x_phone': '0888'})
+        req.with_user(self.emp_user).action_submit()
+        acts = self.env['mail.activity'].sudo().search([
+            ('res_model', '=', 'pb.profile.change.request'),
+            ('res_id', '=', req.id)])
+        self.assertTrue(acts, "submit must file an HR to-do activity")
