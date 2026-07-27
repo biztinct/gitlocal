@@ -4,6 +4,7 @@ import json
 from datetime import date, datetime, timedelta
 
 from odoo import api, fields, models, _
+from odoo.exceptions import AccessError
 
 
 class ShiftPlanningGrid(models.TransientModel):
@@ -12,10 +13,21 @@ class ShiftPlanningGrid(models.TransientModel):
     _description = 'Shift Planning Grid API'
 
     @api.model
+    def _require_officer(self):
+        # C18.73: the sudo reads below live BEHIND an explicit gate, never
+        # behind the accident of a missing ACL (review K-F6)
+        u = self.env.user
+        if not (u.has_group('hr_attendance.group_hr_attendance_officer')
+                or u.has_group('base.group_system')):
+            raise AccessError(_(
+                "Shift planning is restricted to attendance officers."))
+
+    @api.model
     def get_grid_data(self, week_start_str, department_id=False, job_id=False, num_days=7):
         """
         Return grid data: employees × days × shifts + leave overlay.
         """
+        self._require_officer()
         week_start = fields.Date.from_string(week_start_str)
         week_end = week_start + timedelta(days=num_days - 1)
         days = []
@@ -205,6 +217,7 @@ class ShiftPlanningGrid(models.TransientModel):
     @api.model
     def quick_create_shift(self, employee_id, date_str, template_id):
         """Quick-create a shift from the grid."""
+        self._require_officer()
         template = self.env['hr.shift.template'].browse(template_id)
         shift_date = fields.Date.from_string(date_str)
 
@@ -237,6 +250,7 @@ class ShiftPlanningGrid(models.TransientModel):
     @api.model
     def delete_shift(self, shift_id):
         """Delete a draft shift."""
+        self._require_officer()
         shift = self.env['hr.shift.planning'].browse(shift_id)
         if shift.state == 'draft':
             shift.unlink()
@@ -246,6 +260,7 @@ class ShiftPlanningGrid(models.TransientModel):
     @api.model
     def publish_shifts(self, week_start_str, department_id=False, num_days=7):
         """Publish all draft shifts for the period."""
+        self._require_officer()
         week_start = fields.Date.from_string(week_start_str)
         week_end = week_start + timedelta(days=num_days - 1)
         domain = [
@@ -262,6 +277,7 @@ class ShiftPlanningGrid(models.TransientModel):
     @api.model
     def copy_week(self, source_week_str, target_week_str, department_id=False):
         """Copy all shifts from source week to target week."""
+        self._require_officer()
         source_start = fields.Date.from_string(source_week_str)
         source_end = source_start + timedelta(days=6)
         delta = fields.Date.from_string(target_week_str) - source_start
@@ -294,11 +310,13 @@ class ShiftPlanningGrid(models.TransientModel):
     @api.model
     def get_departments(self):
         """Return departments for the filter dropdown."""
+        self._require_officer()
         deps = self.env['hr.department'].search([], order='name')
         return [{'id': d.id, 'name': d.name} for d in deps]
 
     @api.model
     def get_job_positions(self):
         """Return job positions for the filter dropdown."""
+        self._require_officer()
         jobs = self.env['hr.job'].search([], order='name')
         return [{'id': j.id, 'name': j.name} for j in jobs]

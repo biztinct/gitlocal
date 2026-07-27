@@ -70,9 +70,15 @@ class PbOtCeiling(models.Model):
             # bi-weekly = the ISO-week pair anchored on the ODD week. If this
             # week's ISO number is odd it is the pair's first week (window =
             # [Mon, Mon+13]); if even it is the second (window = [Mon-7, Sun]).
+            # ISO week 53 (odd) anchors a SOLO window clamped to its own ISO
+            # year: the next week is week 1, itself odd and anchoring a fresh
+            # pair — without the clamp the two windows overlap and hours are
+            # double-counted across the year boundary (review K-F2; 2026 is a
+            # 53-week ISO year).
             iso_week = d.isocalendar()[1]
             if iso_week % 2 == 1:
-                out.append((monday, monday + timedelta(days=13), self.biweekly_cap))
+                end = sunday if iso_week == 53 else monday + timedelta(days=13)
+                out.append((monday, end, self.biweekly_cap))
             else:
                 out.append((monday - timedelta(days=7), sunday, self.biweekly_cap))
         if self.monthly_cap > 0:

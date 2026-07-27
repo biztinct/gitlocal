@@ -84,7 +84,16 @@ class PbOtDesk(models.AbstractModel):
     # ------------------------------------------------------------- desk load
     @api.model
     def get_desk(self):
-        self._require_manager()
+        # Review K-F5: the sidebar admits BOTH tiers, so the entry gate must
+        # too. A pure bonus viewer (payroll manager without the attendance
+        # role) gets the Bonus review surface with an EMPTY approval queue —
+        # the queue and its actions stay attendance-manager territory.
+        can_act = True
+        try:
+            self._require_manager()
+        except AccessError:
+            can_act = False
+            self._require_bonus_viewer()
         co_ids = self._co_ids()
         # queue: submitted requests org-wide, company-scoped (C18.11/18). sudo:
         # one-permission-world read behind the manager gate (the officer record
@@ -93,7 +102,7 @@ class PbOtDesk(models.AbstractModel):
         reqs = Req.search([
             ('state', '=', 'submitted'),
             ('employee_id.company_id', 'in', co_ids),
-        ], order='date desc, id desc')
+        ], order='date desc, id desc') if can_act else Req.browse()
 
         emp_ids = reqs.mapped('employee_id').ids
         # ONE batched ceiling read for every employee in the queue
@@ -120,6 +129,7 @@ class PbOtDesk(models.AbstractModel):
 
         return {
             'can_view_bonus': self._is_bonus_viewer(),
+            'can_act': can_act,
             'kpis': self._kpis(co_ids),
             'queue': queue,
             'configs': self._config_gallery(),

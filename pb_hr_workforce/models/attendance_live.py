@@ -3,6 +3,7 @@
 from datetime import date, datetime, timedelta
 
 from odoo import api, fields, models, _
+from odoo.exceptions import AccessError
 
 
 class AttendanceLive(models.TransientModel):
@@ -11,11 +12,22 @@ class AttendanceLive(models.TransientModel):
     _description = 'Live Attendance Feed API'
 
     @api.model
+    def _require_officer(self):
+        # C18.73: the sudo leave read below lives BEHIND an explicit gate,
+        # never behind the accident of a missing ACL (review K-F6)
+        u = self.env.user
+        if not (u.has_group('hr_attendance.group_hr_attendance_officer')
+                or u.has_group('base.group_system')):
+            raise AccessError(_(
+                "The live attendance board is restricted to attendance officers."))
+
+    @api.model
     def get_live_data(self, department_id=False):
         """
         Return live attendance data: employees grouped into status columns.
         Statuses: on_shift, on_break, not_started, checked_out
         """
+        self._require_officer()
         today = date.today()
         now = datetime.now()
         today_start = datetime.combine(today, datetime.min.time())
@@ -148,5 +160,6 @@ class AttendanceLive(models.TransientModel):
     @api.model
     def get_departments(self):
         """Return departments list."""
+        self._require_officer()
         deps = self.env['hr.department'].search([], order='name')
         return [{'id': d.id, 'name': d.name} for d in deps]
