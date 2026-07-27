@@ -65,7 +65,7 @@
                 <field name="total_employees"/>
                 <field name="total_payroll" widget="monetary"/>
                 <field name="average_salary" widget="monetary"/>
-                <field name="variance_percentage" widget="percentage" 
+                <field name="variance_percentage"
                        decoration-danger="variance_percentage &lt; -10 or variance_percentage &gt; 20"
                        decoration-warning="variance_percentage &lt; -5 or variance_percentage &gt; 10"/>
                 <field name="state" widget="badge"/>
@@ -174,7 +174,7 @@
                                         </div>
                                         <small t-attf-class="#{record.variance_percentage.raw_value &gt; 0 ? 'text-success' : 'text-danger'}">
                                             <t t-if="record.variance_percentage.raw_value &gt; 0">+</t>
-                                            <field name="variance_percentage" widget="percentage"/> vs last month
+                                            <field name="variance_percentage"/>% vs last month
                                         </small>
                                     </div>
                                 </div>

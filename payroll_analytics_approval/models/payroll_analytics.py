@@ -100,9 +100,16 @@ class PayrollAnalytics(models.Model):
                         record.variance_percentage = round(variance, 2)
                         _logger.info(f"Calculated variance: {variance}%")
                     elif current_total > 0 and prev_total == 0:
-                        # Current data exists but no previous data - new period
-                        record.variance_percentage = 100.0
-                        _logger.info("New period - variance set to 100%")
+                        # No prior period to compare against. This used to store
+                        # the sentinel 100.0 meaning "100%", which the form then
+                        # rendered through widget="percentage" — multiplying by
+                        # 100 a second time and printing "10000%". There is no
+                        # variance to report against nothing: report zero and
+                        # say why in the log.
+                        record.variance_percentage = 0.0
+                        _logger.info(
+                            "No previous period for record %s — variance not "
+                            "computed (was reported as 100%%).", record.id)
                     elif current_total == prev_total and current_total > 0:
                         # Same values - no change
                         record.variance_percentage = 0.0
