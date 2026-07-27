@@ -31,9 +31,14 @@ class BizAuditMixin(models.AbstractModel):
 
         before = {rec.id: {f: rec[f] for f in touched} for rec in self}
         res = super().write(vals)
-        # a broken audit may NOT break the business write (safety rail 2)
+        # a broken audit may NOT break the business write (safety rail 2).
+        # The SAVEPOINT is the load-bearing half (review H-M1): a DB-level
+        # error in the entry INSERT poisons the whole transaction, and catching
+        # the Python exception alone would still abort the business write at
+        # flush time ("current transaction is aborted").
         try:
-            self._biz_audit_log(touched, before)
+            with self.env.cr.savepoint():
+                self._biz_audit_log(touched, before)
         except Exception:
             _logger.exception(
                 "biz.audit.mixin: failed to log %s change(s) on %s",
@@ -80,9 +85,15 @@ class BizAuditMixin(models.AbstractModel):
         value, so both sides format identically.
         """
         field = self._fields.get(fname)
-        if field is None or value is False or value is None:
+        if field is None or value is None:
             return ''
         ftype = field.type
+        # boolean BEFORE the falsy check: archiving must log "Yes → No", not
+        # "Yes → " (review H-L1; the `is False` identity still protects 0.0)
+        if ftype == 'boolean':
+            return 'Yes' if value else 'No'
+        if value is False:
+            return ''
         if ftype == 'many2one':
             return value.display_name or '' if value else ''
         if ftype in ('one2many', 'many2many'):
@@ -93,8 +104,6 @@ class BizAuditMixin(models.AbstractModel):
             except Exception:
                 sel = {}
             return str(sel.get(value, value))
-        if ftype == 'boolean':
-            return 'Yes' if value else 'No'
         if ftype in ('date', 'datetime'):
             return fields.Datetime.to_string(value) if ftype == 'datetime' \
                 else fields.Date.to_string(value)

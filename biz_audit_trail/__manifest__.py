@@ -28,7 +28,7 @@ Consumers ship the rules as data and add the mixin to their models via a thin
 `_inherit = ['their.model', 'biz.audit.mixin']` glue class. This module never
 references payroll, HR, or a country. The audit CONSOLE UI is a separate concern.
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Extra Tools',
     'license': 'LGPL-3',
     'author': 'Payobook',

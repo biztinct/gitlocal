@@ -50,8 +50,12 @@ class BizAuditEntry(models.Model):
     user_id = fields.Many2one(
         'res.users', string='By', required=True, readonly=True, index=True,
         default=lambda self: self.env.user)
+    # index: the table accumulates years of app-wide HR writes and every
+    # consumer (_order above, the 360 timeline, the Phase-J console) sorts and
+    # windows on stamp (C18.68, review H-M3)
     stamp = fields.Datetime(
-        string='When', required=True, readonly=True, default=fields.Datetime.now)
+        string='When', required=True, readonly=True, index=True,
+        default=fields.Datetime.now)
     company_id = fields.Many2one('res.company', string='Company', index=True)
 
     # ----------------------------------------------------- append-only guards
