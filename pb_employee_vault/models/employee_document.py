@@ -116,6 +116,21 @@ class PbEmployeeDocument(models.Model):
             for vals in vals_list:
                 for f in _SYS_FIELDS.intersection(vals):
                     vals.pop(f)
+        # Review I-M4: a self-served create must bind an attachment the caller
+        # OWNS and that no record has claimed — probing a foreign attachment id
+        # would otherwise get the victim's file destroyed when this document is
+        # later deleted (the unlink cascade runs sudo).
+        if not (self._vault_sys_allowed() or self._is_hr()):
+            Att = self.env['ir.attachment'].sudo()
+            for vals in vals_list:
+                att_id = vals.get('attachment_id')
+                if not att_id:
+                    continue
+                att = Att.browse(int(att_id)).exists()
+                if (not att or att.create_uid.id != self.env.uid
+                        or (att.res_model and att.res_id)):
+                    raise AccessError(_(
+                        "You can only attach a file you uploaded yourself."))
         return super().create(vals_list)
 
     def write(self, vals):
@@ -125,7 +140,19 @@ class PbEmployeeDocument(models.Model):
                 raise AccessError(_(
                     "Document verification is HR testimony and cannot be set "
                     "directly: %s.", ', '.join(sorted(forged))))
-        return super().write(vals)
+        # Review H-M2 (C18.31 spirit): verification testifies to a SPECIFIC
+        # file on a specific employee/category. Swapping any of those on a
+        # verified document silently voids the testimony — the shield must
+        # never say "Verified by A" over a file A never saw.
+        content_swap = {'attachment_id', 'category_id', 'employee_id'}.intersection(vals)
+        voided = (self.filtered('verified')
+                  if content_swap and not self._vault_sys_allowed()
+                  else self.browse())
+        res = super().write(vals)
+        if voided:
+            voided._vault_sys_write({
+                'verified': False, 'verified_by': False, 'verified_at': False})
+        return res
 
     def action_verify(self):
         """HR marks a document verified — the ONLY path that sets the flag."""
