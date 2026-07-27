@@ -60,6 +60,7 @@ _DEPT_ROWS = 10          # department leaderboard rows
 _TREND_RUNS = 18         # cost-story columns (the overflow is SURFACED, never silent)
 _SNAPSHOTS = 8           # payroll.analytics cards
 _PULSE_EMPS = 2000       # hard cap on the exception-engine cohort (surfaced)
+_DRILL_IDS = 400         # ids shipped for a tile drill; the overflow is SURFACED
 
 # Statutory buckets read from `hr.salary.rule.category.category_type`
 # (pb_hr_payroll_base/models/hr_payroll_structure_base.py:224) — country
@@ -73,54 +74,15 @@ _CAT_TAX = 'tax'
 _LEGACY_CONTRIB_CODES = ['SI_EMP', 'SI_COMP', 'HI_EMP', 'HI_COMP',
                          'UI_EMP', 'UI_COMP']
 
-# Report gallery.
+# Phase O retired the report GALLERY that used to live here.
 #
-# Phase N replaced the thirteen legacy cards. Every one of them was dead:
-# hardcoded sample KPIs (hr_analytics_dashboard.py:179-240), twelve chart
-# canvases whose JS is commented out of the manifest, statutory totals that can
-# never be non-zero (hr_analytics_statutory_contrib.py:244 sums a dict holding
-# a string inside a swallowed except), generation that cannot run on Odoo 19
-# (:405 reads the removed address_home_id), a compliance flag that is literally
-# `return False` (:483), a card pointing at the wrong model, an always-empty
-# TransientModel seeded with random.randint, and `bank.export.log`, which has
-# no writer ANYWHERE in this repository and is therefore empty by construction.
-#
-# The gallery now opens the Analytics Explorer on a named LENS — each one a
-# live, editable query over the derived fact tables. The `lens` key is passed
-# to the cockpit as a context param; entries with an xmlid still resolve the
-# classic way, so genuinely useful destinations (the real payslip-line pivot)
-# keep their place.
-REPORT_LENSES = [
-    ('cost', 'Personnel Costs',
-     'Total cost of employment by department, month by month', 'wallet'),
-    ('statutory', 'Statutory Contributions',
-     'Employee and employer contributions and tax withheld', 'shield'),
-    ('movement', 'Workforce Movement',
-     'Headcount actually paid, by department and period', 'users'),
-    ('perhead', 'Cost per Head',
-     'Cost per employee by department — the fairest comparison', 'gauge'),
-    ('benefits', 'Benefits & Allowances',
-     'What the allowance budget is actually spent on', 'heart'),
-    ('yoy', 'Year on Year',
-     'Total cost of employment across years, by division', 'calendar'),
-    ('mix', 'Structure Mix',
-     'How gross pay is composed — basic versus everything else', 'layers'),
-    ('tax', 'Tax & Deductions',
-     'What is withheld, by department and period', 'target'),
-    ('components', 'Component Explorer',
-     'Every pay component, ranked — the payslip-line pivot, live', 'grid'),
-]
-
-# Classic act_window destinations still worth surfacing. Only entries that
-# RESOLVE at runtime are shown; an unresolvable xmlid is skipped and logged
-# (test 7). `pb_hr_flow.action_hr_payslip_line_analytics` is the richest
-# payslip-line pivot in the codebase and previously had ZERO entry points.
-REPORT_CANDIDATES = [
-    ('pb_hr_flow.action_hr_payslip_line_analytics',
-     'Payslip Line Pivot', 'Pivot every payslip line by component', 'grid'),
-    ('payroll_analytics_approval.action_payroll_analytics_comparison',
-     'Period Comparison', 'Month-over-month component comparison', 'trending'),
-]
+# Phase N had replaced thirteen legacy cards with nine Explorer lens cards.
+# Those nine turned out to be a verbatim copy of the Explorer's own lens grid,
+# so the board shipped a duplicate menu while every real number on it was
+# unclickable. Drill-through replaced the gallery entirely (see ``_explorer``),
+# and the two genuinely useful classic destinations it also carried — the
+# pb_hr_flow payslip-line pivot and Period Comparison — moved into
+# ``pb_explorer._classic`` so nothing lost its route.
 
 
 class PbInsights(models.AbstractModel):
@@ -315,7 +277,8 @@ class PbInsights(models.AbstractModel):
         statutory = timed('statutory', lambda: su._statutory(latest), default={})
         pulse = timed('pulse', lambda: su._pulse(), default={})
         snapshots = timed('snapshots', lambda: su._snapshots(), default=[])
-        reports = timed('reports', lambda: su._reports(), default=[])
+        explorer = timed('explorer', lambda: su._explorer(),
+                         default={'available': False, 'xmlid': ''})
 
         company = self.env.company
         timings['total'] = round((time.monotonic() - t0) * 1000, 1)
@@ -332,7 +295,7 @@ class PbInsights(models.AbstractModel):
             'statutory': statutory,
             'pulse': pulse,
             'snapshots': snapshots,
-            'reports': reports,
+            'explorer': explorer,
             'timings': timings,
         }
 
@@ -470,6 +433,11 @@ class PbInsights(models.AbstractModel):
                     names[d.id] = d.name
             rows = [{
                 'id': did or 0,
+                # Employees with no department resolve to id 0, which is falsy
+                # — the old drill early-returned on it, so the row looked
+                # clickable and silently did nothing. Marked explicitly so the
+                # UI can render it inert instead of lying.
+                'drillable': bool(did),
                 'name': names.get(did) or _('Unassigned'),
                 'net': float(net or 0.0),
                 'count': int(head or 0),
@@ -484,6 +452,7 @@ class PbInsights(models.AbstractModel):
                 'approx': False,
                 'basis': 'payslip',
                 'run_name': run.name or '',
+                'run_id': run.id,
                 'total': sum(r['net'] for r in rows),
                 'hidden': max(0, len(rows) - len(top)),
             }
@@ -500,6 +469,7 @@ class PbInsights(models.AbstractModel):
             wage = g.get('wage') or 0.0
             rows.append({
                 'id': dep[0] if dep else 0,
+                'drillable': bool(dep),
                 'name': dep[1] if dep else _('Unassigned'),
                 'net': wage, 'count': count,
                 'per_head': (wage / count) if count else 0.0,
@@ -521,11 +491,19 @@ class PbInsights(models.AbstractModel):
     def _statutory(self, latest):
         """Employee vs employer contribution split for the latest run."""
         out = {'employee': 0.0, 'employer': 0.0, 'tax': 0.0, 'total': 0.0,
-               'rows': [], 'run_name': '', 'basis': 'category'}
+               'rows': [], 'run_name': '', 'basis': 'category',
+               'run_id': False, 'month': ''}
         if not latest:
             return out
         run = latest[0]
         out['run_name'] = run.name or ''
+        # Drill keys: which run these figures belong to, so a click on an arc,
+        # a legend row or a code chip can open that exact question.
+        out['run_id'] = run.id
+        anchor = run.date_start or run.date_end
+        out['month'] = anchor.replace(day=1).isoformat() if anchor else ''
+        out['legs'] = {'employee': _CAT_EMPLOYEE, 'employer': _CAT_EMPLOYER,
+                       'tax': _CAT_TAX}
         self.env.cr.execute("""
             SELECT c.category_type, pl.code, COALESCE(SUM(pl.total), 0)
             FROM hr_payslip_line pl
@@ -545,9 +523,13 @@ class PbInsights(models.AbstractModel):
             if not leg or not amount:
                 continue
             out[leg] += amount
-            out['rows'].append({'code': code or '—', 'leg': leg, 'amount': amount})
+            out['rows'].append({'code': code or '—', 'leg': leg,
+                                'amount': amount, 'category_type': cat})
         out['rows'].sort(key=lambda r: -r['amount'])
         out['total'] = out['employee'] + out['employer']
+        # The template shows the first 8 chips; say how many are hidden rather
+        # than letting codes 9+ vanish without a trace.
+        out['rows_hidden'] = max(0, len(out['rows']) - 8)
         return out
 
     def _statutory_legacy(self, run, out):
@@ -612,13 +594,37 @@ class PbInsights(models.AbstractModel):
         rows = self.env['pb.attendance.exception.engine'].get_exceptions(
             employees, monday, today) if employees else []
         kinds = {'missing_punch': 0, 'missing_checkout': 0, 'late': 0, 'early_leave': 0}
+        # Per-DAY counts drive the tile's micro-chart, and the employee ids
+        # behind each kind make the tile drillable. Both used to be thrown
+        # away one line after the engine returned them (Phase N audit), which
+        # is why every pulse tile was a dead click target.
+        by_day = {}
+        kind_emp = {k: set() for k in kinds}
         for r in rows:
-            if r.get('kind') in kinds:
-                kinds[r['kind']] += 1
+            kind = r.get('kind')
+            if kind in kinds:
+                kinds[kind] += 1
+                emp = r.get('employee_id')
+                if emp:
+                    kind_emp[kind].add(emp[0] if isinstance(emp, (list, tuple)) else emp)
+            day = str(r.get('date') or '')[:10]
+            if day:
+                by_day[day] = by_day.get(day, 0) + 1
+        span = []
+        cursor = monday
+        while cursor <= today:
+            iso = cursor.isoformat()
+            span.append({'date': iso, 'count': by_day.get(iso, 0),
+                         'dow': cursor.strftime('%a')})
+            cursor += timedelta(days=1)
         return {
             'total': len(rows), 'kinds': kinds, 'employees': len(employees),
             'date_from': monday.isoformat(), 'date_to': today.isoformat(),
-            'capped': capped,
+            'capped': capped, 'by_day': span,
+            # capped at the drill page size — the cap is surfaced, never silent
+            'kind_employees': {k: sorted(v)[:_DRILL_IDS] for k, v in kind_emp.items()},
+            'kind_overflow': {k: max(0, len(v) - _DRILL_IDS)
+                              for k, v in kind_emp.items()},
         }
 
     def _pulse_leave(self):
@@ -635,10 +641,28 @@ class PbInsights(models.AbstractModel):
         pending = Leave.search_count(
             co + [('state', 'in', ('confirm', 'validate1'))])
         cards = [{'id': lv.employee_id.id, 'name': lv.employee_id.name,
+                  'leave_id': lv.id,
                   'avatar_url': '/web/image/hr.employee/%s/avatar_128' % lv.employee_id.id}
                  for lv in out_today[:8]]
+        # A 14-day out-of-office density strip for the tile's micro-chart.
+        horizon = today + timedelta(days=13)
+        upcoming = Leave.search(
+            co + [('state', '=', 'validate'),
+                  ('request_date_from', '<=', horizon),
+                  ('request_date_to', '>=', today)], limit=1000)
+        density = []
+        for offset in range(14):
+            day = today + timedelta(days=offset)
+            density.append({
+                'date': day.isoformat(), 'dow': day.strftime('%a')[0],
+                'count': sum(1 for lv in upcoming
+                             if lv.request_date_from and lv.request_date_to
+                             and lv.request_date_from <= day <= lv.request_date_to),
+            })
         return {'out_today': len(out_today), 'pending': pending, 'cards': cards,
-                'overflow': max(0, len(out_today) - len(cards))}
+                'overflow': max(0, len(out_today) - len(cards)),
+                'out_today_ids': out_today[:_DRILL_IDS].ids,
+                'density': density}
 
     def _month_bounds(self):
         today = date.today()
@@ -675,14 +699,23 @@ class PbInsights(models.AbstractModel):
         # near-ceiling: per-employee MTD vs the company monthly cap. The cap is
         # the ONE limit source, pb.ot.ceiling (C18.55c); 0 == not enforced.
         near, cap = 0, 0.0
+        near_ids = []
         per_emp = OT.read_group(dom, ['approved_hours:sum'], ['employee_id'])
         if 'pb.ot.ceiling' in self.env:
             cap = self.env['pb.ot.ceiling']._for_company(self.env.company).monthly_cap or 0.0
             if cap > 0:
-                near = sum(1 for g in per_emp
-                           if (g.get('approved_hours') or 0.0) >= cap * 0.9)
+                # Keep the IDS, not just the count: "N employees near the
+                # ceiling" is only actionable if you can see which N.
+                for g in per_emp:
+                    if (g.get('approved_hours') or 0.0) >= cap * 0.9:
+                        near += 1
+                        emp = g.get('employee_id')
+                        if emp and len(near_ids) < _DRILL_IDS:
+                            near_ids.append(emp[0] if isinstance(emp, (list, tuple))
+                                            else emp)
         return {'total': round(total, 2), 'by_type': by_type[:4],
-                'cap': cap, 'near_cap': near, 'employees': len(per_emp),
+                'cap': cap, 'near_cap': near, 'near_cap_ids': near_ids,
+                'employees': len(per_emp),
                 'date_from': start.isoformat(), 'date_to': end.isoformat()}
 
     def _pulse_bonus(self):
@@ -770,6 +803,13 @@ class PbInsights(models.AbstractModel):
                 'total': rec.total_payroll or 0.0,
                 'variance': rec.variance_percentage or 0.0,
                 'anomalies': anomalies,
+                # The RUN ID, not just its name. Dropping it (pre-Phase-O) is
+                # what forced a snapshot card to open the legacy
+                # payroll.analytics form — the only registered form view for
+                # that model, and a dashboard whose charts were deleted in
+                # Phase M. With the id the card can open the run's real,
+                # live composition instead.
+                'run_id': rec.payslip_run_id.id if rec.payslip_run_id else False,
                 'run_name': rec.payslip_run_id.name if rec.payslip_run_id else '',
                 'structure': rec.salary_structure_name or '',
             })
@@ -777,33 +817,25 @@ class PbInsights(models.AbstractModel):
                 break
         return out
 
-    # ------------------------------------------------------------ reports
-    def _reports(self):
-        """Resolve the gallery.
+    # ------------------------------------------------------------ explorer
+    def _explorer(self):
+        """Whether the Explorer is installed, and its action.
 
-        Lens cards come first — they open the Analytics Explorer on a live,
-        editable query. Classic act_window destinations follow, and only if
-        they actually resolve on this database.
+        Phase O RETIRED the report gallery. Its nine cards were launchers into
+        the Explorer, duplicating the Explorer's own lens grid card-for-card —
+        so the board carried a second copy of a menu that already exists one
+        click away, while every actual NUMBER on the board was unclickable.
+
+        The gallery is replaced by drill-through: the hero tiles, the cost
+        columns, the department rows, the statutory arcs and chips, the pulse
+        tiles and the snapshot cards each open their own question. The two
+        classic Odoo destinations the gallery also carried moved into the
+        Explorer's lens grid (``pb_explorer._classic``), so nothing was lost.
         """
-        out = []
-        explorer = self.env.ref('pb_explorer.action_pb_explorer',
-                                raise_if_not_found=False)
-        if explorer:
-            for lens, label, desc, icon in REPORT_LENSES:
-                out.append({'xmlid': 'pb_explorer.action_pb_explorer',
-                            'lens': lens, 'label': _(label), 'desc': _(desc),
-                            'icon': icon})
-        for xmlid, label, desc, icon in REPORT_CANDIDATES:
-            action = self.env.ref(xmlid, raise_if_not_found=False)
-            if not action:
-                _logger.info("Insights: report action %s is not installed — "
-                             "skipped from the gallery.", xmlid)
-                continue
-            # _(<variable>) is not auto-extractable, but the runtime lookup is
-            # by VALUE — the i18n/vi_VN.po ships each of these msgids.
-            out.append({'xmlid': xmlid, 'label': _(label), 'desc': _(desc),
-                        'icon': icon})
-        return out
+        action = self.env.ref('pb_explorer.action_pb_explorer',
+                              raise_if_not_found=False)
+        return {'available': bool(action),
+                'xmlid': 'pb_explorer.action_pb_explorer' if action else ''}
 
     # ----------------------------------------------------- back-compat RPC
     @api.model

@@ -28,7 +28,6 @@ from unittest.mock import patch
 from odoo.exceptions import AccessError
 from odoo.tests import TransactionCase, tagged
 
-from odoo.addons.pb_insights.models import pb_insights as pbin
 
 
 @tagged('post_install', '-at_install')
@@ -339,36 +338,68 @@ class TestInsights(TransactionCase):
             self.assertNotIn(forbidden, source,
                              "pb.insights is a read-only facade: found %s" % forbidden)
 
-    # -------------------------------------------------- §6.7 report gallery
-    def test_07_report_gallery_skips_unresolvable(self):
-        bogus = ('pb_hr_payroll_analytics.action_this_does_not_exist',
-                 'Ghost report', 'Should never be surfaced', 'file')
-        with patch.object(pbin, 'REPORT_CANDIDATES',
-                          list(pbin.REPORT_CANDIDATES) + [bogus]):
-            reports = self._board(self.u_manager)['reports']
-        xmlids = {r['xmlid'] for r in reports}
-        self.assertNotIn(bogus[0], xmlids)
-        # Classic act_window destinations: only the installed ones appear.
-        installed = {x for x, _l, _d, _i in pbin.REPORT_CANDIDATES
-                     if self.env.ref(x, raise_if_not_found=False)}
-        self.assertLessEqual(installed, xmlids)
+    # ---------------------------------- §6.7 every number is a door (Phase O)
+    def test_07_gallery_retired(self):
+        """The report gallery is gone; only the Explorer availability flag
+        remains. The nine cards it held were a verbatim copy of the Explorer's
+        own lens grid, so the board shipped a duplicate menu."""
+        board = self._board(self.u_manager)
+        self.assertNotIn('reports', board,
+                         "the report gallery must not come back")
+        self.assertIn('explorer', board)
+        self.assertIn('available', board['explorer'])
 
-        # Phase N: the gallery leads with Explorer LENS cards. Each carries a
-        # lens id and they all point at the one cockpit action.
-        lens_cards = [r for r in reports if r.get('lens')]
-        if self.env.ref('pb_explorer.action_pb_explorer',
-                        raise_if_not_found=False):
-            self.assertEqual(len(lens_cards), len(pbin.REPORT_LENSES))
-            self.assertEqual({r['xmlid'] for r in lens_cards},
-                             {'pb_explorer.action_pb_explorer'})
-            self.assertEqual([r['lens'] for r in lens_cards],
-                             [x[0] for x in pbin.REPORT_LENSES])
-        # The retired cards must be gone for good — these are the models whose
-        # KPIs were hardcoded and whose totals could never be non-zero.
-        for dead in ('pb_hr_payroll_analytics.action_prepare_hr_analytics_dashboard',
-                     'pb_hr_payroll_analytics.action_view_hr_analytics_statutory_contrib',
-                     'payroll_analytics_approval.action_bank_export_log'):
-            self.assertNotIn(dead, xmlids)
+    def test_07b_drill_payloads_carry_ids(self):
+        """The board is only clickable if its payload keeps the record ids.
+
+        Every one of these was previously computed and then discarded, which is
+        exactly why the tiles were dead click targets.
+        """
+        board = self._board(self.u_manager)
+
+        # hero: the run behind the headline
+        self.assertIn('run_id', board['hero'])
+
+        # departments: a row is either drillable or explicitly marked inert —
+        # never a silent no-op on a falsy id
+        for row in board['departments'].get('rows', []):
+            self.assertIn('drillable', row)
+            if row['drillable']:
+                self.assertTrue(row['id'])
+            else:
+                self.assertFalse(row['id'],
+                                 "only the unassigned row may be non-drillable")
+
+        # statutory: the legs map lets a click name its own category_type
+        stat = board['statutory']
+        if stat.get('total'):
+            self.assertIn('legs', stat)
+            self.assertIn('rows_hidden', stat)
+            for row in stat.get('rows', []):
+                self.assertIn('category_type', row)
+
+        # snapshots: the RUN id, not just its name — dropping it is what forced
+        # the card onto the legacy payroll.analytics form
+        for snap in board.get('snapshots', []):
+            self.assertIn('run_id', snap)
+
+    def test_07c_pulse_is_drillable(self):
+        """Pulse tiles ship ids and per-day series, with the cap surfaced."""
+        pulse = self._board(self.u_manager)['pulse']
+        att = pulse.get('attendance')
+        if att:
+            self.assertIn('kind_employees', att)
+            self.assertIn('kind_overflow', att, "a truncated drill must say so")
+            self.assertIn('by_day', att, "the micro-chart needs a daily series")
+            self.assertIn('capped', att)
+        leave = pulse.get('leave')
+        if leave:
+            self.assertIn('density', leave)
+            self.assertIn('out_today_ids', leave)
+        ot = pulse.get('ot')
+        if ot:
+            self.assertIn('near_cap_ids', ot,
+                          "'N near the ceiling' is only useful if you can see which N")
 
     # --------------------------------------------------- §6.8 multi-company
     def test_08_multi_company(self):

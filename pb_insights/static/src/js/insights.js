@@ -40,6 +40,7 @@ export class PbInsights extends Component {
             hover: -1,           // hovered trend column
             heroNet: 0,
             drawn: false,
+            statHover: "",       // hovered statutory leg — drives the centre readout
         });
         this._raf = null;
         this._timer = null;
@@ -92,9 +93,41 @@ export class PbInsights extends Component {
         const s = this.d.statutory || {};
         return Object.assign({ rows: [], employee: 0, employer: 0, total: 0 }, s);
     }
+    // --- pulse micro-chart geometry -------------------------------------
+    /** Height % for one day of the attendance-exception micro-chart. */
+    dayBar(count) {
+        const days = this.pulse?.attendance?.by_day || [];
+        const max = Math.max(1, ...days.map((d) => d.count || 0));
+        return count ? Math.max(8, Math.round((count / max) * 100)) : 3;
+    }
+
+    /** Opacity for one day of the 14-day out-of-office density strip. */
+    densityAlpha(count) {
+        const days = this.pulse?.leave?.density || [];
+        const max = Math.max(1, ...days.map((d) => d.count || 0));
+        return count ? (0.22 + 0.78 * (count / max)).toFixed(2) : "0.08";
+    }
+
+    /** How many exceptions of one kind — drives the drill affordance. */
+    excCount(kind) { return this.pulse?.attendance?.kinds?.[kind] || 0; }
+
+    /** The donut centre reads the hovered leg, falling back to the total. */
+    get statHoverValue() {
+        const s = this.d.statutory || {};
+        if (this.state.statHover === "employee") { return s.employee || 0; }
+        if (this.state.statHover === "employer") { return s.employer || 0; }
+        return s.total || 0;
+    }
+    get statHoverLabel() {
+        if (this.state.statHover === "employee") { return _t("employee share"); }
+        if (this.state.statHover === "employer") { return _t("employer share"); }
+        return _t("contributions");
+    }
+
     get pulse() { return this.d.pulse || {}; }
     get snapshots() { return this.d.snapshots || []; }
-    get reports() { return this.d.reports || []; }
+    // Phase O: the report gallery is retired — every number is a door now.
+    // `explorer` carries only whether the cockpit is installed.
     get timings() { return this.d.timings || {}; }
 
     /** The run shown in the cost-story readout: hovered, else the newest. */
@@ -300,24 +333,68 @@ export class PbInsights extends Component {
         this._raf = requestAnimationFrame(step);
     }
 
-    // ------------------------------------------------------------ actions
-    /**
-     * Open a gallery card. Lens cards carry a `lens` id and land in the
-     * Analytics Explorer already pointed at that question; classic cards are
-     * plain act_windows.
-     */
-    openReport(rep) {
-        const xmlid = typeof rep === "string" ? rep : rep.xmlid;
-        const opts = { clearBreadcrumbs: true };
-        if (rep && rep.lens) {
-            opts.additionalContext = { pbex_lens: rep.lens };
-        }
-        this.action.doAction(xmlid, opts).catch((e) => {
+    // ============================================================ actions
+    //
+    // Phase O: every number on this board is a door. The board answers the
+    // questions we anticipated; anything you click hands the Explorer the
+    // exact question behind that figure, still fully editable when it lands.
+    //
+    // ------------------------------------------------------------ drilling
+
+    /** Hand the Analytics Explorer a complete question. */
+    openLens(spec) {
+        if (!this.explorerAvailable) {
             this.notif.add(
-                (e && e.data && e.data.message) || _t("That report is not available."),
+                _t("The Analytics Explorer is not installed on this database."),
+                { type: "warning" });
+            return;
+        }
+        this.action.doAction("pb_explorer.action_pb_explorer", {
+            additionalContext: { pbex_spec: spec },
+        }).catch((e) => {
+            this.notif.add(
+                (e && e.data && e.data.message) || _t("Could not open the Explorer."),
                 { type: "danger" });
         });
     }
+
+    get explorerAvailable() { return !!this.d?.explorer?.available; }
+
+    /** The month the board is currently anchored on, for date-scoped drills. */
+    get heroMonth() { return this.hero?.month || null; }
+
+    // --- hero -----------------------------------------------------------
+    openHeadcount() {
+        this.openLens({ measure: "headcount", dimension: "department_id",
+                        grain: "month", chart: "line" });
+    }
+    openAvgCost() {
+        this.openLens({ measure: "cost_per_head", dimension: "department_id",
+                        grain: "month", chart: "heatmap" });
+    }
+    openEmployerCost() {
+        this.openLens({ measure: "employer_cost", dimension: "department_id",
+                        grain: "month", chart: "column" });
+    }
+    openHeroNet() {
+        const runId = this.hero?.run_id;
+        this.openLens({
+            measure: "net", dimension: "code", grain: "none", chart: "donut",
+            filters: runId ? { run_id: [runId] } : {},
+        });
+    }
+
+    // --- cost story -----------------------------------------------------
+    /** A column is a pay run: show what that run was actually made of. */
+    openRunComposition(runId) {
+        if (!runId) { return; }
+        this.openLens({
+            measure: "component", dimension: "code", grain: "none",
+            chart: "table", filters: { run_id: [runId] },
+        });
+    }
+
+    /** The record itself stays one click away, from the hover readout. */
     openRun(runId) {
         if (!runId) { return; }
         this.action.doAction({
@@ -329,27 +406,138 @@ export class PbInsights extends Component {
             target: "current",
         });
     }
-    openSnapshot(snapId) {
-        if (!snapId) { return; }
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            name: _t("Payroll Analytics"),
-            res_model: "payroll.analytics",
-            res_id: snapId,
-            views: [[false, "form"]],
-            target: "current",
+
+    // --- departments ----------------------------------------------------
+    /**
+     * The leaderboard measures NET PAID, so the drill shows what that
+     * department was paid, broken down by component — not the employee
+     * directory the pre-Phase-O drill opened, which answered a different
+     * question entirely.
+     */
+    openDepartment(row) {
+        if (!row || !row.drillable) { return; }
+        const perHead = this.state.deptMode === "perhead";
+        this.openLens({
+            measure: perHead ? "cost_per_head" : "component",
+            dimension: perHead ? "department_id" : "code",
+            grain: perHead ? "month" : "none",
+            chart: perHead ? "line" : "table",
+            filters: { department_id: [row.id] },
         });
     }
-    openDepartment(row) {
-        if (!row || !row.id) { return; }
+
+    // --- statutory ------------------------------------------------------
+    /** One leg of the split: employee, employer or tax. */
+    openStatutoryLeg(leg) {
+        const type = this.d?.statutory?.legs?.[leg];
+        if (!type) { return; }
+        this.openLens({
+            measure: "statutory", dimension: "department_id", grain: "month",
+            chart: "column", filters: { category_type: [type] },
+        });
+    }
+    /** One contribution code. */
+    openStatutoryCode(row) {
+        if (!row || !row.code || row.code === "—") { return; }
+        this.openLens({
+            measure: "component", dimension: "department_id", grain: "month",
+            chart: "column", filters: { code: [row.code] },
+        });
+    }
+
+    // --- snapshots ------------------------------------------------------
+    /**
+     * A snapshot is a pay run. Pre-Phase-O this opened the payroll.analytics
+     * record, whose only registered form view is the legacy dashboard — the
+     * one with the 10000% variance and two blank canvases whose renderer was
+     * deleted in Phase M. Show the run's real composition instead.
+     */
+    openSnapshot(snap) {
+        const runId = typeof snap === "object" ? snap && snap.run_id : null;
+        if (runId) {
+            this.openRunComposition(runId);
+            return;
+        }
+        this.notif.add(
+            _t("This snapshot is not linked to a pay run, so there is nothing to open."),
+            { type: "warning" });
+    }
+
+    // --- pulse: operational queues, not analytics ------------------------
+    _openEmployees(ids, title) {
+        if (!ids || !ids.length) { return; }
         this.action.doAction({
             type: "ir.actions.act_window",
-            name: row.name,
+            name: title,
             res_model: "hr.employee",
-            domain: [["department_id", "=", row.id]],
+            domain: [["id", "in", ids]],
             views: [[false, "list"], [false, "form"]],
             target: "current",
         });
+    }
+
+    openAttendanceKind(kind) {
+        const ids = this.pulse?.attendance?.kind_employees?.[kind] || [];
+        if (!ids.length) { return; }
+        this._openEmployees(ids, _t("Attendance exceptions"));
+    }
+
+    openLeave() {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: _t("Time Off"),
+            res_model: "hr.leave",
+            domain: [["state", "in", ["confirm", "validate1"]]],
+            views: [[false, "list"], [false, "form"]],
+            target: "current",
+        }).catch(() => {
+            this.notif.add(_t("Time Off is not available on this database."),
+                           { type: "warning" });
+        });
+    }
+
+    openOvertime(nearCapOnly) {
+        const ids = this.pulse?.ot?.near_cap_ids || [];
+        if (nearCapOnly && ids.length) {
+            this._openEmployees(ids, _t("Near the overtime ceiling"));
+            return;
+        }
+        const ot = this.pulse?.ot;
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: _t("Overtime"),
+            res_model: "hr.overtime.request",
+            domain: [["state", "=", "approved"],
+                     ["date", ">=", ot?.date_from], ["date", "<=", ot?.date_to]],
+            views: [[false, "list"], [false, "form"]],
+            target: "current",
+        }).catch(() => {
+            this.notif.add(_t("Overtime is not available on this database."),
+                           { type: "warning" });
+        });
+    }
+
+    openBonusHours() {
+        const b = this.pulse?.bonus;
+        if (!b) { return; }
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: _t("Bonus hours"),
+            res_model: "hr.overtime.request",
+            domain: [["state", "=", "approved"], ["bonus_hours", ">", 0],
+                     ["date", ">=", b.date_from], ["date", "<=", b.date_to]],
+            views: [[false, "list"], [false, "form"]],
+            target: "current",
+        }).catch(() => {
+            this.notif.add(_t("Overtime is not available on this database."),
+                           { type: "warning" });
+        });
+    }
+
+    /** The bare "open the Explorer" route, for the band under the board. */
+    openExplorer() {
+        if (!this.explorerAvailable) { return; }
+        this.action.doAction("pb_explorer.action_pb_explorer");
     }
 }
 

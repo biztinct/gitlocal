@@ -347,6 +347,111 @@
     }
 
     // ------------------------------------------------------------ gallery
+    // ============================================================ Phase O
+    //  Every number is a door. `.pbin-door` is the shared affordance: it must
+    //  be obvious that a figure can be opened, without turning the board into
+    //  a wall of buttons.
+    // =====================================================================
+    .pbin-door {
+        cursor: pointer;
+        border: 0; background: none; font: inherit; color: inherit;
+        text-align: left;
+        transition: color 140ms, background-color 140ms, transform 140ms;
+        &:hover { color: var(--p); }
+        // No Explorer installed -> no door. Say nothing, promise nothing.
+        &.off { cursor: default; pointer-events: none; }
+    }
+    .pbin-headline .v.pbin-door:hover { text-decoration: underline;
+                                        text-underline-offset: 4px; }
+
+    .pbin-kpi.pbin-door {
+        position: relative; width: 100%;
+        .go { position: absolute; right: 12px; top: 50%; margin-top: -7px;
+              color: var(--p-light); opacity: 0; transition: all 140ms; }
+        &:hover { border-color: var(--p-light); box-shadow: var(--sh);
+                  transform: translateY(-1px); }
+        &:hover .go { opacity: 1; transform: translateX(2px); color: var(--p); }
+        &.off .go { display: none; }
+    }
+
+    // statutory: arcs and legend rows are live
+    .pbin-arc {
+        cursor: pointer; transition: opacity 160ms, stroke-width 160ms;
+        &:hover { stroke-width: 20; }
+        &.dim { opacity: .35; }
+    }
+    .lgrow.pbin-door {
+        width: 100%; border-radius: 8px; padding: 5px 7px; margin: 0 -7px;
+        &:hover { background: var(--line-2); }
+    }
+    .codes .code {
+        cursor: pointer; border: 0; font: inherit;
+        transition: background-color 140ms, color 140ms;
+        &:hover { background: var(--p); color: #fff; }
+        &.more { cursor: default; background: var(--line-2); color: var(--muted);
+                 &:hover { background: var(--line-2); color: var(--muted); } }
+    }
+
+    // department rows: an undrillable row must LOOK undrillable
+    .dep.inert, .snap.inert {
+        cursor: default; opacity: .72;
+        &:hover { border-color: var(--line); box-shadow: none;
+                  transform: none; background: transparent; }
+    }
+
+    .pbin-openrun {
+        display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+        padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line);
+        background: #fff; color: var(--muted); font-size: 11.5px;
+        font-weight: 600; cursor: pointer; transition: all 140ms;
+        &:hover { border-color: var(--p-light); color: var(--p); }
+    }
+
+    // ---- pulse micro-charts --------------------------------------------
+    .pspark {
+        display: flex; align-items: flex-end; gap: 3px; height: 34px;
+        margin: 8px 0 2px;
+        .sb {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: flex-end; height: 100%; gap: 2px;
+            i { display: block; width: 100%; border-radius: 3px 3px 1px 1px;
+                background: var(--rose); opacity: .78; transition: opacity 140ms; }
+            em { font-style: normal; font-size: 8.5px; color: var(--muted);
+                 line-height: 1; }
+            &:hover i { opacity: 1; }
+        }
+    }
+    .pdens {
+        display: flex; gap: 2px; margin-top: 8px;
+        .dc { flex: 1; height: 14px; border-radius: 3px; background: var(--blue); }
+    }
+    .pkind {
+        border: 0; background: none; font: inherit; color: inherit;
+        padding: 0; cursor: pointer; text-align: left;
+        border-bottom: 1px dashed transparent;
+        &:hover { color: var(--p); border-bottom-color: var(--p-light); }
+        &.off { cursor: default; pointer-events: none; opacity: .62; }
+    }
+    .pn.pbin-door:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .pcap { color: var(--amber); font-weight: 700; }
+
+    // ---- the explore band (replaces the retired gallery) ---------------
+    .pbin-explore {
+        display: flex; align-items: center; gap: 14px; cursor: pointer;
+        padding: 15px 18px; border-radius: var(--r);
+        border: 1px dashed var(--p-light); background: var(--soft);
+        transition: all 160ms;
+        &:hover { background: #fff; border-style: solid;
+                  border-color: var(--p); box-shadow: var(--sh); }
+        .ei { width: 40px; height: 40px; border-radius: 12px; flex: none;
+              display: grid; place-items: center; background: #fff; color: var(--p); }
+        .et { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        b { font-size: 14px; font-weight: 700; color: var(--ink); }
+        i { font-style: normal; font-size: 12px; color: var(--muted); line-height: 1.45; }
+        .ea { color: var(--p); flex: none; transition: transform 140ms; }
+        &:hover .ea { transform: translateX(3px); }
+    }
+
     .pbin-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(262px, 1fr)); gap: 12px; }
     .gcard {
         display: flex; align-items: center; gap: 12px; text-align: left;
