@@ -85,7 +85,10 @@ class PbPayrunWizard(models.AbstractModel):
             slips.write({c: False for c in common})
         n = len(slips)
         slips.unlink()
-        runs.write({'state': 'draft'})
+        # the run state is fully sealed (pb_payruns); this pre-unlink reset is
+        # sanctioned cleanup — the unlink right after still runs as the real
+        # user, so the caller's own rights gate the whole path
+        runs.sudo().write({'state': 'draft'})
         runs.unlink()
         return n
 
@@ -322,8 +325,11 @@ class PbPayrunWizard(models.AbstractModel):
             # still hold, so `state` below must be re-read from the DB.
             self.env.invalidate_all()
             return {'ok': False, 'run_id': run.id, 'state': run.state, 'msg': str(e)}
-        except Exception as e:
-            _logger.warning("Payrun wizard: submit failed: %s", e)
+        except Exception:
+            _logger.exception("Payrun wizard: submit failed on run %s", run.id)
             self.env.invalidate_all()
-            return {'ok': False, 'run_id': run.id, 'state': run.state, 'msg': str(e)}
+            # arbitrary exception internals never reach the client (L-5)
+            return {'ok': False, 'run_id': run.id, 'state': run.state,
+                    'msg': _('The submit failed on the server — the run was left '
+                             'unchanged. Ask an administrator to check the log.')}
         return {'ok': True, 'run_id': run.id, 'state': run.state}

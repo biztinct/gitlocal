@@ -17,7 +17,7 @@ action as the real user. Enforcement is model-side (pb_payruns
 _pb_require_tier) — this module's group gate is defence in depth, never the
 guard. No mail is sent from this module.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
