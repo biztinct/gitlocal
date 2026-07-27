@@ -26,7 +26,7 @@ from collections import defaultdict
 from datetime import timedelta
 
 from odoo import api, fields, models, _
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -683,7 +683,8 @@ class PbAuditConsole(models.AbstractModel):
         except (TypeError, ValueError):
             days = 0
         if days <= 0:
-            raise AccessError(_("Retention must be a positive number of days."))
+            # bad input, not a permissions failure (review J-6)
+            raise UserError(_("Retention must be a positive number of days."))
         self.env['ir.config_parameter'].sudo().set_param(
             _RETENTION_PARAM, str(days))
         return {'retention_days': days}

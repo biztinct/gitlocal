@@ -4,7 +4,7 @@
     # 19.0.1.2.0 — Sudima Phase M: the menu forest is retired (views, actions
     # and models all stay, off-menu; the Insights cockpit's report gallery is
     # now the entry point). See views/hr_analytics_menus.xml.
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources/Payroll',
     'summary': 'Professional HR analytics with personnel costs, statutory contributions, headcount analysis',
     'description': """

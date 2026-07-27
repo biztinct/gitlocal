@@ -533,10 +533,14 @@ class PbInsights(models.AbstractModel):
         return out
 
     def _statutory_legacy(self, run, out):
-        """Untyped-category fallback: the om_hr_payroll country-module CODES."""
+        """Untyped-category fallback: the om_hr_payroll country-module CODES.
+        Same scope as the primary SQL (review M-1): selected companies only,
+        cancelled slips excluded."""
         out['basis'] = 'code'
         groups = self.env['hr.payslip.line'].read_group(
             [('slip_id.payslip_run_id', '=', run.id),
+             ('slip_id.company_id', 'in', list(self._co_ids())),
+             ('slip_id.state', '!=', 'cancel'),
              ('code', 'in', _LEGACY_CONTRIB_CODES)], ['total:sum'], ['code'])
         for g in groups:
             code = g.get('code') or ''
@@ -591,7 +595,7 @@ class PbInsights(models.AbstractModel):
         emp_ids |= {a['employee_id'][0] for a in atts if a['employee_id']}
         capped = len(emp_ids) > _PULSE_EMPS
         employees = self.env['hr.employee'].browse(sorted(emp_ids)[:_PULSE_EMPS])
-        rows = self.env['pb.attendance.exception.engine'].get_exceptions(
+        rows = self.env['pb.attendance.exception.engine']._get_exceptions(
             employees, monday, today) if employees else []
         kinds = {'missing_punch': 0, 'missing_checkout': 0, 'late': 0, 'early_leave': 0}
         # Per-DAY counts drive the tile's micro-chart, and the employee ids
@@ -766,15 +770,22 @@ class PbInsights(models.AbstractModel):
                 "WHERE payslip_run_id IN %s AND company_id IN %s",
                 (tuple(run_ids), self._co_ids()))
             allowed_runs = {r[0] for r in self.env.cr.fetchall()}
+        # Orphan rows (no payslip_run_id) carry no company signal at all — a
+        # same-date_from heuristic showed every legacy orphan to every
+        # company's viewers (review M-3). Policy: orphans are visible ONLY to
+        # the super-admin/system tier, who own the legacy cleanup.
         orphan_periods = set()
-        orphan_dates = [r.date_from for r in rows
-                        if not r.payslip_run_id and r.date_from]
-        if orphan_dates:
-            self.env.cr.execute(
-                "SELECT DISTINCT date_from FROM hr_payslip "
-                "WHERE company_id IN %s AND date_from IN %s",
-                (self._co_ids(), tuple(orphan_dates)))
-            orphan_periods = {r[0] for r in self.env.cr.fetchall()}
+        if (self.env.user.has_group('base.group_system')
+                or self.env.user.has_group(
+                    'pb_hr_payroll_base.group_payroll_super_admin')):
+            orphan_dates = [r.date_from for r in rows
+                            if not r.payslip_run_id and r.date_from]
+            if orphan_dates:
+                self.env.cr.execute(
+                    "SELECT DISTINCT date_from FROM hr_payslip "
+                    "WHERE company_id IN %s AND date_from IN %s",
+                    (self._co_ids(), tuple(orphan_dates)))
+                orphan_periods = {r[0] for r in self.env.cr.fetchall()}
 
         out = []
         for rec in rows:

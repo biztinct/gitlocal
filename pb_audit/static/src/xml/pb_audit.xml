@@ -39,12 +39,13 @@
               <div class="pbau-card__hd">Sources <span class="pbau-card__sub" t-esc="'· ' + presentCount() + ' present'"/></div>
               <div class="pbau-source-pills">
                 <t t-foreach="sourcePills()" t-as="s" t-key="s.key">
-                  <span t-attf-class="pbau-spill pbau-spill--{{ s.color }} {{ s.installed ? '' : 'pbau-spill--ghost' }}"
-                        t-att-title="s.installed ? (s.label + ' · ' + s.count) : (s.label + ' · not installed')">
+                  <span t-attf-class="pbau-spill pbau-spill--{{ s.color }} {{ s.installed ? '' : 'pbau-spill--ghost' }} {{ s.error ? 'pbau-spill--err' : '' }}"
+                        t-att-title="s.error ? (s.label + ' · source unavailable') : s.installed ? (s.label + ' · ' + s.count) : (s.label + ' · not installed')">
                     <span class="pbau-spill__i" t-out="ic(s.icon, 14)"/>
                     <span class="pbau-spill__l" t-esc="s.label"/>
-                    <span class="pbau-spill__c" t-if="s.installed" t-esc="s.count"/>
+                    <span class="pbau-spill__c" t-if="s.installed and !s.error" t-esc="s.count"/>
                     <span class="pbau-spill__c pbau-spill__c--off" t-if="!s.installed">not installed</span>
+                    <span class="pbau-spill__c pbau-spill__c--off" t-if="s.installed and s.error">unavailable</span>
                   </span>
                 </t>
               </div>

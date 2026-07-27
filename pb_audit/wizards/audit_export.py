@@ -79,8 +79,11 @@ class PbAuditExport(models.TransientModel):
             ws.set_column(c, c, w)
 
         console = self.env['pb.audit.console']
-        rows, _capped, _status = console._collect_stream(filters, _EXPORT_CAP)
-        truncated = len(rows) > _EXPORT_CAP
+        rows, capped, _status = console._collect_stream(filters, _EXPORT_CAP)
+        # a single source holding exactly the cap used to report
+        # truncated=False while rows were dropped (review J-1) — the
+        # collector's own capped flag is the truth
+        truncated = capped or len(rows) > _EXPORT_CAP
         rows = rows[:_EXPORT_CAP]
         for r, row in enumerate(rows, start=1):
             when = row['stamp'] or ''
