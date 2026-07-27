@@ -81,6 +81,9 @@ class PbAttendanceImportWizard(models.TransientModel):
 
     @api.model
     def _read_rows(self, file_b64, filename):
+        # returns (cols, rows, truncated) — truncation is SURFACED, never
+        # silent (review G-L15; the old cap also kept 2001 rows, off by one)
+        truncated = False
         """→ (columns:list[str], rows:list[dict]). XLSX via openpyxl, else CSV."""
         raw = self._decode(file_b64)
         is_xlsx = (filename or '').lower().endswith(('.xlsx', '.xlsm')) \
@@ -96,18 +99,19 @@ class PbAttendanceImportWizard(models.TransientModel):
             try:
                 header = next(it)
             except StopIteration:
-                return [], []
+                return [], [], False
             cols = [str(c).strip() if c is not None else '' for c in header]
             rows = []
             for r in it:
                 if r is None or all(c is None for c in r):
                     continue
+                if len(rows) >= _MAX_ROWS:
+                    truncated = True
+                    break
                 rows.append({cols[i]: r[i] if i < len(r) else None
                              for i in range(len(cols))})
-                if len(rows) > _MAX_ROWS:
-                    break
             wb.close()
-            return cols, rows
+            return cols, rows, truncated
         # CSV — sniff encoding gently
         try:
             text = raw.decode('utf-8-sig')
@@ -116,17 +120,18 @@ class PbAttendanceImportWizard(models.TransientModel):
         reader = csv.reader(io.StringIO(text))
         all_rows = list(reader)
         if not all_rows:
-            return [], []
+            return [], [], False
         cols = [str(c).strip() for c in all_rows[0]]
         rows = []
         for r in all_rows[1:]:
             if not any((c or '').strip() for c in r):
                 continue
+            if len(rows) >= _MAX_ROWS:
+                truncated = True
+                break
             rows.append({cols[i]: (r[i] if i < len(r) else None)
                          for i in range(len(cols))})
-            if len(rows) > _MAX_ROWS:
-                break
-        return cols, rows
+        return cols, rows, truncated
 
     @api.model
     def _guess_mapping(self, cols):
@@ -204,7 +209,7 @@ class PbAttendanceImportWizard(models.TransientModel):
     def parse(self, file_b64, filename):
         """Preview: columns, an auto-guessed mapping and a few sample rows."""
         self._require_officer()
-        cols, rows = self._read_rows(file_b64, filename)
+        cols, rows, truncated = self._read_rows(file_b64, filename)
         if not cols:
             raise UserError(_("The file has no header row."))
         sample = [{'__i': i + 1, **{c: ('' if rows[i].get(c) is None
@@ -215,13 +220,15 @@ class PbAttendanceImportWizard(models.TransientModel):
             'mapping': self._guess_mapping(cols),
             'sample': sample,
             'total': len(rows),
+            'truncated': truncated,
+            'max_rows': _MAX_ROWS,
         }
 
     @api.model
     def _prepare(self, file_b64, filename, mapping):
         """Shared row resolution for validate + commit. Returns a list of
         per-row dicts with resolved employee / datetimes / errors (no writes)."""
-        cols, rows = self._read_rows(file_b64, filename)
+        cols, rows, truncated = self._read_rows(file_b64, filename)
         mp = {k: (mapping or {}).get(k) for k in _TARGETS}
         if not mp.get('employee') or not mp.get('date') or not mp.get('check_in'):
             raise UserError(_(
@@ -238,13 +245,18 @@ class PbAttendanceImportWizard(models.TransientModel):
             emp = self._resolve_employee(emp_token, by_code, by_name)
             d = self._parse_date(row.get(mp['date']))
             t_in = self._parse_time(row.get(mp['check_in']))
-            t_out = self._parse_time(row.get(mp['check_out'])) if mp.get('check_out') else None
+            raw_out = row.get(mp['check_out']) if mp.get('check_out') else None
+            t_out = self._parse_time(raw_out) if mp.get('check_out') else None
             if not emp:
                 rec['errors'].append(_("Unknown employee"))
             if not d:
                 rec['errors'].append(_("Bad or missing date"))
             if not t_in:
                 rec['errors'].append(_("Bad or missing check-in time"))
+            if raw_out not in (None, '') and str(raw_out).strip() and not t_out:
+                # a malformed check-out must flag, not silently import an
+                # open punch (review G-L10)
+                rec['errors'].append(_("Bad check-out time"))
             if emp and d and t_in:
                 rec['employee'] = emp
                 rec['date'] = d
@@ -256,14 +268,14 @@ class PbAttendanceImportWizard(models.TransientModel):
                         co += timedelta(days=1)
                     rec['check_out'] = co
             prepared.append(rec)
-        return prepared
+        return prepared, truncated
 
     @api.model
     def validate(self, file_b64, filename, mapping):
         """Dry-run verdicts — NEVER writes. Flags unknown employee, malformed
         time, overlap with an existing punch, and young-worker cap breach."""
         self._require_officer()
-        prepared = self._prepare(file_b64, filename, mapping)
+        prepared, truncated = self._prepare(file_b64, filename, mapping)
 
         # batch existing punches over the file's employee/date span (overlap)
         emp_ids = list({r['employee'].id for r in prepared if r['employee']})
@@ -303,14 +315,16 @@ class PbAttendanceImportWizard(models.TransientModel):
                 'errors': errors,
             })
         return {'rows': verdicts, 'summary': {
-            'total': len(verdicts), 'valid': valid, 'invalid': len(verdicts) - valid}}
+            'total': len(verdicts), 'valid': valid,
+            'invalid': len(verdicts) - valid,
+            'truncated': truncated, 'max_rows': _MAX_ROWS}}
 
     @api.model
     def commit(self, file_b64, filename, mapping):
         """Write the valid rows — each in its OWN savepoint, so a single bad row
         never poisons the batch. Overlapping / cap-breaching rows are skipped."""
         self._require_officer()
-        prepared = self._prepare(file_b64, filename, mapping)
+        prepared, truncated = self._prepare(file_b64, filename, mapping)
         emp_ids = list({r['employee'].id for r in prepared if r['employee']})
         dates = [r['date'] for r in prepared if r['date']]
         existing = self.env['hr.attendance']
@@ -354,7 +368,8 @@ class PbAttendanceImportWizard(models.TransientModel):
                 errors.append({'index': r['index'], 'employee': r['employee'].name,
                                'reason': str(reason)})
         return {'created': created, 'skipped': skipped, 'errors': errors,
-                'total': len(prepared)}
+                'total': len(prepared),
+                'truncated': truncated, 'max_rows': _MAX_ROWS}
 
     # ------------------------------------------------------------- helpers
     @api.model

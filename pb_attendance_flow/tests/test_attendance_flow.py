@@ -100,7 +100,7 @@ class TestAttendanceFlow(TransactionCase):
         self.Att.create({'employee_id': self.ework.id, 'check_in': open_ci,
                          'pb_entry_source': 'grid'})
 
-        rows = self.Engine.get_exceptions(
+        rows = self.Engine._get_exceptions(
             self.ework, self.today - timedelta(days=7), self.today)
         by_kind = {}
         for r in rows:
@@ -130,7 +130,7 @@ class TestAttendanceFlow(TransactionCase):
         if leave.state != 'validate':
             leave.sudo().action_approve()   # no_validation type → straight to validate
         self.assertEqual(leave.state, 'validate')
-        rows = self.Engine.get_exceptions(emp_lv, d - timedelta(days=1), self.today)
+        rows = self.Engine._get_exceptions(emp_lv, d - timedelta(days=1), self.today)
         self.assertFalse([r for r in rows if r['kind'] == 'missing_punch'],
                          "A validated leave day must not raise a missing punch.")
 
@@ -143,7 +143,7 @@ class TestAttendanceFlow(TransactionCase):
                 'employee_id': emp_tr.id, 'purpose': 'Site visit',
                 'date_from': d, 'date_to': d, 'state': 'approved',
                 'company_id': self.company.id})
-            rows = self.Engine.get_exceptions(emp_tr, d - timedelta(days=1), self.today)
+            rows = self.Engine._get_exceptions(emp_tr, d - timedelta(days=1), self.today)
             self.assertFalse([r for r in rows if r['kind'] == 'missing_punch'],
                              "An approved trip day must not raise a missing punch.")
 
@@ -161,7 +161,7 @@ class TestAttendanceFlow(TransactionCase):
         self._shift(emp, d,
                     actual_in=datetime.combine(d, time(8, 20)),
                     actual_out=datetime.combine(d, time(16, 0)))
-        rows = self.Engine.get_exceptions(emp, d - timedelta(days=1), self.today)
+        rows = self.Engine._get_exceptions(emp, d - timedelta(days=1), self.today)
         self.assertFalse([r for r in rows if r['kind'] == 'late'],
                          "With grace 30, a 20-min-late row is not late.")
         # two-search: company A resolves to its own rule, not the global
@@ -345,8 +345,95 @@ class TestAttendanceFlow(TransactionCase):
         d = self.today - timedelta(days=6)
         att = self._att(self.emp_adult, d, start_h=6, hours=12, source=False)
         self.assertTrue(att.exists())
-        rows = self.Engine.get_exceptions(
+        rows = self.Engine._get_exceptions(
             self.emp_adult, d - timedelta(days=1), d + timedelta(days=1))
         # no shift that day → no shift-derived exception; punch is closed → no
         # missing checkout
         self.assertFalse([r for r in rows if r['date'] == d.isoformat()])
+
+    # ================================================= combined-review fixes
+    def test_11_engine_is_private_and_day_punches_gated(self):
+        """Review G-C1/G-H3: the sudo feed is underscore-private (C18.32) and
+        the punch timeline is officer-or-self-or-line-manager only."""
+        self.assertFalse(hasattr(type(self.Engine), 'get_exceptions'),
+                         "the RPC-reachable engine name must be gone")
+        d = self.today - timedelta(days=2)
+        self._att(self.emp_adult, d)
+        Cockpit = self.env['pb.attendance.flow']
+        stranger = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'atf_str', 'login': 'atf_str',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        with self.assertRaises(AccessError):
+            Cockpit.with_user(stranger).get_day_punches(
+                self.emp_adult.id, d.isoformat())
+        # self passes
+        self.emp_adult.user_id = stranger
+        rows = Cockpit.with_user(stranger).get_day_punches(
+            self.emp_adult.id, d.isoformat())
+        self.assertTrue(rows, "an employee sees their own punches")
+
+    def test_12_review_fields_freeze_after_submit(self):
+        """Review G-H2 (C18.31 TOCTOU): the facts an approver rules on are
+        immutable once submitted — no rewrite between submit and approve."""
+        d = self.today - timedelta(days=2)
+        requester = self.env['res.users'].with_context(no_reset_password=True).create({
+            'name': 'atf_req', 'login': 'atf_req',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        self.ework.user_id = requester
+        corr = self.Corr.with_user(requester).create({
+            'employee_id': self.ework.id, 'date': d,
+            'correction_type': 'create',
+            'new_check_in': datetime.combine(d, time(8, 0)),
+            'new_check_out': datetime.combine(d, time(16, 0)),
+            'reason': 'forgot badge'})
+        corr.with_user(requester).action_submit()
+        self.assertEqual(corr.state, 'submitted')
+        with self.assertRaises(AccessError):
+            corr.with_user(requester).write({
+                'new_check_out': datetime.combine(d, time(23, 0))})
+        # reset to draft re-opens editing for the requester
+        corr.with_user(requester).action_reset_to_draft()
+        corr.with_user(requester).write({
+            'new_check_out': datetime.combine(d, time(17, 0))})
+        self.assertEqual(corr.state, 'draft')
+
+    def test_13_adjust_keeps_existing_checkout(self):
+        """Review G-M6: adjusting only the check-in must not wipe the existing
+        check-out (that reopened the punch and zeroed its hours)."""
+        d = self.today - timedelta(days=2)
+        att = self._att(self.ework, d, start_h=9, hours=7, source=False)
+        original_out = att.check_out
+        corr = self.Corr.create({
+            'employee_id': self.ework.id, 'date': d,
+            'correction_type': 'adjust', 'attendance_id': att.id,
+            'new_check_in': datetime.combine(d, time(8, 0)),
+            'reason': 'badge lag'})
+        corr.action_submit()
+        officer = self._officer('atf_off_adj')
+        corr.with_user(officer).action_approve()
+        self.assertEqual(corr.state, 'approved')
+        att.invalidate_recordset()
+        self.assertEqual(att.check_in, datetime.combine(d, time(8, 0)))
+        self.assertEqual(att.check_out, original_out,
+                         "the untouched check-out must survive the adjust")
+
+    def test_14_punch_days_use_employee_local_dates(self):
+        """Review G-M5 (C18.49): a VN 05:58 punch is 22:58 the PREVIOUS UTC day
+        — UTC keying would invent a missing_punch for the local shift day."""
+        emp_vn = self.env['hr.employee'].create({
+            'name': 'Vy VN', 'company_id': self.company.id,
+            'tz': 'Asia/Ho_Chi_Minh'})
+        d = self.today - timedelta(days=3)
+        self._shift(emp_vn, d)   # 08:00 local shift, published, in the past
+        # punch at 05:58 LOCAL = 22:58 UTC the day before
+        self.Att.create({
+            'employee_id': emp_vn.id,
+            'check_in': datetime.combine(d - timedelta(days=1), time(22, 58)),
+            'check_out': datetime.combine(d, time(9, 0)),
+        })
+        rows = self.Engine._get_exceptions(
+            emp_vn, d - timedelta(days=1), d + timedelta(days=1))
+        missing = [r for r in rows if r['kind'] == 'missing_punch'
+                   and r['date'] == d.isoformat()]
+        self.assertFalse(missing,
+                         "an early local punch must count for the LOCAL day")
