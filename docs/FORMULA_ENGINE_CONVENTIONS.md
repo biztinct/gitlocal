@@ -1221,3 +1221,28 @@ number from the handovers — keep the numbering stable.
     safe.** Compute derived display strings in a getter and `t-esc` the getter. Same family as
     C18.71 (word-operators in `t-as`): anything that looks like a plain JS expression in a template
     is compiled, not evaluated in the browser's global scope.
+94. **A cockpit that computes drill keys and then discards them is a dead board.** The Phase-M
+    Insights cockpit had 10 handlers, 4 navigational, and 20+ card-like elements that looked
+    clickable and were not — while the payload was already carrying (or one line away from
+    carrying) every id needed. `_pulse_attendance` called the exception engine and threw away all
+    its rows; `_snapshots` read `payslip_run_id` and kept only `.name`. Rule: if a collector
+    resolves a record, SHIP ITS ID. The UI can ignore an id; it cannot invent one.
+95. **A falsy id makes a silent dead click.** `{'id': did or 0}` for the unassigned bucket plus a
+    handler that early-returns on a falsy id = a row that looks live and does nothing, with no
+    feedback. Emit an explicit `drillable` flag and render the inert case differently.
+96. **`widget="percentage"` multiplies by 100.** It expects a FRACTION. On a field already stored
+    in percent points it renders 1250% for +12.5% — and the "10000%" seen on the legacy analytics
+    dashboard was that bug stacked on a `100.0` sentinel meaning "100%". Check what the compute
+    stores before choosing the widget, and check the search filters agree with the display.
+97. **`invalidate_cache()` was removed in Odoo 15** (only `invalidate_recordset` exists,
+    `odoo/orm/models.py:6722`). Grep for it after any Odoo upgrade: the one in
+    `om_hr_payroll/models/hr_payslip.py:1083` sat unguarded on the batch-approval path, so
+    advancing a run to Level 2 raised AttributeError.
+98. **Comparing a half-finished period against a complete one manufactures phantom movement.** The
+    new Workforce cockpit reported "3,032 left" in a July that had only partly run — everyone whose
+    pay run had not happened yet. Detect the in-progress period and SAY so; the figure is not wrong,
+    it is meaningless, which is worse because it looks precise.
+99. **Normalise untrusted spec input to a hashable type BEFORE the membership test.** A spec that
+    arrives from an action context or URL is user input: `value not in REGISTRY` raises
+    `TypeError: unhashable type: 'dict'` when the value is a JSON object. Coerce, then test, then
+    fall back. Found by a hostile-input test, not by review — write that test.
