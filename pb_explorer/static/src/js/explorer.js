@@ -44,6 +44,7 @@ export class PbExplorer extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
+        this.action = useService("action");
         this.ic = ic;
         this.chartMeta = CHART_META;
         this.filterMeta = FILTER_META;
@@ -70,6 +71,7 @@ export class PbExplorer extends Component {
             drillBusy: false,
             hover: null,
             lensId: "",         // the active shipped lens, if any
+            lensesOpen: true,   // the lens grid — folded once a lens is chosen
             ask: "",            // the natural-language box
             asking: false,
             askWhy: null,       // the chips the parser chose — shown, never hidden
@@ -84,16 +86,27 @@ export class PbExplorer extends Component {
         onWillStart(async () => {
             await ensureChartJs().catch(() => null);
             await this.loadSchema();
-            // A gallery card in the Insights cockpit lands here already
-            // pointed at its question (context pbex_lens), but the spec stays
-            // fully editable — the chips show exactly what it chose.
-            const wanted = this.props.action?.context?.pbex_lens;
-            const lens = wanted && (this.state.schema?.lenses || [])
-                .find((x) => x.id === wanted);
-            if (lens) {
-                this.state.spec = { ...this.state.spec,
-                                    ...JSON.parse(JSON.stringify(lens.spec)) };
-                this.state.lensId = lens.id;
+            // Two ways to arrive with a question already loaded:
+            //   pbex_lens — a named lens (a gallery/sidebar card)
+            //   pbex_spec — a full spec handed over by another board, which is
+            //               how every clickable number on the Insights cockpit
+            //               drills through to here.
+            // Either way the spec stays fully editable and the chips show
+            // exactly what was chosen — arriving pre-filtered must never feel
+            // like a dead end.
+            const ctx = this.props.action?.context || {};
+            if (ctx.pbex_spec || ctx.pbex_lens) {
+                try {
+                    const resolved = await this.orm.call(MODEL, "resolve_spec",
+                        [ctx.pbex_lens || false, ctx.pbex_spec || false]);
+                    this.state.spec = { ...this.state.spec, ...resolved };
+                    this.state.lensId = ctx.pbex_lens || "";
+                    // An incoming question is the point of the visit; fold the
+                    // lens grid away so the answer is what you land on.
+                    this.state.lensesOpen = false;
+                } catch (e) {
+                    this.notif.add(this._msg(e), { type: "warning" });
+                }
             }
             await this.run();
             this.state.loaded = true;
@@ -367,6 +380,17 @@ export class PbExplorer extends Component {
     // --------------------------------------------------------------- lenses
     get lenses() { return this.state.schema?.lenses || []; }
 
+    /** Classic act_window destinations that are not expressible as a lens —
+     *  carried here so retiring the Insights gallery loses nothing. */
+    get classicReports() { return this.state.schema?.classic || []; }
+
+    get activeLensName() {
+        const l = this.lenses.find((x) => x.id === this.state.lensId);
+        return l ? l.name : "";
+    }
+
+    toggleLenses() { this.state.lensesOpen = !this.state.lensesOpen; }
+
     openLens(lens) {
         this.state.spec = {
             ...JSON.parse(JSON.stringify(lens.spec)),
@@ -375,8 +399,15 @@ export class PbExplorer extends Component {
         };
         this.state.lensId = lens.id;
         this.state.askWhy = null;
+        this.state.lensesOpen = false;
         this.destroyChart();
         this.run();
+    }
+
+    openClassic(rep) {
+        this.action.doAction(rep.xmlid).catch((e) => {
+            this.notif.add(this._msg(e), { type: "danger" });
+        });
     }
 
     // ------------------------------------------------------------- ask bar

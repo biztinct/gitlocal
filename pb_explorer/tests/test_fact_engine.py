@@ -400,6 +400,53 @@ class TestFactEngine(common.TransactionCase):
         res = self._scoped().ask('cost per head by department')
         self.assertEqual(res['spec']['measure'], 'cost_per_head')
 
+    # ------------------------------ §6.13 the drill contract (Phase O)
+    def test_13_resolve_spec_from_lens_and_spec(self):
+        """Both cockpit entry points resolve to a valid spec."""
+        by_lens = self._scoped().resolve_spec('statutory', False)
+        self.assertEqual(by_lens['measure'], 'statutory')
+        self.assertEqual(by_lens['dimension'], 'category_type')
+
+        handed = self._scoped().resolve_spec(False, {
+            'measure': 'employer_cost', 'dimension': 'department_id',
+            'grain': 'quarter', 'chart': 'column',
+            'filters': {'department_id': [self.dept.id]}})
+        self.assertEqual(handed['measure'], 'employer_cost')
+        self.assertEqual(handed['grain'], 'quarter')
+        self.assertEqual(handed['filters']['department_id'], [self.dept.id])
+
+    def test_13b_hostile_spec_degrades(self):
+        """A spec arriving from an action context is untrusted input. It must
+        degrade to defaults, never raise and never reach SQL uninterpolated."""
+        out = self._scoped().resolve_spec(False, {
+            'measure': "net'; DROP TABLE hr_payslip; --",
+            'dimension': '../../etc/passwd',
+            'grain': {'nested': 'junk'},
+            'chart': 12345,
+            'filters': {'department_id': ['not-an-id'], 'bogus_field': [1]},
+        })
+        self.assertEqual(out['measure'], 'net')
+        self.assertEqual(out['dimension'], 'department_id')
+        self.assertEqual(out['grain'], 'month')
+        self.assertEqual(out['chart'], 'column')
+        self.assertNotIn('bogus_field', out['filters'])
+        self.assertNotIn('department_id', out['filters'])   # non-numeric dropped
+        # and it still answers
+        self.assertTrue(self._scoped().query(out)['ok'])
+
+    def test_13c_unknown_lens_is_safe(self):
+        out = self._scoped().resolve_spec('no-such-lens', False)
+        self.assertEqual(out['measure'], 'net')
+
+    def test_13d_classic_reports_resolve(self):
+        """The classic destinations the retired Insights gallery carried now
+        live here; only installed ones are offered."""
+        schema = self._scoped().get_schema()
+        self.assertIn('classic', schema)
+        for rep in schema['classic']:
+            self.assertTrue(self.env.ref(rep['xmlid'], raise_if_not_found=False),
+                            "an unresolvable classic report was offered")
+
     # ----------------------------------------------- §6.12 self-contained
     def test_12_no_external_assets(self):
         module = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

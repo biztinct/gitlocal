@@ -129,6 +129,15 @@ _MONTHS = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
 # permanently blank charts and totals that could not be non-zero.
 # Labels are translated at read time (module constant: _() here would freeze
 # the language at import).
+# Real Odoo views worth keeping a route to. `pb_hr_flow`'s payslip-line pivot is
+# the richest one in the codebase and had ZERO entry points before Phase N.
+_CLASSIC_REPORTS = [
+    ('pb_hr_flow.action_hr_payslip_line_analytics', 'Payslip Line Pivot',
+     'The raw pivot — every payslip line, by component'),
+    ('payroll_analytics_approval.action_payroll_analytics_comparison',
+     'Period Comparison', 'Month-over-month component comparison'),
+]
+
 _LENSES = [
     {'id': 'cost', 'name': 'Cost Explorer', 'icon': 'wallet',
      'desc': 'Total cost of employment by department, month by month',
@@ -192,47 +201,90 @@ class PbExplorer(models.AbstractModel):
         """Every SELECTED company (C18.11/18)."""
         return tuple(self.env.companies.ids or [self.env.company.id])
 
+    # -------------------------------------------------------------- entry
+    @api.model
+    def resolve_spec(self, lens=None, spec=None):
+        """Resolve a cockpit ENTRY POINT into a validated spec.
+
+        Two ways in, one exit. A gallery card or sidebar link passes a named
+        ``lens``; any element on another board that wants to hand over an exact
+        question passes a full ``spec`` (Insights' "every number is a door").
+
+        Both go through ``_clean_spec``, so a spec arriving from a URL or an
+        action context is untrusted input that degrades to sane defaults —
+        every value must match a registry key or it is replaced, and nothing
+        reaches SQL uninterpolated. Resolving server-side keeps the lens
+        definitions a single source of truth instead of duplicating them in JS.
+        """
+        self._require()
+        if spec:
+            return self._clean_spec(spec)
+        if lens:
+            for entry in _LENSES:
+                if entry['id'] == lens:
+                    return self._clean_spec(entry['spec'])
+        return self._clean_spec({})
+
     # -------------------------------------------------------------- specs
+    @staticmethod
+    def _pick(spec, key, registry, fallback):
+        """Choose a registry key from untrusted input.
+
+        The value has to be forced to something HASHABLE before the membership
+        test: a spec can arrive from an action context or a URL, and a JSON
+        object there made ``value not in registry`` raise
+        ``TypeError: unhashable type: 'dict'`` — a crash instead of a
+        graceful default. Found by the hostile-spec test, not in review.
+        """
+        value = spec.get(key)
+        if not isinstance(value, str):
+            return fallback
+        return value if value in registry else fallback
+
     @api.model
     def _clean_spec(self, spec):
         """Normalise an untrusted client spec. Every value that reaches SQL is
         either a registry key or a bound parameter — never interpolated text."""
-        spec = dict(spec or {})
-        measure = spec.get('measure') or 'net'
-        if measure not in _MEASURES:
-            measure = 'net'
-        dimension = spec.get('dimension') or 'department_id'
-        if dimension not in _DIMENSIONS:
-            dimension = 'department_id'
-        grain = spec.get('grain') or 'month'
-        if grain not in _GRAINS:
-            grain = 'month'
-        chart = spec.get('chart') or 'column'
-        if chart not in _CHARTS:
-            chart = 'column'
+        if not isinstance(spec, dict):
+            spec = {}
+        measure = self._pick(spec, 'measure', _MEASURES, 'net')
+        dimension = self._pick(spec, 'dimension', _DIMENSIONS, 'department_id')
+        grain = self._pick(spec, 'grain', _GRAINS, 'month')
+        chart = self._pick(spec, 'chart', _CHARTS, 'column')
 
         filters = {}
-        for key, raw in (spec.get('filters') or {}).items():
+        raw_filters = spec.get('filters')
+        for key, raw in (raw_filters if isinstance(raw_filters, dict) else {}).items():
             if key not in _FILTERS:
                 continue
             _col, typ = _FILTERS[key]
             vals = raw if isinstance(raw, (list, tuple)) else [raw]
+            # Only scalars survive: a nested list/dict is not a filter value.
+            vals = [v for v in vals if isinstance(v, (str, int, float))
+                    and not isinstance(v, bool)]
             if typ == 'int':
                 vals = [int(v) for v in vals if str(v).lstrip('-').isdigit()]
             else:
-                vals = [str(v) for v in vals if v not in (None, False)]
+                vals = [str(v) for v in vals if v not in (None, '')]
             if vals:
                 filters[key] = vals
+
+        try:
+            limit = int(spec.get('limit') or _MAX_SERIES)
+        except (TypeError, ValueError):
+            limit = _MAX_SERIES
         return {
             'measure': measure, 'dimension': dimension, 'grain': grain,
             'chart': chart, 'filters': filters,
             'date_from': self._as_date(spec.get('date_from')),
             'date_to': self._as_date(spec.get('date_to')),
-            'limit': min(int(spec.get('limit') or _MAX_SERIES), _MAX_SERIES),
+            'limit': min(max(1, limit), _MAX_SERIES),
         }
 
     @staticmethod
     def _as_date(v):
+        if not isinstance(v, str):
+            return None
         if not v:
             return None
         try:
@@ -605,7 +657,24 @@ class PbExplorer(models.AbstractModel):
             'build': {'built_runs': Fact.search_count([]),
                       'total_runs': total_runs},
             'lenses': self._lenses(),
+            'classic': self._classic(),
         }
+
+    def _classic(self):
+        """Destinations that are real Odoo views, not lenses.
+
+        These used to hang off the Insights report gallery. That gallery is
+        retired (every number on the board is now its own door), so they live
+        here — the one place that is *about* choosing an analysis. Only entries
+        that RESOLVE on this database are returned.
+        """
+        out = []
+        for xmlid, label, desc in _CLASSIC_REPORTS:
+            if self.env.ref(xmlid, raise_if_not_found=False):
+                out.append({'xmlid': xmlid, 'label': _(label), 'desc': _(desc)})
+            else:
+                _logger.info('pb_explorer: classic report %s not installed', xmlid)
+        return out
 
     # -------------------------------------------------------------- drill
     @api.model
