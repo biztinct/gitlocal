@@ -19,12 +19,22 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 
 from .hr_attendance import PB_ATT_CORRECTION_CTX, _CORR_TOKEN
 
-# Approver groups for the officer tier (env.ref fallback so a demo never
-# dead-ends). The employee's own manager also passes, via _approval_can.
+# Approver groups for the officer tier. The employee's own manager also passes,
+# via _approval_can. `hr.group_hr_user` is a LAST-RESORT fallback used only when
+# the attendance groups are absent from the registry (review G-L12: checked
+# unconditionally it silently widened approval to every basic HR user).
 _OFFICER_GROUP = 'hr_attendance.group_hr_attendance_officer'
-_OFFICER_FALLBACKS = ('hr_attendance.group_hr_attendance_officer',
-                      'hr_attendance.group_hr_attendance_manager',
-                      'hr.group_hr_user')
+_OFFICER_TIER = ('hr_attendance.group_hr_attendance_officer',
+                 'hr_attendance.group_hr_attendance_manager')
+_OFFICER_LAST_RESORT = ('hr.group_hr_user',)
+
+# The facts the approver rules on. Once a correction leaves draft they FREEZE —
+# an employee could otherwise rewrite the times between submit and approve and
+# have the manager unknowingly apply them into payroll worked-days (review
+# G-H2, the C18.31 TOCTOU class).
+_REVIEW_FIELDS = frozenset({'employee_id', 'date', 'correction_type',
+                            'attendance_id', 'new_check_in', 'new_check_out',
+                            'reason'})
 
 
 class HrAttendanceCorrection(models.Model):
@@ -115,6 +125,17 @@ class HrAttendanceCorrection(models.Model):
                 continue
         return False
 
+    def _user_in_officer_tier(self):
+        """Attendance officer/manager; hr.group_hr_user counts ONLY when the
+        attendance groups don't exist on this database (review G-L12)."""
+        if self._user_in_any(_OFFICER_TIER):
+            return True
+        try:
+            self.env.ref(_OFFICER_GROUP)
+            return False        # the real tier exists — no fallback
+        except ValueError:
+            return self._user_in_any(_OFFICER_LAST_RESORT)
+
     def _approval_can(self, from_state, to_state):
         """Officer-tier auth, PLUS the employee's own line manager (no group).
 
@@ -132,7 +153,7 @@ class HrAttendanceCorrection(models.Model):
                 return True
             if rec.create_uid == user:
                 return True
-            return self._user_in_any(_OFFICER_FALLBACKS)
+            return self._user_in_officer_tier()
         if pair == ('submitted', 'approved'):
             # approver ≠ requester (the person who filed it)
             if rec.create_uid == user or (
@@ -142,8 +163,25 @@ class HrAttendanceCorrection(models.Model):
             if rec.manager_id and rec.manager_id.user_id == user:
                 return True
             # …else any attendance officer / manager
-            return self._user_in_any(_OFFICER_FALLBACKS)
+            return self._user_in_officer_tier()
         return False
+
+    # ------------------------------------------------------- the review freeze
+    def write(self, vals):
+        # Review G-H2 (C18.31 TOCTOU): the facts an approver rules on are
+        # immutable once the correction leaves draft. Reset to draft first to
+        # amend; state/apply_error stay writable (the chain mixin seals state
+        # with its own sentinel).
+        if not (self.env.su or self.env.user._is_admin()):
+            frozen = _REVIEW_FIELDS.intersection(vals)
+            if frozen:
+                for rec in self:
+                    if rec.state != 'draft':
+                        raise AccessError(_(
+                            "A %(state)s correction can no longer be edited "
+                            "(%(fields)s) — reset it to draft first.",
+                            state=rec.state, fields=', '.join(sorted(frozen))))
+        return super().write(vals)
 
     # --------------------------------------------------------- actions
     def action_submit(self):
@@ -163,6 +201,11 @@ class HrAttendanceCorrection(models.Model):
                 _('adjust') if self.correction_type == 'adjust' else _('remove')))
         if self.correction_type == 'create' and not self.new_check_in:
             raise UserError(_("Enter a check-in time before submitting."))
+        if self.correction_type == 'adjust' and not (
+                self.new_check_in or self.new_check_out):
+            raise UserError(_(
+                "Enter the corrected check-in and/or check-out time before "
+                "submitting an adjustment."))
         if not (self.reason or '').strip():
             raise UserError(_("A reason is required before submitting."))
 
@@ -200,6 +243,16 @@ class HrAttendanceCorrection(models.Model):
                 raise UserError(_(
                     "A correction can be reset to draft only from Submitted or "
                     "Refused."))
+            # same discipline as the other transitions (review G-L13): the
+            # requester pulls back their own filing, or the officer tier does
+            if not (self.env.su or self.env.user._is_admin()
+                    or rec.create_uid == self.env.user
+                    or (rec.employee_id.user_id
+                        and rec.employee_id.user_id == self.env.user)
+                    or self._user_in_officer_tier()):
+                raise AccessError(_(
+                    "Only the requester or an attendance officer can reset "
+                    "this correction to draft."))
             frm = rec.state
             rec._chain_state_write('draft')
             rec.apply_error = False
@@ -235,10 +288,14 @@ class HrAttendanceCorrection(models.Model):
             att = self.attendance_id.sudo()
             if not att.exists():
                 raise UserError(_("The punch to adjust no longer exists."))
-            vals = {'pb_entry_source': 'correction',
-                    'check_out': self.new_check_out or False}
+            # only the times the correction actually carries are written — an
+            # adjust of the check-in alone must NOT wipe the existing check-out
+            # (review G-M6: that reopened the punch and zeroed its hours)
+            vals = {'pb_entry_source': 'correction'}
             if self.new_check_in:
                 vals['check_in'] = self.new_check_in
+            if self.new_check_out:
+                vals['check_out'] = self.new_check_out
             att.with_context(**{PB_ATT_CORRECTION_CTX: _CORR_TOKEN}).write(vals)
         elif self.correction_type == 'delete':
             att = self.attendance_id.sudo()

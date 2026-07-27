@@ -10,6 +10,8 @@ STATE actions run as the real user so the approval log is truthful and
 
 from datetime import date, datetime, time, timedelta
 
+import pytz
+
 from odoo import _, api, models
 from odoo.exceptions import AccessError
 
@@ -101,7 +103,7 @@ class PbAttendanceFlow(models.AbstractModel):
         df = dt - timedelta(days=_WINDOW_DAYS - 1)
         emps, truncated = self._cohort(df, dt)
 
-        exceptions = self.env['pb.attendance.exception.engine'].get_exceptions(
+        exceptions = self.env['pb.attendance.exception.engine']._get_exceptions(
             emps, df, dt) if emps else []
 
         # group the queue by kind (queue tabs)
@@ -172,13 +174,41 @@ class PbAttendanceFlow(models.AbstractModel):
     @api.model
     def get_day_punches(self, employee_id, day_iso):
         """The day's punches (composer timeline). Device rows are flagged so the
-        UI can lock them with a shield tooltip."""
+        UI can lock them with a shield tooltip.
+
+        Gated officer-or-self-or-line-manager and company-scoped (review G-H3:
+        this used to hand ANY internal user any colleague's punch times), and
+        the day window is the EMPLOYEE-LOCAL day converted to UTC (review G-M5
+        — the import wizard already converts this way, the read side now
+        agrees)."""
         self._require()
+        emp = self.env['hr.employee'].sudo().browse(int(employee_id)).exists()
+        if not emp:
+            return []
+        u = self.env.user
+        if not self._is_officer():
+            own = u.employee_id and u.employee_id.id == emp.id
+            line_mgr = (emp.parent_id and emp.parent_id.user_id
+                        and emp.parent_id.user_id.id == u.id)
+            if not (own or line_mgr):
+                raise AccessError(_(
+                    "You can only view your own punches, or your reports' as "
+                    "their manager."))
+        if emp.company_id and emp.company_id.id not in self.env.companies.ids:
+            raise AccessError(_("This employee belongs to another company."))
         d = date.fromisoformat(day_iso)
+        try:
+            tzinfo = pytz.timezone(emp.tz or 'UTC')
+        except Exception:
+            tzinfo = pytz.UTC
+        start = tzinfo.localize(datetime.combine(d, time.min)) \
+            .astimezone(pytz.UTC).replace(tzinfo=None)
+        end = tzinfo.localize(datetime.combine(d, time.max)) \
+            .astimezone(pytz.UTC).replace(tzinfo=None)
         atts = self.env['hr.attendance'].sudo().search([
-            ('employee_id', '=', int(employee_id)),
-            ('check_in', '>=', datetime.combine(d, time.min)),
-            ('check_in', '<=', datetime.combine(d, time.max)),
+            ('employee_id', '=', emp.id),
+            ('check_in', '>=', start),
+            ('check_in', '<=', end),
         ], order='check_in')
         return [{
             'id': a.id,

@@ -249,6 +249,11 @@ export class PbAttendanceFlow extends Component {
             imp.total = r.total;
             imp.mapping = r.mapping;
             imp.step = "map";
+            if (r.truncated) {
+                this.notif.add(
+                    _t("The file has more rows than the %s-row limit — only the first %s were read. Split the file to import the rest.", r.max_rows, r.max_rows),
+                    { type: "warning", sticky: true });
+            }
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {
@@ -279,6 +284,11 @@ export class PbAttendanceFlow extends Component {
             this.notif.add(
                 _t("%s imported, %s skipped.", imp.result.created, imp.result.skipped),
                 { type: imp.result.skipped ? "warning" : "success" });
+            if (imp.result.truncated) {
+                this.notif.add(
+                    _t("Only the first %s rows were imported — split the file for the rest.", imp.result.max_rows),
+                    { type: "warning", sticky: true });
+            }
         } catch (e) {
             this.notif.add(this._err(e), { type: "danger" });
         } finally {

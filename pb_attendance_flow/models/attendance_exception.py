@@ -14,6 +14,8 @@ whole cohort, folded in Python. All methods are ``@api.model``.
 from collections import defaultdict
 from datetime import datetime, time, timedelta
 
+import pytz
+
 from odoo import _, api, fields, models
 
 # kinds surfaced by the feed (icons/labels live in the cockpit)
@@ -78,11 +80,16 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
 
     # --------------------------------------------------------- the feed
     @api.model
-    def get_exceptions(self, employees, date_from, date_to):
+    def _get_exceptions(self, employees, date_from, date_to):
         """Exception rows for `employees` over [date_from, date_to].
 
         Row = {employee_id, name, avatar_url, date, kind, shift_id, shift_code,
         detail, minutes}. Read-only.
+
+        Underscore-private (C18.32, review G-C1): every read below is sudo, so
+        an RPC-reachable name would hand any authenticated session the whole
+        cohort's attendance story. Callers (this module's cockpit, pb_insights,
+        pb_workforce_insights, pb_team) gate themselves first.
         """
         if not isinstance(employees, models.BaseModel):
             employees = self.env['hr.employee'].browse(
@@ -118,15 +125,34 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
             ('state', '=', 'published'),
         ])
 
-        # --- batch read: attendances in the window + a day of overnight slack ---
+        # --- batch read: attendances in the window + a day of slack EACH side
+        # (an employee-local day maps to the previous OR next UTC day depending
+        # on the tz offset — review G-M5) ---
         atts = self.env['hr.attendance'].sudo().search([
             ('employee_id', 'in', emp_ids),
             ('check_in', '>=', datetime.combine(df - timedelta(days=1), time.min)),
-            ('check_in', '<=', datetime.combine(dt, time.max)),
+            ('check_in', '<=', datetime.combine(dt + timedelta(days=1), time.max)),
         ])
+        # Punch days are keyed by the EMPLOYEE-LOCAL date, not the UTC date
+        # (review G-M5): in VN (UTC+7) a 05:58 local punch lands on the previous
+        # UTC day, and UTC keying would invent exactly the missing_punch that
+        # C18.49 forbids. Shift dates are already local calendar days.
+        tz_cache = {}
+
+        def local_day(emp, dt_utc):
+            tzinfo = tz_cache.get(emp.id)
+            if tzinfo is None:
+                try:
+                    tzinfo = pytz.timezone(emp.tz or 'UTC')
+                except Exception:
+                    tzinfo = pytz.UTC
+                tz_cache[emp.id] = tzinfo
+            return pytz.UTC.localize(dt_utc).astimezone(tzinfo).date()
+
         att_days = defaultdict(list)  # (emp_id, iso) -> [attendance]
         for a in atts:
-            att_days[(a.employee_id.id, a.check_in.date().isoformat())].append(a)
+            att_days[(a.employee_id.id,
+                      local_day(a.employee_id, a.check_in).isoformat())].append(a)
 
         emp_by_id = {e.id: e for e in employees}
         rows = []
@@ -180,8 +206,7 @@ class PbAttendanceExceptionEngine(models.AbstractModel):
         for a in atts:
             if a.check_out or not a.check_in:
                 continue
-            iso = a.check_in.date().isoformat()
-            d = a.check_in.date()
+            d = local_day(a.employee_id, a.check_in)
             if not (df <= d <= dt):
                 continue
             emp = a.employee_id
