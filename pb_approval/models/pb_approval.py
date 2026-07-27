@@ -147,10 +147,14 @@ class PbApproval(models.AbstractModel):
             # the model's OWN words — never a generic "Action blocked"
             self.env.invalidate_all()
             return {'ok': False, 'state': run.state, 'msg': str(e)}
-        except Exception as e:
-            _logger.warning("Approval cockpit: %s failed on run %s: %s", method, run_id, e)
+        except Exception:
+            _logger.exception("Approval cockpit: %s failed on run %s", method, run_id)
             self.env.invalidate_all()
-            return {'ok': False, 'state': run.state, 'msg': str(e) or _('Action failed.')}
+            # never surface an arbitrary exception's internals to the client —
+            # only UserError/AccessError carry the model's own words (L-5)
+            return {'ok': False, 'state': run.state,
+                    'msg': _('The action failed on the server — the run was left '
+                             'unchanged. Ask an administrator to check the log.')}
         return {'ok': True, 'state': run.state}
 
     @api.model

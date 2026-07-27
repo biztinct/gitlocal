@@ -306,3 +306,72 @@ class TestApprovalChain(TransactionCase):
         self.assertFalse(officer_run.with_user(self.u_none).pb_can_approve_officer)
         self.assertFalse(officer_run.with_user(self.u_officer).pb_can_submit,
                          "a run already in the chain cannot be submitted again")
+
+    # ------------------------------------------ combined-review fixes (G–M pass)
+    def test_12_cancel_and_draft_writes_are_sealed_too(self):
+        """Review L-2: a raw call_kw write to 'cancel' killed a run awaiting
+        Finance with no owning tier and no testimony; a raw write to 'draft'
+        undid a Finance decision. Every state value is sealed now."""
+        payrun = self._payrun('level2')
+        for user in (self.u_officer, self.u_hr):
+            with self.assertRaises(AccessError):
+                payrun.with_user(user).write({'state': 'cancel'})
+        self.assertEqual(payrun.state, 'level2')
+        done_run = self._payrun('done')
+        for user in (self.u_officer, self.u_hr):
+            with self.assertRaises(AccessError):
+                done_run.with_user(user).write({'state': 'draft'})
+        self.assertEqual(done_run.state, 'done')
+
+    def test_13_sudo_server_caller_passes_the_tier(self):
+        """Review L-3: the analytics finalize path advances level2 under sudo()
+        with a user who holds no Finance tier — sanctioned server code, and
+        call_kw can never hand a client su."""
+        payrun = self._payrun('level2')
+        with self._no_mail():
+            payrun.with_user(self.u_none).sudo().action_payslip_run_level2_done()
+        self.assertEqual(payrun.state, 'done')
+
+    def test_14_demo_authority_stops_at_the_demo_world(self):
+        """Review L-1: a demo login drives the chain ONLY on generator-stamped
+        demo runs — its all-records rules must never walk a REAL run."""
+        try:
+            demo_group = self.env.ref('pb_demo.group_payobook_demo')
+        except ValueError:
+            self.skipTest('pb_demo is not installed')
+        u_demo = self.env['res.users'].create({
+            'name': 'l_demo', 'login': 'l_demo',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
+                                  demo_group.id])],
+        })
+        real_run = self._payrun('level0')
+        with self.assertRaises(AccessError):
+            real_run.with_user(u_demo).action_payslip_run_level0_done()
+        self.assertEqual(real_run.state, 'level0')
+        self.assertFalse(real_run.with_user(u_demo).pb_awaiting_me,
+                         "the cosmetic flag must not disagree with the gate")
+        if 'is_demo' not in self.Run._fields:
+            self.skipTest('hr.payslip.run.is_demo is absent (pb_demo partial)')
+        demo_run = self._payrun('level0')
+        demo_run.sudo().write({'is_demo': True})
+        demo_run.with_user(u_demo).action_payslip_run_level0_done()
+        self.assertEqual(demo_run.state, 'level1',
+                         "a demo login must still drive the showcase chain")
+        # even on a demo run, the raw state write stays sealed
+        sealed_run = self._payrun('level2')
+        sealed_run.sudo().write({'is_demo': True})
+        with self.assertRaises(AccessError):
+            sealed_run.with_user(u_demo).write({'state': 'done'})
+
+    def test_15_vi_translations_load(self):
+        """Review L-7: the pb_approval loader assert existed; pb_payruns' own
+        python strings were never load-asserted (the C18.74 failure mode)."""
+        lang = self.env['res.lang'].with_context(active_test=False).search(
+            [('code', '=', 'vi_VN')], limit=1)
+        if not lang or not lang.active:
+            self.skipTest('vi_VN is not active on this database')
+        from odoo.tools.translate import code_translations
+        py = code_translations.get_python_translations('pb_payruns', 'vi_VN')
+        self.assertTrue(py, "no python translations loaded from pb_payruns/i18n/vi_VN.po")
+        self.assertEqual(py.get('This pay run is not awaiting an approval decision.'),
+                         'Đợt lương này không ở trạng thái chờ quyết định phê duyệt.')

@@ -32,10 +32,14 @@ PB_PENDING_STATES = ('level0', 'level1', 'level2')
 # boolean flag would be forgeable through the call_kw context merge.
 _PB_CHAIN_KEY = 'pb_chain_state_write'
 _PB_CHAIN_TOKEN = object()
-# Only the FORWARD (approval) states are sealed. 'draft'/'cancel' stay writable
-# because demo/cleanup paths reset runs to draft right before unlinking them;
-# neither value can mark a run approved.
-_PB_SEALED_STATES = ('level0', 'level1', 'level2', 'done')
+# EVERY state value is sealed on write: a raw call_kw write to 'cancel' would
+# kill a run awaiting Finance without the owning tier or any testimony, and a
+# raw write to 'draft' would undo a Finance decision — the exact holes the
+# reject/reset gates exist to close (review finding L-2). All state changes ride
+# a chain method, which attaches the sentinel; demo/cleanup paths run as
+# admin/su, which the seal already exempts. The tuple below is the CREATE guard:
+# a run may be born in draft, never mid-chain or decided.
+_PB_BORN_SEALED = ('level0', 'level1', 'level2', 'done', 'cancel')
 
 
 class HrPayslip(models.Model):
@@ -182,15 +186,7 @@ class HrPayslipRun(models.Model):
         the same three booleans.
         """
         u = self.env.user
-        # Demo users drive the whole approval workflow for showcasing — granted the
-        # action flags here WITHOUT joining the real payroll groups, so the upsell
-        # sidebar locks (Admin / Import) stay intact for them.
-        demo = False
-        try:
-            demo = u.has_group('pb_demo.group_payobook_demo')
-        except Exception:
-            demo = False
-        root = demo or u._is_admin() \
+        root = u._is_admin() \
             or u.has_group('pb_hr_payroll_base.group_payroll_super_admin')
         officer = (root
                    or u.has_group('pb_hr_payroll_base.group_payroll_base_officer')
@@ -213,22 +209,45 @@ class HrPayslipRun(models.Model):
         # a run is born in draft; nobody creates one already approved
         if not self._pb_seal_ok():
             for vals in vals_list:
-                if vals.get('state') in _PB_SEALED_STATES:
+                if vals.get('state') in _PB_BORN_SEALED:
                     raise AccessError(_(
                         "A pay run cannot be created in an approved state."))
         return super().create(vals_list)
 
     def write(self, vals):
-        if vals.get('state') in _PB_SEALED_STATES and not self._pb_seal_ok():
+        if 'state' in vals and not self._pb_seal_ok():
             raise AccessError(_(
                 "A pay run's approval status can only change through the "
                 "approval actions (Submit / Approve / Reject)."))
         return super().write(vals)
 
+    def _pb_demo_user(self):
+        try:
+            return self.env.user.has_group('pb_demo.group_payobook_demo')
+        except Exception:
+            return False
+
+    def _pb_demo_reach(self):
+        """Demo logins drive the showcase chain — but their authority stops at
+        the demo world: every run in ``self`` must be generator-stamped
+        ``is_demo`` (review L-1: the demo group's all-records rules would
+        otherwise let any demo login walk a REAL run through all three tiers)."""
+        if not self or 'is_demo' not in self._fields:
+            return False
+        return all(bool(r.sudo().is_demo) for r in self)
+
     def _pb_tier_ok(self, state):
-        """May the current user advance a run that sits in ``state``?"""
+        """May the current user advance a run that sits in ``state``?
+
+        ``env.su`` passes: a server-side sudo caller (the analytics finalize
+        path) is sanctioned code — call_kw can never hand a client su.
+        """
+        if self.env.su:
+            return True
         officer, manager, final = self._pb_user_roles()
-        return {'level0': officer, 'level1': manager, 'level2': final}.get(state, False)
+        if {'level0': officer, 'level1': manager, 'level2': final}.get(state, False):
+            return True
+        return self._pb_demo_user() and self._pb_demo_reach()
 
     def _pb_require_tier(self, state):
         """Raise unless the current user holds the tier that owns ``state``.
@@ -270,11 +289,13 @@ class HrPayslipRun(models.Model):
         guarded by nothing but the native form button's invisible= rule.)
         """
         _officer, _manager, final = self._pb_user_roles()
-        if not final:
+        if not (self.env.su or final
+                or (self._pb_demo_user() and self._pb_demo_reach())):
             raise AccessError(_(
                 "Only the Finance / GM tier can reset an approved pay run to "
                 "draft."))
-        return super().draft_payslip_run()
+        # the legacy body writes 'draft' — sanctioned, so it carries the sentinel
+        return super(HrPayslipRun, self._pb_chain_ctx()).draft_payslip_run()
 
     def action_payslip_run_level0_done(self):
         """Payroll Officer review → HR review.
@@ -319,7 +340,8 @@ class HrPayslipRun(models.Model):
                     "“%(name)s” is already %(state)s — it can no longer be "
                     "rejected.", name=run.name or '', state=st))
             run._pb_require_tier('level0' if st == 'draft' else st)
-        res = super().action_payslip_run_cancel()
+        # the legacy body writes 'cancel' — sanctioned, so it carries the sentinel
+        res = super(HrPayslipRun, self._pb_chain_ctx()).action_payslip_run_cancel()
         self.write({'pb_reject_note': note or False,
                     'pb_reject_uid': self.env.uid,
                     'pb_reject_date': fields.Datetime.now()})
@@ -329,26 +351,32 @@ class HrPayslipRun(models.Model):
     @api.depends('state')
     def _compute_pb_perms(self):
         officer, manager, final = self._pb_user_roles()
+        demo = self._pb_demo_user()
         for run in self:
             st = run.state
-            run.pb_can_submit = st == 'draft' and officer
-            run.pb_can_approve_officer = st == 'level0' and officer
-            run.pb_can_approve_hr = st == 'level1' and manager
-            run.pb_can_approve_gm = st == 'level2' and final
-            run.pb_can_reject = ((st == 'draft' and officer)
-                                 or (st == 'level0' and officer)
-                                 or (st == 'level1' and manager)
-                                 or (st == 'level2' and final))
+            # a demo login's flags light up only on demo-world runs (L-1)
+            d = demo and run._pb_demo_reach()
+            off, man, fin = officer or d, manager or d, final or d
+            run.pb_can_submit = st == 'draft' and off
+            run.pb_can_approve_officer = st == 'level0' and off
+            run.pb_can_approve_hr = st == 'level1' and man
+            run.pb_can_approve_gm = st == 'level2' and fin
+            run.pb_can_reject = ((st == 'draft' and off)
+                                 or (st == 'level0' and off)
+                                 or (st == 'level1' and man)
+                                 or (st == 'level2' and fin))
             run.pb_is_done = st == 'done'
 
     @api.depends_context('uid')
     @api.depends('state')
     def _compute_pb_awaiting_me(self):
         officer, manager, final = self._pb_user_roles()
+        demo = self._pb_demo_user()
         for run in self:
-            run.pb_awaiting_me = ((run.state == 'level0' and officer)
-                                  or (run.state == 'level1' and manager)
-                                  or (run.state == 'level2' and final))
+            d = demo and run._pb_demo_reach()
+            run.pb_awaiting_me = ((run.state == 'level0' and (officer or d))
+                                  or (run.state == 'level1' and (manager or d))
+                                  or (run.state == 'level2' and (final or d)))
 
     def _search_pb_awaiting_me(self, operator, value):
         officer, manager, final = self._pb_user_roles()
@@ -359,8 +387,14 @@ class HrPayslipRun(models.Model):
             states.append('level1')
         if final:
             states.append('level2')
+        match = [('state', 'in', states)] if states else []
+        if self._pb_demo_user() and 'is_demo' in self._fields:
+            demo_match = ['&', ('is_demo', '=', True),
+                          ('state', 'in', list(PB_PENDING_STATES))]
+            match = (['|'] + match + demo_match) if match else demo_match
+        if not match:
+            match = [('id', '=', 0)]
         positive = (operator in ('=', '!=') and bool(value)) == (operator == '=')
-        match = [('state', 'in', states)] if states else [('id', '=', 0)]
         return match if positive else (['!'] + match)
 
     def done_payslip_run(self):
