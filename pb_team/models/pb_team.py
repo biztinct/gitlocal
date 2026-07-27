@@ -139,8 +139,14 @@ class PbTeam(models.AbstractModel):
             cd = rec.create_date
             return max(0, (now - cd).days) if cd else 0
 
+        # Reads are SUDO behind the team gate (review I-H1, C18.65): the team
+        # scope (tids) is server-derived, and a line manager who holds no
+        # HR/attendance group must still see their own team's queue — the ACL
+        # walls (hr.overtime.request is officer-only, hr.employee is
+        # hr-user-only) would otherwise crash the cockpit for its primary
+        # persona. Mutations stay real-user in act().
         # --- OT (no chain mixin; manager acts via action_approve) ---
-        OT = self.env['hr.overtime.request']
+        OT = self.env['hr.overtime.request'].sudo()
         for r in OT.search([('state', '=', 'submitted'),
                             ('employee_id', 'in', tids)], order='create_date'):
             items.append({
@@ -159,7 +165,7 @@ class PbTeam(models.AbstractModel):
 
         # --- business trips (chain; manager tier) — soft ---
         if 'pb.business.trip' in self.env:
-            Trip = self.env['pb.business.trip']
+            Trip = self.env['pb.business.trip'].sudo()
             for r in Trip.search([('state', '=', 'submitted'),
                                   ('employee_id', 'in', tids)], order='create_date'):
                 items.append({
@@ -177,7 +183,7 @@ class PbTeam(models.AbstractModel):
 
         # --- attendance corrections (chain) — soft ---
         if 'hr.attendance.correction' in self.env:
-            Corr = self.env['hr.attendance.correction']
+            Corr = self.env['hr.attendance.correction'].sudo()
             for r in Corr.search([('state', '=', 'submitted'),
                                   ('employee_id', 'in', tids)], order='create_date'):
                 items.append({
@@ -194,7 +200,7 @@ class PbTeam(models.AbstractModel):
 
         # --- leaves (core; confirm state awaiting validation) — soft ---
         if 'hr.leave' in self.env:
-            Leave = self.env['hr.leave']
+            Leave = self.env['hr.leave'].sudo()
             leaves = Leave.search([('state', '=', 'confirm'),
                                    ('employee_id', 'in', tids)], order='create_date')
             for r in leaves:
@@ -270,7 +276,7 @@ class PbTeam(models.AbstractModel):
         if 'pb.attendance.exception.engine' in self.env:
             try:
                 frm = today - _timedelta_days(30)
-                exc = self.env['pb.attendance.exception.engine'].sudo().get_exceptions(
+                exc = self.env['pb.attendance.exception.engine'].sudo()._get_exceptions(
                     team.sudo(), frm, today)
                 m['exceptions'] = len(exc or [])
             except Exception:
@@ -306,7 +312,7 @@ class PbTeam(models.AbstractModel):
         if 'pb.attendance.exception.engine' in self.env:
             try:
                 frm = today - _timedelta_days(30)
-                for e in self.env['pb.attendance.exception.engine'].sudo().get_exceptions(
+                for e in self.env['pb.attendance.exception.engine'].sudo()._get_exceptions(
                         team.sudo(), frm, today) or []:
                     eid = e.get('employee_id')
                     if eid:

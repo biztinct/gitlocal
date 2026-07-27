@@ -105,3 +105,24 @@ class TestPbTeam(TransactionCase):
         # never a crash.
         r2 = Team.act('hr.overtime.request', self.ot_report.id, 'refuse')
         self.assertIn('ok', r2)
+
+    # ------------------------------------ combined-review fixes (G–M pass)
+    def test_08_groupless_line_manager_gets_a_board(self):
+        """Review I-H1 (C18.65): a supervisor with reports and NO HR/attendance
+        group must get their queue, not an AccessError — the queue reads are
+        sudo behind the server-derived team scope."""
+        Users = self.env['res.users'].with_context(no_reset_password=True)
+        bare_mgr_user = Users.create({
+            'name': 'Bare Manager', 'login': 'test_team_bare',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        bare_mgr = self.env['hr.employee'].create({
+            'name': 'Bare Manager Emp', 'user_id': bare_mgr_user.id,
+            'company_id': self.company.id})
+        self.report.sudo().write({'parent_id': bare_mgr.id})
+        data = self.env['pb.team'].with_user(bare_mgr_user).get_team_data()
+        self.assertTrue(data['has_team'])
+        sources = {i['source'] for i in data['queues']['items']}
+        self.assertIn('ot', sources,
+                      "the team's OT queue must be visible to a bare manager")
+        names = {i['employee']['name'] for i in data['queues']['items']}
+        self.assertIn('Report Emp', names)

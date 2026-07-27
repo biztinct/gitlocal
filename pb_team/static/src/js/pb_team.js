@@ -141,7 +141,14 @@ export class PbTeamCockpit extends Component {
     }
 
     afterAct(it, res, okLabel) {
-        if (res && res.ok) {
+        if (res && res.ok && res.state === "refused" && okLabel !== _t("Refused")) {
+            // the model accepted the click but REFUSED the record (e.g. a
+            // young-worker guard on apply) — never toast that as approved
+            this.state.removed[this.key(it)] = true;
+            this.notif.add(
+                _t("Refused by a server guard · %s", it.employee.name),
+                { type: "warning", title: _t("Not applied") });
+        } else if (res && res.ok) {
             this.state.removed[this.key(it)] = true;
             this.notif.add(`${okLabel} · ${it.employee.name}`, { type: "success" });
         } else {

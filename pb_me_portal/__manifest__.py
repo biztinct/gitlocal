@@ -26,7 +26,7 @@ self-service pieces the stock portal lacked:
 Every route re-resolves the employee from the session user (C18.26); no route
 accepts an employee_id for own-data pages (safety rail 3).
 """,
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -42,6 +42,7 @@ accepts an employee_id for own-data pages (safety rail 3).
         'security/ir.model.access.csv',
         'security/pb_me_portal_security.xml',
         'data/pb_me_portal_data.xml',
+        'views/profile_change_views.xml',
         'views/portal_templates.xml',
     ],
     'assets': {

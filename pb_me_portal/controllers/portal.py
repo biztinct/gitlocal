@@ -27,8 +27,13 @@ class PbMePortal(CustomerPortal):
     # ------------------------------------------------------------ helpers
     def _ess_employee(self):
         """The OWN employee, resolved from the session user (C18.26). sudo so
-        the route can read HR-scoped private fields of the user's OWN record."""
-        return request.env['hr.employee'].sudo().search(
+        the route can read HR-scoped private fields of the user's OWN record.
+        Prefers the employee of the user's CURRENT company (review I-low: with
+        multiple linked employees the lowest id used to win arbitrarily)."""
+        Emp = request.env['hr.employee'].sudo()
+        emp = Emp.search([('user_id', '=', request.env.user.id),
+                          ('company_id', '=', request.env.company.id)], limit=1)
+        return emp or Emp.search(
             [('user_id', '=', request.env.user.id)], limit=1)
 
     def _ess_net(self, slip):
@@ -226,12 +231,17 @@ class PbMePortal(CustomerPortal):
             return request.redirect('/my/documents?error=missing')
 
         # validate category is genuinely self-uploadable (never trust the form)
+        try:
+            cat_id = int(category_id)
+        except (TypeError, ValueError):
+            return request.redirect('/my/documents?error=category')
         Cat = request.env['pb.employee.document.category'].sudo()
-        cat = Cat.browse(int(category_id)).exists()
+        cat = Cat.browse(cat_id).exists()
         if not cat or not cat.ess_uploadable:
             return request.redirect('/my/documents?error=category')
 
-        data = upload.read()
+        # bounded read — never buffer more than the limit (+1 to detect excess)
+        data = upload.read(_UPLOAD_MAX_BYTES + 1)
         if len(data) > _UPLOAD_MAX_BYTES:
             return request.redirect('/my/documents?error=size')
         mimetype = upload.mimetype or ''
@@ -257,7 +267,9 @@ class PbMePortal(CustomerPortal):
             doc_vals['expiry_date'] = expiry
         try:
             doc = request.env['pb.employee.document'].create(doc_vals)
-        except (AccessError, UserError, ValidationError) as e:
+        except (AccessError, UserError, ValidationError, ValueError):
+            # ValueError: a malformed expiry date must render the styled error
+            # page, not a 500 (review I-low)
             att.sudo().unlink()
             return request.redirect('/my/documents?error=denied')
         # bind the attachment to the document (C18.25 order). sudo: the employee
@@ -276,8 +288,10 @@ class PbMePortal(CustomerPortal):
         if not emp:
             return request.redirect('/my')
         Slip = request.env['hr.payslip'].sudo()
+        # done only — a CANCELLED slip's figures must never inflate the
+        # employee's stated GROSS/PIT (review I-M2)
         slips = Slip.search([('employee_id', '=', emp.id),
-                             ('state', 'in', ('done', 'cancel'))],
+                             ('state', '=', 'done')],
                             order='date_to desc', limit=48)
         codes = Slip._ess_tax_codes()
         # column labels: first label seen per code across the slips
