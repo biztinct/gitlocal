@@ -220,7 +220,10 @@ class TestInsights(TransactionCase):
         self._board(self.u_manager, months=24)
         baseline = self.env.cr.sql_log_count - before
 
-        for i in (4, 5):
+        # four extra runs with a +2 tolerance: the old per-run read_group loop
+        # costs +1 query/run (+4), so it can no longer squeak under the margin
+        # (review M-2 — with two runs the regression passed at the boundary)
+        for i in (4, 5, 6, 7):
             extra = self._payrun('M Run Extra %s' % i,
                                  date(2031, i, 1), date(2031, i, 28))
             self._slip(extra, self.emp_1, self.company_a, net=500 * i, gross=600 * i)
@@ -230,11 +233,11 @@ class TestInsights(TransactionCase):
         grown = self._board(self.u_manager, months=24)
         delta = self.env.cr.sql_log_count - before
 
-        self.assertGreater(len(grown['trend']['points']), 3)
+        self.assertGreater(len(grown['trend']['points']), 5)
         self.assertLessEqual(
             delta, baseline + 2,
             "the trend must not cost a query per run (stored roll-ups): "
-            "%s queries with 2 extra runs vs %s before" % (delta, baseline))
+            "%s queries with 4 extra runs vs %s before" % (delta, baseline))
 
     # ------------------------------------------------- §6.3 department split
     def test_03_department_split(self):

@@ -89,6 +89,7 @@
         &--green  { color: var(--pbau-green);  border-color: color-mix(in srgb, var(--pbau-green) 30%, #fff); }
         &--cyan   { color: var(--pbau-cyan);   border-color: color-mix(in srgb, var(--pbau-cyan) 30%, #fff); }
         &--ghost { opacity: .5; filter: grayscale(.7); background: var(--pbim-line-2); }
+        &--err { color: var(--pbau-rose, #b42318); border-color: color-mix(in srgb, #b42318 35%, #fff); background: color-mix(in srgb, #b42318 6%, #fff); }
     }
 
     // actors

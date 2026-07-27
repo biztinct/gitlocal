@@ -276,7 +276,7 @@ class PbWorkforceInsights(models.AbstractModel):
                     'date_from': start.isoformat(), 'date_to': today.isoformat()}
         capped = len(emps) > _EMP_SCAN
         cohort = self.env['hr.employee'].browse(sorted(emps)[:_EMP_SCAN])
-        rows = self.env['pb.attendance.exception.engine'].get_exceptions(
+        rows = self.env['pb.attendance.exception.engine']._get_exceptions(
             cohort, start, today)
 
         kinds, by_week, kind_emp = {}, {}, {}
