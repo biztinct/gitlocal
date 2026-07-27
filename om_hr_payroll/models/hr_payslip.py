@@ -1080,7 +1080,12 @@ class HrPayslipRun(models.Model):
 
         analytics_data = analytics._generate_analytics_data(self.slip_ids, country, self.date_start, self.date_end)
         analytics.write(analytics_data)
-        analytics.invalidate_cache()
+        # `invalidate_cache()` was removed in Odoo 15; this server only defines
+        # `invalidate_recordset` (odoo/orm/models.py:6722). The call sits in the
+        # straight-line path of action_payslip_run_level1_done — no try/except
+        # around it — so on Odoo 19 advancing a batch to Level 2 raised
+        # AttributeError and the whole approval step failed.
+        analytics.invalidate_recordset()
         analytics._compute_analytics()
 
         view = self.env.ref('payroll_analytics_approval.view_payroll_analytics_dashboard', raise_if_not_found=False)

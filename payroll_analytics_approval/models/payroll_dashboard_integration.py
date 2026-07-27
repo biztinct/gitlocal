@@ -88,7 +88,7 @@ class PayrollDashboardAnalytics(models.Model):
                         new_analytics.write({'state': 'ready', 'payslip_run_id': batch.id})
                         
                         # Force computation of stored fields to ensure fresh data
-                        new_analytics.invalidate_cache()
+                        new_analytics.invalidate_recordset()
                         new_analytics._compute_analytics()
                         
                         generated_analytics.append(new_analytics)
@@ -112,7 +112,7 @@ class PayrollDashboardAnalytics(models.Model):
             try:
                 analytics = self.env['payroll.analytics'].generate_analytics(country, first_day, last_day)
                 analytics.write({'state': 'ready'})
-                analytics.invalidate_cache()
+                analytics.invalidate_recordset()
                 analytics._compute_analytics()
                 generated_analytics.append(analytics)
             except Exception as e:
