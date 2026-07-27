@@ -252,8 +252,8 @@ class TestOtEngine(TransactionCase):
 
     # ------------------------------------------------------------- §6.15 readonly
     def test_15_bonus_hours_readonly_and_facades_stateless(self):
-        # bonus_hours is declared readonly (the facade/RPC guard; the only ORM
-        # writers are grid-save + approve-recompute)
+        # bonus_hours stays declared readonly for the UI; the REAL guard is the
+        # ORM seal proven by test_16 (review K-F1 upgraded this from theater)
         self.assertTrue(self.Req._fields['bonus_hours'].readonly)
         # facades never write a state field directly (grep-level, C18.17/§5.1)
         import os
@@ -268,3 +268,92 @@ class TestOtEngine(TransactionCase):
             # reads may sudo (consolidation board, C18.65) but MUTATIONS never do
             self.assertNotIn('.sudo().action_', to_src)
             self.assertNotIn('.sudo().create', to_src)
+
+    # ---------------------------------------- combined-review fixes (G–M pass)
+    def test_07b_biweekly_iso53_boundary(self):
+        """Review K-F2: ISO week 53 anchors a SOLO window clamped to its ISO
+        year — hours across the 2026→2027 boundary never share a fortnight."""
+        self._caps(biweekly_cap=10.0)
+        # ISO 2027-W1 (odd, fresh pair) hours must NOT eat the W53 window
+        self._used(6.0, date(2027, 1, 4))
+        a, b = self.Ceil._split(self.emp, date(2026, 12, 30), 6.0)
+        self.assertEqual((a, b), (6.0, 0.0),
+                         "week-1 hours leaked into the week-53 window")
+        # inside week 53 itself the cap still applies
+        self._used(6.0, date(2026, 12, 29))
+        a2, b2 = self.Ceil._split(self.emp, date(2026, 12, 30), 6.0)
+        self.assertEqual((a2, b2), (4.0, 2.0))
+
+    def test_16_workflow_fields_are_sealed_at_the_orm(self):
+        """Review K-F1: readonly is UI-only — the ORM seal is what stands
+        between a call_kw write and the payslip. An officer-tier employee must
+        not self-approve or inflate their own hours."""
+        emp_user = self.env['res.users'].create({
+            'name': 'k_self', 'login': 'k_self',
+            'group_ids': [(6, 0, [
+                self.env.ref('base.group_user').id,
+                self.env.ref('hr_attendance.group_hr_attendance_officer').id])]})
+        self.emp.user_id = emp_user
+        self._caps(daily_cap=4.0)
+        req = self._used(6.0, self.wed, state='submitted')
+        as_self = req.with_user(emp_user)
+        for forged in ({'state': 'approved'}, {'approved_hours': 99.0},
+                       {'bonus_hours': 99.0}):
+            with self.assertRaises(AccessError):
+                as_self.write(forged)
+        with self.assertRaises(AccessError):
+            as_self.action_approve()   # never your own OT
+        self.assertEqual(req.state, 'submitted')
+        # forged create values are silently dropped, the row is born draft/zero
+        born = self.Req.with_user(emp_user).create({
+            'employee_id': self.emp.id, 'date': self.wed + timedelta(days=1),
+            'overtime_type': 'weekday', 'planned_hours': 2.0, 'reason': 'x',
+            'state': 'approved', 'approved_hours': 50.0, 'bonus_hours': 50.0})
+        self.assertEqual(born.state, 'draft')
+        self.assertEqual((born.approved_hours, born.bonus_hours), (0.0, 0.0))
+
+    def test_17_decider_tiers(self):
+        """The decide gate: attendance manager passes, a group-less LINE manager
+        passes the check, a stranger is refused."""
+        self._caps(daily_cap=4.0)
+        mgr_emp = self.env['hr.employee'].create({
+            'name': 'K Line Mgr', 'company_id': self.company.id})
+        line_user = self.env['res.users'].create({
+            'name': 'k_line', 'login': 'k_line',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        mgr_emp.user_id = line_user
+        self.emp.parent_id = mgr_emp
+        req = self._used(6.0, self.wed, state='submitted')
+        self.assertTrue(req.with_user(line_user)._ot_can_decide(),
+                        "the employee's own line manager needs no group")
+        stranger = self.env['res.users'].create({
+            'name': 'k_str', 'login': 'k_str',
+            'group_ids': [(6, 0, [self.env.ref('base.group_user').id])]})
+        self.assertFalse(req.with_user(stranger)._ot_can_decide())
+        am_user = self.env['res.users'].create({
+            'name': 'k_am', 'login': 'k_am',
+            'group_ids': [(6, 0, [
+                self.env.ref('base.group_user').id,
+                self.env.ref('hr_attendance.group_hr_attendance_manager').id])]})
+        req.with_user(am_user).action_approve()
+        self.assertEqual(req.state, 'approved')
+        self.assertEqual((req.approved_hours, req.bonus_hours), (4.0, 2.0))
+
+    def test_18_legacy_minor_cannot_be_approved(self):
+        """Review K-F7: a submitted row that PREDATES the young-worker rule (the
+        creation constraint never saw it as a minor) is still refused at
+        decision time."""
+        if 'pb.young.worker' not in self.env:
+            self.skipTest('pb_young_worker is not installed')
+        if not self.env['pb.young.worker'].sudo()._has_any_rule():
+            self.skipTest('no young-worker rule active on this database')
+        from odoo.exceptions import ValidationError
+        self._caps(daily_cap=4.0)
+        req = self._used(4.0, self.wed, state='submitted')
+        # the employee "turns out to be" a minor after filing (legacy data)
+        self.emp.birthday = date(self.wed.year - 16, 1, 15)
+        with self.assertRaises(ValidationError):
+            req.action_approve()
+        self.assertEqual(req.state, 'submitted')
+        self.assertEqual(req.bonus_hours, 0.0,
+                         "bonus hours must never be a young-worker bypass")

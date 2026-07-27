@@ -12,6 +12,13 @@ from odoo.exceptions import ValidationError
 class OvertimeRequest(models.Model):
     _inherit = 'hr.overtime.request'
 
+    def action_approve(self):
+        # Review K-F7: approval writes none of the constraint's trigger fields,
+        # so a submitted minor row that PREDATES the rule (or was filed while no
+        # rule was active) would slip through — re-run the gate at decision time.
+        self._pb_yw_block_minor_ot()
+        return super().action_approve()
+
     @api.constrains('employee_id', 'date', 'overtime_type', 'planned_hours', 'actual_hours')
     def _pb_yw_block_minor_ot(self):
         Eng = self.env['pb.young.worker'].sudo()
