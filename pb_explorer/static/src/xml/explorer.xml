@@ -61,18 +61,51 @@
           </span>
         </div>
 
-        <!-- ============================ lenses =========================== -->
-        <div t-if="lenses.length" class="pbex-lenses">
-          <button t-foreach="lenses" t-as="lens" t-key="lens.id"
-                  class="pbex-lens"
-                  t-att-class="{ active: lens.id === state.lensId }"
-                  t-on-click="() => this.openLens(lens)">
-            <span class="ico"><t t-out="ic(lens.icon, 16)"/></span>
-            <span class="txt">
-              <b t-esc="lens.name"/>
-              <i t-esc="lens.desc"/>
+        <!-- ============================ lenses ===========================
+             A WRAPPED GRID, never a horizontal scroller: a scrollbar hides
+             most of the choices behind a gesture people do not think to make.
+             Collapsible, because once you have your question the grid is just
+             chrome. -->
+        <div t-if="lenses.length" class="pbex-lensbar">
+          <button class="pbex-lenstoggle" t-on-click="() => this.toggleLenses()">
+            <t t-out="ic('layers', 14)"/>
+            <span class="lb">
+              <t t-if="state.lensesOpen">Starting points</t>
+              <t t-else="">
+                <t t-if="activeLensName" t-esc="activeLensName"/>
+                <t t-else="">Starting points</t>
+              </t>
+            </span>
+            <span class="ct" t-esc="lenses.length + classicReports.length"/>
+            <span class="cv" t-att-class="{ open: state.lensesOpen }">
+              <t t-out="ic('chevronDown', 14)"/>
             </span>
           </button>
+
+          <div t-if="state.lensesOpen" class="pbex-lenses">
+            <button t-foreach="lenses" t-as="lens" t-key="lens.id"
+                    class="pbex-lens"
+                    t-att-class="{ active: lens.id === state.lensId }"
+                    t-on-click="() => this.openLens(lens)">
+              <span class="ico"><t t-out="ic(lens.icon, 16)"/></span>
+              <span class="txt">
+                <b t-esc="lens.name"/>
+                <i t-esc="lens.desc"/>
+              </span>
+            </button>
+
+            <!-- classic Odoo views, kept reachable now the Insights gallery is gone -->
+            <button t-foreach="classicReports" t-as="rep" t-key="rep.xmlid"
+                    class="pbex-lens classic"
+                    t-on-click="() => this.openClassic(rep)">
+              <span class="ico"><t t-out="ic('table', 16)"/></span>
+              <span class="txt">
+                <b t-esc="rep.label"/>
+                <i t-esc="rep.desc"/>
+              </span>
+              <span class="ext"><t t-out="ic('arrowRight', 13)"/></span>
+            </button>
+          </div>
         </div>
 
         <!-- =========================== ask bar =========================== -->
