@@ -77,7 +77,7 @@ def post_init_demo(env):
             it.groups_id = [(4, demo.id)]
             shown += 1
     _logger.info('pb_demo: demo sidebar wired — %s shown, %s locked.', shown, locked)
-    _ensure_analytics_menu(env)
+    _retire_analytics_menu(env)
     _hide_salary_structures(env)
     _feature_demo_config(env)
 
@@ -110,21 +110,24 @@ def _hide_salary_structures(env):
         _logger.info('pb_demo: hid Salary Structures menu (%s item(s)).', len(items))
 
 
-def _ensure_analytics_menu(env):
-    """Add a 'Workforce Analytics' item to the Insights sidebar section."""
-    Section = env['pb.sidebar.section']
-    Item = env['pb.sidebar.item']
-    section = Section.search(['|', ('technical_key', '=', 'insights'), ('name', '=', 'Insights')], limit=1)
-    if not section:
-        return
-    if Item.search([('action_tag', '=', 'pb_demo_analytics')], limit=1):
-        return
-    Item.create({
-        'name': 'Workforce Analytics',
-        'section_id': section.id,
-        'sequence': 50,
-        'icon': 'trending-up',
-        'action_tag': 'pb_demo_analytics',
-        'match_action_tags': 'pb_demo_analytics',
-    })
+def _retire_analytics_menu(env):
+    """Remove the demo 'Workforce Analytics' sidebar item (Phase O).
+
+    This hook used to CREATE that item, pointing the Insights section at
+    ``pb_demo_analytics`` — a demo-module component with no ``groups_id`` (so
+    every user saw it) whose every SQL slice was filtered ``is_demo = true``
+    (so on a real customer database it rendered completely empty while looking
+    like a working feature).
+
+    The slot now belongs to ``pb_workforce_insights``, a gated cockpit on real
+    attendance, overtime, leave and payroll-fact data. This removes the old
+    item on upgrade; the demo action itself is left installed so the demo
+    world keeps its own view, just not a top-level Insights entry.
+    """
+    items = env['pb.sidebar.item'].search(
+        [('action_tag', '=', 'pb_demo_analytics')])
+    if items:
+        items.unlink()
+        _logger.info('pb_demo: retired %s demo analytics sidebar item(s) — '
+                     'superseded by pb_workforce_insights.', len(items))
 

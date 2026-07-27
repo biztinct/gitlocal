@@ -125,6 +125,19 @@
         <field name="match_action_tags">pb_explorer_cockpit</field>
         <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
     </record>
+    <!-- Phase O: a REAL Workforce Analytics surface, gated like its
+         neighbours. The slot previously held pb_demo's placeholder, injected
+         imperatively by pb_demo/hooks.py with NO groups at all and with every
+         query filtered `is_demo = true` — so it was visible to everyone and
+         empty on any real database. -->
+    <record id="item_workforce_insights" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Workforce Analytics</field>
+        <field name="icon">users</field><field name="sequence">18</field>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_workforce_insights</field>
+        <field name="match_action_tags">pb_workforce_insights</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
     <record id="item_reports" model="pb.sidebar.item">
         <field name="section_id" ref="sec_insights"/><field name="name">Reports</field>
         <field name="active" eval="False"/>
