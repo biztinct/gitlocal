@@ -105,7 +105,12 @@ class PbOtCeiling(models.Model):
         never ``bonus_hours`` (bonus is definitionally outside the caps, rail 2).
         """
         ceil = self._for_company(employee.company_id or self.env.company)
-        periods = ceil._enforced_periods(on_date, employee.pb_ot_special_sector)
+        # sudo the special-sector read: the field is groups='hr.group_hr_user',
+        # so an attendance manager without the HR group CRASHED on approve
+        # (review K-F8). It is system-derived budget context, exactly like the
+        # request rows read below — one permission world (C18.17).
+        special = employee.sudo().pb_ot_special_sector
+        periods = ceil._enforced_periods(on_date, special)
         if not periods:
             return float('inf')
         exclude = {int(x) for x in (exclude_ids or [])}

@@ -157,9 +157,13 @@ class OvertimeRequest(models.Model):
         u = self.env.user
         if self.env.su or u._is_admin():
             return True
-        if self.employee_id.user_id and self.employee_id.user_id == u:
+        # auth-only dereference under sudo (the correction precedent): asking
+        # "who is this user to this record" must answer False, not explode with
+        # an AccessError, for someone with no OT access at all
+        rec = self.sudo()
+        if rec.employee_id.user_id and rec.employee_id.user_id == u:
             return False
-        if self.manager_id and self.manager_id.user_id == u:
+        if rec.manager_id and rec.manager_id.user_id == u:
             return True
         for g in _OT_DECIDER_GROUPS:
             try:
@@ -172,7 +176,7 @@ class OvertimeRequest(models.Model):
     def _ot_require_decide(self):
         for rec in self:
             if not rec._ot_can_decide():
-                if rec.employee_id.user_id and rec.employee_id.user_id == self.env.user:
+                if rec.sudo().employee_id.user_id == self.env.user:
                     raise AccessError(_(
                         "You cannot approve or refuse your own overtime (%s).",
                         rec.name))

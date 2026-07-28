@@ -71,6 +71,17 @@ class TestAttendanceFlow(TransactionCase):
             vals['check_out'] = ci + timedelta(hours=hours)
         return self.Att.create(vals)
 
+    def _workday(self, days_back):
+        """A WEEKDAY `days_back` days ago (stepping further back over a
+        weekend). hr_holidays refuses to validate a leave on a non-working day
+        ("not supposed to work during that period"), so any date-relative
+        fixture that feeds a leave must be calendar-stable — otherwise the
+        suite passes on a Friday and fails on a Tuesday."""
+        d = self.today - timedelta(days=days_back)
+        while d.weekday() >= 5:
+            d -= timedelta(days=1)
+        return d
+
     def _officer(self, login='atf_officer', extra=None):
         groups = [self.env.ref('base.group_user').id,
                   self.env.ref('hr.group_hr_user').id,
@@ -115,7 +126,7 @@ class TestAttendanceFlow(TransactionCase):
     # =================================================================== 2
     def test_02_trip_and_leave_exclusion(self):
         """An approved trip day and a validated leave day yield NO missing punch."""
-        d = self.today - timedelta(days=3)
+        d = self._workday(3)
 
         # --- leave (hr_holidays is always in the stack) ---
         emp_lv = self.env['hr.employee'].create({

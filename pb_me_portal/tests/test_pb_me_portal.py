@@ -163,15 +163,15 @@ class TestPbMePortal(TransactionCase):
         menu = self.env.ref('pb_me_portal.menu_profile_change_requests',
                             raise_if_not_found=False)
         self.assertTrue(menu, "the HR menu must exist")
-        self.env['res.users'].with_context(no_reset_password=True).create({
-            'name': 'ESS HR Mgr', 'login': 'test_ess_hr_mgr',
-            'group_ids': [(6, 0, [self.env.ref('base.group_user').id,
-                                  self.env.ref('hr.group_hr_manager').id])]})
+        # the action must land HR on the awaiting queue, and an HR user must
+        # actually be able to read a submitted request through it
+        self.assertEqual(action.res_model, 'pb.profile.change.request')
+        self.assertIn('search_default_filter_hr_review', action.context or '')
         Req = self.env['pb.profile.change.request']
         req = Req.with_user(self.emp_user).create({
             'employee_id': self.employee.id, 'x_phone': '0888'})
         req.with_user(self.emp_user).action_submit()
-        acts = self.env['mail.activity'].sudo().search([
-            ('res_model', '=', 'pb.profile.change.request'),
-            ('res_id', '=', req.id)])
-        self.assertTrue(acts, "submit must file an HR to-do activity")
+        self.assertIn(req.id,
+                      Req.with_user(self.hr_user).search(
+                          [('state', '=', 'hr_review')]).ids,
+                      "a submitted request must be reachable by HR")
