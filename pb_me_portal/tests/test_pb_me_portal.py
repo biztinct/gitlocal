@@ -132,11 +132,19 @@ class TestPbMePortal(TransactionCase):
                 {'employee_id': self.colleague.id})
         # an HR *user* is not enough to file on behalf either — on the live DB
         # hr.group_hr_user is implied by a formula-engine group, so the
-        # on-behalf right sits at the MANAGER tier
+        # on-behalf right sits at the MANAGER tier. With no employee of their
+        # own, such a user is refused outright…
+        with self.assertRaises(AccessError):
+            Req.with_user(self.hr_user).create({
+                'employee_id': self.colleague.id, 'x_phone': '0777'})
+        # …and with one, the target is forced back to themselves.
+        hr_emp = self.env['hr.employee'].create({
+            'name': 'ESS HR Emp', 'user_id': self.hr_user.id,
+            'company_id': self.company.id})
         hr_user_forged = Req.with_user(self.hr_user).create({
             'employee_id': self.colleague.id, 'x_phone': '0777'})
-        self.assertNotEqual(hr_user_forged.employee_id, self.colleague,
-                            "an HR user may review, not plant a request on someone")
+        self.assertEqual(hr_user_forged.employee_id, hr_emp,
+                         "an HR user may review, not plant a request on someone")
         # a manager may (the legitimate on-behalf path)
         mgr = self.env['res.users'].with_context(no_reset_password=True).create({
             'name': 'ESS HR Mgr2', 'login': 'test_ess_hr_mgr2',
