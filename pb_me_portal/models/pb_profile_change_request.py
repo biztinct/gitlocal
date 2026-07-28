@@ -30,6 +30,8 @@ _HR_GROUP = 'om_hr_payroll.group_hr_payroll_user'
 _HR_CORE_GROUP = 'hr.group_hr_user'
 _HR_GROUPS = (_HR_GROUP, _HR_CORE_GROUP, 'om_hr_payroll.group_hr_payroll_manager',
               'hr.group_hr_manager')
+# Creating a request FOR ANOTHER EMPLOYEE is a manager-tier act (review I-H3).
+_ON_BEHALF_GROUPS = ('om_hr_payroll.group_hr_payroll_manager', 'hr.group_hr_manager')
 
 _EDITABLE_PARAM = 'pb_me_portal.editable_fields'
 _DEFAULT_EDITABLE = 'x_phone,x_private_email,x_address,x_emergency_contact,x_emergency_phone'
@@ -145,6 +147,18 @@ class PbProfileChangeRequest(models.Model):
     def _is_hr(self):
         return self.env.user._is_admin() or self._user_in_any(_HR_GROUPS)
 
+    def _can_file_on_behalf(self):
+        """Who may create a request for SOMEONE ELSE (review I-H3).
+
+        Deliberately the MANAGER tier, not `_is_hr()`: reviewing a request is
+        an HR-user job, but planting one on another person's record is not —
+        and `hr.group_hr_user` is a low bar here (on the live DB
+        `pb_hr_payroll_formula.group_formula_user` implies it, so a formula
+        user would otherwise inherit the on-behalf right).
+        """
+        return (self.env.su or self.env.user._is_admin()
+                or self._user_in_any(_ON_BEHALF_GROUPS))
+
     def _approval_can(self, from_state, to_state):
         """Owner may submit their OWN draft; HR advances HR review."""
         self.ensure_one()
@@ -184,7 +198,7 @@ class PbProfileChangeRequest(models.Model):
                 # never taken from the payload (a forged employee_id would
                 # otherwise plant a request on a victim's /my/profile and
                 # bait HR into applying it).
-                if not self._is_hr():
+                if not self._can_file_on_behalf():
                     if own_emp is None:
                         Emp = self.env['hr.employee'].sudo()
                         own_emp = Emp.search(
@@ -217,7 +231,7 @@ class PbProfileChangeRequest(models.Model):
                 vals.pop(f, None)
             # Review I-H3: a non-HR user may never RETARGET a request — the
             # employee is fixed at create (forced to the session's own).
-            if 'employee_id' in vals and not self._is_hr():
+            if 'employee_id' in vals and not self._can_file_on_behalf():
                 raise AccessError(_(
                     "A profile change request always targets your own "
                     "employee record."))
