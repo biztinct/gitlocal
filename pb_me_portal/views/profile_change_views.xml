@@ -92,7 +92,7 @@
                         domain="[('state', '=', 'hr_review')]"/>
                 <filter name="filter_decided" string="Decided"
                         domain="[('state', 'in', ('approved', 'refused'))]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
                     <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
                 </group>
