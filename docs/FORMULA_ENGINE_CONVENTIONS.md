@@ -1246,3 +1246,54 @@ number from the handovers — keep the numbering stable.
     arrives from an action context or URL is user input: `value not in REGISTRY` raises
     `TypeError: unhashable type: 'dict'` when the value is a JSON object. Coerce, then test, then
     fall back. Found by a hostile-input test, not by review — write that test.
+
+### Combined G–M review pass (2026-07-28, Fable review of the Opus batch). Numbering continues C18.
+
+100. **`readonly=True` is a UI hint, not a guard — every workflow field that feeds payroll gets an
+     ORM seal.** Phase K's `bonus_hours` comment literally said "readonly is the RPC guard"; a
+     call_kw `write({'state':'approved','approved_hours':99,'bonus_hours':99})` landed and the
+     bridge would have paid it. The pattern is the module-level `object()` sentinel on
+     create/write (forged create values dropped, forged writes raise) + a decide-tier gate on the
+     actions themselves (never the employee's own record). If a field's value reaches a payslip,
+     grep for its writers and seal them — `hr.overtime.request` now mirrors `hr.payslip.run`
+     (C18.76).
+101. **A demo group may never be a root in an ENFORCEMENT role read.** Phase L wired
+     `pb_demo.group_payobook_demo` into `_pb_user_roles` as `root` — combined with the demo
+     group's `[(1,'=',1)]` rules, any demo login could walk a REAL pay run through all three
+     tiers. Demo authority is scoped per-record to generator-stamped `is_demo` rows (gate, button
+     flags, searches); raw writes stay sealed even on demo rows. When the guided-trial stream
+     hands this group to self-signup strangers, this rule is the only thing between them and the
+     approval chain.
+102. **Tier gates pass `env.su`; seals already did.** A server-side `sudo()` caller
+     (payroll_analytics_approval's finalize) is sanctioned code and call_kw can never hand a
+     client su — a tier gate without the su exemption breaks legitimate cross-module flows the
+     moment someone below the tier triggers them.
+103. **Day-bucketing of UTC datetimes is EMPLOYEE-LOCAL, never `.date()` on the raw value.** VN is
+     UTC+7: a 05:58 local punch lives on the previous UTC day, so UTC keying invented exactly the
+     `missing_punch` C18.49 forbids — and the import wizard already converted local→UTC, so the
+     write and read sides disagreed about which day a punch belonged to. Both sides now share the
+     employee-tz conversion; widen batch windows one day EACH side.
+104. **Odd-anchored fortnight windows clamp ISO week 53 to its own ISO year.** Week 53 is odd and
+     so is next year's week 1 — unclamped, the two windows overlap and hours double-count across
+     the boundary (December OT mis-split). 2026 is a 53-week year; the boundary test exists now.
+105. **An audit hook that swallows exceptions still kills the business write unless the log call
+     runs in a SAVEPOINT.** A DB-level error in the entry INSERT poisons the transaction; the
+     except swallows the Python exception but the flush dies later with "current transaction is
+     aborted". `with self.env.cr.savepoint():` inside the try is the whole fix (biz_audit_trail,
+     H-M1).
+106. **Testimony voids on content swap.** A verification flag testifies to a SPECIFIC file on a
+     specific employee/category — swapping `attachment_id` under a verified document kept
+     "Verified by A" over a file A never saw. Either freeze the reviewed fields (bank-request
+     pattern) or auto-void the testimony when they change (vault pattern). Related: a self-served
+     create may only bind an attachment the caller OWNS and that nothing has claimed — the sudo
+     unlink cascade otherwise destroys a foreign file (I-M4).
+107. **An ACL wall you didn't build is not a gate (C18.65/73 corollary, twice re-learned).** The
+     MSS queues crashed for group-less line managers because the reads leaned on officer-only
+     ACLs; the shift grid's sudo leave read was "protected" by a missing shift ACL one model
+     earlier. Facades read sudo BEHIND their own explicit first-line gate; the gate names the
+     persona, the sudo makes the payload complete, and record rules never silently empty a board.
+108. **A truncation flag must come from the collector, not recomputed at the edge.** The audit
+     export compared `len(rows) > cap` after each source was already capped at exactly `cap` —
+     truncated=False while rows were dropped. Thread the collector's own `capped` boolean through
+     (and the import wizard's row cap was off by one AND silent — surface `truncated` + the cap in
+     every parse/validate/commit payload).
