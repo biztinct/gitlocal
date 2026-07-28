@@ -380,7 +380,9 @@ class AttendanceWeekEntry(models.TransientModel):
             if month_start <= r['date'] <= month_end:
                 agg[eid]['mtd'] += hrs
 
-        special = {e.id: e.pb_ot_special_sector for e in emps}
+        # sudo: same rail as _allowance — the flag is groups='hr.group_hr_user'
+        # and the ceiling rail must render for any gated grid user (K-F8)
+        special = {e.id: e.pb_ot_special_sector for e in emps.sudo()}
         out = {}
         for eid in employee_ids:
             e = emp_by_id.get(eid)

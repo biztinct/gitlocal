@@ -245,34 +245,14 @@ class PbProfileChangeRequest(models.Model):
                     "profile — nothing to submit."))
 
     def _after_approval_transition(self, to_state):
-        if to_state == 'hr_review':
-            self._notify_hr_reviewers()
         if to_state == 'approved':
             self._apply_to_master()
 
-    def _notify_hr_reviewers(self):
-        """In-app to-dos for the HR tier on submit — activities only, never
-        mail (C18.47/48). The queue itself is the new Profile Changes menu
-        (review I-H4: the chain used to dead-end here with HR unaware)."""
-        self.ensure_one()
-        gids = []
-        for g in ('om_hr_payroll.group_hr_payroll_manager', 'hr.group_hr_manager'):
-            try:
-                gids.append(self.env.ref(g).id)
-            except ValueError:
-                continue
-        if not gids:
-            return
-        users = self.env['res.users'].sudo().search(
-            [('group_ids', 'in', gids), ('active', '=', True),
-             ('id', '!=', self.env.uid)], limit=5)
-        for u in users:
-            try:
-                self.activity_schedule(
-                    'mail.mail_activity_data_todo', user_id=u.id,
-                    summary=_('Profile change to review: %s', self.name))
-            except Exception:
-                continue  # a notification must never block the submit
+    # HR discovery of a submitted request is the Profile Changes menu (its
+    # action defaults to the "Awaiting HR" filter) — review I-H4. Deliberately
+    # NOT an activity or a message_post: this model carries no
+    # mail.activity.mixin, and this server has live SMTP with an active queue
+    # cron, so a review fix may not introduce a new outbound path (C18.47/48).
 
     def action_submit(self):
         self.ensure_one()
