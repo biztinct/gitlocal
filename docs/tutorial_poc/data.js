@@ -68,6 +68,7 @@ const I18N = {
     net: "Net", gross: "Gross", employees: "Employees", total: "Total",
     close: "Close", gotIt: "Got it", continueBtn: "Continue",
     hero: { headcount: "Headcount", monthlyNet: "Monthly net", waiting: "Awaiting approval", configs: "Formula configs" },
+    readAnalysis: "Read the analysis",
     langName: "English",
   },
   vi: {
@@ -131,6 +132,7 @@ const I18N = {
     net: "Thực nhận", gross: "Tổng thu nhập", employees: "Nhân viên", total: "Tổng",
     close: "Đóng", gotIt: "Đã hiểu", continueBtn: "Tiếp tục",
     hero: { headcount: "Nhân sự", monthlyNet: "Thực chi tháng", waiting: "Chờ phê duyệt", configs: "Cấu hình công thức" },
+    readAnalysis: "Đọc bản phân tích",
     langName: "Tiếng Việt",
   },
 };

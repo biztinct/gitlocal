@@ -85,8 +85,10 @@ index.html      Shell + inline Lucide SVG sprite (no CDN)
 styles.css      Design system (mirrors pb_theme indigo #5A4BB0 tokens, Inter, 14px radius)
 data.js         ALL content: i18n strings, menu inventory, lessons, missions, Q&A, glossary
 app.js          Engine: router, simulated shell, spotlight/trace engine, 3 concept controllers
-screenshots/    Captured states (hub, map, lessons, simulator, companion-VI)
-ANALYSIS.md     Coverage matrix, comparison, recommendation, roadmap, integration notes
+analysis.html   THE WRITTEN DELIVERABLE — coverage matrix, comparison, recommendation,
+                roadmap, metrics, assumptions, integration checklist. Self-contained;
+                open it directly or via "Read the analysis" on the prototype hub.
+screenshots/    Captured states (hub, map, lessons, simulator, companion-VI, analysis)
 ```
 
 ## Ground truth used
