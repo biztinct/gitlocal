@@ -561,6 +561,7 @@ const HubView = {
       <div class="hub-top">
         <div class="hub-logo"><span class="dot">${ic("zap", "lg")}</span> Payobook <span style="font-weight:600;color:var(--pb-primary)">Learn</span> <span class="badge-poc">${T("prototype")}</span></div>
         <div class="hub-controls">${headControls()}
+          <a class="btn outline sm" href="analysis.html">${ic("book-open")} ${T("readAnalysis")}</a>
           <button class="btn subtle sm" data-act="reset">${ic("rotate-ccw")} ${T("reset")}</button>
         </div>
       </div>
@@ -584,8 +585,8 @@ const HubView = {
         ${this.concept(3, "bot", "vis-ai", `<div class="bub b1"></div><div class="bub b2"></div><span class="ping">${ic("sparkles")}</span>`, "#/companion")}
       </div>
       <div class="hub-note">${ic("info")} <span>${tx(B_(
-        "All three concepts run on the same simulated Payobook shell (real menu structure from pb_sidebar, real VN payroll maths). Progress and language survive refresh via localStorage. See README.md and ANALYSIS.md for the comparison and recommendation.",
-        "Cả ba ý tưởng chạy trên cùng một giao diện Payobook mô phỏng (cấu trúc menu thật từ pb_sidebar, phép tính lương VN thật). Tiến độ và ngôn ngữ được giữ sau khi tải lại trang. Xem README.md và ANALYSIS.md để so sánh và đọc khuyến nghị."))}</span></div>
+        "All three concepts run on the same simulated Payobook shell (real menu structure from pb_sidebar, real VN payroll maths). Progress and language survive refresh via localStorage. The full comparison, recommendation and roadmap live in <a href='analysis.html'>analysis.html</a>.",
+        "Cả ba ý tưởng chạy trên cùng một giao diện Payobook mô phỏng (cấu trúc menu thật từ pb_sidebar, phép tính lương VN thật). Tiến độ và ngôn ngữ được giữ sau khi tải lại trang. Bản so sánh, khuyến nghị và lộ trình đầy đủ nằm trong <a href='analysis.html'>analysis.html</a>."))}</span></div>
     </div>`;
   },
   concept(n, icon, visCls, visHTML, href) {
