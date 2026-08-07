@@ -88,6 +88,11 @@ app.js          Engine: router, simulated shell, spotlight/trace engine, 3 conce
 analysis.html   THE WRITTEN DELIVERABLE — coverage matrix, comparison, recommendation,
                 roadmap, metrics, assumptions, integration checklist. Self-contained;
                 open it directly or via "Read the analysis" on the prototype hub.
+DESIGN_SPEC.md  PORTABLE BLUEPRINT — the strategy abstracted from Payobook so it can be
+                applied to any application: binding rules vs adaptation checklist,
+                content-spine schema, engine architecture, quality bar.
+REUSE_PROMPT.md Ready-to-paste kickoff prompt for reusing this design in another
+                application (copy this whole folder into the target repo first).
 screenshots/    Captured states (hub, map, lessons, simulator, companion-VI, analysis)
 ```
 
