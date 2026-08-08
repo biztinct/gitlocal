@@ -313,7 +313,7 @@ footer.doc-foot{grid-column:1/-1;border-top:1px solid var(--pb-border);margin-to
           <tr><td><code>learn.quiz</code> / <code>.option</code></td><td>One correct option enforced by constraint; <strong>every option requires feedback</strong> (recovery, not rejection). Completion = correct judgement, never Next.</td></tr>
           <tr><td><code>learn.screen</code> / <code>learn.column</code></td><td>Screen registry: key, blurb, next_step, <code>sidebar_key</code>, suggested intents (M2M). Columns = per-screen micro-glossary of KPI tiles/chips ("what does <em>Need review</em> mean here?").</td></tr>
           <tr><td><code>learn.intent</code> (+<code>.phrase</code>/<code>.block</code>/<code>.step</code>)</td><td>Coach Q&amp;A: screens scope (<code>'*'</code> or CSV), match phrases (<strong>deliberately untranslated</strong> — EN+VI in one bag), blocks with kinds p/steps/calc/calc_kpi/ok/warn/refusal/who/how/source, per-block <strong>capability gate</strong>, dynamic intents (screen_blurb/next_step), show_me anchor CSV, simpler text, practice hand-off key.</td></tr>
-          <tr><td><code>learn.mission</code> (+<code>.step</code>/<code>.option</code>/<code>.note</code>)</td><td>Practice missions: 4-field consequence card (title/scope/reversible/verify), seeded anomaly, decision steps with per-wrong-option recovery text (constraint-enforced), undo step, debrief did/check notes. Constraint: full missions must be complete.</td></tr>
+          <tr><td><code>learn.mission</code> (+<code>.step</code>/<code>.option</code>/<code>.note</code>)</td><td>Practice missions: 4-field consequence card (title/scope/reversible/verify), seeded anomaly, decision steps with per-wrong-option recovery text (constraint-enforced), undo step, debrief did/check notes. Constraint: full missions must be complete. <strong>Payobook adds <code>kind = live</code></strong> (§5): fixture missions for every tenant, live capstones demo-gated.</td></tr>
           <tr><td><code>learn.string</code> / <code>learn.glossary.term</code></td><td>Bilingual UI chrome (not <code>_t()</code> — the bundle ships both languages so switching is live) and domain glossary.</td></tr>
           <tr><td><code>learn.tenant.override</code></td><td><code>{{token}}</code> slots: shipped defaults (company_id = False) + per-company overrides; constraint rejects undeclared keys.</td></tr>
           <tr class="group"><td colspan="2">Per-user (own-record rules; author group sees all)</td></tr>
@@ -388,7 +388,26 @@ footer.doc-foot{grid-column:1/-1;border-top:1px solid var(--pb-border);margin-to
         </tbody>
       </table></div>
 
-      <h3>Missions (2 full + 1 outline) — on the practice fixture</h3>
+      <h3>Missions — the practice ladder (decided 2026-08-09)</h3>
+      <p>Missions come in <strong>two kinds</strong>, forming a ladder every tenant climbs as far as its type allows:
+        <em>learn</em> (lessons on real screens, read-only) → <em>practise</em> (fixture missions, isolated) →
+        <em>prove</em> (a live capstone, demo tenant only).</p>
+      <ul>
+        <li><strong>Fixture missions are universal — including the demo tenant.</strong> Prospects practise on the
+          JS fixture exactly like customers: they can fail safely, the seeded anomaly is always there (another user
+          can't have "fixed" it), and random practice computes never dirty the shared demo world. Customer/production
+          tenants get <em>only</em> this kind.</li>
+        <li><strong>Live capstone missions (<code>kind = live</code>) exist only on the demo tenant</strong>, gated by
+          the demo group. Steps validate <em>real actions on real records</em> — the upgraded guided-trial climax:
+          consequence interception before a real Compute, a real run travelling the real approval chain.
+          <strong>Collision answer: per-user division</strong> — each demo signup is assigned one of the 12 divisions
+          as theirs for the capstone (the pb_demo generator already regenerates per division), so two prospects never
+          fight over the same run.</li>
+        <li><strong>Soft gate between rungs:</strong> the capstone card nudges "do the practice mission first" but does
+          not hard-lock — an AE driving a live demo can jump straight to the climax. The gate can harden to a flag if
+          demo hygiene demands it.</li>
+      </ul>
+      <h4>Phase A fixture missions (2 full + 1 outline)</h4>
       <ul>
         <li><strong>m1 · Run the July pay run</strong> (full, confidence <code>run</code> +25): open wizard → choose
           Retail (wrong choice coached) → consequence interception before Compute (scope 48 drafts / reversible yes /
@@ -402,6 +421,18 @@ footer.doc-foot{grid-column:1/-1;border-top:1px solid var(--pb-border);margin-to
         <li><strong>m3 · Fix a bad import before it becomes salaries</strong> (outline): duplicate rows + one orphan
           employee; score drops; fix vs commit-anyway.</li>
       </ul>
+      <h4>Phase B live capstone (demo only)</h4>
+      <ul>
+        <li><strong>mL1 · Run your division's June payroll — for real</strong>: the pb_coach hero-tour climax
+          re-expressed as a live mission on the user's assigned division: real consequence card → real Compute →
+          open a real flagged payslip → submit → approve through level0/level1/level2 → Done. Debrief compares their
+          run to the fixture rehearsal. Until this ships, the existing pb_coach hero tour keeps delivering the live
+          climax — nothing regresses during Phase A.</li>
+      </ul>
+      <div class="callout warn"><svg class="ic"><use href="#i-alert-triangle"/></svg>
+        <span><strong>Isolation stays testable in both directions:</strong> fixture missions keep health_learn's
+        "never call a product method" test; live missions get the inverse — a test asserting <code>kind=live</code>
+        content refuses to run unless the company is the demo tenant and the user is in the demo group.</span></div>
 
       <h3>Coach intents (~14 for Phase A)</h3>
       <div class="tbl-scroll"><table>
@@ -571,13 +602,18 @@ tools/check_contract.py + --check      (CI: facts still true, output not drifted
             m1/m2 full + m3 outline, 14 intents, columns, glossary, slots; VI written natively; generator emits module
             data + .po. <em>A4 Wire &amp; verify (wk 4):</em> Coach mounted, Journey leaf in the sidebar (Pay Run
             section, after Retro), progress/events/confidence live, contract checker green, Chrome-validated on all 8
-            screens in both languages.</p>
+            screens in both languages. <em>Demo world included (coexisting):</em> demo users get the always-on Coach,
+            Journey and fixture missions from day one, while the pb_coach hero tour keeps delivering the live June-run
+            climax untouched.</p>
         </div>
         <div class="phase">
-          <h4>Phase B — Setup section <span class="chip slate">~3 weeks</span></h4>
+          <h4>Phase B — Setup section + live capstone <span class="chip slate">~4 weeks</span></h4>
           <p>Formula Engine, Salary Structures, Statutory, Integrations: anchors (most exist in pb_formula_studio),
             statutory lesson + BHYT-versioning mission from v1, ~10 intents, contract entries for taught statutory
-            facts.</p>
+            facts. <em>Demo track:</em> the mission engine learns to drive real screens; mL1 live capstone replaces the
+            pb_coach climax; the pb_demo generator gains per-user division assignment; the <strong>live-value
+            resolver</strong> lands (lesson/coach calc cards read real run totals and flag reasons via whitelisted
+            read-only methods, static worked example as fallback).</p>
         </div>
         <div class="phase">
           <h4>Phase C — remaining sections + convergence <span class="chip slate">~3 weeks</span></h4>
@@ -631,15 +667,21 @@ tools/check_contract.py + --check      (CI: facts still true, output not drifted
           by action tag makes this free.</li>
         <li><strong>Authoring stays prototype-first</strong> (this folder) with the generator, exactly like health19 —
           not hand-written XML.</li>
+        <li><strong>The practice ladder (decided 2026-08-09):</strong> fixture missions are universal — customers and
+          demo prospects alike practise on isolated JS data; <strong>live missions are demo-tenant-only</strong>
+          (<code>kind=live</code>, demo-group gated, inverse isolation test), delivered as the Phase B capstone.</li>
+        <li><strong>Demo collisions → per-user division:</strong> each demo signup owns one of the 12 divisions for its
+          capstone; the pb_demo generator regenerates per division.</li>
+        <li><strong>Live values in lesson/coach cards land in Phase B</strong> (whitelisted read-only resolver, static
+          worked example as fallback); Phase A ships static content.</li>
+        <li><strong>Demo world adopts pb_learn in Phase A, coexisting</strong> with the pb_coach hero tour until the
+          Phase B capstone replaces the climax and Phase C retires pb_coach.</li>
         <li class="open"><strong>Open</strong> — Journey sidebar placement: a leaf in the Pay Run section (health19
           pattern: CRM section, sequence 90) vs a top-level "Learn" section. Default: Pay Run leaf until Phase C, then a
           section of its own.</li>
         <li class="open"><strong>Open</strong> — should <code>learn.progress</code>/<code>learn.confidence</code> be
           visible to payroll managers (readiness signal) or private + author-only, as health_learn ships? Default:
           health_learn's privacy model.</li>
-        <li class="open"><strong>Open</strong> — demo world in Phase A: does the shared VN demo tenant get pb_learn
-          immediately (guided-trial users see the new Coach alongside pb_coach's hero tour), or only after Phase C
-          convergence? Default: Phase A, coexisting.</li>
       </ol>
     </section>
 
