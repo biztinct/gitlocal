@@ -88,6 +88,11 @@ app.js          Engine: router, simulated shell, spotlight/trace engine, 3 conce
 analysis.html   THE WRITTEN DELIVERABLE — coverage matrix, comparison, recommendation,
                 roadmap, metrics, assumptions, integration checklist. Self-contained;
                 open it directly or via "Read the analysis" on the prototype hub.
+design_v2.html  THE CURRENT IMPLEMENTATION DESIGN (v2, 2026-08) — back-ports the proven
+                health19 health_learn architecture: always-on per-screen Coach, pb_learn
+                module (learn.* models, generated data), anchor registry + contract
+                checker, Pay Run-first screen catalog and rollout. Supersedes the
+                delivery plan in analysis.html §5–§8.
 DESIGN_SPEC.md  PORTABLE BLUEPRINT — the strategy abstracted from Payobook so it can be
                 applied to any application: binding rules vs adaptation checklist,
                 content-spine schema, engine architecture, quality bar.
