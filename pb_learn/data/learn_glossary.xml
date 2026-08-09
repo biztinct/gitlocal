@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check.
+
+         PHASE A1 PLACEHOLDER. Three terms so the model, the security rules and
+         the bundle are exercised end to end. Run A2 ships the nine the content
+         plan calls for. -->
+<!-- The domain glossary. What a payroll word means here, in one sentence. -->
+<odoo>
+
+    <record id="gloss_bhxh" model="learn.glossary.term">
+        <field name="key">bhxh</field>
+        <field name="sequence">10</field>
+        <field name="term">BHXH</field>
+        <field name="definition">Social insurance. The employee pays 8% of the registered insurance base and the employer pays 17.5% on top of it. It is charged on the REGISTERED base, which is why overtime does not move it.</field>
+    </record>
+
+    <record id="gloss_bhyt" model="learn.glossary.term">
+        <field name="key">bhyt</field>
+        <field name="sequence">20</field>
+        <field name="term">BHYT</field>
+        <field name="definition">Health insurance — 1.5% employee and 3% employer, on the same registered insurance base as BHXH.</field>
+    </record>
+
+    <record id="gloss_payrun" model="learn.glossary.term">
+        <field name="key">payrun</field>
+        <field name="sequence">30</field>
+        <field name="term">Pay run</field>
+        <field name="definition">One batch of payslips for a division and a period, travelling draft → Payroll Officer → HR review → GM approval → done. A rejection returns the whole batch to draft with a written reason.</field>
+    </record>
+
+</odoo>

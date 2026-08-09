@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check.
+
+         PHASE A1 PLACEHOLDER. One outline mission. Deliberately NOT a full one:
+         learn.mission constrains a full mission to carry a complete
+         consequence card and a seeded anomaly, and a placeholder that satisfies
+         a constraint with filler text is worse than one that does not pretend.
+         m1 and m2 arrive in Run A2. -->
+<!-- Practice missions. They run on the REPLICA only — a mission step that says
+     "compute the run" must be structurally incapable of computing one. -->
+<odoo>
+
+    <record id="mission_m3" model="learn.mission">
+        <field name="key">m3</field>
+        <field name="sequence">30</field>
+        <field name="line">payrun</field>
+        <field name="icon">flask</field>
+        <field name="name">Fix a bad import before it becomes salaries</field>
+        <field name="summary">A file with duplicate rows and one employee nobody can match. The score drops. Do you fix it, or commit anyway?</field>
+        <field name="duration_min">6</field>
+        <field name="kind">outline</field>
+        <field name="outline_note">The full version puts you in the wizard with the score falling in front of you, makes you choose between Match, Retry and Skip for each bad row, and shows what each choice would have produced on payday.</field>
+        <field name="screen">importwizard</field>
+        <field name="confidence_key">import</field>
+        <field name="confidence_gain">15</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Author-facing views. Content is authored in docs/tutorial_poc/author/ and
+         generated into data files, so these are for INSPECTION and for the
+         translation workflow — not the primary editing surface. -->
+
+    <record id="view_learn_station_list" model="ir.ui.view">
+        <field name="name">learn.station.list</field>
+        <field name="model">learn.station</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="key"/>
+                <field name="name"/>
+                <field name="section"/>
+                <field name="line"/>
+                <field name="kind"/>
+                <field name="duration_min"/>
+                <field name="required"/>
+                <field name="star"/>
+                <field name="sidebar_key"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_learn_station_form" model="ir.ui.view">
+        <field name="name">learn.station.form</field>
+        <field name="model">learn.station</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Station name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="key"/>
+                            <field name="section"/>
+                            <field name="line"/>
+                            <field name="kind"/>
+                            <field name="icon"/>
+                        </group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="duration_min"/>
+                            <field name="required"/>
+                            <field name="star"/>
+                            <field name="after_key"/>
+                            <field name="sidebar_key"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <field name="summary" placeholder="One line on the map card"/>
+                    <notebook>
+                        <page string="Outline">
+                            <group>
+                                <field name="outline_what" string="What it is"/>
+                                <field name="outline_why" string="Why it matters"/>
+                                <field name="outline_when" string="When to use it"/>
+                                <field name="outline_prereq" string="Prerequisites"/>
+                            </group>
+                            <separator string="Common mistakes"/>
+                            <field name="mistake_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Lessons">
+                            <field name="lesson_ids">
+                                <list>
+                                    <field name="key"/>
+                                    <field name="name"/>
+                                    <field name="duration_min"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_learn_station" model="ir.actions.act_window">
+        <field name="name">Learning stations</field>
+        <field name="res_model">learn.station</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_learn_lesson_list" model="ir.ui.view">
+        <field name="name">learn.lesson.list</field>
+        <field name="model">learn.lesson</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="key"/>
+                <field name="name"/>
+                <field name="station_id"/>
+                <field name="duration_min"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_learn_lesson_form" model="ir.ui.view">
+        <field name="name">learn.lesson.form</field>
+        <field name="model">learn.lesson</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <field name="key"/>
+                        <field name="station_id"/>
+                        <field name="duration_min"/>
+                    </group>
+                    <field name="goal"/>
+                    <notebook>
+                        <page string="Steps">
+                            <field name="step_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="title"/>
+                                    <field name="screen"/>
+                                    <field name="anchor"/>
+                                    <field name="visual"/>
+                                </list>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="kicker"/>
+                                                <field name="title"/>
+                                                <field name="screen"/>
+                                                <field name="anchor"/>
+                                            </group>
+                                            <group>
+                                                <field name="visual"/>
+                                                <field name="moment_from"/>
+                                                <field name="moment_to"/>
+                                                <field name="moment_chain"/>
+                                                <field name="moment_which"/>
+                                            </group>
+                                        </group>
+                                        <field name="body"/>
+                                        <field name="tip"/>
+                                        <field name="consequence"/>
+                                        <separator string="Visual rows"/>
+                                        <field name="line_ids">
+                                            <list editable="bottom">
+                                                <field name="sequence" widget="handle"/>
+                                                <field name="role"/>
+                                                <field name="label"/>
+                                                <field name="value"/>
+                                            </list>
+                                        </field>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Understanding checks">
+                            <field name="quiz_ids">
+                                <list>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="prompt"/>
+                                    <field name="kind"/>
+                                </list>
+                                <form>
+                                    <sheet>
+                                        <field name="kind"/>
+                                        <field name="prompt"/>
+                                        <field name="option_ids">
+                                            <list editable="bottom">
+                                                <field name="sequence" widget="handle"/>
+                                                <field name="label"/>
+                                                <field name="is_correct"/>
+                                                <field name="feedback"/>
+                                            </list>
+                                        </field>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_learn_lesson" model="ir.actions.act_window">
+        <field name="name">Lessons</field>
+        <field name="res_model">learn.lesson</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Progress + events: read-only surfaces for the §6 metrics. -->
+    <record id="view_learn_progress_list" model="ir.ui.view">
+        <field name="name">learn.progress.list</field>
+        <field name="model">learn.progress</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="user_id"/>
+                <field name="station_id"/>
+                <field name="state"/>
+                <field name="step_index"/>
+                <field name="attempts"/>
+                <field name="first_try_correct"/>
+                <field name="completed_at"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_learn_progress" model="ir.actions.act_window">
+        <field name="name">Learner progress</field>
+        <field name="res_model">learn.progress</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_learn_event_list" model="ir.ui.view">
+        <field name="name">learn.event.list</field>
+        <field name="model">learn.event</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false">
+                <field name="occurred_at"/>
+                <field name="user_id"/>
+                <field name="kind"/>
+                <field name="station_id"/>
+                <field name="screen"/>
+                <field name="detail"/>
+                <field name="lang"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_learn_event" model="ir.actions.act_window">
+        <field name="name">Learning events</field>
+        <field name="res_model">learn.event</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

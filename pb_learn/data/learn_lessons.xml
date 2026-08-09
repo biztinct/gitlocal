@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check.
+
+         PHASE A1 PLACEHOLDER. One lesson, one step, one understanding check —
+         enough for the player, the quiz constraint and the anchor lint to run
+         against real records. L1–L4 arrive in Run A2. -->
+<!-- Lessons. Every step renders over the practice replica, never the live app. -->
+<odoo>
+
+    <record id="lesson_runpayroll" model="learn.lesson">
+        <field name="key">l_runpayroll</field>
+        <field name="station_id" ref="station_runpayroll"/>
+        <field name="sequence">10</field>
+        <field name="name">Run Payroll — your first pay run</field>
+        <field name="goal">Create one month of draft payslips for one division, and know what you have and have not just done.</field>
+        <field name="duration_min">8</field>
+    </record>
+
+    <record id="lesson_runpayroll_s1" model="learn.step">
+        <field name="lesson_id" ref="lesson_runpayroll"/>
+        <field name="sequence">10</field>
+        <field name="kicker">Where you are</field>
+        <field name="title">The division chooses the rulebook</field>
+        <field name="body">Picking a division here does more than filter a list of people: it selects the <b>formula configuration</b> every payslip in this run will be computed by. Choose the wrong one and every number downstream is wrong in the same direction, which is the hardest kind of error to spot.</field>
+        <field name="tip">The configuration and its version are printed in the scope panel on the right. Read them before you compute, not after.</field>
+        <field name="screen">runpayroll</field>
+        <field name="anchor">pw-division</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_runpayroll_q1" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_runpayroll"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">You have computed July and one payslip has an overtime figure that looks far too high. What do you do?</field>
+    </record>
+
+    <record id="lesson_runpayroll_q1_o1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_runpayroll_q1"/>
+        <field name="sequence">10</field>
+        <field name="label">Fix the overtime in the source data, then recompute the run.</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Exactly. Payslips are an output. Correct the input that produced them and recompute, and the whole run stays consistent with the data behind it.</field>
+    </record>
+
+    <record id="lesson_runpayroll_q1_o2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_runpayroll_q1"/>
+        <field name="sequence">20</field>
+        <field name="label">Edit the net amount on that payslip so it looks right.</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. Editing the output leaves the input still wrong, so the next recompute silently undoes your fix — and the payslip no longer agrees with the attendance record behind it.</field>
+    </record>
+
+</odoo>

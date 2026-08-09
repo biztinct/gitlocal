@@ -1,0 +1,281 @@
+{
+  "_doc": [
+    "The anchor registry. One name for one control, whichever surface it is on.",
+    "",
+    "ATTRIBUTE: data-coach. NOT health_learn's data-a — Payobook already had 40+",
+    "live data-coach anchors across six modules before this module existed, and",
+    "renaming them would churn every template for zero behaviour. The engine",
+    "reads one constant (engine/spotlight.js).",
+    "",
+    "KINDS",
+    "  product   the control exists in a real product template; data-coach=\"key\"",
+    "            must be found there verbatim. `screen` may be a LIST when one",
+    "            template serves several screens (pb_payrun_ledgers renders Full",
+    "            & Final, Proration and Retro from one file) — `shared: true`",
+    "            marks that, so nobody reads a single-screen promise into it.",
+    "  pattern   the control exists once PER RECORD. The template emits the key",
+    "            with t-attf-data-coach, so the registry declares the prefix and",
+    "            the test looks for that prefix rather than a literal key. Empty",
+    "            in Phase A on purpose — see pk-card.",
+    "  practice  a TEACHING view with no product counterpart: an arithmetic",
+    "            breakdown, a lifecycle stepper, the replica's own navigation.",
+    "            Named rep-* and declared so the gap is VISIBLE — the Coach must",
+    "            never claim to point at one of these on a live screen.",
+    "  foreign   data-coach anchors this module does not own. They belong to",
+    "            pb_coach's tours and to PayAI, they predate pb_learn, and they",
+    "            are listed so the lint can tell 'someone else's anchor' from",
+    "            'a typo of one of ours'. pw-division and pw-compute are the two",
+    "            that are BOTH — the registry owns them, pb_coach also points at",
+    "            them, and neither may rename them unilaterally.",
+    "",
+    "tests/test_anchor_registry.py enforces every direction:",
+    "  every product key exists in its template · every pattern prefix is",
+    "  emitted · every practice key exists in the replica · every anchor the",
+    "  content names is registered · every data-coach in a scanned file is",
+    "  declared here or whitelisted as foreign · and the registry never silently",
+    "  claims an anchor another module owns."
+  ],
+
+  "product": {
+    "pw-rail": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "The four-dot stepper. Where you are in the run, and what is still ahead."
+    },
+    "pw-scope": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "Period and batch name. The two inputs that decide which month is computed."
+    },
+    "pw-division": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "The division / formula configuration. Choosing it chooses the rulebook every payslip in this run is computed by."
+    },
+    "pw-summary": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "Company, configuration and eligible headcount. The last read before anything is computed."
+    },
+    "pw-compute": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "Compute payslips. Creates drafts only — nothing is paid, sent or approved."
+    },
+    "pw-result": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "What the compute produced: the run's name, its net total and its counts."
+    },
+    "pw-pills": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "Payslips / Computed / Need review. The third one is a question, not an error."
+    },
+    "pw-exceptions": {
+      "screen": "runpayroll",
+      "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "desc": "The exceptions list — every payslip the engine wants a human to look at."
+    },
+
+    "pk-kpis": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "desc": "The KPI band above the board: total, in pipeline, awaiting YOUR approval, completed, net paid."
+    },
+    "pk-run": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "desc": "Run payroll. The same wizard the Run Payroll leaf opens, reached from the board."
+    },
+    "pk-tabs": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "desc": "Status tabs. They filter the board by approval stage, not by period."
+    },
+    "pk-datechips": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "desc": "Date chips. Every count above is scoped by whichever one is active."
+    },
+    "pk-divchips": {
+      "screen": "payruns",
+      "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "desc": "Division chips. Shown only when this company runs payroll per division."
+    },
+    "pk-card": {
+      "screen": "payruns",
+      "file": "pb_payruns/views/hr_payslip_run_kanban.xml",
+      "repeats": true,
+      "desc": "A pay run card. Emitted once per record, so a point-at lands on the first card on the board — enough to say 'a card looks like this', not enough to say 'that one'."
+    },
+    "pk-card-actions": {
+      "screen": "payruns",
+      "file": "pb_payruns/views/hr_payslip_run_kanban.xml",
+      "repeats": true,
+      "desc": "The card's action footer. Which buttons appear is decided by the record's own gate fields, never by the card."
+    },
+
+    "ps-runsel": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "The run selector. Everything below it belongs to the run named here."
+    },
+    "ps-kpis": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "Payslips, net total, gross total, approved and need-review for this run."
+    },
+    "ps-chips": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "Filter chips: All / Need review / HR pending / GM pending / Done."
+    },
+    "ps-list": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "The payslip list. A flag dot marks a slip the engine wants read."
+    },
+    "ps-detail": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "The detail pane for the selected employee."
+    },
+    "ps-status": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "The approval stepper. It is the payslip's own position in the chain, not the run's."
+    },
+    "ps-breakdown": {
+      "screen": "payslips",
+      "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "desc": "Salary breakdown, line by line with its rule code. The working behind the net figure."
+    },
+
+    "im-kpis": {
+      "screen": "import",
+      "file": "pb_import/static/src/xml/import.xml",
+      "desc": "Batches, completed, in progress, with errors, connectors."
+    },
+    "im-cta": {
+      "screen": "import",
+      "file": "pb_import/static/src/xml/import.xml",
+      "desc": "Start an import. Opens the guided wizard — the only path that scores a file before it commits."
+    },
+    "im-launches": {
+      "screen": "import",
+      "file": "pb_import/static/src/xml/import.xml",
+      "desc": "The secondary launches: the older per-tool import surfaces."
+    },
+    "im-pipe": {
+      "screen": "import",
+      "file": "pb_import/static/src/xml/import.xml",
+      "desc": "map → validate → commit. A batch that stops before commit has changed nothing."
+    },
+    "im-batches": {
+      "screen": "import",
+      "file": "pb_import/static/src/xml/import.xml",
+      "desc": "Recent batches and their state. Where you go back to a file that stalled."
+    },
+
+    "iw-steps": {
+      "screen": "importwizard",
+      "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "desc": "The wizard's stepper: source, review & match, validate & fix, commit."
+    },
+    "iw-source": {
+      "screen": "importwizard",
+      "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "desc": "Where the data comes from, and which formula configuration reads it."
+    },
+    "iw-review": {
+      "screen": "importwizard",
+      "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "desc": "Rows loaded, matched, new and needing attention. The confidence read before any fix."
+    },
+    "iw-fixrows": {
+      "screen": "importwizard",
+      "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "desc": "Match / Retry / Skip. Fixing the INPUT here is what stops a wrong payslip later."
+    },
+    "iw-outcome": {
+      "screen": "importwizard",
+      "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "desc": "What the commit actually created: employees and payslips."
+    },
+    "iw-commit": {
+      "screen": "importwizard",
+      "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "desc": "Commit import. The first irreversible control in this flow — everything before it is a preview."
+    },
+
+    "lg-kpis": {
+      "screen": ["fullfinal", "proration", "retro"],
+      "shared": true,
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "The ledger KPI band. ONE template serves Full & Final, Proration Audit and Retro Adjustments, so this key means a different set of numbers on each — the screen key decides which."
+    },
+    "lg-facets": {
+      "screen": ["fullfinal", "proration", "retro"],
+      "shared": true,
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "The facet chips and the date row. Same control, different facets per ledger."
+    },
+    "lg-rows": {
+      "screen": ["fullfinal", "proration", "retro"],
+      "shared": true,
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "The ledger rows. Each is a line of working, not a record to edit."
+    },
+    "lg-openfull": {
+      "screen": ["fullfinal", "proration", "retro"],
+      "shared": true,
+      "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "desc": "Open full list. Leaves the cockpit for the underlying list view."
+    }
+  },
+
+  "pattern": {},
+
+  "practice": {
+    "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
+    "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
+    "rep-dash-kpis": "The replica Dashboard's KPI row. Context only — Phase A teaches the Pay Run section.",
+    "rep-dash-runs": "The replica Dashboard's recent-runs list.",
+    "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper."
+  },
+
+  "foreign": {
+    "pw-division": "pb_coach — hero_path.js, tour_payrun.js. ALSO ours: the registry owns it and neither module may rename it alone.",
+    "pw-compute": "pb_coach — hero_path.js, tour_payrun.js. ALSO ours, same rule.",
+    "dash-hero": "pb_dashboard / pb_coach hero tour",
+    "dash-kpis": "pb_dashboard / pb_coach hero tour",
+    "dash-formula": "pb_dashboard / pb_coach hero tour",
+    "dash-runpayroll": "pb_dashboard / pb_coach hero tour",
+    "payai-pill": "pb_payroll_ai_insights — the PayAI launcher",
+    "find-panel": "pb_formula_studio command layer",
+    "palette": "pb_formula_studio command layer",
+    "shortcuts": "pb_formula_studio",
+    "snippets": "pb_formula_studio",
+    "fs-*": "pb_formula_studio — the Formula Studio tours",
+    "grid-*": "pb_formula_studio — the grid studio tours",
+    "imp-*": "pb_hr_payroll_formula — the multi-sheet import wizard tour",
+    "map-*": "pb_hr_payroll_formula — the component-mapping wizard tour"
+  },
+
+  "scan": {
+    "templates": [
+      "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "pb_payruns/views/hr_payslip_run_kanban.xml",
+      "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "pb_import/static/src/xml/import.xml",
+      "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "pb_payrun_ledgers/static/src/xml/ledger.xml"
+    ],
+    "replica": [
+      "pb_learn/static/src/engine/screens.js",
+      "pb_learn/static/src/engine/fixture.js"
+    ]
+  }
+}

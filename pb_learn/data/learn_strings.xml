@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check.
+
+         PHASE A1 PLACEHOLDER. Every key the engine reads, with its English
+         value, so the surfaces render before the authoring pipeline exists.
+         Vietnamese arrives with the generated i18n/vi_VN.po in Run A2. -->
+<!-- UI chrome. Both languages reach the browser so the learner can switch live, mid-lesson, without losing their place. -->
+<odoo>
+
+    <record id="str_askplaceholder" model="learn.string">
+        <field name="key">askPlaceholder</field>
+        <field name="value">Ask about this screen…</field>
+    </record>
+
+    <record id="str_back" model="learn.string">
+        <field name="key">back</field>
+        <field name="value">Back</field>
+    </record>
+
+    <record id="str_backtomissions" model="learn.string">
+        <field name="key">backToMissions</field>
+        <field name="value">Back to missions</field>
+    </record>
+
+    <record id="str_badge" model="learn.string">
+        <field name="key">badge</field>
+        <field name="value">Pay Run badge</field>
+    </record>
+
+    <record id="str_badgegot" model="learn.string">
+        <field name="key">badgeGot</field>
+        <field name="value">Pay Run badge earned</field>
+    </record>
+
+    <record id="str_bankfile" model="learn.string">
+        <field name="key">bankFile</field>
+        <field name="value">Bank file</field>
+    </record>
+
+    <record id="str_brand" model="learn.string">
+        <field name="key">brand</field>
+        <field name="value">Payobook</field>
+    </record>
+
+    <record id="str_cananswer" model="learn.string">
+        <field name="key">canAnswer</field>
+        <field name="value">What I can answer here</field>
+    </record>
+
+    <record id="str_cancelact" model="learn.string">
+        <field name="key">cancelAct</field>
+        <field name="value">Go back</field>
+    </record>
+
+    <record id="str_check" model="learn.string">
+        <field name="key">check</field>
+        <field name="value">Understanding check</field>
+    </record>
+
+    <record id="str_checknote" model="learn.string">
+        <field name="key">checkNote</field>
+        <field name="value">One judgement call. A wrong answer is a way back, never a mark against you.</field>
+    </record>
+
+    <record id="str_checklist" model="learn.string">
+        <field name="key">checklist</field>
+        <field name="value">Before doing this for real, always check</field>
+    </record>
+
+    <record id="str_coachname" model="learn.string">
+        <field name="key">coachName</field>
+        <field name="value">Payobook Coach</field>
+    </record>
+
+    <record id="str_coachnoscreen" model="learn.string">
+        <field name="key">coachNoScreen</field>
+        <field name="value">I do not have lessons for this screen yet. Here is what I can answer anywhere.</field>
+    </record>
+
+    <record id="str_columnanswer" model="learn.string">
+        <field name="key">columnAnswer</field>
+        <field name="value">From the column glossary</field>
+    </record>
+
+    <record id="str_commitimport" model="learn.string">
+        <field name="key">commitImport</field>
+        <field name="value">Commit import</field>
+    </record>
+
+    <record id="str_compute" model="learn.string">
+        <field name="key">compute</field>
+        <field name="value">Compute payslips</field>
+    </record>
+
+    <record id="str_confgain" model="learn.string">
+        <field name="key">confGain</field>
+        <field name="value">Confidence gained</field>
+    </record>
+
+    <record id="str_confidencescore" model="learn.string">
+        <field name="key">confidenceScore</field>
+        <field name="value">confidence score</field>
+    </record>
+
+    <record id="str_consequence" model="learn.string">
+        <field name="key">consequence</field>
+        <field name="value">Before you do this</field>
+    </record>
+
+    <record id="str_continuebtn" model="learn.string">
+        <field name="key">continueBtn</field>
+        <field name="value">Continue</field>
+    </record>
+
+    <record id="str_debrieftitle" model="learn.string">
+        <field name="key">debriefTitle</field>
+        <field name="value">Debrief</field>
+    </record>
+
+    <record id="str_employees" model="learn.string">
+        <field name="key">employees</field>
+        <field name="value">employees</field>
+    </record>
+
+    <record id="str_est" model="learn.string">
+        <field name="key">est</field>
+        <field name="value">About</field>
+    </record>
+
+    <record id="str_exit" model="learn.string">
+        <field name="key">exit</field>
+        <field name="value">Leave</field>
+    </record>
+
+    <record id="str_finish" model="learn.string">
+        <field name="key">finish</field>
+        <field name="value">Finish</field>
+    </record>
+
+    <record id="str_fulllesson" model="learn.string">
+        <field name="key">fullLesson</field>
+        <field name="value">Full lesson</field>
+    </record>
+
+    <record id="str_groundedin" model="learn.string">
+        <field name="key">groundedIn</field>
+        <field name="value">Grounded in this screen:</field>
+    </record>
+
+    <record id="str_honest" model="learn.string">
+        <field name="key">honest</field>
+        <field name="value">I guide — you act. I never compute a run, approve a payslip or change a record for you.</field>
+    </record>
+
+    <record id="str_howask" model="learn.string">
+        <field name="key">howAsk</field>
+        <field name="value">How to get access:</field>
+    </record>
+
+    <record id="str_howinstead" model="learn.string">
+        <field name="key">howInstead</field>
+        <field name="value">What to do instead:</field>
+    </record>
+
+    <record id="str_hublead" model="learn.string">
+        <field name="key">hubLead</field>
+        <field name="value">Learn the Pay Run desk one screen at a time. Nothing here touches your company's data.</field>
+    </record>
+
+    <record id="str_hubtitle" model="learn.string">
+        <field name="key">hubTitle</field>
+        <field name="value">Your journey</field>
+    </record>
+
+    <record id="str_journals" model="learn.string">
+        <field name="key">journals</field>
+        <field name="value">Journals</field>
+    </record>
+
+    <record id="str_learn" model="learn.string">
+        <field name="key">learn</field>
+        <field name="value">Learn</field>
+    </record>
+
+    <record id="str_less" model="learn.string">
+        <field name="key">less</field>
+        <field name="value">Say it the full way</field>
+    </record>
+
+    <record id="str_linespayrun" model="learn.string">
+        <field name="key">lines.payrun</field>
+        <field name="value">Pay Run</field>
+    </record>
+
+    <record id="str_livenotyet" model="learn.string">
+        <field name="key">liveNotYet</field>
+        <field name="value">This is a live capstone. It runs against real records on the demo tenant and is not available in this build yet — the practice mission teaches the same judgement safely.</field>
+    </record>
+
+    <record id="str_match" model="learn.string">
+        <field name="key">match</field>
+        <field name="value">Match…</field>
+    </record>
+
+    <record id="str_min" model="learn.string">
+        <field name="key">min</field>
+        <field name="value">min</field>
+    </record>
+
+    <record id="str_missions" model="learn.string">
+        <field name="key">missions</field>
+        <field name="value">Practice missions</field>
+    </record>
+
+    <record id="str_missionslead" model="learn.string">
+        <field name="key">missionsLead</field>
+        <field name="value">Do it once where it cannot matter, before you do it where it can.</field>
+    </record>
+
+    <record id="str_mistakes" model="learn.string">
+        <field name="key">mistakes</field>
+        <field name="value">Mistakes this prevents</field>
+    </record>
+
+    <record id="str_motionon" model="learn.string">
+        <field name="key">motionOn</field>
+        <field name="value">Motion on</field>
+    </record>
+
+    <record id="str_needreview" model="learn.string">
+        <field name="key">needReview</field>
+        <field name="value">Need review</field>
+    </record>
+
+    <record id="str_next" model="learn.string">
+        <field name="key">next</field>
+        <field name="value">Next</field>
+    </record>
+
+    <record id="str_noanswer" model="learn.string">
+        <field name="key">noAnswer</field>
+        <field name="value">I do not have an answer for that</field>
+    </record>
+
+    <record id="str_noanswerbody" model="learn.string">
+        <field name="key">noAnswerBody</field>
+        <field name="value">Nothing written here covers that question. Here is what I can answer on this screen.</field>
+    </record>
+
+    <record id="str_notvisible" model="learn.string">
+        <field name="key">notVisible</field>
+        <field name="value">Not in your menu</field>
+    </record>
+
+    <record id="str_notvisiblebody" model="learn.string">
+        <field name="key">notVisibleBody</field>
+        <field name="value">This screen is not in your sidebar, so you cannot open it yet. You can still read what it does and what it would take to be given access.</field>
+    </record>
+
+    <record id="str_of" model="learn.string">
+        <field name="key">of</field>
+        <field name="value">of</field>
+    </record>
+
+    <record id="str_openfulllist" model="learn.string">
+        <field name="key">openFullList</field>
+        <field name="value">Open full list →</field>
+    </record>
+
+    <record id="str_openlesson" model="learn.string">
+        <field name="key">openLesson</field>
+        <field name="value">Open the lesson</field>
+    </record>
+
+    <record id="str_optional" model="learn.string">
+        <field name="key">optional</field>
+        <field name="value">Optional</field>
+    </record>
+
+    <record id="str_outline" model="learn.string">
+        <field name="key">outline</field>
+        <field name="value">Outline</field>
+    </record>
+
+    <record id="str_outlinemission" model="learn.string">
+        <field name="key">outlineMission</field>
+        <field name="value">Outline</field>
+    </record>
+
+    <record id="str_outlinenote" model="learn.string">
+        <field name="key">outlineNote</field>
+        <field name="value">This station is an outline: what it is, why it matters, when to use it and the mistakes it prevents. The full lesson is not written yet.</field>
+    </record>
+
+    <record id="str_overall" model="learn.string">
+        <field name="key">overall</field>
+        <field name="value">Overall</field>
+    </record>
+
+    <record id="str_pointnothere" model="learn.string">
+        <field name="key">pointNotHere</field>
+        <field name="value">That control is not on this screen right now, so I will not pretend to point at it.</field>
+    </record>
+
+    <record id="str_practicebanner" model="learn.string">
+        <field name="key">practiceBanner</field>
+        <field name="value">Practice company. Nothing you do here reaches a real employee, payslip or pay run.</field>
+    </record>
+
+    <record id="str_prereq" model="learn.string">
+        <field name="key">prereq</field>
+        <field name="value">What you need first</field>
+    </record>
+
+    <record id="str_proceed" model="learn.string">
+        <field name="key">proceed</field>
+        <field name="value">I have read this — continue</field>
+    </record>
+
+    <record id="str_recoveryused" model="learn.string">
+        <field name="key">recoveryUsed</field>
+        <field name="value">you needed a way back on this run</field>
+    </record>
+
+    <record id="str_reducemotion" model="learn.string">
+        <field name="key">reduceMotion</field>
+        <field name="value">Reduce motion</field>
+    </record>
+
+    <record id="str_refusal" model="learn.string">
+        <field name="key">refusal</field>
+        <field name="value">Your role cannot do this here.</field>
+    </record>
+
+    <record id="str_reject" model="learn.string">
+        <field name="key">reject</field>
+        <field name="value">Reject</field>
+    </record>
+
+    <record id="str_replay" model="learn.string">
+        <field name="key">replay</field>
+        <field name="value">Play this step again</field>
+    </record>
+
+    <record id="str_required" model="learn.string">
+        <field name="key">required</field>
+        <field name="value">Required</field>
+    </record>
+
+    <record id="str_retry" model="learn.string">
+        <field name="key">retry</field>
+        <field name="value">Retry</field>
+    </record>
+
+    <record id="str_reversible" model="learn.string">
+        <field name="key">reversible</field>
+        <field name="value">Can I undo it</field>
+    </record>
+
+    <record id="str_runpayroll" model="learn.string">
+        <field name="key">runPayroll</field>
+        <field name="value">Run payroll</field>
+    </record>
+
+    <record id="str_scope" model="learn.string">
+        <field name="key">scope</field>
+        <field name="value">What this touches</field>
+    </record>
+
+    <record id="str_search" model="learn.string">
+        <field name="key">search</field>
+        <field name="value">Search the journey</field>
+    </record>
+
+    <record id="str_showhint" model="learn.string">
+        <field name="key">showHint</field>
+        <field name="value">Hint</field>
+    </record>
+
+    <record id="str_showme" model="learn.string">
+        <field name="key">showMe</field>
+        <field name="value">Show me</field>
+    </record>
+
+    <record id="str_simpler" model="learn.string">
+        <field name="key">simpler</field>
+        <field name="value">Say it more simply</field>
+    </record>
+
+    <record id="str_skip" model="learn.string">
+        <field name="key">skip</field>
+        <field name="value">Skip</field>
+    </record>
+
+    <record id="str_source" model="learn.string">
+        <field name="key">source</field>
+        <field name="value">Grounded in:</field>
+    </record>
+
+    <record id="str_startimport" model="learn.string">
+        <field name="key">startImport</field>
+        <field name="value">Start import</field>
+    </record>
+
+    <record id="str_startmission" model="learn.string">
+        <field name="key">startMission</field>
+        <field name="value">Start mission</field>
+    </record>
+
+    <record id="str_step" model="learn.string">
+        <field name="key">step</field>
+        <field name="value">Step</field>
+    </record>
+
+    <record id="str_stuck" model="learn.string">
+        <field name="key">stuck</field>
+        <field name="value">Stuck?</field>
+    </record>
+
+    <record id="str_submitreview" model="learn.string">
+        <field name="key">submitReview</field>
+        <field name="value">Submit for review</field>
+    </record>
+
+    <record id="str_suggested" model="learn.string">
+        <field name="key">suggested</field>
+        <field name="value">Suggested for this screen</field>
+    </record>
+
+    <record id="str_tryagain" model="learn.string">
+        <field name="key">tryAgain</field>
+        <field name="value">Try again</field>
+    </record>
+
+    <record id="str_undoshown" model="learn.string">
+        <field name="key">undoShown</field>
+        <field name="value">Undo it</field>
+    </record>
+
+    <record id="str_verify" model="learn.string">
+        <field name="key">verify</field>
+        <field name="value">What to check first</field>
+    </record>
+
+    <record id="str_whatis" model="learn.string">
+        <field name="key">whatIs</field>
+        <field name="value">What it is</field>
+    </record>
+
+    <record id="str_whatyoudid" model="learn.string">
+        <field name="key">whatYouDid</field>
+        <field name="value">What you did</field>
+    </record>
+
+    <record id="str_whenuse" model="learn.string">
+        <field name="key">whenUse</field>
+        <field name="value">When to use it</field>
+    </record>
+
+    <record id="str_whocan" model="learn.string">
+        <field name="key">whoCan</field>
+        <field name="value">Who can:</field>
+    </record>
+
+    <record id="str_whymatters" model="learn.string">
+        <field name="key">whyMatters</field>
+        <field name="value">Why it matters</field>
+    </record>
+
+    <record id="str_yourjourney" model="learn.string">
+        <field name="key">yourJourney</field>
+        <field name="value">Your journey</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,303 @@
+/* =============================================================================
+   Payobook Coach — launcher + drawer.
+
+   The drawer deliberately has NO backdrop and NO dimming. You open it because
+   you are stuck on the screen behind it, so that screen stays readable and
+   clickable the whole time. It also never covers the middle of the viewport,
+   where the thing being explained usually is.
+   ========================================================================== */
+
+.lrn-coachhost {
+    position: fixed;
+    inset: auto 0 0 auto;
+    /* Above the app, below Odoo's own dialogs — and below pb_coach's launcher
+       (1990) so that on a demo tenant the two never fight for the same click.
+       They COEXIST by design (design_v2 §2): PayAI is the data copilot,
+       pb_coach runs the demo tour, this is the learning surface. */
+    z-index: 1040;
+    pointer-events: none;   /* only the launcher and drawer are clickable */
+
+    * { pointer-events: auto; }
+}
+
+/* --------------------------------------------------------------- launcher */
+.lrn-fab {
+    position: fixed;
+    right: 24px;
+    /* THE STACK, bottom-right, measured off the two controls that were already
+       there — CSS only, because neither of them may be modified:
+         PayAI pill      .payai-floating-pill   bottom 24px, ~48px tall
+         pb_coach FAB    .pbc-launcher          bottom 92px, 48px tall
+         this launcher                          bottom 160px
+       A demo user sees all three; that is the decision, not an accident. */
+    bottom: 160px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    min-width: 50px;
+    height: 50px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 25px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    white-space: nowrap;
+    background: var(--vuf-primary, #1565C0);
+    color: var(--vuf-primary-ink, #fff);
+    box-shadow: var(--vuf-sh-lg, 0 18px 50px rgba(16, 12, 40, .14));
+    cursor: pointer;
+    transition: transform .16s, background .16s;
+
+    .lrn-ic { width: 22px; height: 22px; stroke-width: 1.8; flex: 0 0 auto; }
+
+    &:hover { transform: translateY(-2px); }
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(90, 75, 176, .35);
+    }
+    /* Open, the label is gone and the control is a plain close button. */
+    &.open {
+        background: var(--vuf-ink, #101728);
+        padding: 0;
+        min-width: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+}
+
+.lrn-fablabel { line-height: 1; }
+
+/* ----------------------------------------------------------------- drawer */
+.lrn-drawer {
+    /* Declared as custom properties, NOT written inline. Bootstrap's Sass
+       min() intercepts `min(400px, calc(100vw - 44px))` and fails with
+       "calc(...) is not a number for min" — which takes the WHOLE asset bundle
+       down silently: Odoo keeps serving the previous CSS and the page just
+       looks unstyled. Sass passes custom properties through verbatim.
+       (Ledger §5.x — and it caught me again here.) */
+    --lrn-dw: min(400px, calc(100vw - 44px));
+    --lrn-dh: min(660px, calc(100vh - 130px));
+
+    position: fixed;
+    right: 22px;
+    bottom: 84px;
+    width: var(--lrn-dw);
+    max-height: var(--lrn-dh);
+    display: flex;
+    flex-direction: column;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-lg, 16px);
+    box-shadow: var(--vuf-sh-lg, 0 18px 50px rgba(16, 12, 40, .14));
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--vuf-ink, #101728);
+}
+
+.lrn-dhead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--vuf-line, #E5E7EB);
+
+    .lrn-dtitle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-right: auto;
+    }
+    .lrn-ic { width: 17px; height: 17px; }
+}
+
+/* The promise, on screen rather than in a policy document. */
+.lrn-dhonest {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin: 0;
+    padding: 8px 12px;
+    background: var(--vuf-info-bg, #E8F0FB);
+    color: var(--vuf-info, #1565C0);
+    font-size: 11.5px;
+
+    .lrn-ic { width: 14px; height: 14px; margin-top: 1px; flex: 0 0 auto; }
+}
+
+.lrn-dbody {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.lrn-dask {
+    display: flex;
+    gap: 7px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--vuf-line, #E5E7EB);
+
+    input {
+        flex: 1;
+        min-width: 0;
+        padding: 8px 11px;
+        border: 1px solid var(--vuf-line, #E5E7EB);
+        border-radius: var(--vuf-r-pill, 999px);
+        font: inherit;
+        outline: none;
+
+        &:focus { border-color: var(--vuf-primary, #1565C0); }
+    }
+}
+
+/* ---------------------------------------------------------------- content */
+.lrn-cground {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--vuf-line-soft, #F1F0F7);
+    font-size: 12px;
+
+    .lrn-ic { width: 14px; height: 14px; color: var(--vuf-primary, #1565C0); }
+    p { flex: 1 0 100%; margin: 2px 0 0; }
+    &.off { color: var(--vuf-muted, #6B7280); }
+}
+
+.lrn-clabel {
+    margin-bottom: 6px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--vuf-muted, #6B7280);
+}
+
+.lrn-cq {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    width: 100%;
+    margin-bottom: 6px;
+    padding: 9px 11px;
+    text-align: left;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-sm, 10px);
+    font: inherit;
+    font-size: 12.5px;
+    color: inherit;
+    cursor: pointer;
+
+    .lrn-ic { width: 14px; height: 14px; margin-top: 2px; flex: 0 0 auto; color: var(--vuf-primary, #1565C0); }
+    &:hover { border-color: var(--vuf-primary, #1565C0); }
+    &:focus-visible { outline: none; box-shadow: var(--vuf-sh-ring); }
+}
+
+.lrn-canswer h4 {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.lrn-cblock {
+    margin-bottom: 9px;
+
+    &.p { }
+    &.simpler {
+        padding: 10px 11px;
+        border-radius: var(--vuf-r-sm, 10px);
+        background: var(--vuf-info-bg, #E8F0FB);
+    }
+    &.warn, &.ok, &.refusal {
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        padding: 9px 11px;
+        border-radius: var(--vuf-r-sm, 10px);
+        font-size: 12.5px;
+        .lrn-ic { width: 15px; height: 15px; margin-top: 1px; flex: 0 0 auto; }
+    }
+    &.warn { background: var(--vuf-warn-bg, #FDF3E2); color: var(--vuf-warn, #B45309); }
+    &.ok { background: var(--vuf-ok-bg, #E7F6EF); color: var(--vuf-ok, #10B981); }
+    /* A refusal is information, not a telling-off: same weight as any other
+       block, never red, and always followed by who can and how to ask. */
+    &.refusal { background: var(--vuf-line-soft, #F1F0F7); color: var(--vuf-ink, #101728); }
+}
+
+.lrn-csteps {
+    margin: 0 0 9px;
+    padding-left: 20px;
+
+    li { margin-bottom: 7px; }
+}
+
+.lrn-clink {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    padding: 1px 7px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-radius: var(--vuf-r-pill, 999px);
+    background: transparent;
+    font: inherit;
+    font-size: 11px;
+    color: var(--vuf-primary, #1565C0);
+    cursor: pointer;
+
+    .lrn-ic { width: 12px; height: 12px; }
+    &:hover { border-color: var(--vuf-primary, #1565C0); }
+}
+
+.lrn-cmeta {
+    margin-bottom: 7px;
+    font-size: 12.5px;
+}
+
+.lrn-csource {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+    font-size: 11.5px;
+    color: var(--vuf-muted, #6B7280);
+
+    .lrn-ic { width: 13px; height: 13px; margin-top: 1px; flex: 0 0 auto; }
+}
+
+.lrn-ctools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+}
+
+.lrn-cmiss p { margin: 0 0 6px; }
+
+/* On a phone the drawer takes the bottom sheet, still without a backdrop. */
+@media (max-width: 640px) {
+    .lrn-drawer {
+        right: 10px;
+        left: 10px;
+        bottom: 78px;
+        width: auto;
+        max-height: calc(100vh - 120px);
+    }
+    /* Narrow viewport: the same stack, tighter. The label is dropped rather
+       than wrapped — a two-line pill in the corner covers more than it helps. */
+    .lrn-fab { right: 14px; bottom: 148px; padding: 0; min-width: 46px; width: 46px; border-radius: 50%; }
+    .lrn-fablabel { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-fab { transition: none; }
+}

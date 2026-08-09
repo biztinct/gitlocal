@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check.
+
+         PHASE A1 PLACEHOLDER. The seven Pay Run stations exist with their real
+         keys, their real sidebar leaves and a what/why, so the map draws and
+         the sidebar join is testable. Steps, mistakes and the remaining outline
+         prose arrive in Run A2. -->
+<!-- Stations — the nodes on the Guided Journey map. One per Pay Run sidebar leaf. -->
+<odoo>
+
+    <record id="station_runpayroll" model="learn.station">
+        <field name="key">runpayroll</field>
+        <field name="name">Run Payroll</field>
+        <field name="line">payrun</field>
+        <field name="section">payroll</field>
+        <field name="sequence">10</field>
+        <field name="summary">The wizard that creates one batch of draft payslips for a division and a period.</field>
+        <field name="icon">zap</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_run_payroll</field>
+        <field name="duration_min">8</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="True"/>
+        <field name="outline_what">The wizard that creates one batch of draft payslips for a division and a period.</field>
+        <field name="outline_why">It is where a month of salaries starts. Everything downstream — review, approval, the bank file — reads what this step produced.</field>
+    </record>
+
+    <record id="station_payruns" model="learn.station">
+        <field name="key">payruns</field>
+        <field name="name">Pay Runs</field>
+        <field name="line">payrun</field>
+        <field name="section">payroll</field>
+        <field name="sequence">20</field>
+        <field name="summary">The board of every pay run, grouped by the approval stage it is waiting at.</field>
+        <field name="icon">calendar</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_pay_runs</field>
+        <field name="duration_min">7</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="True"/>
+        <field name="outline_what">The board of every pay run, grouped by the approval stage it is waiting at.</field>
+        <field name="outline_why">It answers the only question a payroll week really asks: what is stuck, and whose gate is it stuck at.</field>
+    </record>
+
+    <record id="station_payslips" model="learn.station">
+        <field name="key">payslips</field>
+        <field name="name">Payslips</field>
+        <field name="line">payrun</field>
+        <field name="section">payroll</field>
+        <field name="sequence">30</field>
+        <field name="summary">Line-by-line review of each employee's payslip inside one run.</field>
+        <field name="icon">receipt</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_payslips</field>
+        <field name="duration_min">6</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">Line-by-line review of each employee's payslip inside one run.</field>
+        <field name="outline_why">A run total can be right while an individual slip is wrong. This is the only screen that shows the working behind a net figure.</field>
+    </record>
+
+    <record id="station_import" model="learn.station">
+        <field name="key">import</field>
+        <field name="name">Import Data</field>
+        <field name="line">payrun</field>
+        <field name="section">payroll</field>
+        <field name="sequence">40</field>
+        <field name="summary">Bringing attendance, overtime and HR data in from files and connected systems.</field>
+        <field name="icon">database</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_import</field>
+        <field name="duration_min">6</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">Bringing attendance, overtime and HR data in from files and connected systems.</field>
+        <field name="outline_why">Almost every wrong payslip starts as a wrong row in a file. Fixing it here costs minutes; fixing it after approval costs a retro line.</field>
+    </record>
+
+    <record id="station_fullfinal" model="learn.station">
+        <field name="key">fullfinal</field>
+        <field name="name">Full &amp; Final</field>
+        <field name="line">payrun</field>
+        <field name="section">payroll</field>
+        <field name="sequence">50</field>
+        <field name="summary">Final settlement for an employee who is leaving: last salary, unused leave, deductions.</field>
+        <field name="icon">file-text</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_full_final</field>
+        <field name="duration_min">4</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">Final settlement for an employee who is leaving: last salary, unused leave, deductions.</field>
+        <field name="outline_why">A leaver who is also left in the normal monthly run is paid twice, and the correction is a conversation nobody wants to have.</field>
+    </record>
+
+    <record id="station_proration" model="learn.station">
+        <field name="key">proration</field>
+        <field name="name">Proration Audit</field>
+        <field name="line">payrun</field>
+        <field name="section">payroll</field>
+        <field name="sequence">60</field>
+        <field name="summary">The working behind every part-month amount: days worked over standard days, and the factor that produces.</field>
+        <field name="icon">calculator</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_proration</field>
+        <field name="duration_min">4</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">The working behind every part-month amount: days worked over standard days, and the factor that produces.</field>
+        <field name="outline_why">It is the audit trail for the question payroll receives most often from a joiner or a leaver: why is this not a full month's pay.</field>
+    </record>
+
+    <record id="station_retro" model="learn.station">
+        <field name="key">retro</field>
+        <field name="name">Retro Adjustments</field>
+        <field name="line">payrun</field>
+        <field name="section">payroll</field>
+        <field name="sequence">70</field>
+        <field name="summary">Corrections that belong to a closed month, paid in the current one, with the source period on record.</field>
+        <field name="icon">trending-up</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_retro</field>
+        <field name="duration_min">4</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">Corrections that belong to a closed month, paid in the current one, with the source period on record.</field>
+        <field name="outline_why">Closed months stay closed. A retro line is how a backdated raise reaches someone without reopening a period that has already been reported.</field>
+    </record>
+
+</odoo>

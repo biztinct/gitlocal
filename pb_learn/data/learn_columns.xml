@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check.
+
+         PHASE A1 PLACEHOLDER. Two columns, so the column-glossary fallback in
+         learn.intent.ask is exercised against real records. The ~30 the content
+         plan calls for arrive in Run A2. -->
+<!-- The per-screen micro-glossary: what a KPI tile or a chip actually counts.
+
+     Curated, not read from ir.model.fields, because most of these are computed
+     tiles on an OWL cockpit — there is no field behind them to read a help
+     string from. -->
+<odoo>
+
+    <record id="col_payruns_inpipeline" model="learn.column">
+        <field name="screen">payruns</field>
+        <field name="key">in_pipeline</field>
+        <field name="sequence">10</field>
+        <field name="label">In pipeline</field>
+        <field name="body">Runs that have left draft and have not reached done — they are sitting at somebody's approval gate. It is not a count of work you owe; "Awaiting your approval" is that.</field>
+    </record>
+
+    <record id="col_payslips_needreview" model="learn.column">
+        <field name="screen">payslips</field>
+        <field name="key">need_review</field>
+        <field name="sequence">10</field>
+        <field name="label">Need review</field>
+        <field name="body">Payslips the engine flagged for a human to read — an unusual variance, a zero net, an input it could not reconcile. A flag is a question, not an error, and clearing one means understanding it rather than dismissing it.</field>
+    </record>
+
+</odoo>

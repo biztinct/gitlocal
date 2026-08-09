@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check. -->
+<!-- The screens the Coach knows, and how it recognises each one.
+
+     HOW RESOLUTION WORKS, AND WHY THERE ARE ALMOST NO action_tags HERE
+     ==================================================================
+     `sidebar_key` names a pb.sidebar.item, and learn.screen._matchers() reads
+     that leaf's OWN action_tag / action_xmlid / match_* fields at call time.
+     So the Coach resolves the active screen exactly the way pb_sidebar decides
+     which leaf to highlight, and the two can never disagree. Re-declaring the
+     tags here would create a second copy that drifts the first time a leaf is
+     re-pointed.
+
+     `action_tags` is therefore the EXCEPTION, used once: the import wizard is a
+     flow, not a destination. It has no sidebar leaf of its own — it opens over
+     Import Data — so its tag is the only way to know it is showing.
+
+     suggest_ids are wired per screen in Run A2, once the fourteen intents
+     exist. The two dynamic intents are offered everywhere in the meantime,
+     because a screen that suggests nothing is a dead end for the person who
+     opened the Coach precisely because they did not know what to ask. -->
+<odoo>
+
+    <record id="screen_runpayroll" model="learn.screen">
+        <field name="key">runpayroll</field>
+        <field name="sequence">10</field>
+        <field name="name">Run Payroll</field>
+        <field name="blurb">The wizard that creates and computes one batch of draft payslips for a division and a period.</field>
+        <field name="next_step">Check the configuration and the eligible headcount in the scope panel, then compute. Computing creates drafts only — nothing is paid, sent or approved.</field>
+        <field name="sidebar_key">pb_sidebar.item_run_payroll</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_payruns" model="learn.screen">
+        <field name="key">payruns</field>
+        <field name="sequence">20</field>
+        <field name="name">Pay Runs</field>
+        <field name="blurb">Every pay run on one board, in the column of the approval stage it is waiting at.</field>
+        <field name="next_step">Look at "Awaiting your approval" first — that count is the work only you can unblock. Everything else on this board is somebody else's gate.</field>
+        <field name="sidebar_key">pb_sidebar.item_pay_runs</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_payslips" model="learn.screen">
+        <field name="key">payslips</field>
+        <field name="sequence">30</field>
+        <field name="name">Payslips</field>
+        <field name="blurb">Line-by-line review of every payslip in one run, with the working behind each net figure.</field>
+        <field name="next_step">Filter to "Need review" and read those first. A flag is the engine asking a question, not telling you something is broken.</field>
+        <field name="sidebar_key">pb_sidebar.item_payslips</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_import" model="learn.screen">
+        <field name="key">import</field>
+        <field name="sequence">40</field>
+        <field name="name">Import Data</field>
+        <field name="blurb">Where attendance, overtime and HR data arrive from files and connected systems, before any of it becomes a payslip.</field>
+        <field name="next_step">Start an import to use the guided flow — it scores the file and lets you fix rows before anything is written. A batch that stops before commit has changed nothing.</field>
+        <field name="sidebar_key">pb_sidebar.item_import</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <!-- The one screen with no leaf. See the header note. -->
+    <record id="screen_importwizard" model="learn.screen">
+        <field name="key">importwizard</field>
+        <field name="sequence">45</field>
+        <field name="name">Import — guided flow</field>
+        <field name="blurb">The four-step import: choose a source, review what matched, fix what did not, then commit.</field>
+        <field name="next_step">Resolve every row in "Need attention" before you commit. Commit is the first control in this flow that writes anything — everything before it is a preview.</field>
+        <field name="action_tags">pb_import_wizard</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_fullfinal" model="learn.screen">
+        <field name="key">fullfinal</field>
+        <field name="sequence">50</field>
+        <field name="name">Full &amp; Final</field>
+        <field name="blurb">Final settlement for departing employees: last salary, unused leave and deductions, in one place.</field>
+        <field name="next_step">Check that everyone settled here is excluded from the normal monthly run for the same period. A leaver in both is paid twice.</field>
+        <field name="sidebar_key">pb_sidebar.item_full_final</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_proration" model="learn.screen">
+        <field name="key">proration</field>
+        <field name="sequence">60</field>
+        <field name="name">Proration Audit</field>
+        <field name="blurb">The audit trail behind every part-month amount: days worked, standard days, and the factor between them.</field>
+        <field name="next_step">Read the factor, not the money. If the factor is right and the amount still looks wrong, the problem is upstream in the contract or the import.</field>
+        <field name="sidebar_key">pb_sidebar.item_proration</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+    <record id="screen_retro" model="learn.screen">
+        <field name="key">retro</field>
+        <field name="sequence">70</field>
+        <field name="name">Retro Adjustments</field>
+        <field name="blurb">Corrections that belong to a closed month, paid in the current one, with the source period recorded against them.</field>
+        <field name="next_step">Check the source period on each line. That field is what lets a closed month stay closed and still be reported correctly later.</field>
+        <field name="sidebar_key">pb_sidebar.item_retro</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whatpage'), ref('intent_whatnext')])]"/>
+    </record>
+
+</odoo>
