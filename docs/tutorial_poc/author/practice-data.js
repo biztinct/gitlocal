@@ -1,8 +1,3 @@
-/* GENERATED FILE. Do not edit.
-            Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
-            Hand edits are erased on the next run and fail the CI check. */
-/** @odoo-module **/
-
 /* =============================================================================
    Payobook Learn — PRACTICE DATASET
    -----------------------------------------------------------------------------
@@ -359,5 +354,3 @@ const CHAINS = {
               "Bị từ chối — trả về Nháp, kèm lý do bằng văn bản"),
   },
 };
-
-export { B, PRACTICE_META, CASE, EMP, RUN, PRACTICE, MENU, SUB_SCREENS, STATUS_LABELS, CHAINS };

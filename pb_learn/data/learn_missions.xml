@@ -1,16 +1,464 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- GENERATED FILE. Do not edit.
          Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
-         Hand edits are erased on the next run and fail the CI check.
-
-         PHASE A1 PLACEHOLDER. One outline mission. Deliberately NOT a full one:
-         learn.mission constrains a full mission to carry a complete
-         consequence card and a seeded anomaly, and a placeholder that satisfies
-         a constraint with filler text is worse than one that does not pretend.
-         m1 and m2 arrive in Run A2. -->
-<!-- Practice missions. They run on the REPLICA only — a mission step that says
-     "compute the run" must be structurally incapable of computing one. -->
+         Hand edits are erased on the next run and fail the CI check. -->
+<!-- Practice missions. These run on the REPLICA, never a live screen: a step that says "compute the run" would otherwise write 48 real payslips. -->
 <odoo>
+
+    <record id="mission_m1" model="learn.mission">
+        <field name="key">m1</field>
+        <field name="sequence">10</field>
+        <field name="line">payrun</field>
+        <field name="icon">zap</field>
+        <field name="name">Run the July pay run</field>
+        <field name="summary">Compute Retail's July payroll, handle the anomaly the data is hiding, and send it into the approval chain.</field>
+        <field name="duration_min">8</field>
+        <field name="kind">full</field>
+        <field name="screen">runpayroll</field>
+        <field name="confidence_key">run</field>
+        <field name="confidence_gain">25</field>
+        <field name="consequence_title">You are about to compute 48 payslips</field>
+        <field name="consequence_scope">July 2026 × Retail — Hà Nội only. 48 draft payslips are created; no other division and no other period is touched.</field>
+        <field name="consequence_reversible">Yes. Drafts can be recomputed or deleted, nothing is paid or sent, and no employee sees anything until the whole run reaches done.</field>
+        <field name="consequence_verify">That the eligible count reads 48 and not something smaller, and that this month's attendance import has been committed. A short count means the data is not in yet.</field>
+        <field name="anomaly_title">The 4.6 that was typed as 46</field>
+        <field name="anomaly_body">Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 282%. It reads like a genuine peak week, and that is exactly why it is worth stopping on: a decimal point dropped in a timesheet produces a number that is plausible, not absurd. The engine cannot tell a busy month from a typo. You can, by opening the timesheet — and the cost of not looking is one employee paid roughly three million đồng too much, in a run that forty-seven other people will assume was checked.</field>
+    </record>
+
+    <record id="mission_m1_did_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">10</field>
+        <field name="kind">did</field>
+        <field name="body">Chose the division, and with it the formula configuration every payslip in the run was computed by.</field>
+    </record>
+
+    <record id="mission_m1_did_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">20</field>
+        <field name="kind">did</field>
+        <field name="body">Read the consequence card before computing, so you knew the scope and the way back before you acted.</field>
+    </record>
+
+    <record id="mission_m1_did_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">30</field>
+        <field name="kind">did</field>
+        <field name="body">Opened the flagged payslip instead of clearing it, and treated a 282% overtime figure as a question rather than a fact.</field>
+    </record>
+
+    <record id="mission_m1_did_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">40</field>
+        <field name="kind">did</field>
+        <field name="body">Sent the run into the approval chain, where it now waits at a gate that belongs to somebody else.</field>
+    </record>
+
+    <record id="mission_m1_check_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">10</field>
+        <field name="kind">check</field>
+        <field name="body">Headcount matches what you expected, and joiners and leavers are accounted for.</field>
+    </record>
+
+    <record id="mission_m1_check_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">20</field>
+        <field name="kind">check</field>
+        <field name="body">Every flagged payslip has been opened and understood, not dismissed.</field>
+    </record>
+
+    <record id="mission_m1_check_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">30</field>
+        <field name="kind">check</field>
+        <field name="body">Total net against last month — and you can explain the variance in one sentence.</field>
+    </record>
+
+    <record id="mission_m1_check_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">40</field>
+        <field name="kind">check</field>
+        <field name="body">The statutory lines are present on a sample slip: BHXH, BHYT, BHTN, thuế TNCN.</field>
+    </record>
+
+    <record id="mission_m1_check_04" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">50</field>
+        <field name="kind">check</field>
+        <field name="body">Bank details are valid for anyone joining this month, or their pay will not land.</field>
+    </record>
+
+    <record id="mission_m1_step_00" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">10</field>
+        <field name="key">open</field>
+        <field name="nav">runpayroll</field>
+        <field name="target">pw-rail</field>
+        <field name="instruction">Open Run Payroll</field>
+        <field name="detail">It is the first leaf in the Pay Run section of the sidebar.</field>
+        <field name="hint">The stepper at the top tells you where you are: you want step 1, Scope.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m1_step_01" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">20</field>
+        <field name="key">division</field>
+        <field name="target">pw-division</field>
+        <field name="instruction">Which division do you run?</field>
+        <field name="detail">July's attendance has been imported and committed for Retail. The other two divisions are still waiting on their files.</field>
+        <field name="hint">The scope panel on the right updates with your choice — read the eligible count it shows.</field>
+        <field name="is_decision" eval="True"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m1_step_01_opt_retail" model="learn.mission.option">
+        <field name="step_id" ref="mission_m1_step_01"/>
+        <field name="sequence">10</field>
+        <field name="key">retail</field>
+        <field name="label">Retail — Hà Nội</field>
+        <field name="is_correct" eval="True"/>
+    </record>
+
+    <record id="mission_m1_step_01_opt_fnb" model="learn.mission.option">
+        <field name="step_id" ref="mission_m1_step_01"/>
+        <field name="sequence">20</field>
+        <field name="key">fnb</field>
+        <field name="label">F&amp;B</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. F&amp;B's July attendance has not been committed yet, so the eligible count would come back far short of its headcount — and computing on it would create a run that looks finished and is missing most of its people.</field>
+    </record>
+
+    <record id="mission_m1_step_01_opt_it" model="learn.mission.option">
+        <field name="step_id" ref="mission_m1_step_01"/>
+        <field name="sequence">30</field>
+        <field name="key">it</field>
+        <field name="label">IT Services</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. IT Services is in the same position — its file has not arrived. The division whose data is ready is the one the brief named, and the scope panel would have told you the moment you selected it.</field>
+    </record>
+
+    <record id="mission_m1_step_02" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">30</field>
+        <field name="key">consequence</field>
+        <field name="target">pw-compute</field>
+        <field name="instruction">Read what Compute is about to do</field>
+        <field name="detail">This card is the interception. It is not a confirmation dialog — it names the scope, the way back and the thing to verify, and the mission will not move until you have seen all three.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="True"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m1_step_03" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">40</field>
+        <field name="key">compute</field>
+        <field name="target">pw-pills</field>
+        <field name="instruction">Compute, then read the three pills</field>
+        <field name="detail">48 payslips, 48 computed, 1 needing review. The third number is the only one that needs you.</field>
+        <field name="hint">Need review is not an error count — it is the engine asking a question about a specific employee.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m1_step_04" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">50</field>
+        <field name="key">inspect</field>
+        <field name="target">pw-exceptions</field>
+        <field name="instruction">Open the flagged payslip</field>
+        <field name="detail">Trần Văn Hùng. Overtime 4,200,000 ₫ this month against 1,100,000 ₫ in June.</field>
+        <field name="hint">In real payroll you would open the timesheet before deciding. 282% is not impossible — it is unverified.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m1_step_05" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">60</field>
+        <field name="key">decide</field>
+        <field name="target">pw-exceptions</field>
+        <field name="instruction">Overtime at 282% of last month. What do you do?</field>
+        <field name="detail">You cannot see the timesheet from here, and the run is due. The question is what you do with an unverified number, not whether you can prove it wrong.</field>
+        <field name="is_decision" eval="True"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m1_step_05_opt_flag" model="learn.mission.option">
+        <field name="step_id" ref="mission_m1_step_05"/>
+        <field name="sequence">10</field>
+        <field name="key">flag</field>
+        <field name="label">Flag it for review and check the timesheet before this run is approved</field>
+        <field name="is_correct" eval="True"/>
+    </record>
+
+    <record id="mission_m1_step_05_opt_accept" model="learn.mission.option">
+        <field name="step_id" ref="mission_m1_step_05"/>
+        <field name="sequence">20</field>
+        <field name="key">accept</field>
+        <field name="label">Accept it as correct — it was a busy month</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. 4.6 hours typed as 46 is one of the most common timesheet errors there is, and it produces a number that looks like a busy month rather than a mistake. Accepting an unverified spike is not a decision — it is a decision deferred to whoever notices on {{payDay}}.</field>
+    </record>
+
+    <record id="mission_m1_step_05_opt_zero" model="learn.mission.option">
+        <field name="step_id" ref="mission_m1_step_05"/>
+        <field name="sequence">30</field>
+        <field name="key">zero</field>
+        <field name="label">Set the overtime to zero so the run is clean</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. That fixes the output and leaves the input untouched, so the next recompute brings it straight back — and if the overtime was real, you have just underpaid someone who worked for it. Fix inputs, never outputs.</field>
+    </record>
+
+    <record id="mission_m1_step_06" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">70</field>
+        <field name="key">submit</field>
+        <field name="target">pw-result</field>
+        <field name="instruction">Submit the run for approval</field>
+        <field name="detail">It leaves draft and enters the chain: Payroll Officer, {{hrTierName}}, {{gmTierName}}, done.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m1_step_07" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m1"/>
+        <field name="sequence">80</field>
+        <field name="key">undo</field>
+        <field name="nav">payruns</field>
+        <field name="target">pk-card-actions</field>
+        <field name="instruction">Now undo it: send the run back to draft</field>
+        <field name="detail">Everything you just did is reversible until the run reaches done. Do it once here, so that when you need it on a real run you already know it is available and what it costs — the whole batch goes back together, and the reason is recorded.</field>
+        <field name="hint">The card's action footer offers Reject while the run is in the chain. That is the same control a reviewer uses.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="True"/>
+    </record>
+
+    <record id="mission_m2" model="learn.mission">
+        <field name="key">m2</field>
+        <field name="sequence">20</field>
+        <field name="line">payrun</field>
+        <field name="icon">clipboard-check</field>
+        <field name="name">Review and approve like a manager</field>
+        <field name="summary">A run is waiting at {{hrTierName}}. Sample it properly, then approve it — or reject it with a reason somebody can act on.</field>
+        <field name="duration_min">7</field>
+        <field name="kind">full</field>
+        <field name="screen">payruns</field>
+        <field name="confidence_key">approve</field>
+        <field name="confidence_gain">20</field>
+        <field name="consequence_title">Approving moves 48 payslips one gate closer to being paid</field>
+        <field name="consequence_scope">The whole run, all 48 payslips together — there is no way to approve some of them. It moves from {{hrTierName}} to {{gmTierName}}.</field>
+        <field name="consequence_reversible">Yes, at this gate: the next reviewer can still reject it back to draft. That stops being true at done, after which a correction is a retro line and never an edit.</field>
+        <field name="consequence_verify">That you have opened every flagged payslip, sampled a few unflagged ones, and can say in one sentence why the total differs from last month.</field>
+        <field name="anomaly_title">The variance nobody questioned</field>
+        <field name="anomaly_body">The run's net total is 612,480,000 ₫ against 596,110,000 ₫ in June — a rise of about 2.7%, on one more employee. That is a comfortable-looking number, and comfortable-looking numbers are where a single wrong payslip hides best: Hùng's overtime alone accounts for roughly three million of the difference, which is well inside the range a reviewer would wave through as 'a slightly busier month'. A total that looks reasonable is not evidence that every slip inside it is. The flags are.</field>
+    </record>
+
+    <record id="mission_m2_did_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">10</field>
+        <field name="kind">did</field>
+        <field name="body">Found the run by the gate it was waiting at, rather than by the month it belonged to.</field>
+    </record>
+
+    <record id="mission_m2_did_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">20</field>
+        <field name="kind">did</field>
+        <field name="body">Sampled the payslips the engine flagged first, and a few it did not.</field>
+    </record>
+
+    <record id="mission_m2_did_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">30</field>
+        <field name="kind">did</field>
+        <field name="body">Read the consequence card and knew, before deciding, that this gate is still reversible and done is not.</field>
+    </record>
+
+    <record id="mission_m2_did_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">40</field>
+        <field name="kind">did</field>
+        <field name="body">Made the call — and, if you rejected, wrote a reason the officer can actually act on.</field>
+    </record>
+
+    <record id="mission_m2_did_04" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">50</field>
+        <field name="kind">did</field>
+        <field name="body">Watched a rejection go back to draft and forward again, so reversibility is something you have done rather than been told.</field>
+    </record>
+
+    <record id="mission_m2_check_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">10</field>
+        <field name="kind">check</field>
+        <field name="body">Every flagged payslip opened, and the flag understood rather than cleared.</field>
+    </record>
+
+    <record id="mission_m2_check_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">20</field>
+        <field name="kind">check</field>
+        <field name="body">A sample of unflagged slips read — the engine flags the unusual, not the wrong.</field>
+    </record>
+
+    <record id="mission_m2_check_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">30</field>
+        <field name="kind">check</field>
+        <field name="body">The variance against last month explained in one sentence, not just observed.</field>
+    </record>
+
+    <record id="mission_m2_check_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">40</field>
+        <field name="kind">check</field>
+        <field name="body">If rejecting: a written reason that names what to change, not just what is wrong.</field>
+    </record>
+
+    <record id="mission_m2_check_04" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">50</field>
+        <field name="kind">check</field>
+        <field name="body">If approving: that you are content for this to be paid, because the gate after yours is checking totals, not lines.</field>
+    </record>
+
+    <record id="mission_m2_step_00" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">10</field>
+        <field name="key">open</field>
+        <field name="nav">payruns</field>
+        <field name="target">pk-kpis</field>
+        <field name="instruction">Find what is waiting for you</field>
+        <field name="detail">Awaiting your approval is the only number on this band that is about you.</field>
+        <field name="hint">Read that tile first every morning of payroll week. The other four describe the department.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m2_step_01" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">20</field>
+        <field name="key">locate</field>
+        <field name="target">pk-tabs</field>
+        <field name="instruction">Open the run sitting at {{hrTierName}}</field>
+        <field name="detail">Filter by stage, not by month. The column a run sits in is the gate it is waiting at.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m2_step_02" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">30</field>
+        <field name="key">sample</field>
+        <field name="nav">payslips</field>
+        <field name="target">ps-chips</field>
+        <field name="instruction">Read the flagged payslips first</field>
+        <field name="detail">One slip is flagged out of 48. Open it, then sample two or three that are not — the engine flags the unusual, not the wrong, so a clean slip can still be incorrect.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m2_step_03" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">40</field>
+        <field name="key">variance</field>
+        <field name="target">ps-breakdown</field>
+        <field name="instruction">Explain the variance in one sentence</field>
+        <field name="detail">Net total 612,480,000 ₫ against June's 596,110,000 ₫. Overtime moved; insurance did not, because it is charged on the registered base. If you cannot say why the totals differ, you are not ready to approve them.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m2_step_04" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">50</field>
+        <field name="key">consequence</field>
+        <field name="target">pk-card-actions</field>
+        <field name="instruction">Read what your decision does</field>
+        <field name="detail">Both paths move all 48 payslips together. Neither moves one.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="True"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m2_step_05" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">60</field>
+        <field name="key">decide</field>
+        <field name="target">pk-card-actions</field>
+        <field name="instruction">The flagged payslip is still unverified. Approve, or reject?</field>
+        <field name="detail">You cannot open the timesheet from your desk, and the officer who can is still in the building.</field>
+        <field name="is_decision" eval="True"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m2_step_05_opt_reject" model="learn.mission.option">
+        <field name="step_id" ref="mission_m2_step_05"/>
+        <field name="sequence">10</field>
+        <field name="key">reject</field>
+        <field name="label">Reject, with a written reason naming the payslip and what to check</field>
+        <field name="is_correct" eval="True"/>
+    </record>
+
+    <record id="mission_m2_step_05_opt_approve" model="learn.mission.option">
+        <field name="step_id" ref="mission_m2_step_05"/>
+        <field name="sequence">20</field>
+        <field name="key">approve</field>
+        <field name="label">Approve — the total looks reasonable against June</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. A total that looks reasonable is not evidence that every slip inside it is — Hùng's three million is comfortably inside a 2.7% movement. The flag was raised about one employee, and approving is you answering it with silence.</field>
+    </record>
+
+    <record id="mission_m2_step_05_opt_wait" model="learn.mission.option">
+        <field name="step_id" ref="mission_m2_step_05"/>
+        <field name="sequence">30</field>
+        <field name="key">wait</field>
+        <field name="label">Approve and send an email asking someone to check afterwards</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. Once you approve, the next gate checks totals rather than lines — so your email is now racing a run that has already moved on, and if it lands late the correction is a retro line rather than a fix.</field>
+    </record>
+
+    <record id="mission_m2_step_06" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">70</field>
+        <field name="key">reason</field>
+        <field name="target">pk-card-actions</field>
+        <field name="instruction">Write the reason</field>
+        <field name="detail">"Payslip NV0031 — overtime 4,200,000 ₫ is 282% of June. Please verify against the timesheet and resubmit." That is a reason somebody can act on. "Wrong" is not.</field>
+        <field name="hint">The reason is recorded against the run with your name and the time, and it is the only thing the officer has to work from.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m2_step_07" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m2"/>
+        <field name="sequence">80</field>
+        <field name="key">undo</field>
+        <field name="nav">payruns</field>
+        <field name="target">pk-card</field>
+        <field name="instruction">Watch it come back, and send it forward again</field>
+        <field name="detail">The rejected run is in draft with your reason on it. The officer corrects the input, recomputes, and resubmits through the same chain — nothing was lost and nothing was paid. Do the round trip once here, because at done this stops being true.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="True"/>
+    </record>
 
     <record id="mission_m3" model="learn.mission">
         <field name="key">m3</field>
@@ -21,7 +469,7 @@
         <field name="summary">A file with duplicate rows and one employee nobody can match. The score drops. Do you fix it, or commit anyway?</field>
         <field name="duration_min">6</field>
         <field name="kind">outline</field>
-        <field name="outline_note">The full version puts you in the wizard with the score falling in front of you, makes you choose between Match, Retry and Skip for each bad row, and shows what each choice would have produced on payday.</field>
+        <field name="outline_note">The full version puts you in the wizard with the score falling in front of you, makes you choose between Match, Retry and Skip for each bad row, and then shows what each of those choices would have produced on {{payDay}} — including the one where a skipped row turns out to have been a person.</field>
         <field name="screen">importwizard</field>
         <field name="confidence_key">import</field>
         <field name="confidence_gain">15</field>

@@ -1,56 +1,515 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- GENERATED FILE. Do not edit.
          Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
-         Hand edits are erased on the next run and fail the CI check.
-
-         PHASE A1 PLACEHOLDER. One lesson, one step, one understanding check —
-         enough for the player, the quiz constraint and the anchor lint to run
-         against real records. L1–L4 arrive in Run A2. -->
-<!-- Lessons. Every step renders over the practice replica, never the live app. -->
+         Hand edits are erased on the next run and fail the CI check. -->
+<!-- Lessons, steps and understanding checks. Every step renders over the practice replica, never the live app. -->
 <odoo>
 
-    <record id="lesson_runpayroll" model="learn.lesson">
-        <field name="key">l_runpayroll</field>
+    <record id="lesson_l1" model="learn.lesson">
+        <field name="key">L1</field>
         <field name="station_id" ref="station_runpayroll"/>
         <field name="sequence">10</field>
         <field name="name">Run Payroll — your first pay run</field>
-        <field name="goal">Create one month of draft payslips for one division, and know what you have and have not just done.</field>
+        <field name="goal">Create one month of draft payslips for one division, and know exactly what you have and have not just done.</field>
         <field name="duration_min">8</field>
     </record>
 
-    <record id="lesson_runpayroll_s1" model="learn.step">
-        <field name="lesson_id" ref="lesson_runpayroll"/>
+    <record id="lesson_l1_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
         <field name="sequence">10</field>
-        <field name="kicker">Where you are</field>
+        <field name="kicker">What &amp; why</field>
+        <field name="title">This screen creates a month of pay</field>
+        <field name="body">&lt;b&gt;Run Payroll&lt;/b&gt; takes one division and one period and computes a draft payslip for every eligible employee. Nothing is paid here — you are creating &lt;b&gt;drafts&lt;/b&gt; to review. The four dots above tell you how far through that you are.</field>
+        <field name="screen">runpayroll</field>
+        <field name="anchor">pw-rail</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l1_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
+        <field name="sequence">20</field>
+        <field name="kicker">Step 1</field>
         <field name="title">The division chooses the rulebook</field>
-        <field name="body">Picking a division here does more than filter a list of people: it selects the <b>formula configuration</b> every payslip in this run will be computed by. Choose the wrong one and every number downstream is wrong in the same direction, which is the hardest kind of error to spot.</field>
-        <field name="tip">The configuration and its version are printed in the scope panel on the right. Read them before you compute, not after.</field>
+        <field name="body">Picking a division here does more than filter a list of people: it selects the &lt;b&gt;formula configuration&lt;/b&gt; every payslip in this run will be computed by. Retail's rules are not F&amp;amp;B's. Choose the wrong one and every number downstream is wrong in the same direction — the hardest kind of error to spot, because nothing looks odd.</field>
+        <field name="tip">The configuration name and its version are printed in the scope panel on the right. Read them before you compute, not after.</field>
         <field name="screen">runpayroll</field>
         <field name="anchor">pw-division</field>
         <field name="visual">none</field>
     </record>
 
-    <record id="lesson_runpayroll_q1" model="learn.quiz">
-        <field name="lesson_id" ref="lesson_runpayroll"/>
+    <record id="lesson_l1_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
+        <field name="sequence">30</field>
+        <field name="kicker">Step 2</field>
+        <field name="title">Period and cycle</field>
+        <field name="body">The period is the month being settled. The &lt;b&gt;cycle&lt;/b&gt; is which part of it: &lt;b&gt;mid-cycle&lt;/b&gt; pays an advance during the month, &lt;b&gt;end-cycle&lt;/b&gt; settles the whole month. Most divisions run end-cycle only, which is why running the other one by accident produces a payslip that is not wrong so much as unexpected.</field>
+        <field name="screen">runpayroll</field>
+        <field name="anchor">pw-scope</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l1_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
+        <field name="sequence">40</field>
+        <field name="kicker">Before you act</field>
+        <field name="title">Read the eligible count before you compute</field>
+        <field name="body">Payobook prints which configuration will run and how many employees are eligible. That count is your smoke alarm. If it says 12 where you expected 48, &lt;b&gt;stop&lt;/b&gt; — the month's attendance import almost certainly has not been committed, and computing now would produce 12 real-looking payslips and 36 missing ones.</field>
+        <field name="screen">runpayroll</field>
+        <field name="anchor">pw-summary</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l1_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
+        <field name="sequence">50</field>
+        <field name="kicker">The action</field>
+        <field name="title">Compute — what actually happens</field>
+        <field name="body">One press runs the formula configuration for every eligible employee: gross, allowances, BHXH/BHYT/BHTN, thuế TNCN, net. It takes seconds and it writes 48 draft records.</field>
+        <field name="consequence">Affects July 2026 × Retail — Hà Nội only, 48 draft payslips. Reversible: &lt;b&gt;yes&lt;/b&gt; — drafts can be recomputed or deleted, and nothing is paid or sent. No employee sees anything until the whole run reaches done. Verify first: the eligible count above, and that the month's import is committed.</field>
+        <field name="screen">runpayroll</field>
+        <field name="anchor">pw-compute</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l1_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
+        <field name="sequence">60</field>
+        <field name="kicker">Reading results</field>
+        <field name="title">48 computed, 1 needs review</field>
+        <field name="body">Three numbers: how many payslips exist, how many computed cleanly, and how many the engine wants a human to look at. That third one is &lt;b&gt;Need review&lt;/b&gt;, and it is not an error count. A flag is the engine saying it found something unusual and would like you to confirm it is intended.</field>
+        <field name="screen">runpayroll</field>
+        <field name="anchor">pw-pills</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l1_step_06" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
+        <field name="sequence">70</field>
+        <field name="kicker">The judgement</field>
+        <field name="title">One flag, and why it is not an error</field>
+        <field name="body">Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 282% of last month. That may be perfectly correct: a shop refit, a peak week, a genuine burst. It may also be 4.6 hours typed as 46. The engine cannot tell those apart and does not pretend to; you can, by checking the timesheet.</field>
+        <field name="tip">A flag you clear without understanding is a flag you have answered with a guess.</field>
+        <field name="screen">runpayroll</field>
+        <field name="anchor">pw-exceptions</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l1_step_07" model="learn.step">
+        <field name="lesson_id" ref="lesson_l1"/>
+        <field name="sequence">80</field>
+        <field name="kicker">Where it goes</field>
+        <field name="title">Your run enters the pipeline</field>
+        <field name="body">The run is now in &lt;b&gt;draft&lt;/b&gt; on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them returns the run to draft with a written reason.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">rep-pipeline</field>
+        <field name="visual">pipeline</field>
+        <field name="moment_chain">payrun</field>
+    </record>
+
+    <record id="lesson_l1_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_l1"/>
         <field name="sequence">10</field>
         <field name="kind">choice</field>
-        <field name="prompt">You have computed July and one payslip has an overtime figure that looks far too high. What do you do?</field>
+        <field name="prompt">You computed July for Retail and then spot that one employee's overtime input is wrong. What is the safest next step?</field>
     </record>
 
-    <record id="lesson_runpayroll_q1_o1" model="learn.quiz.option">
-        <field name="quiz_id" ref="lesson_runpayroll_q1"/>
+    <record id="lesson_l1_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l1_quiz"/>
         <field name="sequence">10</field>
-        <field name="label">Fix the overtime in the source data, then recompute the run.</field>
-        <field name="is_correct" eval="True"/>
-        <field name="feedback">Exactly. Payslips are an output. Correct the input that produced them and recompute, and the whole run stays consistent with the data behind it.</field>
+        <field name="label">Edit the net amount directly on the payslip</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. Editing the output breaks the trail: the slip no longer agrees with the data behind it, and the next recompute silently undoes your fix — so the mistake comes back without anyone touching it.</field>
     </record>
 
-    <record id="lesson_runpayroll_q1_o2" model="learn.quiz.option">
-        <field name="quiz_id" ref="lesson_runpayroll_q1"/>
+    <record id="lesson_l1_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l1_quiz"/>
         <field name="sequence">20</field>
-        <field name="label">Edit the net amount on that payslip so it looks right.</field>
+        <field name="label">Fix the overtime input, then recompute the draft</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Exactly. Drafts exist for this: correct the input, recompute, and every dependent line — gross, thuế TNCN, net — corrects itself, because they were all derived from that input in the first place.</field>
+    </record>
+
+    <record id="lesson_l1_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l1_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Submit for approval now and correct it next month</field>
         <field name="is_correct" eval="False"/>
-        <field name="feedback">Let's rethink that. Editing the output leaves the input still wrong, so the next recompute silently undoes your fix — and the payslip no longer agrees with the attendance record behind it.</field>
+        <field name="feedback">Let's rethink that. It turns a thirty-second fix into a retro line next month — and an employee who was paid the wrong amount today, which is the part they will remember.</field>
+    </record>
+
+    <record id="lesson_l2" model="learn.lesson">
+        <field name="key">L2</field>
+        <field name="station_id" ref="station_payruns"/>
+        <field name="sequence">10</field>
+        <field name="name">The board and the gates</field>
+        <field name="goal">Read the Pay Runs board the way payroll week needs it read: what is stuck, whose gate it is stuck at, and what a rejection actually does.</field>
+        <field name="duration_min">7</field>
+    </record>
+
+    <record id="lesson_l2_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">10</field>
+        <field name="kicker">What &amp; why</field>
+        <field name="title">Five numbers, and only one of them is yours</field>
+        <field name="body">Total runs, in pipeline, &lt;b&gt;awaiting your approval&lt;/b&gt;, completed, net paid. Four of those describe the department. The third one describes you: it is the work that will not move until you move it, and it is the number to read first every morning of payroll week.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">pk-kpis</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l2_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">20</field>
+        <field name="kicker">Reading the board</field>
+        <field name="title">The columns are stages, not months</field>
+        <field name="body">This is the single most common misreading of this screen. A column is an &lt;b&gt;approval stage&lt;/b&gt;, so July and June can sit side by side in the same one, and a run moves left to right by being approved — never by being edited. Use the date chips below when you want a period.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">pk-tabs</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l2_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">30</field>
+        <field name="kicker">The chain</field>
+        <field name="title">Draft, Officer, {{hrTierName}}, {{gmTierName}}, done</field>
+        <field name="body">Five stages, in that order, every time. Each gate belongs to one group, so the chain is also an answer to 'who do I chase': the run's current column names the person. Nothing skips a gate — not for a deadline, not for a director.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">rep-pipeline</field>
+        <field name="visual">pipeline</field>
+        <field name="moment_chain">payrun</field>
+    </record>
+
+    <record id="lesson_l2_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">40</field>
+        <field name="kicker">The card</field>
+        <field name="title">A card only offers what you can actually do</field>
+        <field name="body">The buttons on a card are decided by the record's own gate fields and your groups — not by the card. If you cannot see Approve here, you do not hold that tier, and pressing harder will not help. That is also why the same run shows different buttons to different people.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">pk-card-actions</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l2_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">50</field>
+        <field name="kicker">The hard part</field>
+        <field name="title">A rejection is testimony, not a rebuke</field>
+        <field name="body">Rejecting sends the whole run back to &lt;b&gt;draft&lt;/b&gt; and records three things against it: who rejected it, when, and &lt;b&gt;why in writing&lt;/b&gt;. That written reason is the entire value of the rejection. Without it the officer who has to fix the run is guessing at what you saw, and will probably resubmit the same thing.</field>
+        <field name="consequence">Affects the whole run, not one payslip: all 48 return to draft together. Reversible: &lt;b&gt;yes&lt;/b&gt; — it is recomputed and resubmitted through the same chain, and nothing was paid. Verify first: that the problem really is the run, and not a single slip you could have discussed.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">pk-card</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l2_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">60</field>
+        <field name="kicker">Scoping</field>
+        <field name="title">Every count above is scoped by these chips</field>
+        <field name="body">The KPI band is not the whole database — it is whatever the active date chip and division chip allow through. A number that looks alarming is worth re-reading with the scope in mind before it becomes an email.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">pk-datechips</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l2_step_06" model="learn.step">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">70</field>
+        <field name="kicker">The far end</field>
+        <field name="title">Done unlocks the money, and locks the run</field>
+        <field name="body">Only a completed run offers {{bankFileFormat}}, the journals and the payments. That is the point of the chain — those buttons appear exactly when every gate has said yes. It is also the last reversible moment: after done, a correction is a retro line, never an edit.</field>
+        <field name="screen">payruns</field>
+        <field name="anchor">pk-card-actions</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l2_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_l2"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">A run has been sitting at {{hrTierName}} for two days and payday is on {{payDay}}. You are the Payroll Officer. What do you do?</field>
+    </record>
+
+    <record id="lesson_l2_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l2_quiz"/>
+        <field name="sequence">10</field>
+        <field name="label">Recompute the run so it moves forward</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. Recomputing does not move a run through a gate — approving does. It would also change figures the reviewer has already read, so they would have to start again.</field>
+    </record>
+
+    <record id="lesson_l2_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l2_quiz"/>
+        <field name="sequence">20</field>
+        <field name="label">Ask the person who holds that tier — the column names them</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Yes. The column a run is sitting in is the answer to who can move it. Chasing the right person is the only thing that shortens the wait, and it is also the fastest way to find out whether they are stuck on something you can resolve.</field>
+    </record>
+
+    <record id="lesson_l2_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l2_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Reject it yourself and start a clean run</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. A rejection is testimony about a problem you found — using it as a scheduling tool puts a reason on the record that is not true, and throws away two days of somebody's review.</field>
+    </record>
+
+    <record id="lesson_l3" model="learn.lesson">
+        <field name="key">L3</field>
+        <field name="station_id" ref="station_payslips"/>
+        <field name="sequence">10</field>
+        <field name="name">Read a payslip like an auditor</field>
+        <field name="goal">Take one payslip apart line by line and be able to say, out loud, where every number came from.</field>
+        <field name="duration_min">6</field>
+    </record>
+
+    <record id="lesson_l3_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_l3"/>
+        <field name="sequence">10</field>
+        <field name="kicker">Scope first</field>
+        <field name="title">Everything below belongs to one run</field>
+        <field name="body">The selector at the top names the run. Every KPI, every chip and every slip under it is scoped to that run — so comparing two months means changing this control, not scrolling.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-runsel</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l3_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_l3"/>
+        <field name="sequence">20</field>
+        <field name="kicker">Where to start</field>
+        <field name="title">Read Need review first, always</field>
+        <field name="body">Forty-eight slips is more than anyone reads carefully. The engine has already told you which ones it could not settle on its own — start there, and sample a few of the rest. Reading top to bottom is how a flagged slip gets approved at 6pm.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-chips</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l3_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_l3"/>
+        <field name="sequence">30</field>
+        <field name="kicker">Whose is it now</field>
+        <field name="title">A payslip carries its own position</field>
+        <field name="body">The stepper here is this slip's stage, which is not always the run's. That distinction matters when a single payslip has been pulled out for a question while the rest of the batch moved on.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-status</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l3_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_l3"/>
+        <field name="sequence">40</field>
+        <field name="kicker">The working</field>
+        <field name="title">Gross to net, one line at a time</field>
+        <field name="body">Mai's July: base 12,000,000 plus allowances 780,000 plus overtime 1,500,000 is a gross of &lt;b&gt;14,280,000 ₫&lt;/b&gt;. Then BHXH 960,000, BHYT 180,000, BHTN 120,000 and thuế TNCN 101,000 come off, leaving &lt;b&gt;12,919,000 ₫&lt;/b&gt;. Every one of those is a named rule, not a typed number.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-breakdown</field>
+        <field name="visual">calc</field>
+    </record>
+
+    <record id="lesson_l3_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_l3"/>
+        <field name="sequence">50</field>
+        <field name="kicker">The one that surprises people</field>
+        <field name="title">Insurance is not charged on what you earned</field>
+        <field name="body">BHXH, BHYT and BHTN are charged on the &lt;b&gt;registered insurance base&lt;/b&gt; — for Mai, 12,000,000 ₫, her contract base. Not on gross. That is why 1,500,000 ₫ of overtime moved her tax and did not move her insurance by a single đồng, and it answers most variance questions before they are asked.</field>
+        <field name="tip">Say it as a sentence: insurance follows the contract, tax follows the month.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-breakdown</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l3_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_l3"/>
+        <field name="sequence">60</field>
+        <field name="kicker">Before &amp; after</field>
+        <field name="title">The same employee, two months</field>
+        <field name="body">Toggle between June and July and watch which lines move. Overtime and thuế TNCN move; insurance does not. Once you can predict which lines will move before you look, you can review forty-eight payslips in the time it used to take to explain one.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-detail</field>
+        <field name="visual">morph</field>
+        <field name="moment_which">maiJuneJuly</field>
+    </record>
+
+    <record id="lesson_l3_step_05_line_00" model="learn.step.line">
+        <field name="step_id" ref="lesson_l3_step_05"/>
+        <field name="sequence">10</field>
+        <field name="role">morph_before</field>
+        <field name="label">June 2026</field>
+        <field name="value">head|12,064,000 ₫</field>
+    </record>
+
+    <record id="lesson_l3_step_05_line_01" model="learn.step.line">
+        <field name="step_id" ref="lesson_l3_step_05"/>
+        <field name="sequence">20</field>
+        <field name="role">morph_before</field>
+        <field name="label">Overtime 600,000 · insurance 1,260,000 · PIT 56,000</field>
+        <field name="value">detail</field>
+    </record>
+
+    <record id="lesson_l3_step_05_line_02" model="learn.step.line">
+        <field name="step_id" ref="lesson_l3_step_05"/>
+        <field name="sequence">30</field>
+        <field name="role">morph_after</field>
+        <field name="label">July 2026</field>
+        <field name="value">head|12,919,000 ₫</field>
+    </record>
+
+    <record id="lesson_l3_step_05_line_03" model="learn.step.line">
+        <field name="step_id" ref="lesson_l3_step_05"/>
+        <field name="sequence">40</field>
+        <field name="role">morph_after</field>
+        <field name="label">Overtime 1,500,000 · insurance 1,260,000 · PIT 101,000</field>
+        <field name="value">detail</field>
+    </record>
+
+    <record id="lesson_l3_step_05_line_04" model="learn.step.line">
+        <field name="step_id" ref="lesson_l3_step_05"/>
+        <field name="sequence">50</field>
+        <field name="role">morph_after</field>
+        <field name="label">Net is 855,000 ₫ higher. Overtime rose 900,000 and PIT took 45,000 of it. Insurance is identical, because it is charged on the registered base and overtime does not touch that.</field>
+        <field name="value">delta</field>
+    </record>
+
+    <record id="lesson_l3_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_l3"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">An employee's overtime doubled this month but their BHXH deduction is unchanged. What is the correct reading?</field>
+    </record>
+
+    <record id="lesson_l3_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l3_quiz"/>
+        <field name="sequence">10</field>
+        <field name="label">The insurance calculation is broken and should be reported</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. It is working exactly as the law describes: contributions are charged on the registered base, and overtime is not part of that base. Reporting it would send someone looking for a bug that is not there.</field>
+    </record>
+
+    <record id="lesson_l3_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l3_quiz"/>
+        <field name="sequence">20</field>
+        <field name="label">Correct — insurance is charged on the registered base, which overtime does not change</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Yes. Insurance follows the contract, tax follows the month. This is the single fact that explains most of the variance questions a payroll desk receives, and being able to say it plainly is worth more than any report.</field>
+    </record>
+
+    <record id="lesson_l3_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l3_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Their insurance base should be raised to match the higher earnings</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. The registered base is a declared contract figure, not something payroll adjusts to follow a busy month — changing it is an HR and legal decision with consequences well beyond this payslip.</field>
+    </record>
+
+    <record id="lesson_l4" model="learn.lesson">
+        <field name="key">L4</field>
+        <field name="station_id" ref="station_import"/>
+        <field name="sequence">10</field>
+        <field name="name">Import with confidence</field>
+        <field name="goal">Get a month of attendance and overtime into Payobook, and know exactly what the confidence score is telling you before you commit.</field>
+        <field name="duration_min">6</field>
+    </record>
+
+    <record id="lesson_l4_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_l4"/>
+        <field name="sequence">10</field>
+        <field name="kicker">What &amp; why</field>
+        <field name="title">Map, validate, commit — and only the last one writes</field>
+        <field name="body">Three stages, and a batch that stops before the last one has changed nothing at all. That is the whole design: you are allowed to load a bad file, look at it, and walk away, and the system is exactly as it was.</field>
+        <field name="screen">import</field>
+        <field name="anchor">im-pipe</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l4_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_l4"/>
+        <field name="sequence">20</field>
+        <field name="kicker">The way in</field>
+        <field name="title">Use the guided flow</field>
+        <field name="body">The other import surfaces exist for specific tools and older habits. This one scores the file before it writes, which is the difference between finding a bad row now and finding it on {{payDay}}.</field>
+        <field name="screen">import</field>
+        <field name="anchor">im-cta</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l4_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_l4"/>
+        <field name="sequence">30</field>
+        <field name="kicker">The score</field>
+        <field name="title">What 98.5% actually means</field>
+        <field name="body">It is not a grade. It is the share of rows the importer could match to an employee and read without ambiguity. 98.5% of 48 rows still leaves two rows that need a human — and those two are the ones that become a missing or a wrong payslip.</field>
+        <field name="screen">importwizard</field>
+        <field name="anchor">iw-review</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l4_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_l4"/>
+        <field name="sequence">40</field>
+        <field name="kicker">Fixing</field>
+        <field name="title">Match, Retry or Skip — and Skip has a cost</field>
+        <field name="body">&lt;b&gt;Match&lt;/b&gt; points a row at the right employee. &lt;b&gt;Retry&lt;/b&gt; re-reads it after you correct the file. &lt;b&gt;Skip&lt;/b&gt; drops it — which is legitimate for a duplicate row and quietly wrong for an employee, because a skipped employee is simply absent from the run.</field>
+        <field name="tip">Skipping a duplicate and skipping a person look identical on this screen. The difference is entirely in what you understood about the row.</field>
+        <field name="screen">importwizard</field>
+        <field name="anchor">iw-fixrows</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l4_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_l4"/>
+        <field name="sequence">50</field>
+        <field name="kicker">The action</field>
+        <field name="title">Commit is the first thing here that writes</field>
+        <field name="body">Everything before this was a preview. Pressing it writes the rows into the period and they become the inputs the next compute reads.</field>
+        <field name="consequence">Affects the period this batch names, for every row it holds. Reversible: &lt;b&gt;partly&lt;/b&gt; — you can import a correction, but rows already read into a computed run leave payslips that must be recomputed. Verify first: the period on the batch, that Need attention is zero, and that every Skip you used was a duplicate and not a person.</field>
+        <field name="screen">importwizard</field>
+        <field name="anchor">iw-commit</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l4_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_l4"/>
+        <field name="sequence">60</field>
+        <field name="kicker">The rule this teaches</field>
+        <field name="title">Never fix an import on the payslips</field>
+        <field name="body">It is tempting: the payslip is right in front of you and the number is obviously wrong. But editing here corrects the output and leaves the input untouched, so the next recompute brings the mistake straight back — and now the slip and the timesheet disagree, which is worse than the original error.</field>
+        <field name="screen">payslips</field>
+        <field name="anchor">ps-breakdown</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l4_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_l4"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">The confidence score is 91%, five rows need attention, and the import cut-off is {{importCutoff}}. What do you do?</field>
+    </record>
+
+    <record id="lesson_l4_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l4_quiz"/>
+        <field name="sequence">10</field>
+        <field name="label">Commit — 91% is high enough and the deadline is today</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. The score is not a pass mark; the five rows are five people. Committing now means five payslips that are missing or wrong, discovered by the employees rather than by you.</field>
+    </record>
+
+    <record id="lesson_l4_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l4_quiz"/>
+        <field name="sequence">20</field>
+        <field name="label">Resolve the five rows first, then commit</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Yes. Each of those rows is a person who would otherwise be absent from the run or paid on the wrong figure — and every one of them is cheaper to fix now than as a retro line next month.</field>
+    </record>
+
+    <record id="lesson_l4_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l4_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Skip the five rows so the score reaches 100%</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. Skipping removes the rows from the batch, not the problem from the month — the score goes green because those people are no longer in the import at all.</field>
     </record>
 
 </odoo>

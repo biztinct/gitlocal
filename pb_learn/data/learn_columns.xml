@@ -1,32 +1,272 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- GENERATED FILE. Do not edit.
          Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
-         Hand edits are erased on the next run and fail the CI check.
-
-         PHASE A1 PLACEHOLDER. Two columns, so the column-glossary fallback in
-         learn.intent.ask is exercised against real records. The ~30 the content
-         plan calls for arrive in Run A2. -->
-<!-- The per-screen micro-glossary: what a KPI tile or a chip actually counts.
-
-     Curated, not read from ir.model.fields, because most of these are computed
-     tiles on an OWL cockpit — there is no field behind them to read a help
-     string from. -->
+         Hand edits are erased on the next run and fail the CI check. -->
+<!-- The per-screen micro-glossary: what a KPI tile or a chip counts. Curated, not read from ir.model.fields — most of these are computed tiles with no field behind them to read a help string from. -->
 <odoo>
 
-    <record id="col_payruns_inpipeline" model="learn.column">
+    <record id="col_runpayroll_eligible_employees" model="learn.column">
+        <field name="screen">runpayroll</field>
+        <field name="key">eligible_employees</field>
+        <field name="sequence">10</field>
+        <field name="label">Eligible employees</field>
+        <field name="body">How many people this configuration would compute a payslip for, given the period and the division you have chosen. It is the count to read before pressing Compute: a number far below the division's headcount almost always means the month's attendance import has not been committed yet.</field>
+    </record>
+
+    <record id="col_runpayroll_payslips" model="learn.column">
+        <field name="screen">runpayroll</field>
+        <field name="key">payslips</field>
+        <field name="sequence">20</field>
+        <field name="label">Payslips</field>
+        <field name="body">How many payslip records the compute created for this run. It should match the eligible count you read beforehand; if it does not, something was excluded during the compute and is worth finding before the run moves on.</field>
+    </record>
+
+    <record id="col_runpayroll_computed" model="learn.column">
+        <field name="screen">runpayroll</field>
+        <field name="key">computed</field>
+        <field name="sequence">30</field>
+        <field name="label">Computed</field>
+        <field name="body">How many of those payslips the formula configuration was able to evaluate all the way through. A payslip that exists but did not compute has no net figure, so it would leave somebody unpaid rather than underpaid.</field>
+    </record>
+
+    <record id="col_runpayroll_need_review" model="learn.column">
+        <field name="screen">runpayroll</field>
+        <field name="key">need_review</field>
+        <field name="sequence">40</field>
+        <field name="label">Need review</field>
+        <field name="body">How many payslips the engine flagged for a human to read — an unusual variance, a zero net, an input it could not reconcile. A flag is a question, not an error, and clearing one means understanding it rather than dismissing it.</field>
+    </record>
+
+    <record id="col_runpayroll_exceptions" model="learn.column">
+        <field name="screen">runpayroll</field>
+        <field name="key">exceptions</field>
+        <field name="sequence">50</field>
+        <field name="label">Exceptions</field>
+        <field name="body">The list behind the Need review count, one line per payslip with the reason the engine raised it. It is where the judgement in a pay run actually lives — everything else on this screen computed itself.</field>
+    </record>
+
+    <record id="col_payruns_pay_runs" model="learn.column">
+        <field name="screen">payruns</field>
+        <field name="key">pay_runs</field>
+        <field name="sequence">10</field>
+        <field name="label">Pay runs</field>
+        <field name="body">How many runs exist within the date and division filters currently active. It is a scoped count, not a total: changing a chip below changes this number without anything having happened in the database.</field>
+    </record>
+
+    <record id="col_payruns_in_pipeline" model="learn.column">
         <field name="screen">payruns</field>
         <field name="key">in_pipeline</field>
-        <field name="sequence">10</field>
+        <field name="sequence">20</field>
         <field name="label">In pipeline</field>
         <field name="body">Runs that have left draft and have not reached done — they are sitting at somebody's approval gate. It is not a count of work you owe; "Awaiting your approval" is that.</field>
     </record>
 
-    <record id="col_payslips_needreview" model="learn.column">
+    <record id="col_payruns_awaiting_your_approval" model="learn.column">
+        <field name="screen">payruns</field>
+        <field name="key">awaiting_your_approval</field>
+        <field name="sequence">30</field>
+        <field name="label">Awaiting your approval</field>
+        <field name="body">Runs sitting at a gate that your groups let you act on. This is the only number on the band that is about you, and the one to read first every morning of payroll week — nothing here moves until you move it.</field>
+    </record>
+
+    <record id="col_payruns_completed" model="learn.column">
+        <field name="screen">payruns</field>
+        <field name="key">completed</field>
+        <field name="sequence">40</field>
+        <field name="label">Completed</field>
+        <field name="body">Runs that have passed every gate. Completion is what unlocks the bank file, the journals and the payments — and it is also the point after which a correction becomes a retro line rather than an edit.</field>
+    </record>
+
+    <record id="col_payruns_net_paid" model="learn.column">
+        <field name="screen">payruns</field>
+        <field name="key">net_paid</field>
+        <field name="sequence">50</field>
+        <field name="label">Net paid</field>
+        <field name="body">The total net of completed runs inside the current filters. Runs still in the pipeline are deliberately excluded: this is money that has passed every gate, not money that is expected to.</field>
+    </record>
+
+    <record id="col_payslips_payslips" model="learn.column">
+        <field name="screen">payslips</field>
+        <field name="key">payslips</field>
+        <field name="sequence">10</field>
+        <field name="label">Payslips</field>
+        <field name="body">How many payslips this run contains, before any filter chip is applied. If it is not the headcount you expected, the problem is in the run rather than on this screen.</field>
+    </record>
+
+    <record id="col_payslips_net_total" model="learn.column">
+        <field name="screen">payslips</field>
+        <field name="key">net_total</field>
+        <field name="sequence">20</field>
+        <field name="label">Net total</field>
+        <field name="body">The sum of every net figure in this run — what will actually leave the bank account. Compare it with last month before approving: a variance you cannot explain in one sentence is a variance you have not checked.</field>
+    </record>
+
+    <record id="col_payslips_gross_total" model="learn.column">
+        <field name="screen">payslips</field>
+        <field name="key">gross_total</field>
+        <field name="sequence">30</field>
+        <field name="label">Gross total</field>
+        <field name="body">The sum of earnings before any deduction — base, allowances and overtime added together across the run. The gap between this and the net total is the statutory deductions plus tax, and that gap should move roughly in step with headcount.</field>
+    </record>
+
+    <record id="col_payslips_approved" model="learn.column">
+        <field name="screen">payslips</field>
+        <field name="key">approved</field>
+        <field name="sequence">40</field>
+        <field name="label">Approved</field>
+        <field name="body">How many payslips in this run have reached the done stage, against the total. A payslip carries its own position in the chain, which is not always the run's — that difference shows up here when one slip has been held back for a question.</field>
+    </record>
+
+    <record id="col_payslips_need_review" model="learn.column">
         <field name="screen">payslips</field>
         <field name="key">need_review</field>
-        <field name="sequence">10</field>
+        <field name="sequence">50</field>
         <field name="label">Need review</field>
         <field name="body">Payslips the engine flagged for a human to read — an unusual variance, a zero net, an input it could not reconcile. A flag is a question, not an error, and clearing one means understanding it rather than dismissing it.</field>
+    </record>
+
+    <record id="col_import_import_batches" model="learn.column">
+        <field name="screen">import</field>
+        <field name="key">import_batches</field>
+        <field name="sequence">10</field>
+        <field name="label">Import batches</field>
+        <field name="body">Every batch ever started, whatever became of it. A batch is a file or a connector pull with a period attached — it is the unit you go back to when something in a month looks wrong.</field>
+    </record>
+
+    <record id="col_import_completed" model="learn.column">
+        <field name="screen">import</field>
+        <field name="key">completed</field>
+        <field name="sequence">20</field>
+        <field name="label">Completed</field>
+        <field name="body">Batches that reached commit. Only these have written anything: a batch that stopped earlier changed nothing at all, which is the whole design of the guided flow.</field>
+    </record>
+
+    <record id="col_import_in_progress" model="learn.column">
+        <field name="screen">import</field>
+        <field name="key">in_progress</field>
+        <field name="sequence">30</field>
+        <field name="label">In progress</field>
+        <field name="body">Batches that have been loaded but not committed. They are safe to leave — nothing is written — but a batch left here on the day of the run is a month of inputs that never arrived.</field>
+    </record>
+
+    <record id="col_import_with_errors" model="learn.column">
+        <field name="screen">import</field>
+        <field name="key">with_errors</field>
+        <field name="sequence">40</field>
+        <field name="label">With errors</field>
+        <field name="body">Batches holding at least one row the importer could not place. Each of those rows is a person: unresolved, they become a payslip that is missing or computed on the wrong figure.</field>
+    </record>
+
+    <record id="col_import_connectors" model="learn.column">
+        <field name="screen">import</field>
+        <field name="key">connectors</field>
+        <field name="sequence">50</field>
+        <field name="label">Connectors</field>
+        <field name="body">Configured links to a source system that can pull data without anybody retyping it. A connector that has quietly stopped syncing looks exactly like a connector that is working until the month it matters.</field>
+    </record>
+
+    <record id="col_importwizard_rows_loaded" model="learn.column">
+        <field name="screen">importwizard</field>
+        <field name="key">rows_loaded</field>
+        <field name="sequence">10</field>
+        <field name="label">Rows loaded</field>
+        <field name="body">How many rows the importer read out of the source. If this is not the row count of your file, the file was truncated or a sheet was missed — and that is a better thing to find here than after the compute.</field>
+    </record>
+
+    <record id="col_importwizard_matched" model="learn.column">
+        <field name="screen">importwizard</field>
+        <field name="key">matched</field>
+        <field name="sequence">20</field>
+        <field name="label">Matched</field>
+        <field name="body">Rows the importer tied to an existing employee with no ambiguity. These are the rows that will become inputs without anybody looking at them again, so the count matters more than the percentage above it.</field>
+    </record>
+
+    <record id="col_importwizard_new_employees" model="learn.column">
+        <field name="screen">importwizard</field>
+        <field name="key">new_employees</field>
+        <field name="sequence">30</field>
+        <field name="label">New employees</field>
+        <field name="body">Rows the importer could not tie to anybody and that you have marked as a person who does not exist yet. Committing creates them, so this number is a hiring decision arriving through a spreadsheet — worth a second look.</field>
+    </record>
+
+    <record id="col_importwizard_need_attention" model="learn.column">
+        <field name="screen">importwizard</field>
+        <field name="key">need_attention</field>
+        <field name="sequence">40</field>
+        <field name="label">Need attention</field>
+        <field name="body">Rows the importer could not place on its own: no matching employee, a duplicate, or a value it could not read. Every one of these is a person, and committing with any of them open produces a payslip that is missing or wrong.</field>
+    </record>
+
+    <record id="col_importwizard_confidence_score" model="learn.column">
+        <field name="screen">importwizard</field>
+        <field name="key">confidence_score</field>
+        <field name="sequence">50</field>
+        <field name="label">Confidence score</field>
+        <field name="body">The share of rows read without ambiguity. It is not a grade and there is no pass mark — the number that matters is the count of rows underneath it, because 98% of fifty rows still leaves one person unaccounted for.</field>
+    </record>
+
+    <record id="col_fullfinal_leavers_this_period" model="learn.column">
+        <field name="screen">fullfinal</field>
+        <field name="key">leavers_this_period</field>
+        <field name="sequence">10</field>
+        <field name="label">Leavers this period</field>
+        <field name="body">Employees whose contract ends inside this period. Each one needs settling here AND excluding from the normal monthly run — a leaver in both is paid twice, and recovering that is a legal conversation rather than a payroll one.</field>
+    </record>
+
+    <record id="col_fullfinal_pending_settlement" model="learn.column">
+        <field name="screen">fullfinal</field>
+        <field name="key">pending_settlement</field>
+        <field name="sequence">20</field>
+        <field name="label">Pending settlement</field>
+        <field name="body">Leavers whose final amount has been worked out but not yet paid. Settlements have legal deadlines, so this count is a clock rather than a queue.</field>
+    </record>
+
+    <record id="col_fullfinal_settled" model="learn.column">
+        <field name="screen">fullfinal</field>
+        <field name="key">settled</field>
+        <field name="sequence">30</field>
+        <field name="label">Settled</field>
+        <field name="body">The total already paid out as final settlements in this period. It sits outside the monthly run's net total, which is why the two numbers never add up to what left the bank.</field>
+    </record>
+
+    <record id="col_proration_prorated_payslips" model="learn.column">
+        <field name="screen">proration</field>
+        <field name="key">prorated_payslips</field>
+        <field name="sequence">10</field>
+        <field name="label">Prorated payslips</field>
+        <field name="body">Payslips in this run paid for part of a month rather than all of it — joiners, leavers and unpaid leave. Every one of them is a likely question from the employee, and this screen is the answer written down before it is asked.</field>
+    </record>
+
+    <record id="col_proration_standard_working_days" model="learn.column">
+        <field name="screen">proration</field>
+        <field name="key">standard_working_days</field>
+        <field name="sequence">20</field>
+        <field name="label">Standard working days</field>
+        <field name="body">The divisor every proration factor is built from, taken from the division's configuration. It is working days and not calendar days, and reading it as calendar days is the mistake that turns an explanation into an argument.</field>
+    </record>
+
+    <record id="col_retro_retro_lines" model="learn.column">
+        <field name="screen">retro</field>
+        <field name="key">retro_lines</field>
+        <field name="sequence">10</field>
+        <field name="label">Retro lines</field>
+        <field name="body">Corrections belonging to a period that is already closed, paid in the current run. Each is a deliberate decision not to reopen an approved month, which is what keeps everything already reported from that month true.</field>
+    </record>
+
+    <record id="col_retro_total_adjustment" model="learn.column">
+        <field name="screen">retro</field>
+        <field name="key">total_adjustment</field>
+        <field name="sequence">20</field>
+        <field name="label">Total adjustment</field>
+        <field name="body">The sum of the retro lines in this run. It is added on top of the month's own earnings, so the run's net total will be higher than the same headcount would normally produce — worth saying out loud before somebody asks about the variance.</field>
+    </record>
+
+    <record id="col_retro_oldest_source_period" model="learn.column">
+        <field name="screen">retro</field>
+        <field name="key">oldest_source_period</field>
+        <field name="sequence">30</field>
+        <field name="label">Oldest source period</field>
+        <field name="body">The furthest-back month any line here is correcting. The older it is, the more reporting has already been done on the original figure — which is exactly why the correction is a retro line and never an edit to that month.</field>
     </record>
 
 </odoo>

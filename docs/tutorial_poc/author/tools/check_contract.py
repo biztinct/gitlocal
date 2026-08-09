@@ -1,0 +1,383 @@
+#!/usr/bin/env python3
+"""Verify that everything Payobook Learn teaches is still true of the product.
+
+WHY THIS EXISTS
+---------------
+The practice company is a JavaScript fixture, not an isolated tenant. That buys
+real safety — there is no server on the other end of it, so a practice action
+cannot reach an employee — at the cost of drift: rename a selection value,
+retire a menu leaf or re-point an action tag, and the tutorial keeps
+confidently teaching a product that no longer exists.
+
+This script is how that cost is paid. `contract.json` declares every fact the
+tutorial asserts, together with where it came from; this re-reads the modules
+and fails when a declaration no longer holds — naming the fixture entries AND
+the content that quotes them, so you know exactly what to update.
+
+    python3 docs/tutorial_poc/author/tools/check_contract.py
+    python3 docs/tutorial_poc/author/tools/check_contract.py --quiet   # CI: errors only
+
+Exit codes: 0 = everything still true · 1 = drift detected · 2 = cannot run.
+
+WHEN IT FAILS there are two correct responses and one wrong one:
+  1. The product changed on purpose -> update `expect` here, then
+     practice-data.js, then the `taughtIn` content the entry names.
+  2. The product changed by accident -> fix the product.
+  3. WRONG: relax the check. A green checker that proves nothing is worse than
+     no checker, because people trust the tutorial more, not less.
+"""
+
+import argparse
+import json
+import os
+import re
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+AUTHOR = os.path.dirname(HERE)                       # docs/tutorial_poc/author
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(AUTHOR)))
+
+RED, GREEN, YELLOW, DIM, BOLD, OFF = (
+    "\033[31m", "\033[32m", "\033[33m", "\033[2m", "\033[1m", "\033[0m"
+)
+if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
+    RED = GREEN = YELLOW = DIM = BOLD = OFF = ""
+
+
+class Result:
+    def __init__(self):
+        self.failures = []   # (check_id, [problems], check dict)
+        self.passed = 0
+        self.skipped = []    # (check_id, reason)
+
+    def ok(self):
+        self.passed += 1
+
+    def fail(self, check, problems):
+        self.failures.append((check.get("id", "?"), problems, check))
+
+    def skip(self, check, reason):
+        self.skipped.append((check.get("id", "?"), reason))
+
+
+def read(root, rel):
+    path = os.path.join(root, rel)
+    if not os.path.exists(path):
+        return None
+    with open(path, encoding="utf-8") as fh:
+        return fh.read()
+
+
+def region(text, symbol):
+    """The slice of `text` that belongs to `symbol`.
+
+    Anchor on the DEFINITION, not the first mention — a method name usually
+    appears first inside `compute="..."` on the field, hundreds of lines above
+    the body, and scoping to that window silently finds nothing.
+
+    Deliberately approximate after that: from the definition to whatever looks
+    like the next top-level one. A lint that is 95% right and always runs beats
+    a parser that is 100% right and gets disabled the first time a decorator
+    breaks it.
+    """
+    i = -1
+    for probe in ("def %s" % symbol, "%s = " % symbol, symbol):
+        i = text.find(probe)
+        if i != -1:
+            break
+    if i == -1:
+        return None
+    tail = text[i:]
+    stop = len(tail)
+    # `\n};` is the JS one and it earns its place: without it a top-level object
+    # literal has no stop pattern at all in a .js file, so the region runs to
+    # EOF and every two-space key in the rest of the file looks like part of it.
+    for pat in (r"\ndef ", r"\n@api", r"\nclass ", r"\n[A-Z_]{3,} = ",
+                r"\n    def ", r"\n\};"):
+        m = re.search(pat, tail[40:])
+        if m:
+            stop = min(stop, m.start() + 40)
+    return tail[:stop]
+
+
+# ---------------------------------------------------------------- check kinds
+def check_contains(root, chk):
+    """Every literal in `expect` must appear in the file (optionally in `within`)."""
+    files = chk.get("files") or [chk["file"]]
+    problems = []
+    blobs = []
+    for rel in files:
+        text = read(root, rel)
+        if text is None:
+            return None, "file not found: %s" % rel
+        blobs.append(text)
+    blob = "\n".join(blobs)
+    if chk.get("within"):
+        scoped = region(blob, chk["within"])
+        if scoped is None:
+            return None, "symbol not found: %s" % chk["within"]
+        blob = scoped
+    for want in chk["expect"]:
+        if want not in blob:
+            problems.append("missing: %s" % want)
+    return problems, None
+
+
+def check_absent(root, chk):
+    """Nothing in `expect` may appear. The inverse check, for a fact that is
+    true because something is NOT there — a tier a screen must not show, a
+    method the Coach must never reach."""
+    files = chk.get("files") or [chk["file"]]
+    blob = ""
+    for rel in files:
+        text = read(root, rel)
+        if text is None:
+            return None, "file not found: %s" % rel
+        blob += text
+    if chk.get("within"):
+        scoped = region(blob, chk["within"])
+        if scoped is None:
+            return None, "symbol not found: %s" % chk["within"]
+        blob = scoped
+    return ["present but must not be: %s" % w for w in chk["expect"] if w in blob], None
+
+
+def check_xmlids(root, chk):
+    """Record ids must still be declared somewhere in the named data files."""
+    blob = ""
+    for rel in chk["files"]:
+        text = read(root, rel)
+        if text is None:
+            return None, "file not found: %s" % rel
+        blob += text
+    problems = []
+    for xmlid in chk["expect"]:
+        if ('id="%s"' % xmlid) not in blob:
+            problems.append("record no longer declared: %s" % xmlid)
+    return problems, None
+
+
+def po_pairs(text):
+    """msgid -> msgstr, single-line entries only (which is all we assert)."""
+    out = {}
+    msgid = None
+    for line in text.splitlines():
+        line = line.strip()
+        m = re.match(r'^msgid "(.*)"$', line)
+        if m:
+            msgid = m.group(1)
+            continue
+        m = re.match(r'^msgstr "(.*)"$', line)
+        if m and msgid is not None:
+            out.setdefault(msgid, m.group(1))
+            msgid = None
+    return out
+
+
+def check_po(root, chk):
+    """Shipped Vietnamese strings must still say what the content ships.
+
+    Spot checks, not a full audit: the generator already refuses to write a
+    translatable with no Vietnamese. What this catches is a translation being
+    silently REPLACED — the promise in the honesty banner is the one string in
+    this module where that would matter most.
+    """
+    problems = []
+    for rel, pairs in chk["expect"].items():
+        text = read(root, rel)
+        if text is None:
+            return None, "file not found: %s" % rel
+        found = po_pairs(text)
+        for msgid, want in pairs.items():
+            got = found.get(msgid)
+            if got is None:
+                problems.append('%s: msgid "%s" is gone' % (rel, msgid))
+            elif got != want:
+                problems.append('%s: "%s" now translates to "%s", content ships "%s"'
+                                % (rel, msgid, got, want))
+    return problems, None
+
+
+KINDS = {
+    "contains": check_contains,
+    "selection": check_contains,
+    "absent": check_absent,
+    "xmlids": check_xmlids,
+    "po": check_po,
+}
+
+# Payobook anchors follow a screen-prefix convention, which is what makes them
+# lintable: pw (run payroll wizard), pk (pay run board), ps (payslip review),
+# im (import), iw (import wizard), lg (the shared ledgers), rep (replica-only).
+ANCHOR_RE = re.compile(r'"((?:pw|pk|ps|im|iw|lg|rep)-[a-z0-9][a-z0-9-]*)"')
+
+
+def anchor_lint(cfg, res, quiet):
+    """Content names controls; a rename must break the build.
+
+    This runs at AUTHORING time, against the real product templates. It is the
+    same comparison tests/test_anchor_registry.py makes after generation, one
+    step earlier — the point being to fail before a bad anchor becomes a
+    database record.
+
+    Unlike the prototype's version, `present` is read from LITERAL attributes
+    only. Our anchors are literal attributes in real OWL templates, so the
+    weaker "the name appears somewhere as a string" fallback is not needed and
+    would only hide a deleted attribute.
+    """
+    spec = cfg.get("anchorLint")
+    if not spec:
+        return
+    referenced, present = set(), set()
+    for rel in spec["contentFiles"]:
+        text = read(AUTHOR, rel)
+        if text is None:
+            res.skip({"id": "anchor-lint"}, "content file not found: %s" % rel)
+            return
+        referenced |= set(ANCHOR_RE.findall(text))
+    for rel in spec["templateFiles"]:
+        text = read(REPO, rel)
+        if text is None:
+            res.skip({"id": "anchor-lint"}, "template file not found: %s" % rel)
+            return
+        present |= set(re.findall(r'data-coach="([^"]+)"', text))
+    # Practice-only anchors have no product template by definition; they are
+    # declared in the registry and drawn by the replica, and the module's own
+    # test checks that side.
+    registry = read(REPO, spec["registry"])
+    if registry is None:
+        res.skip({"id": "anchor-lint"}, "registry not found: %s" % spec["registry"])
+        return
+    present |= set(json.loads(registry)["practice"])
+
+    missing = sorted(referenced - present)
+    chk = {"id": "anchor-lint",
+           "why": spec["why"],
+           "taughtIn": ["every lesson step, mission target and coach point-at"]}
+    if missing:
+        res.fail(chk, ["content points at a control that no longer exists: %s" % a
+                       for a in missing])
+    else:
+        res.ok()
+        if not quiet:
+            orphans = sorted(present - referenced)
+            print("  %s✓%s anchor-lint            %s%d referenced, all present%s%s"
+                  % (GREEN, OFF, DIM, len(referenced), OFF,
+                     (" · %d anchor(s) no content points at yet" % len(orphans))
+                     if orphans else ""))
+
+
+def token_lint(cfg, res, quiet):
+    """Every `{{key}}` content writes must be a declared tenant slot.
+
+    Same failure mode as a broken anchor, different surface: a typo renders the
+    key itself to a learner instead of the company's pay day. Also reports slots
+    nothing uses, which are dead configuration a tenant admin can still see and
+    change to no effect.
+    """
+    spec = cfg.get("tokenLint")
+    if not spec:
+        return
+    used = set()
+    for rel in spec["contentFiles"]:
+        text = read(AUTHOR, rel)
+        if text is None:
+            res.skip({"id": "token-lint"}, "content file not found: %s" % rel)
+            return
+        used |= set(re.findall(r"\{\{([a-zA-Z][a-zA-Z0-9_]*)\}\}", text))
+    fixture = read(AUTHOR, spec["declaredIn"])
+    if fixture is None:
+        res.skip({"id": "token-lint"}, "fixture not found: %s" % spec["declaredIn"])
+        return
+    block = region(fixture, "TENANT_DEFAULTS")
+    declared = set(re.findall(r"^\s{2}([a-zA-Z][a-zA-Z0-9_]*):\s*B\(", block or "", re.M))
+    undeclared = sorted(used - declared)
+    chk = {"id": "token-lint", "why": spec["why"],
+           "fixture": ["TENANT_DEFAULTS"],
+           "taughtIn": ["every string naming a tier, a date or a contact"]}
+    if undeclared:
+        res.fail(chk, ["content uses an undeclared tenant slot: {{%s}}" % k
+                       for k in undeclared])
+    else:
+        res.ok()
+        if not quiet:
+            unused = sorted(declared - used)
+            print("  %s✓%s token-lint             %s%d slot(s) declared, %d used%s%s"
+                  % (GREEN, OFF, DIM, len(declared), len(used), OFF,
+                     (" · unused: %s" % ", ".join(unused)) if unused else ""))
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
+    ap.add_argument("--quiet", action="store_true", help="print failures only")
+    ap.add_argument("--contract", default=os.path.join(AUTHOR, "contract.json"))
+    args = ap.parse_args()
+
+    try:
+        with open(args.contract, encoding="utf-8") as fh:
+            cfg = json.load(fh)
+    except Exception as exc:                                  # noqa: BLE001
+        print("%scannot read contract: %s%s" % (RED, exc, OFF))
+        return 2
+
+    root = os.path.abspath(os.path.join(AUTHOR, cfg.get("repoRoot", "../../..")))
+    # pb_sidebar rather than addons/: Payobook's modules live at the repository
+    # root, so the presence of an addons/ directory would prove nothing.
+    if not os.path.isdir(os.path.join(root, "pb_sidebar")):
+        print("%scannot find pb_sidebar from repoRoot %s%s" % (RED, root, OFF))
+        return 2
+
+    if not args.quiet:
+        print("\n%sPayobook Learn — contract check%s" % (BOLD, OFF))
+        print("%srepo: %s · contract schema %s%s\n"
+              % (DIM, root, cfg.get("schemaVersion", "?"), OFF))
+
+    res = Result()
+    for chk in cfg["checks"]:
+        fn = KINDS.get(chk.get("kind"))
+        if fn is None:
+            res.skip(chk, "unknown kind: %s" % chk.get("kind"))
+            continue
+        problems, err = fn(root, chk)
+        if err:
+            res.skip(chk, err)
+        elif problems:
+            res.fail(chk, problems)
+        else:
+            res.ok()
+            if not args.quiet:
+                print("  %s✓%s %-22s %s%s%s"
+                      % (GREEN, OFF, chk["id"], DIM,
+                         (chk.get("file") or (chk.get("files") or ["-"])[0]), OFF))
+
+    anchor_lint(cfg, res, args.quiet)
+    token_lint(cfg, res, args.quiet)
+
+    for cid, reason in res.skipped:
+        print("  %s⊘%s %-22s %sskipped — %s%s" % (YELLOW, OFF, cid, DIM, reason, OFF))
+
+    if res.failures:
+        print("\n%s%d contract check(s) FAILED — the tutorial now teaches something "
+              "untrue.%s" % (RED + BOLD, len(res.failures), OFF))
+        for cid, problems, chk in res.failures:
+            print("\n  %s✗ %s%s" % (RED + BOLD, cid, OFF))
+            print("    %swhy it matters:%s %s" % (BOLD, OFF, chk.get("why", "-")))
+            for p in problems:
+                print("      %s- %s%s" % (RED, p, OFF))
+            if chk.get("fixture"):
+                print("    %supdate in practice-data.js:%s %s"
+                      % (BOLD, OFF, ", ".join(chk["fixture"])))
+            if chk.get("taughtIn"):
+                print("    %sthen re-read this content:%s %s"
+                      % (BOLD, OFF, ", ".join(chk["taughtIn"])))
+        print()
+        return 1
+
+    print("\n%s✓ %d checks passed%s%s — everything the tutorial teaches is still "
+          "true of the product.%s\n"
+          % (GREEN + BOLD, res.passed, OFF, GREEN, OFF))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

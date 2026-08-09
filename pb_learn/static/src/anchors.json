@@ -35,7 +35,6 @@
     "  declared here or whitelisted as foreign · and the registry never silently",
     "  claims an anchor another module owns."
   ],
-
   "product": {
     "pw-rail": {
       "screen": "runpayroll",
@@ -77,7 +76,6 @@
       "file": "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
       "desc": "The exceptions list — every payslip the engine wants a human to look at."
     },
-
     "pk-kpis": {
       "screen": "payruns",
       "file": "pb_payruns/static/src/xml/payruns_kanban.xml",
@@ -115,7 +113,6 @@
       "repeats": true,
       "desc": "The card's action footer. Which buttons appear is decided by the record's own gate fields, never by the card."
     },
-
     "ps-runsel": {
       "screen": "payslips",
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
@@ -151,7 +148,6 @@
       "file": "pb_payslip_review/static/src/xml/payslip_review.xml",
       "desc": "Salary breakdown, line by line with its rule code. The working behind the net figure."
     },
-
     "im-kpis": {
       "screen": "import",
       "file": "pb_import/static/src/xml/import.xml",
@@ -177,7 +173,6 @@
       "file": "pb_import/static/src/xml/import.xml",
       "desc": "Recent batches and their state. Where you go back to a file that stalled."
     },
-
     "iw-steps": {
       "screen": "importwizard",
       "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
@@ -208,35 +203,48 @@
       "file": "pb_import_wizard/static/src/xml/import_wizard.xml",
       "desc": "Commit import. The first irreversible control in this flow — everything before it is a preview."
     },
-
     "lg-kpis": {
-      "screen": ["fullfinal", "proration", "retro"],
+      "screen": [
+        "fullfinal",
+        "proration",
+        "retro"
+      ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
       "desc": "The ledger KPI band. ONE template serves Full & Final, Proration Audit and Retro Adjustments, so this key means a different set of numbers on each — the screen key decides which."
     },
     "lg-facets": {
-      "screen": ["fullfinal", "proration", "retro"],
+      "screen": [
+        "fullfinal",
+        "proration",
+        "retro"
+      ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
       "desc": "The facet chips and the date row. Same control, different facets per ledger."
     },
     "lg-rows": {
-      "screen": ["fullfinal", "proration", "retro"],
+      "screen": [
+        "fullfinal",
+        "proration",
+        "retro"
+      ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
       "desc": "The ledger rows. Each is a line of working, not a record to edit."
     },
     "lg-openfull": {
-      "screen": ["fullfinal", "proration", "retro"],
+      "screen": [
+        "fullfinal",
+        "proration",
+        "retro"
+      ],
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
       "desc": "Open full list. Leaves the cockpit for the underlying list view."
     }
   },
-
   "pattern": {},
-
   "practice": {
     "rep-nav": "The replica's own sidebar. Mirrors pb_sidebar; nothing on it navigates the real app.",
     "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
@@ -244,7 +252,6 @@
     "rep-dash-runs": "The replica Dashboard's recent-runs list.",
     "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper."
   },
-
   "foreign": {
     "pw-division": "pb_coach — hero_path.js, tour_payrun.js. ALSO ours: the registry owns it and neither module may rename it alone.",
     "pw-compute": "pb_coach — hero_path.js, tour_payrun.js. ALSO ours, same rule.",
@@ -262,7 +269,6 @@
     "imp-*": "pb_hr_payroll_formula — the multi-sheet import wizard tour",
     "map-*": "pb_hr_payroll_formula — the component-mapping wizard tour"
   },
-
   "scan": {
     "templates": [
       "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",

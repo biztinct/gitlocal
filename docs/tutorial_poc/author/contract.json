@@ -1,0 +1,223 @@
+{
+  "_doc": [
+    "Every fact Payobook Learn asserts about the product, with where it came from.",
+    "",
+    "The practice company is a JavaScript fixture, not a tenant. That is what makes",
+    "it safe and it is also what makes it drift. Each entry below is a claim the",
+    "content makes; tools/check_contract.py re-reads the modules and fails when one",
+    "stops being true, naming the fixture entries and the content that quote it.",
+    "",
+    "`taughtIn` is not decoration. When a check fails it is the list of things a",
+    "human has to re-read — the checker cannot know whether a renamed state key",
+    "invalidates one sentence or a whole lesson."
+  ],
+  "schemaVersion": "1.1",
+  "repoRoot": "../../..",
+
+  "checks": [
+    {
+      "id": "payrun-state-chain",
+      "kind": "contains",
+      "why": "The five stages ARE the lesson. If level0 is removed, renamed or re-ordered, L2's pipeline visual, the replica's board columns and every answer about 'whose gate is it at' teach a chain the product no longer has.",
+      "file": "pb_payruns/models/hr_payslip_run.py",
+      "expect": [
+        "('level0', 'Payroll Officer pending')",
+        "('level1',)",
+        "['draft', 'level0', 'level1', 'level2', 'done']"
+      ],
+      "fixture": ["STATUS_LABELS.payrun", "CHAINS.payrun"],
+      "taughtIn": ["L1 step 8 (pipeline)", "L2 steps 1-7", "intent approve", "intent reject", "mission m1 undo step", "mission m2"]
+    },
+    {
+      "id": "payslip-state-chain",
+      "kind": "contains",
+      "why": "A PAYSLIP's chain is four stages and has no level0 — that gate belongs to the run. Drawing the run's five on a payslip stepper would send a learner looking for an Officer tier that does not exist there.",
+      "file": "pb_payslip_review/static/src/js/payslip_review.js",
+      "expect": [
+        "const STATUS_FLOW = [[\"draft\", \"Draft\"], [\"level1\", \"HR Manager pending\"], [\"level2\", \"GM pending\"], [\"done\", \"Done\"]]"
+      ],
+      "fixture": ["STATUS_LABELS.payslip"],
+      "taughtIn": ["L3 step 3 (the approval stepper)", "the payslips replica in engine/screens.js"]
+    },
+    {
+      "id": "payrun-reject-testimony",
+      "kind": "contains",
+      "why": "L2 and m2 both teach that a rejection records who, when and WHY IN WRITING, and m2's whole reject branch rests on that written reason existing. Lose the fields and the lesson is teaching a discipline the product no longer supports.",
+      "file": "pb_payruns/models/hr_payslip_run.py",
+      "expect": ["pb_reject_note", "pb_reject_uid", "pb_reject_date"],
+      "fixture": [],
+      "taughtIn": ["L2 step 5 (a rejection is testimony)", "intent reject", "mission m2 reason step"]
+    },
+    {
+      "id": "payroll-capability-groups",
+      "kind": "xmlids",
+      "why": "learn.intent._capability reads these four groups directly. A rename makes every capability-gated answer fall through to its most restrictive branch — an officer would be told they cannot run a payroll, which is the confidently-wrong answer the gate exists to prevent.",
+      "files": [
+        "pb_hr_payroll_base/security/payroll_base_security_enhanced.xml",
+        "pb_demo/security/pb_demo_security.xml"
+      ],
+      "expect": [
+        "group_payroll_base_officer",
+        "group_payroll_base_manager",
+        "group_payroll_final_approver",
+        "group_payroll_super_admin",
+        "group_payobook_demo"
+      ],
+      "fixture": [],
+      "taughtIn": ["intent approve (all five capability variants)", "models/learn_intent.py::_capability"]
+    },
+    {
+      "id": "payrun-sidebar-leaves",
+      "kind": "xmlids",
+      "why": "Seven stations and seven screens resolve through these leaves — learn.screen reads its matchers off the leaf rather than keeping a copy. A retired leaf is a station that opens nothing and a screen the Coach can never recognise.",
+      "files": ["pb_sidebar/data/pb_sidebar_data.xml"],
+      "expect": [
+        "sec_payrun",
+        "item_run_payroll",
+        "item_pay_runs",
+        "item_payslips",
+        "item_import",
+        "item_full_final",
+        "item_proration",
+        "item_retro"
+      ],
+      "fixture": ["MENU"],
+      "taughtIn": ["all seven stations", "all eight screens", "tools/gen_learn_data.py::SIDEBAR_KEYS"]
+    },
+    {
+      "id": "sidebar-model-matchers",
+      "kind": "contains",
+      "why": "Pay Runs and Payslips are recognised by model as well as by action. If one leaf ever claimed the other's model the Coach would ground on the wrong screen and offer the wrong questions — confidently, which is the worst way to be wrong.",
+      "file": "pb_sidebar/data/pb_sidebar_data.xml",
+      "expect": [
+        "<field name=\"match_models\">hr.payslip.run</field>",
+        "<field name=\"match_models\">hr.payslip</field>"
+      ],
+      "fixture": [],
+      "taughtIn": ["screen payruns", "screen payslips", "tests/test_coach.py::test_17"]
+    },
+    {
+      "id": "client-action-tags",
+      "kind": "contains",
+      "why": "Four screens are client actions found by tag. importwizard has no sidebar leaf at all, so its tag is the ONLY way the Coach knows that screen is showing — rename it and a whole screen's content goes silently unreachable.",
+      "files": [
+        "pb_payrun_wizard/static/src/js/payrun_wizard.js",
+        "pb_import_wizard/static/src/js/import_wizard.js",
+        "pb_import/static/src/js/import.js",
+        "pb_payslip_review/static/src/js/payslip_review.js"
+      ],
+      "expect": [
+        "registry.category(\"actions\").add(\"pb_payrun_wizard\"",
+        "registry.category(\"actions\").add(\"pb_import_wizard\"",
+        "registry.category(\"actions\").add(\"pb_import\"",
+        "registry.category(\"actions\").add(\"pb_payslip_review\""
+      ],
+      "fixture": ["SUB_SCREENS"],
+      "taughtIn": ["screen importwizard (action_tags)", "tools/gen_learn_data.py::SCREEN_ACTION_TAGS"]
+    },
+    {
+      "id": "ledger-action-tags",
+      "kind": "contains",
+      "why": "Full & Final, Proration and Retro are three screens served by ONE template, and their sidebar leaves resolve by these tags. The lg-* anchors mean a different set of numbers on each, so losing a tag collapses three screens' content onto whichever one still resolves.",
+      "file": "pb_payrun_ledgers/views/ledger_actions.xml",
+      "expect": [
+        "<field name=\"tag\">pb_fullfinal</field>",
+        "<field name=\"tag\">pb_proration</field>",
+        "<field name=\"tag\">pb_retro</field>"
+      ],
+      "fixture": ["PRACTICE.ledgers"],
+      "taughtIn": ["stations fullfinal / proration / retro", "the lg-* anchors in anchors.json"]
+    },
+    {
+      "id": "payai-known-tours",
+      "kind": "contains",
+      "why": "PayAI may only launch tours it actually ships, through this whitelist. pb_learn deliberately adds nothing to it: the Coach is a separate surface and must never become a fifth way to start a pb_coach tour. A change here means the two systems have started merging without anyone deciding to.",
+      "file": "pb_payroll_ai_insights/models/payroll_ai_engine.py",
+      "expect": [
+        "_KNOWN_TOURS = ('hero_path', 'tour_payrun', 'tour_formula', 'tour_payslips')"
+      ],
+      "fixture": [],
+      "taughtIn": ["design_v2 §9 — what happens to pb_coach"]
+    },
+    {
+      "id": "shared-anchors-still-shared",
+      "kind": "contains",
+      "why": "pw-division and pw-compute belong to pb_coach's tours AND to this registry. Either module removing one breaks the other silently, in a file neither team reads — the registry's `foreign` block records the shared claim and this is the check behind it.",
+      "files": [
+        "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+        "pb_coach/static/src/js/tours/tour_payrun.js"
+      ],
+      "expect": [
+        "data-coach=\"pw-division\"",
+        "data-coach=\"pw-compute\"",
+        "selector: '[data-coach=\"pw-division\"]'",
+        "selector: '[data-coach=\"pw-compute\"]'"
+      ],
+      "fixture": [],
+      "taughtIn": ["L1 step 2 and step 5", "mission m1 division and consequence steps", "anchors.json foreign block"]
+    },
+    {
+      "id": "sidebar-icon-set",
+      "kind": "contains",
+      "why": "pb_sidebar renders a FIXED icon set and an unknown name draws a plain circle with no error anywhere. The Journey's own leaf uses compass; lose it and the front door to the whole learning system renders as a blank dot.",
+      "file": "pb_sidebar/static/src/js/pb_sidebar.js",
+      "expect": ["compass:"],
+      "fixture": [],
+      "taughtIn": ["data/learn_sidebar_item.xml", "SIDEBAR_LEAF in data.js"]
+    },
+    {
+      "id": "coach-cannot-act",
+      "kind": "absent",
+      "why": "The Coach's standing promise is that it never performs an action. Asserted as an ABSENCE because that is the shape of the promise: no provider, no composer, no product method in the answer path. A future port of health_learn's composer would arrive as exactly these names.",
+      "files": [
+        "pb_learn/models/learn_intent.py",
+        "pb_learn/models/learn_station.py"
+      ],
+      "expect": [
+        "hr.ai.provider.config",
+        "hr_development_ai",
+        "generate_text",
+        "def _compose",
+        "def _provider"
+      ],
+      "fixture": [],
+      "taughtIn": ["the honesty banner", "tests/test_coach.py::test_21 and ::test_21b"]
+    },
+    {
+      "id": "vietnamese-spot-checks",
+      "kind": "po",
+      "why": "The generator refuses to write a translatable with no Vietnamese, so what is left to catch is a translation being silently REPLACED. These four are the ones where that would matter most: the standing promise, the launcher's invitation, the front door, and the name of the flagship screen.",
+      "expect": {
+        "pb_learn/i18n/vi_VN.po": {
+          "Stuck?": "Cần trợ giúp?",
+          "Learn": "Học cùng Payobook",
+          "Run Payroll": "Chạy bảng lương",
+          "Payslips": "Phiếu lương"
+        }
+      },
+      "fixture": [],
+      "taughtIn": ["every Vietnamese reader of this module"]
+    }
+  ],
+
+  "anchorLint": {
+    "why": "Content names controls by one name across the replica and the real screen. A control renamed in a template with the content still pointing at it produces a Show-me that scrolls to nothing — which is the exact 'confidently wrong' failure the registry exists to prevent.",
+    "contentFiles": ["data.js"],
+    "registry": "pb_learn/static/src/anchors.json",
+    "templateFiles": [
+      "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
+      "pb_payruns/static/src/xml/payruns_kanban.xml",
+      "pb_payruns/views/hr_payslip_run_kanban.xml",
+      "pb_payslip_review/static/src/xml/payslip_review.xml",
+      "pb_import/static/src/xml/import.xml",
+      "pb_import_wizard/static/src/xml/import_wizard.xml",
+      "pb_payrun_ledgers/static/src/xml/ledger.xml"
+    ]
+  },
+
+  "tokenLint": {
+    "why": "A typo'd {{token}} renders the key itself to a learner instead of the company's pay day, and nothing anywhere says why. Unused slots are the other half: dead configuration a tenant admin can see and change to no effect.",
+    "contentFiles": ["data.js"],
+    "declaredIn": "practice-data.js"
+  }
+}
