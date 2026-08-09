@@ -13,7 +13,6 @@
   ],
   "schemaVersion": "1.1",
   "repoRoot": "../../..",
-
   "checks": [
     {
       "id": "payrun-state-chain",
@@ -25,8 +24,18 @@
         "('level1',)",
         "['draft', 'level0', 'level1', 'level2', 'done']"
       ],
-      "fixture": ["STATUS_LABELS.payrun", "CHAINS.payrun"],
-      "taughtIn": ["L1 step 8 (pipeline)", "L2 steps 1-7", "intent approve", "intent reject", "mission m1 undo step", "mission m2"]
+      "fixture": [
+        "STATUS_LABELS.payrun",
+        "CHAINS.payrun"
+      ],
+      "taughtIn": [
+        "L1 step 8 (pipeline)",
+        "L2 steps 1-7",
+        "intent approve",
+        "intent reject",
+        "mission m1 undo step",
+        "mission m2"
+      ]
     },
     {
       "id": "payslip-state-chain",
@@ -36,17 +45,55 @@
       "expect": [
         "const STATUS_FLOW = [[\"draft\", \"Draft\"], [\"level1\", \"HR Manager pending\"], [\"level2\", \"GM pending\"], [\"done\", \"Done\"]]"
       ],
-      "fixture": ["STATUS_LABELS.payslip"],
-      "taughtIn": ["L3 step 3 (the approval stepper)", "the payslips replica in engine/screens.js"]
+      "fixture": [
+        "STATUS_LABELS.payslip"
+      ],
+      "taughtIn": [
+        "L3 step 3 (the approval stepper)",
+        "the payslips replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "payrun-pipeline-labels",
+      "kind": "contains",
+      "why": "The tenant slots {{hrTierName}} and {{gmTierName}} DEFAULT to what this widget prints on the real board. A default that disagrees with the screen it names is worse than no slot at all: the tenant who never sets one reads a word in the lesson that is nowhere on their board. Pinning all five also pins the ORDER, which is what the pipeline visual draws.",
+      "file": "pb_payruns/static/src/js/pipeline_field.js",
+      "expect": [
+        "{ key: \"draft\", label: \"Draft\" }",
+        "{ key: \"level0\", label: \"Officer review\" }",
+        "{ key: \"level1\", label: \"HR review\" }",
+        "{ key: \"level2\", label: \"Finance approval\" }",
+        "{ key: \"done\", label: \"Done\" }"
+      ],
+      "fixture": [
+        "TENANT_DEFAULTS.hrTierName",
+        "TENANT_DEFAULTS.gmTierName",
+        "STATUS_LABELS.payrun"
+      ],
+      "taughtIn": [
+        "glossary payrun (the chain, tokenised)",
+        "L1 step 8",
+        "L2 steps 3-7",
+        "intent approve",
+        "mission m2"
+      ]
     },
     {
       "id": "payrun-reject-testimony",
       "kind": "contains",
       "why": "L2 and m2 both teach that a rejection records who, when and WHY IN WRITING, and m2's whole reject branch rests on that written reason existing. Lose the fields and the lesson is teaching a discipline the product no longer supports.",
       "file": "pb_payruns/models/hr_payslip_run.py",
-      "expect": ["pb_reject_note", "pb_reject_uid", "pb_reject_date"],
+      "expect": [
+        "pb_reject_note",
+        "pb_reject_uid",
+        "pb_reject_date"
+      ],
       "fixture": [],
-      "taughtIn": ["L2 step 5 (a rejection is testimony)", "intent reject", "mission m2 reason step"]
+      "taughtIn": [
+        "L2 step 5 (a rejection is testimony)",
+        "intent reject",
+        "mission m2 reason step"
+      ]
     },
     {
       "id": "payroll-capability-groups",
@@ -64,13 +111,18 @@
         "group_payobook_demo"
       ],
       "fixture": [],
-      "taughtIn": ["intent approve (all five capability variants)", "models/learn_intent.py::_capability"]
+      "taughtIn": [
+        "intent approve (all five capability variants)",
+        "models/learn_intent.py::_capability"
+      ]
     },
     {
       "id": "payrun-sidebar-leaves",
       "kind": "xmlids",
       "why": "Seven stations and seven screens resolve through these leaves — learn.screen reads its matchers off the leaf rather than keeping a copy. A retired leaf is a station that opens nothing and a screen the Coach can never recognise.",
-      "files": ["pb_sidebar/data/pb_sidebar_data.xml"],
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml"
+      ],
       "expect": [
         "sec_payrun",
         "item_run_payroll",
@@ -81,8 +133,14 @@
         "item_proration",
         "item_retro"
       ],
-      "fixture": ["MENU"],
-      "taughtIn": ["all seven stations", "all eight screens", "tools/gen_learn_data.py::SIDEBAR_KEYS"]
+      "fixture": [
+        "MENU"
+      ],
+      "taughtIn": [
+        "all seven stations",
+        "all eight screens",
+        "tools/gen_learn_data.py::SIDEBAR_KEYS"
+      ]
     },
     {
       "id": "sidebar-model-matchers",
@@ -94,7 +152,11 @@
         "<field name=\"match_models\">hr.payslip</field>"
       ],
       "fixture": [],
-      "taughtIn": ["screen payruns", "screen payslips", "tests/test_coach.py::test_17"]
+      "taughtIn": [
+        "screen payruns",
+        "screen payslips",
+        "tests/test_coach.py::test_17"
+      ]
     },
     {
       "id": "client-action-tags",
@@ -112,8 +174,13 @@
         "registry.category(\"actions\").add(\"pb_import\"",
         "registry.category(\"actions\").add(\"pb_payslip_review\""
       ],
-      "fixture": ["SUB_SCREENS"],
-      "taughtIn": ["screen importwizard (action_tags)", "tools/gen_learn_data.py::SCREEN_ACTION_TAGS"]
+      "fixture": [
+        "SUB_SCREENS"
+      ],
+      "taughtIn": [
+        "screen importwizard (action_tags)",
+        "tools/gen_learn_data.py::SCREEN_ACTION_TAGS"
+      ]
     },
     {
       "id": "ledger-action-tags",
@@ -125,8 +192,13 @@
         "<field name=\"tag\">pb_proration</field>",
         "<field name=\"tag\">pb_retro</field>"
       ],
-      "fixture": ["PRACTICE.ledgers"],
-      "taughtIn": ["stations fullfinal / proration / retro", "the lg-* anchors in anchors.json"]
+      "fixture": [
+        "PRACTICE.ledgers"
+      ],
+      "taughtIn": [
+        "stations fullfinal / proration / retro",
+        "the lg-* anchors in anchors.json"
+      ]
     },
     {
       "id": "payai-known-tours",
@@ -137,7 +209,9 @@
         "_KNOWN_TOURS = ('hero_path', 'tour_payrun', 'tour_formula', 'tour_payslips')"
       ],
       "fixture": [],
-      "taughtIn": ["design_v2 §9 — what happens to pb_coach"]
+      "taughtIn": [
+        "design_v2 §9 — what happens to pb_coach"
+      ]
     },
     {
       "id": "shared-anchors-still-shared",
@@ -154,16 +228,25 @@
         "selector: '[data-coach=\"pw-compute\"]'"
       ],
       "fixture": [],
-      "taughtIn": ["L1 step 2 and step 5", "mission m1 division and consequence steps", "anchors.json foreign block"]
+      "taughtIn": [
+        "L1 step 2 and step 5",
+        "mission m1 division and consequence steps",
+        "anchors.json foreign block"
+      ]
     },
     {
       "id": "sidebar-icon-set",
       "kind": "contains",
       "why": "pb_sidebar renders a FIXED icon set and an unknown name draws a plain circle with no error anywhere. The Journey's own leaf uses compass; lose it and the front door to the whole learning system renders as a blank dot.",
       "file": "pb_sidebar/static/src/js/pb_sidebar.js",
-      "expect": ["compass:"],
+      "expect": [
+        "compass:"
+      ],
       "fixture": [],
-      "taughtIn": ["data/learn_sidebar_item.xml", "SIDEBAR_LEAF in data.js"]
+      "taughtIn": [
+        "data/learn_sidebar_item.xml",
+        "SIDEBAR_LEAF in data.js"
+      ]
     },
     {
       "id": "coach-cannot-act",
@@ -181,7 +264,10 @@
         "def _provider"
       ],
       "fixture": [],
-      "taughtIn": ["the honesty banner", "tests/test_coach.py::test_21 and ::test_21b"]
+      "taughtIn": [
+        "the honesty banner",
+        "tests/test_coach.py::test_21 and ::test_21b"
+      ]
     },
     {
       "id": "vietnamese-spot-checks",
@@ -196,13 +282,16 @@
         }
       },
       "fixture": [],
-      "taughtIn": ["every Vietnamese reader of this module"]
+      "taughtIn": [
+        "every Vietnamese reader of this module"
+      ]
     }
   ],
-
   "anchorLint": {
     "why": "Content names controls by one name across the replica and the real screen. A control renamed in a template with the content still pointing at it produces a Show-me that scrolls to nothing — which is the exact 'confidently wrong' failure the registry exists to prevent.",
-    "contentFiles": ["data.js"],
+    "contentFiles": [
+      "data.js"
+    ],
     "registry": "pb_learn/static/src/anchors.json",
     "templateFiles": [
       "pb_payrun_wizard/static/src/xml/payrun_wizard.xml",
@@ -214,10 +303,11 @@
       "pb_payrun_ledgers/static/src/xml/ledger.xml"
     ]
   },
-
   "tokenLint": {
     "why": "A typo'd {{token}} renders the key itself to a learner instead of the company's pay day, and nothing anywhere says why. Unused slots are the other half: dead configuration a tenant admin can see and change to no effect.",
-    "contentFiles": ["data.js"],
+    "contentFiles": [
+      "data.js"
+    ],
     "declaredIn": "practice-data.js"
   }
 }

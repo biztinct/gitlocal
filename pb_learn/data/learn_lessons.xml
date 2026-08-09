@@ -87,7 +87,7 @@
         <field name="sequence">70</field>
         <field name="kicker">The judgement</field>
         <field name="title">One flag, and why it is not an error</field>
-        <field name="body">Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 282% of last month. That may be perfectly correct: a shop refit, a peak week, a genuine burst. It may also be 4.6 hours typed as 46. The engine cannot tell those apart and does not pretend to; you can, by checking the timesheet.</field>
+        <field name="body">Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 382% of last month. That may be perfectly correct: a shop refit, a peak week, a genuine burst. It may also be 4.6 hours typed as 46. The engine cannot tell those apart and does not pretend to; you can, by checking the timesheet.</field>
         <field name="tip">A flag you clear without understanding is a flag you have answered with a guess.</field>
         <field name="screen">runpayroll</field>
         <field name="anchor">pw-exceptions</field>
@@ -439,8 +439,8 @@
         <field name="lesson_id" ref="lesson_l4"/>
         <field name="sequence">30</field>
         <field name="kicker">The score</field>
-        <field name="title">What 98.5% actually means</field>
-        <field name="body">It is not a grade. It is the share of rows the importer could match to an employee and read without ambiguity. 98.5% of 48 rows still leaves two rows that need a human — and those two are the ones that become a missing or a wrong payslip.</field>
+        <field name="title">What 95.8% actually means</field>
+        <field name="body">It is not a grade. It is the share of rows the importer could match to an employee and read without ambiguity: 46 of 48. 95.8% of 48 rows still leaves two rows that need a human — and those two are the ones that become a missing or a wrong payslip.</field>
         <field name="screen">importwizard</field>
         <field name="anchor">iw-review</field>
         <field name="visual">none</field>

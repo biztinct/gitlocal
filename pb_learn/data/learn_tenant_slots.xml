@@ -17,7 +17,7 @@
 
     <record id="slot_gmtiername" model="learn.tenant.override">
         <field name="key">gmTierName</field>
-        <field name="value">GM approval</field>
+        <field name="value">Finance approval</field>
     </record>
 
     <record id="slot_hrtiername" model="learn.tenant.override">

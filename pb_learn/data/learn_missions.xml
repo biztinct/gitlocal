@@ -22,7 +22,7 @@
         <field name="consequence_reversible">Yes. Drafts can be recomputed or deleted, nothing is paid or sent, and no employee sees anything until the whole run reaches done.</field>
         <field name="consequence_verify">That the eligible count reads 48 and not something smaller, and that this month's attendance import has been committed. A short count means the data is not in yet.</field>
         <field name="anomaly_title">The 4.6 that was typed as 46</field>
-        <field name="anomaly_body">Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 282%. It reads like a genuine peak week, and that is exactly why it is worth stopping on: a decimal point dropped in a timesheet produces a number that is plausible, not absurd. The engine cannot tell a busy month from a typo. You can, by opening the timesheet — and the cost of not looking is one employee paid roughly three million đồng too much, in a run that forty-seven other people will assume was checked.</field>
+        <field name="anomaly_body">Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 382%. It reads like a genuine peak week, and that is exactly why it is worth stopping on: a decimal point dropped in a timesheet produces a number that is plausible, not absurd. The engine cannot tell a busy month from a typo. You can, by opening the timesheet — and the cost of not looking is one employee paid roughly three million đồng too much, in a run that forty-seven other people will assume was checked.</field>
     </record>
 
     <record id="mission_m1_did_00" model="learn.mission.note">
@@ -43,7 +43,7 @@
         <field name="mission_id" ref="mission_m1"/>
         <field name="sequence">30</field>
         <field name="kind">did</field>
-        <field name="body">Opened the flagged payslip instead of clearing it, and treated a 282% overtime figure as a question rather than a fact.</field>
+        <field name="body">Opened the flagged payslip instead of clearing it, and treated a 382% overtime figure as a question rather than a fact.</field>
     </record>
 
     <record id="mission_m1_did_03" model="learn.mission.note">
@@ -173,7 +173,7 @@
         <field name="target">pw-exceptions</field>
         <field name="instruction">Open the flagged payslip</field>
         <field name="detail">Trần Văn Hùng. Overtime 4,200,000 ₫ this month against 1,100,000 ₫ in June.</field>
-        <field name="hint">In real payroll you would open the timesheet before deciding. 282% is not impossible — it is unverified.</field>
+        <field name="hint">In real payroll you would open the timesheet before deciding. 382% is not impossible — it is unverified.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
@@ -184,7 +184,7 @@
         <field name="sequence">60</field>
         <field name="key">decide</field>
         <field name="target">pw-exceptions</field>
-        <field name="instruction">Overtime at 282% of last month. What do you do?</field>
+        <field name="instruction">Overtime at 382% of last month. What do you do?</field>
         <field name="detail">You cannot see the timesheet from here, and the run is due. The question is what you do with an unverified number, not whether you can prove it wrong.</field>
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
@@ -340,7 +340,7 @@
         <field name="nav">payruns</field>
         <field name="target">pk-kpis</field>
         <field name="instruction">Find what is waiting for you</field>
-        <field name="detail">Awaiting your approval is the only number on this band that is about you.</field>
+        <field name="detail">Time has moved on since m1: the Payroll Officer has approved the July run at their tier, so it now sits at {{hrTierName}} — yours. Awaiting your approval is the only number on this band that is about you.</field>
         <field name="hint">Read that tile first every morning of payroll week. The other four describe the department.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
@@ -440,7 +440,7 @@
         <field name="key">reason</field>
         <field name="target">pk-card-actions</field>
         <field name="instruction">Write the reason</field>
-        <field name="detail">"Payslip NV0031 — overtime 4,200,000 ₫ is 282% of June. Please verify against the timesheet and resubmit." That is a reason somebody can act on. "Wrong" is not.</field>
+        <field name="detail">"Payslip NV0031 — overtime 4,200,000 ₫ is 382% of June. Please verify against the timesheet and resubmit." That is a reason somebody can act on. "Wrong" is not.</field>
         <field name="hint">The reason is recorded against the run with your name and the time, and it is the only thing the officer has to work from.</field>
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>

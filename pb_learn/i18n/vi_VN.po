@@ -20,9 +20,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m2_step_06
 msgid ""
-"\"Payslip NV0031 — overtime 4,200,000 ₫ is 282% of June. Please verify against the timesheet and resubmit.\" That is a reason somebody can act on. \"Wrong\" is not."
+"\"Payslip NV0031 — overtime 4,200,000 ₫ is 382% of June. Please verify against the timesheet and resubmit.\" That is a reason somebody can act on. \"Wrong\" is not."
 msgstr ""
-"\"Phiếu NV0031 — tăng ca 4.200.000 ₫ bằng 282% tháng 6. Vui lòng đối chiếu bảng chấm công và trình lại.\" Đó là lý do người khác xử lý được. \"Sai\" thì không."
+"\"Phiếu NV0031 — tăng ca 4.200.000 ₫ bằng 382% tháng 6. Vui lòng đối chiếu bảng chấm công và trình lại.\" Đó là lý do người khác xử lý được. \"Sai\" thì không."
 
 #. module: pb_learn
 #: model:learn.tenant.override,value:pb_learn.slot_standardworkingdays
@@ -156,7 +156,7 @@ msgstr ""
 msgid ""
 "A run is approved one gate at a time: draft, then the Payroll Officer tier, then {{hrTierName}}, then {{gmTierName}}, then done. Each gate belongs to one group, and the buttons on a card are decided by the record's own gate fields and your groups — so what you can see is what you can do."
 msgstr ""
-"Một đợt lương được duyệt lần lượt qua từng cổng: Nháp, rồi vòng CV tính lương, rồi {{hrTierName}}, rồi {{gmTierName}}, rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền, và các nút trên thẻ do chính các trường kiểm soát cổng của bản ghi và nhóm quyền của bạn quyết định — nên thấy được gì là làm được nấy."
+"Một đợt lương được duyệt lần lượt qua từng cổng: Nháp, rồi vòng Chuyên viên tính lương, rồi {{hrTierName}}, rồi {{gmTierName}}, rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền, và các nút trên thẻ do chính các trường kiểm soát cổng của bản ghi và nhóm quyền của bạn quyết định — nên thấy được gì là làm được nấy."
 
 #. module: pb_learn
 #: model:learn.mission,summary:pb_learn.mission_m2
@@ -302,11 +302,6 @@ msgstr ""
 #: model:learn.column,label:pb_learn.col_payruns_awaiting_your_approval
 msgid "Awaiting your approval"
 msgstr "Chờ bạn phê duyệt"
-
-#. module: pb_learn
-#: model:learn.mission.step,detail:pb_learn.mission_m2_step_00
-msgid "Awaiting your approval is the only number on this band that is about you."
-msgstr "Chờ bạn phê duyệt là con số duy nhất trên dải này nói về bạn."
 
 #. module: pb_learn
 #: model:learn.glossary.term,term:pb_learn.gloss_bhtn
@@ -653,7 +648,7 @@ msgstr "Hoàn tất mở khoá tiền, và khoá đợt lương"
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l2_step_02
 msgid "Draft, Officer, {{hrTierName}}, {{gmTierName}}, done"
-msgstr "Nháp, CV tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất"
+msgstr "Nháp, Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất"
 
 #. module: pb_learn
 #: model:learn.quiz.option,label:pb_learn.lesson_l1_quiz_opt_0
@@ -728,7 +723,7 @@ msgstr "Mọi đợt tính lương trên một bảng, nằm ở cột của bư
 #. module: pb_learn
 #: model:learn.station,summary:pb_learn.station_payruns
 msgid "Every run on one board, moving draft → Officer → HR → GM → done."
-msgstr "Mọi đợt lương trên một bảng, đi từ Nháp → CV tính lương → HR → TGĐ → Hoàn tất."
+msgstr "Mọi đợt lương trên một bảng, đi từ Nháp → Chuyên viên tính lương → HR → TGĐ → Hoàn tất."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_04
@@ -802,6 +797,11 @@ msgid ""
 "Final settlement for departing employees: last salary, unused leave and deductions, in one place."
 msgstr ""
 "Quyết toán cho nhân viên thôi việc: lương cuối, phép chưa dùng và các khoản khấu trừ, ở cùng một nơi."
+
+#. module: pb_learn
+#: model:learn.tenant.override,value:pb_learn.slot_gmtiername
+msgid "Finance approval"
+msgstr "Tài chính phê duyệt"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m2_step_00
@@ -884,11 +884,6 @@ msgstr "Quyết toán thôi việc"
 #: model:learn.string,value:pb_learn.str_fulllesson
 msgid "Full lesson"
 msgstr "Bài học đầy đủ"
-
-#. module: pb_learn
-#: model:learn.tenant.override,value:pb_learn.slot_gmtiername
-msgid "GM approval"
-msgstr "TGĐ phê duyệt"
 
 #. module: pb_learn
 #: model:learn.lesson,goal:pb_learn.lesson_l4
@@ -1127,9 +1122,9 @@ msgstr "Đang xử lý"
 #. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m1_step_04
 msgid ""
-"In real payroll you would open the timesheet before deciding. 282% is not impossible — it is unverified."
+"In real payroll you would open the timesheet before deciding. 382% is not impossible — it is unverified."
 msgstr ""
-"Trong thực tế bạn sẽ mở bảng chấm công trước khi quyết định. 282% không phải là không thể — nó chỉ là chưa được xác minh."
+"Trong thực tế bạn sẽ mở bảng chấm công trước khi quyết định. 382% không phải là không thể — nó chỉ là chưa được xác minh."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_whydiff_b030
@@ -1146,16 +1141,16 @@ msgstr "Bảo hiểm không tính trên số bạn kiếm được"
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_02
 msgid ""
-"It is not a grade. It is the share of rows the importer could match to an employee and read without ambiguity. 98.5% of 48 rows still leaves two rows that need a human — and those two are the ones that become a missing or a wrong payslip."
+"It is not a grade. It is the share of rows the importer could match to an employee and read without ambiguity: 46 of 48. 95.8% of 48 rows still leaves two rows that need a human — and those two are the ones that become a missing or a wrong payslip."
 msgstr ""
-"Đây không phải điểm số học. Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng. 98,5% của 48 dòng vẫn còn hai dòng cần con người xử lý — và đúng hai dòng đó sẽ trở thành một phiếu lương thiếu hoặc sai."
+"Đây không phải điểm số học. Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng: 46 trên 48. 95,8% của 48 dòng vẫn còn hai dòng cần con người xử lý — và đúng hai dòng đó sẽ trở thành một phiếu lương thiếu hoặc sai."
 
 #. module: pb_learn
 #: model:learn.intent,simpler:pb_learn.intent_confidence
 msgid ""
-"It is not a mark out of a hundred. It is simply how much of your file the system could read without having to guess — so 98% of fifty rows still means one row it could not place, and that row is one person's pay."
+"It is not a mark out of a hundred. It is simply how much of your file the system could read without having to guess — so 96% of fifty rows still means two rows it could not place, and each of those is one person's pay."
 msgstr ""
-"Đây không phải điểm trên thang một trăm. Nó chỉ đơn giản là phần dữ liệu trong tệp mà hệ thống đọc được mà không phải đoán — nên 98% của năm mươi dòng vẫn nghĩa là còn một dòng nó không xếp được, và dòng đó là lương của một con người."
+"Đây không phải điểm trên thang một trăm. Nó chỉ đơn giản là phần dữ liệu trong tệp mà hệ thống đọc được mà không phải đoán — nên 96% của năm mươi dòng vẫn nghĩa là còn hai dòng nó không xếp được, và mỗi dòng đó là lương của một con người."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_05
@@ -1172,9 +1167,9 @@ msgstr "Đó là mục đầu tiên trong phần Chạy lương ở thanh bên."
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_confidence_b010
 msgid ""
-"It is the share of rows the importer matched to an employee and read without ambiguity. It is not a grade and there is no pass mark, because the number that matters is the count underneath it: 98.5% of 48 rows still leaves two rows a human has to resolve."
+"It is the share of rows the importer matched to an employee and read without ambiguity — 46 of 48 here. It is not a grade and there is no pass mark, because the number that matters is the count underneath it: 95.8% of 48 rows still leaves two rows a human has to resolve."
 msgstr ""
-"Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng. Nó không phải điểm số và không có mức đạt, vì con số quan trọng là số lượng bên dưới nó: 98,5% của 48 dòng vẫn còn hai dòng phải có người xử lý."
+"Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng — ở đây là 46 trên 48. Nó không phải điểm số và không có mức đạt, vì con số quan trọng là số lượng bên dưới nó: 95,8% của 48 dòng vẫn còn hai dòng phải có người xử lý."
 
 #. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_runpayroll
@@ -1195,7 +1190,7 @@ msgstr ""
 msgid ""
 "It leaves draft and enters the chain: Payroll Officer, {{hrTierName}}, {{gmTierName}}, done."
 msgstr ""
-"Nó rời trạng thái Nháp và vào chuỗi: CV tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất."
+"Nó rời trạng thái Nháp và vào chuỗi: Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_journals
@@ -1564,9 +1559,9 @@ msgstr "Kỳ gốc xa nhất"
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_needreview_b020
 msgid ""
-"On this run it is Trần Văn Hùng: overtime of 4,200,000 ₫ against 1,100,000 ₫ in June, which is 282% of last month. That is well inside the range a genuine peak week produces, and also exactly what 4.6 hours typed as 46 looks like."
+"On this run it is Trần Văn Hùng: overtime of 4,200,000 ₫ against 1,100,000 ₫ in June, which is 382% of last month. That is well inside the range a genuine peak week produces, and also exactly what 4.6 hours typed as 46 looks like."
 msgstr ""
-"Trên đợt này là Trần Văn Hùng: tăng ca 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6, tức 282% tháng trước. Con số đó hoàn toàn nằm trong khoảng mà một tuần cao điểm thật tạo ra, và cũng đúng là hình dạng của 4,6 giờ bị gõ thành 46."
+"Trên đợt này là Trần Văn Hùng: tăng ca 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6, tức 382% tháng trước. Con số đó hoàn toàn nằm trong khoảng mà một tuần cao điểm thật tạo ra, và cũng đúng là hình dạng của 4,6 giờ bị gõ thành 46."
 
 #. module: pb_learn
 #: model:learn.station,outline_when:pb_learn.station_runpayroll
@@ -1578,9 +1573,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.glossary.term,definition:pb_learn.gloss_payrun
 msgid ""
-"One batch of payslips for a division and a period, travelling draft → Payroll Officer → HR review → GM approval → done. A rejection returns the whole batch to draft with a written reason."
+"One batch of payslips for a division and a period, travelling draft → Payroll Officer → {{hrTierName}} → {{gmTierName}} → done. A rejection returns the whole batch to draft with a written reason."
 msgstr ""
-"Một lô phiếu lương của một bộ phận trong một kỳ, đi qua Nháp → CV tính lương → HR soát xét → TGĐ phê duyệt → Hoàn tất. Từ chối sẽ trả cả lô về Nháp kèm lý do bằng văn bản."
+"Một lô phiếu lương của một bộ phận trong một kỳ, đi qua Nháp → Chuyên viên tính lương → {{hrTierName}} → {{gmTierName}} → Hoàn tất. Từ chối sẽ trả cả lô về Nháp kèm lý do bằng văn bản."
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l1_step_06
@@ -1667,9 +1662,9 @@ msgstr "Mở đợt lương khi còn ở trạng thái Nháp"
 #. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m1_did_02
 msgid ""
-"Opened the flagged payslip instead of clearing it, and treated a 282% overtime figure as a question rather than a fact."
+"Opened the flagged payslip instead of clearing it, and treated a 382% overtime figure as a question rather than a fact."
 msgstr ""
-"Mở phiếu bị gắn cờ thay vì xoá cờ, và coi con số tăng ca 282% là một câu hỏi chứ không phải một dữ kiện."
+"Mở phiếu bị gắn cờ thay vì xoá cờ, và coi con số tăng ca 382% là một câu hỏi chứ không phải một dữ kiện."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_optional
@@ -1699,8 +1694,8 @@ msgstr "Tăng ca 600.000 · bảo hiểm 1.260.000 · thuế TNCN 56.000"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_05
-msgid "Overtime at 282% of last month. What do you do?"
-msgstr "Tăng ca bằng 282% tháng trước. Bạn xử lý thế nào?"
+msgid "Overtime at 382% of last month. What do you do?"
+msgstr "Tăng ca bằng 382% tháng trước. Bạn xử lý thế nào?"
 
 #. module: pb_learn
 #: model:learn.glossary.term,term:pb_learn.gloss_pit
@@ -1832,13 +1827,13 @@ msgstr "Phiếu tính theo ngày công"
 #. module: pb_learn
 #: model:learn.glossary.term,term:pb_learn.gloss_proration
 msgid "Proration"
-msgstr "Tính theo ngày công"
+msgstr "Tính theo ngày công (pro-rata)"
 
 #. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_proration
 #: model:learn.station,name:pb_learn.station_proration
 msgid "Proration Audit"
-msgstr "Soát xét ngày công"
+msgstr "Soát xét ngày công (pro-rata)"
 
 #. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_proration
@@ -2368,7 +2363,7 @@ msgstr ""
 msgid ""
 "The Payroll Officer tier, {{hrTierName}} and {{gmTierName}} each belong to a different group. The column a run is sitting in names the tier that has to act next."
 msgstr ""
-"Vòng CV tính lương, {{hrTierName}} và {{gmTierName}} mỗi vòng thuộc một nhóm quyền khác nhau. Cột mà đợt lương đang nằm chỉ đích danh vòng phải xử lý tiếp theo."
+"Vòng Chuyên viên tính lương, {{hrTierName}} và {{gmTierName}} mỗi vòng thuộc một nhóm quyền khác nhau. Cột mà đợt lương đang nằm chỉ đích danh vòng phải xử lý tiếp theo."
 
 #. module: pb_learn
 #: model:learn.step,kicker:pb_learn.lesson_l1_step_04
@@ -2631,7 +2626,7 @@ msgstr "Nguyên tắc bài này dạy"
 msgid ""
 "The run is now in <b>draft</b> on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them returns the run to draft with a written reason."
 msgstr ""
-"Đợt lương giờ ở trạng thái <b>Nháp</b> trên bảng Đợt tính lương. Từ đây nó đi qua vòng CV tính lương, {{hrTierName}}, {{gmTierName}} rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền; không ai bỏ qua được cổng nào, và bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp kèm lý do bằng văn bản."
+"Đợt lương giờ ở trạng thái <b>Nháp</b> trên bảng Đợt tính lương. Từ đây nó đi qua vòng Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}} rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền; không ai bỏ qua được cổng nào, và bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp kèm lý do bằng văn bản."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_needreview_b040
@@ -2872,6 +2867,13 @@ msgstr ""
 "Ba cách xử lý một dòng: Khớp trỏ nó tới đúng nhân viên, Thử lại đọc lại sau khi bạn sửa tệp, Bỏ qua loại nó ra. Bỏ qua đúng với một dòng bị lặp và sai một cách âm thầm với một con người, vì nhân viên bị bỏ qua đơn giản là vắng mặt trong đợt lương."
 
 #. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_m2_step_00
+msgid ""
+"Time has moved on since m1: the Payroll Officer has approved the July run at their tier, so it now sits at {{hrTierName}} — yours. Awaiting your approval is the only number on this band that is about you."
+msgstr ""
+"Thời gian đã trôi qua kể từ m1: Chuyên viên tính lương đã duyệt đợt tháng 7 ở vòng của họ, nên nó đang nằm ở {{hrTierName}} — vòng của bạn. Chờ bạn phê duyệt là con số duy nhất trên dải này nói về bạn."
+
+#. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l3_step_05
 msgid ""
 "Toggle between June and July and watch which lines move. Overtime and thuế TNCN move; insurance does not. Once you can predict which lines will move before you look, you can review forty-eight payslips in the time it used to take to explain one."
@@ -2913,16 +2915,16 @@ msgstr "Thử lại"
 #. module: pb_learn
 #: model:learn.mission,anomaly_body:pb_learn.mission_m1
 msgid ""
-"Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 282%. It reads like a genuine peak week, and that is exactly why it is worth stopping on: a decimal point dropped in a timesheet produces a number that is plausible, not absurd. The engine cannot tell a busy month from a typo. You can, by opening the timesheet — and the cost of not looking is one employee paid roughly three million đồng too much, in a run that forty-seven other people will assume was checked."
+"Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 382%. It reads like a genuine peak week, and that is exactly why it is worth stopping on: a decimal point dropped in a timesheet produces a number that is plausible, not absurd. The engine cannot tell a busy month from a typo. You can, by opening the timesheet — and the cost of not looking is one employee paid roughly three million đồng too much, in a run that forty-seven other people will assume was checked."
 msgstr ""
-"Tăng ca của Trần Văn Hùng vào hệ thống ở mức 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 282%. Nó trông như một tuần cao điểm thật, và chính vì thế mới đáng dừng lại: một dấu thập phân bị mất trong bảng chấm công tạo ra con số hợp lý chứ không hề vô lý. Hệ thống không phân biệt được tháng bận với lỗi gõ. Bạn thì phân biệt được, bằng cách mở bảng chấm công — và cái giá của việc không xem là một nhân viên được trả thừa khoảng ba triệu đồng, trong một đợt lương mà bốn mươi bảy người khác mặc định là đã được kiểm tra."
+"Tăng ca của Trần Văn Hùng vào hệ thống ở mức 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382%. Nó trông như một tuần cao điểm thật, và chính vì thế mới đáng dừng lại: một dấu thập phân bị mất trong bảng chấm công tạo ra con số hợp lý chứ không hề vô lý. Hệ thống không phân biệt được tháng bận với lỗi gõ. Bạn thì phân biệt được, bằng cách mở bảng chấm công — và cái giá của việc không xem là một nhân viên được trả thừa khoảng ba triệu đồng, trong một đợt lương mà bốn mươi bảy người khác mặc định là đã được kiểm tra."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l1_step_06
 msgid ""
-"Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 282% of last month. That may be perfectly correct: a shop refit, a peak week, a genuine burst. It may also be 4.6 hours typed as 46. The engine cannot tell those apart and does not pretend to; you can, by checking the timesheet."
+"Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 382% of last month. That may be perfectly correct: a shop refit, a peak week, a genuine burst. It may also be 4.6 hours typed as 46. The engine cannot tell those apart and does not pretend to; you can, by checking the timesheet."
 msgstr ""
-"Tăng ca của Trần Văn Hùng là 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 282% tháng trước. Điều đó hoàn toàn có thể đúng: sửa cửa hàng, tuần cao điểm, một đợt tăng ca thật. Nhưng cũng có thể là 4,6 giờ bị gõ thành 46. Hệ thống không phân biệt được và cũng không giả vờ là phân biệt được; bạn thì phân biệt được, bằng cách đối chiếu bảng chấm công."
+"Tăng ca của Trần Văn Hùng là 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382% tháng trước. Điều đó hoàn toàn có thể đúng: sửa cửa hàng, tuần cao điểm, một đợt tăng ca thật. Nhưng cũng có thể là 4,6 giờ bị gõ thành 46. Hệ thống không phân biệt được và cũng không giả vờ là phân biệt được; bạn thì phân biệt được, bằng cách đối chiếu bảng chấm công."
 
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m1_step_04
@@ -2978,8 +2980,8 @@ msgstr "Là gì & vì sao"
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l4_step_02
-msgid "What 98.5% actually means"
-msgstr "98,5% thực sự nghĩa là gì"
+msgid "What 95.8% actually means"
+msgstr "95,8% thực sự nghĩa là gì"
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_cananswer
@@ -3233,7 +3235,7 @@ msgstr ""
 msgid ""
 "You own the first gate: you can submit a draft run for review and approve at the Payroll Officer tier. {{hrTierName}} and {{gmTierName}} come after you and belong to other people."
 msgstr ""
-"Bạn giữ cổng đầu tiên: bạn có thể trình một đợt nháp lên soát xét và duyệt ở vòng CV tính lương. {{hrTierName}} và {{gmTierName}} nằm sau bạn và thuộc về người khác."
+"Bạn giữ cổng đầu tiên: bạn có thể trình một đợt nháp lên soát xét và duyệt ở vòng Chuyên viên tính lương. {{hrTierName}} và {{gmTierName}} nằm sau bạn và thuộc về người khác."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_compliance_b020

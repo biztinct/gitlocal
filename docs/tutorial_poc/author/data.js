@@ -307,8 +307,8 @@ const GLOSSARY = {
   },
   payrun: {
     term: B("Pay run", "Đợt tính lương"),
-    def: B("One batch of payslips for a division and a period, travelling draft → Payroll Officer → HR review → GM approval → done. A rejection returns the whole batch to draft with a written reason.",
-           "Một lô phiếu lương của một bộ phận trong một kỳ, đi qua Nháp → CV tính lương → HR soát xét → TGĐ phê duyệt → Hoàn tất. Từ chối sẽ trả cả lô về Nháp kèm lý do bằng văn bản."),
+    def: B("One batch of payslips for a division and a period, travelling draft → Payroll Officer → {{hrTierName}} → {{gmTierName}} → done. A rejection returns the whole batch to draft with a written reason.",
+           "Một lô phiếu lương của một bộ phận trong một kỳ, đi qua Nháp → Chuyên viên tính lương → {{hrTierName}} → {{gmTierName}} → Hoàn tất. Từ chối sẽ trả cả lô về Nháp kèm lý do bằng văn bản."),
   },
   cycle: {
     term: B("Cycle", "Chu kỳ"),
@@ -316,7 +316,7 @@ const GLOSSARY = {
            "Đợt lương quyết toán phần nào của tháng. Giữa kỳ là khoản tạm ứng trong tháng; cuối kỳ là quyết toán cả tháng. Đa số bộ phận chỉ chạy cuối kỳ."),
   },
   proration: {
-    term: B("Proration", "Tính theo ngày công"),
+    term: B("Proration", "Tính theo ngày công (pro-rata)"),
     def: B("Paying part of a month, as days worked over the division's standard working days. It is a factor, not a discount — the factor is the number to check when an amount looks wrong.",
            "Trả lương cho một phần của tháng, bằng số ngày công thực tế chia cho ngày công chuẩn của bộ phận. Đây là hệ số, không phải khoản giảm trừ — khi một con số trông sai, hệ số là thứ cần kiểm tra."),
   },
@@ -372,7 +372,7 @@ const STATIONS = {
         id: "payruns", icon: "calendar", star: true, required: true, mins: 7, after: "runpayroll",
         title: B("Pay Runs", "Đợt tính lương"),
         desc: B("Every run on one board, moving draft → Officer → HR → GM → done.",
-                "Mọi đợt lương trên một bảng, đi từ Nháp → CV tính lương → HR → TGĐ → Hoàn tất."),
+                "Mọi đợt lương trên một bảng, đi từ Nháp → Chuyên viên tính lương → HR → TGĐ → Hoàn tất."),
         outline: {
           what: B("A board of every pay run, grouped by the approval stage it is waiting at, with the actions that stage allows on each card.",
                   "Bảng chứa mọi đợt tính lương, nhóm theo trạng thái phê duyệt mà nó đang chờ, kèm các thao tác mà trạng thái đó cho phép trên từng thẻ."),
@@ -464,7 +464,7 @@ const STATIONS = {
       },
       {
         id: "proration", icon: "calculator", mins: 4, after: "payslips",
-        title: B("Proration Audit", "Soát xét ngày công"),
+        title: B("Proration Audit", "Soát xét ngày công (pro-rata)"),
         desc: B("See exactly how a part-month salary was prorated — day by day, no black box.",
                 "Xem chính xác lương tháng lẻ ngày được tính theo tỷ lệ ra sao — từng ngày, không hộp đen."),
         outline: {
@@ -611,8 +611,8 @@ const LESSONS = {
         screen: "runpayroll", anchor: "pw-exceptions",
         kicker: B("The judgement", "Phần cần phán đoán"),
         title: B("One flag, and why it is not an error", "Một cờ cảnh báo, và vì sao đó không phải lỗi"),
-        body: B("Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 282% of last month. That may be perfectly correct: a shop refit, a peak week, a genuine burst. It may also be 4.6 hours typed as 46. The engine cannot tell those apart and does not pretend to; you can, by checking the timesheet.",
-                "Tăng ca của Trần Văn Hùng là 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 282% tháng trước. Điều đó hoàn toàn có thể đúng: sửa cửa hàng, tuần cao điểm, một đợt tăng ca thật. Nhưng cũng có thể là 4,6 giờ bị gõ thành 46. Hệ thống không phân biệt được và cũng không giả vờ là phân biệt được; bạn thì phân biệt được, bằng cách đối chiếu bảng chấm công."),
+        body: B("Trần Văn Hùng's overtime is 4,200,000 ₫ against 1,100,000 ₫ in June — 382% of last month. That may be perfectly correct: a shop refit, a peak week, a genuine burst. It may also be 4.6 hours typed as 46. The engine cannot tell those apart and does not pretend to; you can, by checking the timesheet.",
+                "Tăng ca của Trần Văn Hùng là 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382% tháng trước. Điều đó hoàn toàn có thể đúng: sửa cửa hàng, tuần cao điểm, một đợt tăng ca thật. Nhưng cũng có thể là 4,6 giờ bị gõ thành 46. Hệ thống không phân biệt được và cũng không giả vờ là phân biệt được; bạn thì phân biệt được, bằng cách đối chiếu bảng chấm công."),
         tip: B("A flag you clear without understanding is a flag you have answered with a guess.",
                "Một cờ cảnh báo bạn xoá đi mà chưa hiểu là một cờ bạn đã trả lời bằng phỏng đoán."),
       },
@@ -621,7 +621,7 @@ const LESSONS = {
         kicker: B("Where it goes", "Đi về đâu"),
         title: B("Your run enters the pipeline", "Đợt lương vào quy trình"),
         body: B("The run is now in <b>draft</b> on the Pay Runs board. From here it travels through the Payroll Officer tier, {{hrTierName}}, {{gmTierName}} and then done. Each gate belongs to one group; nobody can skip one, and a rejection at any of them returns the run to draft with a written reason.",
-                "Đợt lương giờ ở trạng thái <b>Nháp</b> trên bảng Đợt tính lương. Từ đây nó đi qua vòng CV tính lương, {{hrTierName}}, {{gmTierName}} rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền; không ai bỏ qua được cổng nào, và bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp kèm lý do bằng văn bản."),
+                "Đợt lương giờ ở trạng thái <b>Nháp</b> trên bảng Đợt tính lương. Từ đây nó đi qua vòng Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}} rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền; không ai bỏ qua được cổng nào, và bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp kèm lý do bằng văn bản."),
         moment: { kind: "pipeline", chain: "payrun" },
       },
     ],
@@ -674,7 +674,7 @@ const LESSONS = {
       {
         screen: "payruns", anchor: "rep-pipeline",
         kicker: B("The chain", "Chuỗi phê duyệt"),
-        title: B("Draft, Officer, {{hrTierName}}, {{gmTierName}}, done", "Nháp, CV tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất"),
+        title: B("Draft, Officer, {{hrTierName}}, {{gmTierName}}, done", "Nháp, Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất"),
         body: B("Five stages, in that order, every time. Each gate belongs to one group, so the chain is also an answer to 'who do I chase': the run's current column names the person. Nothing skips a gate — not for a deadline, not for a director.",
                 "Năm bước, đúng thứ tự đó, mọi lúc. Mỗi cổng thuộc về một nhóm quyền, nên chuỗi này cũng là câu trả lời cho 'tôi phải hỏi ai': cột hiện tại của đợt lương chỉ đích danh người đó. Không gì bỏ qua được một cổng — không vì hạn chót, không vì cấp trên."),
         moment: { kind: "pipeline", chain: "payrun" },
@@ -838,9 +838,9 @@ const LESSONS = {
       {
         screen: "importwizard", anchor: "iw-review",
         kicker: B("The score", "Điểm tin cậy"),
-        title: B("What 98.5% actually means", "98,5% thực sự nghĩa là gì"),
-        body: B("It is not a grade. It is the share of rows the importer could match to an employee and read without ambiguity. 98.5% of 48 rows still leaves two rows that need a human — and those two are the ones that become a missing or a wrong payslip.",
-                "Đây không phải điểm số học. Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng. 98,5% của 48 dòng vẫn còn hai dòng cần con người xử lý — và đúng hai dòng đó sẽ trở thành một phiếu lương thiếu hoặc sai."),
+        title: B("What 95.8% actually means", "95,8% thực sự nghĩa là gì"),
+        body: B("It is not a grade. It is the share of rows the importer could match to an employee and read without ambiguity: 46 of 48. 95.8% of 48 rows still leaves two rows that need a human — and those two are the ones that become a missing or a wrong payslip.",
+                "Đây không phải điểm số học. Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng: 46 trên 48. 95,8% của 48 dòng vẫn còn hai dòng cần con người xử lý — và đúng hai dòng đó sẽ trở thành một phiếu lương thiếu hoặc sai."),
       },
       {
         screen: "importwizard", anchor: "iw-fixrows",
@@ -938,8 +938,8 @@ const MISSIONS = [
     },
     anomaly: {
       title: B("The 4.6 that was typed as 46", "Con số 4,6 bị gõ thành 46"),
-      body: B("Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 282%. It reads like a genuine peak week, and that is exactly why it is worth stopping on: a decimal point dropped in a timesheet produces a number that is plausible, not absurd. The engine cannot tell a busy month from a typo. You can, by opening the timesheet — and the cost of not looking is one employee paid roughly three million đồng too much, in a run that forty-seven other people will assume was checked.",
-             "Tăng ca của Trần Văn Hùng vào hệ thống ở mức 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 282%. Nó trông như một tuần cao điểm thật, và chính vì thế mới đáng dừng lại: một dấu thập phân bị mất trong bảng chấm công tạo ra con số hợp lý chứ không hề vô lý. Hệ thống không phân biệt được tháng bận với lỗi gõ. Bạn thì phân biệt được, bằng cách mở bảng chấm công — và cái giá của việc không xem là một nhân viên được trả thừa khoảng ba triệu đồng, trong một đợt lương mà bốn mươi bảy người khác mặc định là đã được kiểm tra."),
+      body: B("Trần Văn Hùng's overtime came through at 4,200,000 ₫ against 1,100,000 ₫ in June — 382%. It reads like a genuine peak week, and that is exactly why it is worth stopping on: a decimal point dropped in a timesheet produces a number that is plausible, not absurd. The engine cannot tell a busy month from a typo. You can, by opening the timesheet — and the cost of not looking is one employee paid roughly three million đồng too much, in a run that forty-seven other people will assume was checked.",
+             "Tăng ca của Trần Văn Hùng vào hệ thống ở mức 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6 — bằng 382%. Nó trông như một tuần cao điểm thật, và chính vì thế mới đáng dừng lại: một dấu thập phân bị mất trong bảng chấm công tạo ra con số hợp lý chứ không hề vô lý. Hệ thống không phân biệt được tháng bận với lỗi gõ. Bạn thì phân biệt được, bằng cách mở bảng chấm công — và cái giá của việc không xem là một nhân viên được trả thừa khoảng ba triệu đồng, trong một đợt lương mà bốn mươi bảy người khác mặc định là đã được kiểm tra."),
     },
     debrief: {
       did: [
@@ -947,8 +947,8 @@ const MISSIONS = [
           "Chọn bộ phận, và cùng với nó là cấu hình công thức mà mọi phiếu lương trong đợt được tính theo."),
         B("Read the consequence card before computing, so you knew the scope and the way back before you acted.",
           "Đọc thẻ hậu quả trước khi tính, để biết phạm vi và lối quay lại trước khi thao tác."),
-        B("Opened the flagged payslip instead of clearing it, and treated a 282% overtime figure as a question rather than a fact.",
-          "Mở phiếu bị gắn cờ thay vì xoá cờ, và coi con số tăng ca 282% là một câu hỏi chứ không phải một dữ kiện."),
+        B("Opened the flagged payslip instead of clearing it, and treated a 382% overtime figure as a question rather than a fact.",
+          "Mở phiếu bị gắn cờ thay vì xoá cờ, và coi con số tăng ca 382% là một câu hỏi chứ không phải một dữ kiện."),
         B("Sent the run into the approval chain, where it now waits at a gate that belongs to somebody else.",
           "Đưa đợt lương vào chuỗi phê duyệt, nơi nó đang chờ ở một cổng thuộc về người khác."),
       ],
@@ -1077,12 +1077,12 @@ const MISSION_STEPS = {
       instruction: B("Open the flagged payslip", "Mở phiếu bị gắn cờ"),
       detail: B("Trần Văn Hùng. Overtime 4,200,000 ₫ this month against 1,100,000 ₫ in June.",
                 "Trần Văn Hùng. Tăng ca 4.200.000 ₫ tháng này so với 1.100.000 ₫ tháng 6."),
-      hint: B("In real payroll you would open the timesheet before deciding. 282% is not impossible — it is unverified.",
-              "Trong thực tế bạn sẽ mở bảng chấm công trước khi quyết định. 282% không phải là không thể — nó chỉ là chưa được xác minh."),
+      hint: B("In real payroll you would open the timesheet before deciding. 382% is not impossible — it is unverified.",
+              "Trong thực tế bạn sẽ mở bảng chấm công trước khi quyết định. 382% không phải là không thể — nó chỉ là chưa được xác minh."),
     },
     {
       id: "decide", target: "pw-exceptions", decision: true,
-      instruction: B("Overtime at 282% of last month. What do you do?", "Tăng ca bằng 282% tháng trước. Bạn xử lý thế nào?"),
+      instruction: B("Overtime at 382% of last month. What do you do?", "Tăng ca bằng 382% tháng trước. Bạn xử lý thế nào?"),
       detail: B("You cannot see the timesheet from here, and the run is due. The question is what you do with an unverified number, not whether you can prove it wrong.",
                 "Bạn không xem được bảng chấm công từ đây, và đợt lương thì đến hạn. Câu hỏi là bạn làm gì với một con số chưa được xác minh, không phải bạn có chứng minh được nó sai hay không."),
       options: [
@@ -1101,7 +1101,7 @@ const MISSION_STEPS = {
       id: "submit", target: "pw-result",
       instruction: B("Submit the run for approval", "Trình đợt lương lên phê duyệt"),
       detail: B("It leaves draft and enters the chain: Payroll Officer, {{hrTierName}}, {{gmTierName}}, done.",
-                "Nó rời trạng thái Nháp và vào chuỗi: CV tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất."),
+                "Nó rời trạng thái Nháp và vào chuỗi: Chuyên viên tính lương, {{hrTierName}}, {{gmTierName}}, Hoàn tất."),
     },
     {
       id: "undo", nav: "payruns", target: "pk-card-actions", undo: true,
@@ -1117,8 +1117,8 @@ const MISSION_STEPS = {
     {
       id: "open", nav: "payruns", target: "pk-kpis",
       instruction: B("Find what is waiting for you", "Tìm phần việc đang chờ bạn"),
-      detail: B("Awaiting your approval is the only number on this band that is about you.",
-                "Chờ bạn phê duyệt là con số duy nhất trên dải này nói về bạn."),
+      detail: B("Time has moved on since m1: the Payroll Officer has approved the July run at their tier, so it now sits at {{hrTierName}} — yours. Awaiting your approval is the only number on this band that is about you.",
+                "Thời gian đã trôi qua kể từ m1: Chuyên viên tính lương đã duyệt đợt tháng 7 ở vòng của họ, nên nó đang nằm ở {{hrTierName}} — vòng của bạn. Chờ bạn phê duyệt là con số duy nhất trên dải này nói về bạn."),
       hint: B("Read that tile first every morning of payroll week. The other four describe the department.",
               "Hãy đọc ô đó đầu tiên mỗi sáng trong tuần tính lương. Bốn ô còn lại mô tả cả bộ phận."),
     },
@@ -1166,8 +1166,8 @@ const MISSION_STEPS = {
     {
       id: "reason", target: "pk-card-actions",
       instruction: B("Write the reason", "Viết lý do"),
-      detail: B("\"Payslip NV0031 — overtime 4,200,000 ₫ is 282% of June. Please verify against the timesheet and resubmit.\" That is a reason somebody can act on. \"Wrong\" is not.",
-                "\"Phiếu NV0031 — tăng ca 4.200.000 ₫ bằng 282% tháng 6. Vui lòng đối chiếu bảng chấm công và trình lại.\" Đó là lý do người khác xử lý được. \"Sai\" thì không."),
+      detail: B("\"Payslip NV0031 — overtime 4,200,000 ₫ is 382% of June. Please verify against the timesheet and resubmit.\" That is a reason somebody can act on. \"Wrong\" is not.",
+                "\"Phiếu NV0031 — tăng ca 4.200.000 ₫ bằng 382% tháng 6. Vui lòng đối chiếu bảng chấm công và trình lại.\" Đó là lý do người khác xử lý được. \"Sai\" thì không."),
       hint: B("The reason is recorded against the run with your name and the time, and it is the only thing the officer has to work from.",
               "Lý do được ghi lại trên đợt lương kèm tên bạn và thời điểm, và đó là thứ duy nhất chuyên viên có để làm việc."),
     },
@@ -1292,8 +1292,8 @@ const QA = [
     blocks: [
       { k: "p", v: B("A flag is the engine saying it found something unusual for this employee and would like a human to confirm it was intended. It is a question, not an error — the payslip computed correctly from the inputs it was given.",
                      "Cờ cảnh báo là hệ thống nói rằng nó thấy điều gì đó bất thường với nhân viên này và muốn có người xác nhận đó là có chủ ý. Đó là câu hỏi, không phải lỗi — phiếu lương đã tính đúng từ dữ liệu đầu vào mà nó nhận được.") },
-      { k: "p", v: B("On this run it is Trần Văn Hùng: overtime of 4,200,000 ₫ against 1,100,000 ₫ in June, which is 282% of last month. That is well inside the range a genuine peak week produces, and also exactly what 4.6 hours typed as 46 looks like.",
-                     "Trên đợt này là Trần Văn Hùng: tăng ca 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6, tức 282% tháng trước. Con số đó hoàn toàn nằm trong khoảng mà một tuần cao điểm thật tạo ra, và cũng đúng là hình dạng của 4,6 giờ bị gõ thành 46.") },
+      { k: "p", v: B("On this run it is Trần Văn Hùng: overtime of 4,200,000 ₫ against 1,100,000 ₫ in June, which is 382% of last month. That is well inside the range a genuine peak week produces, and also exactly what 4.6 hours typed as 46 looks like.",
+                     "Trên đợt này là Trần Văn Hùng: tăng ca 4.200.000 ₫ so với 1.100.000 ₫ của tháng 6, tức 382% tháng trước. Con số đó hoàn toàn nằm trong khoảng mà một tuần cao điểm thật tạo ra, và cũng đúng là hình dạng của 4,6 giờ bị gõ thành 46.") },
       { k: "warn", v: B("Clearing a flag without understanding it is answering the question with a guess. Check the timesheet before the run leaves draft.",
                         "Xoá một cờ mà chưa hiểu nó là trả lời câu hỏi bằng phỏng đoán. Hãy đối chiếu bảng chấm công trước khi đợt lương rời trạng thái Nháp.") },
       { k: "src", v: B("The run's exception list, and Hùng's June and July payslips.",
@@ -1327,7 +1327,7 @@ const QA = [
     roleVariants: {
       any: [
         { k: "p", v: B("A run is approved one gate at a time: draft, then the Payroll Officer tier, then {{hrTierName}}, then {{gmTierName}}, then done. Each gate belongs to one group, and the buttons on a card are decided by the record's own gate fields and your groups — so what you can see is what you can do.",
-                       "Một đợt lương được duyệt lần lượt qua từng cổng: Nháp, rồi vòng CV tính lương, rồi {{hrTierName}}, rồi {{gmTierName}}, rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền, và các nút trên thẻ do chính các trường kiểm soát cổng của bản ghi và nhóm quyền của bạn quyết định — nên thấy được gì là làm được nấy.") },
+                       "Một đợt lương được duyệt lần lượt qua từng cổng: Nháp, rồi vòng Chuyên viên tính lương, rồi {{hrTierName}}, rồi {{gmTierName}}, rồi Hoàn tất. Mỗi cổng thuộc về một nhóm quyền, và các nút trên thẻ do chính các trường kiểm soát cổng của bản ghi và nhóm quyền của bạn quyết định — nên thấy được gì là làm được nấy.") },
         { k: "src", v: B("The approval chain on the pay run record, and your group membership.",
                          "Chuỗi phê duyệt trên bản ghi đợt lương, và nhóm quyền của bạn.") },
       ],
@@ -1350,7 +1350,7 @@ const QA = [
       ],
       operator: [
         { k: "p", v: B("You own the first gate: you can submit a draft run for review and approve at the Payroll Officer tier. {{hrTierName}} and {{gmTierName}} come after you and belong to other people.",
-                       "Bạn giữ cổng đầu tiên: bạn có thể trình một đợt nháp lên soát xét và duyệt ở vòng CV tính lương. {{hrTierName}} và {{gmTierName}} nằm sau bạn và thuộc về người khác.") },
+                       "Bạn giữ cổng đầu tiên: bạn có thể trình một đợt nháp lên soát xét và duyệt ở vòng Chuyên viên tính lương. {{hrTierName}} và {{gmTierName}} nằm sau bạn và thuộc về người khác.") },
         { k: "steps", v: [
           { t: B("Open the run while it is still in draft", "Mở đợt lương khi còn ở trạng thái Nháp"), a: "pk-card" },
           { t: B("Submit it for review", "Trình lên soát xét"), a: "pk-card-actions" },
@@ -1363,7 +1363,7 @@ const QA = [
         { k: "refusal", v: B("Not from here. Approving a pay run needs one of the payroll approval groups, and this screen is not in your menu — so there is no button for you to be missing.",
                              "Không phải từ đây. Phê duyệt một đợt lương cần một trong các nhóm quyền phê duyệt lương, và màn hình này không có trong menu của bạn — nên không có nút nào mà bạn đang thiếu cả.") },
         { k: "who", v: B("The Payroll Officer tier, {{hrTierName}} and {{gmTierName}} each belong to a different group. The column a run is sitting in names the tier that has to act next.",
-                         "Vòng CV tính lương, {{hrTierName}} và {{gmTierName}} mỗi vòng thuộc một nhóm quyền khác nhau. Cột mà đợt lương đang nằm chỉ đích danh vòng phải xử lý tiếp theo.") },
+                         "Vòng Chuyên viên tính lương, {{hrTierName}} và {{gmTierName}} mỗi vòng thuộc một nhóm quyền khác nhau. Cột mà đợt lương đang nằm chỉ đích danh vòng phải xử lý tiếp theo.") },
         { k: "how", v: B("Ask {{payrollSupportContact}}. Access to an approval tier is a decision about who signs for money, so it is granted deliberately rather than on request — expect to be asked what you need it for.",
                          "Hãy hỏi {{payrollSupportContact}}. Quyền vào một vòng phê duyệt là quyết định về việc ai ký cho những khoản tiền, nên nó được cấp một cách có cân nhắc chứ không phải cứ xin là có — hãy chuẩn bị trả lời bạn cần nó để làm gì.") },
         { k: "src", v: B("Your sidebar, and the payroll approval groups.",
@@ -1452,11 +1452,11 @@ const QA = [
     label: B("What does the confidence score mean?", "Điểm tin cậy nghĩa là gì?"),
     match: ["confidence score", "what does the score mean", "diem tin cay", "điểm tin cậy là gì", "import score"],
     showMe: ["iw-review"],
-    simpler: B("It is not a mark out of a hundred. It is simply how much of your file the system could read without having to guess — so 98% of fifty rows still means one row it could not place, and that row is one person's pay.",
-               "Đây không phải điểm trên thang một trăm. Nó chỉ đơn giản là phần dữ liệu trong tệp mà hệ thống đọc được mà không phải đoán — nên 98% của năm mươi dòng vẫn nghĩa là còn một dòng nó không xếp được, và dòng đó là lương của một con người."),
+    simpler: B("It is not a mark out of a hundred. It is simply how much of your file the system could read without having to guess — so 96% of fifty rows still means two rows it could not place, and each of those is one person's pay.",
+               "Đây không phải điểm trên thang một trăm. Nó chỉ đơn giản là phần dữ liệu trong tệp mà hệ thống đọc được mà không phải đoán — nên 96% của năm mươi dòng vẫn nghĩa là còn hai dòng nó không xếp được, và mỗi dòng đó là lương của một con người."),
     blocks: [
-      { k: "p", v: B("It is the share of rows the importer matched to an employee and read without ambiguity. It is not a grade and there is no pass mark, because the number that matters is the count underneath it: 98.5% of 48 rows still leaves two rows a human has to resolve.",
-                     "Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng. Nó không phải điểm số và không có mức đạt, vì con số quan trọng là số lượng bên dưới nó: 98,5% của 48 dòng vẫn còn hai dòng phải có người xử lý.") },
+      { k: "p", v: B("It is the share of rows the importer matched to an employee and read without ambiguity — 46 of 48 here. It is not a grade and there is no pass mark, because the number that matters is the count underneath it: 95.8% of 48 rows still leaves two rows a human has to resolve.",
+                     "Đó là tỷ lệ dòng mà trình nhập liệu khớp được với một nhân viên và đọc được không nhập nhằng — ở đây là 46 trên 48. Nó không phải điểm số và không có mức đạt, vì con số quan trọng là số lượng bên dưới nó: 95,8% của 48 dòng vẫn còn hai dòng phải có người xử lý.") },
       { k: "warn", v: B("Committing with rows unresolved does not lose them quietly — it produces payslips that are missing or wrong, and those are found by the employees rather than by you.",
                         "Ghi nhận khi còn dòng chưa xử lý không làm chúng biến mất êm thấm — nó tạo ra những phiếu lương thiếu hoặc sai, và người phát hiện sẽ là nhân viên chứ không phải bạn.") },
       { k: "p", v: B("Three ways to resolve a row: Match points it at the right employee, Retry re-reads it after you correct the file, Skip drops it. Skip is right for a duplicate row and quietly wrong for a person, because a skipped employee is simply absent from the run.",
