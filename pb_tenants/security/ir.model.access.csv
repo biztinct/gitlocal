@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_tenant_admin,pb.tenant admin,model_pb_tenant,base.group_system,1,1,1,1
+access_pb_tenant_backup_admin,pb.tenant.backup admin,model_pb_tenant_backup,base.group_system,1,1,1,1
+access_pb_tenant_domain_admin,pb.tenant.domain admin,model_pb_tenant_domain,base.group_system,1,1,1,1

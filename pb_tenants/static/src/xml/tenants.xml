@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pb_tenants.PbTenants">
+  <div class="pbim pbim-page tnx">
+    <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading Mission Control…</span></div>
+
+    <!-- ================================================== FLEET ================================================== -->
+    <div t-elif="state.view === 'fleet'" class="pbim-wrap tnx-fleet">
+      <div class="tnx-head">
+        <div>
+          <div class="pbim-eyebrow"><t t-out="ic('building',13)"/> Platform · Admin</div>
+          <h1 class="pbim-h1">Tenant Mission Control</h1>
+          <div class="pbim-sub">One platform, many databases — create, watch and manage every client on <b t-esc="state.data.base_domain"/>.</div>
+        </div>
+        <div class="tnx-head-actions">
+          <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'platform'" t-on-click="refreshFleetHealth">
+            <t t-out="ic('refresh',15)"/> Refresh health
+          </button>
+          <button class="pbim-btn primary tnx-new" t-on-click="openWizard">
+            <t t-out="ic('rocket',16)"/> New tenant
+          </button>
+        </div>
+      </div>
+
+      <!-- go-live checklist -->
+      <div t-if="!state.data.platform.ready" class="pbim-card tnx-golive">
+        <div class="tnx-golive-head" t-on-click="() => state.checklistOpen = !state.checklistOpen">
+          <span class="tnx-golive-ic"><t t-out="ic('gauge',18)"/></span>
+          <div class="tnx-golive-tt">
+            <b>Platform go-live checklist</b>
+            <span>Finish these once — every tenant you create after that is instant.</span>
+          </div>
+          <span class="tnx-golive-count">
+            <t t-esc="state.data.platform.checks.filter(c => c.ok).length"/>/<t t-esc="state.data.platform.checks.length"/>
+          </span>
+          <span t-attf-class="tnx-chev {{ state.checklistOpen ? 'open' : '' }}"><t t-out="ic('chevron',16)"/></span>
+        </div>
+        <div t-if="state.checklistOpen" class="tnx-golive-body">
+          <div class="tnx-checks">
+            <div t-foreach="state.data.platform.checks" t-as="c" t-key="c.key" class="tnx-check">
+              <span t-attf-class="tnx-check-ic {{ c.ok ? 'ok' : 'todo' }}">
+                <t t-if="c.ok" t-out="ic('check',13)"/><t t-else="" t-out="ic('alert',13)"/>
+              </span>
+              <div class="tnx-check-tx">
+                <b t-esc="c.label"/>
+                <span t-if="!c.ok" t-esc="c.hint"/>
+              </div>
+            </div>
+          </div>
+          <div class="tnx-records">
+            <div class="tnx-records-h"><t t-out="ic('globe',14)"/> Add at your domain registrar</div>
+            <div t-foreach="state.data.platform.registrar_records" t-as="r" t-key="r_index" class="tnx-record">
+              <span class="tnx-rec-type" t-esc="r.type"/>
+              <code class="tnx-rec-host" t-esc="r.host"/>
+              <code class="tnx-rec-val" t-esc="r.value"/>
+              <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.copy(r.value, 'Record value copied')"><t t-out="ic('copy',13)"/></button>
+              <span class="tnx-rec-why" t-esc="r.why"/>
+            </div>
+            <div class="pbim-note tnx-rec-note">The wildcard TLS certificate is issued from the server once the DNS record above resolves (deploy runbook step — a one-time TXT record will be requested during issuance).</div>
+            <button class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.det.busy === 'platform'" t-on-click="recheckPlatform">
+              <t t-out="ic('refresh',13)"/> Re-check platform
+            </button>
+          </div>
+        </div>
+      </div>
+      <div t-else="" class="tnx-live-strip">
+        <span class="tnx-live-dot"/> Platform live — wildcard routing, TLS and template ready.
+        <span class="tnx-live-ip">server <code t-esc="state.data.platform.public_ip"/></span>
+      </div>
+
+      <!-- KPIs -->
+      <div class="pbim-stats tnx-stats">
+        <div class="pbim-stat">
+          <span class="pbim-stat-ic"><t t-out="ic('building',18)"/></span>
+          <span class="pbim-stat-tx"><span class="n" t-esc="state.data.kpis.live"/><span class="l">Live tenants</span></span>
+        </div>
+        <div class="pbim-stat">
+          <span class="pbim-stat-ic blue"><t t-out="ic('clock',18)"/></span>
+          <span class="pbim-stat-tx"><span class="n" t-esc="state.data.kpis.provisioning"/><span class="l">In progress</span></span>
+        </div>
+        <div class="pbim-stat">
+          <span class="pbim-stat-ic teal"><t t-out="ic('database',18)"/></span>
+          <span class="pbim-stat-tx"><span class="n" t-esc="state.data.kpis.storage"/><span class="l">Fleet storage</span></span>
+        </div>
+        <div class="pbim-stat">
+          <span class="pbim-stat-ic amber"><t t-out="ic('hardDrive',18)"/></span>
+          <span class="pbim-stat-tx"><span class="n"><t t-esc="state.data.kpis.disk_free"/> <small class="tnx-pct">(<t t-esc="state.data.kpis.disk_free_pct"/>%)</small></span><span class="l">Disk free</span></span>
+        </div>
+        <div class="pbim-stat">
+          <span t-attf-class="pbim-stat-ic {{ state.data.kpis.backup_ok ? 'green' : 'rose' }}"><t t-out="ic('shieldCheck',18)"/></span>
+          <span class="pbim-stat-tx">
+            <span class="n" t-esc="state.data.kpis.backup_ok ? 'Protected' : 'Check'"/>
+            <span class="l">Backups <t t-if="state.data.kpis.last_backup">· <t t-esc="state.data.kpis.last_backup"/></t></span>
+          </span>
+        </div>
+      </div>
+
+      <!-- tenant grid -->
+      <div t-if="state.data.tenants.length" class="tnx-grid">
+        <div t-foreach="state.data.tenants" t-as="t" t-key="t.id" class="tnx-card" t-on-click="() => this.openDetail(t.id)">
+          <div class="tnx-card-top">
+            <span class="tnx-av" t-esc="(t.name || '?')[0].toUpperCase()"/>
+            <div class="tnx-card-id">
+              <b t-esc="t.name"/>
+              <span class="tnx-url" t-on-click.stop="() => this.copy(t.url, 'Tenant URL copied')">
+                <t t-esc="t.slug"/>.<t t-esc="state.data.base_domain"/> <t t-out="ic('copy',11)"/>
+              </span>
+            </div>
+            <span t-attf-class="pbim-badge {{ stateBadge[t.state][0] }}" t-esc="stateBadge[t.state][1]"/>
+          </div>
+          <div class="tnx-card-stats">
+            <span><t t-out="ic('users',13)"/> <t t-esc="t.users"/> users</span>
+            <span><t t-out="ic('briefcase',13)"/> <t t-esc="t.employees"/> employees</span>
+            <span><t t-out="ic('database',13)"/> <t t-esc="t.db_size_h"/></span>
+            <span class="tnx-ping"><span t-attf-class="tnx-hd {{ healthDot(t) }}"/> <t t-if="t.ping_ms >= 0"><t t-esc="t.ping_ms"/> ms</t><t t-else="">—</t></span>
+          </div>
+          <div class="tnx-card-foot">
+            <span class="tnx-foot-note">
+              <t t-if="t.state === 'live'"><t t-out="ic('shieldCheck',12)"/> backup <t t-esc="t.last_backup || 'never'"/></t>
+              <t t-elif="t.state === 'error'" ><span class="tnx-errtx" t-esc="t.error"/></t>
+              <t t-elif="t.state === 'decommissioned'"><t t-out="ic('archive',12)"/> archived</t>
+            </span>
+            <span class="tnx-card-actions">
+              <button t-if="t.state === 'live'" class="pbim-btn ghost pbim-btn-sm" t-on-click.stop="() => this.openUrl(t.url)">
+                <t t-out="ic('external',13)"/> Open
+              </button>
+              <button class="pbim-btn outline pbim-btn-sm">Manage</button>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div t-else="" class="tnx-empty">
+        <span class="tnx-empty-ic"><t t-out="ic('rocket',30)"/></span>
+        <h3>No tenants yet</h3>
+        <p>Create your first client workspace — its own database, its own subdomain, fully isolated. It takes about two minutes.</p>
+        <button class="pbim-btn primary" t-on-click="openWizard"><t t-out="ic('rocket',15)"/> Create the first tenant</button>
+      </div>
+    </div>
+
+    <!-- ================================================== WIZARD ================================================== -->
+    <div t-elif="state.view === 'wizard'" class="pplw-root tnx-wiz">
+      <div class="pplw-card tnx-wiz-card">
+        <div class="pplw-head">
+          <div>
+            <div class="pplw-eyebrow">New tenant</div>
+            <h2>
+              <t t-if="state.wiz.step === 1">Name the workspace</t>
+              <t t-elif="state.wiz.step === 2">Review &amp; confirm</t>
+              <t t-elif="state.wiz.finished">Welcome aboard</t>
+              <t t-else="">Provisioning…</t>
+            </h2>
+          </div>
+          <button class="pplw-x" t-att-disabled="state.wiz.running" t-on-click="closeWizard"><t t-out="ic('x',16)"/></button>
+        </div>
+
+        <div class="pplw-rail">
+          <t t-foreach="['Identity','Review','Provision']" t-as="s" t-key="s_index">
+            <div t-attf-class="pplw-step {{ state.wiz.step === s_index+1 ? 'cur' : (state.wiz.step > s_index+1 ? 'done' : '') }}">
+              <span class="pplw-dot"><t t-if="state.wiz.step > s_index+1" t-out="ic('check',13)"/><t t-else="" t-esc="s_index+1"/></span>
+              <span class="pplw-lab" t-esc="s"/>
+            </div>
+            <div t-if="!s_last" t-attf-class="pplw-bar {{ state.wiz.step > s_index+1 ? 'done' : '' }}"/>
+          </t>
+        </div>
+
+        <!-- step 1 : identity -->
+        <div t-if="state.wiz.step === 1" class="pplw-body">
+          <div class="tnx-urlprev" t-attf-data-st="{{ state.wiz.slug.st }}">
+            <span class="tnx-urlprev-proto">https://</span><span class="tnx-urlprev-slug" t-esc="state.wiz.form.slug || 'your-client'"/><span class="tnx-urlprev-dom">.<t t-esc="state.data.base_domain"/></span>
+            <span class="tnx-urlprev-st">
+              <t t-if="state.wiz.slug.st === 'checking'"><span class="pbim-spin tnx-minispin"/></t>
+              <t t-elif="state.wiz.slug.st === 'ok'"><span class="tnx-avail ok"><t t-out="ic('check',12)"/> available</span></t>
+              <t t-elif="state.wiz.slug.st === 'bad'"><span class="tnx-avail bad"><t t-out="ic('x',12)"/> <t t-esc="state.wiz.slug.msg"/></span></t>
+            </span>
+          </div>
+          <div class="pplw-grid2">
+            <div class="pplw-sec">
+              <h4>Client company</h4>
+              <label class="pplw-label">Company name</label>
+              <input class="pplw-in" t-model="state.wiz.form.name" t-on-input="onNameInput" placeholder="Acme Manufacturing Co."/>
+              <label class="pplw-label">Subdomain</label>
+              <input class="pplw-in tnx-slug-in" t-model="state.wiz.form.slug" t-on-input="onSlugInput" placeholder="acme"/>
+              <label class="pplw-label">Country</label>
+              <select class="pplw-in" t-model="state.wiz.form.country_code">
+                <option t-foreach="countries" t-as="c" t-key="c[0]" t-att-value="c[0]" t-esc="c[1]"/>
+              </select>
+            </div>
+            <div class="pplw-sec">
+              <h4>Tenant administrator</h4>
+              <label class="pplw-label">Full name</label>
+              <input class="pplw-in" t-model="state.wiz.form.admin_name" placeholder="Nguyen Thi Lan"/>
+              <label class="pplw-label">Email (their login)</label>
+              <input class="pplw-in" type="email" t-model="state.wiz.form.admin_email" placeholder="lan@acme.com"/>
+              <div class="pplw-note tnx-what">
+                <b>What this creates</b>
+                <span><t t-out="ic('database',12)"/> A private, isolated database + filestore</span>
+                <span><t t-out="ic('globe',12)"/> Their own address on your platform</span>
+                <span><t t-out="ic('shieldCheck',12)"/> Nightly backups from day one</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div t-if="state.wiz.step === 1" class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="closeWizard">Cancel</button>
+          <span class="pplw-sp"/>
+          <button class="pbim-btn primary" t-att-disabled="!wizValid" t-on-click="toReview">Continue <t t-out="ic('arrow',14)"/></button>
+        </div>
+
+        <!-- step 2 : review -->
+        <div t-if="state.wiz.step === 2" class="pplw-body">
+          <div class="tnx-review">
+            <div class="tnx-rev-row"><span>Workspace</span><b t-esc="state.wiz.form.name"/></div>
+            <div class="tnx-rev-row"><span>Address</span><b class="tnx-rev-url" t-esc="state.wiz.slug.url"/></div>
+            <div class="tnx-rev-row"><span>Administrator</span><b><t t-esc="state.wiz.form.admin_name || '—'"/> · <t t-esc="state.wiz.form.admin_email"/></b></div>
+            <div class="tnx-rev-row"><span>Country</span><b t-esc="state.wiz.form.country_code || 'set later'"/></div>
+            <div class="tnx-rev-row"><span>Starts from</span><b>Clean Payobook golden template — no data</b></div>
+          </div>
+          <div class="pplw-note">
+            Provisioning clones the golden template into a brand-new database, locks its web address,
+            regenerates its identity, and creates the administrator account. Nothing existing is touched.
+          </div>
+        </div>
+        <div t-if="state.wiz.step === 2" class="pplw-foot">
+          <button class="pbim-btn ghost" t-on-click="backToIdentity"><t t-out="ic('back',14)"/> Back</button>
+          <span class="pplw-sp"/>
+          <button class="pbim-btn primary tnx-launch" t-on-click="launchProvision"><t t-out="ic('zap',15)"/> Provision tenant</button>
+        </div>
+
+        <!-- step 3 : provision -->
+        <div t-if="state.wiz.step === 3" class="pplw-body tnx-prov-body">
+          <div t-if="!state.wiz.finished" class="tnx-prov">
+            <div t-foreach="state.wiz.steps" t-as="s" t-key="s.key" t-attf-class="tnx-pstep {{ s.state }}">
+              <span class="tnx-pdot">
+                <t t-if="s.state === 'done'" t-out="ic('check',13)"/>
+                <t t-elif="s.state === 'fail'" t-out="ic('x',13)"/>
+                <t t-elif="s.state === 'run'"><span class="tnx-pulse"/></t>
+                <t t-else="" t-esc="s_index + 1"/>
+              </span>
+              <span class="tnx-plab" t-esc="s.label"/>
+              <span t-if="s.state === 'done'" class="tnx-pms"><t t-esc="(s.ms/1000).toFixed(1)"/>s</span>
+            </div>
+          </div>
+
+          <div t-if="state.wiz.finished" class="pplw-result tnx-done">
+            <div class="pplw-result-ic tnx-done-ic"><t t-out="ic('check',30)"/></div>
+            <h3><t t-esc="state.wiz.form.name"/> is live</h3>
+            <p>Hand these credentials to the client administrator — the password is shown once and never stored.</p>
+            <div class="tnx-creds">
+              <div class="tnx-cred"><span>Address</span><code t-esc="state.wiz.creds ? state.wiz.creds.url : state.wiz.doneUrl"/>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.copy(state.wiz.creds ? state.wiz.creds.url : state.wiz.doneUrl, 'URL copied')"><t t-out="ic('copy',13)"/></button></div>
+              <div class="tnx-cred" t-if="state.wiz.creds"><span>Login</span><code t-esc="state.wiz.creds.login"/>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.copy(state.wiz.creds.login, 'Login copied')"><t t-out="ic('copy',13)"/></button></div>
+              <div class="tnx-cred" t-if="state.wiz.creds"><span>Password</span><code t-esc="state.wiz.creds.password"/>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.copy(state.wiz.creds.password, 'Password copied')"><t t-out="ic('copy',13)"/></button></div>
+            </div>
+          </div>
+
+          <div t-if="state.wiz.error" class="tnx-proverr">
+            <t t-out="ic('alert',15)"/> <span t-esc="state.wiz.error"/>
+          </div>
+
+          <div class="tnx-console" t-if="state.wiz.console.length &amp;&amp; !state.wiz.finished">
+            <div class="tnx-console-h"><t t-out="ic('terminal',13)"/> provisioning log</div>
+            <div t-foreach="state.wiz.console" t-as="l" t-key="l_index" t-attf-class="tnx-cline {{ l.level }}" t-esc="l.line"/>
+          </div>
+        </div>
+        <div t-if="state.wiz.step === 3" class="pplw-foot">
+          <t t-if="state.wiz.finished">
+            <button class="pbim-btn ghost" t-on-click="closeWizard">Done</button>
+            <span class="pplw-sp"/>
+            <button class="pbim-btn primary" t-on-click="() => this.openUrl(state.wiz.creds ? state.wiz.creds.url : state.wiz.doneUrl)">
+              <t t-out="ic('external',14)"/> Open tenant
+            </button>
+          </t>
+          <t t-elif="state.wiz.error">
+            <button class="pbim-btn ghost" t-on-click="closeWizard">Close</button>
+            <span class="pplw-sp"/>
+            <button class="pbim-btn primary" t-on-click="retryProvision"><t t-out="ic('refresh',14)"/> Retry failed step</button>
+          </t>
+          <t t-else="">
+            <span class="tnx-prov-wait"><span class="pbim-spin tnx-minispin"/> Building an isolated workspace — about a minute…</span>
+          </t>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================== DETAIL ================================================== -->
+    <div t-elif="state.view === 'detail'" class="pbim-wrap tnx-detail">
+      <div t-if="!state.det.d" class="pbim-busy"><div class="pbim-spin"/><span>Loading tenant…</span></div>
+      <t t-else="">
+        <t t-set="d" t-value="state.det.d"/>
+        <div class="tnx-det-head">
+          <button class="pbim-btn ghost pbim-btn-sm" t-on-click="backToFleet"><t t-out="ic('back',14)"/> Fleet</button>
+          <span class="tnx-av lg" t-esc="(d.name || '?')[0].toUpperCase()"/>
+          <div class="tnx-det-id">
+            <h2 t-esc="d.name"/>
+            <span class="tnx-url" t-on-click="() => this.copy(d.url, 'Tenant URL copied')"><t t-esc="d.url"/> <t t-out="ic('copy',11)"/></span>
+          </div>
+          <span t-attf-class="pbim-badge {{ stateBadge[d.state][0] }}" t-esc="stateBadge[d.state][1]"/>
+          <span class="pplw-sp"/>
+          <button class="pbim-btn ghost" t-att-disabled="state.det.busy === 'health'" t-on-click="refreshTenantHealth"><t t-out="ic('activity',14)"/> Refresh health</button>
+          <button t-if="d.state === 'live'" class="pbim-btn primary" t-on-click="() => this.openUrl(d.url)"><t t-out="ic('external',14)"/> Open</button>
+        </div>
+
+        <div class="pbim-seg tnx-tabs">
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'overview' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'overview'">Overview</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'backups' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'backups'">Backups</button>
+          <button t-attf-class="pbim-segbtn {{ state.det.tab === 'domains' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'domains'">Domains</button>
+          <button t-attf-class="pbim-segbtn tnx-danger-tab {{ state.det.tab === 'danger' ? 'on' : '' }}" t-on-click="() => state.det.tab = 'danger'">Danger zone</button>
+        </div>
+
+        <!-- overview -->
+        <div t-if="state.det.tab === 'overview'">
+          <div class="pbim-stats tnx-stats">
+            <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('users',18)"/></span>
+              <span class="pbim-stat-tx"><span class="n" t-esc="d.users"/><span class="l">Internal users</span></span></div>
+            <div class="pbim-stat"><span class="pbim-stat-ic blue"><t t-out="ic('briefcase',18)"/></span>
+              <span class="pbim-stat-tx"><span class="n" t-esc="d.employees"/><span class="l">Employees</span></span></div>
+            <div class="pbim-stat"><span class="pbim-stat-ic teal"><t t-out="ic('database',18)"/></span>
+              <span class="pbim-stat-tx"><span class="n" t-esc="d.db_size_only_h"/><span class="l">Database</span></span></div>
+            <div class="pbim-stat"><span class="pbim-stat-ic amber"><t t-out="ic('hardDrive',18)"/></span>
+              <span class="pbim-stat-tx"><span class="n" t-esc="d.filestore_size_h"/><span class="l">Filestore</span></span></div>
+            <div class="pbim-stat"><span t-attf-class="pbim-stat-ic {{ d.health === 'ok' ? 'green' : (d.health === 'down' ? 'rose' : 'amber') }}"><t t-out="ic('activity',18)"/></span>
+              <span class="pbim-stat-tx"><span class="n"><t t-if="d.ping_ms >= 0"><t t-esc="d.ping_ms"/> ms</t><t t-else="">—</t></span><span class="l">Response</span></span></div>
+          </div>
+          <div class="pbim-card tnx-info">
+            <div class="tnx-rev-row"><span>Created</span><b t-esc="d.created || '—'"/></div>
+            <div class="tnx-rev-row"><span>Administrator</span><b t-esc="d.admin_email || '—'"/></div>
+            <div class="tnx-rev-row"><span>Last user login</span><b t-esc="d.last_login || 'never'"/></div>
+            <div class="tnx-rev-row"><span>Health checked</span><b t-esc="d.health_checked || 'not yet'"/></div>
+            <div class="tnx-rev-row"><span>Staging copy</span>
+              <b t-if="d.staging_exists" class="tnx-staging-on">
+                <t t-esc="d.staging_db"/> — <a href="#" t-on-click.prevent="() => this.openUrl(d.staging_url)">open</a> ·
+                <a href="#" class="tnx-danger-link" t-on-click.prevent="dropStaging">drop</a>
+              </b>
+              <b t-else="">none</b>
+            </div>
+          </div>
+        </div>
+
+        <!-- backups -->
+        <div t-if="state.det.tab === 'backups'">
+          <div class="tnx-tab-actions">
+            <button class="pbim-btn primary" t-att-disabled="state.det.busy === 'backup'" t-on-click="backupNow">
+              <t t-if="state.det.busy === 'backup'"><span class="pbim-spin tnx-minispin"/> Backing up…</t>
+              <t t-else=""><t t-out="ic('shieldCheck',15)"/> Backup now</t>
+            </button>
+            <button class="pbim-btn outline" t-att-disabled="state.det.busy === 'restore' || !d.backups.length" t-on-click="() => this.restoreStaging(null)">
+              <t t-out="ic('beaker',15)"/> Restore latest → staging
+            </button>
+            <span class="pbim-note tnx-inline-note">Nightly backups run automatically; the last <t t-esc="14"/> are kept. Manual and final backups are kept forever.</span>
+          </div>
+          <div t-if="state.det.restoreMsg" class="pbim-note tnx-restored">
+            Staging ready from <b t-esc="state.det.restoreMsg.from_backup"/> —
+            <a href="#" t-on-click.prevent="() => this.openUrl(state.det.restoreMsg.staging_url)">open staging</a>
+          </div>
+          <div class="pbim-tablewrap">
+            <table class="pbim-table">
+              <thead><tr><th>Date</th><th>Type</th><th>Size</th><th>Status</th><th/></tr></thead>
+              <tbody>
+                <tr t-foreach="d.backups" t-as="b" t-key="b.id">
+                  <td t-esc="b.date"/>
+                  <td><span t-attf-class="pbim-badge {{ b.kind === 'nightly' ? 'info' : (b.kind === 'final' ? 'warn' : 'muted') }}" t-esc="b.kind"/></td>
+                  <td t-esc="b.size_h"/>
+                  <td><span t-attf-class="pbim-badge {{ b.state === 'done' ? 'ok' : 'err' }}" t-esc="b.state"/><span t-if="b.note" class="tnx-bnote" t-esc="b.note"/></td>
+                  <td class="tnx-row-actions">
+                    <a t-if="b.state === 'done'" t-attf-href="/pb_tenants/backup/{{ b.id }}" class="pbim-btn ghost pbim-btn-sm" title="Download"><t t-out="ic('download',13)"/></a>
+                    <button t-if="b.state === 'done'" class="pbim-btn ghost pbim-btn-sm" title="Restore to staging" t-on-click="() => this.restoreStaging(b.id)"><t t-out="ic('beaker',13)"/></button>
+                  </td>
+                </tr>
+                <tr t-if="!d.backups.length"><td colspan="5" class="pbim-empty">No backups yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- domains -->
+        <div t-if="state.det.tab === 'domains'">
+          <div class="tnx-tab-actions">
+            <input class="pplw-in tnx-dom-in" t-model="state.det.newDomain" placeholder="payroll.acme.com"/>
+            <button class="pbim-btn primary" t-att-disabled="state.det.busy === 'domain'" t-on-click="addDomain"><t t-out="ic('plus',15)"/> Attach domain</button>
+          </div>
+          <div class="pbim-note tnx-dom-note">
+            Client adds one DNS record: <code>CNAME</code> their host → <code t-esc="d.slug + '.' + state.data.base_domain"/>
+            (or <code>A</code> → <code t-esc="state.data.platform.public_ip"/>). Then Check DNS, then Activate —
+            certificate and routing are automatic.
+          </div>
+          <div class="pbim-tablewrap">
+            <table class="pbim-table">
+              <thead><tr><th>Hostname</th><th>Status</th><th>Detail</th><th>Checked</th><th/></tr></thead>
+              <tbody>
+                <tr t-foreach="d.domain_list" t-as="dm" t-key="dm.id">
+                  <td><code t-esc="dm.hostname"/></td>
+                  <td><span t-attf-class="pbim-badge {{ {pending:'warn', verified:'info', active:'ok', error:'err'}[dm.state] }}"
+                        t-esc="{pending:'waiting for DNS', verified:'DNS verified', active:'active', error:'error'}[dm.state]"/></td>
+                  <td class="tnx-dom-msg" t-esc="dm.message"/>
+                  <td t-esc="dm.last_check || '—'"/>
+                  <td class="tnx-row-actions">
+                    <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.det.busy === 'domain'" t-on-click="() => this.checkDomain(dm.id)"><t t-out="ic('search',13)"/> Check</button>
+                    <button t-if="dm.state === 'verified'" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.det.busy === 'domain'" t-on-click="() => this.activateDomain(dm.id)"><t t-out="ic('zap',13)"/> Activate</button>
+                    <button class="pbim-btn ghost pbim-btn-sm tnx-danger-link" t-on-click="() => this.removeDomain(dm.id, dm.hostname)"><t t-out="ic('trash',13)"/></button>
+                  </td>
+                </tr>
+                <tr t-if="!d.domain_list.length"><td colspan="5" class="pbim-empty">No custom domains — clients use <t t-esc="d.slug"/>.<t t-esc="state.data.base_domain"/>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- danger -->
+        <div t-if="state.det.tab === 'danger'" class="tnx-dangerzone">
+          <div class="pbim-card tnx-danger-card">
+            <h3><t t-out="ic('alert',16)"/> Decommission this tenant</h3>
+            <p>Takes a <b>final full backup</b> (kept forever, downloadable for handover), then permanently drops the
+              database and its staging copy. The address <code t-esc="d.slug + '.' + state.data.base_domain"/> stops working immediately.
+              This cannot be undone.</p>
+            <label class="pplw-label">Type the subdomain <code t-esc="d.slug"/> to confirm</label>
+            <div class="tnx-tab-actions">
+              <input class="pplw-in tnx-dom-in" t-model="state.det.confirm" t-att-placeholder="d.slug"/>
+              <button class="pbim-btn danger" t-att-disabled="state.det.confirm !== d.slug || state.det.busy === 'offboard'" t-on-click="offboard">
+                <t t-if="state.det.busy === 'offboard'"><span class="pbim-spin tnx-minispin"/> Decommissioning…</t>
+                <t t-else=""><t t-out="ic('power',15)"/> Decommission tenant</t>
+              </button>
+            </div>
+          </div>
+        </div>
+      </t>
+    </div>
+  </div>
+</t>
+
+</templates>
