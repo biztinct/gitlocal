@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- GENERATED FILE. Do not edit.
          Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
-         Hand edits are erased on the next run and fail the CI check.
-
-         PHASE A1 PLACEHOLDER. Every key the engine reads, with its English
-         value, so the surfaces render before the authoring pipeline exists.
-         Vietnamese arrives with the generated i18n/vi_VN.po in Run A2. -->
+         Hand edits are erased on the next run and fail the CI check. -->
 <!-- UI chrome. Both languages reach the browser so the learner can switch live, mid-lesson, without losing their place. -->
 <odoo>
 
@@ -181,7 +177,7 @@
 
     <record id="str_learn" model="learn.string">
         <field name="key">learn</field>
-        <field name="value">Learn</field>
+        <field name="value">Learning</field>
     </record>
 
     <record id="str_less" model="learn.string">
@@ -189,7 +185,7 @@
         <field name="value">Say it the full way</field>
     </record>
 
-    <record id="str_linespayrun" model="learn.string">
+    <record id="str_lines_payrun" model="learn.string">
         <field name="key">lines.payrun</field>
         <field name="value">Pay Run</field>
     </record>

@@ -132,3 +132,52 @@ Append new gotchas at the bottom as they are hit; never delete entries.
 - **`node --check` on a copy renamed to `.mjs` syntax-checks every engine file
   without an Odoo runtime.** Cheap, and it caught nothing this run only because
   it was run continuously. Worth keeping in the A2 verification list.
+
+### Run A2 (authoring source + generated content)
+
+- **A PAYSLIP's approval chain is FOUR stages, not five.**
+  `pb_payslip_review/static/src/js/payslip_review.js:12` —
+  `draft → level1 → level2 → done`, with **no level0**; that gate belongs to the
+  RUN (`pb_payruns/models/hr_payslip_run.py:73-86`). The A1 replica drew the
+  run's five stages on the payslip stepper, which would have sent a learner
+  looking for an Officer tier that does not exist on a slip. Found by writing
+  the contract check, not by reading the code. `STATUS_LABELS` now carries both
+  chains and `contract.json::payslip-state-chain` pins them apart.
+- **`gen_learn_data.py`'s repo root is THREE dirnames up, not two.** The
+  authoring source lives one directory deeper than health19's
+  (`docs/tutorial_poc/author/` vs `docs/tutorial_crm/`). Getting it wrong writes
+  the whole module into `docs/` and says nothing; there is now an `assert
+  os.path.isdir(ADDON)` immediately after.
+- **health_learn never writes `learn.screen.next_step`.** Its `gen_screens`
+  collects the value into the .po and omits the FIELD, so the `whatnext` intent
+  — the most-asked question on any screen — renders an empty English answer.
+  Ours emits it as a real field from an explicit `next` in `SCREEN_CTX`. Worth
+  back-porting to health19.
+- **gettext allows ONE msgstr per msgid, and the guard earns its place.** The
+  chrome key `learn` ("Learn" → "Học") collided with the sidebar leaf's name
+  ("Learn" → "Học cùng Payobook"). Resolved by making the chrome value
+  contextually distinct ("Learning" / "Học tập") rather than forcing one
+  Vietnamese onto two meanings. If a conflict is reported, the fix is almost
+  always to make the ENGLISH distinct, not to reconcile the Vietnamese.
+- **The generator now REFUSES to write a file when any translatable has no
+  Vietnamese** (`Trans.untranslated`, exit code 4). health_learn silently
+  emitted an empty msgstr and left `test_bundle::test_06` to catch it on a
+  server. Failing at generation is the same check three minutes earlier.
+- **A column question only reaches the column glossary when NO intent scores on
+  it** — curated intents are tried first, which is correct. "what does need
+  review mean" legitimately resolves to the `needreview` intent (topic overlap
+  55 + on-screen bonus 25 = 80). Any test of the column fallback has to pick a
+  label whose words no intent shares; `gross total` is the one used.
+- **Simulating `learn_intent._score` in JS before generating is worth the
+  twenty lines.** It proved: no two intents share a phrase, every label
+  resolves to its own intent in both languages, and no label trips the
+  `_ADVICE_MARKERS` deny list (which runs BEFORE scoring, so a label containing
+  one would resolve to `compliance` and make its own suggestion chip dead).
+- **`_ADVICE_MARKERS` must be written in NORMALISED form.** `_norm` turns every
+  punctuation mark into a space, so a hyphenated marker (`under-declare`) can
+  never match. Same trap as the diacritic folding on the Vietnamese entries.
+- **The generator owns the `practice` block of anchors.json and nothing else.**
+  `product` / `pattern` / `foreign` / `scan` describe real templates in other
+  modules and stay hand-curated — generating a claim about someone else's
+  template from our own content would let the registry agree with itself while
+  disagreeing with the product.

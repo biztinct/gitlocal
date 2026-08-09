@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- GENERATED FILE. Do not edit.
          Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
-         Hand edits are erased on the next run and fail the CI check.
-
-         PHASE A1 PLACEHOLDER. The seven Pay Run stations exist with their real
-         keys, their real sidebar leaves and a what/why, so the map draws and
-         the sidebar join is testable. Steps, mistakes and the remaining outline
-         prose arrive in Run A2. -->
+         Hand edits are erased on the next run and fail the CI check. -->
 <!-- Stations — the nodes on the Guided Journey map. One per Pay Run sidebar leaf. -->
 <odoo>
 
@@ -16,15 +11,35 @@
         <field name="line">payrun</field>
         <field name="section">payroll</field>
         <field name="sequence">10</field>
-        <field name="summary">The wizard that creates one batch of draft payslips for a division and a period.</field>
+        <field name="summary">Create a month's draft payslips for one division — the heart of Payobook.</field>
         <field name="icon">zap</field>
         <field name="kind">lesson</field>
         <field name="sidebar_key">pb_sidebar.item_run_payroll</field>
         <field name="duration_min">8</field>
         <field name="required" eval="True"/>
         <field name="star" eval="True"/>
-        <field name="outline_what">The wizard that creates one batch of draft payslips for a division and a period.</field>
-        <field name="outline_why">It is where a month of salaries starts. Everything downstream — review, approval, the bank file — reads what this step produced.</field>
+        <field name="outline_what">A four-step wizard that takes one division and one period and computes a draft payslip for every eligible employee.</field>
+        <field name="outline_why">It is where a month of salaries starts. Everything downstream — review, approval, the bank file — reads what this step produced, so an error here is an error in all of it.</field>
+        <field name="outline_when">Once the month's attendance and overtime have been imported and committed. Not before: computing on an uncommitted import is the single most common first-week mistake.</field>
+        <field name="outline_prereq">The Payroll Officer group, a committed import for the period, and a formula configuration on the division you are running.</field>
+    </record>
+
+    <record id="station_runpayroll_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_runpayroll"/>
+        <field name="sequence">10</field>
+        <field name="name">Computing before the month's import is committed. The eligible count is the tell — 12 where you expected 48 means the data is not in yet.</field>
+    </record>
+
+    <record id="station_runpayroll_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_runpayroll"/>
+        <field name="sequence">20</field>
+        <field name="name">Running the wrong cycle. Mid-cycle pays an advance; end-cycle settles the month. They are not two views of one thing.</field>
+    </record>
+
+    <record id="station_runpayroll_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_runpayroll"/>
+        <field name="sequence">30</field>
+        <field name="name">Submitting for approval without opening the flagged payslips. A flag is a question the engine wants answered, and submitting is you answering it with silence.</field>
     </record>
 
     <record id="station_payruns" model="learn.station">
@@ -33,15 +48,36 @@
         <field name="line">payrun</field>
         <field name="section">payroll</field>
         <field name="sequence">20</field>
-        <field name="summary">The board of every pay run, grouped by the approval stage it is waiting at.</field>
+        <field name="summary">Every run on one board, moving draft → Officer → HR → GM → done.</field>
         <field name="icon">calendar</field>
         <field name="kind">lesson</field>
         <field name="sidebar_key">pb_sidebar.item_pay_runs</field>
         <field name="duration_min">7</field>
         <field name="required" eval="True"/>
         <field name="star" eval="True"/>
-        <field name="outline_what">The board of every pay run, grouped by the approval stage it is waiting at.</field>
-        <field name="outline_why">It answers the only question a payroll week really asks: what is stuck, and whose gate is it stuck at.</field>
+        <field name="after_key">runpayroll</field>
+        <field name="outline_what">A board of every pay run, grouped by the approval stage it is waiting at, with the actions that stage allows on each card.</field>
+        <field name="outline_why">Nothing is paid without the right sign-offs, and the board is what makes the pipeline visible and auditable. It answers the only question a payroll week really asks: what is stuck, and whose gate is it stuck at.</field>
+        <field name="outline_when">Daily during payroll week, and any time you need to know where a period has got to.</field>
+        <field name="outline_prereq">A computed run. Approving needs the group that owns that particular gate.</field>
+    </record>
+
+    <record id="station_payruns_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_payruns"/>
+        <field name="sequence">10</field>
+        <field name="name">Approving a run without opening its flagged payslips. The board shows totals; the flags are on the slips.</field>
+    </record>
+
+    <record id="station_payruns_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_payruns"/>
+        <field name="sequence">20</field>
+        <field name="name">Rejecting without a written reason. The run goes back to draft either way, but the person who has to fix it is then guessing at what you saw.</field>
+    </record>
+
+    <record id="station_payruns_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_payruns"/>
+        <field name="sequence">30</field>
+        <field name="name">Reading a status column as a period. The columns are approval stages — July and June can sit in the same one.</field>
     </record>
 
     <record id="station_payslips" model="learn.station">
@@ -50,15 +86,36 @@
         <field name="line">payrun</field>
         <field name="section">payroll</field>
         <field name="sequence">30</field>
-        <field name="summary">Line-by-line review of each employee's payslip inside one run.</field>
+        <field name="summary">Read any employee's slip line by line — gross to net, with every rule visible.</field>
         <field name="icon">receipt</field>
         <field name="kind">lesson</field>
         <field name="sidebar_key">pb_sidebar.item_payslips</field>
         <field name="duration_min">6</field>
         <field name="required" eval="True"/>
         <field name="star" eval="False"/>
-        <field name="outline_what">Line-by-line review of each employee's payslip inside one run.</field>
-        <field name="outline_why">A run total can be right while an individual slip is wrong. This is the only screen that shows the working behind a net figure.</field>
+        <field name="after_key">runpayroll</field>
+        <field name="outline_what">The review surface for individual payslips inside one run: a filterable list, and for the selected employee the approval stepper and the full salary breakdown.</field>
+        <field name="outline_why">A run total can be right while an individual slip is wrong. This is the only screen that shows the working behind a net figure, so it is where an error is caught before money moves.</field>
+        <field name="outline_when">After computing and before submitting for approval, and again whenever an employee asks why their pay is what it is.</field>
+        <field name="outline_prereq">A computed run to read. No special group is needed to look.</field>
+    </record>
+
+    <record id="station_payslips_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_payslips"/>
+        <field name="sequence">10</field>
+        <field name="name">Editing a net amount directly instead of fixing the input and recomputing. The slip then no longer agrees with the data behind it, and the next recompute silently undoes the fix.</field>
+    </record>
+
+    <record id="station_payslips_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_payslips"/>
+        <field name="sequence">20</field>
+        <field name="name">Expecting insurance to move when overtime does. BHXH, BHYT and BHTN are charged on the registered base, which overtime does not change.</field>
+    </record>
+
+    <record id="station_payslips_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_payslips"/>
+        <field name="sequence">30</field>
+        <field name="name">Clearing a flag by dismissing it. Clearing one means understanding it — the flag was the engine asking a question about that employee.</field>
     </record>
 
     <record id="station_import" model="learn.station">
@@ -67,15 +124,35 @@
         <field name="line">payrun</field>
         <field name="section">payroll</field>
         <field name="sequence">40</field>
-        <field name="summary">Bringing attendance, overtime and HR data in from files and connected systems.</field>
+        <field name="summary">Bring attendance, overtime and inputs in — preview, score and fix before anything commits.</field>
         <field name="icon">database</field>
         <field name="kind">lesson</field>
         <field name="sidebar_key">pb_sidebar.item_import</field>
         <field name="duration_min">6</field>
         <field name="required" eval="True"/>
         <field name="star" eval="False"/>
-        <field name="outline_what">Bringing attendance, overtime and HR data in from files and connected systems.</field>
-        <field name="outline_why">Almost every wrong payslip starts as a wrong row in a file. Fixing it here costs minutes; fixing it after approval costs a retro line.</field>
+        <field name="outline_what">A guided four-step flow — source, review and match, validate and fix, commit — plus the batch history of everything imported before.</field>
+        <field name="outline_why">Most wrong payslips start as a wrong row in a file. Fixing it here costs minutes; fixing it after approval costs a retro line and a conversation.</field>
+        <field name="outline_when">Whenever the month's inputs arrive, and always before computing a run.</field>
+        <field name="outline_prereq">The Import group, a file or a connected system to read from, and a formula configuration to map the columns onto.</field>
+    </record>
+
+    <record id="station_import_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_import"/>
+        <field name="sequence">10</field>
+        <field name="name">Committing a batch with unresolved rows because the deadline is close. An unmatched row is an employee who will be missing from the run.</field>
+    </record>
+
+    <record id="station_import_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_import"/>
+        <field name="sequence">20</field>
+        <field name="name">Importing one month's data into another month's period. The batch is named for the period it targets — read that name before committing.</field>
+    </record>
+
+    <record id="station_import_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_import"/>
+        <field name="sequence">30</field>
+        <field name="name">Fixing an import mistake on the payslips afterwards. That corrects the output and leaves the input wrong, so the next recompute brings the mistake back.</field>
     </record>
 
     <record id="station_fullfinal" model="learn.station">
@@ -84,15 +161,30 @@
         <field name="line">payrun</field>
         <field name="section">payroll</field>
         <field name="sequence">50</field>
-        <field name="summary">Final settlement for an employee who is leaving: last salary, unused leave, deductions.</field>
+        <field name="summary">Settle a leaver: last salary, unused leave, deductions — one closing statement.</field>
         <field name="icon">file-text</field>
         <field name="kind">outline</field>
         <field name="sidebar_key">pb_sidebar.item_full_final</field>
         <field name="duration_min">4</field>
         <field name="required" eval="False"/>
         <field name="star" eval="False"/>
-        <field name="outline_what">Final settlement for an employee who is leaving: last salary, unused leave, deductions.</field>
-        <field name="outline_why">A leaver who is also left in the normal monthly run is paid twice, and the correction is a conversation nobody wants to have.</field>
+        <field name="after_key">payruns</field>
+        <field name="outline_what">The settlement workspace for departing employees, listing what each is still owed and whether it has been paid.</field>
+        <field name="outline_why">Leaver settlements have legal deadlines and one chance to be right. They are also the payment most likely to be disputed, because it is the last one.</field>
+        <field name="outline_when">As soon as a resignation or termination date is confirmed — not on the payroll run date, which is usually too late.</field>
+        <field name="outline_prereq">A recorded contract end date and a current leave balance for the employee.</field>
+    </record>
+
+    <record id="station_fullfinal_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_fullfinal"/>
+        <field name="sequence">10</field>
+        <field name="name">Leaving the departing employee in the normal monthly run as well. They are then paid twice, and recovering an overpayment from someone who has left is a legal problem, not a payroll one.</field>
+    </record>
+
+    <record id="station_fullfinal_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_fullfinal"/>
+        <field name="sequence">20</field>
+        <field name="name">Settling before the last month's attendance is in. The final salary is a prorated month, so it needs the same inputs every other month needs.</field>
     </record>
 
     <record id="station_proration" model="learn.station">
@@ -101,15 +193,30 @@
         <field name="line">payrun</field>
         <field name="section">payroll</field>
         <field name="sequence">60</field>
-        <field name="summary">The working behind every part-month amount: days worked over standard days, and the factor that produces.</field>
+        <field name="summary">See exactly how a part-month salary was prorated — day by day, no black box.</field>
         <field name="icon">calculator</field>
         <field name="kind">outline</field>
         <field name="sidebar_key">pb_sidebar.item_proration</field>
         <field name="duration_min">4</field>
         <field name="required" eval="False"/>
         <field name="star" eval="False"/>
-        <field name="outline_what">The working behind every part-month amount: days worked over standard days, and the factor that produces.</field>
-        <field name="outline_why">It is the audit trail for the question payroll receives most often from a joiner or a leaver: why is this not a full month's pay.</field>
+        <field name="after_key">payslips</field>
+        <field name="outline_what">An audit trail of every prorated amount in a run — joiners, leavers and unpaid leave — showing days worked, standard days and the factor between them.</field>
+        <field name="outline_why">Proration is the question employees ask most often, and the one hardest to answer from memory. This screen is the evidence, written down before anyone asks.</field>
+        <field name="outline_when">When a payslip looks too small and you need to show why, and as a spot check on any run with mid-month movement.</field>
+        <field name="outline_prereq">A computed run containing at least one joiner, leaver or unpaid-leave case.</field>
+    </record>
+
+    <record id="station_proration_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_proration"/>
+        <field name="sequence">10</field>
+        <field name="name">Assuming calendar days when the division's configuration uses standard working days. Twenty-two is not thirty, and the difference is somebody's salary.</field>
+    </record>
+
+    <record id="station_proration_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_proration"/>
+        <field name="sequence">20</field>
+        <field name="name">Reading the money before the factor. If the factor is right and the amount still looks wrong, the problem is upstream in the contract or the import.</field>
     </record>
 
     <record id="station_retro" model="learn.station">
@@ -118,15 +225,30 @@
         <field name="line">payrun</field>
         <field name="section">payroll</field>
         <field name="sequence">70</field>
-        <field name="summary">Corrections that belong to a closed month, paid in the current one, with the source period on record.</field>
+        <field name="summary">Backdated raises and corrections, applied cleanly to a later run — with a full trail.</field>
         <field name="icon">trending-up</field>
         <field name="kind">outline</field>
         <field name="sidebar_key">pb_sidebar.item_retro</field>
         <field name="duration_min">4</field>
         <field name="required" eval="False"/>
         <field name="star" eval="False"/>
-        <field name="outline_what">Corrections that belong to a closed month, paid in the current one, with the source period on record.</field>
-        <field name="outline_why">Closed months stay closed. A retro line is how a backdated raise reaches someone without reopening a period that has already been reported.</field>
+        <field name="after_key">payruns</field>
+        <field name="outline_what">A ledger of differences owed from periods that are already closed, paid in the current run with the source period recorded on every line.</field>
+        <field name="outline_why">It keeps closed months closed. Reopening an approved run to fix the past invalidates everything that was reported from it — the retro line is how you pay the difference without doing that.</field>
+        <field name="outline_when">Backdated raises, allowances missed in an earlier month, and any correction found after the run it belongs to was approved.</field>
+        <field name="outline_prereq">The source run is done, and the correction is documented — a retro line without a reason is an unexplained payment.</field>
+    </record>
+
+    <record id="station_retro_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_retro"/>
+        <field name="sequence">10</field>
+        <field name="name">Editing the old approved payslip instead of creating a retro line. The old month has already been reported; changing it changes a number somebody else has filed.</field>
+    </record>
+
+    <record id="station_retro_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_retro"/>
+        <field name="sequence">20</field>
+        <field name="name">Leaving the source period blank. Without it the line is money paid for no stated reason, which is exactly what an audit asks about first.</field>
     </record>
 
 </odoo>
