@@ -35,7 +35,7 @@
     .tnx-live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--pbim-green, #2E7D4F); box-shadow: 0 0 0 4px rgba(46,125,79,.15); }
 
     // ---------------- KPI band
-    .tnx-stats { margin-bottom: 20px; }
+    .tnx-stats { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 20px; }
     .tnx-pct { font-size: 12px; color: var(--pbim-muted); font-weight: 600; }
 
     // ---------------- tenant grid

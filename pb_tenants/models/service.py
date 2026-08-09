@@ -55,15 +55,23 @@ NIGHTLY_KEEP = 14
 
 
 def _direct(fn):
-    """The db-management functions are wrapped by check_db_management_enabled
-    (raises when list_db=False). We keep list_db=False for the web surface and
-    call the inner function directly for our own guarded, in-process use."""
-    inner = getattr(fn, '__wrapped__', None)
-    if inner is None:
-        raise UserError(
-            "Odoo's database service layer changed shape (no __wrapped__) — "
-            "update pb_tenants before managing tenants on this build.")
-    return inner
+    """Run a db-management service function with the management gate lifted.
+
+    odoo.service.db functions are wrapped by check_db_management_enabled, which
+    raises when list_db=False — and some (dump_db) call other wrapped functions
+    internally, so unwrapping only the outer one is not enough. We keep
+    list_db=False for the web surface (the web db-manager is also 404'd at nginx)
+    and lift the flag for the duration of one call, restoring it in finally.
+    Our own _require_admin() guards every entry point that reaches here."""
+    def run(*args, **kwargs):
+        cfg = odoo.tools.config
+        prev = cfg['list_db']
+        cfg['list_db'] = True
+        try:
+            return fn(*args, **kwargs)
+        finally:
+            cfg['list_db'] = prev
+    return run
 
 
 class PbTenants(models.AbstractModel):
