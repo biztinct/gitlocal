@@ -14,7 +14,7 @@
         </div>
 
         <!-- KPI strip -->
-        <div class="pbm-kpis">
+        <div class="pbm-kpis" data-coach="im-kpis">
           <div class="pbm-kpi"><span class="pbm-kpi-ic"><t t-out="ic('upload',21)"/></span><div class="tx"><span class="v" t-esc="state.kpis.total_batches"/><span class="l">Import batches</span></div></div>
           <div class="pbm-kpi"><span class="pbm-kpi-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="tx"><span class="v green" t-esc="state.kpis.done"/><span class="l">Completed</span></div></div>
           <div class="pbm-kpi"><span class="pbm-kpi-ic blue"><t t-out="ic('refresh',21)"/></span><div class="tx"><span class="v indigo" t-esc="state.kpis.in_progress"/><span class="l">In progress</span></div></div>
@@ -23,7 +23,7 @@
         </div>
 
         <!-- hero CTA: guided import -->
-        <div class="pbm-cta">
+        <div class="pbm-cta" data-coach="im-cta">
           <span class="ic">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
           </span>
@@ -38,7 +38,7 @@
         </div>
 
         <!-- secondary launches -->
-        <div class="pbm-launches" t-if="secondaryLaunches.length">
+        <div class="pbm-launches" data-coach="im-launches" t-if="secondaryLaunches.length">
           <button t-foreach="secondaryLaunches" t-as="l" t-key="l.xmlid"
                   class="pbm-launch" t-on-click="() => this.launch(l.xmlid)">
             <span class="pbm-launch-ic"><t t-out="tileIcon(l.icon)"/></span>
@@ -53,7 +53,7 @@
         <!-- pipeline -->
         <div class="pbm-panel">
           <div class="pbm-panel-h"><h2>Import pipeline</h2><span class="pbm-tag">map → validate → commit</span></div>
-          <div class="pbm-pipe">
+          <div class="pbm-pipe" data-coach="im-pipe">
             <t t-foreach="state.pipeline" t-as="p" t-key="p.key">
               <button class="pbm-pipe-step" t-on-click="() => this.pipeClick(p.key)"
                       t-att-title="'Show ' + p.label + ' batches'">
@@ -67,7 +67,7 @@
 
         <div class="pbm-cols">
           <!-- recent batches -->
-          <div class="pbm-panel pbm-grow">
+          <div class="pbm-panel pbm-grow" data-coach="im-batches">
             <div class="pbm-panel-h">
               <h2>Recent batches</h2>
               <div class="pbm-filters">

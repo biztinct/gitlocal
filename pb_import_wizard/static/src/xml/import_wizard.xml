@@ -13,7 +13,7 @@
         </div>
 
         <!-- stepper -->
-        <div class="iw-rail">
+        <div class="iw-rail" data-coach="iw-steps">
           <t t-foreach="steps" t-as="s" t-key="s_index">
             <div t-attf-class="iw-step {{ state.step === s_index+1 ? 'cur' : (state.step > s_index+1 ? 'done' : '') }}">
               <span class="iw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',13)"/></t><t t-else="" t-esc="s_index+1"/></span>
@@ -30,7 +30,7 @@
           <!-- STEP 1: SOURCE & FILE -->
           <t t-if="state.step === 1 and !state.loading">
             <div class="iw-grid2">
-              <div class="iw-sec">
+              <div class="iw-sec" data-coach="iw-source">
                 <h4>Source</h4>
                 <div class="iw-seg">
                   <button t-foreach="state.defaults.sources" t-as="src" t-key="src.id"
@@ -80,7 +80,7 @@
 
           <!-- STEP 2: REVIEW & MATCH -->
           <t t-if="state.step === 2 and !state.loading and state.summary">
-            <div class="iw-stats">
+            <div class="iw-stats" data-coach="iw-review">
               <div class="iw-stat"><span class="n" t-esc="state.summary.total_lines"/><span class="l">Rows loaded</span></div>
               <div class="iw-stat ok"><span class="n" t-esc="state.summary.matched"/><span class="l">Matched</span></div>
               <div class="iw-stat new"><span class="n" t-esc="state.summary.new"/><span class="l">New employees</span></div>
@@ -108,7 +108,7 @@
             </div>
             <t t-if="errorLines.length">
               <div class="iw-errhead"><t t-out="ic('alert',15)"/> Resolve these before committing</div>
-              <div class="iw-errlist">
+              <div class="iw-errlist" data-coach="iw-fixrows">
                 <div t-foreach="errorLines" t-as="l" t-key="l.id" class="iw-err-wrap">
                   <div class="iw-err">
                     <div class="who"><span class="nm" t-esc="l.name"/><span class="cd" t-esc="l.code"/></div>
@@ -150,7 +150,7 @@
               <h3>Import complete</h3>
               <p class="iw-muted"><t t-esc="state.summary.name"/> · <t t-esc="state.summary.processed"/> rows processed</p>
             </div>
-            <div class="iw-outcomes">
+            <div class="iw-outcomes" data-coach="iw-outcome">
               <div class="iw-outcome"><span class="ic"><t t-out="ic('users',18)"/></span><span class="n" t-esc="state.summary.created_employees"/><span class="l">Employees created</span></div>
               <div class="iw-outcome"><span class="ic"><t t-out="ic('receipt',18)"/></span><span class="n" t-esc="state.summary.created_payslips"/><span class="l">Payslips created</span></div>
               <button t-if="state.summary.payslip_run_id" class="iw-outcome link" t-on-click="openRun"><span class="ic"><t t-out="ic('file',18)"/></span><span class="rn" t-esc="state.summary.payslip_run_name"/><span class="l">Open payslip run →</span></button>
@@ -165,7 +165,7 @@
           <div class="iw-sp"/>
           <button t-if="state.step === 1" class="iw-btn primary" t-att-disabled="!canLoad || state.loading" t-on-click="toReview">Load &amp; match <t t-out="ic('arrow',15)"/></button>
           <button t-if="state.step === 2" class="iw-btn primary" t-att-disabled="state.loading" t-on-click="toValidate">Validate <t t-out="ic('arrow',15)"/></button>
-          <button t-if="state.step === 3" class="iw-btn primary" t-att-disabled="state.loading" t-on-click="commit">Commit import <t t-out="ic('arrow',15)"/></button>
+          <button t-if="state.step === 3" class="iw-btn primary" data-coach="iw-commit" t-att-disabled="state.loading" t-on-click="commit">Commit import <t t-out="ic('arrow',15)"/></button>
           <button t-if="state.step === 4" class="iw-btn ghost" t-on-click="openBatch">Open batch</button>
           <button t-if="state.step === 4" class="iw-btn primary" t-on-click="close">Done</button>
         </div>

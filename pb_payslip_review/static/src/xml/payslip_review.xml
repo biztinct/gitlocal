@@ -11,7 +11,7 @@
                     <div class="psr-sub" t-esc="state.run.period"/>
                 </div>
                 <div class="psr-head-r">
-                    <select class="psr-runsel" t-on-change="onRunChange">
+                    <select class="psr-runsel" data-coach="ps-runsel" t-on-change="onRunChange">
                         <t t-foreach="state.runs" t-as="r" t-key="r.id">
                             <option t-att-value="r.id" t-att-selected="r.id === state.runId" t-esc="r.name"/>
                         </t>
@@ -20,7 +20,7 @@
             </div>
 
             <!-- KPI strip -->
-            <div class="psr-kpis">
+            <div class="psr-kpis" data-coach="ps-kpis">
                 <div class="psr-kpi"><div class="l">Payslips</div><div class="v" t-esc="state.totals.count"/></div>
                 <div class="psr-kpi g"><div class="l">Net total</div><div class="v" t-esc="vnd(state.totals.net)"/></div>
                 <div class="psr-kpi"><div class="l">Gross total</div><div class="v" t-esc="vnd(state.totals.gross)"/></div>
@@ -29,7 +29,7 @@
             </div>
 
             <!-- Filters -->
-            <div class="psr-chips">
+            <div class="psr-chips" data-coach="ps-chips">
                 <button t-attf-class="psr-chip #{state.filter==='all'?'on':''}" t-on-click="() => this.setFilter('all')">All</button>
                 <button t-attf-class="psr-chip #{state.filter==='flag'?'on':''}" t-on-click="() => this.setFilter('flag')">Need review</button>
                 <button t-attf-class="psr-chip #{state.filter==='level1'?'on':''}" t-on-click="() => this.setFilter('level1')">HR pending</button>
@@ -39,7 +39,7 @@
 
             <!-- Split -->
             <div class="psr-split">
-                <div class="psr-list">
+                <div class="psr-list" data-coach="ps-list">
                     <t t-foreach="filteredSlips" t-as="s" t-key="s.id">
                         <div t-attf-class="psr-card #{s.id===state.selId?'sel':''}" t-on-click="() => this.select(s.id)">
                             <span class="psr-av" t-attf-style="background:{{s.color}}" t-esc="initials(s.emp)"/>
@@ -58,7 +58,7 @@
                 </div>
 
                 <!-- Detail -->
-                <div class="psr-detail" t-if="state.detail">
+                <div class="psr-detail" data-coach="ps-detail" t-if="state.detail">
                     <div class="psr-detail-hero">
                         <span class="psr-av lg" t-attf-style="background:{{state.detail.color}}" t-esc="initials(state.detail.emp)"/>
                         <div>
@@ -72,14 +72,14 @@
                     </div>
 
                     <!-- statusbar -->
-                    <div class="psr-status">
+                    <div class="psr-status" data-coach="ps-status">
                         <t t-foreach="statusFlow" t-as="f" t-key="f[0]">
                             <div t-attf-class="psr-st #{flowIdx(state.detail.state) &gt; f_index ? 'done' : ''} #{flowIdx(state.detail.state) === f_index ? 'cur' : ''}" t-esc="f[1]"/>
                         </t>
                     </div>
 
                     <!-- breakdown -->
-                    <div class="psr-bk">
+                    <div class="psr-bk" data-coach="ps-breakdown">
                         <div class="psr-bk-h">Salary breakdown</div>
                         <t t-foreach="state.detail.lines" t-as="l" t-key="l_index">
                             <div class="psr-bk-row">

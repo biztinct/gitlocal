@@ -14,7 +14,7 @@
             </div>
 
             <!-- Stepper -->
-            <div class="pw-rail">
+            <div class="pw-rail" data-coach="pw-rail">
                 <t t-foreach="steps" t-as="s" t-key="s_index">
                     <div t-attf-class="pw-step #{state.step > s_index+1 ? 'done' : ''} #{state.step === s_index+1 ? 'cur' : ''}">
                         <div class="pw-dot"><t t-if="state.step > s_index+1"><t t-out="ic('check',14)"/></t><t t-else=""><t t-esc="s_index+1"/></t></div>
@@ -45,7 +45,7 @@
 
                 <!-- Step 1 -->
                 <t t-elif="state.step === 1">
-                    <div class="pw-grid2">
+                    <div class="pw-grid2" data-coach="pw-scope">
                         <div class="pw-sec">
                             <h4>Period</h4>
                             <t t-if="(state.defaults.divisions || []).length">
@@ -63,7 +63,7 @@
                                 <div><label>To</label><input type="date" t-attf-class="pw-in{{ state.defaults and state.defaults.is_demo ? ' pw-locked' : '' }}" t-att-value="state.form.date_end" t-att-disabled="state.defaults and state.defaults.is_demo" t-on-change="(ev)=>this.onField('date_end',ev)"/></div>
                             </div>
                         </div>
-                        <div class="pw-sec">
+                        <div class="pw-sec" data-coach="pw-summary">
                             <h4>Scope</h4>
                             <div class="pw-kv"><span>Company</span><b t-esc="state.defaults.company"/></div>
                             <div class="pw-kv"><span>Currency</span><b t-esc="state.defaults.currency"/></div>
@@ -76,11 +76,11 @@
 
                 <!-- Step 2 (after compute) -->
                 <t t-elif="state.step === 2 and state.summary">
-                    <div class="pw-result">
+                    <div class="pw-result" data-coach="pw-result">
                         <div class="pw-result-ic"><t t-out="ic('zap',30)"/></div>
                         <h3>Computed <t t-esc="state.summary.computed"/> of <t t-esc="state.summary.count"/> payslips</h3>
                         <p class="pw-muted"><t t-esc="state.summary.name"/> · net total <b t-esc="vnd(state.summary.total_net)"/></p>
-                        <div class="pw-statpills">
+                        <div class="pw-statpills" data-coach="pw-pills">
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.count"/><div class="l">Payslips</div></div>
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.computed"/><div class="l">Computed</div></div>
                             <div class="pw-statpill"><div class="n" t-esc="state.summary.flagged + (state.summary.exceptions ? state.summary.exceptions.length : 0)"/><div class="l">Need review</div></div>
@@ -93,7 +93,7 @@
                     <t t-set="exc" t-value="state.summary.exceptions || []"/>
                     <t t-if="exc.length or state.summary.flagged">
                         <p class="pw-muted mb">These items need a look before approval:</p>
-                        <div class="pw-list">
+                        <div class="pw-list" data-coach="pw-exceptions">
                             <t t-foreach="exc" t-as="e" t-key="e_index">
                                 <div class="pw-li"><span class="pw-flag"><t t-out="ic('alert',13)"/> <t t-esc="e.why"/></span><span t-esc="e.emp"/></div>
                             </t>
