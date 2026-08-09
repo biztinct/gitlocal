@@ -5,7 +5,7 @@
        above the kanban columns. -->
   <t t-name="pb_payruns.KanbanView" t-inherit="web.KanbanView" t-inherit-mode="primary">
     <xpath expr="//t[@t-component='props.Renderer']" position="before">
-      <div t-if="pbState.loaded" class="pbk-kpis">
+      <div t-if="pbState.loaded" class="pbk-kpis" data-coach="pk-kpis">
         <div class="pbk-kpi"><span class="pbk-kpi-ic"><t t-out="pbIc('layers',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbState.kpis.total"/><span class="l">Pay runs</span></div></div>
         <div class="pbk-kpi indigo"><span class="pbk-kpi-ic blue"><t t-out="pbIc('refresh',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbState.kpis.in_pipeline"/><span class="l">In pipeline</span></div></div>
         <div t-attf-class="pbk-kpi {{ pbState.kpis.my_pending ? 'hot' : '' }}">
@@ -13,14 +13,14 @@
         </div>
         <div class="pbk-kpi green"><span class="pbk-kpi-ic green"><t t-out="pbIc('checkCircle',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbState.kpis.done"/><span class="l">Completed</span></div></div>
         <div class="pbk-kpi"><span class="pbk-kpi-ic green"><t t-out="pbIc('receipt',20)"/></span><div class="pbk-kpi-tx"><span class="v" t-esc="pbMoney(pbState.kpis.period_net)"/><span class="l">Net paid (done)</span></div></div>
-        <button class="pbk-run" t-on-click="pbRunPayroll">
+        <button class="pbk-run" data-coach="pk-run" t-on-click="pbRunPayroll">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           Run payroll
         </button>
       </div>
 
       <div class="pbk-chipbar">
-        <div class="pbk-tabs">
+        <div class="pbk-tabs" data-coach="pk-tabs">
           <button t-foreach="pbStatusTabs" t-as="tab" t-key="tab.id"
                   t-attf-class="pbk-tab {{ pbState.activeTab === tab.id ? 'active' : '' }}"
                   t-on-click="() => this.setTab(tab.id)">
@@ -28,7 +28,7 @@
             <span t-if="tab.count" t-attf-class="pbk-badge {{ tab.tone }}" t-esc="tab.count"/>
           </button>
         </div>
-        <div class="pbk-datechips">
+        <div class="pbk-datechips" data-coach="pk-datechips">
           <button t-foreach="pbDateTabs" t-as="dt" t-key="dt.id"
                   t-attf-class="pbk-datechip {{ pbState.dateFilter === dt.id ? 'active' : '' }}"
                   t-on-click="() => this.setDateFilter(dt.id)" t-esc="dt.label"/>
@@ -41,7 +41,7 @@
           </t>
         </div>
       </div>
-      <div class="pbk-chipbar pbk-divchips" t-if="pbState.divisions.length">
+      <div class="pbk-chipbar pbk-divchips" data-coach="pk-divchips" t-if="pbState.divisions.length">
         <div class="pbk-datechips">
           <button t-foreach="pbDivisionTabs" t-as="dv" t-key="dv.key"
                   t-attf-class="pbk-datechip {{ pbState.activeDivision === dv.key ? 'active' : '' }}"

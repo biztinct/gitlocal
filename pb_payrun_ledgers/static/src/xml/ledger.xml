@@ -15,7 +15,7 @@
         </div>
 
         <!-- KPI band -->
-        <div class="ppl-kpis">
+        <div class="ppl-kpis" data-coach="lg-kpis">
           <t t-foreach="state.data.kpis or []" t-as="k" t-key="k_index">
             <div t-attf-class="pbim-stat {{ k.tone === 'ok' ? 'ok' : '' }} {{ k.tone === 'err' ? 'err' : '' }}">
               <span t-attf-class="pbim-stat-ic {{ k.ic_tone or '' }}"><t t-out="ic(k.icon, 21)"/></span>
@@ -27,7 +27,7 @@
         <!-- filters -->
         <div class="pbim-panel ppl-filters">
           <div class="ppl-filter-row">
-            <div class="pbl-facetwrap">
+            <div class="pbl-facetwrap" data-coach="lg-facets">
               <t t-foreach="state.data.facets or []" t-as="fac" t-key="fac.key">
                 <div t-if="fac.chips.length > 1" class="pbl-facet">
                   <span class="pbl-flabel" t-esc="fac.label"/>
@@ -73,7 +73,7 @@
         </div>
 
         <!-- rows -->
-        <div t-if="rows.length" class="ppl-roster">
+        <div t-if="rows.length" class="ppl-roster" data-coach="lg-rows">
           <div t-foreach="rows" t-as="r" t-key="r.id" class="ppl-card pbl-card" t-on-click="() => this.openRow(r)">
             <div class="ppl-av" t-attf-style="background-image:url({{ r.avatar }})"><span t-if="!r.avatar" t-esc="r.initials"/></div>
             <div class="ppl-id">
@@ -104,7 +104,7 @@
 
         <div class="ppl-foot">
           Showing <t t-esc="rows.length"/> of <t t-esc="state.data.total"/>
-          <t t-if="state.data.list_action"> · <button class="ppl-link" t-on-click="openFullList">Open full list →</button></t>
+          <t t-if="state.data.list_action"> · <button class="ppl-link" data-coach="lg-openfull" t-on-click="openFullList">Open full list →</button></t>
         </div>
       </div>
     </div>

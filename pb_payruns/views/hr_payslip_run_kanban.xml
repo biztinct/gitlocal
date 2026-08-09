@@ -30,7 +30,7 @@
                 <field name="pb_is_done"/>
                 <templates>
                     <t t-name="card">
-                        <div t-attf-class="pbk-card pbk-st-{{ record.state.raw_value }}">
+                        <div t-attf-class="pbk-card pbk-st-{{ record.state.raw_value }}" data-coach="pk-card">
                             <div class="pbk-top">
                                 <span class="pbk-nm"><field name="name"/></span>
                                 <span t-if="record.credit_note.raw_value" class="pbk-cn">refund</span>
@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                             <div class="pbk-jnl" t-if="!record.pb_division_label.raw_value and record.journal_id.raw_value"><field name="journal_id"/></div>
-                            <div class="pbk-foot">
+                            <div class="pbk-foot" data-coach="pk-card-actions">
                                 <button t-if="record.pb_can_submit.raw_value" type="object" name="done_payslip_run" class="pbk-btn primary">Submit for review</button>
                                 <button t-if="record.pb_can_approve_officer.raw_value" type="object" name="action_payslip_run_level0_done" class="pbk-btn primary">Approve (Officer)</button>
                                 <button t-if="record.pb_can_approve_hr.raw_value" type="object" name="action_payslip_run_level1_done" class="pbk-btn primary">Approve (HR)</button>
