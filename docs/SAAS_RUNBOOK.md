@@ -96,6 +96,13 @@ Same staged-rsync + detached `systemd-run` ritual as before, with two changes:
   (menu record override) and `-u om_hr_payroll,pb_hr_flow` — do in a normal deploy window.
 - `vendor_license_core` logs a "license missing" warning in every new DB
   (`/opt/vendor_license/license.json` absent on this box) — non-fatal, same as apex.
+- **Tenant cron `Cleanup Old Analytics Data` (server action #651, from
+  `payroll_analytics_approval`) errors with `NameError: name 'fields' is not
+  defined`** every run — a pre-existing bug in that action's Python (it uses
+  `fields.Date...` without importing/whitelisting `fields` in the `safe_eval`
+  scope). Non-fatal (just a failed cron job), but noisy in every tenant now that
+  crons are active. Fix: add `fields` to the action code's eval context (or
+  rewrite the date math with `datetime`) and `-u payroll_analytics_approval`.
 - Tenants get the stock `website` homepage on `/` (pb_website is apex-only);
   backend entry is `/odoo`. Cosmetic; revisit if clients notice.
 - RAM: the box has 1.9 GB. Each *served* database (apex + every active tenant) holds a
