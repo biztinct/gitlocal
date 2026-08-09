@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="cron_nightly_backups" model="ir.cron">
+        <field name="name">Payobook Tenants: nightly backups</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_nightly_backups()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=19, minute=30, second=0) + timedelta(days=1))"/>
+        <field name="active" eval="True"/>
+    </record>
+    <record id="cron_health" model="ir.cron">
+        <field name="name">Payobook Tenants: fleet health refresh</field>
+        <field name="model_id" ref="model_pb_tenants"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_health()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>
