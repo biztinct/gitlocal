@@ -409,16 +409,22 @@ class TestCoach(TransactionCase):
     def test_18_a_column_question_gets_a_column_answer(self):
         """A question about a TILE, not a procedure.
 
-        "What does Need review mean here?" is the most common question a
-        payroll reviewer actually asks, and no curated intent covers it. It is
-        deterministic — a written definition, looked up — so missing it would
-        be a miss the Coach had no excuse for.
+        "What does gross total mean?" is deterministic — a written definition,
+        looked up — and no curated intent covers it, which is exactly when the
+        column glossary has to answer instead of the Coach missing.
+
+        The question is chosen carefully. Curated intents are tried FIRST and
+        that ordering is correct, so a column question whose words overlap an
+        intent's topic reaches the intent instead: "what does need review mean"
+        legitimately resolves to the `needreview` intent, which knows the
+        procedure as well as the definition. This one shares no topic with any
+        intent, so it exercises the fallback the test is about.
         """
-        res = self.Intent.ask("what does need review mean", 'payslips')
+        res = self.Intent.ask("what does gross total mean", 'payslips')
         self.assertTrue(res['matched'], "still cannot answer a column question")
         self.assertEqual(res.get('source_kind'), 'column')
         body = res['blocks'][0]['body']
-        self.assertIn('flag', body['en'].lower())
+        self.assertIn('deduction', body['en'].lower())
         self.assertTrue(body['vi'] and body['vi'] != body['en'],
                         "the column answer is not translated")
 

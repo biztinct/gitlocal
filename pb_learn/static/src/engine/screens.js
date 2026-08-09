@@ -266,9 +266,12 @@ export const SCREENS = {
                     <b class="lrn-money">${esc(M(s.net))}</b></span>
             </div>`).join("");
 
-        const flow = ["draft", "level0", "level1", "level2", "done"].map((c, i) => `
-            <div class="lrn-st ${i < 2 ? "done" : ""}${SP}${i === 2 ? "cur" : ""}"
-                >${esc(tx(STATUS_LABELS.payrun[c].l))}</div>`).join("");
+        // A payslip's own chain — FOUR stages. It has no level0; that gate
+        // belongs to the run. Drawing the run's five here would teach a tier
+        // that does not exist on a slip.
+        const flow = ["draft", "level1", "level2", "done"].map((c, i) => `
+            <div class="lrn-st ${i < 1 ? "done" : ""}${SP}${i === 1 ? "cur" : ""}"
+                >${esc(tx(STATUS_LABELS.payslip[c].l))}</div>`).join("");
 
         return `
             <div class="lrn-strip">
