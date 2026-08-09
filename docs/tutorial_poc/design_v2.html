@@ -499,6 +499,23 @@ footer.doc-foot{grid-column:1/-1;border-top:1px solid var(--pb-border);margin-to
         <code>compliance</code> intent — teach where the statutory rates live and who owns policy, never advise on
         minimising obligations.</p>
 
+      <h3>Data boundaries — what leaves the server (audited 2026-08-09)</h3>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th style="width:18%">System</th><th style="width:30%">Sends to an external LLM?</th><th>Detail (verified in code)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>pb_coach</strong></td><td class="win">Never</td><td>Pure JS tours; no LLM, no network calls beyond one ORM read of <code>res.users.login_date</code> for first-run detection.</td></tr>
+          <tr><td><strong>pb_learn</strong> (Phases A–C)</td><td class="win">Never</td><td>Deterministic retrieval over authored records; the bundle is served by your own Odoo. No provider is even configured.</td></tr>
+          <tr><td><strong>pb_learn</strong> (Phase D <code>_compose</code>, off by default)</td><td>Scrubbed question + authored corpus only</td><td>The prompt contains the user's question (regex-scrubbed of emails/phones/#ids/long numbers, 400-char cap) and the module's own teaching content — <strong>never a database record</strong>. That's a testable contract: the composer has no ORM access to payroll models. Residual risk: a person's name typed into the question survives regex scrubbing → mitigation below.</td></tr>
+          <tr><td><strong>PayAI</strong> (existing)</td><td style="background:var(--pb-warn-soft);color:#7A5310;font-weight:700">Yes — by design</td><td>Data queries fetch real records and embed them as JSON in the provider prompt (<code>payroll_ai_engine.py:216-220</code>). Most intents send aggregates (per-department totals/averages), but <code>_query_individual_data</code> (<code>payroll_data_query.py:573-604</code>) sends <strong>employee names, job titles and individual salaries</strong> (up to 20), and the query engine runs <code>.sudo()</code> throughout. Conversation history is also forwarded.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="callout warn"><svg class="ic"><use href="#i-alert-triangle"/></svg>
+        <span><strong>PayAI hardening (recommended, independent of pb_learn):</strong> (1) drop the <code>.sudo()</code>
+        in <code>payroll.data.query</code> so answers respect the asking user's access rights — today a user without
+        contract access can extract salaries through chat; (2) pseudonymise the individual path (send tokens, re-substitute
+        names in the reply) or gate it to managers; (3) if data residency matters, a self-hosted provider slots into the
+        existing factory. pb_learn's Phase D composer will reuse whatever provider policy PayAI lands on.</span></div>
+
       <h3>Two LLM seams, both optional</h3>
       <ol>
         <li><strong><code>_resolve_hook</code></strong> — may only <em>choose an intent key from the scored
@@ -653,7 +670,7 @@ tools/check_contract.py + --check      (CI: facts still true, output not drifted
     <!-- ================================================================ 12 -->
     <section id="questions">
       <h2><span class="h-ic"><svg class="ic lg"><use href="#i-help-circle"/></svg></span><span><span class="n">12</span><br/>Decisions taken &amp; open questions</span></h2>
-      <p class="small muted">Numbered = decided here (flag if you disagree). Amber = needs your call before Phase A ends.</p>
+      <p class="small muted">All questions resolved in review, 2026-08-09.</p>
       <ol class="qs">
         <li><strong>Model names stay <code>learn.*</code></strong> (not <code>pb.learn.*</code>) — maximum diffability
           against health_learn; the products never share a DB.</li>
@@ -676,13 +693,17 @@ tools/check_contract.py + --check      (CI: facts still true, output not drifted
           worked example as fallback); Phase A ships static content.</li>
         <li><strong>Demo world adopts pb_learn in Phase A, coexisting</strong> with the pb_coach hero tour until the
           Phase B capstone replaces the climax and Phase C retires pb_coach.</li>
-        <li class="open"><strong>Open</strong> — Journey sidebar placement: a leaf in the Pay Run section (health19
-          pattern: CRM section, sequence 90) vs a top-level "Learn" section. Default: Pay Run leaf until Phase C, then a
-          section of its own.</li>
-        <li class="open"><strong>Open</strong> — should <code>learn.progress</code>/<code>learn.confidence</code> be
-          visible to payroll managers (readiness signal) or private + author-only, as health_learn ships? Default:
-          health_learn's privacy model.</li>
+        <li><strong>Journey placement (decided 2026-08-09):</strong> a leaf in the Pay Run section through Phases A–B;
+          promoted to a top-level "Learn" section of its own once all sections are implemented (Phase C).</li>
+        <li><strong>Progress privacy (decided 2026-08-09):</strong> <code>learn.progress</code> /
+          <code>learn.confidence</code> stay private + author-only, exactly as health_learn ships. No manager
+          visibility.</li>
+        <li><strong>Data boundaries (decided 2026-08-09):</strong> pb_learn never sends database records to any LLM in
+          any phase (§6 audit table); the Phase D composer sends only the scrubbed question + authored corpus, behind a
+          flag that ships off. PayAI's existing data-egress and <code>.sudo()</code> issues are tracked as an
+          independent hardening task (§6).</li>
       </ol>
+      <p class="small muted">No open questions remain — the design is fully decided and ready for Phase A.</p>
     </section>
 
   </article>
