@@ -85,3 +85,50 @@ Append new gotchas at the bottom as they are hit; never delete entries.
 ## Appended during implementation
 
 (implementers: add discoveries here, one bullet each, with file:line)
+
+### Run A1 (port + anchors)
+
+- **`res.groups` has NO `category_id` in this repo — use `privilege_id`.** The
+  handover's A1-1 row said "simple `category_id`"; that is Odoo ≤18. Every group
+  in `pb_hr_payroll_base/security/payroll_base_security_enhanced.xml:73,79,86,93`
+  hangs off a `res.groups.privilege`, and the *privilege* carries `category_id`
+  (:11-15). `group_learn_author` therefore takes
+  `privilege_id ref="pb_hr_payroll_base.res_groups_privilege_payroll_base"`
+  (pb_learn/security/learn_security.xml:11-24). A `category_id` field on
+  `res.groups` would fail the data load outright.
+- **`health_user_admin` has no Payobook analog.** health_learn gave the tenant
+  admin write access to the override slots via its own admin group. The nearest
+  honest equivalent is `pb_hr_payroll_base.group_payroll_super_admin` — used in
+  `security/ir.model.access.csv:21` and `views/learn_menus.xml:24`.
+- **XML comments cannot contain `--`.** A dashed underline inside the header
+  comment of `data/learn_screens.xml` made the file non-well-formed. Use `====`
+  in XML comment rules; `----` is fine in .py/.js/.scss.
+- **`pb_sidebar` REPLACES `//ActionContainer`**
+  (pb_sidebar/static/src/xml/webclient_patch.xml:5) — exactly the collision
+  health_learn's comment warns about. `coach_patch.xml` therefore xpaths
+  `//MainComponentsContainer`, which nothing in this repo touches. Do not move it.
+- **Bottom-right is a three-control stack now.** `.payai-floating-pill`
+  bottom 24px (pb_payroll_ai_insights/…/ai_insight_chat.scss:96) · `.pbc-launcher`
+  bottom 92px (pb_coach/static/src/scss/coach.scss:200) · `.lrn-fab` bottom 160px
+  (pb_learn/static/src/coach/coach.scss). CSS only — neither neighbour is
+  modified, and demo users deliberately get all three. Note pb_coach *hides*
+  itself over `.iw-root` / `.pw-root`; pb_learn does NOT, because those two
+  wizards are two of the eight screens the Coach is supposed to be on.
+- **The sprite is not optional and the regex scan under-reads it.** Icon names
+  reaching `ic()` through a helper argument (`kpiTile("layers", …)`) or out of a
+  `learn.station.icon` record are invisible to health_learn's `test_assets`
+  scan, and a missing symbol renders as a silent gap. `layers` was already
+  missing. Fixed by adding the symbol plus `test_02b`, which reads the icon
+  names off the *records*.
+- **`pb.sidebar.item.get_sidebar_data()` returns the same shape as the cms one**
+  (sections → `items` → `children`, pb_sidebar/models/pb_sidebar.py:106-136), so
+  `learn.station._visible_sidebar_item_ids` ports with only the model name
+  changed. Confirmed, not assumed.
+- **Only 7 of the 8 Phase-A screens have a sidebar leaf.** `importwizard` is a
+  flow, not a destination — it is the single legitimate user of
+  `learn.screen.action_tags` (`pb_import_wizard`, registered at
+  pb_import_wizard/static/src/js/import_wizard.js:160). `test_coach`'s
+  "every screen names a leaf" count is 7, not 8.
+- **`node --check` on a copy renamed to `.mjs` syntax-checks every engine file
+  without an Odoo runtime.** Cheap, and it caught nothing this run only because
+  it was run continuously. Worth keeping in the A2 verification list.

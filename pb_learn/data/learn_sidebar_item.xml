@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Journey's front door.
+
+         groups_id is deliberately EMPTY. Every gated leaf in this sidebar hides
+         itself from users who cannot use it, which is right for a working
+         screen and wrong for a learning one: someone who cannot open Run
+         Payroll is exactly the person who needs to read what it is before
+         asking for access. The Journey itself marks each station the learner
+         cannot see as "not in your menu" rather than hiding it.
+
+         `compass`, not a graduation cap: pb_sidebar renders a FIXED icon set
+         (pb_sidebar/static/src/js/pb_sidebar.js) and an unknown name draws a
+         plain circle.
+
+         Sits last in Pay Run for Phase A. When the People / Insights / Setup
+         lines exist it moves to its own section — a one-line change, which is
+         why it is not worth designing for now. -->
+    <record id="item_learn_journey" model="pb.sidebar.item">
+        <field name="name">Learn</field>
+        <field name="section_id" ref="pb_sidebar.sec_payrun"/>
+        <field name="sequence">90</field>
+        <field name="icon">compass</field>
+        <field name="action_xmlid">pb_learn.action_learn_journey</field>
+        <field name="action_tag">learn_journey</field>
+        <field name="match_action_tags">learn_journey</field>
+    </record>
+
+</odoo>

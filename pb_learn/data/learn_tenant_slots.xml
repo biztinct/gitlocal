@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check. -->
+<!-- The named slots a tenant may fill with its own facts.
+
+     A row with NO company is the shipped default AND the declaration: a key
+     with no default row does not exist, and learn.tenant.override refuses an
+     override that does not fill one. Overrides can never replace a lesson step,
+     a quiz option, a consequence card or a Coach answer — the moment a tenant
+     can edit prose you have twelve divergent tutorials and no check can guard
+     any of them. -->
+<odoo>
+
+    <record id="slot_companyDisplayName" model="learn.tenant.override">
+        <field name="key">companyDisplayName</field>
+        <field name="value">your company</field>
+        <field name="note">How the lessons refer to this tenant.</field>
+    </record>
+
+    <record id="slot_payDay" model="learn.tenant.override">
+        <field name="key">payDay</field>
+        <field name="value">the 5th of the month</field>
+        <field name="note">When salaries actually land, in this company.</field>
+    </record>
+
+    <record id="slot_hrTierName" model="learn.tenant.override">
+        <field name="key">hrTierName</field>
+        <field name="value">HR review</field>
+        <field name="note">What this company calls the first approval gate (level1).</field>
+    </record>
+
+    <record id="slot_gmTierName" model="learn.tenant.override">
+        <field name="key">gmTierName</field>
+        <field name="value">GM approval</field>
+        <field name="note">What this company calls the final approval gate (level2).</field>
+    </record>
+
+    <record id="slot_importCutoff" model="learn.tenant.override">
+        <field name="key">importCutoff</field>
+        <field name="value">the 28th</field>
+        <field name="note">The day attendance and overtime must be imported by.</field>
+    </record>
+
+    <record id="slot_bankFileFormat" model="learn.tenant.override">
+        <field name="key">bankFileFormat</field>
+        <field name="value">the bank's standard salary file</field>
+        <field name="note">Which payment file this company's bank accepts.</field>
+    </record>
+
+    <record id="slot_standardWorkingDays" model="learn.tenant.override">
+        <field name="key">standardWorkingDays</field>
+        <field name="value">22</field>
+        <field name="note">Standard working days per month, as the division config sets them.</field>
+    </record>
+
+    <record id="slot_payrollSupportContact" model="learn.tenant.override">
+        <field name="key">payrollSupportContact</field>
+        <field name="value">your payroll administrator</field>
+        <field name="note">Who to ask when a screen is not in your menu.</field>
+    </record>
+
+</odoo>

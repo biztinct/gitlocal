@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_learn_root"
+              name="Training"
+              sequence="180"/>
+
+    <menuitem id="menu_learn_journey"
+              name="Guided Journey"
+              parent="menu_learn_root"
+              action="action_learn_journey"
+              sequence="10"/>
+
+    <!-- Tenant-admin: the override slots. -->
+    <menuitem id="menu_learn_config"
+              name="Configuration"
+              parent="menu_learn_root"
+              sequence="80"/>
+
+    <menuitem id="menu_learn_override"
+              name="Training wording"
+              parent="menu_learn_config"
+              action="action_learn_override"
+              groups="pb_hr_payroll_base.group_payroll_super_admin,pb_learn.group_learn_author"
+              sequence="10"/>
+
+    <!-- Author-only: the spine and the measurement surfaces. -->
+    <menuitem id="menu_learn_content"
+              name="Content"
+              parent="menu_learn_root"
+              groups="pb_learn.group_learn_author"
+              sequence="90"/>
+
+    <menuitem id="menu_learn_station"
+              name="Stations"
+              parent="menu_learn_content"
+              action="action_learn_station"
+              sequence="10"/>
+
+    <menuitem id="menu_learn_lesson"
+              name="Lessons"
+              parent="menu_learn_content"
+              action="action_learn_lesson"
+              sequence="20"/>
+
+    <menuitem id="menu_learn_progress"
+              name="Learner progress"
+              parent="menu_learn_content"
+              action="action_learn_progress"
+              sequence="30"/>
+
+    <menuitem id="menu_learn_event"
+              name="Learning events"
+              parent="menu_learn_content"
+              action="action_learn_event"
+              sequence="40"/>
+
+</odoo>

@@ -1,0 +1,57 @@
+# GENERATED FILE. Do not edit.
+# Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+# Hand edits are erased on the next run and fail the CI check.
+#
+# PHASE A1 PLACEHOLDER — intentionally empty of entries.
+#
+# health_learn's vi_VN.po was 7,892 lines of Vietnamese written for a
+# healthcare CRM. Carrying it over would have shipped clinical wording against
+# payroll records: worse than no translation, because it looks translated.
+# So it is gone, and this file is a valid, empty catalogue until Run A2
+# regenerates it from docs/tutorial_poc/author/.
+#
+# EVERY translatable in this module ships complete EN and VI values — the
+# bundle carries both languages so a learner can switch mid-lesson without
+# losing their place, and tests/test_bundle.py fails on any string that reaches
+# a Vietnamese reader in English. Until A2 runs, that test is expected to fail:
+# the content is English-only by construction, not by omission.
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ---------------------------------------------------------------------------
+# THREE ENTRIES, AND ONLY THREE.
+#
+# These are the strings design_v2 specifies word for word in both languages:
+# the standing honesty promise, the launcher's own invitation, and the name the
+# sidebar leaf carries. They are here rather than waiting for Run A2 because a
+# promise that reaches a Vietnamese reader in English is not the promise that
+# was agreed. Everything else in this catalogue is generated.
+# ---------------------------------------------------------------------------
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_honest
+msgid ""
+"I guide — you act. I never compute a run, approve a payslip or change a "
+"record for you."
+msgstr ""
+"Tôi hướng dẫn — bạn thao tác. Tôi không bao giờ tự tính lương, phê duyệt "
+"phiếu lương hay sửa dữ liệu thay bạn."
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_stuck
+msgid "Stuck?"
+msgstr "Cần trợ giúp?"
+
+#. module: pb_learn
+#: model:pb.sidebar.item,name:pb_learn.item_learn_journey
+msgid "Learn"
+msgstr "Học cùng Payobook"

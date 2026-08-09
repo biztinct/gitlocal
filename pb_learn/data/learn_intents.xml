@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GENERATED FILE. Do not edit.
+         Source: docs/tutorial_poc/author/ · Regenerate: python3 docs/tutorial_poc/author/tools/gen_learn_data.py
+         Hand edits are erased on the next run and fail the CI check.
+
+         PHASE A1 PLACEHOLDER. Three intents: the two dynamic ones every screen
+         suggests, and the compliance refusal — which is in from day one because
+         it is the deny-list's landing point and a refusal that resolves to
+         nothing is worse than no deny-list at all. The other eleven arrive in
+         Run A2. -->
+<!-- The Coach's intents. Match phrases are deliberately NOT translated: a
+     learner types in whichever language they are thinking in, often without
+     tone marks, and both have to hit the same intent. -->
+<odoo>
+
+    <!-- ============================================== whatpage (dynamic) -->
+    <record id="intent_whatpage" model="learn.intent">
+        <field name="key">whatpage</field>
+        <field name="label">What is this screen for?</field>
+        <field name="screens">*</field>
+        <field name="dynamic">screen_blurb</field>
+        <field name="offer" eval="True"/>
+    </record>
+    <record id="intent_whatpage_p1" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whatpage"/>
+        <field name="text">what is this screen for</field>
+    </record>
+    <record id="intent_whatpage_p2" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whatpage"/>
+        <field name="text">what does this page do</field>
+    </record>
+    <record id="intent_whatpage_p3" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whatpage"/>
+        <field name="text">màn hình này dùng để làm gì</field>
+    </record>
+
+    <!-- ============================================== whatnext (dynamic) -->
+    <record id="intent_whatnext" model="learn.intent">
+        <field name="key">whatnext</field>
+        <field name="label">What should I do next here?</field>
+        <field name="screens">*</field>
+        <field name="dynamic">next_step</field>
+        <field name="offer" eval="True"/>
+    </record>
+    <record id="intent_whatnext_p1" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whatnext"/>
+        <field name="text">what should I do next here</field>
+    </record>
+    <record id="intent_whatnext_p2" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whatnext"/>
+        <field name="text">tiếp theo tôi nên làm gì</field>
+    </record>
+
+    <!-- ================================================= compliance -->
+    <!-- The landing point for the tax/legal-advice deny list in
+         models/learn_intent.py. offer=False on purpose: a refusal must stay
+         REACHABLE but never advertised — offering "ask me how to pay less tax"
+         invites exactly the question this exists to decline.
+
+         It is not a dead end. It teaches where the rates live and who owns the
+         policy, which is the honest and useful answer. -->
+    <record id="intent_compliance" model="learn.intent">
+        <field name="key">compliance</field>
+        <field name="label">Can Payobook reduce what we owe?</field>
+        <field name="screens">*</field>
+        <field name="dynamic">none</field>
+        <field name="offer" eval="False"/>
+    </record>
+    <record id="intent_compliance_p1" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_compliance"/>
+        <field name="text">how do we pay less tax</field>
+    </record>
+    <record id="intent_compliance_p2" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_compliance"/>
+        <field name="text">làm sao để giảm đóng bhxh</field>
+    </record>
+    <record id="intent_compliance_b1" model="learn.intent.block">
+        <field name="intent_id" ref="intent_compliance"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">refusal</field>
+        <field name="body">I will not help reduce a statutory obligation. Payobook computes what the configured rates and the declared insurance base produce — it does not look for a smaller answer, and neither will I.</field>
+    </record>
+    <record id="intent_compliance_b2" model="learn.intent.block">
+        <field name="intent_id" ref="intent_compliance"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">who</field>
+        <field name="body">Your company's payroll policy owner decides the declared insurance base and the allowance structure. A change to either is a policy decision with legal consequences, not a payroll-software setting.</field>
+    </record>
+    <record id="intent_compliance_b3" model="learn.intent.block">
+        <field name="intent_id" ref="intent_compliance"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">how</field>
+        <field name="body">What I can show you is where the numbers come from: the BHXH, BHYT and BHTN rates and the PIT table live in Statutory, and the per-division formula configuration decides which of them apply to whom. If a figure looks wrong, that is where to look first.</field>
+    </record>
+    <record id="intent_compliance_b4" model="learn.intent.block">
+        <field name="intent_id" ref="intent_compliance"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">Statutory (Insurance &amp; Tax), and the division's formula configuration.</field>
+    </record>
+
+</odoo>
