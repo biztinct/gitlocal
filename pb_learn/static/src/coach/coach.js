@@ -182,7 +182,19 @@ export class CoachHost extends Component {
             const answer = await this.orm.call("learn.intent", "ask", [q, this.state.screen]);
             this.state.answer = answer;
             this.state.history.push({ q, answered: !!answer.matched });
-            this._log(answer.matched ? "coach_hit" : "coach_miss", answer.key || q.slice(0, 40));
+            // NEVER the question text. health_learn logs the first 40
+            // characters of an unanswered question, which is a good content
+            // signal and a bad privacy decision: a help box on a payroll system
+            // receives "why is Nguyễn Thị Mai's net only 4m" — a named employee
+            // and their pay, landing in a table with no retention policy and no
+            // way for that person to know it is there.
+            //
+            // What survives is the signal that is actually used: `screen` is
+            // logged alongside every event, so coach_miss still answers "which
+            // screens do people get stuck on", which is what drives the next
+            // piece of content. WHICH question they asked becomes a Phase D
+            // opt-in on its own deletable model.
+            this._log(answer.matched ? "coach_hit" : "coach_miss", answer.key || "");
         } catch {
             this.state.answer = null;
         } finally {

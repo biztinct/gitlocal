@@ -242,16 +242,43 @@ class TestCoach(TransactionCase):
                 self.assertTrue(s['label']['en'] and s['label']['vi'])
 
     def test_11_an_uncovered_screen_is_admitted_not_guessed(self):
-        """Off the Pay Run map the Coach must say so, not answer about Pay Run."""
-        res = self.Intent.ask("what does this screen do", 'not_a_real_screen')
-        # `whatpage` is screens='*', so it resolves — but with no screen record
-        # its dynamic blurb is empty rather than a borrowed one.
-        if res['matched']:
-            bodies = [b['body'] for b in res['blocks']]
-            for b in bodies:
-                if isinstance(b, dict):
-                    self.assertNotIn('Run Payroll', b.get('en') or '',
-                                     "answered about another screen entirely")
+        """Off the Pay Run map the Coach must say so, not answer about Pay Run.
+
+        `whatpage` and `whatnext` are screens='*' and DYNAMIC: their only block
+        is built from the screen record. On a screen the spine does not cover
+        there is no record, so the block list is empty — and an answer with no
+        blocks used to be returned as `matched`, which rendered the intent's own
+        heading above an empty card. The Coach appeared to answer while saying
+        nothing, which is worse than the miss it should have been: a miss at
+        least names what it CAN answer.
+        """
+        for question in ("what does this screen do", "what should i do next here"):
+            res = self.Intent.ask(question, 'not_a_real_screen')
+            self.assertFalse(res['matched'],
+                             "%r on an uncovered screen was answered with an "
+                             "empty card instead of an honest miss" % question)
+            self.assertTrue(res['suggest'],
+                            "the miss offered nothing to ask instead")
+            self.assertNotIn('blocks', res,
+                             "a miss is carrying an answer payload")
+
+    def test_11b_an_answer_that_renders_nothing_is_never_matched(self):
+        """The guard, asserted directly rather than through one screen key.
+
+        Every intent, on every screen it claims: if it comes back matched it
+        has something to say. This is the invariant the drawer relies on — it
+        renders `matched` as an answer card without checking there is anything
+        in it.
+        """
+        empty = []
+        screens = [None] + self.Screen.search([]).mapped('key') + ['not_a_real_screen']
+        for intent in self.Intent.search([]):
+            for screen in screens:
+                res = self.Intent.ask(intent.label, screen)
+                if res.get('matched') and not res.get('blocks'):
+                    empty.append('%s on %s' % (intent.key, screen))
+        self.assertFalse(empty, "Answers that claim to have matched and render "
+                                "an empty card:\n  " + "\n  ".join(empty))
 
     # -------------------------------------------------------------- content
     def test_12_no_unresolved_tokens_in_any_answer(self):

@@ -97,10 +97,15 @@ function ledgerHTML(key) {
     if (!d) {
         return "";
     }
+    // A money value arrives as a NUMBER and is formatted here, in the one place
+    // that formats money — so it follows the reader's language like every other
+    // figure on the screen. Pre-formatted strings in the fixture printed
+    // "8,420,000 ₫" to a Vietnamese reader who groups thousands with a dot.
     const kpis = d.kpis.map((k) => `
         <div class="lrn-kpi">
             <div class="lrn-kt">${ic("calculator")}<span>${esc(tx(k.label))}</span></div>
-            <div class="lrn-kv ${k.money ? "lrn-money" : ""}">${esc(k.v)}</div>
+            <div class="lrn-kv ${k.money ? "lrn-money" : ""}">${
+                esc(typeof k.v === "number" ? M(k.v) : k.v)}</div>
         </div>`).join("");
     const facets = d.facets.map((f, i) =>
         `<button class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(f))}</button>`).join("");
@@ -269,8 +274,15 @@ export const SCREENS = {
         // A payslip's own chain — FOUR stages. It has no level0; that gate
         // belongs to the run. Drawing the run's five here would teach a tier
         // that does not exist on a slip.
-        const flow = ["draft", "level1", "level2", "done"].map((c, i) => `
-            <div class="lrn-st ${i < 1 ? "done" : ""}${SP}${i === 1 ? "cur" : ""}"
+        //
+        // The current stage is read from the SELECTED slip rather than fixed,
+        // so the stepper cannot disagree with the row that is highlighted. The
+        // July run is at level0, which means every slip in it is still draft.
+        const chain = ["draft", "level1", "level2", "done"];
+        const at = Math.max(0, chain.indexOf((PRACTICE.slips.find((x) => x.sel)
+            || PRACTICE.slips[0]).state));
+        const flow = chain.map((c, i) => `
+            <div class="lrn-st ${i < at ? "done" : ""}${SP}${i === at ? "cur" : ""}"
                 >${esc(tx(STATUS_LABELS.payslip[c].l))}</div>`).join("");
 
         return `
@@ -385,6 +397,7 @@ export const SCREENS = {
             </div>
             <div class="lrn-statpills" data-coach="iw-review">
                 <span class="lrn-statpill"><b>${P(w.score)}</b>${esc(T("confidenceScore"))}</span>
+                <span class="lrn-statpill"><b>${N(w.rows)}</b>${esc(tx(B("Rows loaded", "Dòng đã nạp")))}</span>
                 <span class="lrn-statpill"><b>${N(w.matched)}</b>${esc(tx(B("Matched", "Đã khớp")))}</span>
                 <span class="lrn-statpill"><b>${N(w.newEmployees)}</b>${esc(tx(B("New employees", "Nhân viên mới")))}</span>
                 <span class="lrn-statpill warn"><b>${N(w.errors)}</b>${esc(tx(B("Need attention", "Cần xử lý")))}</span>

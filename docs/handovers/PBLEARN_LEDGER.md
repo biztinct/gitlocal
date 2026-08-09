@@ -181,3 +181,79 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   modules and stay hand-curated — generating a claim about someone else's
   template from our own content would let the registry agree with itself while
   disagreeing with the product.
+
+### Run A2 review fixes
+
+- **PRIVACY DIVERGENCE FROM health_learn, deliberate:** `coach_miss` must NOT
+  carry the learner's question. health_learn logs `q.slice(0, 40)`
+  (health_learn/static/src/coach/coach.js), which on a payroll help box is
+  "why is Nguyễn Thị Mai's net only 4m" — a named employee and their pay,
+  landing in `learn.event`, a table with no retention policy and no way for
+  that person to know it is there. pb_learn sends `answer.key || ""`. The
+  signal that is actually used survives: `screen` is logged on every event, so
+  miss RATE per screen still drives the next piece of content. Mining the
+  questions themselves becomes a Phase D opt-in on its own deletable model.
+  Asserted by `test_progress_security::test_06`, which reads coach.js because
+  the server cannot observe what the browser chose not to send.
+- **A resolved intent can render NOTHING, and used to ship as `matched`.**
+  Dynamic intents (`whatpage`, `whatnext`) build their only block from the
+  screen record, so on an uncovered screen — or before `next_step` was a real
+  field — the drawer showed the intent's heading above an empty card. `ask()`
+  now requires `answer['blocks']` before claiming a match; anything else falls
+  through to the honest miss, which at least names what it CAN answer.
+  Undeclared shipped behaviour in A1/A2; `test_11`/`test_11b` pin it.
+- **Do the arithmetic, then write the sentence.** 4,200,000 / 1,100,000 is
+  **381.8%**, not 282% — the wrong figure had propagated to 39 sites across
+  lessons, missions, intents and the fixture before anyone multiplied it out.
+  Ratio framing ("382% of June") is now used everywhere; "up N%" was banned
+  because the two framings differ by exactly 100 points and mixing them is how
+  the error survived review the first time.
+- **Every displayed figure in the fixture is now DERIVED.** `payslip()` in
+  practice-data.js is the one rule (10.5% insurance on the registered base,
+  11m relief + 4.4m per dependant, 5% first bracket); employees declare only
+  inputs. Mai is the test vector and reproduces her canonical numbers exactly.
+  Board KPIs, the import score and the ledger totals are getters over their own
+  rows — a hand-typed KPI that disagrees with the list beneath it is the exact
+  misreading the "In pipeline" column entry warns about.
+- **One record, one state, across every replica.** The July run was `draft` on
+  the board and `level0` on the Dashboard, with its payslips at `level1` — a
+  batch cannot be behind its own slips. Now: run at `level0`, payslips `draft`
+  (level0 is a gate on the RUN; a payslip's chain has no such stage), F&B at
+  `draft` for the same reason m1's division decision turns on, and
+  `In pipeline = 1` follows from the rows rather than being asserted.
+  Missions state their own starting point when it differs from the replica's
+  "now" — m2 says the Officer has already approved.
+- **Tenant-slot defaults must be what the PRODUCT says by default.**
+  `gmTierName` shipped "GM approval"; the real board prints "Finance approval"
+  (pb_payruns/static/src/js/pipeline_field.js:11). A tenant who never sets the
+  slot then reads one word in the lesson and another on their board.
+  `contract.json::payrun-pipeline-labels` now pins all five stage labels — and
+  note there are TWO legitimate label sets: the model's selection strings
+  ("Payroll Officer pending", used by the kanban the replica mirrors) and this
+  widget's ("Officer review"). Neither is wrong; they are different surfaces.
+- **Money belongs in the fixture as a NUMBER.** Two ledger KPIs shipped as the
+  pre-formatted string "8,420,000 ₫" and reached a Vietnamese reader unchanged,
+  in a module whose whole point is that figures follow the reader's language.
+  Formatting happens in `M()`, once.
+- **Proration: print the factor to 4 dp or the money will not multiply out.**
+  10,000,000 × 9/22 is 4,090,909.09; "0.41" beside "4,090,000" invited a
+  learner to check the tutorial's arithmetic and find it wrong. Huy's 11/22 is
+  exactly 0.5000 — one tidy row and one untidy one is what real proration looks
+  like.
+
+### Deferred by the reviewer (do not treat as missing)
+
+- **`trace` visual has no content yet.** It arrives with Phase B's statutory
+  lesson; the designer is amending the acceptance doc. The engine supports it.
+- **Duplicate sprite ids** in icons.xml — cosmetic, no render impact.
+- **`learn.confidence.award` has no server-side proof** in Phase A.
+- **pb_sidebar ships no i18n**, so leaf names outside pb_learn are English on a
+  Vietnamese session. Separate ticket, not a pb_learn defect.
+
+### Deploy notes
+
+- **`vi_VN` must be an ACTIVE language before `-u pb_learn`.** The .po is loaded
+  at install/upgrade only; installing the language afterwards leaves every
+  Vietnamese value missing until the module is upgraded again. Activate the
+  language first, then install, then verify with one `learn.string` read under
+  `with_context(lang='vi_VN')`.

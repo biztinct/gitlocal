@@ -56,8 +56,11 @@ never hand-edited here).
         'data/learn_columns.xml',
         # Practice missions. They run on the REPLICA only.
         'data/learn_missions.xml',
-        # Hand-written.
+        # Hand-written: module wiring, not content.
         'views/learn_actions.xml',
+        # Generated too — the leaf's NAME is content and ships in both
+        # languages, so it reaches the .po the same way everything else does.
+        # It loads AFTER learn_actions.xml because it refs the client action.
         'data/learn_sidebar_item.xml',
         'views/learn_content_views.xml',
         'views/learn_override_views.xml',

@@ -379,7 +379,17 @@ class LearnIntent(models.Model):
         key = self.resolve(question, screen_key)
         if key:
             answer = self._answer(key, screen_key)
-            if answer:
+            # AN ANSWER WITH NO BLOCKS IS NOT AN ANSWER.
+            #
+            # A dynamic intent builds its only block from the screen record —
+            # `whatpage` from the blurb, `whatnext` from next_step — so on a
+            # screen the spine does not cover, or before those fields are
+            # written, it resolves and then renders NOTHING. What the learner
+            # saw was the intent's own heading above an empty card: the Coach
+            # appearing to answer while saying nothing at all, which is worse
+            # than the miss it should have been, because a miss at least names
+            # what it CAN answer.
+            if answer and answer.get('blocks'):
                 answer['matched'] = True
                 return answer
 

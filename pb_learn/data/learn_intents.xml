@@ -148,7 +148,7 @@
         <field name="sequence">20</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">On this run it is Trần Văn Hùng: overtime of 4,200,000 ₫ against 1,100,000 ₫ in June, which is 282% of last month. That is well inside the range a genuine peak week produces, and also exactly what 4.6 hours typed as 46 looks like.</field>
+        <field name="body">On this run it is Trần Văn Hùng: overtime of 4,200,000 ₫ against 1,100,000 ₫ in June, which is 382% of last month. That is well inside the range a genuine peak week produces, and also exactly what 4.6 hours typed as 46 looks like.</field>
     </record>
 
     <record id="intent_needreview_b030" model="learn.intent.block">
@@ -805,7 +805,7 @@
         <field name="screens">import,importwizard</field>
         <field name="dynamic">none</field>
         <field name="show_me">iw-review</field>
-        <field name="simpler">It is not a mark out of a hundred. It is simply how much of your file the system could read without having to guess — so 98% of fifty rows still means one row it could not place, and that row is one person's pay.</field>
+        <field name="simpler">It is not a mark out of a hundred. It is simply how much of your file the system could read without having to guess — so 96% of fifty rows still means two rows it could not place, and each of those is one person's pay.</field>
         <field name="offer" eval="True"/>
     </record>
 
@@ -849,7 +849,7 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">It is the share of rows the importer matched to an employee and read without ambiguity. It is not a grade and there is no pass mark, because the number that matters is the count underneath it: 98.5% of 48 rows still leaves two rows a human has to resolve.</field>
+        <field name="body">It is the share of rows the importer matched to an employee and read without ambiguity — 46 of 48 here. It is not a grade and there is no pass mark, because the number that matters is the count underneath it: 95.8% of 48 rows still leaves two rows a human has to resolve.</field>
     </record>
 
     <record id="intent_confidence_b020" model="learn.intent.block">

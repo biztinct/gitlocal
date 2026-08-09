@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """Learner state is real data about a person. It is scoped like it."""
+import os
+
 from odoo.exceptions import AccessError
+from odoo.modules.module import get_module_path
 from odoo.tests.common import TransactionCase, tagged
 
 
@@ -73,3 +76,26 @@ class TestProgressSecurity(TransactionCase):
         ]
         self.assertFalse(text_fields,
                          "learn.event has an unbounded text field: %s" % text_fields)
+
+    def test_06_a_coach_miss_never_logs_the_question(self):
+        """The privacy rule, asserted against the source that would break it.
+
+        health_learn logs the first 40 characters of an unanswered question. On
+        a payroll help box that is "why is Nguyễn Thị Mai's net only 4m" — a
+        named employee and their pay — landing in a table with no retention
+        policy and no way for that person to know it is there. pb_learn
+        deliberately diverges: the miss is logged with the intent key or an
+        empty string, so the per-screen miss RATE survives (screen is logged on
+        every event) and the question text never leaves the browser.
+
+        Checked against the source because the behaviour lives in JS: the
+        server cannot observe what the frontend chose not to send.
+        """
+        path = os.path.join(get_module_path('pb_learn'),
+                            'static/src/coach/coach.js')
+        with open(path, encoding='utf-8') as fh:
+            src = fh.read()
+        call = src.split('this._log(answer.matched')[1].split(';')[0]
+        for banned in ('q.slice', 'question', 'this.state.question'):
+            self.assertNotIn(banned, call,
+                             "the coach_miss log carries the learner's question: %s" % call)
