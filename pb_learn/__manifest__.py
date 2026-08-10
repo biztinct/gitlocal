@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payobook Learn — in-app learning',
-    'version': '19.0.5.0.0',
+    'version': '19.0.6.0.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
@@ -78,6 +78,13 @@ never hand-edited here).
             'pb_learn/static/src/coach/coach.scss',
             'pb_learn/static/src/coach/coach.js',
             'pb_learn/static/src/coach/coach.xml',
+            # The live capstone's docked card. Mounted through the same
+            # WebClient patch as the Coach, because its first step navigates
+            # away from the Journey that started it.
+            'pb_learn/static/src/live/live_mission.scss',
+            'pb_learn/static/src/live/live_state.js',
+            'pb_learn/static/src/live/live_mission.js',
+            'pb_learn/static/src/live/live_mission.xml',
             'pb_learn/static/src/coach/coach_patch.js',
             'pb_learn/static/src/coach/coach_patch.xml',
         ],

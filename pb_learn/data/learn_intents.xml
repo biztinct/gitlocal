@@ -1520,13 +1520,22 @@
         <field name="intent_id" ref="intent_whichpolicy"/>
         <field name="sequence">30</field>
         <field name="capability">any</field>
-        <field name="kind">warn</field>
-        <field name="body">Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip.</field>
+        <field name="kind">p</field>
+        <field name="body">On this company right now, employee / employer: {{live:active_policy_rates}}. Read straight off the policy in force — if that is not what you expected, the roster below will show you which record is being applied.</field>
+        <field name="live_fallback">Open the rates table above to read the split that is in force here. Every figure the Coach quotes about contributions comes off that record, never from memory.</field>
     </record>
 
     <record id="intent_whichpolicy_b040" model="learn.intent.block">
         <field name="intent_id" ref="intent_whichpolicy"/>
         <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip.</field>
+    </record>
+
+    <record id="intent_whichpolicy_b050" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="sequence">50</field>
         <field name="capability">any</field>
         <field name="kind">source</field>
         <field name="body">The active insurance policies, ordered by effective date.</field>

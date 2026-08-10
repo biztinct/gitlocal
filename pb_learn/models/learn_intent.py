@@ -107,7 +107,24 @@ class LearnScreen(models.Model):
              "from the sidebar leaf named by sidebar_key, so the Coach and the "
              "sidebar can never disagree about which screen is showing.")
     sidebar_key = fields.Char(help="xml-id of the leaf, for the visibility check.")
+    live_fallback = fields.Text(
+        translate=True,
+        help="The sentence to show when a {{live:...}} token in next_step cannot "
+             "be resolved — on a tenant that is not the demo world, which is "
+             "every tenant but one.")
     suggest_ids = fields.Many2many('learn.intent', string='Suggested questions')
+
+    def _next_step_live(self):
+        """next_step with its live tokens resolved, or the authored fallback.
+
+        The second and last live site. `whatnext` is the most-asked question on
+        any screen, and on the demo world the useful answer names the state the
+        prospect's OWN June run is actually in — which no static sentence can.
+        Everywhere else the authored sentence is shown unchanged.
+        """
+        self.ensure_one()
+        return self.env['learn.live'].render(self.next_step or '',
+                                             self.live_fallback or '')
 
     _sql_constraints = [('key_uniq', 'unique(key)', 'A screen key must be unique.')]
 
@@ -370,7 +387,7 @@ class LearnIntent(models.Model):
                            'body': screen.blurb or '', 'steps': []})
         elif self.dynamic == 'next_step' and screen:
             out.insert(0, {'capability': 'any', 'kind': 'p',
-                           'body': screen.next_step or '', 'steps': []})
+                           'body': screen._next_step_live(), 'steps': []})
         return {
             'key': self.key,
             'label': self.label,
@@ -509,7 +526,7 @@ class LearnIntent(models.Model):
                     'key': s.key,
                     'name': s.name,
                     'blurb': s.blurb or '',
-                    'next_step': s.next_step or '',
+                    'next_step': s._next_step_live(),
                     'action_tags': s._matchers()[0],
                     'action_xmlids': s._matchers()[1],
                     'models': s._matchers()[2],
@@ -566,6 +583,11 @@ class LearnIntentBlock(models.Model):
     kind = fields.Selection(
         selection=lambda self: self._selection_kind(), required=True, default='p')
     body = fields.Text(translate=True)
+    live_fallback = fields.Text(
+        translate=True,
+        help="The sentence to show when a {{live:...}} token in the body cannot "
+             "be resolved. Required by the generator on any body that uses one: "
+             "a half-resolved sentence reads as a fact with a hole in it.")
     step_ids = fields.One2many('learn.intent.step', 'block_id')
 
     @api.model
@@ -598,7 +620,12 @@ class LearnIntentBlock(models.Model):
         return {
             'capability': self.capability,
             'kind': self.kind,
-            'body': self.body or '',
+            # Live values are resolved HERE, per language, because this runs
+            # once inside each of _answer's two language contexts — so a
+            # Vietnamese reader gets a Vietnamese division name rather than an
+            # English one substituted into a Vietnamese sentence.
+            'body': self.env['learn.live'].render(self.body or '',
+                                                  self.live_fallback or ''),
             'steps': [{'text': s.text, 'anchor': s.anchor or ''} for s in self.step_ids],
         }
 

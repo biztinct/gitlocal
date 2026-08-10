@@ -306,6 +306,57 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   (the `practice` intent, which had to stop saying "two are playable") and
   altered none of the other 561.
 
+### Run B2 (the demo live track)
+
+- **`check` was already taken, and taking it twice would have shipped the
+  debrief in English.** `learn.mission._mission_dict` has had a `check` key
+  since Phase A — the debrief CHECKLIST, a list of prose. Adding the live
+  step's predicate key under the same name would have forced `check` into
+  `_RAW_KEYS` to survive the bilingual zip, and the checklist would have gone
+  with it. The FIELD is `check` (as the handover specifies); the serialised key
+  is **`check_key`**. Same class of bug as ledger §5.146, one level deeper, and
+  it is the second time this exact shape has bitten.
+- **A live mission cannot live inside the Journey.** Its first step navigates to
+  the product, which unmounts the Journey client action and everything it was
+  holding. The runner is therefore a separate component mounted through the SAME
+  `WebClient` patch as the Coach (`coach_patch.js/.xml`), with `LiveState`
+  (localStorage-backed) as the handover between them. Anything Phase C adds that
+  must outlive a `doAction` belongs there too.
+- **The predicate registry must not assign the division it reads.**
+  `_my_division` was written to call `_pb_ensure_demo_division()` — convenient,
+  and it would have put a field write inside a 10-second poll loop and cost
+  `learn_live.py` the one property that makes it auditable. Assignment lives in
+  pb_demo (signup, and lazily in `demo_payrun.get_defaults`); the predicate just
+  reports `_NO_DIVISION`, whose note is exactly the instruction that causes one.
+- **`contract.json::live-surfaces-are-read-only` is an `absent` check, so its
+  tokens must be greppable without false positives.** `_compute` matches
+  `june_run_computed`; `write` matches "written". The pinned tokens are
+  `.create(` `.write(` `.unlink(` `cr.execute` `action_` `_do_` — punctuation
+  included, deliberately.
+- **The demo world is identified by COMPANY NAME.** There is no `is_demo` on
+  `res.company`; `pb_demo/models/demo_catalog.py:25` is the only declaration of
+  `'Payobook Vietnam JSC'`. The gate checks group membership AND that name, and
+  `contract.json::demo-divisions-and-group` pins the string.
+- **`hr.payslip.run.pb_division` is empty until the run has payslips.** It is a
+  stored compute over the first slip's formula config
+  (hr_payslip_run.py:106-125), so a run that exists but has not computed cannot
+  be found by division at all. `june_run_computed` therefore counts slips as
+  well as matching the division — matching alone would report "not yet" forever
+  on a run that was sitting right there.
+- **Round-robin counts ASSIGNMENTS, not group members.** One indexed search on
+  `pb_demo_division != False`, so the lazy back-fill of an older demo user and a
+  fresh signup take the identical path — one rule, one behaviour, and no
+  dependency on how this Odoo build flattens `group_ids`.
+- **The scss min()/max()+calc() trap caught this module a second time**, in the
+  file whose own comment warned about it. `min(var(--w), calc(100vw - 32px))`
+  is the same hazard as the inline form; the fix is TWO custom properties and no
+  CSS `min()` at all.
+- **Chrome strings were audited both directions and three were dropped.**
+  `liveVerified`, `liveResume` and `liveObserveOnly` shipped as records nothing
+  rendered. Dead configuration is dead configuration whether it is a tenant slot
+  or a UI label — 110 declared, 109 read by the JS, the rest being `lines.*` and
+  `brand`.
+
 ### Deferred by the reviewer (do not treat as missing)
 
 - ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5

@@ -20,7 +20,8 @@
         <field name="sequence">20</field>
         <field name="name">Pay Runs</field>
         <field name="blurb">Every pay run on one board, in the column of the approval stage it is waiting at.</field>
-        <field name="next_step">Look at "Awaiting your approval" first — that count is the work only you can unblock. Everything else on this board is somebody else's gate.</field>
+        <field name="next_step">Your division on this demo is {{live:division_name}}, and its June run is at {{live:june_run_state}} right now. Look at "Awaiting your approval" first — that count is the work only you can unblock.</field>
+        <field name="live_fallback">Look at "Awaiting your approval" first — that count is the work only you can unblock. Everything else on this board is somebody else's gate.</field>
         <field name="sidebar_key">pb_sidebar.item_pay_runs</field>
         <field name="suggest_ids" eval="[(6, 0, [ref('intent_approve'), ref('intent_reject'), ref('intent_checkfinal'), ref('intent_retroq'), ref('intent_whatnext')])]"/>
     </record>

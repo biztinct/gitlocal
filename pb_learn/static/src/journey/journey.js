@@ -29,6 +29,7 @@ const MISSION_HOME = {
     setup: "statutory",
 };
 import { shellHTML } from "../engine/screens";
+import { LiveState } from "../live/live_state";
 import { morphHTML, calcHTML, pipeHTML, runPipeline } from "../engine/visuals";
 
 const LOCAL_PREFS = "pbLearnPrefs";
@@ -465,8 +466,12 @@ export class LearnJourney extends Component {
         const cards = this.missions.map((m) => {
             const done = (this.progress[`mission:${m.key}`] || {}).state === "done";
             const full = m.kind === "full";
+            // A live capstone is marked on the CARD, not only inside it. It is
+            // the one mission on this list that touches real records, and a
+            // learner should know that before they open it, not after.
+            const live = m.kind === "live";
             return `
-            <button class="lrn-card ${full ? "star" : ""}${SP}${done ? "done" : ""}"
+            <button class="lrn-card ${full || live ? "star" : ""}${SP}${done ? "done" : ""}"
                     data-mission="${esc(m.key)}">
                 <span class="lrn-cardico">${ic(m.icon)}</span>
                 <span class="lrn-cardmain">
@@ -474,8 +479,9 @@ export class LearnJourney extends Component {
                         ${done ? ic("check-circle", "ok") : ""}</span>
                     <span class="lrn-carddesc">${esc(tx(m.summary))}</span>
                     <span class="lrn-cardmeta">
+                        ${live ? `<span class="lrn-chip a">${ic("zap")}${esc(T("liveBadge"))}</span>` : ""}
                         <span class="lrn-chip ${full ? "b" : ""}">${ic(full ? "flask" : "list-checks")}
-                            ${esc(full ? T("startMission") : T("outlineMission"))}</span>
+                            ${esc(live ? T("liveStart") : (full ? T("startMission") : T("outlineMission")))}</span>
                         <span class="lrn-chip">${ic("clock")}${esc(
                             T("est") + " " + m.duration_min + " " + T("min"))}</span>
                     </span>
@@ -528,10 +534,13 @@ export class LearnJourney extends Component {
         }
         if (m.kind === "live") {
             // Live capstones validate REAL actions on REAL records and are
-            // demo-tenant only (design_v2 §5). Phase A ships the content shape
-            // and not the runtime, so the runner says so rather than opening a
-            // mission whose steps would silently do nothing.
-            return this._missionUnavailableBody(m);
+            // demo-world only (design_v2 §5). Outside it there is nothing to
+            // observe, so the runner says so by name rather than opening a
+            // mission whose steps could never complete. The server refuses too
+            // — this branch is the courtesy, learn.live._live_gate is the gate.
+            return this.isDemo
+                ? this._liveBriefingBody(m)
+                : this._missionUnavailableBody(m);
         }
         if (m.kind !== "full") {
             return this._missionOutlineBody(m);
@@ -567,6 +576,47 @@ export class LearnJourney extends Component {
             <div><h1>${esc(tx(m.name))}</h1><p class="lrn-lead">${esc(tx(m.summary))}</p></div>
         </header>
         <p class="lrn-callout warn">${ic("lock")}${esc(T("liveNotYet"))}</p>`;
+    }
+
+    /** The live capstone's front door: what is real, and a nudge to rehearse.
+     *
+     *  The nudge is a LINK and never a lock. An account executive driving a
+     *  demo has to be able to jump straight to the climax, and a learner who
+     *  wants to feel the consequence first should be one click from doing so.
+     *  Hard-locking would serve neither of them. */
+    _liveBriefingBody(m) {
+        const rehearsed = (this.progress["mission:m1"] || {}).state === "done";
+        const c = m.consequence || {};
+        return `
+        <div class="lrn-back"><button class="lrn-btn ghost sm" data-act="to-missions">
+            ${ic("chevron-left")}${esc(T("missions"))}</button></div>
+        <header class="lrn-ohead">
+            <span class="lrn-cardico big">${ic(m.icon)}</span>
+            <div><h1>${esc(tx(m.name))}
+                    <span class="lrn-chip a">${ic("zap")}${esc(T("liveBadge"))}</span></h1>
+                <p class="lrn-lead">${esc(tx(m.summary))}</p></div>
+        </header>
+        <div class="lrn-panel">
+            <h3>${ic("alert-triangle")}${esc(T("liveReal"))}</h3>
+            <p class="lrn-note">${esc(T("liveRealBody"))}</p>
+            <div class="lrn-obls">
+                <div class="lrn-obl"><h4>${ic("target")}${esc(T("scope"))}</h4>
+                    <p>${esc(tx(c.scope))}</p></div>
+                <div class="lrn-obl"><h4>${ic("rotate-ccw")}${esc(T("reversible"))}</h4>
+                    <p>${esc(tx(c.reversible))}</p></div>
+                <div class="lrn-obl"><h4>${ic("help-circle")}${esc(T("verify"))}</h4>
+                    <p>${esc(tx(c.verify))}</p></div>
+            </div>
+        </div>
+        ${rehearsed ? "" : `<div class="lrn-panel">
+            <h3>${ic("flask")}${esc(T("liveNudge"))}</h3>
+            <p class="lrn-note">${esc(T("liveNudgeBody"))}</p>
+            <button class="lrn-btn sm" data-mission="m1">${ic("play")}${esc(T("liveNudgeGo"))}</button>
+        </div>`}
+        <div class="lrn-cta">
+            <button class="lrn-btn pri" data-act="live-start">
+                ${ic("zap")}${esc(T("liveStart"))}</button>
+        </div>`;
     }
 
     _missionOutlineBody(m) {
@@ -755,6 +805,7 @@ export class LearnJourney extends Component {
             "m-ack": () => { this.state.mAcked = true; },
             "m-cancel": () => this.mBack(),
             "m-retry": () => { this.state.mChoice = null; },
+            "live-start": () => this.startLive(),
             "morph-before": () => { this.state.morphSide = "before"; },
             "morph-after": () => { this.state.morphSide = "after"; },
         }[a];
@@ -908,6 +959,28 @@ export class LearnJourney extends Component {
         this.state.view = "missions";
         this.state.missionKey = null;
         this.state.mDone = false;
+    }
+
+    /** Hand the mission to the docked runner and get out of its way.
+     *
+     *  The Journey does NOT drive a live mission: its first step navigates to
+     *  the product, which unmounts this component. LiveState is the handover,
+     *  and LiveHost — mounted in the web client shell beside the Coach — is
+     *  what survives the navigation. */
+    startLive() {
+        const m = this.mission;
+        if (!m || m.kind !== "live" || !this.isDemo) {
+            return;
+        }
+        LiveState.start(m.key);
+        this.state.view = "missions";
+    }
+
+    /** Whether this session is in the demo world at all. Read from the bundle,
+     *  which reads the real group and the real company — never guessed from a
+     *  URL or a company name in the browser. */
+    get isDemo() {
+        return !!(this.bundle && this.bundle.user && this.bundle.user.is_demo);
     }
 
     openMission(key) {

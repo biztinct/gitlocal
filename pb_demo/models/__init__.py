@@ -2,6 +2,7 @@
 from . import hr_loan
 from . import res_company
 from . import demo_catalog
+from . import demo_division
 from . import demo_generator
 from . import demo_employees
 from . import demo_ess

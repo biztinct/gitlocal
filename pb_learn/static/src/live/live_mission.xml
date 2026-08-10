@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<!-- The live capstone's docked card.
+
+     Bottom-LEFT on purpose. The bottom-right corner already holds three
+     stacked controls (PayAI's pill, pb_coach's FAB, pb_learn's own launcher —
+     see coach.scss), and a fourth would be a pile rather than a stack. This
+     card also has to coexist with all of them: a learner running the capstone
+     can still open the Coach and ask what a flag means.
+
+     No backdrop, no dimming, no focus trap. The product behind it must stay
+     fully usable, because using it is the entire mission. -->
+<t t-name="pb_learn.LiveHost">
+    <div class="lrn-livehost" t-if="state.running and mission">
+        <t t-call="pb_learn.IconSprite"/>
+
+        <!-- Minimised: a single pill that says a mission is running and gets
+             out of the way. Leaving must never be the only way to see the
+             screen underneath. -->
+        <button class="lrn-lvpill" t-if="state.minimised" t-on-click="toggleMinimised">
+            <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-zap"/></svg>
+            <span t-esc="title"/>
+            <span class="lrn-lvstep" t-esc="stepLabel"/>
+        </button>
+
+        <aside class="lrn-lvcard" t-else="" role="region" t-att-aria-label="title">
+            <header class="lrn-lvhead">
+                <span class="lrn-lvbadge">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-zap"/></svg>
+                    <span t-esc="liveBadge"/>
+                </span>
+                <span class="lrn-lvstep" t-esc="stepLabel"/>
+                <button class="lrn-btn sm ghost" t-on-click="toggleMinimised"
+                        t-att-title="minimiseLabel" t-att-aria-label="minimiseLabel">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-chevron-left"/></svg>
+                </button>
+            </header>
+
+            <h2 class="lrn-lvtitle" t-esc="title"/>
+
+            <div class="lrn-lvbody" t-out="bodyHTML"/>
+
+            <footer class="lrn-lvfoot">
+                <button class="lrn-btn sm ghost" t-on-click="back"
+                        t-att-disabled="state.step === 0">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-chevron-left"/></svg>
+                    <span t-esc="backLabel"/>
+                </button>
+
+                <!-- Deep link. Offered, never forced: the learner can navigate
+                     the product themselves and the step is unaffected. -->
+                <button class="lrn-btn sm" t-if="current and current.nav"
+                        t-on-click="openScreen">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-arrow-right"/></svg>
+                    <span t-esc="openScreenLabel"/>
+                </button>
+
+                <!-- Exactly one of these three, decided by the step's own shape. -->
+                <button class="lrn-btn sm pri" t-if="current and current.check_key"
+                        t-on-click="() => this.check(false)" t-att-disabled="state.checking">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-rotate-ccw"/></svg>
+                    <span t-esc="state.checking ? checkingLabel : checkNowLabel"/>
+                </button>
+                <button class="lrn-btn sm pri" t-elif="current and (current.is_ack or current.is_consequence)"
+                        t-on-click="ackStep">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-check"/></svg>
+                    <span t-esc="ackLabel"/>
+                </button>
+                <button class="lrn-btn sm pri" t-else="" t-on-click="_advance">
+                    <span t-esc="isLast ? finishLabel : nextLabel"/>
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-chevron-right"/></svg>
+                </button>
+
+                <button class="lrn-btn sm ghost" t-on-click="leave">
+                    <svg class="lrn-ic" aria-hidden="true"><use href="#lrn-i-x"/></svg>
+                    <span t-esc="leaveLabel"/>
+                </button>
+            </footer>
+        </aside>
+    </div>
+</t>
+
+</templates>

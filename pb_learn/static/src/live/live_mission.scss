@@ -1,0 +1,159 @@
+/* =============================================================================
+   The live capstone card.
+
+   Bottom-LEFT, because the bottom-right corner is already a three-control stack
+   (PayAI 24px · pb_coach 92px · pb_learn's launcher 160px — coach.scss). Same
+   --vuf-* tokens as every other surface in this module, so it re-themes with
+   the Theme Engine rather than carrying its own palette.
+
+   No backdrop and no dimming anywhere in this file. The product behind the card
+   is what the learner is here to use.
+   ========================================================================== */
+
+.lrn-livehost {
+    position: fixed;
+    left: var(--vuf-sp-4, 16px);
+    bottom: var(--vuf-sp-4, 16px);
+    z-index: 1035;          /* above the sheet, below Odoo's own dialogs */
+    /* Two custom properties and NO min()/max() anywhere. Bootstrap's Sass
+       intercepts a CSS min()/max() that wraps a calc() and fails the whole
+       bundle — Odoo then keeps serving the PREVIOUS stylesheet, so the only
+       symptom is a new surface that looks unstyled with nothing in the console.
+       It is in this repo's ledger, it is asserted by
+       tests/test_assets.py::test_01b, and it still caught this file. */
+    --lrn-lv-w: 380px;
+    --lrn-lv-max: calc(100vw - 32px);
+    width: var(--lrn-lv-w);
+    max-width: var(--lrn-lv-max);
+}
+
+.lrn-lvcard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vuf-sp-2, 8px);
+    width: var(--lrn-lv-w);
+    max-width: 100%;
+    padding: var(--vuf-sp-3, 12px);
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-primary, #5A4BB0);
+    border-radius: var(--vuf-r-md, 12px);
+    background: var(--vuf-surface, #fff);
+    box-shadow: var(--vuf-shadow-lg, 0 12px 32px rgba(16, 23, 40, .16));
+    color: var(--vuf-ink, #101728);
+    font-size: 13px;
+}
+
+.lrn-lvhead {
+    display: flex;
+    align-items: center;
+    gap: var(--vuf-sp-2, 8px);
+
+    .lrn-btn { margin-left: auto; }
+}
+
+/* "Live · demo world". Amber rather than the module's indigo: everything else
+   pb_learn draws is a replica, and this is the one surface that is not. */
+.lrn-lvbadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: var(--vuf-r-pill, 999px);
+    background: var(--vuf-warn-bg, #FDF3E2);
+    color: var(--vuf-warn, #B45309);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+.lrn-lvstep { font-size: 11.5px; color: var(--vuf-muted, #6B7280); }
+
+.lrn-lvtitle { margin: 0; font-size: 14px; font-weight: 700; }
+
+.lrn-lvbody {
+    max-height: 46vh;
+    overflow-y: auto;
+
+    h3 { margin: 0 0 6px; font-size: 13.5px; font-weight: 650; }
+    p { margin: 0 0 8px; }
+}
+
+.lrn-lvdetail { color: var(--vuf-muted, #6B7280); line-height: 1.55; }
+
+.lrn-lvnote {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 7px 9px;
+    border-radius: var(--vuf-r-sm, 8px);
+    font-size: 12.5px;
+
+    &.wait { background: var(--vuf-line-soft, #F1F0F7); color: var(--vuf-muted, #6B7280); }
+    &.ok { background: var(--vuf-ok-bg, #E7F6EF); color: var(--vuf-ok, #10B981); }
+}
+
+.lrn-lvhint {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--vuf-faint, #9CA3AF);
+}
+
+/* The consequence card, shown BEFORE the instruction it is about. Teaching,
+   not an interception: nothing here disables a product control. */
+.lrn-lvconseq {
+    padding: var(--vuf-sp-2, 8px) var(--vuf-sp-3, 12px);
+    border: 1px solid var(--vuf-warn, #B45309);
+    border-radius: var(--vuf-r-sm, 8px);
+    background: var(--vuf-warn-bg, #FDF3E2);
+
+    h4 {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0 0 6px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--vuf-warn, #B45309);
+    }
+    dl { margin: 0; font-size: 12px; }
+    dt { font-weight: 700; margin-top: 6px; }
+    dd { margin: 0; color: var(--vuf-ink, #101728); line-height: 1.5; }
+}
+
+.lrn-lvfoot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding-top: var(--vuf-sp-2, 8px);
+    border-top: 1px solid var(--vuf-line-soft, #F1F0F7);
+}
+
+/* Minimised. One pill, and pressing it brings the card back. */
+.lrn-lvpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--vuf-line, #E5E7EB);
+    border-left: 3px solid var(--vuf-warn, #B45309);
+    border-radius: var(--vuf-r-pill, 999px);
+    background: var(--vuf-surface, #fff);
+    box-shadow: var(--vuf-shadow-md, 0 6px 18px rgba(16, 23, 40, .12));
+    color: var(--vuf-ink, #101728);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+@media (max-width: 720px) {
+    .lrn-livehost { left: 8px; right: 8px; --lrn-lv-w: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lrn-lvcard, .lrn-lvpill { transition: none; }
+}

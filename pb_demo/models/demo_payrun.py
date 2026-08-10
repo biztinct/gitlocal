@@ -106,6 +106,18 @@ class PbPayrunWizardDemo(models.AbstractModel):
             d['name'] = 'Demo Payroll June 2026'
             d['date_start'] = '2026-06-01'
             d['date_end'] = '2026-06-30'
+            # Each demo signup owns ONE of the six divisions, so two prospects
+            # never reach for the same June run. Theirs is moved to the FRONT
+            # and preselected; the other five stay on the list because a
+            # prospect exploring the product is the point of the demo, and the
+            # capstone mission validates against the assignment rather than
+            # against what the wizard happens to be showing.
+            mine = self.env.user._pb_ensure_demo_division()
+            if mine and any(x['key'] == mine for x in divs):
+                divs.sort(key=lambda x: (x['key'] != mine, x['key']))
+                d['divisions'] = divs
+                d['division'] = mine
+                d['eligible'] = next(x['eligible'] for x in divs if x['key'] == mine)
         return d
 
     # ---- scoped-per-chunk variants of the helpers (bounded to a batch's ids) ----
