@@ -124,9 +124,16 @@ class LearnStation(models.Model):
     def _selection_line(self):
         # One list across every section. Later phases add ROWS to the map, not
         # a second map — a learner who moves from the Pay Run desk to People
-        # meets the same journey, further along. Phase A ships one line; the
-        # selection stays extensible on purpose.
-        return [('payrun', self.env._('Pay run line'))]
+        # meets the same journey, further along.
+        #
+        # `setup` arrived in Phase B and is the proof that the shape holds: the
+        # Setup stations render on the SAME map under a second heading, and the
+        # only thing that had to change was this list and the two chrome strings
+        # that name it (lines.setup). learn.mission._selection_line mirrors this
+        # exactly — tests/test_mission.py::test_13 fails if the two drift, and a
+        # mission on a line the map does not draw is simply unreachable.
+        return [('payrun', self.env._('Pay run line')),
+                ('setup', self.env._('Setup line'))]
 
     @api.model
     def _selection_section(self):

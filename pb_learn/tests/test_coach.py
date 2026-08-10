@@ -432,6 +432,29 @@ class TestCoach(TransactionCase):
                              "broad pass would pick one arbitrarily"
                              % (model, owners))
 
+    def test_17b_a_contested_model_is_dropped_rather_than_awarded(self):
+        """The mechanism behind test_17, exercised rather than assumed.
+
+        Two REAL leaves claim hr.integration.connector — Import Data and
+        Integrations — and both are right for the sidebar. test_17 above would
+        pass just as happily if a future change made one screen simply stop
+        declaring models at all, so this asserts the actual rule: a model more
+        than one leaf claims is a matcher for NEITHER, and every model that is
+        dropped is dropped for exactly that reason.
+        """
+        raw_owners = {}
+        for screen in self.Screen.search([]):
+            for m in screen._raw_models():
+                raw_owners.setdefault(m, []).append(screen.key)
+        contested = {m for m, o in raw_owners.items() if len(o) > 1}
+        self.assertEqual(contested, self.Screen._contested_models(),
+                         "the contested set does not match what the leaves declare")
+        for screen in self.Screen.search([]):
+            _t, _x, models_ = screen._matchers()
+            dropped = screen._raw_models() - set(models_)
+            self.assertEqual(dropped, screen._raw_models() & contested,
+                             "%s dropped a model that nothing else claims" % screen.key)
+
     # ---------------------------------------------------- column glossary
     def test_18_a_column_question_gets_a_column_answer(self):
         """A question about a TILE, not a procedure.

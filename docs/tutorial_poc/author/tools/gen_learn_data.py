@@ -74,6 +74,15 @@ SIDEBAR_KEYS = {
     'fullfinal':  'pb_sidebar.item_full_final',
     'proration':  'pb_sidebar.item_proration',
     'retro':      'pb_sidebar.item_retro',
+    # Setup (Phase B). All four leaves carry an action_TAG and an EMPTY
+    # action_xmlid (pb_sidebar_data.xml:150-199) — they are OWL client actions,
+    # not act_windows. learn.screen._primary() reads the tag, so each still
+    # resolves to itself; contract.json::setup-sidebar-leaves pins the ids and
+    # ::setup-client-action-tags pins the tags they name.
+    'formula':      'pb_sidebar.item_formula',
+    'structures':   'pb_sidebar.item_structures',
+    'statutory':    'pb_sidebar.item_statutory',
+    'integrations': 'pb_sidebar.item_integrations',
 }
 
 # The ONE screen with no leaf. The import wizard is a flow, not a destination:
@@ -744,8 +753,13 @@ def gen_fixture():
     src = open(os.path.join(AUTHOR, 'practice-data.js'), encoding='utf-8').read()
     header = ('/* %s */\n' % BANNER.replace('\n', '\n   ')
               + '/** @odoo-module **/\n\n')
+    # POLICY_NEXT and RATE_CHANGE are deliberately NOT exported. They are the
+    # derivation behind the figures L6 and m4 quote — `payslip()` run twice —
+    # and they are checked by running this file, not by rendering it. Exporting
+    # a name no screen imports would put a second, unread copy of the rate
+    # change in the engine's contract.
     exports = ('\nexport { B, PRACTICE_META, CASE, EMP, RUN, PRACTICE, MENU,'
-               ' SUB_SCREENS, STATUS_LABELS, CHAINS };\n')
+               ' SUB_SCREENS, STATUS_LABELS, CHAINS, POLICY, TAX };\n')
     return header + src.rstrip() + '\n' + exports
 
 

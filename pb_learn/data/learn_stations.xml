@@ -251,4 +251,141 @@
         <field name="name">Leaving the source period blank. Without it the line is money paid for no stated reason, which is exactly what an audit asks about first.</field>
     </record>
 
+    <record id="station_formula" model="learn.station">
+        <field name="key">formula</field>
+        <field name="name">Formula Engine</field>
+        <field name="line">setup</field>
+        <field name="section">payroll</field>
+        <field name="sequence">80</field>
+        <field name="summary">The visible rulebook: every payslip line is a named component with a formula you can read.</field>
+        <field name="icon">calculator</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_formula</field>
+        <field name="duration_min">7</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">A studio for each division's formula configuration — the components, the formula behind each one, what it depends on, and a live preview against a real employee.</field>
+        <field name="outline_why">It is the answer to every "why is my pay this number" question, written down. A payroll desk that can read the configuration stops guessing and starts showing.</field>
+        <field name="outline_when">When an allowance is added, when a rule changes, and any time a number on a payslip has to be traced back to where it came from.</field>
+        <field name="outline_prereq">The Payroll Officer group to read it and a manager tier to change it, plus a sample employee to preview against.</field>
+    </record>
+
+    <record id="station_formula_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_formula"/>
+        <field name="sequence">10</field>
+        <field name="name">Editing a live configuration without previewing. The preview costs seconds; a wrong component costs every future payslip in that division.</field>
+    </record>
+
+    <record id="station_formula_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_formula"/>
+        <field name="sequence">20</field>
+        <field name="name">Renaming a component other formulas depend on. The dependency panel names them — read it before you rename, because a formula that lost its input does not always fail loudly.</field>
+    </record>
+
+    <record id="station_formula_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_formula"/>
+        <field name="sequence">30</field>
+        <field name="name">Building a statutory rate into a formula by hand. Rates belong on the statutory policy; a hard-typed 8% is one that nobody will remember to change.</field>
+    </record>
+
+    <record id="station_structures" model="learn.station">
+        <field name="key">structures</field>
+        <field name="name">Salary Structures</field>
+        <field name="line">setup</field>
+        <field name="section">payroll</field>
+        <field name="sequence">90</field>
+        <field name="summary">The legacy rule sets — kept because old payslips still reference them, not because new pay logic belongs here.</field>
+        <field name="icon">layers</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_structures</field>
+        <field name="duration_min">4</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="after_key">formula</field>
+        <field name="outline_what">Odoo salary structures and their rules: the older way of computing a payslip, still holding the logic that historical payslips were produced by.</field>
+        <field name="outline_why">You will meet them the first time you open a payslip from before the migration, and knowing what they are is the difference between reading history and doubting it.</field>
+        <field name="outline_when">When reading an old payslip, and when migrating a division onto a formula configuration — the structure is what you are migrating FROM.</field>
+        <field name="outline_prereq">A manager tier, and the Formula Engine basics — otherwise it is hard to see what the two are for.</field>
+    </record>
+
+    <record id="station_structures_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_structures"/>
+        <field name="sequence">10</field>
+        <field name="name">Building new pay logic here because it is familiar. A new rule added to a structure is invisible to the Formula Engine, so the division it was meant for never sees it.</field>
+    </record>
+
+    <record id="station_structures_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_structures"/>
+        <field name="sequence">20</field>
+        <field name="name">Deleting a structure that has no employees on it today. Payslips from three years ago still point at it, and a report run over those months needs it to still be there.</field>
+    </record>
+
+    <record id="station_statutory" model="learn.station">
+        <field name="key">statutory</field>
+        <field name="name">Statutory (Insurance &amp; Tax)</field>
+        <field name="line">setup</field>
+        <field name="section">payroll</field>
+        <field name="sequence">100</field>
+        <field name="summary">BHXH · BHYT · BHTN rates, the ceilings, and the thuế TNCN table — the rules the law writes for you.</field>
+        <field name="icon">shield-check</field>
+        <field name="kind">lesson</field>
+        <field name="sidebar_key">pb_sidebar.item_statutory</field>
+        <field name="duration_min">8</field>
+        <field name="required" eval="True"/>
+        <field name="star" eval="True"/>
+        <field name="outline_what">The company's active insurance policy and tax table: who pays what, on which base, up to which ceiling, and from which date.</field>
+        <field name="outline_why">Every payslip in every division reads these numbers. A wrong rate here is not one wrong payslip — it is all of them, in the same direction, with a filing deadline attached.</field>
+        <field name="outline_when">When a decree changes a rate or a deduction, at the start of a tax year, and whenever an employee asks why a contribution is the amount it is.</field>
+        <field name="outline_prereq">A manager tier, and the decree or circular in front of you — this screen records a decision that was made elsewhere.</field>
+    </record>
+
+    <record id="station_statutory_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_statutory"/>
+        <field name="sequence">10</field>
+        <field name="name">Editing the rate on the policy that is currently in force. There is no version history to fall back on: the old rate is simply gone, and any run that recomputes picks up the new one.</field>
+    </record>
+
+    <record id="station_statutory_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_statutory"/>
+        <field name="sequence">20</field>
+        <field name="name">Creating the new policy but leaving its effective date at today while a month is still open. The current policy is chosen by latest effective date, so a run that recomputes gets rates that were not in force for its period.</field>
+    </record>
+
+    <record id="station_statutory_mistake_2" model="learn.station.mistake">
+        <field name="station_id" ref="station_statutory"/>
+        <field name="sequence">30</field>
+        <field name="name">Forgetting to end-date the outgoing policy. Two open-ended active policies is not an error the system reports — it just quietly resolves to one of them.</field>
+    </record>
+
+    <record id="station_integrations" model="learn.station">
+        <field name="key">integrations</field>
+        <field name="name">Integrations</field>
+        <field name="line">setup</field>
+        <field name="section">payroll</field>
+        <field name="sequence">110</field>
+        <field name="summary">Connectors that pull attendance and HR data in automatically — mapped field by field, with a sync history.</field>
+        <field name="icon">database</field>
+        <field name="kind">outline</field>
+        <field name="sidebar_key">pb_sidebar.item_integrations</field>
+        <field name="duration_min">4</field>
+        <field name="required" eval="False"/>
+        <field name="star" eval="False"/>
+        <field name="outline_what">Configured links to the systems payroll data arrives from — an HR system, a time clock, the bank — with their field mappings and when each last synced.</field>
+        <field name="outline_why">Data that arrives by itself is data nobody retyped, and most wrong payslips start as a retyped row. The sync history is the part that matters: a connector that stopped looks exactly like one that is working.</field>
+        <field name="outline_when">Once at onboarding, again whenever a source system changes its fields — and as a two-minute check at the start of every payroll week.</field>
+        <field name="outline_prereq">The Integration user group and credentials for the source system.</field>
+    </record>
+
+    <record id="station_integrations_mistake_0" model="learn.station.mistake">
+        <field name="station_id" ref="station_integrations"/>
+        <field name="sequence">10</field>
+        <field name="name">Leaving a failed sync unnoticed until payroll week. The staged-record count is the tell — rows sitting in staging are a month of attendance that never became inputs.</field>
+    </record>
+
+    <record id="station_integrations_mistake_1" model="learn.station.mistake">
+        <field name="station_id" ref="station_integrations"/>
+        <field name="sequence">20</field>
+        <field name="name">Assuming a connector that is "connected" is also up to date. Connected describes the credentials; the last-sync time describes the data.</field>
+    </record>
+
 </odoo>

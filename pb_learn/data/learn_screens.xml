@@ -85,4 +85,44 @@
         <field name="suggest_ids" eval="[(6, 0, [ref('intent_retroq'), ref('intent_fixerror'), ref('intent_whatpage')])]"/>
     </record>
 
+    <record id="screen_formula" model="learn.screen">
+        <field name="key">formula</field>
+        <field name="sequence">90</field>
+        <field name="name">Formula Engine</field>
+        <field name="blurb">The visible rulebook: every payslip line for one division, as a named component with a formula you can read.</field>
+        <field name="next_step">Read the component list first, then open the one behind the number you are asking about. Nothing here is live until a configuration is activated — and a simulation against last month is what tells you whether it should be.</field>
+        <field name="sidebar_key">pb_sidebar.item_formula</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_whysetup'), ref('intent_editlive'), ref('intent_whichconfig'), ref('intent_configvsstructure'), ref('intent_practice')])]"/>
+    </record>
+
+    <record id="screen_structures" model="learn.screen">
+        <field name="key">structures</field>
+        <field name="sequence">100</field>
+        <field name="name">Salary Structures</field>
+        <field name="blurb">The legacy Odoo salary structures and their rules — kept because historical payslips still reference them.</field>
+        <field name="next_step">Read, do not build. New pay logic belongs in a formula configuration; what is here exists so that payslips from before the migration can still be explained.</field>
+        <field name="sidebar_key">pb_sidebar.item_structures</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_configvsstructure'), ref('intent_whysetup'), ref('intent_whatpage')])]"/>
+    </record>
+
+    <record id="screen_statutory" model="learn.screen">
+        <field name="key">statutory</field>
+        <field name="sequence">110</field>
+        <field name="name">Statutory (Insurance &amp; Tax)</field>
+        <field name="blurb">The company's active insurance policy and tax table: BHXH, BHYT and BHTN rates and ceilings, and the thuế TNCN bands.</field>
+        <field name="next_step">Check that the rates on display are the ones currently in force — the table shows the active policy with the latest effective date. To change one, create a new policy record dated from the day the change applies; never edit the one in force.</field>
+        <field name="sidebar_key">pb_sidebar.item_statutory</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_changerate'), ref('intent_whichpolicy'), ref('intent_ceiling'), ref('intent_pitcalc'), ref('intent_bhxh')])]"/>
+    </record>
+
+    <record id="screen_integrations" model="learn.screen">
+        <field name="key">integrations</field>
+        <field name="sequence">120</field>
+        <field name="name">Integrations</field>
+        <field name="blurb">The connectors payroll data arrives through — an HR system, a time clock, the bank — with their field mappings and sync history.</field>
+        <field name="next_step">Read the last-sync time on every connector, not just its status. Connected describes the credentials; the sync time describes the data, and a connector that stopped looks exactly like one that is working.</field>
+        <field name="sidebar_key">pb_sidebar.item_integrations</field>
+        <field name="suggest_ids" eval="[(6, 0, [ref('intent_syncbroken'), ref('intent_whysetup'), ref('intent_whatnext')])]"/>
+    </record>
+
 </odoo>

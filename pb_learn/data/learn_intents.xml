@@ -879,7 +879,7 @@
     <record id="intent_bhxh" model="learn.intent">
         <field name="key">bhxh</field>
         <field name="label">Explain BHXH on this payslip</field>
-        <field name="screens">payslips,runpayroll</field>
+        <field name="screens">payslips,runpayroll,statutory</field>
         <field name="dynamic">none</field>
         <field name="show_me">ps-breakdown</field>
         <field name="simpler">Think of BHXH as a shared fund the law requires. Every month you put in 8% of the salary written in your contract — not your bonuses and not your overtime — and your company puts in more than double that on top. It pays for pensions, sick leave and maternity leave.</field>
@@ -1153,7 +1153,7 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">Good instinct. The practice missions run on a fictional 48-person company — not {{companyDisplayName}} — with no server behind it, so nothing you do can reach a real employee, payslip or pay run. Two are playable: computing a run, and reviewing one at an approval gate.</field>
+        <field name="body">Good instinct. The practice missions run on a fictional 48-person company — not {{companyDisplayName}} — with no server behind it, so nothing you do can reach a real employee, payslip or pay run. Three are playable: computing a run, reviewing one at an approval gate, and applying a statutory rate change.</field>
     </record>
 
     <record id="intent_practice_b020" model="learn.intent.block">
@@ -1240,6 +1240,827 @@
         <field name="capability">any</field>
         <field name="kind">source</field>
         <field name="body">The statutory rates and the division's formula configuration.</field>
+    </record>
+
+    <record id="intent_whysetup" model="learn.intent">
+        <field name="key">whysetup</field>
+        <field name="label">Why do I have to set this up?</field>
+        <field name="screens">formula,structures,statutory,integrations</field>
+        <field name="dynamic">screen_blurb</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whysetup_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">why do i need to configure</field>
+    </record>
+
+    <record id="intent_whysetup_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">why does setup exist</field>
+    </record>
+
+    <record id="intent_whysetup_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">what is setup for</field>
+    </record>
+
+    <record id="intent_whysetup_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">tai sao phai cau hinh</field>
+    </record>
+
+    <record id="intent_whysetup_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">vì sao phải thiết lập</field>
+    </record>
+
+    <record id="intent_whysetup_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">cau hinh de lam gi</field>
+    </record>
+
+    <record id="intent_whysetup_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">Why do I have to set this up?</field>
+    </record>
+
+    <record id="intent_whysetup_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="text">Vì sao tôi phải thiết lập cái này?</field>
+    </record>
+
+    <record id="intent_whysetup_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Because a payroll system that decides anything for you is a payroll system you cannot defend. Every number on a payslip comes from something written down here: a component in a formula configuration, a rate on a statutory policy, a field mapped from a connected system.</field>
+    </record>
+
+    <record id="intent_whysetup_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_whysetup_b020_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_whysetup_b020"/>
+        <field name="sequence">10</field>
+        <field name="text">Formula Engine — how each line is computed, for one division</field>
+        <field name="anchor">fs-components</field>
+    </record>
+
+    <record id="intent_whysetup_b020_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_whysetup_b020"/>
+        <field name="sequence">20</field>
+        <field name="text">Statutory — the rates the law sets, for the whole company</field>
+        <field name="anchor">st-rates</field>
+    </record>
+
+    <record id="intent_whysetup_b020_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_whysetup_b020"/>
+        <field name="sequence">30</field>
+        <field name="text">Integrations — how the inputs arrive without anybody retyping them</field>
+        <field name="anchor">ig-roster</field>
+    </record>
+
+    <record id="intent_whysetup_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">ok</field>
+        <field name="body">Setup is done rarely and read often. Most of the time you are here to answer a question, not to change anything — and reading is always safe.</field>
+    </record>
+
+    <record id="intent_whysetup_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whysetup"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The Setup section of the sidebar: formula configurations, statutory policies and connectors.</field>
+    </record>
+
+    <record id="intent_changerate" model="learn.intent">
+        <field name="key">changerate</field>
+        <field name="label">What happens if I change this rate?</field>
+        <field name="screens">statutory</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">st-new</field>
+        <field name="practice_key">m4</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_changerate_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">what happens if i change this rate</field>
+    </record>
+
+    <record id="intent_changerate_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">change a contribution rate</field>
+    </record>
+
+    <record id="intent_changerate_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">edit the rate</field>
+    </record>
+
+    <record id="intent_changerate_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">doi ty le</field>
+    </record>
+
+    <record id="intent_changerate_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">đổi tỷ lệ đóng</field>
+    </record>
+
+    <record id="intent_changerate_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">sua ty le bao hiem</field>
+    </record>
+
+    <record id="intent_changerate_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">What happens if I change this rate?</field>
+    </record>
+
+    <record id="intent_changerate_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="text">Nếu tôi đổi tỷ lệ này thì sao?</field>
+    </record>
+
+    <record id="intent_changerate_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">It re-prices every future payslip in &lt;b&gt;every division&lt;/b&gt; — one insurance policy serves the whole company, not one configuration. For a BHYT employee share moving from 1.5% to 2.0%, Mai alone loses 57,000 ₫ of net a month, and every other employee loses their own version of that.</field>
+    </record>
+
+    <record id="intent_changerate_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Do not edit the policy that is in force. There is no version history to fall back on, and if an open run recomputes it will be charged rates that were not in force for its own period.</field>
+    </record>
+
+    <record id="intent_changerate_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_changerate_b030_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_changerate_b030"/>
+        <field name="sequence">10</field>
+        <field name="text">Create a NEW insurance policy record, with its own code</field>
+        <field name="anchor">st-new</field>
+    </record>
+
+    <record id="intent_changerate_b030_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_changerate_b030"/>
+        <field name="sequence">20</field>
+        <field name="text">Set its effective date to the first day the change applies — after every open period</field>
+        <field name="anchor">st-effective</field>
+    </record>
+
+    <record id="intent_changerate_b030_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_changerate_b030"/>
+        <field name="sequence">30</field>
+        <field name="text">End-date the outgoing policy, so exactly one is in force on any day</field>
+        <field name="anchor">st-roster</field>
+    </record>
+
+    <record id="intent_changerate_b030_s03" model="learn.intent.step">
+        <field name="block_id" ref="intent_changerate_b030"/>
+        <field name="sequence">40</field>
+        <field name="text">Read the effect on one real payslip before you save</field>
+        <field name="anchor">ps-breakdown</field>
+    </record>
+
+    <record id="intent_changerate_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_changerate"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The insurance policy record: its rates, its effective date and its end date.</field>
+    </record>
+
+    <record id="intent_whichpolicy" model="learn.intent">
+        <field name="key">whichpolicy</field>
+        <field name="label">Which policy applies today?</field>
+        <field name="screens">statutory,payslips</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">st-rates,st-roster</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whichpolicy_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">which policy is in force</field>
+    </record>
+
+    <record id="intent_whichpolicy_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">which rates apply now</field>
+    </record>
+
+    <record id="intent_whichpolicy_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">current policy</field>
+    </record>
+
+    <record id="intent_whichpolicy_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">chinh sach nao dang ap dung</field>
+    </record>
+
+    <record id="intent_whichpolicy_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">chính sách nào đang hiệu lực</field>
+    </record>
+
+    <record id="intent_whichpolicy_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">ty le hien hanh</field>
+    </record>
+
+    <record id="intent_whichpolicy_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">Which policy applies today?</field>
+    </record>
+
+    <record id="intent_whichpolicy_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="text">Hôm nay chính sách nào đang áp dụng?</field>
+    </record>
+
+    <record id="intent_whichpolicy_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">The one with the &lt;b&gt;latest effective date&lt;/b&gt; among the policies that are still active. Not the most recently created record and not the last one edited — the effective date is the field that decides, which is why it is the field to check first.</field>
+    </record>
+
+    <record id="intent_whichpolicy_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">The rates table at the top of this screen always shows that policy, with its effective date beside the heading. The roster below shows all of them, so a change reads as a history: one record ended, the next one starting.</field>
+    </record>
+
+    <record id="intent_whichpolicy_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip.</field>
+    </record>
+
+    <record id="intent_whichpolicy_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichpolicy"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The active insurance policies, ordered by effective date.</field>
+    </record>
+
+    <record id="intent_ceiling" model="learn.intent">
+        <field name="key">ceiling</field>
+        <field name="label">What is the insurance base and the ceiling?</field>
+        <field name="screens">statutory,payslips</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">st-rates</field>
+        <field name="simpler">Insurance is not worked out from what you earned this month. It is worked out from the salary written in your contract, and only up to a limit — so a busy month with a lot of overtime does not change it, and a very high salary stops adding to it after a point.</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_ceiling_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">what is the insurance base</field>
+    </record>
+
+    <record id="intent_ceiling_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">contribution ceiling</field>
+    </record>
+
+    <record id="intent_ceiling_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">capped at</field>
+    </record>
+
+    <record id="intent_ceiling_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">muc dong bao hiem</field>
+    </record>
+
+    <record id="intent_ceiling_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">trần đóng</field>
+    </record>
+
+    <record id="intent_ceiling_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">tran bao hiem</field>
+    </record>
+
+    <record id="intent_ceiling_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">What is the insurance base and the ceiling?</field>
+    </record>
+
+    <record id="intent_ceiling_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="text">Mức đóng bảo hiểm và trần đóng là gì?</field>
+    </record>
+
+    <record id="intent_ceiling_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Contributions are charged on the &lt;b&gt;registered insurance base&lt;/b&gt; — normally the contract base salary. For Mai that is 12,000,000 ₫, not her gross of 14,280,000 ₫, which is why her 1,500,000 ₫ of overtime moved her tax and not a đồng of her insurance.</field>
+    </record>
+
+    <record id="intent_ceiling_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">calc</field>
+    </record>
+
+    <record id="intent_ceiling_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Each scheme also carries a &lt;b&gt;ceiling&lt;/b&gt; in the last column of the rates table — the maximum base it is charged on. Above it the deduction stops growing, so two employees on very different salaries can pay exactly the same BHXH.</field>
+    </record>
+
+    <record id="intent_ceiling_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_ceiling"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The active insurance policy's rates and ceilings, and Mai's July payslip.</field>
+    </record>
+
+    <record id="intent_pitcalc" model="learn.intent">
+        <field name="key">pitcalc</field>
+        <field name="label">How is thuế TNCN worked out?</field>
+        <field name="screens">statutory,payslips</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">st-slabs,ps-breakdown</field>
+        <field name="simpler">First take off the insurance. Then take off a fixed allowance for yourself, and another for each person who depends on you. Whatever is left is what gets taxed — and the rate starts low and only rises on the part above each band.</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_pitcalc_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">how is pit calculated</field>
+    </record>
+
+    <record id="intent_pitcalc_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">personal income tax calculation</field>
+    </record>
+
+    <record id="intent_pitcalc_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">tax brackets</field>
+    </record>
+
+    <record id="intent_pitcalc_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">thue tncn tinh the nao</field>
+    </record>
+
+    <record id="intent_pitcalc_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">cách tính thuế thu nhập</field>
+    </record>
+
+    <record id="intent_pitcalc_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">giam tru gia canh</field>
+    </record>
+
+    <record id="intent_pitcalc_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">How is thuế TNCN worked out?</field>
+    </record>
+
+    <record id="intent_pitcalc_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="text">Thuế TNCN được tính thế nào?</field>
+    </record>
+
+    <record id="intent_pitcalc_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Taxable income is gross, less insurance, less &lt;b&gt;11,000,000 ₫&lt;/b&gt; personal relief and &lt;b&gt;4,400,000 ₫&lt;/b&gt; for each dependant. Only what is left goes into the bands, and the bands are progressive: the first 5,000,000 ₫ is taxed at 5%, and each higher band applies only to the part inside it.</field>
+    </record>
+
+    <record id="intent_pitcalc_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Mai's July: 14,280,000 − 1,260,000 insurance − 11,000,000 relief = &lt;b&gt;2,020,000 ₫&lt;/b&gt; taxable, entirely inside the 5% band, so her tax is &lt;b&gt;101,000 ₫&lt;/b&gt;. A dependant would take another 4,400,000 ₫ off and leave her paying almost nothing.</field>
+    </record>
+
+    <record id="intent_pitcalc_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Dependants are registered, not assumed. A relief that was never registered is a tax bill the employee did not need to pay, and it is the single most common thing an employee is owed and never asks for.</field>
+    </record>
+
+    <record id="intent_pitcalc_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_pitcalc"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The active tax table: its bands, its personal deduction and its dependant deduction.</field>
+    </record>
+
+    <record id="intent_configvsstructure" model="learn.intent">
+        <field name="key">configvsstructure</field>
+        <field name="label">Formula configuration or salary structure?</field>
+        <field name="screens">formula,structures</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">fs-components,sr-roster</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_configvsstructure_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">difference between structure and config</field>
+    </record>
+
+    <record id="intent_configvsstructure_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">which one do i use</field>
+    </record>
+
+    <record id="intent_configvsstructure_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">legacy structures</field>
+    </record>
+
+    <record id="intent_configvsstructure_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">cau truc luong khac gi</field>
+    </record>
+
+    <record id="intent_configvsstructure_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">khác nhau cấu trúc và cấu hình</field>
+    </record>
+
+    <record id="intent_configvsstructure_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">dung cai nao</field>
+    </record>
+
+    <record id="intent_configvsstructure_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">Formula configuration or salary structure?</field>
+    </record>
+
+    <record id="intent_configvsstructure_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="text">Cấu hình công thức hay cấu trúc lương?</field>
+    </record>
+
+    <record id="intent_configvsstructure_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">A &lt;b&gt;formula configuration&lt;/b&gt; is where pay logic lives now: named components, readable formulas, a live preview and a simulation. A &lt;b&gt;salary structure&lt;/b&gt; is the older mechanism, and it is kept for one reason — payslips produced before the migration still point at it.</field>
+    </record>
+
+    <record id="intent_configvsstructure_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">ok</field>
+        <field name="body">New logic goes in a configuration, always. Run Payroll selects a configuration when you choose a division, so a rule added to a structure is a rule the division never sees.</field>
+    </record>
+
+    <record id="intent_configvsstructure_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Do not delete a structure that shows zero employees. Zero means nobody is paid by it today, not that nothing references it — payslips from three years ago still do, and a report over those months needs it.</field>
+    </record>
+
+    <record id="intent_configvsstructure_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_configvsstructure"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The division's formula configuration, and the salary structures kept for historical payslips.</field>
+    </record>
+
+    <record id="intent_editlive" model="learn.intent">
+        <field name="key">editlive</field>
+        <field name="label">Is it safe to edit a live configuration?</field>
+        <field name="screens">formula</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">fs-deps,fs-simulate</field>
+        <field name="practice_key">m5</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_editlive_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">can i edit this config</field>
+    </record>
+
+    <record id="intent_editlive_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">is it safe to change the formula</field>
+    </record>
+
+    <record id="intent_editlive_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">edit a live configuration</field>
+    </record>
+
+    <record id="intent_editlive_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">sua cau hinh dang chay</field>
+    </record>
+
+    <record id="intent_editlive_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">sửa công thức đang dùng</field>
+    </record>
+
+    <record id="intent_editlive_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">co an toan khong</field>
+    </record>
+
+    <record id="intent_editlive_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">Is it safe to edit a live configuration?</field>
+    </record>
+
+    <record id="intent_editlive_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="text">Sửa một cấu hình đang chạy có an toàn không?</field>
+    </record>
+
+    <record id="intent_editlive_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">It is allowed, and it reaches further than it looks: every payslip computed by this configuration from now on, for the whole division — and any run still in draft that gets recomputed, including one for a month you thought was finished with.</field>
+    </record>
+
+    <record id="intent_editlive_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_editlive_b020_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_editlive_b020"/>
+        <field name="sequence">10</field>
+        <field name="text">Read the dependency panel for anything you are renaming or removing</field>
+        <field name="anchor">fs-deps</field>
+    </record>
+
+    <record id="intent_editlive_b020_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_editlive_b020"/>
+        <field name="sequence">20</field>
+        <field name="text">Preview against a sample employee — the arithmetic, on one person</field>
+        <field name="anchor">fs-preview</field>
+    </record>
+
+    <record id="intent_editlive_b020_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_editlive_b020"/>
+        <field name="sequence">30</field>
+        <field name="text">Simulate against last month, which is the same change across everybody</field>
+        <field name="anchor">fs-simulate</field>
+    </record>
+
+    <record id="intent_editlive_b020_s03" model="learn.intent.step">
+        <field name="block_id" ref="intent_editlive_b020"/>
+        <field name="sequence">40</field>
+        <field name="text">Apply it once no run for an earlier period is still open</field>
+    </record>
+
+    <record id="intent_editlive_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Renaming a component that other formulas depend on is the quiet one. The dependency panel names them; a formula that lost its input does not always fail loudly.</field>
+    </record>
+
+    <record id="intent_editlive_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_editlive"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The configuration's dependency map, and its preview and simulation tools.</field>
+    </record>
+
+    <record id="intent_whichconfig" model="learn.intent">
+        <field name="key">whichconfig</field>
+        <field name="label">Which configuration does a division use?</field>
+        <field name="screens">formula,runpayroll</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">fs-config,pw-division</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_whichconfig_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">which config does this division use</field>
+    </record>
+
+    <record id="intent_whichconfig_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">find the right configuration</field>
+    </record>
+
+    <record id="intent_whichconfig_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">config code</field>
+    </record>
+
+    <record id="intent_whichconfig_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">bo phan nay dung cau hinh nao</field>
+    </record>
+
+    <record id="intent_whichconfig_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">mã cấu hình</field>
+    </record>
+
+    <record id="intent_whichconfig_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">tim cau hinh</field>
+    </record>
+
+    <record id="intent_whichconfig_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">Which configuration does a division use?</field>
+    </record>
+
+    <record id="intent_whichconfig_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="text">Bộ phận này dùng cấu hình nào?</field>
+    </record>
+
+    <record id="intent_whichconfig_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">One per division and cycle, and the code says which: the division's name, then &lt;b&gt;END&lt;/b&gt; for the end-of-month settlement or &lt;b&gt;MID&lt;/b&gt; for a mid-cycle advance. On the demo world they read DEMO_RETAIL_END, DEMO_LOGISTICS_MID and so on — one naming rule, twelve configurations.</field>
+    </record>
+
+    <record id="intent_whichconfig_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">You do not have to look it up before running a payroll: choosing the division in Run Payroll selects the configuration, and prints its name in the scope panel. Reading that name before you compute is the check — it is also the only place the wrong-division mistake is visible.</field>
+    </record>
+
+    <record id="intent_whichconfig_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_whichconfig"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The configuration codes on the divisions, and the scope panel in Run Payroll.</field>
+    </record>
+
+    <record id="intent_syncbroken" model="learn.intent">
+        <field name="key">syncbroken</field>
+        <field name="label">A connector has stopped syncing. What now?</field>
+        <field name="screens">integrations,import</field>
+        <field name="dynamic">none</field>
+        <field name="show_me">ig-roster,im-cta</field>
+        <field name="offer" eval="True"/>
+    </record>
+
+    <record id="intent_syncbroken_p00" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">connector not syncing</field>
+    </record>
+
+    <record id="intent_syncbroken_p01" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">sync failed</field>
+    </record>
+
+    <record id="intent_syncbroken_p02" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">integration error</field>
+    </record>
+
+    <record id="intent_syncbroken_p03" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">staged records</field>
+    </record>
+
+    <record id="intent_syncbroken_p04" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">dong bo loi</field>
+    </record>
+
+    <record id="intent_syncbroken_p05" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">đầu nối lỗi</field>
+    </record>
+
+    <record id="intent_syncbroken_p06" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">khong dong bo duoc</field>
+    </record>
+
+    <record id="intent_syncbroken_p07" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">A connector has stopped syncing. What now?</field>
+    </record>
+
+    <record id="intent_syncbroken_p08" model="learn.intent.phrase">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="text">Một đầu nối đã ngừng đồng bộ. Giờ làm gì?</field>
+    </record>
+
+    <record id="intent_syncbroken_b010" model="learn.intent.block">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="sequence">10</field>
+        <field name="capability">any</field>
+        <field name="kind">p</field>
+        <field name="body">Read the &lt;b&gt;last sync time&lt;/b&gt; before the status. Connected describes the credentials; the sync time describes the data — and a connector that quietly stopped nine days ago still says connected.</field>
+    </record>
+
+    <record id="intent_syncbroken_b020" model="learn.intent.block">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="sequence">20</field>
+        <field name="capability">any</field>
+        <field name="kind">steps</field>
+    </record>
+
+    <record id="intent_syncbroken_b020_s00" model="learn.intent.step">
+        <field name="block_id" ref="intent_syncbroken_b020"/>
+        <field name="sequence">10</field>
+        <field name="text">Find the connector whose staged count is climbing — those rows never became inputs</field>
+        <field name="anchor">ig-roster</field>
+    </record>
+
+    <record id="intent_syncbroken_b020_s01" model="learn.intent.step">
+        <field name="block_id" ref="intent_syncbroken_b020"/>
+        <field name="sequence">20</field>
+        <field name="text">Fix it at the source, or import the month's file by hand through the guided flow</field>
+        <field name="anchor">im-cta</field>
+    </record>
+
+    <record id="intent_syncbroken_b020_s02" model="learn.intent.step">
+        <field name="block_id" ref="intent_syncbroken_b020"/>
+        <field name="sequence">30</field>
+        <field name="text">Check the eligible count in Run Payroll before you compute — it is the second alarm</field>
+        <field name="anchor">pw-summary</field>
+    </record>
+
+    <record id="intent_syncbroken_b030" model="learn.intent.block">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="sequence">30</field>
+        <field name="capability">any</field>
+        <field name="kind">warn</field>
+        <field name="body">Do this before payroll week, not during it. A month of attendance sitting in staging becomes a run that computes cleanly on inputs that are three weeks old, and nothing about it looks wrong.</field>
+    </record>
+
+    <record id="intent_syncbroken_b040" model="learn.intent.block">
+        <field name="intent_id" ref="intent_syncbroken"/>
+        <field name="sequence">40</field>
+        <field name="capability">any</field>
+        <field name="kind">source</field>
+        <field name="body">The connector list with its sync history and staged-record counts.</field>
     </record>
 
 </odoo>

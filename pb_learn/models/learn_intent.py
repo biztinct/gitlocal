@@ -111,6 +111,50 @@ class LearnScreen(models.Model):
 
     _sql_constraints = [('key_uniq', 'unique(key)', 'A screen key must be unique.')]
 
+    @staticmethod
+    def _split(val):
+        return {v.strip() for v in (val or '').split(',') if v.strip()}
+
+    def _raw_models(self):
+        """The models this screen's LEAF declares, before any tie-break."""
+        self.ensure_one()
+        if not self.sidebar_key:
+            return set()
+        item = self.env.ref(self.sidebar_key, raise_if_not_found=False)
+        return self._split(item.sudo().match_models) if item else set()
+
+    @api.model
+    def _contested_models(self):
+        """Models that more than one screen's leaf claims.
+
+        `hr.integration.connector` is claimed by BOTH the Import Data leaf and
+        the Integrations leaf (pb_sidebar_data.xml:82 and :196), and BOTH are
+        right for the sidebar: a connector form opened from either place should
+        leave that leaf lit. It is not right for the Coach. A model two screens
+        answer to makes the broad third pass pick whichever the search returned
+        first — wrong, and wrong differently on different databases, which is
+        the exact 'confidently wrong' failure the three-pass resolver exists to
+        prevent.
+
+        So a contested model is not a matcher for EITHER screen. The tags and
+        xml-ids still resolve both cockpits exactly (they are distinct client
+        actions), and what is lost is only the bare list/form view of the
+        contested model — where the honest answer really is "I do not have
+        lessons for this screen", not a coin flip between two that both have
+        content.
+
+        Computed from the live leaves rather than declared, because the contest
+        is a fact about pb_sidebar and a copy of it here would be one more thing
+        to keep in step.
+        """
+        seen, contested = set(), set()
+        for screen in self.sudo().search([]):
+            for model in screen._raw_models():
+                if model in seen:
+                    contested.add(model)
+                seen.add(model)
+        return contested
+
     def _matchers(self):
         """How to tell that THIS screen is the one on display.
 
@@ -121,14 +165,13 @@ class LearnScreen(models.Model):
         has no lessons for a screen it has a full lesson for.
 
         Reusing the leaf's own declaration means the Coach resolves the screen
-        exactly the way the sidebar decides which leaf to highlight.
+        exactly the way the sidebar decides which leaf to highlight — with the
+        one documented exception in `_contested_models`.
         """
         self.ensure_one()
         tags, xmlids, models_ = set(), set(), set()
 
-        def split(val):
-            return {v.strip() for v in (val or '').split(',') if v.strip()}
-
+        split = self._split
         tags |= split(self.action_tags)
         if self.sidebar_key:
             item = self.env.ref(self.sidebar_key, raise_if_not_found=False)
@@ -137,7 +180,7 @@ class LearnScreen(models.Model):
                 tags |= split(item.action_tag) | split(item.match_action_tags)
                 xmlids |= split(item.action_xmlid) | split(item.match_action_xmlids)
                 models_ |= split(item.match_models)
-        return sorted(tags), sorted(xmlids), sorted(models_)
+        return sorted(tags), sorted(xmlids), sorted(models_ - self._contested_models())
 
     def _primary(self):
         """The leaf's OWN action — the one that IS this screen.

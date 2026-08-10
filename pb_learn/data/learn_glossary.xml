@@ -68,4 +68,32 @@
         <field name="definition">A difference owed for a period that is already closed, paid in the current run with the source period recorded against it. It is how a closed month stays closed.</field>
     </record>
 
+    <record id="gloss_policy" model="learn.glossary.term">
+        <field name="key">policy</field>
+        <field name="sequence">100</field>
+        <field name="term">Insurance policy</field>
+        <field name="definition">One record holding the BHXH, BHYT and BHTN rates and ceilings, with the date it takes effect. It is not versioned in place: a rate change is a NEW policy record with its own code, and the old one is end-dated.</field>
+    </record>
+
+    <record id="gloss_effectivedate" model="learn.glossary.term">
+        <field name="key">effectiveDate</field>
+        <field name="sequence">110</field>
+        <field name="term">Effective date</field>
+        <field name="definition">The date a policy starts applying. Payobook uses the latest effective date among the active policies, so this field — not the order records were created in — decides which rates a payslip is computed with.</field>
+    </record>
+
+    <record id="gloss_ceiling" model="learn.glossary.term">
+        <field name="key">ceiling</field>
+        <field name="sequence">120</field>
+        <field name="term">Insurance ceiling (trần đóng)</field>
+        <field name="definition">The maximum base a contribution is charged on. Above it the deduction stops growing, so two people on very different salaries can pay exactly the same BHXH.</field>
+    </record>
+
+    <record id="gloss_configcode" model="learn.glossary.term">
+        <field name="key">configCode</field>
+        <field name="sequence">130</field>
+        <field name="term">Configuration code</field>
+        <field name="definition">The short unique name of a formula configuration — the thing Run Payroll actually selects when you choose a division. On the demo world the codes follow one pattern: DEMO_&lt;DIVISION&gt;_END for the end-cycle rulebook and DEMO_&lt;DIVISION&gt;_MID for the mid-cycle one.</field>
+    </record>
+
 </odoo>

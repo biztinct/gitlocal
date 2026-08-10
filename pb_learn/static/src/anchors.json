@@ -242,6 +242,121 @@
       "shared": true,
       "file": "pb_payrun_ledgers/static/src/xml/ledger.xml",
       "desc": "Open full list. Leaves the cockpit for the underlying list view."
+    },
+    "fs-config": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "The configuration switcher. Its name IS the rulebook a division is paid by — reading it is how you know which config you are editing."
+    },
+    "fs-components": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "The component outline: every named piece of the rulebook, in four kinds. A payslip line exists because a component here produced it."
+    },
+    "fs-formula": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "The formula itself, as coloured chips. Each chip is a component you can click through to; the colour is its kind."
+    },
+    "fs-namesletters": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "Names / Letters. One formula in two spellings — names to explain it, letters to read it beside a spreadsheet."
+    },
+    "fs-deps": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "Depends on / Used by. The blast radius of a rename or a deletion, written down before you make one."
+    },
+    "fs-preview": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "The live preview: the whole configuration evaluated against one sample employee, line by line."
+    },
+    "fs-simulate": {
+      "screen": "formula",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "desc": "Simulate. Runs the edited configuration against a period that has already been paid — the evidence the one-employee preview is not."
+    },
+    "st-new": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "New insurance policy. A rate change is a NEW RECORD with its own code and effective date; there is no version chain to edit."
+    },
+    "st-kpis": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "Contributions, employee leg, employer leg, policies, tax tables, dependents."
+    },
+    "st-rates": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "The active insurance rates table: scheme, employee share, employer share and ceiling. The near end of L6's trace — the 1.5% that becomes a deduction."
+    },
+    "st-effective": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "The effective date of the policy on display. The field that decides which rates a payslip is computed with, and the whole of the risk in changing one."
+    },
+    "st-slabs": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "The progressive thuế TNCN bands for the active tax year."
+    },
+    "st-filters": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "Insurance policies / tax tables, and the active-only chip. Every count in the roster below is scoped by these."
+    },
+    "st-roster": {
+      "screen": "statutory",
+      "file": "pb_statutory/static/src/xml/statutory.xml",
+      "desc": "The policy roster. Two rows is the healthy shape: a rate change ends one record and starts another, so the list reads as a history."
+    },
+    "sr-new": {
+      "screen": "structures",
+      "file": "pb_structures/static/src/xml/structures.xml",
+      "desc": "New structure. Present, and almost always the wrong control: new pay logic belongs in a formula configuration."
+    },
+    "sr-kpis": {
+      "screen": "structures",
+      "file": "pb_structures/static/src/xml/structures.xml",
+      "desc": "Structures, salary rules, categories, employees covered and countries."
+    },
+    "sr-filters": {
+      "screen": "structures",
+      "file": "pb_structures/static/src/xml/structures.xml",
+      "desc": "Status, search, date and country chips. They scope the roster, not the database."
+    },
+    "sr-roster": {
+      "screen": "structures",
+      "file": "pb_structures/static/src/xml/structures.xml",
+      "desc": "The structure cards. Each is history: the rule set a payslip from before the migration was computed by."
+    },
+    "sr-openall": {
+      "screen": "structures",
+      "file": "pb_structures/static/src/xml/structures.xml",
+      "desc": "Open full structures list. Leaves the cockpit for the underlying list view."
+    },
+    "ig-connect": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "Connect a system. Adds a source payroll data can arrive from without anybody retyping it."
+    },
+    "ig-kpis": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "Connectors, connected, errors, synced records, field mappings and staged records."
+    },
+    "ig-filters": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "Status, search, recency and type chips over the connector roster."
+    },
+    "ig-roster": {
+      "screen": "integrations",
+      "file": "pb_integrations/static/src/xml/integrations.xml",
+      "desc": "The connector cards, with the last-sync time and the staged count. A connector that stopped still says connected — the sync time is the tell."
     }
   },
   "pattern": {},
@@ -250,7 +365,8 @@
     "rep-banner": "The practice banner. Says, on every screen, that none of this is your company.",
     "rep-dash-kpis": "The replica Dashboard's KPI row. Context only — Phase A teaches the Pay Run section.",
     "rep-dash-runs": "The replica Dashboard's recent-runs list.",
-    "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper."
+    "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper.",
+    "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen."
   },
   "foreign": {
     "pw-division": "pb_coach — hero_path.js, tour_payrun.js. ALSO ours: the registry owns it and neither module may rename it alone.",
@@ -264,7 +380,7 @@
     "palette": "pb_formula_studio command layer",
     "shortcuts": "pb_formula_studio",
     "snippets": "pb_formula_studio",
-    "fs-*": "pb_formula_studio — the Formula Studio tours",
+    "fs-*": "pb_formula_studio — the Formula Studio tours. SEVEN of these are PROMOTED into `product` above (fs-config, fs-components, fs-formula, fs-namesletters, fs-deps, fs-preview, fs-simulate): pb_learn's L5 names them, so the registry owns them and a rename breaks a build rather than a lesson. pb_coach's hero_path and tour_formula point at six of the seven, so — exactly like pw-division and pw-compute — neither module may rename one alone. Everything else matching fs-* is still someone else's.",
     "grid-*": "pb_formula_studio — the grid studio tours",
     "imp-*": "pb_hr_payroll_formula — the multi-sheet import wizard tour",
     "map-*": "pb_hr_payroll_formula — the component-mapping wizard tour"
@@ -277,7 +393,11 @@
       "pb_payslip_review/static/src/xml/payslip_review.xml",
       "pb_import/static/src/xml/import.xml",
       "pb_import_wizard/static/src/xml/import_wizard.xml",
-      "pb_payrun_ledgers/static/src/xml/ledger.xml"
+      "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "pb_formula_studio/static/src/xml/studio.xml",
+      "pb_statutory/static/src/xml/statutory.xml",
+      "pb_structures/static/src/xml/structures.xml",
+      "pb_integrations/static/src/xml/integrations.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

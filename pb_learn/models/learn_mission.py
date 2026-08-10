@@ -79,7 +79,8 @@ class LearnMission(models.Model):
         # Mirrors learn.station._selection_line — one vocabulary for the map
         # and the missions, so a mission cannot belong to a line the Journey
         # does not draw. tests/test_mission.py asserts the two never drift.
-        return [('payrun', self.env._('Pay run line'))]
+        return [('payrun', self.env._('Pay run line')),
+                ('setup', self.env._('Setup line'))]
 
     @api.model
     def _selection_kind(self):

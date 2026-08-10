@@ -512,4 +512,299 @@
         <field name="feedback">Let's rethink that. Skipping removes the rows from the batch, not the problem from the month — the score goes green because those people are no longer in the import at all.</field>
     </record>
 
+    <record id="lesson_l5" model="learn.lesson">
+        <field name="key">L5</field>
+        <field name="station_id" ref="station_formula"/>
+        <field name="sequence">10</field>
+        <field name="name">The formula is the payslip</field>
+        <field name="goal">Read a division's rulebook end to end, and be able to point at the component that produced any line on a payslip.</field>
+        <field name="duration_min">7</field>
+    </record>
+
+    <record id="lesson_l5_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">10</field>
+        <field name="kicker">What &amp; why</field>
+        <field name="title">One division, one rulebook</field>
+        <field name="body">This is &lt;b&gt;HOASEN_RETAIL_END&lt;/b&gt; — the configuration every Retail payslip is computed by. The name at the top is a switcher: other divisions have their own, and they are not variations of this one. Choosing a division in Run Payroll is choosing which of these runs.</field>
+        <field name="tip">The code is the thing to quote when you ask someone about a number: "HOASEN_RETAIL_END, component TNCN" is a question that can be answered.</field>
+        <field name="screen">formula</field>
+        <field name="anchor">fs-config</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l5_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">20</field>
+        <field name="kicker">The inventory</field>
+        <field name="title">Every line on a payslip is a component here</field>
+        <field name="body">Ten components, in four kinds: &lt;b&gt;inputs&lt;/b&gt; (base salary), &lt;b&gt;earnings&lt;/b&gt; (allowances, overtime), &lt;b&gt;deductions&lt;/b&gt; (BHXH, BHYT, BHTN, thuế TNCN) and &lt;b&gt;totals&lt;/b&gt; (gross, taxable, net). Nothing on a payslip comes from anywhere else — if a line exists, it is one of these, and if a line is missing, its component is.</field>
+        <field name="screen">formula</field>
+        <field name="anchor">fs-components</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l5_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">30</field>
+        <field name="kicker">The formula</field>
+        <field name="title">Read it out loud and it is just a sentence</field>
+        <field name="body">&lt;b&gt;TNCN = 5% × TNCT&lt;/b&gt;, and &lt;b&gt;TNCT = GROSS − (BHXH + BHYT + BHTN) − 11,000,000&lt;/b&gt;. That is the whole of Mai's tax line: gross, less her insurance, less the personal deduction, then the first band's rate. Each coloured chip is a component you can click through to.</field>
+        <field name="tip">The 11,000,000 is written as a chip, not typed into the formula twice. One relief figure, one place to change it.</field>
+        <field name="screen">formula</field>
+        <field name="anchor">fs-formula</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l5_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">40</field>
+        <field name="kicker">Two ways to read</field>
+        <field name="title">Names for people, letters for spreadsheets</field>
+        <field name="body">The same formula switches between &lt;b&gt;Names&lt;/b&gt; (TNCN = 5% × TNCT) and &lt;b&gt;Letters&lt;/b&gt; (I = 5% × H). Letters are how the engine stores it and how it reads next to a spreadsheet; names are how you explain it to somebody. They are one formula in two spellings, so a change in either is a change in both.</field>
+        <field name="screen">formula</field>
+        <field name="anchor">fs-namesletters</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l5_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">50</field>
+        <field name="kicker">The wiring</field>
+        <field name="title">Depends on, and used by</field>
+        <field name="body">TNCT &lt;b&gt;depends on&lt;/b&gt; GROSS, BHXH, BHYT and BHTN — change any of those and it moves. It is &lt;b&gt;used by&lt;/b&gt; THUCNHAN, so the net follows it. This panel is the one to read before renaming or deleting anything: it names, exactly, what would break.</field>
+        <field name="screen">formula</field>
+        <field name="anchor">fs-deps</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l5_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">60</field>
+        <field name="kicker">Proof</field>
+        <field name="title">The rulebook, run on a real person</field>
+        <field name="body">The preview evaluates the whole configuration against one employee: Mai's gross of &lt;b&gt;14,280,000 ₫&lt;/b&gt;, taxable of 2,020,000, tax of 101,000 and net of &lt;b&gt;12,919,000 ₫&lt;/b&gt;. This is the same arithmetic her payslip shows — the difference is that here you can see which component produced each line.</field>
+        <field name="screen">formula</field>
+        <field name="anchor">fs-preview</field>
+        <field name="visual">calc</field>
+    </record>
+
+    <record id="lesson_l5_step_06" model="learn.step">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">70</field>
+        <field name="kicker">Before you act</field>
+        <field name="title">Simulate before you activate</field>
+        <field name="body">&lt;b&gt;Simulate&lt;/b&gt; runs the edited configuration against a period that has already been paid, and shows you what would have come out. It is the only way to see a change's effect on people rather than on one preview employee — and it costs a minute.</field>
+        <field name="consequence">Affects every future payslip computed by this configuration — the whole division, not one employee, and not one month. Reversible: &lt;b&gt;partly&lt;/b&gt; — the configuration can be edited back, but any run already computed on the changed version keeps its figures until it is recomputed. Verify first: the dependency panel for anything you renamed, and a simulation against last month.</field>
+        <field name="screen">formula</field>
+        <field name="anchor">fs-simulate</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l5_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_l5"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">You need to add a meal allowance for Retail. The July run is computed and waiting at {{hrTierName}}. What do you do?</field>
+    </record>
+
+    <record id="lesson_l5_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l5_quiz"/>
+        <field name="sequence">10</field>
+        <field name="label">Add the component now — the July run has already been computed, so it cannot be affected</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. Computed is not finished: a rejection at any gate sends the run back to draft, and the recompute that follows would use the configuration as it is then — so July would quietly acquire an allowance that was never approved for it.</field>
+    </record>
+
+    <record id="lesson_l5_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l5_quiz"/>
+        <field name="sequence">20</field>
+        <field name="label">Add the component, simulate it against last month, and apply it once July is done</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Yes. The simulation tells you what the change does to real people before anybody is paid by it, and waiting for July to reach done means no open run can pick it up by accident. Both halves matter — the simulation is the evidence, the timing is the safety.</field>
+    </record>
+
+    <record id="lesson_l5_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l5_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Add the allowance straight onto each employee's payslip instead</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. That is forty-eight manual edits that the next recompute erases, and next month it is forty-eight more. A component is written once and paid every month; an edit is written every month and remembered by nobody.</field>
+    </record>
+
+    <record id="lesson_l6" model="learn.lesson">
+        <field name="key">L6</field>
+        <field name="station_id" ref="station_statutory"/>
+        <field name="sequence">10</field>
+        <field name="name">Statutory — the rules the law writes</field>
+        <field name="goal">Read the policy and the tax table the way an inspector would, and know exactly how to apply a rate change without touching a month that is already open.</field>
+        <field name="duration_min">8</field>
+    </record>
+
+    <record id="lesson_l6_step_00" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">10</field>
+        <field name="kicker">What &amp; why</field>
+        <field name="title">You do not invent these numbers</field>
+        <field name="body">This screen holds what the law has already decided: the &lt;b&gt;BHXH&lt;/b&gt;, &lt;b&gt;BHYT&lt;/b&gt; and &lt;b&gt;BHTN&lt;/b&gt; rates, the base they are charged on, and the &lt;b&gt;thuế TNCN&lt;/b&gt; table. Your job is not to choose them — it is to keep them current, and to be able to show where each one came from.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">st-kpis</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l6_step_01" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">20</field>
+        <field name="kicker">Reading the policy</field>
+        <field name="title">Who pays what — and the bigger half is not yours</field>
+        <field name="body">Each scheme has an &lt;b&gt;employee share&lt;/b&gt;, deducted from the payslip, and an &lt;b&gt;employer share&lt;/b&gt;, which is a company cost and never appears in anybody's net. BHXH 8% / 17.5% · BHYT 1.5% / 3% · BHTN 1% / 1%. The employee pays 10.5% in total and the company pays 21.5% — twice as much, on top.</field>
+        <field name="tip">When an employee says "I pay a third of my salary in insurance", this table is the answer: they pay 10.5% of the registered base, and the company pays the rest.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">st-rates</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l6_step_02" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">30</field>
+        <field name="kicker">The base &amp; the ceiling</field>
+        <field name="title">Charged on the registered base, up to a ceiling</field>
+        <field name="body">Contributions apply to the &lt;b&gt;registered insurance base&lt;/b&gt; — for Mai, her contract base of 12,000,000 ₫, not her 14,280,000 ₫ gross. And they stop at the ceiling in the last column: above &lt;b&gt;20,000,000 ₫&lt;/b&gt; the deduction does not grow, so two people on very different salaries can pay exactly the same BHXH.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">st-rates</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l6_step_03" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">40</field>
+        <field name="kicker">The tax table</field>
+        <field name="title">PIT is progressive, and kind at the bottom</field>
+        <field name="body">Taxable income is gross &lt;b&gt;less insurance&lt;/b&gt;, less &lt;b&gt;11,000,000 ₫&lt;/b&gt; for yourself and &lt;b&gt;4,400,000 ₫&lt;/b&gt; per dependant. Mai: 14,280,000 − 1,260,000 − 11,000,000 = &lt;b&gt;2,020,000 ₫&lt;/b&gt;, which sits entirely in the 5% band, so her tax is &lt;b&gt;101,000 ₫&lt;/b&gt;. The bands only bite further up.</field>
+        <field name="tip">Insurance comes off BEFORE the deductions, which is why a rise in a contribution rate always costs a little less net than it costs in contribution.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">st-slabs</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l6_step_04" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">50</field>
+        <field name="kicker">The connection</field>
+        <field name="title">Watch a rate become a payslip line</field>
+        <field name="body">The &lt;b&gt;1.5%&lt;/b&gt; on the BHYT row and the &lt;b&gt;−180,000 ₫&lt;/b&gt; on Mai's July payslip are the same fact, twice: 1.5% of her registered base of 12,000,000 ₫. Every deduction on every slip traces back to a cell on this table — which is why a single edit here moves thousands of lines at once.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">st-rates</field>
+        <field name="visual">trace</field>
+        <field name="moment_from">st-rates</field>
+        <field name="moment_to">rep-slipline</field>
+    </record>
+
+    <record id="lesson_l6_step_05" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">60</field>
+        <field name="kicker">The mechanics</field>
+        <field name="title">A rate change is a new record, not an edit</field>
+        <field name="body">There is &lt;b&gt;no version history&lt;/b&gt; on a policy. When a decree changes a rate you create a &lt;b&gt;new policy record&lt;/b&gt; with its own code — codes are unique per company — and its own &lt;b&gt;effective date&lt;/b&gt;, then end-date the outgoing one. The roster below is what that looks like afterwards: 2025 ended and archived, 2026 active.</field>
+        <field name="tip">Payobook picks the policy with the latest effective date among those still active. Not the newest record, not the last one edited — the effective date is the field that decides.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">st-roster</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l6_step_06" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">70</field>
+        <field name="kicker">Before you act</field>
+        <field name="title">The date is the whole of the risk</field>
+        <field name="body">A new policy dated from the first of next month is safe. One dated from today, while a month is still open, is not: the current policy is chosen by &lt;b&gt;latest effective date&lt;/b&gt;, so any run that recomputes — after a rejection, after an import fix — would pick up rates that were not in force for its own period.</field>
+        <field name="consequence">Affects every future payslip in &lt;b&gt;every division&lt;/b&gt; — one policy serves the whole company, not one configuration. Reversible: &lt;b&gt;partly&lt;/b&gt; — the new record can be archived, but any run recomputed while it was in force keeps the figures it produced until it is recomputed again. Verify first: that no run is still open for a period before the effective date.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">st-new</field>
+        <field name="visual">none</field>
+    </record>
+
+    <record id="lesson_l6_step_07" model="learn.step">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">80</field>
+        <field name="kicker">Before &amp; after</field>
+        <field name="title">What half a percentage point costs</field>
+        <field name="body">If BHYT's employee share went from 1.5% to 2.0%, Mai's deduction grows 60,000 ₫ — and her net falls &lt;b&gt;57,000 ₫&lt;/b&gt;, not 60,000, because insurance comes off before tax and her thuế TNCN falls 3,000 with it. Toggle the two sides and read which lines move.</field>
+        <field name="screen">statutory</field>
+        <field name="anchor">rep-slipline</field>
+        <field name="visual">morph</field>
+        <field name="moment_which">maiBhytRate</field>
+    </record>
+
+    <record id="lesson_l6_step_07_line_00" model="learn.step.line">
+        <field name="step_id" ref="lesson_l6_step_07"/>
+        <field name="sequence">10</field>
+        <field name="role">morph_before</field>
+        <field name="label">BHYT at 1.5%</field>
+        <field name="value">head|12,919,000 ₫</field>
+    </record>
+
+    <record id="lesson_l6_step_07_line_01" model="learn.step.line">
+        <field name="step_id" ref="lesson_l6_step_07"/>
+        <field name="sequence">20</field>
+        <field name="role">morph_before</field>
+        <field name="label">BHYT 180,000 · insurance 1,260,000 · taxable 2,020,000 · PIT 101,000</field>
+        <field name="value">detail</field>
+    </record>
+
+    <record id="lesson_l6_step_07_line_02" model="learn.step.line">
+        <field name="step_id" ref="lesson_l6_step_07"/>
+        <field name="sequence">30</field>
+        <field name="role">morph_after</field>
+        <field name="label">BHYT at 2.0%</field>
+        <field name="value">head|12,862,000 ₫</field>
+    </record>
+
+    <record id="lesson_l6_step_07_line_03" model="learn.step.line">
+        <field name="step_id" ref="lesson_l6_step_07"/>
+        <field name="sequence">40</field>
+        <field name="role">morph_after</field>
+        <field name="label">BHYT 240,000 · insurance 1,320,000 · taxable 1,960,000 · PIT 98,000</field>
+        <field name="value">detail</field>
+    </record>
+
+    <record id="lesson_l6_step_07_line_04" model="learn.step.line">
+        <field name="step_id" ref="lesson_l6_step_07"/>
+        <field name="sequence">50</field>
+        <field name="role">morph_after</field>
+        <field name="label">Net falls 57,000 ₫, not 60,000. The deduction grew by 60,000, and because insurance comes off before tax, taxable income fell by the same 60,000 and PIT fell 3,000 with it. Half a percentage point, one employee, every month.</field>
+        <field name="value">delta</field>
+    </record>
+
+    <record id="lesson_l6_quiz" model="learn.quiz">
+        <field name="lesson_id" ref="lesson_l6"/>
+        <field name="sequence">10</field>
+        <field name="kind">choice</field>
+        <field name="prompt">A decree raises BHYT's employee share from 1 August. It is 20 July and the July run is still awaiting {{gmTierName}}. What do you do?</field>
+    </record>
+
+    <record id="lesson_l6_quiz_opt_0" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l6_quiz"/>
+        <field name="sequence">10</field>
+        <field name="label">Edit the rate on the policy that is in force now</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. There is no version history to fall back on — the old rate is simply gone. And if anything sends July back to draft, the recompute charges an August rate to a July payslip, which is a compliance error nobody will see until it is filed.</field>
+    </record>
+
+    <record id="lesson_l6_quiz_opt_1" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l6_quiz"/>
+        <field name="sequence">20</field>
+        <field name="label">Create a new policy record effective 01/08, and end-date the current one on 31/07</field>
+        <field name="is_correct" eval="True"/>
+        <field name="feedback">Yes. July keeps the rates that were in force in July, August gets the new ones, and the change is on the record with a date and a code against it. Both halves are needed: without the end date on the old policy, two policies are active with nothing to choose between them.</field>
+    </record>
+
+    <record id="lesson_l6_quiz_opt_2" model="learn.quiz.option">
+        <field name="quiz_id" ref="lesson_l6_quiz"/>
+        <field name="sequence">30</field>
+        <field name="label">Create the new policy now with today's date so nothing is forgotten</field>
+        <field name="is_correct" eval="False"/>
+        <field name="feedback">Let's rethink that. The instinct is right and the date is wrong: from today means from 20 July, and the current policy is whichever active one has the latest effective date. Write the record now if you like — with 01/08 in the effective date field.</field>
+    </record>
+
 </odoo>
