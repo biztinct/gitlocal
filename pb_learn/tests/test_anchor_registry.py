@@ -39,9 +39,26 @@ ATTF_RE = re.compile(r't-attf-data-coach="([^"]*)"')
 JS_COMMENT_RE = re.compile(r'/\*.*?\*/|(?<!:)//[^\n]*', re.S)
 XML_COMMENT_RE = re.compile(r'<!--.*?-->', re.S)
 
-# Anchors the registry is ALLOWED to own even though pb_coach also points at
-# them. Everything else in anchors.json's `foreign` map is someone else's.
-SHARED_WITH_PB_COACH = {'pw-division', 'pw-compute'}
+# Anchors the registry is ALLOWED to own even though a `foreign` entry also
+# matches them. Everything else in anchors.json's `foreign` map is someone
+# else's, and (4) below fails if the registry quietly adopts one.
+#
+# Two groups, for two different reasons:
+#
+#   pw-division / pw-compute  are pointed at by pb_coach's tour_payrun AND by
+#   this module. Genuinely shared; neither may rename one alone.
+#
+#   the seven fs-*            were PROMOTED out of the `fs-*` wildcard in Phase
+#   B1, because L5 names them and an anchor a lesson points at has to be one a
+#   test can check. Six are also in pb_coach's hero_path and tour_formula, so
+#   they are shared on exactly the pw-* terms; fs-simulate is in studio.xml and
+#   no tour uses it. pb_learn adds NOTHING to studio.xml — promotion is a claim
+#   about ownership of a name, not a change to somebody else's template.
+SHARED_WITH_PB_COACH = {
+    'pw-division', 'pw-compute',
+    'fs-config', 'fs-components', 'fs-formula', 'fs-namesletters', 'fs-deps',
+    'fs-preview', 'fs-simulate',
+}
 
 
 def _read(module_and_path):

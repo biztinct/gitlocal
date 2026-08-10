@@ -190,6 +190,11 @@
         <field name="value">Pay Run</field>
     </record>
 
+    <record id="str_lines_setup" model="learn.string">
+        <field name="key">lines.setup</field>
+        <field name="value">Setup</field>
+    </record>
+
     <record id="str_livenotyet" model="learn.string">
         <field name="key">liveNotYet</field>
         <field name="value">This is a live capstone. It runs against real records on the demo tenant and is not available in this build yet — the practice mission teaches the same judgement safely.</field>

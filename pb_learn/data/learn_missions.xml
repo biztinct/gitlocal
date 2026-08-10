@@ -475,4 +475,291 @@
         <field name="confidence_gain">15</field>
     </record>
 
+    <record id="mission_m4" model="learn.mission">
+        <field name="key">m4</field>
+        <field name="sequence">40</field>
+        <field name="line">setup</field>
+        <field name="icon">shield-check</field>
+        <field name="name">Apply a BHYT rate change — properly</field>
+        <field name="summary">A decree raises the health-insurance rate. Create the new policy the way the product actually supports, date it so no open month is touched, and see what it costs one employee.</field>
+        <field name="duration_min">7</field>
+        <field name="kind">full</field>
+        <field name="screen">statutory</field>
+        <field name="confidence_key">setup</field>
+        <field name="confidence_gain">30</field>
+        <field name="consequence_title">You are about to change what every division deducts</field>
+        <field name="consequence_scope">One insurance policy serves the whole company. Every payslip computed after the effective date, in every division, uses these rates — this is not a per-configuration setting.</field>
+        <field name="consequence_reversible">Partly. The new record can be archived and the old one reopened, but any run that recomputed while the new rates were in force keeps the figures it produced until somebody recomputes it again.</field>
+        <field name="consequence_verify">That the effective date falls after every period that is still open. June and July are both unfinished here, so anything earlier than 01/08 can reach a month it has no business reaching.</field>
+        <field name="anomaly_title">The 60,000 that is only 57,000</field>
+        <field name="anomaly_body">Half a percentage point on Mai's registered base of 12,000,000 ₫ is 60,000 ₫ of extra BHYT — so it is natural to tell her that her pay drops by 60,000. It does not: it drops by 57,000. Insurance is deducted BEFORE the tax relief, so her taxable income falls by the same 60,000 and her thuế TNCN falls 3,000 with it. The number a payroll desk quotes from memory is almost always the contribution, and the number the employee sees is always the net. Quoting the wrong one is how a correct change becomes an argument on {{payDay}}.</field>
+    </record>
+
+    <record id="mission_m4_did_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">10</field>
+        <field name="kind">did</field>
+        <field name="body">Created a new policy record with its own code instead of editing the rates that were in force — the only shape the product actually supports.</field>
+    </record>
+
+    <record id="mission_m4_did_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">20</field>
+        <field name="kind">did</field>
+        <field name="body">Changed the one rate the decree changed, and left the employer share and the other two schemes alone.</field>
+    </record>
+
+    <record id="mission_m4_did_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">30</field>
+        <field name="kind">did</field>
+        <field name="body">Dated it from the first of the next month, so no run that is still open can recompute onto rates that were not in force for its period.</field>
+    </record>
+
+    <record id="mission_m4_did_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">40</field>
+        <field name="kind">did</field>
+        <field name="body">Read the impact on a real payslip before saving, and found that the net effect is smaller than the contribution change.</field>
+    </record>
+
+    <record id="mission_m4_did_04" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">50</field>
+        <field name="kind">did</field>
+        <field name="body">Ended the outgoing policy, so exactly one policy is in force on any given day.</field>
+    </record>
+
+    <record id="mission_m4_check_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">10</field>
+        <field name="kind">check</field>
+        <field name="body">The decree or circular is in front of you, and the rate you typed is the one it names.</field>
+    </record>
+
+    <record id="mission_m4_check_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">20</field>
+        <field name="kind">check</field>
+        <field name="body">Only the changed rate has moved — an employer share edited by accident is invisible on every payslip.</field>
+    </record>
+
+    <record id="mission_m4_check_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">30</field>
+        <field name="kind">check</field>
+        <field name="body">The effective date is after every open period, and you have checked which periods are open.</field>
+    </record>
+
+    <record id="mission_m4_check_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">40</field>
+        <field name="kind">check</field>
+        <field name="body">The outgoing policy has an end date, so two policies are never in force at once.</field>
+    </record>
+
+    <record id="mission_m4_check_04" model="learn.mission.note">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">50</field>
+        <field name="kind">check</field>
+        <field name="body">You can state the effect on one employee's NET, not just on the contribution.</field>
+    </record>
+
+    <record id="mission_m4_step_00" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">10</field>
+        <field name="key">open</field>
+        <field name="nav">statutory</field>
+        <field name="target">st-roster</field>
+        <field name="instruction">Open Statutory and read the roster</field>
+        <field name="detail">One policy is active — 2026, effective 01/01/2026 — and one is archived, ended on 31/12/2025. That pair is what a correctly applied rate change leaves behind.</field>
+        <field name="hint">The rates table at the top always shows the CURRENT policy: the active one with the latest effective date.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m4_step_01" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">20</field>
+        <field name="key">newrecord</field>
+        <field name="target">st-new</field>
+        <field name="instruction">A decree raises BHYT's employee share. How do you apply it?</field>
+        <field name="detail">The decree takes effect on 1 August. Today is 20 July, and both the June and July runs are still unfinished.</field>
+        <field name="hint">Ask what would be left to show an inspector afterwards — one record, or two.</field>
+        <field name="is_decision" eval="True"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m4_step_01_opt_newpolicy" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_01"/>
+        <field name="sequence">10</field>
+        <field name="key">newpolicy</field>
+        <field name="label">Create a new insurance policy record with its own code</field>
+        <field name="is_correct" eval="True"/>
+    </record>
+
+    <record id="mission_m4_step_01_opt_editlive" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_01"/>
+        <field name="sequence">20</field>
+        <field name="key">editlive</field>
+        <field name="label">Edit the rate on the policy that is in force</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. A policy has no version history, so editing it does not create a before and an after — the old rate is simply gone, and there is nothing left to show which rates July was computed under. The product's answer to a rate change is a second record, not a second version.</field>
+    </record>
+
+    <record id="mission_m4_step_01_opt_samecode" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_01"/>
+        <field name="sequence">30</field>
+        <field name="key">samecode</field>
+        <field name="label">Create a new record and reuse the current policy's code</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. The code is unique per company, so this one is refused outright — which is fortunate, because a shared code is exactly how two policies become indistinguishable in a report. Give the new record its own code and the pair reads as a history.</field>
+    </record>
+
+    <record id="mission_m4_step_02" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">30</field>
+        <field name="key">rate</field>
+        <field name="target">st-rates</field>
+        <field name="instruction">Set the BHYT employee share on the new record</field>
+        <field name="detail">The decree names one number and it applies to the employee share only. The employer's 3% and the other two schemes are untouched.</field>
+        <field name="hint">Two of the three numbers on offer are already on this screen somewhere. That is the trap, not a coincidence.</field>
+        <field name="is_decision" eval="True"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m4_step_02_opt_two" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_02"/>
+        <field name="sequence">10</field>
+        <field name="key">two</field>
+        <field name="label">2.0%</field>
+        <field name="is_correct" eval="True"/>
+    </record>
+
+    <record id="mission_m4_step_02_opt_onefive" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_02"/>
+        <field name="sequence">20</field>
+        <field name="key">onefive</field>
+        <field name="label">1.5%</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. 1.5% is the rate that is in force today — typing it into the new record creates a policy that changes nothing, and the first anybody knows about it is when August's deductions come out identical to July's.</field>
+    </record>
+
+    <record id="mission_m4_step_02_opt_three" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_02"/>
+        <field name="sequence">30</field>
+        <field name="key">three</field>
+        <field name="label">3.0%</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. 3.0% is the EMPLOYER's BHYT share, sitting one column to the right. Putting it in the employee column doubles what every employee pays and leaves the company paying the same — a mistake that is invisible on this screen and very visible on a payslip.</field>
+    </record>
+
+    <record id="mission_m4_step_03" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">40</field>
+        <field name="key">effective</field>
+        <field name="target">st-effective</field>
+        <field name="instruction">Choose the effective date</field>
+        <field name="detail">It is 20 July. June's run is still being corrected and July's is awaiting approval — either could be recomputed this week.</field>
+        <field name="hint">The current policy is the active one with the latest effective date. Ask which periods that sentence puts at risk.</field>
+        <field name="is_decision" eval="True"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m4_step_03_opt_aug" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_03"/>
+        <field name="sequence">10</field>
+        <field name="key">aug</field>
+        <field name="label">01/08/2026 — the first day the decree applies</field>
+        <field name="is_correct" eval="True"/>
+    </record>
+
+    <record id="mission_m4_step_03_opt_today" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_03"/>
+        <field name="sequence">20</field>
+        <field name="key">today</field>
+        <field name="label">Today, 20/07/2026, so it is not forgotten</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. From today means from 20 July — and July is not finished. If the run is rejected and recomputed, its payslips are charged an August rate for a July month, and nothing warns anybody: the figures simply come out slightly different from the ones already reviewed.</field>
+    </record>
+
+    <record id="mission_m4_step_03_opt_jan" model="learn.mission.option">
+        <field name="step_id" ref="mission_m4_step_03"/>
+        <field name="sequence">30</field>
+        <field name="key">jan</field>
+        <field name="label">01/01/2026, to keep the year consistent</field>
+        <field name="is_correct" eval="False"/>
+        <field name="recovery">Let's rethink that. Backdating to January would make the new rate the one in force for every month of the year — including four that have already been paid and reported. A retro line pays a difference; a backdated policy silently rewrites what the difference was.</field>
+    </record>
+
+    <record id="mission_m4_step_04" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">50</field>
+        <field name="key">preview</field>
+        <field name="target">rep-slipline</field>
+        <field name="instruction">Read the impact on one real payslip</field>
+        <field name="detail">Mai's BHYT goes from 180,000 ₫ to 240,000 ₫, her insurance total from 1,260,000 to 1,320,000, her taxable income from 2,020,000 down to 1,960,000, her thuế TNCN from 101,000 to 98,000 — and her net from 12,919,000 ₫ to 12,862,000 ₫.</field>
+        <field name="hint">Subtract the two nets before you read on: the answer is 57,000, and the reason it is not 60,000 is the whole point of this step.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m4_step_05" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">60</field>
+        <field name="key">consequence</field>
+        <field name="target">st-new</field>
+        <field name="instruction">Read what saving this record does</field>
+        <field name="detail">One policy serves every division, so this is not a change to Retail. The card names the scope, the way back and the thing to check, and the mission will not move until you have seen all three.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="True"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m4_step_06" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">70</field>
+        <field name="key">commit</field>
+        <field name="target">st-roster</field>
+        <field name="instruction">Save the new policy, and end-date the old one</field>
+        <field name="detail">Set 31/07/2026 as the end date on the 2026 policy. Two active policies with no end date between them is not an error the system reports — it simply resolves to one of them, and you will not know which until a payslip tells you.</field>
+        <field name="hint">Afterwards the roster should read like a timeline: 2025 ended, 2026 ending on 31/07, August active from 01/08.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+    </record>
+
+    <record id="mission_m4_step_07" model="learn.mission.step">
+        <field name="mission_id" ref="mission_m4"/>
+        <field name="sequence">80</field>
+        <field name="key">undo</field>
+        <field name="target">st-roster</field>
+        <field name="instruction">Now undo it: archive the new policy and reopen the old one</field>
+        <field name="detail">Clear the end date on the 2026 policy and archive the August one, and the current policy is what it was this morning. Do it once here, because on a real tenant the undo is only this clean while no run has recomputed in between — after that, the records are back but the payslips are not.</field>
+        <field name="hint">That last sentence is the real lesson of this mission: the records are reversible and the payslips they produced are not.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="True"/>
+    </record>
+
+    <record id="mission_m5" model="learn.mission">
+        <field name="key">m5</field>
+        <field name="sequence">50</field>
+        <field name="line">setup</field>
+        <field name="icon">calculator</field>
+        <field name="name">Map a new allowance into a config</field>
+        <field name="summary">A meal allowance has been agreed for Retail. Add it as a component, wire it into gross, and prove it before anybody is paid by it.</field>
+        <field name="duration_min">6</field>
+        <field name="kind">outline</field>
+        <field name="outline_note">The full version adds the component to HOASEN_RETAIL_END, makes you choose where it belongs — an earning that feeds GROSS, not a total and not an input — then wire it into the gross formula and read the dependency panel to see what moved. It ends where every configuration change should: a simulation against last month's real payslips, and the decision of whether to activate while a run is still open.</field>
+        <field name="screen">formula</field>
+        <field name="confidence_key">formula</field>
+        <field name="confidence_gain">20</field>
+    </record>
+
 </odoo>

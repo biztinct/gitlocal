@@ -22,12 +22,33 @@
    hand a translator wording they do not own, and the two would diverge at the
    first product rename.
    ========================================================================== */
-import { B, CASE, MENU, PRACTICE, RUN, STATUS_LABELS, SUB_SCREENS } from "./fixture";
+import { B, CASE, MENU, POLICY, PRACTICE, RUN, STATUS_LABELS, SUB_SCREENS, TAX }
+    from "./fixture";
 import { esc, ic, initial, tx, T, N, M, P, SP} from "./runtime";
 import { calcHTML, pipeHTML } from "./visuals";
 
 /* Which screen the shell is showing. The Coach grounds on this. */
 export let CURRENT_SCREEN = null;
+
+/* Separators live here rather than inside a template interpolation. A quoted
+   string CONCATENATED inside `${…}` makes rjsmin lose track of the enclosing
+   literal and strip whitespace from the rest of it — the same hazard the
+   `approved` line in payslips() is written out of line to avoid. */
+const DOT = " · ";
+const DASH = " – ";
+const ARROW = " → ";
+const SLASH = " / ";
+
+/* A formula component's kind decides its chip colour and its label. The Studio
+   colours them the same way, which is what makes a formula readable at a
+   glance: red is money leaving, green is money arriving, amber is a subtotal. */
+const CHIP_TONE = { input: "b", earning: "ok", deduction: "danger", total: "a", op: "" };
+const KIND_LABEL = {
+    input: B("Input", "Đầu vào"),
+    earning: B("Earning", "Thu nhập"),
+    deduction: B("Deduction", "Khấu trừ"),
+    total: B("Total", "Tổng"),
+};
 
 /* ------------------------------------------------------------------- helpers */
 export function statusChip(kind, key) {
@@ -416,6 +437,277 @@ export const SCREENS = {
                 <span class="lrn-note">${esc(tx(B(
                     "Nothing is written until you press this. Fix the rows above, not the payslips afterwards.",
                     "Chưa gì được ghi cho tới khi bạn bấm nút này. Hãy sửa các dòng ở trên, đừng sửa phiếu lương về sau.")))}</span>
+            </div>`;
+    },
+
+    /* --------------------------------------------------- Formula Engine
+       The anchors here are the REAL Formula Studio's — fs-config, fs-components,
+       fs-formula, fs-namesletters, fs-deps, fs-preview, fs-simulate. pb_learn
+       adds NOTHING to studio.xml: those attributes have been in that template
+       since before this module existed, and the registry now owns the seven the
+       content names, so a rename over there breaks a build here. */
+    formula() {
+        const c = PRACTICE.config;
+        const cfgName = c.code + DOT + c.version;
+        const comps = c.components.map((k) => `
+            <div class="lrn-row ${k.code === c.selected ? "on" : ""}">
+                <span class="lrn-avatar">${esc(k.l)}</span>
+                <span><span class="lrn-nm">${esc(k.code)}</span><br>
+                    <span class="lrn-sub2">${esc(tx(k.label))}</span></span>
+                <span class="lrn-rr"><span class="lrn-chip ${CHIP_TONE[k.kind]}"
+                    >${esc(tx(KIND_LABEL[k.kind]))}</span></span>
+            </div>`).join("");
+
+        const formula = c.formula.map((line) => `
+            <div class="lrn-strip">${line.map((tok) =>
+                `<span class="lrn-chip ${CHIP_TONE[tok.k]}">${esc(tok.t)}</span>`).join("")}</div>`
+        ).join("");
+
+        const preview = c.preview.map((r) => `
+            <div class="lrn-cr ${r.tot ? "tot" : ""}"><span>${esc(r.code)}</span>
+                <b>${r.neg ? "−" : ""}${esc(M(r.v))}</b></div>`).join("");
+        const previewFor = CASE.emp.mai.name + DOT + tx(RUN.period);
+        const dependsOn = c.dependsOn.join(DOT);
+        const usedBy = c.usedBy.join(DOT);
+
+        return `
+            <div class="lrn-strip">
+                <button class="lrn-btn" data-coach="fs-config">${ic("grid")}${esc(cfgName)}</button>
+                <button class="lrn-btn ghost" data-coach="fs-simulate">${ic("bar-chart")}${
+                    esc(tx(B("Simulate", "Mô phỏng")))}</button>
+            </div>
+            <div class="lrn-grid g3 top">
+                <div class="lrn-panel" data-coach="fs-components">
+                    <h3>${ic("layers")}${esc(tx(B("Components", "Thành phần")))}</h3>
+                    <div class="lrn-rows">${comps}</div>
+                </div>
+                <div class="lrn-panel" data-coach="fs-formula">
+                    <h3>${ic("calculator")}${esc(c.selected)}</h3>
+                    <div class="lrn-seg" data-coach="fs-namesletters">
+                        <button aria-pressed="true">${esc(tx(B("Names", "Tên")))}</button>
+                        <button aria-pressed="false">${esc(tx(B("Letters", "Chữ cái")))}</button>
+                    </div>
+                    ${formula}
+                    <div class="lrn-kv2" data-coach="fs-deps">
+                        <span>${esc(tx(B("Depends on", "Phụ thuộc vào")))}</span>
+                        <b>${esc(dependsOn)}</b>
+                    </div>
+                    <div class="lrn-kv2">
+                        <span>${esc(tx(B("Used by", "Được dùng bởi")))}</span>
+                        <b>${esc(usedBy)}</b>
+                    </div>
+                </div>
+                <div class="lrn-panel" data-coach="fs-preview">
+                    <h3>${ic("eye")}${esc(tx(B("Live preview", "Xem trước trực tiếp")))}</h3>
+                    <p class="lrn-note">${esc(previewFor)}</p>
+                    <div class="lrn-calc">${preview}</div>
+                </div>
+            </div>`;
+    },
+
+    /* -------------------------------------------------- Salary Structures */
+    structures() {
+        const k = PRACTICE.structures.kpis;
+        const rows = PRACTICE.structures.rows.map((s) => {
+            const meta = N(s.rules) + SP + tx(B("rules", "quy tắc")) + DOT
+                + N(s.employees) + SP + T("employees");
+            return `
+            <div class="lrn-row">
+                <span class="lrn-avatar">${ic("layers")}</span>
+                <span><span class="lrn-nm">${esc(s.name)}
+                        <span class="lrn-faint">${esc(s.code)}</span></span><br>
+                    <span class="lrn-sub2">${esc(meta)}</span></span>
+                <span class="lrn-rr"><span class="lrn-chip">${esc(tx(s.badge))}</span>
+                    <span class="lrn-sub2">${esc(s.updated)}</span></span>
+            </div>`;
+        }).join("");
+
+        return `
+            <div class="lrn-grid g5" data-coach="sr-kpis">
+                ${kpiTile("layers", "", N(k.structures), B("Structures", "Cấu trúc"))}
+                ${kpiTile("list-checks", "", N(k.rules), B("Salary rules", "Quy tắc lương"))}
+                ${kpiTile("grid", "", N(k.categories), B("Categories", "Nhóm quy tắc"))}
+                ${kpiTile("users", "", N(k.employees), B("Employees covered", "Nhân viên áp dụng"))}
+                ${kpiTile("globe", "", N(k.countries), B("Countries", "Quốc gia"))}
+            </div>
+            <div class="lrn-strip">
+                <button class="lrn-btn pri" data-coach="sr-new">${ic("plus")}${
+                    esc(tx(B("New structure", "Cấu trúc mới")))}</button>
+            </div>
+            <div class="lrn-tabs" data-coach="sr-filters">
+                ${[B("All", "Tất cả"), B("Active", "Đang dùng"), B("Historical", "Lịch sử")].map(
+                    (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
+            </div>
+            <div class="lrn-panel">
+                <h3>${ic("layers")}${esc(tx(B(
+                    "Salary structures (legacy)", "Cấu trúc lương (thế hệ cũ)")))}</h3>
+                <div class="lrn-rows" data-coach="sr-roster">${rows}</div>
+                <div class="lrn-foot2">
+                    <button class="lrn-link" data-coach="sr-openall">${esc(T("openFullList"))}</button>
+                </div>
+                <p class="lrn-note">${esc(tx(B(
+                    "Old payslips still reference these rule sets. New pay logic belongs in a formula configuration.",
+                    "Phiếu lương cũ vẫn tham chiếu các bộ quy tắc này. Logic lương mới thuộc về cấu hình công thức.")))}</p>
+            </div>`;
+    },
+
+    /* ---------------------------------------------------------- Statutory
+       `rep-slipline` on the right exists ONLY here, and that is deliberate: the
+       product's statutory cockpit shows RATES and a payslip shows ĐỒNG, and no
+       single product screen shows both at once. L6's trace needs both ends in
+       one DOM — spotlight.js draws nothing when either anchor is absent — so the
+       far end is drawn here and registered as practice-only, which is what stops
+       the Coach ever claiming to point at it on a live screen. Its rows are
+       CASE, the same ones the payslips replica draws. */
+    statutory() {
+        const s = PRACTICE.statutory;
+        const rates = POLICY.rows.map((r) => {
+            const cap = tx(B("Ceiling", "Trần đóng")) + SP + M(r.ceiling);
+            return `
+            <div class="lrn-row">
+                <span><span class="lrn-nm">${esc(tx(r.label))}</span><br>
+                    <span class="lrn-sub2">${esc(cap)}</span></span>
+                <span class="lrn-rr"><span class="lrn-chip b">${P(r.employee)}</span>
+                    <span class="lrn-chip">${P(r.employer)}</span></span>
+            </div>`;
+        }).join("");
+        const totals = P(POLICY.totalEmployee) + SLASH + P(POLICY.totalEmployer);
+
+        const slabs = TAX.slabs.map((b) => {
+            const band = b.to
+                ? M(b.from) + DASH + M(b.to)
+                : tx(B("above", "trên")) + SP + M(b.from);
+            return `<div class="lrn-cr"><span>${esc(band)}</span><b>${P(b.rate)}</b></div>`;
+        }).join("");
+        const relief = tx(B("Personal relief", "Giảm trừ bản thân")) + SP
+            + M(TAX.personalDeduction) + DOT
+            + tx(B("per dependant", "mỗi người phụ thuộc")) + SP + M(TAX.dependentDeduction);
+
+        const roster = PRACTICE.policies.map((p) => {
+            const dates = tx(B("Effective", "Hiệu lực")) + SP + p.effective
+                + (p.end ? ARROW + p.end : "");
+            const legs = P(p.employee) + SLASH + P(p.employer);
+            return `
+            <div class="lrn-row">
+                <span class="lrn-avatar">${ic("shield-check")}</span>
+                <span><span class="lrn-nm">${esc(tx(p.name))}
+                        <span class="lrn-faint">${esc(p.code)}</span></span><br>
+                    <span class="lrn-sub2">${esc(dates)}</span></span>
+                <span class="lrn-rr"><span class="lrn-chip ${p.active ? "ok" : ""}"
+                    >${esc(tx(p.active ? B("Active", "Đang hiệu lực")
+                                       : B("Archived", "Đã lưu trữ")))}</span>
+                    <span class="lrn-sub2">${esc(legs)}</span></span>
+            </div>`;
+        }).join("");
+
+        /* The worked example's statutory lines only — the far end of the trace. */
+        const slip = CASE.slip.filter((t) => t.neg).map((t) => `
+            <div class="lrn-cr"><span>${esc(tx(t.k))}</span>
+                <b>−${esc(M(t.v))}</b></div>`).join("");
+        const slipFor = CASE.emp.mai.name + DOT + tx(RUN.period) + DOT
+            + tx(B("registered base", "mức đóng đã đăng ký")) + SP + M(CASE.emp.mai.base);
+        const effective = tx(B("Effective from", "Hiệu lực từ")) + SP + POLICY.effective;
+
+        return `
+            <div class="lrn-grid g6" data-coach="st-kpis">
+                ${kpiTile("receipt", "", M(s.contributions), B("Contributions", "Tổng đóng bảo hiểm"))}
+                ${kpiTile("users", "", M(s.employeeLeg), B("Employee leg", "Phần người lao động"))}
+                ${kpiTile("bar-chart", "", M(s.employerLeg), B("Employer leg", "Phần doanh nghiệp"))}
+                ${kpiTile("shield-check", "pos", N(PRACTICE.policies.length), B("Policies", "Chính sách"))}
+                ${kpiTile("pie", "", N(s.taxTables), B("Tax tables", "Biểu thuế"))}
+                ${kpiTile("user-plus", "", N(s.dependents), B("Dependents", "Người phụ thuộc"))}
+            </div>
+            <div class="lrn-strip">
+                <button class="lrn-btn pri" data-coach="st-new">${ic("plus")}${
+                    esc(tx(B("Insurance policy", "Chính sách bảo hiểm")))}</button>
+            </div>
+            <div class="lrn-grid g2 top">
+                <div class="lrn-panel" data-coach="st-rates">
+                    <h3>${ic("shield-check")}${esc(tx(B(
+                        "Active insurance rates", "Tỷ lệ bảo hiểm đang hiệu lực")))}</h3>
+                    <div class="lrn-strip" data-coach="st-effective">
+                        <span class="lrn-chip">${ic("clock")}${esc(effective)}</span>
+                        <span class="lrn-chip">${esc(POLICY.code)}</span>
+                    </div>
+                    <div class="lrn-kv2">
+                        <span>${esc(tx(B("Scheme", "Loại bảo hiểm")))}</span>
+                        <b>${esc(tx(B("Employee / Employer",
+                                      "Người lao động / Doanh nghiệp")))}</b>
+                    </div>
+                    <div class="lrn-rows">${rates}</div>
+                    <div class="lrn-kv2">
+                        <span>${esc(tx(B("Total", "Tổng cộng")))}</span><b>${esc(totals)}</b>
+                    </div>
+                </div>
+                <div class="lrn-panel" data-coach="rep-slipline">
+                    <h3>${ic("receipt")}${esc(tx(B(
+                        "What those rates deduct", "Các tỷ lệ đó khấu trừ bao nhiêu")))}</h3>
+                    <p class="lrn-note">${esc(slipFor)}</p>
+                    <div class="lrn-calc">${slip}</div>
+                </div>
+            </div>
+            <div class="lrn-panel" data-coach="st-slabs">
+                <h3>${ic("pie")}${esc(tx(B(
+                    "Tax brackets (progressive)", "Biểu thuế TNCN (luỹ tiến)")))}</h3>
+                <div class="lrn-calc">${slabs}</div>
+                <p class="lrn-note">${esc(relief)}</p>
+            </div>
+            <div class="lrn-tabs" data-coach="st-filters">
+                ${[B("Insurance policies", "Chính sách bảo hiểm"), B("Tax tables", "Biểu thuế"),
+                   B("Active only", "Chỉ đang hiệu lực")].map(
+                    (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
+            </div>
+            <div class="lrn-panel">
+                <h3>${ic("clock")}${esc(tx(B("Policy history", "Lịch sử chính sách")))}</h3>
+                <div class="lrn-rows" data-coach="st-roster">${roster}</div>
+                <p class="lrn-note">${esc(tx(B(
+                    "A rate change is a new record with its own code and effective date, and the outgoing one is end-dated. The policy in force is the active one with the latest effective date.",
+                    "Đổi tỷ lệ là tạo bản ghi mới với mã và ngày hiệu lực riêng, còn bản cũ được đặt ngày kết thúc. Chính sách đang hiệu lực là bản còn bật có ngày hiệu lực mới nhất.")))}</p>
+            </div>`;
+    },
+
+    /* ------------------------------------------------------- Integrations */
+    integrations() {
+        const k = PRACTICE.integrationKpis;
+        const rows = PRACTICE.connectors.map((c) => {
+            const meta = tx(c.type) + DOT + tx(c.last);
+            const counts = N(c.mappings) + SP + tx(B("mappings", "ánh xạ")) + DOT
+                + N(c.staged) + SP + tx(B("staged", "đang chờ"));
+            return `
+            <div class="lrn-row ${c.status === "err" ? "hit" : ""}">
+                <span class="lrn-avatar">${ic(c.icon)}</span>
+                <span><span class="lrn-nm">${esc(tx(c.name))}</span><br>
+                    <span class="lrn-sub2">${esc(meta)}</span></span>
+                <span class="lrn-rr"><span class="lrn-sub2">${esc(counts)}</span>
+                    <span class="lrn-chip ${c.status === "err" ? "danger" : "ok"}"
+                        >${esc(tx(c.status === "err" ? B("Sync failed", "Đồng bộ lỗi")
+                                                     : B("Connected", "Đã kết nối")))}</span></span>
+            </div>`;
+        }).join("");
+
+        return `
+            <div class="lrn-grid g6" data-coach="ig-kpis">
+                ${kpiTile("plug", "", N(k.connectors), B("Connectors", "Đầu nối"))}
+                ${kpiTile("check-circle", "pos", N(k.connected), B("Connected", "Đã kết nối"))}
+                ${kpiTile("alert-triangle", "warn", N(k.errors), B("Errors", "Lỗi"))}
+                ${kpiTile("rotate-ccw", "", N(k.synced), B("Synced records", "Bản ghi đã đồng bộ"))}
+                ${kpiTile("git-branch", "", N(k.mappings), B("Field mappings", "Ánh xạ trường"))}
+                ${kpiTile("inbox", "warn", N(k.staged), B("Staged records", "Bản ghi đang chờ"))}
+            </div>
+            <div class="lrn-strip">
+                <button class="lrn-btn pri" data-coach="ig-connect">${ic("plug")}${
+                    esc(tx(B("Connect a system", "Kết nối một hệ thống")))}</button>
+            </div>
+            <div class="lrn-tabs" data-coach="ig-filters">
+                ${[B("All", "Tất cả"), B("Connected", "Đã kết nối"), B("Errors", "Lỗi")].map(
+                    (f, i) => `<button aria-selected="${i === 0}">${esc(tx(f))}</button>`).join("")}
+            </div>
+            <div class="lrn-panel">
+                <h3>${ic("plug")}${esc(tx(B("Connectors", "Đầu nối")))}</h3>
+                <div class="lrn-rows" data-coach="ig-roster">${rows}</div>
+                <p class="lrn-note">${esc(tx(B(
+                    "Read the last sync time, not just the status. A connector that stopped nine days ago still says connected.",
+                    "Hãy đọc thời điểm đồng bộ gần nhất, đừng chỉ đọc trạng thái. Một đầu nối ngừng chạy chín ngày trước vẫn hiện là đã kết nối.")))}</p>
             </div>`;
     },
 

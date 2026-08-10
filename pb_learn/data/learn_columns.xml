@@ -269,4 +269,180 @@
         <field name="body">The furthest-back month any line here is correcting. The older it is, the more reporting has already been done on the original figure — which is exactly why the correction is a retro line and never an edit to that month.</field>
     </record>
 
+    <record id="col_formula_components" model="learn.column">
+        <field name="screen">formula</field>
+        <field name="key">components</field>
+        <field name="sequence">10</field>
+        <field name="label">Components</field>
+        <field name="body">Every named piece of a division's rulebook: the inputs, the earnings, the deductions and the totals. A payslip line exists because a component here produced it, so a missing line is a missing component rather than a bug in the compute.</field>
+    </record>
+
+    <record id="col_formula_depends_on" model="learn.column">
+        <field name="screen">formula</field>
+        <field name="key">depends_on</field>
+        <field name="sequence">20</field>
+        <field name="label">Depends on</field>
+        <field name="body">The components this one reads to produce its own value. Change any of them and this line moves — which makes this the list to check before you edit an input rather than after somebody notices the output.</field>
+    </record>
+
+    <record id="col_formula_used_by" model="learn.column">
+        <field name="screen">formula</field>
+        <field name="key">used_by</field>
+        <field name="sequence">30</field>
+        <field name="label">Used by</field>
+        <field name="body">The components that read THIS one. It is the blast radius of a rename or a deletion, written down: everything listed here would lose an input, and a formula that lost an input does not always fail loudly.</field>
+    </record>
+
+    <record id="col_formula_live_preview" model="learn.column">
+        <field name="screen">formula</field>
+        <field name="key">live_preview</field>
+        <field name="sequence">40</field>
+        <field name="label">Live preview</field>
+        <field name="body">The whole configuration evaluated against one sample employee, line by line. It is the cheapest possible check on an edit — and it is one person, which is why it is a first look rather than the evidence.</field>
+    </record>
+
+    <record id="col_formula_simulate" model="learn.column">
+        <field name="screen">formula</field>
+        <field name="key">simulate</field>
+        <field name="sequence">50</field>
+        <field name="label">Simulate</field>
+        <field name="body">The edited configuration run against a period that has already been paid, so you can compare what it would have produced with what was actually paid. This is the evidence the preview is not: everybody, not one person.</field>
+    </record>
+
+    <record id="col_statutory_contributions" model="learn.column">
+        <field name="screen">statutory</field>
+        <field name="key">contributions</field>
+        <field name="sequence">10</field>
+        <field name="label">Contributions</field>
+        <field name="body">The total of both legs — what employees have deducted plus what the company pays on top — for the period on display. It is a cost figure, not a deduction figure, so it is roughly three times what appears on the payslips.</field>
+    </record>
+
+    <record id="col_statutory_employee_leg" model="learn.column">
+        <field name="screen">statutory</field>
+        <field name="key">employee_leg</field>
+        <field name="sequence">20</field>
+        <field name="label">Employee leg</field>
+        <field name="body">The part deducted from payslips — 10.5% of the registered insurance base under the current policy. This is the only half an employee ever sees, and it is the half they ask about.</field>
+    </record>
+
+    <record id="col_statutory_employer_leg" model="learn.column">
+        <field name="screen">statutory</field>
+        <field name="key">employer_leg</field>
+        <field name="sequence">30</field>
+        <field name="label">Employer leg</field>
+        <field name="body">The part the company pays on top of salary — 21.5% of the same base, twice what the employee pays. It never appears in anybody's net, which is why it is invisible in every conversation about pay unless somebody puts it on the table.</field>
+    </record>
+
+    <record id="col_statutory_policies" model="learn.column">
+        <field name="screen">statutory</field>
+        <field name="key">policies</field>
+        <field name="sequence">40</field>
+        <field name="label">Policies</field>
+        <field name="body">How many insurance policy records exist, active and archived together. More than one is normal and healthy: a rate change is a new record, so the count grows every time the law does.</field>
+    </record>
+
+    <record id="col_statutory_tax_tables" model="learn.column">
+        <field name="screen">statutory</field>
+        <field name="key">tax_tables</field>
+        <field name="sequence">50</field>
+        <field name="label">Tax tables</field>
+        <field name="body">One per tax year, holding the bands and the two relief figures. Last year's stays because last year's payslips were computed by it and still have to be explainable.</field>
+    </record>
+
+    <record id="col_statutory_dependents" model="learn.column">
+        <field name="screen">statutory</field>
+        <field name="key">dependents</field>
+        <field name="sequence">60</field>
+        <field name="label">Dependents</field>
+        <field name="body">Registered dependants across the company, each worth 4,400,000 ₫ a month off taxable income. Registration is the point: an unregistered dependant is relief the employee is entitled to and is not getting.</field>
+    </record>
+
+    <record id="col_structures_structures" model="learn.column">
+        <field name="screen">structures</field>
+        <field name="key">structures</field>
+        <field name="sequence">10</field>
+        <field name="label">Structures</field>
+        <field name="body">Legacy Odoo salary structures still held by this company. They are history rather than configuration: new pay logic belongs in a formula configuration, and these exist so old payslips can still be explained.</field>
+    </record>
+
+    <record id="col_structures_salary_rules" model="learn.column">
+        <field name="screen">structures</field>
+        <field name="key">salary_rules</field>
+        <field name="sequence">20</field>
+        <field name="label">Salary rules</field>
+        <field name="body">The individual rules inside those structures — the older equivalent of a component. Reading one tells you how a payslip from before the migration got its number.</field>
+    </record>
+
+    <record id="col_structures_categories" model="learn.column">
+        <field name="screen">structures</field>
+        <field name="key">categories</field>
+        <field name="sequence">30</field>
+        <field name="label">Categories</field>
+        <field name="body">How the rules are grouped for reporting — basic, allowance, deduction, net. The grouping is what a payslip's subtotals are built from, which is why two structures with the same rules can still print differently.</field>
+    </record>
+
+    <record id="col_structures_employees_covered" model="learn.column">
+        <field name="screen">structures</field>
+        <field name="key">employees_covered</field>
+        <field name="sequence">40</field>
+        <field name="label">Employees covered</field>
+        <field name="body">How many people are still paid through a structure rather than a formula configuration. On a migrated company this trends to zero, and zero is the signal that a division has finished moving — not that the structure can be deleted.</field>
+    </record>
+
+    <record id="col_structures_countries" model="learn.column">
+        <field name="screen">structures</field>
+        <field name="key">countries</field>
+        <field name="sequence">50</field>
+        <field name="label">Countries</field>
+        <field name="body">How many country rule sets are represented here. A structure carries its country's statutory assumptions, so a structure from the wrong country is wrong in ways that do not look wrong.</field>
+    </record>
+
+    <record id="col_integrations_connectors" model="learn.column">
+        <field name="screen">integrations</field>
+        <field name="key">connectors</field>
+        <field name="sequence">10</field>
+        <field name="label">Connectors</field>
+        <field name="body">Configured links to a source system that can pull data in without anybody retyping it — an HR system, a time clock, the bank. Each one is a place a wrong row can enter payroll without passing a human.</field>
+    </record>
+
+    <record id="col_integrations_connected" model="learn.column">
+        <field name="screen">integrations</field>
+        <field name="key">connected</field>
+        <field name="sequence">20</field>
+        <field name="label">Connected</field>
+        <field name="body">How many connectors currently hold working credentials. It says nothing about whether data is arriving: connected describes the login, and the last-sync time describes the data.</field>
+    </record>
+
+    <record id="col_integrations_errors" model="learn.column">
+        <field name="screen">integrations</field>
+        <field name="key">errors</field>
+        <field name="sequence">30</field>
+        <field name="label">Errors</field>
+        <field name="body">Connectors whose last attempt failed. One here in the week before payroll is a month of inputs that will not arrive — and the payslips computed without them will look perfectly normal.</field>
+    </record>
+
+    <record id="col_integrations_synced_records" model="learn.column">
+        <field name="screen">integrations</field>
+        <field name="key">synced_records</field>
+        <field name="sequence">40</field>
+        <field name="label">Synced records</field>
+        <field name="body">How many records have come through successfully. Compare it with last month rather than reading it alone: a number that stopped growing is a connector that stopped working.</field>
+    </record>
+
+    <record id="col_integrations_field_mappings" model="learn.column">
+        <field name="screen">integrations</field>
+        <field name="key">field_mappings</field>
+        <field name="sequence">50</field>
+        <field name="label">Field mappings</field>
+        <field name="body">How many fields in the source system are wired to a field here. A mapping that was never made is a column that silently arrives empty, and the payslip line it feeds simply computes on zero.</field>
+    </record>
+
+    <record id="col_integrations_staged_records" model="learn.column">
+        <field name="screen">integrations</field>
+        <field name="key">staged_records</field>
+        <field name="sequence">60</field>
+        <field name="label">Staged records</field>
+        <field name="body">Rows that arrived but have not been taken into payroll yet. A count that is climbing is the clearest single sign of a broken sync — those rows are somebody's attendance, waiting.</field>
+    </record>
+
 </odoo>

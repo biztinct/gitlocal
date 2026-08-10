@@ -42,7 +42,7 @@ const B = (en, vi) => ({ en, vi });
 /* Bump the minor when you add records; bump the major when a shape changes,
    because `check_contract.py` pins to it. */
 const PRACTICE_META = {
-  schemaVersion: "1.1.0",
+  schemaVersion: "1.2.0",
   contract: "contract.json",
   derivedFrom: "gitlocal branch 19.1",
   isolation: B(
@@ -96,6 +96,68 @@ const TENANT_DEFAULTS = {
 };
 
 /* =============================================================================
+   0b. THE STATUTORY RECORDS — the rules the law writes, as the product holds them.
+   -----------------------------------------------------------------------------
+   These mirror TWO real models, and the mirror is the point: everything the
+   payslip rule below deducts is read from here, so a lesson about the policy
+   screen and a lesson about a payslip line cannot disagree about a rate.
+
+     vietnam.insurance.policy   name · code · effective_date · end_date ·
+                                active · si/hi/ui employee+employer rates ·
+                                si_max_salary_ceiling
+     vietnam.tax.table          tax_year · personal_deduction ·
+                                dependent_deduction · slab_ids
+
+   THERE IS NO VERSION CHAIN ON EITHER MODEL, and the content must never teach
+   one. A rate change is a NEW RECORD with its own `code` (unique per company —
+   `code_company_uniq`) and its own `effective_date`; the old record is
+   end-dated. The cockpit picks the CURRENT policy as the latest effective_date
+   among active=True (pb_statutory/models/pb_statutory.py). `contract.json`
+   pins all four of those facts.
+   ========================================================================== */
+const POLICY = {
+  name: B("Insurance policy 2026", "Chính sách bảo hiểm 2026"),
+  code: "VN-INS-2026",
+  effective: "01/01/2026",
+  end: "",
+  active: true,
+  /* `key` is the product's own scheme key (pb_statutory CONTRIB_MAP: SI / HI /
+     UI), not a display label — the cockpit rows are keyed by it. */
+  rows: [
+    { key: "SI", label: B("BHXH — social insurance", "BHXH — bảo hiểm xã hội"),
+      employee: 8, employer: 17.5, ceiling: 20000000 },
+    { key: "HI", label: B("BHYT — health insurance", "BHYT — bảo hiểm y tế"),
+      employee: 1.5, employer: 3, ceiling: 20000000 },
+    { key: "UI", label: B("BHTN — unemployment insurance", "BHTN — bảo hiểm thất nghiệp"),
+      employee: 1, employer: 1, ceiling: 20000000 },
+  ],
+  /* Totals are DERIVED, exactly as `total_employee_rate` is a computed field on
+     the real record. A hand-typed total beside the rows it sums is the first
+     number a learner checks and the first one to go stale. */
+  get totalEmployee() { return this.rows.reduce((t, r) => t + r.employee, 0); },
+  get totalEmployer() { return this.rows.reduce((t, r) => t + r.employer, 0); },
+};
+
+const TAX = {
+  name: B("PIT table 2026", "Biểu thuế TNCN 2026"),
+  code: "VN-PIT-2026",
+  year: 2026,
+  personalDeduction: 11000000,
+  dependentDeduction: 4400000,
+  /* Vietnam's seven progressive bands. `to: 0` is the open-ended top one, which
+     is how vietnam.tax.slab stores it (income_to left at zero). */
+  slabs: [
+    { from: 0, to: 5000000, rate: 5 },
+    { from: 5000000, to: 10000000, rate: 10 },
+    { from: 10000000, to: 18000000, rate: 15 },
+    { from: 18000000, to: 32000000, rate: 20 },
+    { from: 32000000, to: 52000000, rate: 25 },
+    { from: 52000000, to: 80000000, rate: 30 },
+    { from: 80000000, to: 0, rate: 35 },
+  ],
+};
+
+/* =============================================================================
    1. THE WORKED EXAMPLE — one employee, one run, one month.
    ========================================================================== */
 /* -----------------------------------------------------------------------------
@@ -109,31 +171,42 @@ const TENANT_DEFAULTS = {
 
    The rule set, deliberately the simplest one that is still true of the worked
    example:
-     · insurance = 10.5% of the REGISTERED BASE (BHXH 8 + BHYT 1.5 + BHTN 1).
-       Charged on the base, never on gross — that single fact is L3's spine.
-     · taxable   = gross − insurance − 11,000,000 personal relief
-                          − 4,400,000 per dependant
-     · PIT       = 5% of taxable, floored at zero. Everyone in this fixture
-       lands in the first bracket, which is realistic for a retail division and
-       keeps the arithmetic checkable by a reader.
+     · insurance = the three EMPLOYEE rates on the POLICY above, each charged on
+       the REGISTERED BASE and rounded to the đồng, then added up. Charged on
+       the base, never on gross — that single fact is L3's spine. Reading the
+       rates off the policy rather than restating them is what lets L6 trace a
+       cell on the statutory screen to a line on a payslip and be telling the
+       truth about both.
+     · taxable   = gross − insurance − the TAX table's personal deduction
+                          − its dependant deduction per dependant
+     · PIT       = the first band's rate on the taxable amount, floored at zero.
+       Everyone in this fixture lands in the first band, which is realistic for
+       a retail division and keeps the arithmetic checkable by a reader.
 
    MAI IS THE TEST VECTOR. Her canonical numbers were agreed before this
    function existed and it reproduces every one of them exactly — 14,280,000
    gross, 1,260,000 insurance, 2,020,000 taxable, 101,000 PIT, 12,919,000 net
    for July; 12,064,000 net for June. If a change here moves any of those, the
    change is wrong.
-   -------------------------------------------------------------------------- */
-const RELIEF_SELF = 11000000;
-const RELIEF_DEPENDANT = 4400000;
-const INSURANCE_RATE = 0.105;   // 8% BHXH + 1.5% BHYT + 1% BHTN
-const PIT_FIRST_BRACKET = 0.05;
 
-function payslip({ base, allowance = 0, ot = 0, dependants = 0 }) {
+   `rates` is the ONE parameter that is not an employee input: it takes an
+   alternative set of policy rows, which is how RATE_CHANGE below computes what
+   a BHYT rise would do without a second copy of the arithmetic anywhere.
+   -------------------------------------------------------------------------- */
+const RELIEF_SELF = TAX.personalDeduction;
+const RELIEF_DEPENDANT = TAX.dependentDeduction;
+const PIT_FIRST_BRACKET = TAX.slabs[0].rate / 100;
+
+function employeeRate(key, rows) {
+  return (rows || POLICY.rows).find((r) => r.key === key).employee / 100;
+}
+
+function payslip({ base, allowance = 0, ot = 0, dependants = 0, rates }) {
   const gross = base + allowance + ot;
-  const bhxh = Math.round(base * 0.08);
-  const bhyt = Math.round(base * 0.015);
-  const bhtn = Math.round(base * 0.01);
-  const insurance = Math.round(base * INSURANCE_RATE);
+  const bhxh = Math.round(base * employeeRate("SI", rates));
+  const bhyt = Math.round(base * employeeRate("HI", rates));
+  const bhtn = Math.round(base * employeeRate("UI", rates));
+  const insurance = bhxh + bhyt + bhtn;
   const taxable = Math.max(0, gross - insurance
                               - RELIEF_SELF - dependants * RELIEF_DEPENDANT);
   const pit = Math.round(taxable * PIT_FIRST_BRACKET);
@@ -215,6 +288,39 @@ const CASE = {
     ],
     total: { k: B("Net pay", "Thực nhận"), v: EMP.mai.netJul - EMP.mai.netJun },
   },
+};
+
+/* -----------------------------------------------------------------------------
+   THE RATE CHANGE — the (fictional) decree L6 explains and m4 practises.
+
+   BHYT's employee share goes from 1.5% to 2.0%. The new rates arrive as a NEW
+   POLICY RECORD with its own code and its own effective date, because that is
+   what the product supports; nothing here versions anything in place.
+
+   Every figure below is `payslip()` run twice. It was hand-typed once, in the
+   v1 prototype, and the round trip through the tax line is exactly where a
+   hand-typed impact goes wrong: the extra 60,000 ₫ of BHYT also REDUCES taxable
+   income, so PIT falls by 3,000 and the net drop is 57,000 rather than 60,000.
+   -------------------------------------------------------------------------- */
+const POLICY_NEXT = {
+  name: B("Insurance policy 2026 · August", "Chính sách bảo hiểm 2026 · tháng 8"),
+  code: "VN-INS-2026-08",
+  effective: "01/08/2026",
+  end: "",
+  active: true,
+  rows: POLICY.rows.map((r) => (r.key === "HI" ? { ...r, employee: 2 } : { ...r })),
+};
+
+const RATE_CHANGE = {
+  scheme: "HI",
+  from: POLICY.rows.find((r) => r.key === "HI").employee,
+  to: POLICY_NEXT.rows.find((r) => r.key === "HI").employee,
+  before: payslip({ base: EMP_INPUT.mai.base, allowance: EMP_INPUT.mai.allowance,
+                    ot: EMP_INPUT.mai.otJul, dependants: EMP_INPUT.mai.dependants }),
+  after: payslip({ base: EMP_INPUT.mai.base, allowance: EMP_INPUT.mai.allowance,
+                   ot: EMP_INPUT.mai.otJul, dependants: EMP_INPUT.mai.dependants,
+                   rates: POLICY_NEXT.rows }),
+  get netDelta() { return this.after.net - this.before.net; },
 };
 
 /* =============================================================================
@@ -380,6 +486,137 @@ const PRACTICE = {
       ],
     },
   },
+
+  /* ---------------------------------------------------------------- Setup
+     The four Setup screens. Same discipline as the Pay Run rows above: every
+     count is derived from the list beneath it, and every rate is read from
+     POLICY / TAX rather than restated. */
+
+  /* Statutory. `policies` is the ROSTER, and it is deliberately two rows: the
+     2025 policy END-DATED and archived, the 2026 one active. That shape IS the
+     lesson — the product has no version chain, so a rate change is a second
+     record, and the roster is where a learner sees that for themselves. */
+  policies: [
+    {
+      name: POLICY.name, code: POLICY.code, effective: POLICY.effective,
+      end: POLICY.end, active: POLICY.active,
+      employee: POLICY.totalEmployee, employer: POLICY.totalEmployer,
+    },
+    {
+      name: B("Insurance policy 2025", "Chính sách bảo hiểm 2025"),
+      code: "VN-INS-2025", effective: "01/01/2025", end: "31/12/2025",
+      active: false, employee: 10.5, employer: 21.5,
+    },
+  ],
+  /* The registered insurance base across the 48-person run. Both legs are the
+     POLICY's own totals applied to it, so the KPI band cannot disagree with the
+     rates table above it — and the employer leg being twice the employee one is
+     the fact the "who pays what" step turns on. */
+  statutory: {
+    insuranceBase: 570000000,
+    taxTables: 2,
+    dependents: 6,
+    get employeeLeg() { return Math.round(this.insuranceBase * POLICY.totalEmployee / 100); },
+    get employerLeg() { return Math.round(this.insuranceBase * POLICY.totalEmployer / 100); },
+    get contributions() { return this.employeeLeg + this.employerLeg; },
+  },
+
+  /* Formula Engine. The components are the division's rulebook, letter by
+     letter — the letters are what the Studio's Names/Letters toggle switches
+     to, and they are why a formula can be read aloud. */
+  config: {
+    code: RUN.config,
+    version: RUN.configVersion,
+    division: RUN.division,
+    components: [
+      { l: "A", code: "LCB", kind: "input", label: B("Base salary", "Lương cơ bản") },
+      { l: "B", code: "PC", kind: "earning", label: B("Allowances", "Phụ cấp") },
+      { l: "C", code: "TANGCA", kind: "earning", label: B("Overtime", "Tăng ca") },
+      { l: "D", code: "GROSS", kind: "total", label: B("Gross income", "Tổng thu nhập") },
+      { l: "E", code: "BHXH", kind: "deduction", label: B("Social insurance", "Bảo hiểm xã hội") },
+      { l: "F", code: "BHYT", kind: "deduction", label: B("Health insurance", "Bảo hiểm y tế") },
+      { l: "G", code: "BHTN", kind: "deduction", label: B("Unemployment insurance", "Bảo hiểm thất nghiệp") },
+      { l: "H", code: "TNCT", kind: "total", label: B("Taxable income", "Thu nhập chịu thuế") },
+      { l: "I", code: "TNCN", kind: "deduction", label: B("Personal income tax", "Thuế TNCN") },
+      { l: "J", code: "THUCNHAN", kind: "total", label: B("Net pay", "Thực nhận") },
+    ],
+    /* The component the editor card is open on. */
+    selected: "TNCN",
+    /* Two lines of chips, exactly as the Studio prints them. `k` is the chip's
+       kind and decides its colour; `op` is an operator and never a component. */
+    formula: [
+      [{ k: "deduction", t: "TNCN" }, { k: "op", t: "=" }, { k: "op", t: "5% ×" },
+       { k: "total", t: "TNCT" }],
+      [{ k: "total", t: "TNCT" }, { k: "op", t: "=" }, { k: "total", t: "GROSS" },
+       { k: "op", t: "−" }, { k: "deduction", t: "BHXH + BHYT + BHTN" },
+       { k: "op", t: "−" }, { k: "input", t: "11,000,000" }],
+    ],
+    dependsOn: ["GROSS", "BHXH", "BHYT", "BHTN"],
+    usedBy: ["THUCNHAN"],
+    /* The live preview, on the worked example. Derived, like everything else. */
+    get preview() {
+      return [
+        { code: "GROSS", v: EMP.mai.grossJul },
+        { code: "TNCT", v: EMP.mai.taxableJul },
+        { code: "TNCN", v: EMP.mai.pitJul, neg: true },
+        { code: "THUCNHAN", v: EMP.mai.netJul, tot: true },
+      ];
+    },
+  },
+
+  /* Salary Structures — legacy on purpose. New pay logic belongs in a formula
+     configuration; these exist because old payslips still reference them. */
+  structures: {
+    categories: 8,
+    countries: 1,
+    rows: [
+      { name: "VN Standard 2023", code: "VN_STD_2023", rules: 14, employees: 7,
+        updated: "12/2023", badge: B("Historical", "Lịch sử") },
+      { name: "VN Probation 2023", code: "VN_PROB_2023", rules: 9, employees: 5,
+        updated: "12/2023", badge: B("Historical", "Lịch sử") },
+      { name: "VN Expatriate 2022", code: "VN_EXPAT_2022", rules: 8, employees: 0,
+        updated: "03/2022", badge: B("Archived", "Đã lưu trữ") },
+    ],
+    get kpis() {
+      const r = this.rows;
+      return {
+        structures: r.length,
+        rules: r.reduce((t, s) => t + s.rules, 0),
+        categories: this.categories,
+        employees: r.reduce((t, s) => t + s.employees, 0),
+        countries: this.countries,
+      };
+    },
+  },
+
+  /* Integrations. One connector is BROKEN, and it looks exactly like a working
+     one until the month it matters — which is the whole of the syncbroken
+     answer and the integrations station's one mistake. */
+  connectors: [
+    { name: "Zoho People", icon: "database", status: "ok",
+      type: B("HR system", "Hệ thống nhân sự"),
+      last: B("Synced 06:00 today", "Đồng bộ 06:00 hôm nay"),
+      mappings: 42, staged: 0, synced: 4820 },
+    { name: "Bank SFTP", icon: "send", status: "ok",
+      type: B("Payment file", "Tệp chi lương"),
+      last: B("Synced yesterday", "Đồng bộ hôm qua"),
+      mappings: 9, staged: 0, synced: 312 },
+    { name: B("Time clock — Hà Nội", "Máy chấm công — Hà Nội"), icon: "clock", status: "err",
+      type: B("Attendance", "Chấm công"),
+      last: B("Last synced 9 days ago", "Đồng bộ lần cuối 9 ngày trước"),
+      mappings: 6, staged: 214, synced: 0 },
+  ],
+  get integrationKpis() {
+    const c = this.connectors;
+    return {
+      connectors: c.length,
+      connected: c.filter((x) => x.status === "ok").length,
+      errors: c.filter((x) => x.status === "err").length,
+      synced: c.reduce((t, x) => t + x.synced, 0),
+      mappings: c.reduce((t, x) => t + x.mappings, 0),
+      staged: c.reduce((t, x) => t + x.staged, 0),
+    };
+  },
 };
 
 /* =============================================================================
@@ -404,6 +641,14 @@ const MENU = [
       { id: "fullfinal", icon: "file-text", label: B("Full & Final", "Quyết toán thôi việc") },
       { id: "proration", icon: "calculator", label: B("Proration Audit", "Soát xét ngày công (pro-rata)") },
       { id: "retro", icon: "trending-up", label: B("Retro Adjustments", "Điều chỉnh hồi tố") },
+    ],
+  },
+  {
+    key: "setup", label: B("Setup", "Thiết lập"), scope: true, items: [
+      { id: "formula", icon: "calculator", label: B("Formula Engine", "Công thức lương") },
+      { id: "structures", icon: "layers", label: B("Salary Structures", "Cấu trúc lương") },
+      { id: "statutory", icon: "shield-check", label: B("Statutory (Insurance & Tax)", "Bảo hiểm & Thuế") },
+      { id: "integrations", icon: "database", label: B("Integrations", "Tích hợp") },
     ],
   },
 ];

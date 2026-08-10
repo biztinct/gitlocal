@@ -11,7 +11,7 @@
     "human has to re-read — the checker cannot know whether a renamed state key",
     "invalidates one sentence or a whole lesson."
   ],
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "repoRoot": "../../..",
   "checks": [
     {
@@ -285,6 +285,211 @@
       "taughtIn": [
         "every Vietnamese reader of this module"
       ]
+    },
+    {
+      "id": "insurance-policy-fields",
+      "kind": "contains",
+      "why": "L6 reads its rates, its base and its ceiling straight off this record, and m4 practises changing one. A renamed rate field does not break anything visibly — the cockpit simply stops showing a scheme, and the lesson keeps teaching a percentage the product no longer holds.",
+      "file": "pb_hr_payroll_vietnam/models/vietnam_insurance_policy.py",
+      "expect": [
+        "si_employee_rate",
+        "si_employer_rate",
+        "si_max_salary_ceiling",
+        "hi_employee_rate",
+        "hi_employer_rate",
+        "ui_employee_rate",
+        "ui_employer_rate",
+        "effective_date",
+        "end_date"
+      ],
+      "fixture": [
+        "POLICY"
+      ],
+      "taughtIn": [
+        "L6 steps 2-3 (who pays what, base & ceiling)",
+        "intent ceiling",
+        "intent whichpolicy",
+        "mission m4 rate step",
+        "the statutory replica in engine/screens.js"
+      ]
+    },
+    {
+      "id": "insurance-policy-code-uniq",
+      "kind": "contains",
+      "why": "m4's wrong option 'reuse the current policy's code' is refused BY THE DATABASE, and its recovery text says so. Lose the constraint and the mission coaches a learner away from something the product would now happily allow.",
+      "file": "pb_hr_payroll_vietnam/models/vietnam_insurance_policy.py",
+      "expect": [
+        "('code_company_uniq', 'unique(code, company_id)'"
+      ],
+      "fixture": [
+        "POLICY",
+        "POLICY_NEXT"
+      ],
+      "taughtIn": [
+        "glossary policy",
+        "L6 step 6 (a rate change is a new record)",
+        "mission m4 newrecord step, option samecode"
+      ]
+    },
+    {
+      "id": "statutory-current-policy-rule",
+      "kind": "contains",
+      "why": "THE fact the whole statutory lesson turns on: there is no version chain, so the policy in force is the ACTIVE one with the LATEST effective date. If the cockpit ever selected by create order or by id instead, the effective-date judgement in L6, m4 and the whichpolicy answer would all be teaching a rule the product had stopped following.",
+      "file": "pb_statutory/models/pb_statutory.py",
+      "expect": [
+        "('active', '=', True)",
+        "order='effective_date desc'"
+      ],
+      "fixture": [
+        "POLICY",
+        "PRACTICE.policies"
+      ],
+      "taughtIn": [
+        "L6 steps 6-7",
+        "intent whichpolicy",
+        "intent changerate",
+        "mission m4 effective step",
+        "glossary effectiveDate"
+      ]
+    },
+    {
+      "id": "tax-table-fields",
+      "kind": "contains",
+      "why": "The two relief figures and the bands are what `payslip()` computes Mai's thuế TNCN from, so a rename here silently detaches the worked example from the product it claims to mirror.",
+      "file": "pb_hr_payroll_vietnam/models/vietnam_tax_table.py",
+      "expect": [
+        "tax_year",
+        "personal_deduction",
+        "dependent_deduction",
+        "slab_ids",
+        "income_from",
+        "income_to",
+        "tax_rate"
+      ],
+      "fixture": [
+        "TAX"
+      ],
+      "taughtIn": [
+        "L6 step 4 (PIT table + relief)",
+        "intent pitcalc",
+        "the PIT bands on the statutory replica",
+        "RELIEF_SELF / RELIEF_DEPENDANT / PIT_FIRST_BRACKET in practice-data.js"
+      ]
+    },
+    {
+      "id": "setup-sidebar-leaves",
+      "kind": "xmlids",
+      "why": "Four stations and four screens resolve through these leaves. A retired leaf is a station that opens nothing and a screen the Coach can never recognise — and it fails in the most misleading way, with the Coach saying it has no lessons for a screen that has a full one.",
+      "files": [
+        "pb_sidebar/data/pb_sidebar_data.xml"
+      ],
+      "expect": [
+        "sec_setup",
+        "item_formula",
+        "item_structures",
+        "item_statutory",
+        "item_integrations"
+      ],
+      "fixture": [
+        "MENU"
+      ],
+      "taughtIn": [
+        "all four Setup stations",
+        "all four Setup screens",
+        "tools/gen_learn_data.py::SIDEBAR_KEYS"
+      ]
+    },
+    {
+      "id": "setup-client-action-tags",
+      "kind": "contains",
+      "why": "All four Setup leaves carry an action TAG and an empty action_xmlid, so the tag is the only thing that identifies the screen. Rename one and a whole section's content goes silently unreachable.",
+      "files": [
+        "pb_formula_studio/static/src/js/formula_studio.js",
+        "pb_structures/static/src/js/structures.js",
+        "pb_statutory/static/src/js/statutory.js",
+        "pb_integrations/static/src/js/integrations.js"
+      ],
+      "expect": [
+        "registry.category(\"actions\").add(\"pb_formula_studio\"",
+        "registry.category(\"actions\").add(\"pb_structures\"",
+        "registry.category(\"actions\").add(\"pb_statutory\"",
+        "registry.category(\"actions\").add(\"pb_integrations\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "screens formula / structures / statutory / integrations",
+        "tests/test_coach.py::test_16"
+      ]
+    },
+    {
+      "id": "formula-studio-anchors",
+      "kind": "contains",
+      "why": "pb_learn adds NOTHING to studio.xml — L5 points at seven attributes that were already there, and the registry has now promoted them out of the fs-* foreign wildcard into `product`. That promotion is a claim about somebody else's template, so it is checked at authoring time as well as by the module's own registry test.",
+      "file": "pb_formula_studio/static/src/xml/studio.xml",
+      "expect": [
+        "data-coach=\"fs-config\"",
+        "data-coach=\"fs-components\"",
+        "data-coach=\"fs-formula\"",
+        "data-coach=\"fs-namesletters\"",
+        "data-coach=\"fs-deps\"",
+        "data-coach=\"fs-preview\"",
+        "data-coach=\"fs-simulate\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "L5 steps 1-7",
+        "the formula replica in engine/screens.js",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "setup-cockpit-anchors",
+      "kind": "contains",
+      "why": "The sixteen anchors pb_learn added to the three Setup cockpits are additive attributes in modules this one does not own. Nothing in those modules reads them, so a tidy-up would delete them without any test over there noticing — and the Coach's Show-me would then scroll to nothing.",
+      "files": [
+        "pb_statutory/static/src/xml/statutory.xml",
+        "pb_structures/static/src/xml/structures.xml",
+        "pb_integrations/static/src/xml/integrations.xml"
+      ],
+      "expect": [
+        "data-coach=\"st-new\"",
+        "data-coach=\"st-kpis\"",
+        "data-coach=\"st-rates\"",
+        "data-coach=\"st-effective\"",
+        "data-coach=\"st-slabs\"",
+        "data-coach=\"st-filters\"",
+        "data-coach=\"st-roster\"",
+        "data-coach=\"sr-new\"",
+        "data-coach=\"sr-kpis\"",
+        "data-coach=\"sr-filters\"",
+        "data-coach=\"sr-roster\"",
+        "data-coach=\"sr-openall\"",
+        "data-coach=\"ig-connect\"",
+        "data-coach=\"ig-kpis\"",
+        "data-coach=\"ig-filters\"",
+        "data-coach=\"ig-roster\""
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "L6 every step",
+        "mission m4 every step",
+        "intents whysetup / changerate / whichpolicy / syncbroken",
+        "anchors.json product block"
+      ]
+    },
+    {
+      "id": "demo-config-code-convention",
+      "kind": "contains",
+      "why": "The whichconfig answer teaches DEMO_<DIVISION>_END / _MID as a rule a prospect can rely on. It is a rule only for as long as the generator builds codes that way, and a demo user who is told a naming convention that no longer holds cannot find their own division's configuration.",
+      "file": "pb_demo/models/demo_generator.py",
+      "expect": [
+        "code = 'DEMO_%s_%s' % (division.upper(), 'END' if cycle == 'end' else 'MID')"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "intent whichconfig",
+        "glossary configCode"
+      ]
     }
   ],
   "anchorLint": {
@@ -300,7 +505,11 @@
       "pb_payslip_review/static/src/xml/payslip_review.xml",
       "pb_import/static/src/xml/import.xml",
       "pb_import_wizard/static/src/xml/import_wizard.xml",
-      "pb_payrun_ledgers/static/src/xml/ledger.xml"
+      "pb_payrun_ledgers/static/src/xml/ledger.xml",
+      "pb_formula_studio/static/src/xml/studio.xml",
+      "pb_statutory/static/src/xml/statutory.xml",
+      "pb_structures/static/src/xml/structures.xml",
+      "pb_integrations/static/src/xml/integrations.xml"
     ]
   },
   "tokenLint": {

@@ -26,6 +26,7 @@ import { Spot, Trace, setOverlayRoot } from "../engine/spotlight";
    Phase A draws one line; later phases add rows here, not a second map. */
 const MISSION_HOME = {
     payrun: "runpayroll",
+    setup: "statutory",
 };
 import { shellHTML } from "../engine/screens";
 import { morphHTML, calcHTML, pipeHTML, runPipeline } from "../engine/visuals";

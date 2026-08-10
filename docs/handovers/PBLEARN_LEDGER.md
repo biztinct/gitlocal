@@ -241,10 +241,75 @@ Append new gotchas at the bottom as they are hit; never delete entries.
   exactly 0.5000 — one tidy row and one untidy one is what real proration looks
   like.
 
+### Run B1 (Setup section)
+
+- **TWO sidebar leaves claim `hr.integration.connector`** — Import Data
+  (pb_sidebar/data/pb_sidebar_data.xml:82) and Integrations (:196). Both
+  claims are CORRECT for the sidebar; neither is usable by the Coach, whose
+  third pass would then pick whichever screen the search returned first. Fixed
+  inside pb_learn: `learn.screen._contested_models()` computes the set of
+  models more than one screen's leaf declares and `_matchers()` subtracts it,
+  so a contested model is a matcher for NEITHER. Tags and xml-ids still resolve
+  both cockpits exactly; what is given up is the bare list view of a connector,
+  where "I do not have lessons for this screen" is the honest answer. Found by
+  the offline mirror of `test_coach::test_17`, which is why `test_17b` now
+  exercises the mechanism rather than the symptom.
+- **The engine's `trace` draws NOTHING unless both anchors are in the same
+  DOM.** `spotlight.js` Trace.run returns early when either
+  `anchorEl(fromKey)` or `anchorEl(toKey)` is null (:40-42), and a lesson step
+  renders exactly ONE replica screen (`shellHTML(st.screen)`, journey.js:371).
+  A literally cross-screen trace is therefore not expressible. L6's trace runs
+  on the statutory replica, whose right-hand column draws the worked example's
+  statutory lines from `CASE` — the same rows the payslips replica draws — under
+  the practice-only anchor `rep-slipline`. Practice-only is the honest kind: no
+  product screen shows a rate and a đồng amount at once.
+- **A `pattern` anchor would have failed the AUTHORING lint even though the
+  module's own test accepts it.** `check_contract.py::anchor_lint` builds
+  `present` from LITERAL `data-coach="…"` attributes plus the registry's
+  `practice` block, so a `t-attf-data-coach` prefix is invisible to it. That is
+  why the BHYT row did not get its own anchor and the trace starts at
+  `st-rates`, the table the rate is printed in. Extend `anchor_lint` before
+  declaring the first pattern, not after.
+- **`ANCHOR_RE` in check_contract.py is a hard-coded prefix list.** A new screen
+  prefix that is not added there is silently NOT LINTED — no failure, just a
+  control the content can point at that does not exist. `fs|st|sr|ig` added
+  with the Setup screens; adding the prefix is part of adding a screen.
+- **Promoting an anchor out of `foreign` needs the TEST updated too.**
+  `test_anchor_registry::test_06` refuses to let the registry declare anything a
+  `foreign` entry matches, and `fs-*` is a wildcard. The seven anchors L5 names
+  are now in `SHARED_WITH_PB_COACH` beside pw-division/pw-compute, and the
+  `fs-*` entry says which seven left. pb_learn still adds NOTHING to
+  studio.xml — promotion is a claim about a NAME, not an edit to the template.
+- **The four Setup leaves have an EMPTY `action_xmlid` and only a tag.** They
+  are OWL client actions (pb_sidebar_data.xml:150-199), so `_primary()` returns
+  `(tag, None)` and pass 0 of the resolver still ties each screen to itself.
+  A map that expected an xml-id would have left all four undetectable.
+- **`payslip()` now reads its rates off `POLICY` and its reliefs off `TAX`.**
+  Charging the three employee rates separately and summing them is arithmetically
+  identical to the old `round(base * 0.105)` for every employee in the fixture
+  (verified against all four), and it is what makes L6's trace true rather than
+  merely consistent: the 1.5% on the statutory replica and the 180,000 ₫ on
+  Mai's slip are now literally the same number, once.
+- **The rate-change impact is 57,000 ₫, not 60,000 ₫**, and the difference is
+  the lesson. Insurance is deducted BEFORE the reliefs, so the extra 60,000 of
+  BHYT also lowers taxable income and PIT falls 3,000 with it. `RATE_CHANGE` in
+  practice-data.js is `payslip()` run twice for exactly this reason — the v1
+  prototype hand-typed the figure and the arithmetic is the kind that looks
+  right when it is wrong.
+- **`POLICY_NEXT` and `RATE_CHANGE` are deliberately NOT in the fixture's export
+  list.** They are the derivation the authored prose is checked against, not
+  something a screen renders; exporting a name no screen imports would put a
+  second, unread copy of the rate change in the engine's contract.
+- **The .po diff lies about deletions.** Entries are emitted sorted by msgid, so
+  an inserted entry shows as `-` on lines that merely moved. Diff the parsed
+  msgid→msgstr maps instead: Run B1 changed exactly ONE existing translation
+  (the `practice` intent, which had to stop saying "two are playable") and
+  altered none of the other 561.
+
 ### Deferred by the reviewer (do not treat as missing)
 
-- **`trace` visual has no content yet.** It arrives with Phase B's statutory
-  lesson; the designer is amending the acceptance doc. The engine supports it.
+- ~~**`trace` visual has no content yet.**~~ CLOSED in Run B1: L6 step 5
+  (`lesson_l6_step_04`) traces `st-rates` → `rep-slipline`.
 - **Duplicate sprite ids** in icons.xml — cosmetic, no render impact.
 - **`learn.confidence.award` has no server-side proof** in Phase A.
 - **pb_sidebar ships no i18n**, so leaf names outside pb_learn are English on a

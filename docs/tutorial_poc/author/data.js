@@ -75,7 +75,7 @@ const I18N = {
     badge: "Pay Run badge",
     badgeGot: "Pay Run badge earned",
     search: "Search the journey",
-    lines: { payrun: "Pay Run" },
+    lines: { payrun: "Pay Run", setup: "Setup" },
     /* -- station cards -------------------------------------------------- */
     fullLesson: "Full lesson",
     outline: "Outline",
@@ -178,7 +178,7 @@ const I18N = {
     badge: "Huy hiệu Chạy lương",
     badgeGot: "Đã đạt huy hiệu Chạy lương",
     search: "Tìm trong hành trình",
-    lines: { payrun: "Chạy lương" },
+    lines: { payrun: "Chạy lương", setup: "Thiết lập" },
     /* -- station cards -------------------------------------------------- */
     fullLesson: "Bài học đầy đủ",
     outline: "Dàn ý",
@@ -324,6 +324,27 @@ const GLOSSARY = {
     term: B("Retro adjustment", "Điều chỉnh hồi tố"),
     def: B("A difference owed for a period that is already closed, paid in the current run with the source period recorded against it. It is how a closed month stays closed.",
            "Khoản chênh lệch còn nợ của một kỳ đã đóng, được chi trong kỳ hiện tại và có ghi rõ kỳ gốc. Đây là cách để một kỳ đã đóng vẫn luôn đóng."),
+  },
+  /* -- Setup (Phase B) ------------------------------------------------- */
+  policy: {
+    term: B("Insurance policy", "Chính sách bảo hiểm"),
+    def: B("One record holding the BHXH, BHYT and BHTN rates and ceilings, with the date it takes effect. It is not versioned in place: a rate change is a NEW policy record with its own code, and the old one is end-dated.",
+           "Một bản ghi chứa tỷ lệ và trần đóng BHXH, BHYT, BHTN, kèm ngày bắt đầu hiệu lực. Nó không được sửa đè theo phiên bản: đổi tỷ lệ nghĩa là tạo một bản ghi chính sách MỚI với mã riêng, và bản cũ được đặt ngày kết thúc."),
+  },
+  effectiveDate: {
+    term: B("Effective date", "Ngày hiệu lực"),
+    def: B("The date a policy starts applying. Payobook uses the latest effective date among the active policies, so this field — not the order records were created in — decides which rates a payslip is computed with.",
+           "Ngày một chính sách bắt đầu được áp dụng. Payobook lấy chính sách có ngày hiệu lực mới nhất trong số các chính sách đang bật, nên chính trường này — chứ không phải thứ tự tạo bản ghi — quyết định phiếu lương được tính theo tỷ lệ nào."),
+  },
+  ceiling: {
+    term: B("Insurance ceiling (trần đóng)", "Trần đóng bảo hiểm"),
+    def: B("The maximum base a contribution is charged on. Above it the deduction stops growing, so two people on very different salaries can pay exactly the same BHXH.",
+           "Mức đóng tối đa mà một khoản bảo hiểm được tính trên đó. Vượt qua mức này thì khoản khấu trừ không tăng nữa, nên hai người lương rất khác nhau vẫn có thể đóng BHXH bằng nhau."),
+  },
+  configCode: {
+    term: B("Configuration code", "Mã cấu hình"),
+    def: B("The short unique name of a formula configuration — the thing Run Payroll actually selects when you choose a division. On the demo world the codes follow one pattern: DEMO_<DIVISION>_END for the end-cycle rulebook and DEMO_<DIVISION>_MID for the mid-cycle one.",
+           "Tên ngắn và duy nhất của một cấu hình công thức — chính là thứ Chạy bảng lương chọn khi bạn chọn bộ phận. Trên bản demo, các mã theo một quy ước: DEMO_<BỘ PHẬN>_END cho bộ quy tắc cuối kỳ và DEMO_<BỘ PHẬN>_MID cho giữa kỳ."),
   },
 };
 
@@ -508,6 +529,115 @@ const STATIONS = {
       },
     ],
   },
+
+  /* ---------------------------------------------------------------------------
+     THE SETUP LINE (Phase B).
+
+     A second line on the SAME map, not a second map: a learner who has finished
+     the Pay Run desk meets these further along the same journey. The order is
+     the order pb_sidebar draws the Setup section.
+
+     Statutory is the flagship here rather than Formula Engine, and that is a
+     judgement about consequence: a wrong formula produces one division's wrong
+     payslips, and a wrong statutory rate produces every division's — silently,
+     and with a legal deadline attached.
+     ------------------------------------------------------------------------ */
+  setup: {
+    stations: [
+      {
+        id: "formula", icon: "calculator", required: true, mins: 7, after: null,
+        title: B("Formula Engine", "Công thức lương"),
+        desc: B("The visible rulebook: every payslip line is a named component with a formula you can read.",
+                "Bộ quy tắc nhìn thấy được: mỗi dòng phiếu lương là một thành phần có tên, với công thức bạn đọc được."),
+        outline: {
+          what: B("A studio for each division's formula configuration — the components, the formula behind each one, what it depends on, and a live preview against a real employee.",
+                  "Xưởng làm việc cho cấu hình công thức của từng bộ phận — các thành phần, công thức đằng sau mỗi thành phần, nó phụ thuộc vào gì, và bản xem trước trực tiếp trên một nhân viên thật."),
+          why: B("It is the answer to every \"why is my pay this number\" question, written down. A payroll desk that can read the configuration stops guessing and starts showing.",
+                 "Đây là câu trả lời đã được viết sẵn cho mọi thắc mắc \"vì sao lương tôi lại là con số này\". Một bộ phận lương đọc được cấu hình sẽ thôi phỏng đoán và bắt đầu trưng ra bằng chứng."),
+          when: B("When an allowance is added, when a rule changes, and any time a number on a payslip has to be traced back to where it came from.",
+                  "Khi thêm một khoản phụ cấp, khi một quy tắc thay đổi, và bất cứ lúc nào cần truy một con số trên phiếu lương về đúng nơi sinh ra nó."),
+          prereq: B("The Payroll Officer group to read it and a manager tier to change it, plus a sample employee to preview against.",
+                    "Quyền Chuyên viên tính lương để xem và quyền cấp quản lý để sửa, cùng một nhân viên mẫu để xem trước."),
+          mistakes: [
+            B("Editing a live configuration without previewing. The preview costs seconds; a wrong component costs every future payslip in that division.",
+              "Sửa một cấu hình đang chạy mà không xem trước. Xem trước tốn vài giây; một thành phần sai làm hỏng mọi phiếu lương tương lai của bộ phận đó."),
+            B("Renaming a component other formulas depend on. The dependency panel names them — read it before you rename, because a formula that lost its input does not always fail loudly.",
+              "Đổi tên một thành phần mà công thức khác đang phụ thuộc. Bảng phụ thuộc liệt kê chúng — hãy đọc trước khi đổi tên, vì một công thức mất đầu vào không phải lúc nào cũng báo lỗi rõ ràng."),
+            B("Building a statutory rate into a formula by hand. Rates belong on the statutory policy; a hard-typed 8% is one that nobody will remember to change.",
+              "Gõ thẳng một tỷ lệ luật định vào công thức. Tỷ lệ thuộc về chính sách bảo hiểm; một con số 8% gõ tay là con số sẽ không ai nhớ để sửa."),
+          ],
+        },
+      },
+      {
+        id: "structures", icon: "layers", mins: 4, after: "formula",
+        title: B("Salary Structures", "Cấu trúc lương"),
+        desc: B("The legacy rule sets — kept because old payslips still reference them, not because new pay logic belongs here.",
+                "Các bộ quy tắc thế hệ cũ — giữ lại vì phiếu lương cũ vẫn tham chiếu tới chúng, không phải vì logic lương mới nên nằm ở đây."),
+        outline: {
+          what: B("Odoo salary structures and their rules: the older way of computing a payslip, still holding the logic that historical payslips were produced by.",
+                  "Cấu trúc lương và các quy tắc của Odoo: cách tính phiếu lương thế hệ trước, vẫn đang giữ phần logic đã tạo ra các phiếu lương lịch sử."),
+          why: B("You will meet them the first time you open a payslip from before the migration, and knowing what they are is the difference between reading history and doubting it.",
+                 "Bạn sẽ gặp chúng ngay lần đầu mở một phiếu lương từ trước khi chuyển đổi, và hiểu chúng là gì chính là khác biệt giữa đọc được lịch sử và hoài nghi lịch sử."),
+          when: B("When reading an old payslip, and when migrating a division onto a formula configuration — the structure is what you are migrating FROM.",
+                  "Khi đọc một phiếu lương cũ, và khi chuyển một bộ phận sang cấu hình công thức — cấu trúc chính là thứ bạn đang chuyển ĐI TỪ đó."),
+          prereq: B("A manager tier, and the Formula Engine basics — otherwise it is hard to see what the two are for.",
+                    "Quyền cấp quản lý, và nắm cơ bản Công thức lương — nếu không sẽ khó thấy hai thứ này dùng để làm gì."),
+          mistakes: [
+            B("Building new pay logic here because it is familiar. A new rule added to a structure is invisible to the Formula Engine, so the division it was meant for never sees it.",
+              "Xây logic lương mới ở đây vì thấy quen tay. Một quy tắc mới thêm vào cấu trúc thì Công thức lương không nhìn thấy, nên bộ phận cần nó sẽ chẳng bao giờ nhận được."),
+            B("Deleting a structure that has no employees on it today. Payslips from three years ago still point at it, and a report run over those months needs it to still be there.",
+              "Xoá một cấu trúc mà hôm nay không còn nhân viên nào dùng. Phiếu lương của ba năm trước vẫn trỏ tới nó, và một báo cáo chạy trên các tháng đó vẫn cần nó tồn tại."),
+          ],
+        },
+      },
+      {
+        id: "statutory", icon: "shield-check", star: true, required: true, mins: 8, after: null,
+        title: B("Statutory (Insurance & Tax)", "Bảo hiểm & Thuế"),
+        desc: B("BHXH · BHYT · BHTN rates, the ceilings, and the thuế TNCN table — the rules the law writes for you.",
+                "Tỷ lệ BHXH · BHYT · BHTN, các mức trần, và biểu thuế TNCN — những quy tắc do pháp luật viết sẵn cho bạn."),
+        outline: {
+          what: B("The company's active insurance policy and tax table: who pays what, on which base, up to which ceiling, and from which date.",
+                  "Chính sách bảo hiểm và biểu thuế đang hiệu lực của công ty: ai đóng bao nhiêu, trên mức nào, tới trần nào, và từ ngày nào."),
+          why: B("Every payslip in every division reads these numbers. A wrong rate here is not one wrong payslip — it is all of them, in the same direction, with a filing deadline attached.",
+                 "Mọi phiếu lương của mọi bộ phận đều đọc những con số này. Một tỷ lệ sai ở đây không phải một phiếu lương sai — mà là tất cả, sai cùng một hướng, và kèm theo một hạn nộp báo cáo."),
+          when: B("When a decree changes a rate or a deduction, at the start of a tax year, and whenever an employee asks why a contribution is the amount it is.",
+                  "Khi một nghị định thay đổi tỷ lệ hoặc mức giảm trừ, vào đầu một năm tính thuế, và bất cứ khi nào có nhân viên hỏi vì sao khoản đóng lại là con số đó."),
+          prereq: B("A manager tier, and the decree or circular in front of you — this screen records a decision that was made elsewhere.",
+                    "Quyền cấp quản lý, và văn bản pháp luật đang mở trước mặt — màn hình này ghi lại một quyết định đã được ra ở nơi khác."),
+          mistakes: [
+            B("Editing the rate on the policy that is currently in force. There is no version history to fall back on: the old rate is simply gone, and any run that recomputes picks up the new one.",
+              "Sửa tỷ lệ ngay trên chính sách đang có hiệu lực. Không có lịch sử phiên bản nào để quay lại: tỷ lệ cũ đơn giản là biến mất, và bất kỳ đợt lương nào tính lại sẽ lấy tỷ lệ mới."),
+            B("Creating the new policy but leaving its effective date at today while a month is still open. The current policy is chosen by latest effective date, so a run that recomputes gets rates that were not in force for its period.",
+              "Tạo chính sách mới nhưng để ngày hiệu lực là hôm nay trong khi một kỳ vẫn đang mở. Chính sách hiện hành được chọn theo ngày hiệu lực mới nhất, nên một đợt tính lại sẽ nhận tỷ lệ chưa có hiệu lực trong kỳ của nó."),
+            B("Forgetting to end-date the outgoing policy. Two open-ended active policies is not an error the system reports — it just quietly resolves to one of them.",
+              "Quên đặt ngày kết thúc cho chính sách cũ. Hai chính sách cùng bật và cùng để ngỏ ngày kết thúc không phải lỗi mà hệ thống báo — nó chỉ lặng lẽ chọn ra một cái."),
+          ],
+        },
+      },
+      {
+        id: "integrations", icon: "database", mins: 4, after: null,
+        title: B("Integrations", "Tích hợp"),
+        desc: B("Connectors that pull attendance and HR data in automatically — mapped field by field, with a sync history.",
+                "Các đầu nối tự động kéo dữ liệu chấm công và nhân sự về — ánh xạ theo từng trường, kèm lịch sử đồng bộ."),
+        outline: {
+          what: B("Configured links to the systems payroll data arrives from — an HR system, a time clock, the bank — with their field mappings and when each last synced.",
+                  "Các kết nối đã cấu hình tới những hệ thống mà dữ liệu tính lương đi vào từ đó — hệ thống nhân sự, máy chấm công, ngân hàng — kèm ánh xạ trường và thời điểm đồng bộ gần nhất."),
+          why: B("Data that arrives by itself is data nobody retyped, and most wrong payslips start as a retyped row. The sync history is the part that matters: a connector that stopped looks exactly like one that is working.",
+                 "Dữ liệu tự về là dữ liệu không ai phải gõ lại, mà phần lớn phiếu lương sai đều bắt đầu từ một dòng gõ tay. Phần quan trọng là lịch sử đồng bộ: một đầu nối đã ngừng chạy trông y hệt một đầu nối đang chạy tốt."),
+          when: B("Once at onboarding, again whenever a source system changes its fields — and as a two-minute check at the start of every payroll week.",
+                  "Một lần khi triển khai, làm lại mỗi khi hệ thống nguồn đổi trường dữ liệu — và như một bước kiểm tra hai phút vào đầu mỗi tuần tính lương."),
+          prereq: B("The Integration user group and credentials for the source system.",
+                    "Quyền Người dùng tích hợp và thông tin đăng nhập của hệ thống nguồn."),
+          mistakes: [
+            B("Leaving a failed sync unnoticed until payroll week. The staged-record count is the tell — rows sitting in staging are a month of attendance that never became inputs.",
+              "Để một lần đồng bộ lỗi trôi qua cho tới tuần tính lương. Số bản ghi đang chờ là dấu hiệu — những dòng nằm lại ở vùng chờ là cả một tháng chấm công không bao giờ trở thành dữ liệu đầu vào."),
+            B("Assuming a connector that is \"connected\" is also up to date. Connected describes the credentials; the last-sync time describes the data.",
+              "Cho rằng một đầu nối \"đã kết nối\" thì cũng đang cập nhật. Đã kết nối nói về thông tin đăng nhập; thời điểm đồng bộ gần nhất mới nói về dữ liệu."),
+          ],
+        },
+      },
+    ],
+  },
 };
 
 /* =============================================================================
@@ -535,6 +665,28 @@ const MORPHS = {
            "Tăng ca 1.500.000 · bảo hiểm 1.260.000 · thuế TNCN 101.000"),
       delta: B("Net is 855,000 ₫ higher. Overtime rose 900,000 and PIT took 45,000 of it. Insurance is identical, because it is charged on the registered base and overtime does not touch that.",
                "Thực nhận cao hơn 855.000 ₫. Tăng ca tăng 900.000 và thuế TNCN lấy đi 45.000 trong đó. Bảo hiểm không đổi, vì tính trên mức lương đóng BH đã đăng ký và tăng ca không chạm tới mức đó."),
+    },
+  },
+
+  /* The same employee, the same month, under two POLICIES. Every figure is
+     RATE_CHANGE in practice-data.js, which is `payslip()` run twice — including
+     the part that is easy to get wrong by hand: the extra BHYT also lowers
+     taxable income, so PIT falls and the net drop is 57,000 rather than the
+     60,000 the deduction grew by. */
+  maiBhytRate: {
+    before: {
+      h: B("BHYT at 1.5%", "BHYT ở mức 1,5%"),
+      big: "12,919,000 ₫",
+      d: B("BHYT 180,000 · insurance 1,260,000 · taxable 2,020,000 · PIT 101,000",
+           "BHYT 180.000 · bảo hiểm 1.260.000 · thu nhập chịu thuế 2.020.000 · thuế TNCN 101.000"),
+    },
+    after: {
+      h: B("BHYT at 2.0%", "BHYT ở mức 2,0%"),
+      big: "12,862,000 ₫",
+      d: B("BHYT 240,000 · insurance 1,320,000 · taxable 1,960,000 · PIT 98,000",
+           "BHYT 240.000 · bảo hiểm 1.320.000 · thu nhập chịu thuế 1.960.000 · thuế TNCN 98.000"),
+      delta: B("Net falls 57,000 ₫, not 60,000. The deduction grew by 60,000, and because insurance comes off before tax, taxable income fell by the same 60,000 and PIT fell 3,000 with it. Half a percentage point, one employee, every month.",
+               "Thực nhận giảm 57.000 ₫, không phải 60.000. Khoản khấu trừ tăng 60.000, và vì bảo hiểm được trừ trước khi tính thuế, thu nhập chịu thuế cũng giảm đúng 60.000 nên thuế TNCN giảm theo 3.000. Nửa điểm phần trăm, một nhân viên, mỗi tháng."),
     },
   },
 };
@@ -893,6 +1045,205 @@ const LESSONS = {
       ],
     },
   },
+
+  /* ===========================================================================
+     THE SETUP LINE.
+
+     L5 and L6 render over two NEW replicas. The anchors on the formula screen
+     are the REAL Formula Studio's — fs-config, fs-components, fs-formula,
+     fs-namesletters, fs-deps, fs-preview, fs-simulate — because pb_learn adds
+     nothing to studio.xml and does not need to: those attributes have been in
+     that template since before this module existed. The registry now OWNS the
+     seven the content names, which is what makes a rename break a build
+     instead of a lesson.
+     ======================================================================== */
+  L5: {
+    id: "L5", station: "formula", mins: 7,
+    title: B("The formula is the payslip", "Công thức chính là phiếu lương"),
+    goal: B("Read a division's rulebook end to end, and be able to point at the component that produced any line on a payslip.",
+            "Đọc trọn bộ quy tắc của một bộ phận, và chỉ đúng được thành phần đã tạo ra bất kỳ dòng nào trên phiếu lương."),
+    steps: [
+      {
+        screen: "formula", anchor: "fs-config",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("One division, one rulebook", "Một bộ phận, một bộ quy tắc"),
+        body: B("This is <b>HOASEN_RETAIL_END</b> — the configuration every Retail payslip is computed by. The name at the top is a switcher: other divisions have their own, and they are not variations of this one. Choosing a division in Run Payroll is choosing which of these runs.",
+                "Đây là <b>HOASEN_RETAIL_END</b> — cấu hình mà mọi phiếu lương của Bán lẻ được tính theo. Cái tên ở trên cùng là một ô chuyển: các bộ phận khác có cấu hình riêng, và chúng không phải biến thể của cấu hình này. Chọn bộ phận trong Chạy bảng lương chính là chọn cấu hình nào sẽ chạy."),
+        tip: B("The code is the thing to quote when you ask someone about a number: \"HOASEN_RETAIL_END, component TNCN\" is a question that can be answered.",
+               "Mã cấu hình là thứ nên trích dẫn khi bạn hỏi ai đó về một con số: \"HOASEN_RETAIL_END, thành phần TNCN\" là một câu hỏi có thể trả lời được."),
+      },
+      {
+        screen: "formula", anchor: "fs-components",
+        kicker: B("The inventory", "Danh mục thành phần"),
+        title: B("Every line on a payslip is a component here", "Mỗi dòng trên phiếu lương là một thành phần ở đây"),
+        body: B("Ten components, in four kinds: <b>inputs</b> (base salary), <b>earnings</b> (allowances, overtime), <b>deductions</b> (BHXH, BHYT, BHTN, thuế TNCN) and <b>totals</b> (gross, taxable, net). Nothing on a payslip comes from anywhere else — if a line exists, it is one of these, and if a line is missing, its component is.",
+                "Mười thành phần, thuộc bốn loại: <b>đầu vào</b> (lương cơ bản), <b>thu nhập</b> (phụ cấp, tăng ca), <b>khấu trừ</b> (BHXH, BHYT, BHTN, thuế TNCN) và <b>các tổng</b> (tổng thu nhập, thu nhập chịu thuế, thực nhận). Không dòng nào trên phiếu lương đến từ nơi khác — có dòng nào thì nó là một trong số này, và thiếu dòng nào thì thiếu thành phần của nó."),
+      },
+      {
+        screen: "formula", anchor: "fs-formula",
+        kicker: B("The formula", "Công thức"),
+        title: B("Read it out loud and it is just a sentence", "Đọc to lên thì nó chỉ là một câu"),
+        body: B("<b>TNCN = 5% × TNCT</b>, and <b>TNCT = GROSS − (BHXH + BHYT + BHTN) − 11,000,000</b>. That is the whole of Mai's tax line: gross, less her insurance, less the personal deduction, then the first band's rate. Each coloured chip is a component you can click through to.",
+                "<b>TNCN = 5% × TNCT</b>, và <b>TNCT = Tổng thu nhập − (BHXH + BHYT + BHTN) − 11.000.000</b>. Đó là toàn bộ dòng thuế của Mai: tổng thu nhập, trừ bảo hiểm của cô ấy, trừ giảm trừ bản thân, rồi nhân thuế suất bậc đầu tiên. Mỗi chip màu là một thành phần bạn bấm vào để đi tiếp."),
+        tip: B("The 11,000,000 is written as a chip, not typed into the formula twice. One relief figure, one place to change it.",
+               "Con số 11.000.000 được viết thành một chip, không phải gõ lặp lại hai lần trong công thức. Một mức giảm trừ, một chỗ để sửa."),
+      },
+      {
+        screen: "formula", anchor: "fs-namesletters",
+        kicker: B("Two ways to read", "Hai cách đọc"),
+        title: B("Names for people, letters for spreadsheets", "Tên cho người đọc, chữ cái cho bảng tính"),
+        body: B("The same formula switches between <b>Names</b> (TNCN = 5% × TNCT) and <b>Letters</b> (I = 5% × H). Letters are how the engine stores it and how it reads next to a spreadsheet; names are how you explain it to somebody. They are one formula in two spellings, so a change in either is a change in both.",
+                "Cùng một công thức chuyển qua lại giữa <b>Tên</b> (TNCN = 5% × TNCT) và <b>Chữ cái</b> (I = 5% × H). Chữ cái là cách hệ thống lưu công thức và là cách nó đọc song song với một bảng tính; tên là cách bạn giải thích cho người khác. Đó là một công thức với hai cách viết, nên sửa ở cách nào cũng là sửa cả hai."),
+      },
+      {
+        screen: "formula", anchor: "fs-deps",
+        kicker: B("The wiring", "Đường dây"),
+        title: B("Depends on, and used by", "Phụ thuộc vào, và được dùng bởi"),
+        body: B("TNCT <b>depends on</b> GROSS, BHXH, BHYT and BHTN — change any of those and it moves. It is <b>used by</b> THUCNHAN, so the net follows it. This panel is the one to read before renaming or deleting anything: it names, exactly, what would break.",
+                "TNCT <b>phụ thuộc vào</b> Tổng thu nhập, BHXH, BHYT và BHTN — đổi bất kỳ cái nào thì nó đổi theo. Nó <b>được dùng bởi</b> THUCNHAN, nên thực nhận cũng đi theo. Đây là bảng cần đọc trước khi đổi tên hay xoá bất cứ thứ gì: nó nêu chính xác cái gì sẽ hỏng."),
+      },
+      {
+        screen: "formula", anchor: "fs-preview",
+        kicker: B("Proof", "Bằng chứng"),
+        title: B("The rulebook, run on a real person", "Bộ quy tắc, chạy trên một người thật"),
+        body: B("The preview evaluates the whole configuration against one employee: Mai's gross of <b>14,280,000 ₫</b>, taxable of 2,020,000, tax of 101,000 and net of <b>12,919,000 ₫</b>. This is the same arithmetic her payslip shows — the difference is that here you can see which component produced each line.",
+                "Bản xem trước chạy toàn bộ cấu hình trên một nhân viên: tổng thu nhập của Mai là <b>14.280.000 ₫</b>, thu nhập chịu thuế 2.020.000, thuế 101.000 và thực nhận <b>12.919.000 ₫</b>. Vẫn đúng phép tính trên phiếu lương của cô ấy — khác ở chỗ tại đây bạn thấy được thành phần nào đã tạo ra từng dòng."),
+        moment: { kind: "calc" },
+      },
+      {
+        screen: "formula", anchor: "fs-simulate",
+        kicker: B("Before you act", "Trước khi thao tác"),
+        title: B("Simulate before you activate", "Mô phỏng trước khi kích hoạt"),
+        body: B("<b>Simulate</b> runs the edited configuration against a period that has already been paid, and shows you what would have come out. It is the only way to see a change's effect on people rather than on one preview employee — and it costs a minute.",
+                "<b>Mô phỏng</b> chạy cấu hình đã sửa trên một kỳ lương đã chi, và cho bạn thấy kết quả sẽ ra sao. Đây là cách duy nhất để thấy tác động của một thay đổi lên nhiều con người thay vì chỉ một nhân viên xem trước — và nó chỉ tốn một phút."),
+        consequence: B("Affects every future payslip computed by this configuration — the whole division, not one employee, and not one month. Reversible: <b>partly</b> — the configuration can be edited back, but any run already computed on the changed version keeps its figures until it is recomputed. Verify first: the dependency panel for anything you renamed, and a simulation against last month.",
+                       "Ảnh hưởng tới mọi phiếu lương tương lai được tính bằng cấu hình này — cả bộ phận, không phải một nhân viên, và không chỉ một tháng. Hoàn tác: <b>một phần</b> — cấu hình có thể sửa lại, nhưng đợt lương đã tính theo bản đã đổi vẫn giữ nguyên con số cho tới khi được tính lại. Kiểm tra trước: bảng phụ thuộc cho bất cứ thứ gì bạn đổi tên, và một lần mô phỏng trên tháng trước."),
+      },
+    ],
+    quiz: {
+      question: B("You need to add a meal allowance for Retail. The July run is computed and waiting at {{hrTierName}}. What do you do?",
+                  "Bạn cần thêm phụ cấp ăn ca cho Bán lẻ. Đợt lương tháng 7 đã tính xong và đang chờ ở {{hrTierName}}. Bạn làm gì?"),
+      options: [
+        {
+          text: B("Add the component now — the July run has already been computed, so it cannot be affected", "Thêm thành phần ngay — đợt tháng 7 đã tính xong nên không bị ảnh hưởng"),
+          correct: false,
+          explanation: B("Let's rethink that. Computed is not finished: a rejection at any gate sends the run back to draft, and the recompute that follows would use the configuration as it is then — so July would quietly acquire an allowance that was never approved for it.",
+                         "Hãy nghĩ lại một chút. Đã tính không có nghĩa là đã xong: bị từ chối ở bất kỳ cổng nào cũng đưa đợt về Nháp, và lần tính lại sau đó sẽ dùng cấu hình tại thời điểm ấy — nên tháng 7 âm thầm có thêm một khoản phụ cấp chưa từng được duyệt cho nó."),
+        },
+        {
+          text: B("Add the component, simulate it against last month, and apply it once July is done", "Thêm thành phần, mô phỏng trên tháng trước, và áp dụng khi tháng 7 đã Hoàn tất"),
+          correct: true,
+          explanation: B("Yes. The simulation tells you what the change does to real people before anybody is paid by it, and waiting for July to reach done means no open run can pick it up by accident. Both halves matter — the simulation is the evidence, the timing is the safety.",
+                         "Đúng vậy. Mô phỏng cho bạn biết thay đổi này tác động thế nào tới người thật trước khi có ai được trả theo nó, còn chờ tháng 7 đạt Hoàn tất thì không đợt nào đang mở có thể vô tình nhận phải nó. Cả hai vế đều quan trọng — mô phỏng là bằng chứng, thời điểm là sự an toàn."),
+        },
+        {
+          text: B("Add the allowance straight onto each employee's payslip instead", "Thay vào đó, cộng thẳng khoản phụ cấp vào từng phiếu lương"),
+          correct: false,
+          explanation: B("Let's rethink that. That is forty-eight manual edits that the next recompute erases, and next month it is forty-eight more. A component is written once and paid every month; an edit is written every month and remembered by nobody.",
+                         "Hãy nghĩ lại một chút. Đó là bốn mươi tám lần sửa tay mà lần tính lại kế tiếp sẽ xoá sạch, và tháng sau lại thêm bốn mươi tám lần nữa. Một thành phần viết một lần và trả hằng tháng; một lần sửa tay phải viết lại mỗi tháng và không ai nhớ tới."),
+        },
+      ],
+    },
+  },
+
+  L6: {
+    id: "L6", station: "statutory", mins: 8,
+    title: B("Statutory — the rules the law writes", "Bảo hiểm & Thuế — những quy tắc do luật viết"),
+    goal: B("Read the policy and the tax table the way an inspector would, and know exactly how to apply a rate change without touching a month that is already open.",
+            "Đọc chính sách bảo hiểm và biểu thuế theo cách một đoàn kiểm tra sẽ đọc, và biết chính xác cách áp dụng một thay đổi tỷ lệ mà không đụng tới kỳ đang mở."),
+    steps: [
+      {
+        screen: "statutory", anchor: "st-kpis",
+        kicker: B("What & why", "Là gì & vì sao"),
+        title: B("You do not invent these numbers", "Bạn không tự nghĩ ra những con số này"),
+        body: B("This screen holds what the law has already decided: the <b>BHXH</b>, <b>BHYT</b> and <b>BHTN</b> rates, the base they are charged on, and the <b>thuế TNCN</b> table. Your job is not to choose them — it is to keep them current, and to be able to show where each one came from.",
+                "Màn hình này lưu những gì pháp luật đã quyết: tỷ lệ <b>BHXH</b>, <b>BHYT</b>, <b>BHTN</b>, mức lương làm căn cứ đóng, và biểu <b>thuế TNCN</b>. Việc của bạn không phải chọn chúng — mà là giữ chúng luôn đúng hiện hành, và chỉ ra được từng con số đến từ đâu."),
+      },
+      {
+        screen: "statutory", anchor: "st-rates",
+        kicker: B("Reading the policy", "Đọc chính sách"),
+        title: B("Who pays what — and the bigger half is not yours", "Ai đóng bao nhiêu — và phần lớn hơn không phải của bạn"),
+        body: B("Each scheme has an <b>employee share</b>, deducted from the payslip, and an <b>employer share</b>, which is a company cost and never appears in anybody's net. BHXH 8% / 17.5% · BHYT 1.5% / 3% · BHTN 1% / 1%. The employee pays 10.5% in total and the company pays 21.5% — twice as much, on top.",
+                "Mỗi loại bảo hiểm có <b>phần người lao động</b>, khấu trừ trên phiếu lương, và <b>phần doanh nghiệp</b>, là chi phí công ty và không bao giờ xuất hiện trong thực nhận của ai. BHXH 8% / 17,5% · BHYT 1,5% / 3% · BHTN 1% / 1%. Người lao động đóng tổng 10,5% còn doanh nghiệp đóng 21,5% — gấp đôi, và là khoản cộng thêm."),
+        tip: B("When an employee says \"I pay a third of my salary in insurance\", this table is the answer: they pay 10.5% of the registered base, and the company pays the rest.",
+               "Khi một nhân viên nói \"tôi đóng cả một phần ba lương cho bảo hiểm\", bảng này chính là câu trả lời: họ đóng 10,5% trên mức lương đã đăng ký, phần còn lại do công ty đóng."),
+      },
+      {
+        screen: "statutory", anchor: "st-rates",
+        kicker: B("The base & the ceiling", "Mức đóng & trần"),
+        title: B("Charged on the registered base, up to a ceiling", "Tính trên mức đã đăng ký, tới một mức trần"),
+        body: B("Contributions apply to the <b>registered insurance base</b> — for Mai, her contract base of 12,000,000 ₫, not her 14,280,000 ₫ gross. And they stop at the ceiling in the last column: above <b>20,000,000 ₫</b> the deduction does not grow, so two people on very different salaries can pay exactly the same BHXH.",
+                "Bảo hiểm tính trên <b>mức lương đóng bảo hiểm đã đăng ký</b> — với Mai là lương cơ bản theo hợp đồng 12.000.000 ₫, không phải tổng thu nhập 14.280.000 ₫. Và nó dừng ở mức trần tại cột cuối: trên <b>20.000.000 ₫</b> thì khoản khấu trừ không tăng nữa, nên hai người lương rất khác nhau vẫn có thể đóng BHXH bằng nhau."),
+      },
+      {
+        screen: "statutory", anchor: "st-slabs",
+        kicker: B("The tax table", "Biểu thuế"),
+        title: B("PIT is progressive, and kind at the bottom", "Thuế TNCN luỹ tiến, và nhẹ ở bậc thấp"),
+        body: B("Taxable income is gross <b>less insurance</b>, less <b>11,000,000 ₫</b> for yourself and <b>4,400,000 ₫</b> per dependant. Mai: 14,280,000 − 1,260,000 − 11,000,000 = <b>2,020,000 ₫</b>, which sits entirely in the 5% band, so her tax is <b>101,000 ₫</b>. The bands only bite further up.",
+                "Thu nhập chịu thuế là tổng thu nhập <b>trừ bảo hiểm</b>, trừ <b>11.000.000 ₫</b> giảm trừ bản thân và <b>4.400.000 ₫</b> mỗi người phụ thuộc. Với Mai: 14.280.000 − 1.260.000 − 11.000.000 = <b>2.020.000 ₫</b>, nằm trọn trong bậc 5%, nên thuế là <b>101.000 ₫</b>. Các bậc cao chỉ ảnh hưởng khi thu nhập lớn hơn nhiều."),
+        tip: B("Insurance comes off BEFORE the deductions, which is why a rise in a contribution rate always costs a little less net than it costs in contribution.",
+               "Bảo hiểm được trừ TRƯỚC các khoản giảm trừ, nên khi một tỷ lệ đóng tăng, phần thực nhận mất đi luôn nhỏ hơn phần đóng thêm một chút."),
+      },
+      {
+        screen: "statutory", anchor: "st-rates",
+        kicker: B("The connection", "Sợi dây liên kết"),
+        title: B("Watch a rate become a payslip line", "Xem một tỷ lệ trở thành dòng phiếu lương"),
+        body: B("The <b>1.5%</b> on the BHYT row and the <b>−180,000 ₫</b> on Mai's July payslip are the same fact, twice: 1.5% of her registered base of 12,000,000 ₫. Every deduction on every slip traces back to a cell on this table — which is why a single edit here moves thousands of lines at once.",
+                "Con số <b>1,5%</b> ở dòng BHYT và khoản <b>−180.000 ₫</b> trên phiếu lương tháng 7 của Mai là cùng một sự việc, nói hai lần: 1,5% của mức đóng đã đăng ký 12.000.000 ₫. Mọi khoản khấu trừ trên mọi phiếu đều truy được về một ô trong bảng này — và vì vậy một lần sửa ở đây làm thay đổi hàng nghìn dòng cùng lúc."),
+        moment: { kind: "trace", from: "st-rates", to: "rep-slipline" },
+      },
+      {
+        screen: "statutory", anchor: "st-roster",
+        kicker: B("The mechanics", "Cơ chế thật"),
+        title: B("A rate change is a new record, not an edit", "Đổi tỷ lệ là tạo bản ghi mới, không phải sửa"),
+        body: B("There is <b>no version history</b> on a policy. When a decree changes a rate you create a <b>new policy record</b> with its own code — codes are unique per company — and its own <b>effective date</b>, then end-date the outgoing one. The roster below is what that looks like afterwards: 2025 ended and archived, 2026 active.",
+                "Chính sách <b>không có lịch sử phiên bản</b>. Khi một nghị định thay đổi tỷ lệ, bạn tạo một <b>bản ghi chính sách mới</b> với mã riêng — mã là duy nhất trong mỗi công ty — và <b>ngày hiệu lực</b> riêng, rồi đặt ngày kết thúc cho bản cũ. Danh sách bên dưới cho thấy kết quả: bản 2025 đã kết thúc và lưu trữ, bản 2026 đang hiệu lực."),
+        tip: B("Payobook picks the policy with the latest effective date among those still active. Not the newest record, not the last one edited — the effective date is the field that decides.",
+               "Payobook chọn chính sách có ngày hiệu lực mới nhất trong số các chính sách còn bật. Không phải bản ghi mới tạo nhất, cũng không phải bản sửa gần nhất — ngày hiệu lực mới là trường quyết định."),
+      },
+      {
+        screen: "statutory", anchor: "st-new",
+        kicker: B("Before you act", "Trước khi thao tác"),
+        title: B("The date is the whole of the risk", "Ngày hiệu lực chính là toàn bộ rủi ro"),
+        body: B("A new policy dated from the first of next month is safe. One dated from today, while a month is still open, is not: the current policy is chosen by <b>latest effective date</b>, so any run that recomputes — after a rejection, after an import fix — would pick up rates that were not in force for its own period.",
+                "Một chính sách mới có hiệu lực từ ngày đầu tháng sau là an toàn. Một chính sách có hiệu lực từ hôm nay, trong khi một kỳ vẫn đang mở, thì không: chính sách hiện hành được chọn theo <b>ngày hiệu lực mới nhất</b>, nên bất kỳ đợt nào tính lại — sau khi bị từ chối, sau khi sửa dữ liệu nhập — sẽ nhận phải tỷ lệ chưa có hiệu lực trong kỳ của chính nó."),
+        consequence: B("Affects every future payslip in <b>every division</b> — one policy serves the whole company, not one configuration. Reversible: <b>partly</b> — the new record can be archived, but any run recomputed while it was in force keeps the figures it produced until it is recomputed again. Verify first: that no run is still open for a period before the effective date.",
+                       "Ảnh hưởng tới mọi phiếu lương tương lai của <b>mọi bộ phận</b> — một chính sách phục vụ cả công ty, không phải một cấu hình. Hoàn tác: <b>một phần</b> — bản ghi mới có thể lưu trữ lại, nhưng đợt nào đã tính lại trong lúc nó có hiệu lực vẫn giữ nguyên con số cho tới khi được tính lại lần nữa. Kiểm tra trước: không còn đợt nào đang mở cho kỳ trước ngày hiệu lực."),
+      },
+      {
+        screen: "statutory", anchor: "rep-slipline",
+        kicker: B("Before & after", "Trước & sau"),
+        title: B("What half a percentage point costs", "Nửa điểm phần trăm đáng giá bao nhiêu"),
+        body: B("If BHYT's employee share went from 1.5% to 2.0%, Mai's deduction grows 60,000 ₫ — and her net falls <b>57,000 ₫</b>, not 60,000, because insurance comes off before tax and her thuế TNCN falls 3,000 with it. Toggle the two sides and read which lines move.",
+                "Nếu phần người lao động của BHYT tăng từ 1,5% lên 2,0%, khoản khấu trừ của Mai tăng 60.000 ₫ — và thực nhận giảm <b>57.000 ₫</b>, không phải 60.000, vì bảo hiểm được trừ trước khi tính thuế nên thuế TNCN của cô ấy giảm theo 3.000. Hãy chuyển qua lại hai bên và xem những dòng nào thay đổi."),
+        moment: { kind: "morph", which: "maiBhytRate" },
+      },
+    ],
+    quiz: {
+      question: B("A decree raises BHYT's employee share from 1 August. It is 20 July and the July run is still awaiting {{gmTierName}}. What do you do?",
+                  "Một nghị định nâng phần đóng BHYT của người lao động từ 1/8. Hôm nay là 20/7 và đợt lương tháng 7 vẫn đang chờ {{gmTierName}}. Bạn làm gì?"),
+      options: [
+        {
+          text: B("Edit the rate on the policy that is in force now", "Sửa tỷ lệ ngay trên chính sách đang có hiệu lực"),
+          correct: false,
+          explanation: B("Let's rethink that. There is no version history to fall back on — the old rate is simply gone. And if anything sends July back to draft, the recompute charges an August rate to a July payslip, which is a compliance error nobody will see until it is filed.",
+                         "Hãy nghĩ lại một chút. Không có lịch sử phiên bản nào để quay lại — tỷ lệ cũ đơn giản là mất. Và nếu có gì đó đưa tháng 7 về Nháp, lần tính lại sẽ áp tỷ lệ của tháng 8 lên phiếu lương tháng 7 — một lỗi tuân thủ không ai thấy cho tới lúc nộp báo cáo."),
+        },
+        {
+          text: B("Create a new policy record effective 01/08, and end-date the current one on 31/07", "Tạo bản ghi chính sách mới hiệu lực 01/08, và đặt ngày kết thúc 31/07 cho bản hiện tại"),
+          correct: true,
+          explanation: B("Yes. July keeps the rates that were in force in July, August gets the new ones, and the change is on the record with a date and a code against it. Both halves are needed: without the end date on the old policy, two policies are active with nothing to choose between them.",
+                         "Đúng vậy. Tháng 7 giữ đúng tỷ lệ đã có hiệu lực trong tháng 7, tháng 8 nhận tỷ lệ mới, và thay đổi được ghi lại kèm ngày và mã. Cần cả hai vế: nếu không đặt ngày kết thúc cho chính sách cũ, sẽ có hai chính sách cùng hiệu lực mà không có căn cứ nào để chọn."),
+        },
+        {
+          text: B("Create the new policy now with today's date so nothing is forgotten", "Tạo chính sách mới ngay hôm nay với ngày hiệu lực là hôm nay cho khỏi quên"),
+          correct: false,
+          explanation: B("Let's rethink that. The instinct is right and the date is wrong: from today means from 20 July, and the current policy is whichever active one has the latest effective date. Write the record now if you like — with 01/08 in the effective date field.",
+                         "Hãy nghĩ lại một chút. Ý thức cẩn thận là đúng, chỉ có ngày là sai: từ hôm nay nghĩa là từ 20/7, và chính sách hiện hành là chính sách còn bật có ngày hiệu lực mới nhất. Cứ tạo bản ghi ngay bây giờ cũng được — nhưng điền 01/08 vào ô ngày hiệu lực."),
+        },
+      ],
+    },
+  },
 };
 
 /* =============================================================================
@@ -1023,6 +1374,64 @@ const MISSIONS = [
             "Một tệp có dòng bị lặp và một nhân viên không ai khớp được. Điểm tin cậy tụt xuống. Bạn sửa, hay cứ ghi nhận?"),
     outlineNote: B("The full version puts you in the wizard with the score falling in front of you, makes you choose between Match, Retry and Skip for each bad row, and then shows what each of those choices would have produced on {{payDay}} — including the one where a skipped row turns out to have been a person.",
                    "Bản đầy đủ đặt bạn vào trình hướng dẫn với điểm tin cậy đang tụt ngay trước mắt, buộc bạn chọn giữa Khớp, Thử lại và Bỏ qua cho từng dòng lỗi, rồi cho thấy mỗi lựa chọn đó sẽ tạo ra gì vào {{payDay}} — kể cả trường hợp dòng bị bỏ qua hoá ra là một con người."),
+  },
+  {
+    id: "m4", group: "setup", icon: "shield-check", mins: 7, full: true,
+    screen: "statutory",
+    conf: { key: "setup", gain: 30 },
+    title: B("Apply a BHYT rate change — properly", "Áp dụng thay đổi tỷ lệ BHYT — cho đúng cách"),
+    desc: B("A decree raises the health-insurance rate. Create the new policy the way the product actually supports, date it so no open month is touched, and see what it costs one employee.",
+            "Một nghị định nâng tỷ lệ bảo hiểm y tế. Hãy tạo chính sách mới theo đúng cách sản phẩm hỗ trợ, đặt ngày sao cho không kỳ nào đang mở bị ảnh hưởng, và xem nó khiến một nhân viên mất bao nhiêu."),
+    consequence: {
+      title: B("You are about to change what every division deducts", "Bạn sắp thay đổi khoản khấu trừ của mọi bộ phận"),
+      scope: B("One insurance policy serves the whole company. Every payslip computed after the effective date, in every division, uses these rates — this is not a per-configuration setting.",
+               "Một chính sách bảo hiểm phục vụ cả công ty. Mọi phiếu lương được tính sau ngày hiệu lực, ở mọi bộ phận, đều dùng các tỷ lệ này — đây không phải thiết lập riêng cho từng cấu hình."),
+      reversible: B("Partly. The new record can be archived and the old one reopened, but any run that recomputed while the new rates were in force keeps the figures it produced until somebody recomputes it again.",
+                    "Một phần. Bản ghi mới có thể lưu trữ lại và bản cũ mở lại, nhưng đợt lương nào đã tính lại trong lúc tỷ lệ mới có hiệu lực vẫn giữ nguyên con số cho tới khi có người tính lại lần nữa."),
+      verify: B("That the effective date falls after every period that is still open. June and July are both unfinished here, so anything earlier than 01/08 can reach a month it has no business reaching.",
+                "Rằng ngày hiệu lực rơi vào sau mọi kỳ còn đang mở. Ở đây cả tháng 6 và tháng 7 đều chưa xong, nên bất kỳ ngày nào sớm hơn 01/08 đều có thể chạm tới một kỳ mà nó không được phép chạm."),
+    },
+    anomaly: {
+      title: B("The 60,000 that is only 57,000", "Con số 60.000 hoá ra chỉ là 57.000"),
+      body: B("Half a percentage point on Mai's registered base of 12,000,000 ₫ is 60,000 ₫ of extra BHYT — so it is natural to tell her that her pay drops by 60,000. It does not: it drops by 57,000. Insurance is deducted BEFORE the tax relief, so her taxable income falls by the same 60,000 and her thuế TNCN falls 3,000 with it. The number a payroll desk quotes from memory is almost always the contribution, and the number the employee sees is always the net. Quoting the wrong one is how a correct change becomes an argument on {{payDay}}.",
+             "Nửa điểm phần trăm trên mức đóng đã đăng ký 12.000.000 ₫ của Mai là 60.000 ₫ BHYT tăng thêm — nên rất tự nhiên khi nói với cô ấy rằng lương giảm 60.000. Không phải vậy: nó giảm 57.000. Bảo hiểm được trừ TRƯỚC các khoản giảm trừ thuế, nên thu nhập chịu thuế của cô ấy cũng giảm đúng 60.000 và thuế TNCN giảm theo 3.000. Con số mà bộ phận lương nói theo trí nhớ hầu như luôn là khoản đóng, còn con số nhân viên nhìn thấy luôn là thực nhận. Nói nhầm con số là cách một thay đổi đúng biến thành một cuộc tranh cãi vào {{payDay}}."),
+    },
+    debrief: {
+      did: [
+        B("Created a new policy record with its own code instead of editing the rates that were in force — the only shape the product actually supports.",
+          "Tạo một bản ghi chính sách mới với mã riêng thay vì sửa các tỷ lệ đang có hiệu lực — đây là cách duy nhất mà sản phẩm thực sự hỗ trợ."),
+        B("Changed the one rate the decree changed, and left the employer share and the other two schemes alone.",
+          "Chỉ đổi đúng tỷ lệ mà nghị định thay đổi, và để nguyên phần doanh nghiệp cùng hai loại bảo hiểm còn lại."),
+        B("Dated it from the first of the next month, so no run that is still open can recompute onto rates that were not in force for its period.",
+          "Đặt hiệu lực từ ngày đầu tháng kế tiếp, để không đợt nào còn mở có thể tính lại theo tỷ lệ chưa có hiệu lực trong kỳ của nó."),
+        B("Read the impact on a real payslip before saving, and found that the net effect is smaller than the contribution change.",
+          "Xem tác động trên một phiếu lương thật trước khi lưu, và thấy phần thực nhận thay đổi ít hơn phần đóng thay đổi."),
+        B("Ended the outgoing policy, so exactly one policy is in force on any given day.",
+          "Kết thúc chính sách cũ, để mỗi ngày chỉ có đúng một chính sách đang hiệu lực."),
+      ],
+      checklist: [
+        B("The decree or circular is in front of you, and the rate you typed is the one it names.",
+          "Văn bản pháp luật đang mở trước mặt, và tỷ lệ bạn gõ đúng bằng tỷ lệ trong văn bản đó."),
+        B("Only the changed rate has moved — an employer share edited by accident is invisible on every payslip.",
+          "Chỉ tỷ lệ thay đổi mới bị sửa — một phần doanh nghiệp bị sửa nhầm sẽ không hiện ra trên bất kỳ phiếu lương nào."),
+        B("The effective date is after every open period, and you have checked which periods are open.",
+          "Ngày hiệu lực nằm sau mọi kỳ đang mở, và bạn đã kiểm tra xem những kỳ nào đang mở."),
+        B("The outgoing policy has an end date, so two policies are never in force at once.",
+          "Chính sách cũ đã có ngày kết thúc, để không bao giờ có hai chính sách cùng hiệu lực."),
+        B("You can state the effect on one employee's NET, not just on the contribution.",
+          "Bạn nói được tác động lên THỰC NHẬN của một nhân viên, chứ không chỉ lên khoản đóng."),
+      ],
+    },
+  },
+  {
+    id: "m5", group: "setup", icon: "calculator", mins: 6, full: false,
+    screen: "formula",
+    conf: { key: "formula", gain: 20 },
+    title: B("Map a new allowance into a config", "Đưa một khoản phụ cấp mới vào cấu hình"),
+    desc: B("A meal allowance has been agreed for Retail. Add it as a component, wire it into gross, and prove it before anybody is paid by it.",
+            "Bán lẻ vừa thống nhất một khoản phụ cấp ăn ca. Hãy thêm nó thành một thành phần, nối vào tổng thu nhập, và chứng minh nó trước khi có ai được trả theo nó."),
+    outlineNote: B("The full version adds the component to HOASEN_RETAIL_END, makes you choose where it belongs — an earning that feeds GROSS, not a total and not an input — then wire it into the gross formula and read the dependency panel to see what moved. It ends where every configuration change should: a simulation against last month's real payslips, and the decision of whether to activate while a run is still open.",
+                   "Bản đầy đủ thêm thành phần vào HOASEN_RETAIL_END, buộc bạn chọn nó thuộc về đâu — một khoản thu nhập cấu thành Tổng thu nhập, không phải một tổng và cũng không phải đầu vào — rồi nối vào công thức tổng thu nhập và đọc bảng phụ thuộc để thấy những gì đã đổi. Nó kết thúc đúng ở nơi mọi thay đổi cấu hình nên kết thúc: một lần mô phỏng trên phiếu lương thật của tháng trước, và quyết định có kích hoạt hay không khi một đợt lương vẫn đang mở."),
   },
 ];
 
@@ -1178,6 +1587,108 @@ const MISSION_STEPS = {
                 "Đợt bị từ chối nằm ở Nháp cùng lý do của bạn. Chuyên viên sửa dữ liệu đầu vào, tính lại, và trình lại qua đúng chuỗi đó — không mất gì và chưa chi gì. Hãy đi trọn vòng một lần ở đây, vì tới trạng thái Hoàn tất thì điều này không còn đúng nữa."),
     },
   ],
+
+  /* m4 stays on ONE screen throughout, which is unusual for a mission and is
+     the right shape here: the whole judgement is about a single record on the
+     statutory replica, and navigating away from it would break the one thing
+     the learner has to keep in view — that the roster ends up with two rows. */
+  m4: [
+    {
+      id: "open", nav: "statutory", target: "st-roster",
+      instruction: B("Open Statutory and read the roster", "Mở Bảo hiểm & Thuế và đọc danh sách chính sách"),
+      detail: B("One policy is active — 2026, effective 01/01/2026 — and one is archived, ended on 31/12/2025. That pair is what a correctly applied rate change leaves behind.",
+                "Một chính sách đang hiệu lực — bản 2026, hiệu lực từ 01/01/2026 — và một bản đã lưu trữ, kết thúc ngày 31/12/2025. Cặp bản ghi đó chính là dấu vết mà một lần đổi tỷ lệ đúng cách để lại."),
+      hint: B("The rates table at the top always shows the CURRENT policy: the active one with the latest effective date.",
+              "Bảng tỷ lệ ở trên cùng luôn hiển thị chính sách HIỆN HÀNH: bản đang bật có ngày hiệu lực mới nhất."),
+    },
+    {
+      id: "newrecord", target: "st-new", decision: true,
+      instruction: B("A decree raises BHYT's employee share. How do you apply it?", "Một nghị định nâng phần đóng BHYT của người lao động. Bạn áp dụng thế nào?"),
+      detail: B("The decree takes effect on 1 August. Today is 20 July, and both the June and July runs are still unfinished.",
+                "Nghị định có hiệu lực từ ngày 1/8. Hôm nay là 20/7, và cả đợt tháng 6 lẫn tháng 7 đều chưa xong."),
+      hint: B("Ask what would be left to show an inspector afterwards — one record, or two.",
+              "Hãy tự hỏi sau đó còn gì để trưng ra cho đoàn kiểm tra — một bản ghi, hay hai."),
+      options: [
+        { id: "newpolicy", correct: true, label: B("Create a new insurance policy record with its own code", "Tạo một bản ghi chính sách bảo hiểm mới với mã riêng") },
+        { id: "editlive", label: B("Edit the rate on the policy that is in force", "Sửa tỷ lệ trên chính sách đang có hiệu lực") },
+        { id: "samecode", label: B("Create a new record and reuse the current policy's code", "Tạo bản ghi mới và dùng lại mã của chính sách hiện tại") },
+      ],
+      recovery: {
+        editlive: B("Let's rethink that. A policy has no version history, so editing it does not create a before and an after — the old rate is simply gone, and there is nothing left to show which rates July was computed under. The product's answer to a rate change is a second record, not a second version.",
+                    "Hãy nghĩ lại một chút. Chính sách không có lịch sử phiên bản, nên sửa nó không tạo ra bản trước và bản sau — tỷ lệ cũ đơn giản là mất, và không còn gì để chứng minh tháng 7 đã được tính theo tỷ lệ nào. Câu trả lời của sản phẩm cho việc đổi tỷ lệ là một bản ghi thứ hai, không phải một phiên bản thứ hai."),
+        samecode: B("Let's rethink that. The code is unique per company, so this one is refused outright — which is fortunate, because a shared code is exactly how two policies become indistinguishable in a report. Give the new record its own code and the pair reads as a history.",
+                    "Hãy nghĩ lại một chút. Mã là duy nhất trong mỗi công ty, nên cách này bị từ chối ngay — và đó là điều may, vì trùng mã chính là cách hai chính sách trở nên không phân biệt được trong báo cáo. Cho bản ghi mới một mã riêng thì cặp bản ghi sẽ đọc ra như một lịch sử."),
+      },
+    },
+    {
+      id: "rate", target: "st-rates", decision: true,
+      instruction: B("Set the BHYT employee share on the new record", "Đặt phần đóng BHYT của người lao động trên bản ghi mới"),
+      detail: B("The decree names one number and it applies to the employee share only. The employer's 3% and the other two schemes are untouched.",
+                "Nghị định nêu một con số và nó chỉ áp cho phần người lao động. Phần doanh nghiệp 3% và hai loại bảo hiểm còn lại giữ nguyên."),
+      hint: B("Two of the three numbers on offer are already on this screen somewhere. That is the trap, not a coincidence.",
+              "Hai trong ba con số đưa ra đã có sẵn đâu đó trên màn hình này. Đó là cái bẫy, không phải trùng hợp."),
+      options: [
+        { id: "two", correct: true, label: B("2.0%", "2,0%") },
+        { id: "onefive", label: B("1.5%", "1,5%") },
+        { id: "three", label: B("3.0%", "3,0%") },
+      ],
+      recovery: {
+        onefive: B("Let's rethink that. 1.5% is the rate that is in force today — typing it into the new record creates a policy that changes nothing, and the first anybody knows about it is when August's deductions come out identical to July's.",
+                   "Hãy nghĩ lại một chút. 1,5% là tỷ lệ đang có hiệu lực hôm nay — gõ nó vào bản ghi mới sẽ tạo ra một chính sách không thay đổi gì, và người ta chỉ biết khi khấu trừ tháng 8 ra y hệt tháng 7."),
+        three: B("Let's rethink that. 3.0% is the EMPLOYER's BHYT share, sitting one column to the right. Putting it in the employee column doubles what every employee pays and leaves the company paying the same — a mistake that is invisible on this screen and very visible on a payslip.",
+                 "Hãy nghĩ lại một chút. 3,0% là phần BHYT của DOANH NGHIỆP, nằm ngay cột bên phải. Đặt nó vào cột người lao động sẽ làm mọi nhân viên đóng gấp đôi trong khi công ty vẫn đóng như cũ — một lỗi không nhìn thấy trên màn hình này nhưng rất dễ thấy trên phiếu lương."),
+      },
+    },
+    {
+      id: "effective", target: "st-effective", decision: true,
+      instruction: B("Choose the effective date", "Chọn ngày hiệu lực"),
+      detail: B("It is 20 July. June's run is still being corrected and July's is awaiting approval — either could be recomputed this week.",
+                "Hôm nay là 20/7. Đợt tháng 6 vẫn đang được sửa và đợt tháng 7 đang chờ phê duyệt — cả hai đều có thể bị tính lại trong tuần này."),
+      hint: B("The current policy is the active one with the latest effective date. Ask which periods that sentence puts at risk.",
+              "Chính sách hiện hành là bản đang bật có ngày hiệu lực mới nhất. Hãy tự hỏi câu đó đặt những kỳ nào vào rủi ro."),
+      options: [
+        { id: "aug", correct: true, label: B("01/08/2026 — the first day the decree applies", "01/08/2026 — ngày đầu tiên nghị định áp dụng") },
+        { id: "today", label: B("Today, 20/07/2026, so it is not forgotten", "Hôm nay, 20/07/2026, cho khỏi quên") },
+        { id: "jan", label: B("01/01/2026, to keep the year consistent", "01/01/2026, cho nhất quán cả năm") },
+      ],
+      recovery: {
+        today: B("Let's rethink that. From today means from 20 July — and July is not finished. If the run is rejected and recomputed, its payslips are charged an August rate for a July month, and nothing warns anybody: the figures simply come out slightly different from the ones already reviewed.",
+                 "Hãy nghĩ lại một chút. Từ hôm nay nghĩa là từ ngày 20/7 — mà tháng 7 chưa xong. Nếu đợt bị từ chối rồi tính lại, các phiếu sẽ chịu tỷ lệ của tháng 8 cho một kỳ tháng 7, và không có cảnh báo nào cả: con số chỉ đơn giản khác đi một chút so với bản đã soát xét."),
+        jan: B("Let's rethink that. Backdating to January would make the new rate the one in force for every month of the year — including four that have already been paid and reported. A retro line pays a difference; a backdated policy silently rewrites what the difference was.",
+               "Hãy nghĩ lại một chút. Lùi về tháng 1 sẽ khiến tỷ lệ mới trở thành tỷ lệ có hiệu lực cho mọi tháng trong năm — kể cả bốn tháng đã chi và đã báo cáo. Một dòng hồi tố chi phần chênh; một chính sách lùi ngày thì âm thầm viết lại chính phần chênh đó."),
+      },
+    },
+    {
+      id: "preview", target: "rep-slipline",
+      instruction: B("Read the impact on one real payslip", "Đọc tác động trên một phiếu lương thật"),
+      detail: B("Mai's BHYT goes from 180,000 ₫ to 240,000 ₫, her insurance total from 1,260,000 to 1,320,000, her taxable income from 2,020,000 down to 1,960,000, her thuế TNCN from 101,000 to 98,000 — and her net from 12,919,000 ₫ to 12,862,000 ₫.",
+                "BHYT của Mai đi từ 180.000 ₫ lên 240.000 ₫, tổng bảo hiểm từ 1.260.000 lên 1.320.000, thu nhập chịu thuế từ 2.020.000 xuống 1.960.000, thuế TNCN từ 101.000 xuống 98.000 — và thực nhận từ 12.919.000 ₫ còn 12.862.000 ₫."),
+      hint: B("Subtract the two nets before you read on: the answer is 57,000, and the reason it is not 60,000 is the whole point of this step.",
+              "Hãy trừ hai con số thực nhận trước khi đọc tiếp: đáp số là 57.000, và lý do nó không phải 60.000 chính là điều bước này muốn dạy."),
+    },
+    {
+      id: "consequence", target: "st-new", consequence: true,
+      instruction: B("Read what saving this record does", "Đọc xem việc lưu bản ghi này gây ra điều gì"),
+      detail: B("One policy serves every division, so this is not a change to Retail. The card names the scope, the way back and the thing to check, and the mission will not move until you have seen all three.",
+                "Một chính sách phục vụ mọi bộ phận, nên đây không phải thay đổi riêng cho Bán lẻ. Thẻ này nêu rõ phạm vi, lối quay lại và thứ cần kiểm tra, và nhiệm vụ sẽ không đi tiếp cho tới khi bạn đã xem cả ba."),
+    },
+    {
+      id: "commit", target: "st-roster",
+      instruction: B("Save the new policy, and end-date the old one", "Lưu chính sách mới, và đặt ngày kết thúc cho bản cũ"),
+      detail: B("Set 31/07/2026 as the end date on the 2026 policy. Two active policies with no end date between them is not an error the system reports — it simply resolves to one of them, and you will not know which until a payslip tells you.",
+                "Đặt 31/07/2026 làm ngày kết thúc cho chính sách 2026. Hai chính sách cùng bật mà không có ngày kết thúc không phải lỗi hệ thống báo — nó chỉ đơn giản chọn lấy một bản, và bạn sẽ không biết là bản nào cho tới khi một phiếu lương nói cho bạn biết."),
+      hint: B("Afterwards the roster should read like a timeline: 2025 ended, 2026 ending on 31/07, August active from 01/08.",
+              "Sau đó danh sách nên đọc ra như một dòng thời gian: bản 2025 đã kết thúc, bản 2026 kết thúc 31/07, bản tháng 8 hiệu lực từ 01/08."),
+    },
+    {
+      id: "undo", target: "st-roster", undo: true,
+      instruction: B("Now undo it: archive the new policy and reopen the old one", "Giờ hãy hoàn tác: lưu trữ chính sách mới và mở lại bản cũ"),
+      detail: B("Clear the end date on the 2026 policy and archive the August one, and the current policy is what it was this morning. Do it once here, because on a real tenant the undo is only this clean while no run has recomputed in between — after that, the records are back but the payslips are not.",
+                "Xoá ngày kết thúc trên chính sách 2026 và lưu trữ bản tháng 8, thế là chính sách hiện hành trở lại đúng như sáng nay. Hãy làm một lần ở đây, vì trên hệ thống thật việc hoàn tác chỉ gọn như vậy khi chưa có đợt nào tính lại ở giữa — sau đó thì bản ghi quay về được, còn phiếu lương thì không."),
+      hint: B("That last sentence is the real lesson of this mission: the records are reversible and the payslips they produced are not.",
+              "Chính câu cuối đó là bài học thật của nhiệm vụ này: bản ghi thì hoàn tác được, còn những phiếu lương chúng đã tạo ra thì không."),
+    },
+  ],
 };
 
 /* =============================================================================
@@ -1251,6 +1762,36 @@ const SCREEN_CTX = {
     next: B("Check the source period on each line. That field is what lets a closed month stay closed and still be reported correctly later.",
             "Kiểm tra kỳ gốc trên từng dòng. Chính trường đó giúp một kỳ đã đóng vẫn luôn đóng mà sau này vẫn báo cáo đúng."),
     chips: ["retroq", "fixerror", "whatpage"],
+  },
+
+  /* -- Setup ------------------------------------------------------------- */
+  formula: {
+    blurb: B("The visible rulebook: every payslip line for one division, as a named component with a formula you can read.",
+             "Bộ quy tắc nhìn thấy được: mỗi dòng phiếu lương của một bộ phận là một thành phần có tên, kèm công thức bạn đọc được."),
+    next: B("Read the component list first, then open the one behind the number you are asking about. Nothing here is live until a configuration is activated — and a simulation against last month is what tells you whether it should be.",
+            "Hãy đọc danh sách thành phần trước, rồi mở đúng thành phần đứng sau con số bạn đang thắc mắc. Không gì ở đây có hiệu lực cho tới khi một cấu hình được kích hoạt — và một lần mô phỏng trên tháng trước sẽ cho biết có nên kích hoạt hay không."),
+    chips: ["whysetup", "editlive", "whichconfig", "configvsstructure", "practice"],
+  },
+  structures: {
+    blurb: B("The legacy Odoo salary structures and their rules — kept because historical payslips still reference them.",
+             "Các cấu trúc lương và quy tắc Odoo thế hệ cũ — giữ lại vì phiếu lương lịch sử vẫn tham chiếu tới chúng."),
+    next: B("Read, do not build. New pay logic belongs in a formula configuration; what is here exists so that payslips from before the migration can still be explained.",
+            "Hãy đọc, đừng xây mới ở đây. Logic lương mới thuộc về cấu hình công thức; những gì ở đây tồn tại để các phiếu lương từ trước khi chuyển đổi vẫn giải thích được."),
+    chips: ["configvsstructure", "whysetup", "whatpage"],
+  },
+  statutory: {
+    blurb: B("The company's active insurance policy and tax table: BHXH, BHYT and BHTN rates and ceilings, and the thuế TNCN bands.",
+             "Chính sách bảo hiểm và biểu thuế đang hiệu lực của công ty: tỷ lệ và trần đóng BHXH, BHYT, BHTN, cùng các bậc thuế TNCN."),
+    next: B("Check that the rates on display are the ones currently in force — the table shows the active policy with the latest effective date. To change one, create a new policy record dated from the day the change applies; never edit the one in force.",
+            "Hãy kiểm tra các tỷ lệ đang hiển thị có đúng là tỷ lệ hiện hành không — bảng này hiển thị chính sách đang bật có ngày hiệu lực mới nhất. Muốn đổi một tỷ lệ, hãy tạo bản ghi chính sách mới với ngày hiệu lực đúng bằng ngày thay đổi có hiệu lực; đừng bao giờ sửa bản đang chạy."),
+    chips: ["changerate", "whichpolicy", "ceiling", "pitcalc", "bhxh"],
+  },
+  integrations: {
+    blurb: B("The connectors payroll data arrives through — an HR system, a time clock, the bank — with their field mappings and sync history.",
+             "Các đầu nối mà dữ liệu tính lương đi vào qua đó — hệ thống nhân sự, máy chấm công, ngân hàng — kèm ánh xạ trường và lịch sử đồng bộ."),
+    next: B("Read the last-sync time on every connector, not just its status. Connected describes the credentials; the sync time describes the data, and a connector that stopped looks exactly like one that is working.",
+            "Hãy đọc thời điểm đồng bộ gần nhất của từng đầu nối, không chỉ đọc trạng thái. Đã kết nối nói về thông tin đăng nhập; thời điểm đồng bộ mới nói về dữ liệu, và một đầu nối đã ngừng chạy trông y hệt một đầu nối đang chạy tốt."),
+    chips: ["syncbroken", "whysetup", "whatnext"],
   },
 };
 
@@ -1467,7 +2008,11 @@ const QA = [
   },
 
   {
-    id: "bhxh", screens: ["payslips", "runpayroll"],
+    /* Also answers on the statutory screens, where the 8% is a cell in a table
+       rather than a line on a slip. Same fact, two surfaces — and the reader
+       who asks "explain BHXH" while looking at the policy deserves the worked
+       example, not a definition. */
+    id: "bhxh", screens: ["payslips", "runpayroll", "statutory"],
     label: B("Explain BHXH on this payslip", "Giải thích BHXH trên phiếu lương này"),
     match: ["what is bhxh", "explain bhxh", "social insurance", "bao hiem xa hoi", "bảo hiểm xã hội"],
     showMe: ["ps-breakdown"],
@@ -1524,8 +2069,8 @@ const QA = [
     match: ["let me practise", "let me practice", "thực hành", "lam thu", "try it safely"],
     practice: "m1",
     blocks: [
-      { k: "p", v: B("Good instinct. The practice missions run on a fictional 48-person company — not {{companyDisplayName}} — with no server behind it, so nothing you do can reach a real employee, payslip or pay run. Two are playable: computing a run, and reviewing one at an approval gate.",
-                     "Bản năng tốt. Các nhiệm vụ thực hành chạy trên một công ty giả lập 48 người — không phải {{companyDisplayName}} — và không có máy chủ phía sau, nên mọi thao tác đều không chạm tới nhân viên, phiếu lương hay đợt lương thật. Hai nhiệm vụ chơi được: tính một đợt lương, và soát xét một đợt ở cổng phê duyệt.") },
+      { k: "p", v: B("Good instinct. The practice missions run on a fictional 48-person company — not {{companyDisplayName}} — with no server behind it, so nothing you do can reach a real employee, payslip or pay run. Three are playable: computing a run, reviewing one at an approval gate, and applying a statutory rate change.",
+                     "Bản năng tốt. Các nhiệm vụ thực hành chạy trên một công ty giả lập 48 người — không phải {{companyDisplayName}} — và không có máy chủ phía sau, nên mọi thao tác đều không chạm tới nhân viên, phiếu lương hay đợt lương thật. Ba nhiệm vụ chơi được: tính một đợt lương, soát xét một đợt ở cổng phê duyệt, và áp dụng một thay đổi tỷ lệ luật định.") },
       { k: "ok", v: B("You can fail safely there. The seeded anomaly is always present, so the judgement it teaches is the same one every time — and getting it wrong costs a recovery message rather than a salary.",
                       "Bạn được phép sai ở đó. Điểm bất thường được cài sẵn luôn có mặt, nên phán đoán mà nó dạy luôn là một, và làm sai chỉ tốn một lời gợi ý quay lại chứ không tốn một khoản lương.") },
       { k: "src", v: B("The practice missions in the Journey.",
@@ -1546,6 +2091,192 @@ const QA = [
                        "Điều tôi có thể chỉ cho bạn là các con số đến từ đâu: tỷ lệ BHXH, BHYT, BHTN và biểu thuế TNCN, cùng cấu hình công thức theo từng bộ phận quyết định tỷ lệ nào áp cho ai. Nếu một con số trông sai, đó là nơi cần xem — tìm ra một con số sai là việc đáng làm, còn tìm một con số nhỏ hơn thì không phải cùng một việc.") },
       { k: "src", v: B("The statutory rates and the division's formula configuration.",
                        "Các tỷ lệ luật định và cấu hình công thức của bộ phận.") },
+    ],
+  },
+
+  /* ===========================================================================
+     SETUP INTENTS.
+
+     Appended rather than interleaved: the generator writes records in this
+     order, so inserting into the middle would rewrite every intent id after the
+     insertion point for no content reason.
+     ======================================================================== */
+  {
+    id: "whysetup", screens: ["formula", "structures", "statutory", "integrations"],
+    dynamic: "screenCtx",
+    label: B("Why do I have to set this up?", "Vì sao tôi phải thiết lập cái này?"),
+    match: ["why do i need to configure", "why does setup exist", "what is setup for",
+            "tai sao phai cau hinh", "vì sao phải thiết lập", "cau hinh de lam gi"],
+    blocks: [
+      { k: "p", v: B("Because a payroll system that decides anything for you is a payroll system you cannot defend. Every number on a payslip comes from something written down here: a component in a formula configuration, a rate on a statutory policy, a field mapped from a connected system.",
+                     "Vì một hệ thống tính lương tự quyết thay bạn là hệ thống bạn không bảo vệ được. Mọi con số trên phiếu lương đều đến từ một thứ đã được ghi lại ở đây: một thành phần trong cấu hình công thức, một tỷ lệ trên chính sách bảo hiểm, một trường được ánh xạ từ hệ thống đã kết nối.") },
+      { k: "steps", v: [
+        { t: B("Formula Engine — how each line is computed, for one division", "Công thức lương — mỗi dòng được tính thế nào, cho một bộ phận"), a: "fs-components" },
+        { t: B("Statutory — the rates the law sets, for the whole company", "Bảo hiểm & Thuế — các tỷ lệ do luật định, cho cả công ty"), a: "st-rates" },
+        { t: B("Integrations — how the inputs arrive without anybody retyping them", "Tích hợp — dữ liệu đầu vào về tới nơi mà không ai phải gõ lại"), a: "ig-roster" },
+      ] },
+      { k: "ok", v: B("Setup is done rarely and read often. Most of the time you are here to answer a question, not to change anything — and reading is always safe.",
+                      "Thiết lập ít khi phải sửa nhưng thường xuyên phải đọc. Phần lớn thời gian bạn tới đây để trả lời một câu hỏi, không phải để thay đổi gì — và đọc thì luôn an toàn.") },
+      { k: "src", v: B("The Setup section of the sidebar: formula configurations, statutory policies and connectors.",
+                       "Phần Thiết lập trên thanh bên: cấu hình công thức, chính sách bảo hiểm và các đầu nối.") },
+    ],
+  },
+
+  {
+    id: "changerate", screens: ["statutory"],
+    label: B("What happens if I change this rate?", "Nếu tôi đổi tỷ lệ này thì sao?"),
+    match: ["what happens if i change this rate", "change a contribution rate", "edit the rate",
+            "doi ty le", "đổi tỷ lệ đóng", "sua ty le bao hiem"],
+    showMe: ["st-new"],
+    practice: "m4",
+    blocks: [
+      { k: "p", v: B("It re-prices every future payslip in <b>every division</b> — one insurance policy serves the whole company, not one configuration. For a BHYT employee share moving from 1.5% to 2.0%, Mai alone loses 57,000 ₫ of net a month, and every other employee loses their own version of that.",
+                     "Nó tính lại giá cho mọi phiếu lương tương lai của <b>mọi bộ phận</b> — một chính sách bảo hiểm phục vụ cả công ty, không phải một cấu hình. Với phần BHYT của người lao động tăng từ 1,5% lên 2,0%, riêng Mai đã mất 57.000 ₫ thực nhận mỗi tháng, và mỗi nhân viên khác đều mất phần tương ứng của họ.") },
+      { k: "warn", v: B("Do not edit the policy that is in force. There is no version history to fall back on, and if an open run recomputes it will be charged rates that were not in force for its own period.",
+                        "Đừng sửa chính sách đang có hiệu lực. Không có lịch sử phiên bản nào để quay lại, và nếu một đợt đang mở tính lại thì nó sẽ chịu tỷ lệ chưa có hiệu lực trong kỳ của chính nó.") },
+      { k: "steps", v: [
+        { t: B("Create a NEW insurance policy record, with its own code", "Tạo một bản ghi chính sách bảo hiểm MỚI, với mã riêng"), a: "st-new" },
+        { t: B("Set its effective date to the first day the change applies — after every open period", "Đặt ngày hiệu lực là ngày đầu tiên thay đổi có hiệu lực — sau mọi kỳ đang mở"), a: "st-effective" },
+        { t: B("End-date the outgoing policy, so exactly one is in force on any day", "Đặt ngày kết thúc cho chính sách cũ, để mỗi ngày chỉ có đúng một bản hiệu lực"), a: "st-roster" },
+        { t: B("Read the effect on one real payslip before you save", "Đọc tác động trên một phiếu lương thật trước khi lưu"), a: "ps-breakdown" },
+      ] },
+      { k: "src", v: B("The insurance policy record: its rates, its effective date and its end date.",
+                       "Bản ghi chính sách bảo hiểm: các tỷ lệ, ngày hiệu lực và ngày kết thúc của nó.") },
+    ],
+  },
+
+  {
+    id: "whichpolicy", screens: ["statutory", "payslips"],
+    label: B("Which policy applies today?", "Hôm nay chính sách nào đang áp dụng?"),
+    match: ["which policy is in force", "which rates apply now", "current policy",
+            "chinh sach nao dang ap dung", "chính sách nào đang hiệu lực", "ty le hien hanh"],
+    showMe: ["st-rates", "st-roster"],
+    blocks: [
+      { k: "p", v: B("The one with the <b>latest effective date</b> among the policies that are still active. Not the most recently created record and not the last one edited — the effective date is the field that decides, which is why it is the field to check first.",
+                     "Bản có <b>ngày hiệu lực mới nhất</b> trong số các chính sách còn đang bật. Không phải bản ghi mới tạo nhất, cũng không phải bản sửa gần nhất — ngày hiệu lực mới là trường quyết định, nên đó là trường cần kiểm tra đầu tiên.") },
+      { k: "p", v: B("The rates table at the top of this screen always shows that policy, with its effective date beside the heading. The roster below shows all of them, so a change reads as a history: one record ended, the next one starting.",
+                     "Bảng tỷ lệ ở đầu màn hình này luôn hiển thị đúng chính sách đó, kèm ngày hiệu lực ngay cạnh tiêu đề. Danh sách bên dưới hiển thị tất cả, nên một thay đổi đọc ra như một lịch sử: bản này kết thúc, bản kế tiếp bắt đầu.") },
+      { k: "warn", v: B("Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip.",
+                        "Hai chính sách cùng bật mà không có ngày kết thúc phân định thì không bị báo lỗi. Hệ thống chỉ chọn lấy một bản, và bạn biết là bản nào qua một phiếu lương.") },
+      { k: "src", v: B("The active insurance policies, ordered by effective date.",
+                       "Các chính sách bảo hiểm đang bật, sắp theo ngày hiệu lực.") },
+    ],
+  },
+
+  {
+    id: "ceiling", screens: ["statutory", "payslips"],
+    label: B("What is the insurance base and the ceiling?", "Mức đóng bảo hiểm và trần đóng là gì?"),
+    match: ["what is the insurance base", "contribution ceiling", "capped at",
+            "muc dong bao hiem", "trần đóng", "tran bao hiem"],
+    showMe: ["st-rates"],
+    simpler: B("Insurance is not worked out from what you earned this month. It is worked out from the salary written in your contract, and only up to a limit — so a busy month with a lot of overtime does not change it, and a very high salary stops adding to it after a point.",
+               "Bảo hiểm không tính từ số bạn kiếm được trong tháng. Nó tính từ mức lương ghi trong hợp đồng, và chỉ tính tới một mức giới hạn — nên một tháng bận rộn nhiều tăng ca không làm nó thay đổi, và lương rất cao thì qua một ngưỡng cũng không làm nó tăng thêm."),
+    blocks: [
+      { k: "p", v: B("Contributions are charged on the <b>registered insurance base</b> — normally the contract base salary. For Mai that is 12,000,000 ₫, not her gross of 14,280,000 ₫, which is why her 1,500,000 ₫ of overtime moved her tax and not a đồng of her insurance.",
+                     "Bảo hiểm tính trên <b>mức lương đóng bảo hiểm đã đăng ký</b> — thường là lương cơ bản theo hợp đồng. Với Mai là 12.000.000 ₫, không phải tổng thu nhập 14.280.000 ₫, nên 1.500.000 ₫ tăng ca của cô ấy làm thay đổi thuế mà không làm thay đổi một đồng bảo hiểm nào.") },
+      { k: "calc" },
+      { k: "p", v: B("Each scheme also carries a <b>ceiling</b> in the last column of the rates table — the maximum base it is charged on. Above it the deduction stops growing, so two employees on very different salaries can pay exactly the same BHXH.",
+                     "Mỗi loại bảo hiểm còn có một <b>mức trần</b> ở cột cuối của bảng tỷ lệ — mức đóng tối đa mà nó được tính trên đó. Vượt mức này thì khoản khấu trừ không tăng nữa, nên hai nhân viên lương rất khác nhau vẫn có thể đóng BHXH bằng nhau.") },
+      { k: "src", v: B("The active insurance policy's rates and ceilings, and Mai's July payslip.",
+                       "Tỷ lệ và trần đóng của chính sách bảo hiểm đang hiệu lực, và phiếu lương tháng 7 của Mai.") },
+    ],
+  },
+
+  {
+    id: "pitcalc", screens: ["statutory", "payslips"],
+    label: B("How is thuế TNCN worked out?", "Thuế TNCN được tính thế nào?"),
+    match: ["how is pit calculated", "personal income tax calculation", "tax brackets",
+            "thue tncn tinh the nao", "cách tính thuế thu nhập", "giam tru gia canh"],
+    showMe: ["st-slabs", "ps-breakdown"],
+    simpler: B("First take off the insurance. Then take off a fixed allowance for yourself, and another for each person who depends on you. Whatever is left is what gets taxed — and the rate starts low and only rises on the part above each band.",
+               "Trước hết trừ bảo hiểm. Rồi trừ một khoản cố định cho bản thân, và thêm một khoản nữa cho mỗi người phụ thuộc. Phần còn lại mới là phần chịu thuế — và thuế suất bắt đầu ở mức thấp, chỉ tăng lên với phần vượt qua từng bậc."),
+    blocks: [
+      { k: "p", v: B("Taxable income is gross, less insurance, less <b>11,000,000 ₫</b> personal relief and <b>4,400,000 ₫</b> for each dependant. Only what is left goes into the bands, and the bands are progressive: the first 5,000,000 ₫ is taxed at 5%, and each higher band applies only to the part inside it.",
+                     "Thu nhập chịu thuế là tổng thu nhập, trừ bảo hiểm, trừ <b>11.000.000 ₫</b> giảm trừ bản thân và <b>4.400.000 ₫</b> cho mỗi người phụ thuộc. Chỉ phần còn lại mới đi vào biểu thuế, và biểu thuế là luỹ tiến: 5.000.000 ₫ đầu tiên chịu 5%, và mỗi bậc cao hơn chỉ áp cho phần nằm trong bậc đó.") },
+      { k: "p", v: B("Mai's July: 14,280,000 − 1,260,000 insurance − 11,000,000 relief = <b>2,020,000 ₫</b> taxable, entirely inside the 5% band, so her tax is <b>101,000 ₫</b>. A dependant would take another 4,400,000 ₫ off and leave her paying almost nothing.",
+                     "Tháng 7 của Mai: 14.280.000 − 1.260.000 bảo hiểm − 11.000.000 giảm trừ = <b>2.020.000 ₫</b> chịu thuế, nằm trọn trong bậc 5%, nên thuế là <b>101.000 ₫</b>. Thêm một người phụ thuộc sẽ trừ tiếp 4.400.000 ₫ và cô ấy gần như không phải nộp gì.") },
+      { k: "warn", v: B("Dependants are registered, not assumed. A relief that was never registered is a tax bill the employee did not need to pay, and it is the single most common thing an employee is owed and never asks for.",
+                        "Người phụ thuộc phải được đăng ký, không mặc định có. Một khoản giảm trừ chưa từng đăng ký là một khoản thuế mà nhân viên lẽ ra không phải nộp, và đây là thứ nhân viên bị thiệt phổ biến nhất mà lại chẳng mấy ai hỏi tới.") },
+      { k: "src", v: B("The active tax table: its bands, its personal deduction and its dependant deduction.",
+                       "Biểu thuế đang hiệu lực: các bậc, mức giảm trừ bản thân và mức giảm trừ người phụ thuộc.") },
+    ],
+  },
+
+  {
+    id: "configvsstructure", screens: ["formula", "structures"],
+    label: B("Formula configuration or salary structure?", "Cấu hình công thức hay cấu trúc lương?"),
+    match: ["difference between structure and config", "which one do i use", "legacy structures",
+            "cau truc luong khac gi", "khác nhau cấu trúc và cấu hình", "dung cai nao"],
+    showMe: ["fs-components", "sr-roster"],
+    blocks: [
+      { k: "p", v: B("A <b>formula configuration</b> is where pay logic lives now: named components, readable formulas, a live preview and a simulation. A <b>salary structure</b> is the older mechanism, and it is kept for one reason — payslips produced before the migration still point at it.",
+                     "<b>Cấu hình công thức</b> là nơi logic lương nằm ở hiện tại: các thành phần có tên, công thức đọc được, xem trước trực tiếp và mô phỏng. <b>Cấu trúc lương</b> là cơ chế thế hệ trước, và được giữ lại vì đúng một lý do — phiếu lương tạo trước khi chuyển đổi vẫn trỏ tới nó.") },
+      { k: "ok", v: B("New logic goes in a configuration, always. Run Payroll selects a configuration when you choose a division, so a rule added to a structure is a rule the division never sees.",
+                      "Logic mới luôn đặt trong một cấu hình. Chạy bảng lương chọn một cấu hình khi bạn chọn bộ phận, nên một quy tắc thêm vào cấu trúc là quy tắc mà bộ phận đó không bao giờ nhìn thấy.") },
+      { k: "warn", v: B("Do not delete a structure that shows zero employees. Zero means nobody is paid by it today, not that nothing references it — payslips from three years ago still do, and a report over those months needs it.",
+                        "Đừng xoá một cấu trúc đang hiện số nhân viên bằng không. Bằng không nghĩa là hôm nay không ai được trả theo nó, chứ không phải không gì tham chiếu tới nó — phiếu lương ba năm trước vẫn tham chiếu, và một báo cáo trên các tháng đó vẫn cần nó.") },
+      { k: "src", v: B("The division's formula configuration, and the salary structures kept for historical payslips.",
+                       "Cấu hình công thức của bộ phận, và các cấu trúc lương giữ lại cho phiếu lương lịch sử.") },
+    ],
+  },
+
+  {
+    id: "editlive", screens: ["formula"],
+    label: B("Is it safe to edit a live configuration?", "Sửa một cấu hình đang chạy có an toàn không?"),
+    match: ["can i edit this config", "is it safe to change the formula", "edit a live configuration",
+            "sua cau hinh dang chay", "sửa công thức đang dùng", "co an toan khong"],
+    showMe: ["fs-deps", "fs-simulate"],
+    practice: "m5",
+    blocks: [
+      { k: "p", v: B("It is allowed, and it reaches further than it looks: every payslip computed by this configuration from now on, for the whole division — and any run still in draft that gets recomputed, including one for a month you thought was finished with.",
+                     "Được phép, và tác động xa hơn vẻ ngoài của nó: mọi phiếu lương do cấu hình này tính từ giờ trở đi, cho cả bộ phận — và bất kỳ đợt nào còn ở Nháp mà được tính lại, kể cả đợt của một tháng bạn tưởng đã xong.") },
+      { k: "steps", v: [
+        { t: B("Read the dependency panel for anything you are renaming or removing", "Đọc bảng phụ thuộc cho bất cứ thứ gì bạn định đổi tên hoặc xoá"), a: "fs-deps" },
+        { t: B("Preview against a sample employee — the arithmetic, on one person", "Xem trước trên một nhân viên mẫu — phép tính, trên một con người"), a: "fs-preview" },
+        { t: B("Simulate against last month, which is the same change across everybody", "Mô phỏng trên tháng trước, tức là cùng thay đổi đó trên tất cả mọi người"), a: "fs-simulate" },
+        { t: B("Apply it once no run for an earlier period is still open", "Áp dụng khi không còn đợt nào của kỳ trước đó đang mở") },
+      ] },
+      { k: "warn", v: B("Renaming a component that other formulas depend on is the quiet one. The dependency panel names them; a formula that lost its input does not always fail loudly.",
+                        "Đổi tên một thành phần mà công thức khác đang phụ thuộc là lỗi âm thầm nhất. Bảng phụ thuộc liệt kê chúng ra; một công thức mất đầu vào không phải lúc nào cũng báo lỗi rõ ràng.") },
+      { k: "src", v: B("The configuration's dependency map, and its preview and simulation tools.",
+                       "Bản đồ phụ thuộc của cấu hình, cùng các công cụ xem trước và mô phỏng của nó.") },
+    ],
+  },
+
+  {
+    id: "whichconfig", screens: ["formula", "runpayroll"],
+    label: B("Which configuration does a division use?", "Bộ phận này dùng cấu hình nào?"),
+    match: ["which config does this division use", "find the right configuration", "config code",
+            "bo phan nay dung cau hinh nao", "mã cấu hình", "tim cau hinh"],
+    showMe: ["fs-config", "pw-division"],
+    blocks: [
+      { k: "p", v: B("One per division and cycle, and the code says which: the division's name, then <b>END</b> for the end-of-month settlement or <b>MID</b> for a mid-cycle advance. On the demo world they read DEMO_RETAIL_END, DEMO_LOGISTICS_MID and so on — one naming rule, twelve configurations.",
+                     "Mỗi bộ phận và mỗi chu kỳ có một cấu hình, và chính mã cho biết là cái nào: tên bộ phận, rồi <b>END</b> cho quyết toán cuối tháng hoặc <b>MID</b> cho khoản tạm ứng giữa kỳ. Trên bản demo, chúng đọc là DEMO_RETAIL_END, DEMO_LOGISTICS_MID và tương tự — một quy ước đặt tên, mười hai cấu hình.") },
+      { k: "p", v: B("You do not have to look it up before running a payroll: choosing the division in Run Payroll selects the configuration, and prints its name in the scope panel. Reading that name before you compute is the check — it is also the only place the wrong-division mistake is visible.",
+                     "Bạn không cần tra cứu trước khi chạy lương: chọn bộ phận trong Chạy bảng lương là đã chọn cấu hình, và tên của nó được in ở bảng phạm vi. Đọc cái tên đó trước khi tính chính là bước kiểm tra — và cũng là nơi duy nhất nhìn thấy được lỗi chọn nhầm bộ phận.") },
+      { k: "src", v: B("The configuration codes on the divisions, and the scope panel in Run Payroll.",
+                       "Mã cấu hình trên các bộ phận, và bảng phạm vi trong Chạy bảng lương.") },
+    ],
+  },
+
+  {
+    id: "syncbroken", screens: ["integrations", "import"],
+    label: B("A connector has stopped syncing. What now?", "Một đầu nối đã ngừng đồng bộ. Giờ làm gì?"),
+    match: ["connector not syncing", "sync failed", "integration error", "staged records",
+            "dong bo loi", "đầu nối lỗi", "khong dong bo duoc"],
+    showMe: ["ig-roster", "im-cta"],
+    blocks: [
+      { k: "p", v: B("Read the <b>last sync time</b> before the status. Connected describes the credentials; the sync time describes the data — and a connector that quietly stopped nine days ago still says connected.",
+                     "Hãy đọc <b>thời điểm đồng bộ gần nhất</b> trước khi đọc trạng thái. Đã kết nối nói về thông tin đăng nhập; thời điểm đồng bộ mới nói về dữ liệu — và một đầu nối âm thầm ngừng chạy chín ngày trước vẫn hiện là đã kết nối.") },
+      { k: "steps", v: [
+        { t: B("Find the connector whose staged count is climbing — those rows never became inputs", "Tìm đầu nối có số bản ghi chờ đang tăng — những dòng đó chưa bao giờ thành dữ liệu đầu vào"), a: "ig-roster" },
+        { t: B("Fix it at the source, or import the month's file by hand through the guided flow", "Sửa từ hệ thống nguồn, hoặc nhập tệp của tháng bằng tay qua luồng có hướng dẫn"), a: "im-cta" },
+        { t: B("Check the eligible count in Run Payroll before you compute — it is the second alarm", "Kiểm tra số nhân viên đủ điều kiện trong Chạy bảng lương trước khi tính — đó là chuông báo thứ hai"), a: "pw-summary" },
+      ] },
+      { k: "warn", v: B("Do this before payroll week, not during it. A month of attendance sitting in staging becomes a run that computes cleanly on inputs that are three weeks old, and nothing about it looks wrong.",
+                        "Hãy làm việc này trước tuần tính lương, không phải trong tuần đó. Cả một tháng chấm công nằm lại ở vùng chờ sẽ tạo ra một đợt lương tính rất sạch trên dữ liệu đã cũ ba tuần, và nhìn vào không thấy gì bất thường.") },
+      { k: "src", v: B("The connector list with its sync history and staged-record counts.",
+                       "Danh sách đầu nối kèm lịch sử đồng bộ và số bản ghi đang chờ.") },
     ],
   },
 ];
@@ -1722,6 +2453,107 @@ const COLUMNS = {
      B("The furthest-back month any line here is correcting. The older it is, the more reporting has already been done on the original figure — which is exactly why the correction is a retro line and never an edit to that month.",
        "Tháng xa nhất mà một dòng ở đây đang hiệu chỉnh. Càng lâu thì càng nhiều báo cáo đã được lập trên con số gốc — và đó chính là lý do việc sửa phải là một dòng hồi tố chứ không bao giờ là sửa vào tháng đó.")],
   ],
+
+  /* -- Setup ------------------------------------------------------------- */
+  formula: [
+    ["components",
+     B("Components", "Thành phần"),
+     B("Every named piece of a division's rulebook: the inputs, the earnings, the deductions and the totals. A payslip line exists because a component here produced it, so a missing line is a missing component rather than a bug in the compute.",
+       "Từng phần có tên trong bộ quy tắc của một bộ phận: đầu vào, các khoản thu nhập, các khoản khấu trừ và các tổng. Một dòng trên phiếu lương tồn tại vì có một thành phần ở đây tạo ra nó, nên thiếu dòng nghĩa là thiếu thành phần chứ không phải lỗi khi tính.")],
+    ["depends_on",
+     B("Depends on", "Phụ thuộc vào"),
+     B("The components this one reads to produce its own value. Change any of them and this line moves — which makes this the list to check before you edit an input rather than after somebody notices the output.",
+       "Những thành phần mà thành phần này đọc vào để tạo ra giá trị của chính nó. Đổi bất kỳ cái nào thì dòng này thay đổi theo — nên đây là danh sách cần kiểm tra trước khi sửa một đầu vào, chứ không phải sau khi có người phát hiện kết quả sai.")],
+    ["used_by",
+     B("Used by", "Được dùng bởi"),
+     B("The components that read THIS one. It is the blast radius of a rename or a deletion, written down: everything listed here would lose an input, and a formula that lost an input does not always fail loudly.",
+       "Những thành phần đọc vào chính thành phần NÀY. Đây là phạm vi ảnh hưởng của việc đổi tên hay xoá, đã được ghi rõ: mọi thứ liệt kê ở đây sẽ mất một đầu vào, và một công thức mất đầu vào không phải lúc nào cũng báo lỗi rõ ràng.")],
+    ["live_preview",
+     B("Live preview", "Xem trước trực tiếp"),
+     B("The whole configuration evaluated against one sample employee, line by line. It is the cheapest possible check on an edit — and it is one person, which is why it is a first look rather than the evidence.",
+       "Toàn bộ cấu hình được chạy trên một nhân viên mẫu, theo từng dòng. Đây là cách kiểm tra rẻ nhất cho một lần sửa — và chỉ trên một người, nên nó là cái nhìn đầu tiên chứ chưa phải bằng chứng.")],
+    ["simulate",
+     B("Simulate", "Mô phỏng"),
+     B("The edited configuration run against a period that has already been paid, so you can compare what it would have produced with what was actually paid. This is the evidence the preview is not: everybody, not one person.",
+       "Cấu hình đã sửa được chạy trên một kỳ lương đã chi, để bạn so kết quả nó sẽ tạo ra với số đã thực trả. Đây mới là bằng chứng mà bản xem trước chưa phải: trên tất cả mọi người, không phải một người.")],
+  ],
+
+  statutory: [
+    ["contributions",
+     B("Contributions", "Tổng đóng bảo hiểm"),
+     B("The total of both legs — what employees have deducted plus what the company pays on top — for the period on display. It is a cost figure, not a deduction figure, so it is roughly three times what appears on the payslips.",
+       "Tổng của cả hai phần — khoản khấu trừ của người lao động cộng khoản doanh nghiệp đóng thêm — trong kỳ đang hiển thị. Đây là con số chi phí, không phải con số khấu trừ, nên nó lớn hơn phần hiện trên phiếu lương khoảng ba lần.")],
+    ["employee_leg",
+     B("Employee leg", "Phần người lao động"),
+     B("The part deducted from payslips — 10.5% of the registered insurance base under the current policy. This is the only half an employee ever sees, and it is the half they ask about.",
+       "Phần được khấu trừ trên phiếu lương — 10,5% của mức lương đóng bảo hiểm đã đăng ký theo chính sách hiện hành. Đây là nửa duy nhất mà nhân viên nhìn thấy, và cũng là nửa họ hỏi tới.")],
+    ["employer_leg",
+     B("Employer leg", "Phần doanh nghiệp"),
+     B("The part the company pays on top of salary — 21.5% of the same base, twice what the employee pays. It never appears in anybody's net, which is why it is invisible in every conversation about pay unless somebody puts it on the table.",
+       "Phần doanh nghiệp đóng thêm ngoài lương — 21,5% trên cùng mức đóng đó, gấp đôi phần người lao động. Nó không bao giờ xuất hiện trong thực nhận của ai, nên vô hình trong mọi cuộc trao đổi về lương trừ khi có người chủ động nêu ra.")],
+    ["policies",
+     B("Policies", "Chính sách"),
+     B("How many insurance policy records exist, active and archived together. More than one is normal and healthy: a rate change is a new record, so the count grows every time the law does.",
+       "Có bao nhiêu bản ghi chính sách bảo hiểm, tính cả đang bật và đã lưu trữ. Nhiều hơn một là bình thường và lành mạnh: đổi tỷ lệ là tạo bản ghi mới, nên con số này tăng mỗi lần pháp luật thay đổi.")],
+    ["tax_tables",
+     B("Tax tables", "Biểu thuế"),
+     B("One per tax year, holding the bands and the two relief figures. Last year's stays because last year's payslips were computed by it and still have to be explainable.",
+       "Mỗi năm tính thuế một biểu, chứa các bậc thuế và hai mức giảm trừ. Biểu của năm ngoái vẫn được giữ vì phiếu lương năm ngoái được tính theo nó và vẫn phải giải thích được.")],
+    ["dependents",
+     B("Dependents", "Người phụ thuộc"),
+     B("Registered dependants across the company, each worth 4,400,000 ₫ a month off taxable income. Registration is the point: an unregistered dependant is relief the employee is entitled to and is not getting.",
+       "Số người phụ thuộc đã đăng ký trên toàn công ty, mỗi người giảm trừ 4.400.000 ₫ mỗi tháng vào thu nhập chịu thuế. Mấu chốt là việc đăng ký: một người phụ thuộc chưa đăng ký là khoản giảm trừ mà nhân viên có quyền hưởng nhưng không được hưởng.")],
+  ],
+
+  structures: [
+    ["structures",
+     B("Structures", "Cấu trúc"),
+     B("Legacy Odoo salary structures still held by this company. They are history rather than configuration: new pay logic belongs in a formula configuration, and these exist so old payslips can still be explained.",
+       "Các cấu trúc lương Odoo thế hệ cũ mà công ty này còn giữ. Chúng là lịch sử chứ không phải cấu hình: logic lương mới thuộc về cấu hình công thức, còn những cái này tồn tại để phiếu lương cũ vẫn giải thích được.")],
+    ["salary_rules",
+     B("Salary rules", "Quy tắc lương"),
+     B("The individual rules inside those structures — the older equivalent of a component. Reading one tells you how a payslip from before the migration got its number.",
+       "Từng quy tắc bên trong các cấu trúc đó — tương đương thành phần ở thế hệ trước. Đọc một quy tắc là biết một phiếu lương từ trước khi chuyển đổi đã ra con số đó bằng cách nào.")],
+    ["categories",
+     B("Categories", "Nhóm quy tắc"),
+     B("How the rules are grouped for reporting — basic, allowance, deduction, net. The grouping is what a payslip's subtotals are built from, which is why two structures with the same rules can still print differently.",
+       "Cách các quy tắc được nhóm lại để báo cáo — lương cơ bản, phụ cấp, khấu trừ, thực nhận. Chính cách nhóm này tạo ra các tổng phụ trên phiếu lương, nên hai cấu trúc có cùng quy tắc vẫn có thể in ra khác nhau.")],
+    ["employees_covered",
+     B("Employees covered", "Nhân viên áp dụng"),
+     B("How many people are still paid through a structure rather than a formula configuration. On a migrated company this trends to zero, and zero is the signal that a division has finished moving — not that the structure can be deleted.",
+       "Còn bao nhiêu người được trả lương qua cấu trúc thay vì qua cấu hình công thức. Ở một công ty đã chuyển đổi, con số này tiến về không, và không là dấu hiệu một bộ phận đã chuyển xong — chứ không phải dấu hiệu có thể xoá cấu trúc đó.")],
+    ["countries",
+     B("Countries", "Quốc gia"),
+     B("How many country rule sets are represented here. A structure carries its country's statutory assumptions, so a structure from the wrong country is wrong in ways that do not look wrong.",
+       "Có bao nhiêu bộ quy tắc theo quốc gia đang hiện diện ở đây. Mỗi cấu trúc mang theo các giả định luật định của quốc gia đó, nên một cấu trúc sai quốc gia sẽ sai theo cách nhìn vào không thấy sai.")],
+  ],
+
+  integrations: [
+    ["connectors",
+     B("Connectors", "Đầu nối"),
+     B("Configured links to a source system that can pull data in without anybody retyping it — an HR system, a time clock, the bank. Each one is a place a wrong row can enter payroll without passing a human.",
+       "Các kết nối đã cấu hình tới hệ thống nguồn, có thể kéo dữ liệu về mà không ai phải gõ lại — hệ thống nhân sự, máy chấm công, ngân hàng. Mỗi đầu nối là một cửa để một dòng sai có thể vào hệ thống lương mà không qua tay người nào.")],
+    ["connected",
+     B("Connected", "Đã kết nối"),
+     B("How many connectors currently hold working credentials. It says nothing about whether data is arriving: connected describes the login, and the last-sync time describes the data.",
+       "Bao nhiêu đầu nối hiện có thông tin đăng nhập còn dùng được. Nó không nói gì về việc dữ liệu có đang về hay không: đã kết nối nói về đăng nhập, còn thời điểm đồng bộ gần nhất mới nói về dữ liệu.")],
+    ["errors",
+     B("Errors", "Lỗi"),
+     B("Connectors whose last attempt failed. One here in the week before payroll is a month of inputs that will not arrive — and the payslips computed without them will look perfectly normal.",
+       "Các đầu nối có lần chạy gần nhất thất bại. Một lỗi ở đây trong tuần trước kỳ lương là cả một tháng dữ liệu đầu vào sẽ không về — và những phiếu lương tính thiếu chúng vẫn trông hoàn toàn bình thường.")],
+    ["synced_records",
+     B("Synced records", "Bản ghi đã đồng bộ"),
+     B("How many records have come through successfully. Compare it with last month rather than reading it alone: a number that stopped growing is a connector that stopped working.",
+       "Bao nhiêu bản ghi đã về thành công. Hãy so với tháng trước thay vì đọc riêng con số này: một con số ngừng tăng là một đầu nối đã ngừng chạy.")],
+    ["field_mappings",
+     B("Field mappings", "Ánh xạ trường"),
+     B("How many fields in the source system are wired to a field here. A mapping that was never made is a column that silently arrives empty, and the payslip line it feeds simply computes on zero.",
+       "Có bao nhiêu trường ở hệ thống nguồn được nối tới một trường ở đây. Một ánh xạ chưa từng được tạo là một cột âm thầm về rỗng, và dòng phiếu lương ăn theo nó chỉ đơn giản tính trên số không.")],
+    ["staged_records",
+     B("Staged records", "Bản ghi đang chờ"),
+     B("Rows that arrived but have not been taken into payroll yet. A count that is climbing is the clearest single sign of a broken sync — those rows are somebody's attendance, waiting.",
+       "Các dòng đã về nhưng chưa được đưa vào hệ thống lương. Con số này tăng dần là dấu hiệu rõ nhất của một đầu nối hỏng — những dòng đó là chấm công của ai đó, đang nằm chờ.")],
+  ],
 };
 
 /* =============================================================================
@@ -1742,6 +2574,7 @@ const PRACTICE_ANCHORS = {
   "rep-dash-kpis": "The replica Dashboard's KPI row. Context only — Phase A teaches the Pay Run section.",
   "rep-dash-runs": "The replica Dashboard's recent-runs list.",
   "rep-pipeline": "The lifecycle stepper: draft → level0 → level1 → level2 → done, with the rejection branch. A teaching view; the product draws this as columns, not as a stepper.",
+  "rep-slipline": "The worked example's statutory deductions, drawn on the STATUTORY replica beside the rates that produced them. It is the far end of L6's trace and it exists only here: the product's statutory cockpit shows rates, and a payslip shows đồng, and no single product screen shows both at once. Naming it rep- is the honest consequence — the Coach must never claim to point at this on a live screen.",
 };
 
 /* =============================================================================
