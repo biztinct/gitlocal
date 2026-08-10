@@ -356,6 +356,13 @@ msgstr ""
 "Sau khi tính và trước khi trình phê duyệt, và bất cứ khi nào có nhân viên hỏi vì sao lương của họ lại như vậy."
 
 #. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_07
+msgid ""
+"After done, a correction is a retro line and never an edit. That is not a restriction — it is what keeps a reported month reportable."
+msgstr ""
+"Sau khi Hoàn tất, mọi hiệu chỉnh là một dòng hồi tố chứ không bao giờ là sửa trực tiếp. Đó không phải hạn chế — đó là thứ giữ cho một kỳ đã báo cáo vẫn báo cáo được."
+
+#. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m4_step_06
 msgid ""
 "Afterwards the roster should read like a timeline: 2025 ended, 2026 ending on 31/07, August active from 01/08."
@@ -676,6 +683,11 @@ msgid "Charged on the registered base, up to a ceiling"
 msgstr "Tính trên mức đã đăng ký, tới một mức trần"
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livechecknow
+msgid "Check now"
+msgstr "Kiểm tra ngay"
+
+#. module: pb_learn
 #: model:learn.screen,next_step:pb_learn.screen_fullfinal
 msgid ""
 "Check that everyone settled here is excluded from the normal monthly run for the same period. A leaver in both is paid twice."
@@ -708,6 +720,11 @@ msgid ""
 "Check the source period on each line. That field is what lets a closed month stay closed and still be reported correctly later."
 msgstr ""
 "Kiểm tra kỳ gốc trên từng dòng. Chính trường đó giúp một kỳ đã đóng vẫn luôn đóng mà sau này vẫn báo cáo đúng."
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livechecking
+msgid "Checking…"
+msgstr "Đang kiểm tra…"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m4_step_03
@@ -795,6 +812,11 @@ msgid "Compute payslips"
 msgstr "Tính phiếu lương"
 
 #. module: pb_learn
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_03
+msgid "Compute the run"
+msgstr "Tính đợt lương"
+
+#. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l1_step_04
 msgid "Compute — what actually happens"
 msgstr "Tính — điều gì thực sự diễn ra"
@@ -808,6 +830,13 @@ msgstr "Tính, rồi đọc ba ô số"
 #: model:learn.column,label:pb_learn.col_runpayroll_computed
 msgid "Computed"
 msgstr "Đã tính"
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_did_00
+msgid ""
+"Computed a real month of payroll for a real division, having read what the action would do before you did it."
+msgstr ""
+"Tính một tháng lương thật cho một bộ phận thật, sau khi đã đọc xem thao tác đó sẽ gây ra điều gì."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_runpayroll_mistake_0
@@ -1047,6 +1076,11 @@ msgid "Depends on, and used by"
 msgstr "Phụ thuộc vào, và được dùng bởi"
 
 #. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_did_04
+msgid "Did it once where a mistake costs a demo record, which is the last place it is cheap."
+msgstr "Làm một lần ở nơi mà sai sót chỉ tốn một bản ghi demo, và đó là nơi cuối cùng nó còn rẻ."
+
+#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_missionslead
 msgid "Do it once where it cannot matter, before you do it where it can."
 msgstr "Làm một lần ở nơi không hậu quả, trước khi làm ở nơi có hậu quả."
@@ -1216,6 +1250,13 @@ msgid "Every flagged payslip opened and understood, not dismissed"
 msgstr "Mọi phiếu bị gắn cờ đã được mở và hiểu rõ, không phải bị bỏ qua"
 
 #. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_check_01
+msgid ""
+"Every flagged payslip opened and understood. A flag is a question about one employee, and submitting is you answering it."
+msgstr ""
+"Mọi phiếu bị gắn cờ đã được mở và hiểu rõ. Cờ là một câu hỏi về một nhân viên cụ thể, và trình duyệt chính là bạn trả lời câu hỏi đó."
+
+#. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m2_check_00
 msgid "Every flagged payslip opened, and the flag understood rather than cleared."
 msgstr "Mọi phiếu bị gắn cờ đã được mở, và cờ được hiểu rõ chứ không chỉ bị xoá."
@@ -1250,6 +1291,13 @@ msgid "Every run on one board, moving draft → Officer → HR → GM → done."
 msgstr "Mọi đợt lương trên một bảng, đi từ Nháp → Chuyên viên tính lương → HR → TGĐ → Hoàn tất."
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_liverealbody
+msgid ""
+"Every step below happens in Payobook itself, on records other people can see. Nothing here is a replica, and nothing here is undone for you when you leave."
+msgstr ""
+"Mọi bước dưới đây diễn ra ngay trong Payobook, trên những bản ghi người khác cũng nhìn thấy. Không có bản mô phỏng nào ở đây, và cũng không có gì được tự hoàn tác khi bạn thoát."
+
+#. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_04
 msgid ""
 "Everything before this was a preview. Pressing it writes the rows into the period and they become the inputs the next compute reads."
@@ -1260,6 +1308,13 @@ msgstr ""
 #: model:learn.step,title:pb_learn.lesson_l3_step_00
 msgid "Everything below belongs to one run"
 msgstr "Mọi thứ bên dưới thuộc về một đợt lương"
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_00
+msgid ""
+"Everything from here happens in Payobook itself. The practice missions ran on a fixture with no server behind them; this one creates real payslip records in the shared demo company, on the division assigned to your account. It is the safest real payroll you will ever run — and it is still a real one."
+msgstr ""
+"Từ đây trở đi mọi thứ diễn ra ngay trong Payobook. Các nhiệm vụ thực hành chạy trên dữ liệu giả lập không có máy chủ phía sau; nhiệm vụ này tạo ra phiếu lương thật trong công ty demo dùng chung, trên bộ phận được gán cho tài khoản của bạn. Đây là kỳ lương thật an toàn nhất bạn từng chạy — nhưng vẫn là một kỳ lương thật."
 
 #. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m1_step_07
@@ -1321,6 +1376,13 @@ msgstr ""
 "Lọc theo \"Cần soát xét\" và đọc những phiếu đó trước. Cờ cảnh báo là hệ thống đang hỏi một câu, không phải báo rằng có gì đó hỏng."
 
 #. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_04
+msgid ""
+"Filter to \"Need review\" first, then sample two or three that are not flagged. The engine flags the unusual, not the wrong — so a clean slip can still be incorrect, and a flagged one can be perfectly fine."
+msgstr ""
+"Hãy lọc theo \"Cần soát xét\" trước, rồi lấy mẫu hai ba phiếu không bị gắn cờ. Hệ thống gắn cờ cái bất thường chứ không phải cái sai — nên một phiếu sạch vẫn có thể sai, và một phiếu bị gắn cờ vẫn có thể hoàn toàn ổn."
+
+#. module: pb_learn
 #: model:learn.screen,blurb:pb_learn.screen_fullfinal
 msgid ""
 "Final settlement for departing employees: last salary, unused leave and deductions, in one place."
@@ -1347,6 +1409,11 @@ msgstr "Tìm phần việc đang chờ bạn"
 #: model:learn.string,value:pb_learn.str_finish
 msgid "Finish"
 msgstr "Hoàn thành"
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livefinish
+msgid "Finish the mission"
+msgstr "Hoàn thành nhiệm vụ"
 
 #. module: pb_learn
 #: model:learn.intent,simpler:pb_learn.intent_pitcalc
@@ -1398,6 +1465,13 @@ msgstr ""
 #: model:learn.mission.option,label:pb_learn.mission_m1_step_05_opt_flag
 msgid "Flag it for review and check the timesheet before this run is approved"
 msgstr "Đánh dấu cần soát xét và kiểm tra bảng chấm công trước khi đợt này được duyệt"
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_did_03
+msgid ""
+"Followed it through the gates to done — the same journey, and the same waiting, that payroll week is actually made of."
+msgstr ""
+"Theo nó đi qua các cổng tới Hoàn tất — đúng hành trình đó, và đúng những khoảng chờ đó, chính là thứ làm nên một tuần tính lương."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_statutory_mistake_2
@@ -1498,6 +1572,13 @@ msgstr "Căn cứ:"
 #: model:learn.tenant.override,value:pb_learn.slot_hrtiername
 msgid "HR review"
 msgstr "HR soát xét"
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_07
+msgid ""
+"HR review, then finance approval, then done. Only a completed run offers the bank file, the journals and the payments — those buttons appear exactly when every gate has said yes, and that is the whole point of the chain."
+msgstr ""
+"HR soát xét, rồi Tài chính phê duyệt, rồi Hoàn tất. Chỉ đợt đã Hoàn tất mới hiện tệp chi lương, bút toán và các khoản thanh toán — các nút đó xuất hiện đúng lúc mọi cổng đã đồng ý, và đó chính là ý nghĩa của cả chuỗi."
 
 #. module: pb_learn
 #: model:learn.mission,anomaly_body:pb_learn.mission_m4
@@ -1670,6 +1751,11 @@ msgstr ""
 "Tôi hướng dẫn — bạn thao tác. Tôi không bao giờ tự tính lương, phê duyệt phiếu lương hay sửa dữ liệu thay bạn."
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_liveack
+msgid "I have done this"
+msgstr "Tôi đã làm xong"
+
+#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_proceed
 msgid "I have read this — continue"
 msgstr "Tôi đã đọc — tiếp tục"
@@ -1718,6 +1804,13 @@ msgid ""
 "If the run is still in draft, do not use retro at all — fix the input and recompute. Retro is for the past you cannot reopen, not for the present you have not finished."
 msgstr ""
 "Nếu đợt còn ở trạng thái Nháp thì đừng dùng hồi tố — hãy sửa đầu vào và tính lại. Hồi tố dành cho quá khứ bạn không mở lại được, không dành cho hiện tại bạn chưa làm xong."
+
+#. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_00
+msgid ""
+"If you have not done the practice run yet, it is worth eight minutes: the same judgement, on a fixture where a wrong answer costs a sentence rather than a record."
+msgstr ""
+"Nếu bạn chưa làm bài thực hành thì rất đáng dành tám phút: cùng một phán đoán, trên dữ liệu giả lập, nơi trả lời sai chỉ tốn một câu nhắc chứ không tốn một bản ghi."
 
 #. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_import
@@ -1945,6 +2038,7 @@ msgstr "Học tập"
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_exit
+#: model:learn.string,value:pb_learn.str_liveleave
 msgid "Leave"
 msgstr "Thoát"
 
@@ -2180,7 +2274,12 @@ msgid "Live preview"
 msgstr "Xem trước trực tiếp"
 
 #. module: pb_learn
-#: model:learn.screen,next_step:pb_learn.screen_payruns
+#: model:learn.string,value:pb_learn.str_livebadge
+msgid "Live · demo world"
+msgstr "Trực tiếp · môi trường demo"
+
+#. module: pb_learn
+#: model:learn.screen,live_fallback:pb_learn.screen_payruns
 msgid ""
 "Look at \"Awaiting your approval\" first — that count is the work only you can unblock. Everything else on this board is somebody else's gate."
 msgstr ""
@@ -2248,6 +2347,11 @@ msgid "Match…"
 msgstr "Khớp…"
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_liveminimise
+msgid "Minimise"
+msgstr "Thu gọn"
+
+#. module: pb_learn
 #: model:learn.string,value:pb_learn.str_mistakes
 msgid "Mistakes this prevents"
 msgstr "Những lỗi bài này giúp tránh"
@@ -2263,6 +2367,11 @@ msgstr ""
 #: model:learn.string,value:pb_learn.str_motionon
 msgid "Motion on"
 msgstr "Bật chuyển động"
+
+#. module: pb_learn
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_06
+msgid "Move it past the Payroll Officer gate"
+msgstr "Đưa nó qua cổng Chuyên viên tính lương"
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l5_step_03
@@ -2336,6 +2445,7 @@ msgstr ""
 "Logic mới luôn đặt trong một cấu hình. Chạy bảng lương chọn một cấu hình khi bạn chọn bộ phận, nên một quy tắc thêm vào cấu trúc là quy tắc mà bộ phận đó không bao giờ nhìn thấy."
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livenext
 #: model:learn.string,value:pb_learn.str_next
 msgid "Next"
 msgstr "Tiếp theo"
@@ -2367,11 +2477,25 @@ msgstr ""
 "Không mất gì và chưa chi gì, nhưng một lý do kiểu \"sai\" khiến chuyên viên mất cả ngày để đoán. Chính lý do bằng văn bản mới là toàn bộ giá trị của việc từ chối."
 
 #. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_03
+msgid ""
+"Nothing is paid and nobody is notified. Drafts can be deleted and recomputed as often as you want."
+msgstr ""
+"Chưa có gì được chi và chưa ai được thông báo. Bản nháp có thể xoá và tính lại bao nhiêu lần tuỳ ý."
+
+#. module: pb_learn
 #: model:learn.station,outline_why:pb_learn.station_payruns
 msgid ""
 "Nothing is paid without the right sign-offs, and the board is what makes the pipeline visible and auditable. It answers the only question a payroll week really asks: what is stuck, and whose gate is it stuck at."
 msgstr ""
 "Không khoản nào được chi khi chưa đủ chữ ký, và bảng này làm quy trình minh bạch và kiểm toán được. Nó trả lời đúng câu hỏi mà tuần tính lương thực sự đặt ra: cái gì đang tắc, và tắc ở cổng của ai."
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_check_04
+msgid ""
+"Nothing was submitted to make a deadline. A gate skipped for a deadline is a signature nobody gave."
+msgstr ""
+"Không có gì được trình chỉ để kịp hạn. Một cổng bị bỏ qua vì hạn chót là một chữ ký chưa ai đặt bút."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_noanswerbody
@@ -2400,6 +2524,20 @@ msgstr ""
 #: model:learn.column,label:pb_learn.col_retro_oldest_source_period
 msgid "Oldest source period"
 msgstr "Kỳ gốc xa nhất"
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_06
+msgid ""
+"On the demo world your account holds the approval tiers, so you can walk the run through the chain yourself. On a real tenant these are four different people, and the waiting between them is most of what payroll week is."
+msgstr ""
+"Trên môi trường demo, tài khoản của bạn giữ các vòng phê duyệt, nên bạn tự đưa đợt lương đi hết chuỗi được. Ở một hệ thống thật, đây là bốn con người khác nhau, và phần lớn một tuần tính lương chính là những khoảng chờ giữa họ."
+
+#. module: pb_learn
+#: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b030
+msgid ""
+"On this company right now, employee / employer: {{live:active_policy_rates}}. Read straight off the policy in force — if that is not what you expected, the roster below will show you which record is being applied."
+msgstr ""
+"Trên công ty này ngay lúc này, người lao động / doanh nghiệp: {{live:active_policy_rates}}. Đọc trực tiếp từ chính sách đang hiệu lực — nếu con số khác với bạn nghĩ, danh sách bên dưới sẽ cho thấy bản ghi nào đang được áp dụng."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_needreview_b020
@@ -2517,6 +2655,7 @@ msgstr ""
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_00
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_01
 msgid "Open Run Payroll"
 msgstr "Mở Chạy bảng lương"
 
@@ -2536,6 +2675,13 @@ msgid "Open full list →"
 msgstr "Mở danh sách đầy đủ →"
 
 #. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_04
+msgid ""
+"Open the breakdown on one slip and follow it from base to net. If you can say where each line came from, you are ready to submit."
+msgstr ""
+"Hãy mở bảng chi tiết của một phiếu và đi từ lương cơ bản tới thực nhận. Nếu bạn nói được mỗi dòng đến từ đâu thì bạn đã sẵn sàng để trình duyệt."
+
+#. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_04
 msgid "Open the flagged payslip"
 msgstr "Mở phiếu bị gắn cờ"
@@ -2549,6 +2695,23 @@ msgstr "Mở bài học"
 #: model:learn.intent.step,text:pb_learn.intent_fixerror_b020_s00
 msgid "Open the payslip and find the line that is wrong"
 msgstr "Mở phiếu lương và tìm dòng bị sai"
+
+#. module: pb_learn
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_04
+msgid "Open the payslips and read what is flagged"
+msgstr "Mở phiếu lương và đọc những gì bị gắn cờ"
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livenudgego
+msgid "Open the practice mission"
+msgstr "Mở nhiệm vụ thực hành"
+
+#. module: pb_learn
+#: model:learn.intent.block,live_fallback:pb_learn.intent_whichpolicy_b030
+msgid ""
+"Open the rates table above to read the split that is in force here. Every figure the Coach quotes about contributions comes off that record, never from memory."
+msgstr ""
+"Hãy mở bảng tỷ lệ ở trên để đọc mức đóng đang hiệu lực tại đây. Mọi con số về bảo hiểm mà trợ lý đưa ra đều lấy từ bản ghi đó, không bao giờ theo trí nhớ."
 
 #. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_reject_b020_s00
@@ -2571,11 +2734,23 @@ msgid "Open the run while it is still in draft"
 msgstr "Mở đợt lương khi còn ở trạng thái Nháp"
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_liveopenscreen
+msgid "Open the screen"
+msgstr "Mở màn hình"
+
+#. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m1_did_02
 msgid ""
 "Opened the flagged payslip instead of clearing it, and treated a 382% overtime figure as a question rather than a fact."
 msgstr ""
 "Mở phiếu bị gắn cờ thay vì xoá cờ, và coi con số tăng ca 382% là một câu hỏi chứ không phải một dữ kiện."
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_did_01
+msgid ""
+"Opened the run and read what the engine flagged, instead of taking a clean-looking total as evidence."
+msgstr ""
+"Mở đợt lương và đọc những gì hệ thống gắn cờ, thay vì coi một con số tổng trông sạch sẽ là bằng chứng."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_optional
@@ -2617,6 +2792,13 @@ msgstr "Thuế TNCN"
 #: model:learn.step,title:pb_learn.lesson_l6_step_03
 msgid "PIT is progressive, and kind at the bottom"
 msgstr "Thuế TNCN luỹ tiến, và nhẹ ở bậc thấp"
+
+#. module: pb_learn
+#: model:learn.mission,consequence_reversible:pb_learn.mission_ml1
+msgid ""
+"Partly, and the halves matter. Draft payslips can be deleted and recomputed as often as you like. Submitting is not silently undoable: from there the run moves only by being approved, or by being rejected back to draft with a written reason — the same chain a real payroll travels."
+msgstr ""
+"Một phần, và ranh giới rất quan trọng. Phiếu lương nháp có thể xoá và tính lại bao nhiêu lần tuỳ ý. Trình phê duyệt thì không thể âm thầm hoàn tác: từ đó đợt lương chỉ đi tiếp bằng cách được duyệt, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản — đúng chuỗi mà một kỳ lương thật đi qua."
 
 #. module: pb_learn
 #: model:learn.mission,consequence_reversible:pb_learn.mission_m4
@@ -2753,6 +2935,13 @@ msgstr ""
 #: model:learn.string,value:pb_learn.str_missions
 msgid "Practice missions"
 msgstr "Nhiệm vụ thực hành"
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_03
+msgid ""
+"Press Compute in the wizard. When the payslips exist, this step ticks itself — the mission is watching the records, not your clicks."
+msgstr ""
+"Hãy bấm Tính trong trình hướng dẫn. Khi các phiếu lương đã có, bước này tự đánh dấu hoàn thành — nhiệm vụ đang theo dõi bản ghi, không theo dõi cú bấm của bạn."
 
 #. module: pb_learn
 #: model:learn.intent.step,text:pb_learn.intent_editlive_b020_s01
@@ -2917,8 +3106,14 @@ msgstr ""
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_02
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_02
 msgid "Read what Compute is about to do"
 msgstr "Đọc xem nút Tính sắp làm gì"
+
+#. module: pb_learn
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_00
+msgid "Read what makes this one different"
+msgstr "Đọc xem nhiệm vụ này khác ở chỗ nào"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m4_step_05
@@ -2987,6 +3182,11 @@ msgid ""
 "Registered dependants across the company, each worth 4,400,000 ₫ a month off taxable income. Registration is the point: an unregistered dependant is relief the employee is entitled to and is not getting."
 msgstr ""
 "Số người phụ thuộc đã đăng ký trên toàn công ty, mỗi người giảm trừ 4.400.000 ₫ mỗi tháng vào thu nhập chịu thuế. Mấu chốt là việc đăng ký: một người phụ thuộc chưa đăng ký là khoản giảm trừ mà nhân viên có quyền hưởng nhưng không được hưởng."
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livenudge
+msgid "Rehearse it first?"
+msgstr "Tập dượt trước nhé?"
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_reject
@@ -3137,6 +3337,11 @@ msgstr "Chạy bảng lương"
 #: model:learn.mission,name:pb_learn.mission_m1
 msgid "Run the July pay run"
 msgstr "Chạy đợt lương tháng 7"
+
+#. module: pb_learn
+#: model:learn.mission,name:pb_learn.mission_ml1
+msgid "Run your division's June payroll — for real"
+msgstr "Chạy lương tháng 6 của bộ phận bạn — trên dữ liệu thật"
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_runpayroll_mistake_1
@@ -3359,6 +3564,11 @@ msgid "Start mission"
 msgstr "Bắt đầu nhiệm vụ"
 
 #. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livestart
+msgid "Start the live mission"
+msgstr "Bắt đầu nhiệm vụ trực tiếp"
+
+#. module: pb_learn
 #: model:learn.screen,name:pb_learn.screen_statutory
 #: model:learn.station,name:pb_learn.station_statutory
 msgid "Statutory (Insurance & Tax)"
@@ -3416,8 +3626,16 @@ msgstr "Trình lên soát xét"
 
 #. module: pb_learn
 #: model:learn.mission.step,instruction:pb_learn.mission_m1_step_06
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_05
 msgid "Submit the run for approval"
 msgstr "Trình đợt lương lên phê duyệt"
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_did_02
+msgid ""
+"Submitted it, and watched it stop being yours: from that point the run moves only through the chain."
+msgstr ""
+"Trình đợt lương lên, và thấy nó không còn là của riêng bạn: từ lúc đó đợt chỉ đi tiếp qua chuỗi phê duyệt."
 
 #. module: pb_learn
 #: model:learn.station.mistake,name:pb_learn.station_runpayroll_mistake_2
@@ -3425,6 +3643,13 @@ msgid ""
 "Submitting for approval without opening the flagged payslips. A flag is a question the engine wants answered, and submitting is you answering it with silence."
 msgstr ""
 "Trình phê duyệt mà chưa mở các phiếu bị gắn cờ. Cờ là câu hỏi hệ thống muốn được trả lời, và trình duyệt là bạn trả lời nó bằng sự im lặng."
+
+#. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_05
+msgid ""
+"Submitting is you saying the flags have been answered. If any of them have not, go back — the run will still be there."
+msgstr ""
+"Trình duyệt là bạn tuyên bố rằng các cờ cảnh báo đã được trả lời. Nếu còn cờ nào chưa, hãy quay lại — đợt lương vẫn nằm đó."
 
 #. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m4_step_04
@@ -3456,6 +3681,11 @@ msgid ""
 "Take Mai's June to July as the worked example. Net went from 12,064,000 ₫ to 12,919,000 ₫, and it decomposes exactly:"
 msgstr ""
 "Lấy tháng 6 sang tháng 7 của Mai làm ví dụ. Thực nhận đi từ 12.064.000 ₫ lên 12.919.000 ₫, và phân tách chính xác như sau:"
+
+#. module: pb_learn
+#: model:learn.mission.step,instruction:pb_learn.mission_ml1_step_07
+msgid "Take it through the remaining gates to done"
+msgstr "Đưa nó qua các cổng còn lại tới Hoàn tất"
 
 #. module: pb_learn
 #: model:learn.lesson,goal:pb_learn.lesson_l3
@@ -3500,6 +3730,13 @@ msgid ""
 "That last sentence is the real lesson of this mission: the records are reversible and the payslips they produced are not."
 msgstr ""
 "Chính câu cuối đó là bài học thật của nhiệm vụ này: bản ghi thì hoàn tác được, còn những phiếu lương chúng đã tạo ra thì không."
+
+#. module: pb_learn
+#: model:learn.mission,consequence_verify:pb_learn.mission_ml1
+msgid ""
+"That the division the wizard has selected is the one assigned to you. It is preselected and moved to the front of the list for exactly this reason, and the mission verifies against your assignment rather than against whatever the wizard happens to be showing."
+msgstr ""
+"Rằng bộ phận mà trình hướng dẫn đang chọn đúng là bộ phận được gán cho bạn. Nó được chọn sẵn và đưa lên đầu danh sách chính vì lý do này, và nhiệm vụ xác minh theo phần được gán cho bạn chứ không theo thứ mà trình hướng dẫn đang hiển thị."
 
 #. module: pb_learn
 #: model:learn.mission,consequence_verify:pb_learn.mission_m4
@@ -3606,7 +3843,7 @@ msgid "The action"
 msgstr "Thao tác chính"
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b040
+#: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b050
 msgid "The active insurance policies, ordered by effective date."
 msgstr "Các chính sách bảo hiểm đang bật, sắp theo ngày hiệu lực."
 
@@ -3679,6 +3916,13 @@ msgid ""
 "The code is the thing to quote when you ask someone about a number: \"HOASEN_RETAIL_END, component TNCN\" is a question that can be answered."
 msgstr ""
 "Mã cấu hình là thứ nên trích dẫn khi bạn hỏi ai đó về một con số: \"HOASEN_RETAIL_END, thành phần TNCN\" là một câu hỏi có thể trả lời được."
+
+#. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_06
+msgid ""
+"The column a run sits in names the tier that has to act next. That is the answer to \"who do I chase\"."
+msgstr ""
+"Cột mà đợt lương đang nằm chỉ đích danh vòng phải xử lý tiếp theo. Đó chính là câu trả lời cho \"tôi phải hỏi ai\"."
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l2_step_01
@@ -3796,6 +4040,13 @@ msgstr ""
 #: model:learn.step,title:pb_learn.lesson_l1_step_01
 msgid "The division chooses the rulebook"
 msgstr "Chọn bộ phận là chọn bộ quy tắc"
+
+#. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_check_00
+msgid ""
+"The division is yours and the period is the one you meant — read both before computing, not after."
+msgstr ""
+"Bộ phận đúng là của bạn và kỳ lương đúng là kỳ bạn định chạy — hãy đọc cả hai trước khi tính, đừng đọc sau."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_configvsstructure_b040
@@ -3975,6 +4226,13 @@ msgstr ""
 "Bản có <b>ngày hiệu lực mới nhất</b> trong số các chính sách còn đang bật. Không phải bản ghi mới tạo nhất, cũng không phải bản sửa gần nhất — ngày hiệu lực mới là trường quyết định, nên đó là trường cần kiểm tra đầu tiên."
 
 #. module: pb_learn
+#: model:learn.mission.step,hint:pb_learn.mission_ml1_step_01
+msgid ""
+"The other five divisions are still on the list on purpose. You are welcome to look; the mission checks the one that is yours."
+msgstr ""
+"Năm bộ phận còn lại vẫn nằm trong danh sách một cách có chủ ý. Bạn cứ xem thoải mái; nhiệm vụ chỉ kiểm tra đúng bộ phận của bạn."
+
+#. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l4_step_01
 msgid ""
 "The other import surfaces exist for specific tools and older habits. This one scores the file before it writes, which is the difference between finding a bad row now and finding it on {{payDay}}."
@@ -4026,6 +4284,13 @@ msgid ""
 "The period is the month being settled. The <b>cycle</b> is which part of it: <b>mid-cycle</b> pays an advance during the month, <b>end-cycle</b> settles the whole month. Most divisions run end-cycle only, which is why running the other one by accident produces a payslip that is not wrong so much as unexpected."
 msgstr ""
 "Kỳ lương là tháng đang được quyết toán. <b>Chu kỳ</b> là phần nào của tháng đó: <b>giữa kỳ</b> là khoản tạm ứng trong tháng, <b>cuối kỳ</b> là quyết toán cả tháng. Đa số bộ phận chỉ chạy cuối kỳ, nên chạy nhầm chu kỳ tạo ra một phiếu lương không hẳn sai — mà là ngoài dự kiến."
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livenudgebody
+msgid ""
+"The practice mission runs the same judgement on a fixture where nothing can matter. You do not have to — this is a nudge, not a lock."
+msgstr ""
+"Nhiệm vụ thực hành dạy đúng phán đoán đó trên dữ liệu giả lập, nơi không có hậu quả nào. Bạn không bắt buộc phải làm — đây là lời nhắc, không phải khoá chặn."
 
 #. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_practice_b030
@@ -4136,6 +4401,13 @@ msgid ""
 "The same formula switches between <b>Names</b> (TNCN = 5% × TNCT) and <b>Letters</b> (I = 5% × H). Letters are how the engine stores it and how it reads next to a spreadsheet; names are how you explain it to somebody. They are one formula in two spellings, so a change in either is a change in both."
 msgstr ""
 "Cùng một công thức chuyển qua lại giữa <b>Tên</b> (TNCN = 5% × TNCT) và <b>Chữ cái</b> (I = 5% × H). Chữ cái là cách hệ thống lưu công thức và là cách nó đọc song song với một bảng tính; tên là cách bạn giải thích cho người khác. Đó là một công thức với hai cách viết, nên sửa ở cách nào cũng là sửa cả hai."
+
+#. module: pb_learn
+#: model:learn.mission,summary:pb_learn.mission_ml1
+msgid ""
+"The same judgement as the practice run, on real records in the demo world: your own division, the open June period, and the approval chain all the way to done."
+msgstr ""
+"Vẫn là phán đoán như bài thực hành, nhưng trên bản ghi thật trong môi trường demo: đúng bộ phận của bạn, kỳ tháng 6 đang mở, và chuỗi phê duyệt đi trọn tới Hoàn tất."
 
 #. module: pb_learn
 #: model:learn.mission.step,hint:pb_learn.mission_m1_step_01
@@ -4350,6 +4622,13 @@ msgstr ""
 "Hãy hình dung BHXH như một quỹ chung mà pháp luật yêu cầu. Mỗi tháng bạn đóng 8% mức lương ghi trong hợp đồng — không tính thưởng, không tính tăng ca — và công ty đóng thêm hơn gấp đôi phần đó. Quỹ này chi trả lương hưu, ốm đau và thai sản."
 
 #. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_02
+msgid ""
+"This card is teaching, not a gate: nothing here blocks the button, and Payobook's own rules are what decide whether you may press it. Read the scope, the way back and the thing to verify — then act, in the product."
+msgstr ""
+"Thẻ này để dạy, không phải để chặn: không có gì ở đây khoá nút lại, và chính các quy tắc của Payobook mới quyết định bạn có được bấm hay không. Hãy đọc phạm vi, lối quay lại và thứ cần kiểm tra — rồi thao tác, ngay trong sản phẩm."
+
+#. module: pb_learn
 #: model:learn.mission.step,detail:pb_learn.mission_m1_step_02
 msgid ""
 "This card is the interception. It is not a confirmation dialog — it names the scope, the way back and the thing to verify, and the mission will not move until you have seen all three."
@@ -4366,9 +4645,9 @@ msgstr ""
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_livenotyet
 msgid ""
-"This is a live capstone. It runs against real records on the demo tenant and is not available in this build yet — the practice mission teaches the same judgement safely."
+"This is a live capstone. It runs against real records in the Payobook demo world, so it opens only for a demo account — the practice mission above teaches the same judgement, safely, wherever you are."
 msgstr ""
-"Đây là nhiệm vụ tổng kết chạy trên dữ liệu thật của bản demo, và chưa có trong phiên bản này — nhiệm vụ thực hành dạy đúng phán đoán đó một cách an toàn."
+"Đây là nhiệm vụ tổng kết chạy trên dữ liệu thật của môi trường demo Payobook, nên chỉ mở được với tài khoản demo — nhiệm vụ thực hành ở trên dạy đúng phán đoán đó, một cách an toàn, ở bất kỳ đâu."
 
 #. module: pb_learn
 #: model:learn.step,body:pb_learn.lesson_l2_step_01
@@ -4376,6 +4655,19 @@ msgid ""
 "This is the single most common misreading of this screen. A column is an <b>approval stage</b>, so July and June can sit side by side in the same one, and a run moves left to right by being approved — never by being edited. Use the date chips below when you want a period."
 msgstr ""
 "Đây là cách đọc sai phổ biến nhất của màn hình này. Một cột là một <b>bước phê duyệt</b>, nên tháng 7 và tháng 6 có thể nằm cạnh nhau trong cùng một cột, và một đợt di chuyển từ trái sang phải bằng việc được phê duyệt — không bao giờ bằng việc bị sửa. Muốn lọc theo kỳ, hãy dùng các chip ngày ở dưới."
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_05
+msgid ""
+"This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected back to draft with a written reason."
+msgstr ""
+"Đây là bước mà việc hoàn tác không còn dễ dàng nữa. Sau bước này, đợt lương chỉ đi tiếp bằng cách được duyệt ở từng cổng, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản."
+
+#. module: pb_learn
+#: model:learn.mission,consequence_title:pb_learn.mission_ml1
+#: model:learn.string,value:pb_learn.str_livereal
+msgid "This one is real"
+msgstr "Nhiệm vụ này là thật"
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l1_step_00
@@ -4495,7 +4787,7 @@ msgid "Trần Văn Hùng. Overtime 4,200,000 ₫ this month against 1,100,000 �
 msgstr "Trần Văn Hùng. Tăng ca 4.200.000 ₫ tháng này so với 1.100.000 ₫ tháng 6."
 
 #. module: pb_learn
-#: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b030
+#: model:learn.intent.block,body:pb_learn.intent_whichpolicy_b040
 msgid ""
 "Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip."
 msgstr ""
@@ -4545,6 +4837,11 @@ msgstr "Hãy dùng luồng có hướng dẫn"
 #: model:learn.column,label:pb_learn.col_formula_used_by
 msgid "Used by"
 msgstr "Được dùng bởi"
+
+#. module: pb_learn
+#: model:learn.string,value:pb_learn.str_livewaiting
+msgid "Waiting for you to do this in Payobook"
+msgstr "Đang chờ bạn thao tác trong Payobook"
 
 #. module: pb_learn
 #: model:learn.step,title:pb_learn.lesson_l6_step_04
@@ -4886,6 +5183,13 @@ msgstr ""
 "Bạn được phép sai ở đó. Điểm bất thường được cài sẵn luôn có mặt, nên phán đoán mà nó dạy luôn là một, và làm sai chỉ tốn một lời gợi ý quay lại chứ không tốn một khoản lương."
 
 #. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_check_02
+msgid ""
+"You can say in one sentence why the total is what it is, before anybody at a later gate asks you."
+msgstr ""
+"Bạn nói được trong một câu vì sao tổng lại là con số đó, trước khi có ai ở cổng phía sau hỏi bạn."
+
+#. module: pb_learn
 #: model:learn.mission.note,body:pb_learn.mission_m4_check_04
 msgid "You can state the effect on one employee's NET, not just on the contribution."
 msgstr "Bạn nói được tác động lên THỰC NHẬN của một nhân viên, chứ không chỉ lên khoản đóng."
@@ -4924,6 +5228,11 @@ msgid "You do not invent these numbers"
 msgstr "Bạn không tự nghĩ ra những con số này"
 
 #. module: pb_learn
+#: model:learn.mission.note,body:pb_learn.mission_ml1_check_03
+msgid "You know which gate the run is at and who holds it — the column names them."
+msgstr "Bạn biết đợt lương đang ở cổng nào và ai đang giữ cổng đó — cột đã chỉ đích danh."
+
+#. module: pb_learn
 #: model:learn.quiz,prompt:pb_learn.lesson_l5_quiz
 msgid ""
 "You need to add a meal allowance for Retail. The July run is computed and waiting at {{hrTierName}}. What do you do?"
@@ -4945,11 +5254,32 @@ msgstr ""
 "Bạn sẽ gặp chúng ngay lần đầu mở một phiếu lương từ trước khi chuyển đổi, và hiểu chúng là gì chính là khác biệt giữa đọc được lịch sử và hoài nghi lịch sử."
 
 #. module: pb_learn
+#: model:learn.mission,consequence_scope:pb_learn.mission_ml1
+msgid ""
+"Your assigned division's June 2026 run, in the shared Payobook demo company. Real payslip records are created, and other people exploring the demo can see them. No other division and no other period is touched — and no real company's data is anywhere near this."
+msgstr ""
+"Đợt lương tháng 6/2026 của bộ phận bạn được gán, trong công ty demo dùng chung của Payobook. Các bản ghi phiếu lương thật sẽ được tạo, và những người khác đang xem demo cũng nhìn thấy chúng. Không bộ phận nào khác và không kỳ nào khác bị ảnh hưởng — và không dữ liệu của công ty thật nào ở gần chỗ này."
+
+#. module: pb_learn
 #: model:learn.intent.block,body:pb_learn.intent_compliance_b020
 msgid ""
 "Your company's payroll policy owner decides the declared insurance base and the allowance structure. A change to either is a legal decision with consequences well beyond payroll, not a software setting."
 msgstr ""
 "Người phụ trách chính sách lương của công ty bạn quyết định mức lương đóng bảo hiểm đã đăng ký và cấu trúc phụ cấp. Thay đổi một trong hai là quyết định pháp lý với hệ quả vượt xa phạm vi tính lương, không phải một thiết lập phần mềm."
+
+#. module: pb_learn
+#: model:learn.mission.step,detail:pb_learn.mission_ml1_step_01
+msgid ""
+"Your division is already selected and moved to the top of the list, and the period is pinned to June 2026 — the one month the demo world leaves open. Read both before you go on."
+msgstr ""
+"Bộ phận của bạn đã được chọn sẵn và đưa lên đầu danh sách, còn kỳ lương được cố định ở tháng 6/2026 — tháng duy nhất mà môi trường demo để mở. Hãy đọc cả hai trước khi đi tiếp."
+
+#. module: pb_learn
+#: model:learn.screen,next_step:pb_learn.screen_payruns
+msgid ""
+"Your division on this demo is {{live:division_name}}, and its June run is at {{live:june_run_state}} right now. Look at \"Awaiting your approval\" first — that count is the work only you can unblock."
+msgstr ""
+"Bộ phận của bạn trên bản demo này là {{live:division_name}}, và đợt lương tháng 6 của bộ phận đó hiện đang ở {{live:june_run_state}}. Nhìn \"Chờ bạn phê duyệt\" trước — con số đó là phần việc chỉ bạn mới gỡ được."
 
 #. module: pb_learn
 #: model:learn.string,value:pb_learn.str_hubtitle

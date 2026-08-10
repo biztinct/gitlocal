@@ -192,6 +192,54 @@ def vi_of(v):
     return v['vi'] if is_pair(v) else (v if isinstance(v, str) else '')
 
 
+LIVE_TOKEN_RE = re.compile(r'\{\{live:([a-z_]+)\}\}')
+
+# The six keys models/learn_live.py implements. A token naming anything else
+# renders the authored fallback forever and says nothing about why, so it is
+# caught here instead — at authoring time, by name.
+LIVE_KEYS = {
+    'june_net_total', 'june_run_state', 'active_policy_rates',
+    'pit_relief', 'flagged_count', 'division_name',
+}
+
+
+class Live:
+    """Every {{live:key}} the content writes, and whether it can degrade.
+
+    TWO rules, and the second is the one that matters:
+      · the key must exist, or the sentence can never resolve;
+      · the body must carry a `live_fallback` IN BOTH LANGUAGES, because on
+        every tenant but the demo world that fallback IS the answer. A live
+        token with no fallback renders an empty paragraph to twelve tenants out
+        of twelve and a fact to none.
+    """
+
+    def __init__(self):
+        self.problems = []
+        self.sites = []
+
+    def check(self, where, body, fallback):
+        for lang, text in (('en', en_of(body)), ('vi', vi_of(body))):
+            keys = LIVE_TOKEN_RE.findall(text or '')
+            if not keys:
+                continue
+            self.sites.append((where, lang, keys))
+            unknown = [k for k in keys if k not in LIVE_KEYS]
+            if unknown:
+                self.problems.append(
+                    '%s [%s] names live keys nothing implements: %s'
+                    % (where, lang, ', '.join(unknown)))
+            for flang, ftext in (('en', en_of(fallback)), ('vi', vi_of(fallback))):
+                if not (ftext or '').strip():
+                    self.problems.append(
+                        '%s [%s] uses {{live:}} with no %s live_fallback'
+                        % (where, lang, flang))
+                elif LIVE_TOKEN_RE.search(ftext):
+                    self.problems.append(
+                        '%s [%s] fallback contains a live token of its own'
+                        % (where, flang))
+
+
 class Xml:
     def __init__(self, title, note=None):
         self.lines = ['<?xml version="1.0" encoding="utf-8"?>',
@@ -452,7 +500,7 @@ def _blocks_of(intent):
     return [('any', intent.get('blocks') or [])]
 
 
-def gen_intents(data, tr):
+def gen_intents(data, tr, live):
     doc = Xml('Coach intents. Every answer the Coach can give is a block here; '
               'there is no path from a question to the screen that skips this '
               'file, which is what lets it promise never to invent a rate.')
@@ -503,15 +551,22 @@ def gen_intents(data, tr):
                 body = ''
                 if kind != 'steps' and b.get('v') is not None:
                     body = en_of(b['v'])
+                fallback = b.get('liveFallback')
+                live.check('intent %s block %d' % (key, seq),
+                           b.get('v') if kind != 'steps' else None, fallback)
                 doc.rec('learn.intent.block', bx, [
                     ('intent_id', ('ref', xmlid)),
                     ('sequence', seq),
                     ('capability', capability),
                     ('kind', kind),
                     ('body', body),
+                    ('live_fallback', en_of(fallback)),
                 ])
                 if body:
                     tr.add('learn.intent.block', 'body', bx, body, vi_of(b['v']))
+                if fallback:
+                    tr.add('learn.intent.block', 'live_fallback', bx,
+                           en_of(fallback), vi_of(fallback))
                 if kind == 'steps':
                     for k, st in enumerate(b['v']):
                         sx = '%s_s%02d' % (bx, k)
@@ -526,7 +581,7 @@ def gen_intents(data, tr):
     return doc.render()
 
 
-def gen_screens(data, tr):
+def gen_screens(data, tr, live):
     doc = Xml('The screens the Coach knows, and how it recognises each one. '
               'Matchers are read from the sidebar leaf named by sidebar_key, so '
               'the Coach and the sidebar can never disagree.')
@@ -555,6 +610,7 @@ def gen_screens(data, tr):
             # English. It is the most-asked question on any screen; it ships as
             # a real field here.
             ('next_step', en_of(ctx['next'])),
+            ('live_fallback', en_of(ctx.get('liveFallback'))),
             ('action_tags', SCREEN_ACTION_TAGS.get(key, '')),
             ('sidebar_key', SIDEBAR_KEYS.get(key, '')),
             ('suggest_ids', ('eval', '[(6, 0, [%s])]' % ', '.join(
@@ -563,6 +619,10 @@ def gen_screens(data, tr):
         tr.add('learn.screen', 'name', xmlid, name_en, name_vi)
         tr.add('learn.screen', 'blurb', xmlid, en_of(ctx['blurb']), vi_of(ctx['blurb']))
         tr.add('learn.screen', 'next_step', xmlid, en_of(ctx['next']), vi_of(ctx['next']))
+        live.check('screen %s next_step' % key, ctx['next'], ctx.get('liveFallback'))
+        if ctx.get('liveFallback'):
+            tr.add('learn.screen', 'live_fallback', xmlid,
+                   en_of(ctx['liveFallback']), vi_of(ctx['liveFallback']))
     return doc.render()
 
 
@@ -639,6 +699,11 @@ def gen_missions(data, tr):
                 ('is_decision', bool(st.get('decision'))),
                 ('is_consequence', bool(st.get('consequence'))),
                 ('is_undo', bool(st.get('undo'))),
+                # Live capstones only. A fixture step never carries either:
+                # there is no server behind the replica to check, and a step
+                # the learner ticks off themselves is what `Next` already is.
+                ('check', st.get('check') or ''),
+                ('is_ack', bool(st.get('ack'))),
             ])
             for f in ('instruction', 'detail', 'hint'):
                 tr.add('learn.mission.step', f, sx, en_of(st.get(f)), vi_of(st.get(f)))
@@ -794,14 +859,15 @@ def main():
 
     data = dump()
     tr = Trans()
+    live = Live()
     files = {
         'data/learn_strings.xml': gen_strings(data, tr),
         'data/learn_glossary.xml': gen_glossary(data, tr),
         'data/learn_tenant_slots.xml': gen_overrides(data, tr),
         'data/learn_stations.xml': gen_stations(data, tr),
         'data/learn_lessons.xml': gen_lessons(data, tr),
-        'data/learn_intents.xml': gen_intents(data, tr),
-        'data/learn_screens.xml': gen_screens(data, tr),
+        'data/learn_intents.xml': gen_intents(data, tr, live),
+        'data/learn_screens.xml': gen_screens(data, tr, live),
         'data/learn_columns.xml': gen_columns(data, tr),
         'data/learn_missions.xml': gen_missions(data, tr),
         'data/learn_sidebar_item.xml': gen_sidebar_item(data, tr),
@@ -822,6 +888,14 @@ def main():
         except ET.ParseError as exc:
             print('MALFORMED: %s — %s' % (rel, exc))
             return 3
+
+    if live.problems:
+        print('LIVE TOKENS: %d problem(s). A {{live:}} token with no fallback is '
+              'an empty answer on every tenant that is not the demo world.'
+              % len(live.problems))
+        for p in live.problems:
+            print('  %s' % p)
+        return 5
 
     if tr.untranslated:
         print('UNTRANSLATED: %d translatable value(s) have no Vietnamese. Every '
@@ -866,6 +940,8 @@ def main():
     for c in changed:
         print('  %s' % c)
     print('  %d translatable string(s) in vi_VN.po' % len(tr.entries))
+    print('  %d live token site(s): %s' % (
+        len(live.sites), ', '.join(sorted({w for w, _l, _k in live.sites})) or '-'))
     return 0
 
 

@@ -109,7 +109,23 @@ const I18N = {
     missionsLead: "Do it once where it cannot matter, before you do it where it can.",
     startMission: "Start mission",
     outlineMission: "Outline",
-    liveNotYet: "This is a live capstone. It runs against real records on the demo tenant and is not available in this build yet — the practice mission teaches the same judgement safely.",
+    liveNotYet: "This is a live capstone. It runs against real records in the Payobook demo world, so it opens only for a demo account — the practice mission above teaches the same judgement, safely, wherever you are.",
+    liveBadge: "Live \u00b7 demo world",
+    liveStart: "Start the live mission",
+    liveReal: "This one is real",
+    liveRealBody: "Every step below happens in Payobook itself, on records other people can see. Nothing here is a replica, and nothing here is undone for you when you leave.",
+    liveNudge: "Rehearse it first?",
+    liveNudgeBody: "The practice mission runs the same judgement on a fixture where nothing can matter. You do not have to \u2014 this is a nudge, not a lock.",
+    liveNudgeGo: "Open the practice mission",
+    liveOpenScreen: "Open the screen",
+    liveCheckNow: "Check now",
+    liveChecking: "Checking\u2026",
+    liveWaiting: "Waiting for you to do this in Payobook",
+    liveAck: "I have done this",
+    liveNext: "Next",
+    liveFinish: "Finish the mission",
+    liveLeave: "Leave",
+    liveMinimise: "Minimise",
     showHint: "Hint",
     scope: "What this touches",
     reversible: "Can I undo it",
@@ -212,7 +228,23 @@ const I18N = {
     missionsLead: "Làm một lần ở nơi không hậu quả, trước khi làm ở nơi có hậu quả.",
     startMission: "Bắt đầu nhiệm vụ",
     outlineMission: "Dàn ý",
-    liveNotYet: "Đây là nhiệm vụ tổng kết chạy trên dữ liệu thật của bản demo, và chưa có trong phiên bản này — nhiệm vụ thực hành dạy đúng phán đoán đó một cách an toàn.",
+    liveNotYet: "Đây là nhiệm vụ tổng kết chạy trên dữ liệu thật của môi trường demo Payobook, nên chỉ mở được với tài khoản demo — nhiệm vụ thực hành ở trên dạy đúng phán đoán đó, một cách an toàn, ở bất kỳ đâu.",
+    liveBadge: "Trực tiếp \u00b7 môi trường demo",
+    liveStart: "Bắt đầu nhiệm vụ trực tiếp",
+    liveReal: "Nhiệm vụ này là thật",
+    liveRealBody: "Mọi bước dưới đây diễn ra ngay trong Payobook, trên những bản ghi người khác cũng nhìn thấy. Không có bản mô phỏng nào ở đây, và cũng không có gì được tự hoàn tác khi bạn thoát.",
+    liveNudge: "Tập dượt trước nhé?",
+    liveNudgeBody: "Nhiệm vụ thực hành dạy đúng phán đoán đó trên dữ liệu giả lập, nơi không có hậu quả nào. Bạn không bắt buộc phải làm \u2014 đây là lời nhắc, không phải khoá chặn.",
+    liveNudgeGo: "Mở nhiệm vụ thực hành",
+    liveOpenScreen: "Mở màn hình",
+    liveCheckNow: "Kiểm tra ngay",
+    liveChecking: "Đang kiểm tra\u2026",
+    liveWaiting: "Đang chờ bạn thao tác trong Payobook",
+    liveAck: "Tôi đã làm xong",
+    liveNext: "Tiếp theo",
+    liveFinish: "Hoàn thành nhiệm vụ",
+    liveLeave: "Thoát",
+    liveMinimise: "Thu gọn",
     showHint: "Gợi ý",
     scope: "Thao tác này ảnh hưởng tới đâu",
     reversible: "Có hoàn tác được không",
@@ -1433,6 +1465,71 @@ const MISSIONS = [
     outlineNote: B("The full version adds the component to HOASEN_RETAIL_END, makes you choose where it belongs — an earning that feeds GROSS, not a total and not an input — then wire it into the gross formula and read the dependency panel to see what moved. It ends where every configuration change should: a simulation against last month's real payslips, and the decision of whether to activate while a run is still open.",
                    "Bản đầy đủ thêm thành phần vào HOASEN_RETAIL_END, buộc bạn chọn nó thuộc về đâu — một khoản thu nhập cấu thành Tổng thu nhập, không phải một tổng và cũng không phải đầu vào — rồi nối vào công thức tổng thu nhập và đọc bảng phụ thuộc để thấy những gì đã đổi. Nó kết thúc đúng ở nơi mọi thay đổi cấu hình nên kết thúc: một lần mô phỏng trên phiếu lương thật của tháng trước, và quyết định có kích hoạt hay không khi một đợt lương vẫn đang mở."),
   },
+
+  /* ===========================================================================
+     THE LIVE CAPSTONE.
+
+     `kind: live` and everything that follows from it. This mission runs on the
+     REAL Payobook, in the shared demo world, against the division this account
+     was assigned at signup — so no two prospects fight over the same June run.
+
+     WHAT IT DELIBERATELY DOES NOT DO
+     --------------------------------
+     It never asserts an amount. Every figure in a live run is on the screen in
+     front of the learner and is theirs, not ours; a mission that printed
+     "you should see 612,480,000" would be wrong the first time the demo world
+     was regenerated, and confidently wrong is the failure this whole system is
+     built to avoid. The fixture missions are where the worked example lives.
+
+     It never intercepts either. The consequence card is a TEACHING step shown
+     BEFORE the compute instruction — the learner then presses Payobook's own
+     button, and the runner finds out what happened by asking the server what
+     the records now say. Enforcement stays with the product's own gates,
+     where it belongs.
+     ======================================================================== */
+  {
+    id: "mL1", group: "payrun", icon: "zap", mins: 12, kind: "live",
+    screen: "runpayroll",
+    conf: { key: "run_live", gain: 40 },
+    title: B("Run your division's June payroll — for real", "Chạy lương tháng 6 của bộ phận bạn — trên dữ liệu thật"),
+    desc: B("The same judgement as the practice run, on real records in the demo world: your own division, the open June period, and the approval chain all the way to done.",
+            "Vẫn là phán đoán như bài thực hành, nhưng trên bản ghi thật trong môi trường demo: đúng bộ phận của bạn, kỳ tháng 6 đang mở, và chuỗi phê duyệt đi trọn tới Hoàn tất."),
+    consequence: {
+      title: B("This one is real", "Nhiệm vụ này là thật"),
+      scope: B("Your assigned division's June 2026 run, in the shared Payobook demo company. Real payslip records are created, and other people exploring the demo can see them. No other division and no other period is touched — and no real company's data is anywhere near this.",
+               "Đợt lương tháng 6/2026 của bộ phận bạn được gán, trong công ty demo dùng chung của Payobook. Các bản ghi phiếu lương thật sẽ được tạo, và những người khác đang xem demo cũng nhìn thấy chúng. Không bộ phận nào khác và không kỳ nào khác bị ảnh hưởng — và không dữ liệu của công ty thật nào ở gần chỗ này."),
+      reversible: B("Partly, and the halves matter. Draft payslips can be deleted and recomputed as often as you like. Submitting is not silently undoable: from there the run moves only by being approved, or by being rejected back to draft with a written reason — the same chain a real payroll travels.",
+                    "Một phần, và ranh giới rất quan trọng. Phiếu lương nháp có thể xoá và tính lại bao nhiêu lần tuỳ ý. Trình phê duyệt thì không thể âm thầm hoàn tác: từ đó đợt lương chỉ đi tiếp bằng cách được duyệt, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản — đúng chuỗi mà một kỳ lương thật đi qua."),
+      verify: B("That the division the wizard has selected is the one assigned to you. It is preselected and moved to the front of the list for exactly this reason, and the mission verifies against your assignment rather than against whatever the wizard happens to be showing.",
+                "Rằng bộ phận mà trình hướng dẫn đang chọn đúng là bộ phận được gán cho bạn. Nó được chọn sẵn và đưa lên đầu danh sách chính vì lý do này, và nhiệm vụ xác minh theo phần được gán cho bạn chứ không theo thứ mà trình hướng dẫn đang hiển thị."),
+    },
+    debrief: {
+      did: [
+        B("Computed a real month of payroll for a real division, having read what the action would do before you did it.",
+          "Tính một tháng lương thật cho một bộ phận thật, sau khi đã đọc xem thao tác đó sẽ gây ra điều gì."),
+        B("Opened the run and read what the engine flagged, instead of taking a clean-looking total as evidence.",
+          "Mở đợt lương và đọc những gì hệ thống gắn cờ, thay vì coi một con số tổng trông sạch sẽ là bằng chứng."),
+        B("Submitted it, and watched it stop being yours: from that point the run moves only through the chain.",
+          "Trình đợt lương lên, và thấy nó không còn là của riêng bạn: từ lúc đó đợt chỉ đi tiếp qua chuỗi phê duyệt."),
+        B("Followed it through the gates to done — the same journey, and the same waiting, that payroll week is actually made of.",
+          "Theo nó đi qua các cổng tới Hoàn tất — đúng hành trình đó, và đúng những khoảng chờ đó, chính là thứ làm nên một tuần tính lương."),
+        B("Did it once where a mistake costs a demo record, which is the last place it is cheap.",
+          "Làm một lần ở nơi mà sai sót chỉ tốn một bản ghi demo, và đó là nơi cuối cùng nó còn rẻ."),
+      ],
+      checklist: [
+        B("The division is yours and the period is the one you meant — read both before computing, not after.",
+          "Bộ phận đúng là của bạn và kỳ lương đúng là kỳ bạn định chạy — hãy đọc cả hai trước khi tính, đừng đọc sau."),
+        B("Every flagged payslip opened and understood. A flag is a question about one employee, and submitting is you answering it.",
+          "Mọi phiếu bị gắn cờ đã được mở và hiểu rõ. Cờ là một câu hỏi về một nhân viên cụ thể, và trình duyệt chính là bạn trả lời câu hỏi đó."),
+        B("You can say in one sentence why the total is what it is, before anybody at a later gate asks you.",
+          "Bạn nói được trong một câu vì sao tổng lại là con số đó, trước khi có ai ở cổng phía sau hỏi bạn."),
+        B("You know which gate the run is at and who holds it — the column names them.",
+          "Bạn biết đợt lương đang ở cổng nào và ai đang giữ cổng đó — cột đã chỉ đích danh."),
+        B("Nothing was submitted to make a deadline. A gate skipped for a deadline is a signature nobody gave.",
+          "Không có gì được trình chỉ để kịp hạn. Một cổng bị bỏ qua vì hạn chót là một chữ ký chưa ai đặt bút."),
+      ],
+    },
+  },
 ];
 
 /* Mission 1 — the step machine. `nav` moves the replica; a step without one
@@ -1689,6 +1786,90 @@ const MISSION_STEPS = {
               "Chính câu cuối đó là bài học thật của nhiệm vụ này: bản ghi thì hoàn tác được, còn những phiếu lương chúng đã tạo ra thì không."),
     },
   ],
+
+  /* ---------------------------------------------------------------------------
+     mL1 — the live capstone's step machine.
+
+     THREE KINDS OF STEP, and the difference is who answers them:
+       `check`  the SERVER answers, by looking at the record the learner just
+                changed with the product's own buttons. Read-only, always
+                gated (models/learn_live.py).
+       `ack`    the LEARNER answers, because nothing observable happened —
+                they read a card, or they are watching a gate somebody else
+                holds.
+       neither  instructional; Next moves it on.
+
+     `nav` names a learn.screen, not an action: the runner turns it into a
+     deep link through the SAME learn.screen record the Coach grounds on, so
+     the two surfaces can never disagree about what "Pay Runs" means.
+
+     No step asserts an amount. Every number in a live run is on the screen and
+     belongs to the learner.
+     ------------------------------------------------------------------------ */
+  mL1: [
+    {
+      id: "brief", ack: true,
+      instruction: B("Read what makes this one different", "Đọc xem nhiệm vụ này khác ở chỗ nào"),
+      detail: B("Everything from here happens in Payobook itself. The practice missions ran on a fixture with no server behind them; this one creates real payslip records in the shared demo company, on the division assigned to your account. It is the safest real payroll you will ever run — and it is still a real one.",
+                "Từ đây trở đi mọi thứ diễn ra ngay trong Payobook. Các nhiệm vụ thực hành chạy trên dữ liệu giả lập không có máy chủ phía sau; nhiệm vụ này tạo ra phiếu lương thật trong công ty demo dùng chung, trên bộ phận được gán cho tài khoản của bạn. Đây là kỳ lương thật an toàn nhất bạn từng chạy — nhưng vẫn là một kỳ lương thật."),
+      hint: B("If you have not done the practice run yet, it is worth eight minutes: the same judgement, on a fixture where a wrong answer costs a sentence rather than a record.",
+              "Nếu bạn chưa làm bài thực hành thì rất đáng dành tám phút: cùng một phán đoán, trên dữ liệu giả lập, nơi trả lời sai chỉ tốn một câu nhắc chứ không tốn một bản ghi."),
+    },
+    {
+      id: "open", nav: "runpayroll", ack: true,
+      instruction: B("Open Run Payroll", "Mở Chạy bảng lương"),
+      detail: B("Your division is already selected and moved to the top of the list, and the period is pinned to June 2026 — the one month the demo world leaves open. Read both before you go on.",
+                "Bộ phận của bạn đã được chọn sẵn và đưa lên đầu danh sách, còn kỳ lương được cố định ở tháng 6/2026 — tháng duy nhất mà môi trường demo để mở. Hãy đọc cả hai trước khi đi tiếp."),
+      hint: B("The other five divisions are still on the list on purpose. You are welcome to look; the mission checks the one that is yours.",
+              "Năm bộ phận còn lại vẫn nằm trong danh sách một cách có chủ ý. Bạn cứ xem thoải mái; nhiệm vụ chỉ kiểm tra đúng bộ phận của bạn."),
+    },
+    {
+      id: "consequence", consequence: true,
+      instruction: B("Read what Compute is about to do", "Đọc xem nút Tính sắp làm gì"),
+      detail: B("This card is teaching, not a gate: nothing here blocks the button, and Payobook's own rules are what decide whether you may press it. Read the scope, the way back and the thing to verify — then act, in the product.",
+                "Thẻ này để dạy, không phải để chặn: không có gì ở đây khoá nút lại, và chính các quy tắc của Payobook mới quyết định bạn có được bấm hay không. Hãy đọc phạm vi, lối quay lại và thứ cần kiểm tra — rồi thao tác, ngay trong sản phẩm."),
+    },
+    {
+      id: "compute", check: "june_run_computed",
+      instruction: B("Compute the run", "Tính đợt lương"),
+      detail: B("Press Compute in the wizard. When the payslips exist, this step ticks itself — the mission is watching the records, not your clicks.",
+                "Hãy bấm Tính trong trình hướng dẫn. Khi các phiếu lương đã có, bước này tự đánh dấu hoàn thành — nhiệm vụ đang theo dõi bản ghi, không theo dõi cú bấm của bạn."),
+      hint: B("Nothing is paid and nobody is notified. Drafts can be deleted and recomputed as often as you want.",
+              "Chưa có gì được chi và chưa ai được thông báo. Bản nháp có thể xoá và tính lại bao nhiêu lần tuỳ ý."),
+    },
+    {
+      id: "review", nav: "payslips", ack: true,
+      instruction: B("Open the payslips and read what is flagged", "Mở phiếu lương và đọc những gì bị gắn cờ"),
+      detail: B("Filter to \"Need review\" first, then sample two or three that are not flagged. The engine flags the unusual, not the wrong — so a clean slip can still be incorrect, and a flagged one can be perfectly fine.",
+                "Hãy lọc theo \"Cần soát xét\" trước, rồi lấy mẫu hai ba phiếu không bị gắn cờ. Hệ thống gắn cờ cái bất thường chứ không phải cái sai — nên một phiếu sạch vẫn có thể sai, và một phiếu bị gắn cờ vẫn có thể hoàn toàn ổn."),
+      hint: B("Open the breakdown on one slip and follow it from base to net. If you can say where each line came from, you are ready to submit.",
+              "Hãy mở bảng chi tiết của một phiếu và đi từ lương cơ bản tới thực nhận. Nếu bạn nói được mỗi dòng đến từ đâu thì bạn đã sẵn sàng để trình duyệt."),
+    },
+    {
+      id: "submit", nav: "payruns", check: "june_run_submitted",
+      instruction: B("Submit the run for approval", "Trình đợt lương lên phê duyệt"),
+      detail: B("This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected back to draft with a written reason.",
+                "Đây là bước mà việc hoàn tác không còn dễ dàng nữa. Sau bước này, đợt lương chỉ đi tiếp bằng cách được duyệt ở từng cổng, hoặc bị từ chối trả về Nháp kèm lý do bằng văn bản."),
+      hint: B("Submitting is you saying the flags have been answered. If any of them have not, go back — the run will still be there.",
+              "Trình duyệt là bạn tuyên bố rằng các cờ cảnh báo đã được trả lời. Nếu còn cờ nào chưa, hãy quay lại — đợt lương vẫn nằm đó."),
+    },
+    {
+      id: "officer", check: "june_run_officer_done",
+      instruction: B("Move it past the Payroll Officer gate", "Đưa nó qua cổng Chuyên viên tính lương"),
+      detail: B("On the demo world your account holds the approval tiers, so you can walk the run through the chain yourself. On a real tenant these are four different people, and the waiting between them is most of what payroll week is.",
+                "Trên môi trường demo, tài khoản của bạn giữ các vòng phê duyệt, nên bạn tự đưa đợt lương đi hết chuỗi được. Ở một hệ thống thật, đây là bốn con người khác nhau, và phần lớn một tuần tính lương chính là những khoảng chờ giữa họ."),
+      hint: B("The column a run sits in names the tier that has to act next. That is the answer to \"who do I chase\".",
+              "Cột mà đợt lương đang nằm chỉ đích danh vòng phải xử lý tiếp theo. Đó chính là câu trả lời cho \"tôi phải hỏi ai\"."),
+    },
+    {
+      id: "done", check: "june_run_done",
+      instruction: B("Take it through the remaining gates to done", "Đưa nó qua các cổng còn lại tới Hoàn tất"),
+      detail: B("HR review, then finance approval, then done. Only a completed run offers the bank file, the journals and the payments — those buttons appear exactly when every gate has said yes, and that is the whole point of the chain.",
+                "HR soát xét, rồi Tài chính phê duyệt, rồi Hoàn tất. Chỉ đợt đã Hoàn tất mới hiện tệp chi lương, bút toán và các khoản thanh toán — các nút đó xuất hiện đúng lúc mọi cổng đã đồng ý, và đó chính là ý nghĩa của cả chuỗi."),
+      hint: B("After done, a correction is a retro line and never an edit. That is not a restriction — it is what keeps a reported month reportable.",
+              "Sau khi Hoàn tất, mọi hiệu chỉnh là một dòng hồi tố chứ không bao giờ là sửa trực tiếp. Đó không phải hạn chế — đó là thứ giữ cho một kỳ đã báo cáo vẫn báo cáo được."),
+    },
+  ],
 };
 
 /* =============================================================================
@@ -1717,8 +1898,16 @@ const SCREEN_CTX = {
   payruns: {
     blurb: B("Every pay run on one board, in the column of the approval stage it is waiting at.",
              "Mọi đợt tính lương trên một bảng, nằm ở cột của bước phê duyệt mà nó đang chờ."),
-    next: B("Look at \"Awaiting your approval\" first — that count is the work only you can unblock. Everything else on this board is somebody else's gate.",
-            "Nhìn \"Chờ bạn phê duyệt\" trước — con số đó là phần việc chỉ bạn mới gỡ được. Mọi thứ khác trên bảng này là cổng của người khác."),
+    /* LIVE SITE 1 of 2. On the demo world this names the prospect's OWN
+       division and the state their OWN June run is actually in — which is the
+       whole reason "what should I do next here" is worth asking on a board
+       full of other people's work. `liveFallback` is the sentence every other
+       tenant sees, and it is the previous wording verbatim: adding a live
+       token must not change what a real company reads. */
+    next: B("Your division on this demo is {{live:division_name}}, and its June run is at {{live:june_run_state}} right now. Look at \"Awaiting your approval\" first — that count is the work only you can unblock.",
+            "Bộ phận của bạn trên bản demo này là {{live:division_name}}, và đợt lương tháng 6 của bộ phận đó hiện đang ở {{live:june_run_state}}. Nhìn \"Chờ bạn phê duyệt\" trước — con số đó là phần việc chỉ bạn mới gỡ được."),
+    liveFallback: B("Look at \"Awaiting your approval\" first — that count is the work only you can unblock. Everything else on this board is somebody else's gate.",
+                    "Nhìn \"Chờ bạn phê duyệt\" trước — con số đó là phần việc chỉ bạn mới gỡ được. Mọi thứ khác trên bảng này là cổng của người khác."),
     chips: ["approve", "reject", "checkfinal", "retroq", "whatnext"],
   },
   payslips: {
@@ -2155,7 +2344,21 @@ const QA = [
       { k: "p", v: B("The one with the <b>latest effective date</b> among the policies that are still active. Not the most recently created record and not the last one edited — the effective date is the field that decides, which is why it is the field to check first.",
                      "Bản có <b>ngày hiệu lực mới nhất</b> trong số các chính sách còn đang bật. Không phải bản ghi mới tạo nhất, cũng không phải bản sửa gần nhất — ngày hiệu lực mới là trường quyết định, nên đó là trường cần kiểm tra đầu tiên.") },
       { k: "p", v: B("The rates table at the top of this screen always shows that policy, with its effective date beside the heading. The roster below shows all of them, so a change reads as a history: one record ended, the next one starting.",
-                     "Bảng tỷ lệ ở đầu màn hình này luôn hiển thị đúng chính sách đó, kèm ngày hiệu lực ngay cạnh tiêu đề. Danh sách bên dưới hiển thị tất cả, nên một thay đổi đọc ra như một lịch sử: bản này kết thúc, bản kế tiếp bắt đầu.") },
+                     "Bảng tỷ lệ ở đầu màn hình này luôn hiển thị đúng chính sách đó, kèm ngày hiệu lực ngay cạnh tiêu đề. Danh sách bên dưới hiển thị tất cả, nên một thay đổi đọc ra như một lịch sử: bản này kết thúc, bản kế tiếp bắt đầu."),
+      },
+      /* LIVE SITE 2 of 2. The one place the Coach quotes a rate it did not
+         author: the employee / employer split on the policy THIS company has
+         in force, read at answer time by the same latest-effective-active rule
+         the cockpit applies. If the read fails, or there is no policy, the
+         fallback below is shown whole — the Coach's standing promise is that
+         it never invents a rate, and half a sentence about one is an invention
+         with a gap in it. */
+      { k: "p",
+        v: B("On this company right now, employee / employer: {{live:active_policy_rates}}. Read straight off the policy in force — if that is not what you expected, the roster below will show you which record is being applied.",
+             "Trên công ty này ngay lúc này, người lao động / doanh nghiệp: {{live:active_policy_rates}}. Đọc trực tiếp từ chính sách đang hiệu lực — nếu con số khác với bạn nghĩ, danh sách bên dưới sẽ cho thấy bản ghi nào đang được áp dụng."),
+        liveFallback: B("Open the rates table above to read the split that is in force here. Every figure the Coach quotes about contributions comes off that record, never from memory.",
+                        "Hãy mở bảng tỷ lệ ở trên để đọc mức đóng đang hiệu lực tại đây. Mọi con số về bảo hiểm mà trợ lý đưa ra đều lấy từ bản ghi đó, không bao giờ theo trí nhớ."),
+      },
       { k: "warn", v: B("Two active policies with no end date between them is not reported as an error. It simply resolves to one of them, and you find out which from a payslip.",
                         "Hai chính sách cùng bật mà không có ngày kết thúc phân định thì không bị báo lỗi. Hệ thống chỉ chọn lấy một bản, và bạn biết là bản nào qua một phiếu lương.") },
       { k: "src", v: B("The active insurance policies, ordered by effective date.",

@@ -100,6 +100,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m1_step_01" model="learn.mission.step">
@@ -113,6 +114,7 @@
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m1_step_01_opt_retail" model="learn.mission.option">
@@ -151,6 +153,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="True"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m1_step_03" model="learn.mission.step">
@@ -164,6 +167,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m1_step_04" model="learn.mission.step">
@@ -177,6 +181,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m1_step_05" model="learn.mission.step">
@@ -189,6 +194,7 @@
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m1_step_05_opt_flag" model="learn.mission.option">
@@ -227,6 +233,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m1_step_07" model="learn.mission.step">
@@ -241,6 +248,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="True"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2" model="learn.mission">
@@ -345,6 +353,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2_step_01" model="learn.mission.step">
@@ -357,6 +366,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2_step_02" model="learn.mission.step">
@@ -370,6 +380,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2_step_03" model="learn.mission.step">
@@ -382,6 +393,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2_step_04" model="learn.mission.step">
@@ -394,6 +406,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="True"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2_step_05" model="learn.mission.step">
@@ -406,6 +419,7 @@
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2_step_05_opt_reject" model="learn.mission.option">
@@ -445,6 +459,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m2_step_07" model="learn.mission.step">
@@ -458,6 +473,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="True"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m3" model="learn.mission">
@@ -577,6 +593,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m4_step_01" model="learn.mission.step">
@@ -590,6 +607,7 @@
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m4_step_01_opt_newpolicy" model="learn.mission.option">
@@ -629,6 +647,7 @@
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m4_step_02_opt_two" model="learn.mission.option">
@@ -668,6 +687,7 @@
         <field name="is_decision" eval="True"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m4_step_03_opt_aug" model="learn.mission.option">
@@ -707,6 +727,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m4_step_05" model="learn.mission.step">
@@ -719,6 +740,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="True"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m4_step_06" model="learn.mission.step">
@@ -732,6 +754,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m4_step_07" model="learn.mission.step">
@@ -745,6 +768,7 @@
         <field name="is_decision" eval="False"/>
         <field name="is_consequence" eval="False"/>
         <field name="is_undo" eval="True"/>
+        <field name="is_ack" eval="False"/>
     </record>
 
     <record id="mission_m5" model="learn.mission">
@@ -760,6 +784,204 @@
         <field name="screen">formula</field>
         <field name="confidence_key">formula</field>
         <field name="confidence_gain">20</field>
+    </record>
+
+    <record id="mission_ml1" model="learn.mission">
+        <field name="key">mL1</field>
+        <field name="sequence">60</field>
+        <field name="line">payrun</field>
+        <field name="icon">zap</field>
+        <field name="name">Run your division's June payroll — for real</field>
+        <field name="summary">The same judgement as the practice run, on real records in the demo world: your own division, the open June period, and the approval chain all the way to done.</field>
+        <field name="duration_min">12</field>
+        <field name="kind">live</field>
+        <field name="screen">runpayroll</field>
+        <field name="confidence_key">run_live</field>
+        <field name="confidence_gain">40</field>
+        <field name="consequence_title">This one is real</field>
+        <field name="consequence_scope">Your assigned division's June 2026 run, in the shared Payobook demo company. Real payslip records are created, and other people exploring the demo can see them. No other division and no other period is touched — and no real company's data is anywhere near this.</field>
+        <field name="consequence_reversible">Partly, and the halves matter. Draft payslips can be deleted and recomputed as often as you like. Submitting is not silently undoable: from there the run moves only by being approved, or by being rejected back to draft with a written reason — the same chain a real payroll travels.</field>
+        <field name="consequence_verify">That the division the wizard has selected is the one assigned to you. It is preselected and moved to the front of the list for exactly this reason, and the mission verifies against your assignment rather than against whatever the wizard happens to be showing.</field>
+    </record>
+
+    <record id="mission_ml1_did_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">10</field>
+        <field name="kind">did</field>
+        <field name="body">Computed a real month of payroll for a real division, having read what the action would do before you did it.</field>
+    </record>
+
+    <record id="mission_ml1_did_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">20</field>
+        <field name="kind">did</field>
+        <field name="body">Opened the run and read what the engine flagged, instead of taking a clean-looking total as evidence.</field>
+    </record>
+
+    <record id="mission_ml1_did_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">30</field>
+        <field name="kind">did</field>
+        <field name="body">Submitted it, and watched it stop being yours: from that point the run moves only through the chain.</field>
+    </record>
+
+    <record id="mission_ml1_did_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">40</field>
+        <field name="kind">did</field>
+        <field name="body">Followed it through the gates to done — the same journey, and the same waiting, that payroll week is actually made of.</field>
+    </record>
+
+    <record id="mission_ml1_did_04" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">50</field>
+        <field name="kind">did</field>
+        <field name="body">Did it once where a mistake costs a demo record, which is the last place it is cheap.</field>
+    </record>
+
+    <record id="mission_ml1_check_00" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">10</field>
+        <field name="kind">check</field>
+        <field name="body">The division is yours and the period is the one you meant — read both before computing, not after.</field>
+    </record>
+
+    <record id="mission_ml1_check_01" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">20</field>
+        <field name="kind">check</field>
+        <field name="body">Every flagged payslip opened and understood. A flag is a question about one employee, and submitting is you answering it.</field>
+    </record>
+
+    <record id="mission_ml1_check_02" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">30</field>
+        <field name="kind">check</field>
+        <field name="body">You can say in one sentence why the total is what it is, before anybody at a later gate asks you.</field>
+    </record>
+
+    <record id="mission_ml1_check_03" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">40</field>
+        <field name="kind">check</field>
+        <field name="body">You know which gate the run is at and who holds it — the column names them.</field>
+    </record>
+
+    <record id="mission_ml1_check_04" model="learn.mission.note">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">50</field>
+        <field name="kind">check</field>
+        <field name="body">Nothing was submitted to make a deadline. A gate skipped for a deadline is a signature nobody gave.</field>
+    </record>
+
+    <record id="mission_ml1_step_00" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">10</field>
+        <field name="key">brief</field>
+        <field name="instruction">Read what makes this one different</field>
+        <field name="detail">Everything from here happens in Payobook itself. The practice missions ran on a fixture with no server behind them; this one creates real payslip records in the shared demo company, on the division assigned to your account. It is the safest real payroll you will ever run — and it is still a real one.</field>
+        <field name="hint">If you have not done the practice run yet, it is worth eight minutes: the same judgement, on a fixture where a wrong answer costs a sentence rather than a record.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="True"/>
+    </record>
+
+    <record id="mission_ml1_step_01" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">20</field>
+        <field name="key">open</field>
+        <field name="nav">runpayroll</field>
+        <field name="instruction">Open Run Payroll</field>
+        <field name="detail">Your division is already selected and moved to the top of the list, and the period is pinned to June 2026 — the one month the demo world leaves open. Read both before you go on.</field>
+        <field name="hint">The other five divisions are still on the list on purpose. You are welcome to look; the mission checks the one that is yours.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="True"/>
+    </record>
+
+    <record id="mission_ml1_step_02" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">30</field>
+        <field name="key">consequence</field>
+        <field name="instruction">Read what Compute is about to do</field>
+        <field name="detail">This card is teaching, not a gate: nothing here blocks the button, and Payobook's own rules are what decide whether you may press it. Read the scope, the way back and the thing to verify — then act, in the product.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="True"/>
+        <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="False"/>
+    </record>
+
+    <record id="mission_ml1_step_03" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">40</field>
+        <field name="key">compute</field>
+        <field name="instruction">Compute the run</field>
+        <field name="detail">Press Compute in the wizard. When the payslips exist, this step ticks itself — the mission is watching the records, not your clicks.</field>
+        <field name="hint">Nothing is paid and nobody is notified. Drafts can be deleted and recomputed as often as you want.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+        <field name="check">june_run_computed</field>
+        <field name="is_ack" eval="False"/>
+    </record>
+
+    <record id="mission_ml1_step_04" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">50</field>
+        <field name="key">review</field>
+        <field name="nav">payslips</field>
+        <field name="instruction">Open the payslips and read what is flagged</field>
+        <field name="detail">Filter to "Need review" first, then sample two or three that are not flagged. The engine flags the unusual, not the wrong — so a clean slip can still be incorrect, and a flagged one can be perfectly fine.</field>
+        <field name="hint">Open the breakdown on one slip and follow it from base to net. If you can say where each line came from, you are ready to submit.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+        <field name="is_ack" eval="True"/>
+    </record>
+
+    <record id="mission_ml1_step_05" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">60</field>
+        <field name="key">submit</field>
+        <field name="nav">payruns</field>
+        <field name="instruction">Submit the run for approval</field>
+        <field name="detail">This is the step that stops being reversible in the easy way. After it, the run moves only by being approved at each gate, or by being rejected back to draft with a written reason.</field>
+        <field name="hint">Submitting is you saying the flags have been answered. If any of them have not, go back — the run will still be there.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+        <field name="check">june_run_submitted</field>
+        <field name="is_ack" eval="False"/>
+    </record>
+
+    <record id="mission_ml1_step_06" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">70</field>
+        <field name="key">officer</field>
+        <field name="instruction">Move it past the Payroll Officer gate</field>
+        <field name="detail">On the demo world your account holds the approval tiers, so you can walk the run through the chain yourself. On a real tenant these are four different people, and the waiting between them is most of what payroll week is.</field>
+        <field name="hint">The column a run sits in names the tier that has to act next. That is the answer to "who do I chase".</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+        <field name="check">june_run_officer_done</field>
+        <field name="is_ack" eval="False"/>
+    </record>
+
+    <record id="mission_ml1_step_07" model="learn.mission.step">
+        <field name="mission_id" ref="mission_ml1"/>
+        <field name="sequence">80</field>
+        <field name="key">done</field>
+        <field name="instruction">Take it through the remaining gates to done</field>
+        <field name="detail">HR review, then finance approval, then done. Only a completed run offers the bank file, the journals and the payments — those buttons appear exactly when every gate has said yes, and that is the whole point of the chain.</field>
+        <field name="hint">After done, a correction is a retro line and never an edit. That is not a restriction — it is what keeps a reported month reportable.</field>
+        <field name="is_decision" eval="False"/>
+        <field name="is_consequence" eval="False"/>
+        <field name="is_undo" eval="False"/>
+        <field name="check">june_run_done</field>
+        <field name="is_ack" eval="False"/>
     </record>
 
 </odoo>

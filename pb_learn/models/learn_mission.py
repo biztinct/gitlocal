@@ -15,10 +15,13 @@ that one key addresses the replica's Compute button AND the real Run Payroll
 wizard, which is how the Coach can later point at the live control using the
 vocabulary the mission taught.
 
-kind='live' EXISTS IN THE SELECTION AND DOES NOT RUN IN PHASE A. Live capstone
-missions validate real actions on real records and are demo-tenant only
-(design_v2 §5). The selection carries the value now so content and progress
-rows do not have to be migrated later; the runner refuses to open one.
+kind='live' IS THE ONE EXCEPTION, AND IT RUNS SOMEWHERE ELSE ENTIRELY.
+A live capstone validates real actions on real records and exists only in the
+demo world (design_v2 §5). It does not run on the replica and it is not driven
+by the Journey: `live_check` below observes what the learner did with the
+PRODUCT's own controls, and models/learn_live.py — one read-only file, guarded
+by a contract check — is the only place that looks. Everything in this file
+that is not `live_check` still belongs to the fixture missions.
 
 WHAT THE CONSTRAINTS ARE FOR
 ----------------------------
@@ -86,26 +89,76 @@ class LearnMission(models.Model):
     def _selection_kind(self):
         return [('full', self.env._('Full mission')),
                 ('outline', self.env._('Outline mission')),
-                # Live capstones run against REAL records on the demo tenant
-                # only. Phase A ships the value, not the runtime.
-                ('live', self.env._('Live capstone (demo tenant only)'))]
+                # Live capstones run against REAL records in the demo world
+                # only — gated server-side on every check, not just hidden.
+                ('live', self.env._('Live capstone (demo world only)'))]
 
     @api.constrains('kind', 'consequence_scope', 'anomaly_body')
     def _check_full_missions_are_complete(self):
         """A full mission without a consequence card is a practice run that
-        teaches someone to act without checking — the opposite of the point."""
+        teaches someone to act without checking — the opposite of the point.
+
+        LIVE missions are held to the consequence card too, and more strictly in
+        spirit: a fixture mission's worst outcome is a wrong answer, and a live
+        one's is a real record in a world other people are looking at.
+
+        They are NOT held to the anomaly. A seeded anomaly is a fact about a
+        fixture — the same 382% overtime, every time, for every learner. Live
+        data has whatever it has, and a mission that claimed otherwise would be
+        asserting an amount, which is the one thing a live mission must never
+        do.
+        """
         for m in self:
-            if m.kind != 'full':
+            if m.kind not in ('full', 'live'):
                 continue
             if not (m.consequence_title and m.consequence_scope
                     and m.consequence_reversible and m.consequence_verify):
                 raise ValidationError(self.env._(
-                    "Mission '%s' is full but its consequence card is incomplete. "
+                    "Mission '%s' is %s but its consequence card is incomplete. "
                     "All four of title, scope, reversibility and what-to-verify "
-                    "are required.", m.key))
-            if not m.anomaly_body:
+                    "are required.", m.key, m.kind))
+            if m.kind == 'full' and not m.anomaly_body:
                 raise ValidationError(self.env._(
                     "Mission '%s' is full but seeds no judgement anomaly.", m.key))
+
+    # ------------------------------------------------------- live capstones
+    @api.model
+    def live_check(self, mission_key, step_key):
+        """Has the learner done the thing this live step asked for?
+
+        The ONE call the live runner makes while a mission is open, and the
+        only thing it can do: name a step and be told what the product's own
+        records currently say. It cannot advance anything, and there is no
+        method here that could — the runner instructs, the learner acts in the
+        product, and this looks.
+
+        Refuses by NAME rather than by silence in every failure mode: a live
+        mission opened outside the demo world, a step that carries no check, a
+        check key nothing implements. Each of those is a different mistake and
+        a learner staring at a step that will not complete deserves to know
+        which one they are in.
+        """
+        step = self.env['learn.mission.step'].sudo().search([
+            ('mission_id.key', '=', mission_key), ('key', '=', step_key)], limit=1)
+        if not step:
+            return {'ok': False, 'note': {
+                'en': "No step '%s' in mission '%s'." % (step_key, mission_key),
+                'vi': "Không có bước '%s' trong nhiệm vụ '%s'." % (step_key, mission_key)}}
+        if step.mission_id.kind != 'live':
+            # A fixture mission has no business calling this. Its steps run on
+            # a JavaScript replica with no server behind them, and the moment
+            # one of them starts asking the database a question it has stopped
+            # being a practice surface.
+            return {'ok': False, 'note': {
+                'en': "'%s' is a practice mission — it has nothing to check on the server."
+                      % mission_key,
+                'vi': "'%s' là nhiệm vụ thực hành — không có gì để kiểm tra trên máy chủ."
+                      % mission_key}}
+        if not step.check:
+            return {'ok': False, 'note': {
+                'en': "Step '%s' is not verified by the server." % step_key,
+                'vi': "Bước '%s' không được máy chủ xác minh." % step_key}}
+        return self.env['learn.live'].check(step.check)
 
     def _mission_dict(self):
         self.ensure_one()
@@ -159,6 +212,28 @@ class LearnMissionStep(models.Model):
     is_undo = fields.Boolean(
         default=False, help="Demonstrates the reversal. Every mission ends on one "
                             "where an undo exists, so the learner has DONE it once.")
+
+    # -- live steps (Phase B) ---------------------------------------------
+    # A live step is one of exactly three things, and the runner needs to be
+    # able to tell them apart without inspecting prose:
+    #
+    #   check    a server-side predicate answers it. The learner acts in the
+    #            PRODUCT and the runner watches the record change.
+    #   is_ack   nothing observable happens, so the learner confirms. Used
+    #            where the instruction is "read this" or where the state the
+    #            step is about belongs to somebody else's gate.
+    #   neither  instructional. Next-gated, exactly like a fixture step.
+    #
+    # `check` is a KEY, not a domain: the predicate lives in models/learn_live.py
+    # where one contract check can prove the whole registry only reads.
+    check = fields.Char(
+        help="Key of a learn.live predicate. The step completes when it says ok.")
+    is_ack = fields.Boolean(
+        default=False,
+        help="The learner confirms this step themselves. For steps where no "
+             "state is observable — reading a card, or watching a gate that "
+             "belongs to another role.")
+
     option_ids = fields.One2many('learn.mission.option', 'step_id')
 
     @api.constrains('is_decision', 'option_ids')
@@ -194,6 +269,13 @@ class LearnMissionStep(models.Model):
             'is_decision': self.is_decision,
             'is_consequence': self.is_consequence,
             'is_undo': self.is_undo,
+            # `check_key`, NOT `check`: the mission dict already has a `check`
+            # and it is the debrief CHECKLIST — a list of prose. Marking a key
+            # named `check` as structure so this one survived the bilingual zip
+            # would ship the whole checklist in English, which is precisely the
+            # bug _RAW_KEYS' comment warns about, one level deeper.
+            'check_key': self.check or '',
+            'is_ack': self.is_ack,
             'options': [o._option_dict() for o in self.option_ids],
         }
 

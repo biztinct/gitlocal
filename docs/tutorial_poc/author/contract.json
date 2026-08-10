@@ -11,7 +11,7 @@
     "human has to re-read — the checker cannot know whether a renamed state key",
     "invalidates one sentence or a whole lesson."
   ],
-  "schemaVersion": "1.2",
+  "schemaVersion": "1.3",
   "repoRoot": "../../..",
   "checks": [
     {
@@ -489,6 +489,96 @@
       "taughtIn": [
         "intent whichconfig",
         "glossary configCode"
+      ]
+    },
+    {
+      "id": "live-surfaces-are-read-only",
+      "kind": "absent",
+      "why": "The capstone's whole safety argument in one check. pb_learn may look at the product and may not touch it: the mission instructs, the learner presses Payobook's own buttons, and these predicates find out what happened by searching. A convenience that mutated — marking a run, ticking a flag, assigning a division from inside a poll loop — would turn a learning module into an actor on real payroll records, and it would arrive as exactly one of these tokens.",
+      "files": [
+        "pb_learn/models/learn_live.py"
+      ],
+      "expect": [
+        ".create(",
+        ".write(",
+        ".unlink(",
+        "cr.execute",
+        "action_",
+        "_do_"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "mission mL1 every check step",
+        "the intent whichpolicy live block",
+        "screen payruns next_step",
+        "tests/test_mission.py::test_15"
+      ]
+    },
+    {
+      "id": "demo-divisions-and-group",
+      "kind": "contains",
+      "why": "mL1 hands each prospect one of these six divisions and verifies against that assignment. A renamed key silently un-assigns every existing demo user — round-robin keeps handing out a name nothing resolves — and the capstone then tells a prospect to compute a run it can never find.",
+      "file": "pb_demo/models/demo_catalog.py",
+      "expect": [
+        "'retail'",
+        "'manufacturing'",
+        "'logistics'",
+        "'corporate'",
+        "'it'",
+        "'construction'",
+        "GROUP_COMPANY_NAME = 'Payobook Vietnam JSC'"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_demo/models/demo_division.py::DIVISION_KEYS",
+        "pb_learn/models/learn_live.py::DEMO_COMPANY_NAME",
+        "mission mL1"
+      ]
+    },
+    {
+      "id": "demo-june-is-the-open-month",
+      "kind": "contains",
+      "why": "Every predicate looks for a June 2026 run because June is the ONE month the demo generator leaves in draft — April and May are done and locked. Move the open month and the capstone asks a prospect to compute a period that is already closed, which the product will correctly refuse while the mission keeps waiting.",
+      "file": "pb_demo/models/demo_history.py",
+      "expect": [
+        "_HISTORY_YEAR = 2026",
+        "_OPEN_MONTH = 6"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/models/learn_live.py::JUNE_START / JUNE_END",
+        "mission mL1 compute and submit steps"
+      ]
+    },
+    {
+      "id": "demo-run-division-is-derived",
+      "kind": "contains",
+      "why": "A run's pb_division is COMPUTED from its first payslip's formula config and STORED — which is why every predicate can search on it, and why june_run_computed also counts slips: before the compute there are no slips, so there is no division, so the run the prospect is about to create cannot be found by division alone.",
+      "file": "pb_payruns/models/hr_payslip_run.py",
+      "expect": [
+        "pb_division = fields.Char(",
+        "compute='_compute_pb_division', store=True"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "pb_learn/models/learn_live.py::_my_june_run",
+        "mission mL1"
+      ]
+    },
+    {
+      "id": "demo-payrun-defaults-seam",
+      "kind": "contains",
+      "why": "pb_demo pins the demo wizard to June 2026 and now also moves the user's own division to the front and preselects it. mL1's consequence card promises exactly that ('it is preselected and moved to the front of the list'), so if this seam is refactored away the mission is making a promise about a screen that no longer keeps it.",
+      "file": "pb_demo/models/demo_payrun.py",
+      "expect": [
+        "_pb_ensure_demo_division()",
+        "d['date_start'] = '2026-06-01'",
+        "d['division'] = mine"
+      ],
+      "fixture": [],
+      "taughtIn": [
+        "mission mL1 open step and consequence card",
+        "pb_demo_portal/controllers/main.py::_create_demo_user"
       ]
     }
   ],

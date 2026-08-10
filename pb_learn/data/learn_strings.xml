@@ -195,9 +195,89 @@
         <field name="value">Setup</field>
     </record>
 
+    <record id="str_liveack" model="learn.string">
+        <field name="key">liveAck</field>
+        <field name="value">I have done this</field>
+    </record>
+
+    <record id="str_livebadge" model="learn.string">
+        <field name="key">liveBadge</field>
+        <field name="value">Live · demo world</field>
+    </record>
+
+    <record id="str_livechecknow" model="learn.string">
+        <field name="key">liveCheckNow</field>
+        <field name="value">Check now</field>
+    </record>
+
+    <record id="str_livechecking" model="learn.string">
+        <field name="key">liveChecking</field>
+        <field name="value">Checking…</field>
+    </record>
+
+    <record id="str_livefinish" model="learn.string">
+        <field name="key">liveFinish</field>
+        <field name="value">Finish the mission</field>
+    </record>
+
+    <record id="str_liveleave" model="learn.string">
+        <field name="key">liveLeave</field>
+        <field name="value">Leave</field>
+    </record>
+
+    <record id="str_liveminimise" model="learn.string">
+        <field name="key">liveMinimise</field>
+        <field name="value">Minimise</field>
+    </record>
+
+    <record id="str_livenext" model="learn.string">
+        <field name="key">liveNext</field>
+        <field name="value">Next</field>
+    </record>
+
     <record id="str_livenotyet" model="learn.string">
         <field name="key">liveNotYet</field>
-        <field name="value">This is a live capstone. It runs against real records on the demo tenant and is not available in this build yet — the practice mission teaches the same judgement safely.</field>
+        <field name="value">This is a live capstone. It runs against real records in the Payobook demo world, so it opens only for a demo account — the practice mission above teaches the same judgement, safely, wherever you are.</field>
+    </record>
+
+    <record id="str_livenudge" model="learn.string">
+        <field name="key">liveNudge</field>
+        <field name="value">Rehearse it first?</field>
+    </record>
+
+    <record id="str_livenudgebody" model="learn.string">
+        <field name="key">liveNudgeBody</field>
+        <field name="value">The practice mission runs the same judgement on a fixture where nothing can matter. You do not have to — this is a nudge, not a lock.</field>
+    </record>
+
+    <record id="str_livenudgego" model="learn.string">
+        <field name="key">liveNudgeGo</field>
+        <field name="value">Open the practice mission</field>
+    </record>
+
+    <record id="str_liveopenscreen" model="learn.string">
+        <field name="key">liveOpenScreen</field>
+        <field name="value">Open the screen</field>
+    </record>
+
+    <record id="str_livereal" model="learn.string">
+        <field name="key">liveReal</field>
+        <field name="value">This one is real</field>
+    </record>
+
+    <record id="str_liverealbody" model="learn.string">
+        <field name="key">liveRealBody</field>
+        <field name="value">Every step below happens in Payobook itself, on records other people can see. Nothing here is a replica, and nothing here is undone for you when you leave.</field>
+    </record>
+
+    <record id="str_livestart" model="learn.string">
+        <field name="key">liveStart</field>
+        <field name="value">Start the live mission</field>
+    </record>
+
+    <record id="str_livewaiting" model="learn.string">
+        <field name="key">liveWaiting</field>
+        <field name="value">Waiting for you to do this in Payobook</field>
     </record>
 
     <record id="str_match" model="learn.string">

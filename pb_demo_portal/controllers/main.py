@@ -272,6 +272,11 @@ class DemoPortal(http.Controller):
         if dash:
             user_vals['action_id'] = dash.id
         user = Users.create(user_vals)
+        # One of the six demo divisions, round-robin, so this prospect's live
+        # capstone drives a June run nobody else is driving. Assigned here
+        # rather than in the vals so that the same helper serves the lazy
+        # back-fill of users created before the field existed.
+        user.sudo()._pb_ensure_demo_division()
         # enrich the partner with the captured profile (Odoo 19 res.partner has no
         # 'mobile' field — use 'phone'; fold company/size into the comment).
         user.partner_id.sudo().write({

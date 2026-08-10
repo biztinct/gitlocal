@@ -34,6 +34,11 @@ _RAW_KEYS = frozenset({
     # as §5.146, one level deeper.
     'nav', 'target', 'is_decision', 'is_consequence', 'is_undo',
     'confidence_key', 'confidence_gain',
+    # Phase B live steps. `check_key` is the predicate NAME and must survive
+    # untouched — and it is deliberately not called `check`, because that key
+    # is the debrief checklist and is prose. Booleans need no entry: the zip
+    # only wraps strings.
+    'check_key',
 })
 
 
@@ -293,6 +298,13 @@ class LearnStation(models.Model):
             'user': {
                 'name': self.env.user.name,
                 'lang': (self.env.user.lang or 'en_US').startswith('vi') and 'vi' or 'en',
+                # Whether live capstones are offered at all. Asked of the real
+                # group and the real company, exactly as the predicates do —
+                # the frontend uses it to decide what to DRAW, and the server
+                # re-asks on every check, so a browser that lied would get a
+                # mission it could never complete rather than a live action it
+                # should not have had.
+                'is_demo': self.env['learn.live'].gate_open(),
             },
         })
         return bundle
