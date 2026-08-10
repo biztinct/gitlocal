@@ -116,6 +116,17 @@ class TestDemoChrome(TransactionCase):
         self.assertIn('pb_demo_disclaimer_off', self.chrome)
         self.assertIn('dismiss()', self.chrome)
 
+    def test_08b_a_dismissal_made_against_pb_coach_is_honoured(self):
+        """A prospect who already closed this chip has answered the question.
+
+        Asking again because the module that drew it was retired underneath
+        them reads as the product forgetting things.
+        """
+        self.assertIn('pb_coach_disclaimer_off', self.chrome,
+                      "a dismissal made against pb_coach's chip is ignored")
+        self.assertNotIn('setItem(COACH_DISMISSED', self.chrome,
+                         "pb_demo writes pb_coach's dismissal flag")
+
     def test_09_the_mount_point_is_additive(self):
         """MainComponentsContainer, position="after" — an APPEND.
 

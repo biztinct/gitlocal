@@ -75,6 +75,18 @@
 
 .lrn-fablabel { line-height: 1; }
 
+/* pb_coach uninstalled: its 92px slot is empty, so this launcher drops into it
+   and the corner reads as two controls rather than two and a hole.
+
+   DECLARED HERE, ABOVE THE MEDIA QUERIES, and the order is the whole point.
+   Both selectors have the same specificity (0,2,1), so the LAST one wins — and
+   the mobile block below also sets `body.pb-coach-absent .lrn-fab`. Sitting
+   after it, this rule silently overrode the phone offset and put the launcher
+   back at 92px on a 380px screen. tests/test_retirement.py::test_10 asserts the
+   ORDER, not the presence, because presence was never the thing that was
+   wrong. */
+body.pb-coach-absent .lrn-fab { bottom: 92px; }
+
 /* ----------------------------------------------------------------- drawer */
 .lrn-drawer {
     /* Declared as custom properties, NOT written inline. Bootstrap's Sass
@@ -304,10 +316,6 @@
     body.pb-coach-absent .lrn-fab { bottom: 86px; }
     .lrn-fablabel { display: none; }
 }
-
-/* pb_coach uninstalled: its 92px slot is empty, so this launcher drops into it
-   and the corner reads as two controls rather than two and a hole. */
-body.pb-coach-absent .lrn-fab { bottom: 92px; }
 
 @media (prefers-reduced-motion: reduce) {
     .lrn-fab { transition: none; }

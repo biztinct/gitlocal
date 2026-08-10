@@ -142,6 +142,13 @@ class LearnEvent(models.Model):
             ('mission_recover', self.env._('Mission recovery shown')),
             ('mission_complete', self.env._('Mission completed')),
             ('mission_abandon', self.env._('Mission abandoned')),
+            # Phase C1/C2 — somebody arrived at a lesson from OUTSIDE the
+            # Journey, which today means PayAI's "Show me". It is the one row
+            # in this table that measures whether the retarget was worth doing,
+            # and an undeclared kind is silently dropped by `log` rather than
+            # stored — so the signal would have been missing without anything
+            # saying so.
+            ('lesson_deeplink', self.env._('Lesson opened from a deep link')),
         ]
 
     # -- append-only ------------------------------------------------------

@@ -185,6 +185,12 @@ class TestAnchorRegistry(TransactionCase):
                 if key and key not in declared and not self._matches_pattern(key):
                     unknown.append('%s (lesson %s step %s)'
                                    % (key, step.lesson_id.key, step.sequence))
+        # Missions point at controls too, and this direction was blind to them.
+        for mstep in self.env['learn.mission.step'].sudo().search([]):
+            key = mstep.target
+            if key and key not in declared and not self._matches_pattern(key):
+                unknown.append('%s (mission %s step %s)'
+                               % (key, mstep.mission_id.key, mstep.key))
         self.assertFalse(unknown, "Content points at anchors nothing registers:\n  "
                                   + "\n  ".join(sorted(set(unknown))))
 
@@ -222,6 +228,54 @@ class TestAnchorRegistry(TransactionCase):
                          "The registry claims anchors another module owns. Renaming one of "
                          "these breaks a pb_coach tour or PayAI without any test in EITHER "
                          "module noticing:\n  " + "\n  ".join(claimed))
+
+    # -- 5. an anchor is either used or declared unused ---------------------
+    def test_08_every_product_anchor_is_referenced_or_reserved(self):
+        """The convention added in the Phase C review, in both directions.
+
+        Phase C1 anchored whole REGIONS of seven cockpits in one pass, because
+        the alternative is a second edit to somebody else's template for every
+        lesson written afterwards — and each of those is a chance for a tidy-up
+        to delete an attribute nothing over there reads. So an anchor may be
+        laid ahead of its content, and the registry has to SAY SO: `reserved`
+        is the difference between "not written yet" and "a typo nobody caught".
+
+        The flag comes off when content arrives. A reserved anchor that is now
+        referenced fails just as loudly as an unreferenced one that is not
+        reserved — otherwise the flag decays into a blanket exemption, which is
+        the same as not having the check.
+        """
+        referenced = set()
+        for step in self.env['learn.step'].sudo().search([]):
+            referenced |= {a for a in (step.anchor, step.moment_from, step.moment_to) if a}
+        for intent in self.env['learn.intent'].sudo().search([]):
+            referenced |= {a.strip() for a in (intent.show_me or '').split(',') if a.strip()}
+        for istep in self.env['learn.intent.step'].sudo().search([]):
+            if istep.anchor:
+                referenced.add(istep.anchor)
+        # A MISSION STEP'S TARGET is a content reference too, and no test in
+        # this module counted it — which is how `pw-result` and `st-effective`
+        # read as unreferenced while m1 and m4 have been pointing at them since
+        # Phase A. Found by executing this test rather than by writing it.
+        for mstep in self.env['learn.mission.step'].sudo().search([]):
+            if mstep.target:
+                referenced.add(mstep.target)
+
+        undeclared, stale = [], []
+        for key, spec in self.product.items():
+            is_reserved = bool(spec.get('reserved'))
+            if key in referenced and is_reserved:
+                stale.append(key)
+            elif key not in referenced and not is_reserved:
+                undeclared.append(key)
+        self.assertFalse(undeclared,
+                         "Anchors no content points at and the registry does not declare "
+                         "reserved. Either write the content, or say it is coming with "
+                         '"reserved": true:\n  ' + "\n  ".join(sorted(undeclared)))
+        self.assertFalse(stale,
+                         "Anchors marked reserved that content now names. Drop the flag — "
+                         "a reserved marker that survives its content is an exemption "
+                         "nobody decided to grant:\n  " + "\n  ".join(sorted(stale)))
 
     def test_07_shared_anchors_are_declared_shared_in_both_directions(self):
         """pw-division and pw-compute are ours AND pb_coach's.

@@ -411,7 +411,7 @@
     <record id="intent_approve_b110_s02" model="learn.intent.step">
         <field name="block_id" ref="intent_approve_b110"/>
         <field name="sequence">30</field>
-        <field name="text">Approve — or reject with a written reason, which returns the run to draft</field>
+        <field name="text">Approve — or reject with a written reason, which cancels the run</field>
         <field name="anchor">pk-card-actions</field>
     </record>
 
@@ -488,7 +488,7 @@
         <field name="sequence">10</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">The whole run returns to draft — all 48 payslips together, never one — and three things are recorded against it: who rejected it, when, and why in writing.</field>
+        <field name="body">The whole run is &lt;b&gt;cancelled&lt;/b&gt; — all 48 payslips together, never one — its state becomes Rejected, and three things are recorded against it: who rejected it, when, and why in writing.</field>
     </record>
 
     <record id="intent_reject_b020" model="learn.intent.block">
@@ -515,7 +515,13 @@
     <record id="intent_reject_b020_s02" model="learn.intent.step">
         <field name="block_id" ref="intent_reject_b020"/>
         <field name="sequence">30</field>
-        <field name="text">The officer corrects the input, recomputes and resubmits through the same chain</field>
+        <field name="text">Somebody at the {{gmTierName}} tier reopens the cancelled run as a draft — this is the part people expect to be automatic and is not</field>
+    </record>
+
+    <record id="intent_reject_b020_s03" model="learn.intent.step">
+        <field name="block_id" ref="intent_reject_b020"/>
+        <field name="sequence">40</field>
+        <field name="text">Only then does the officer correct the input, recompute and resubmit through the same chain</field>
     </record>
 
     <record id="intent_reject_b030" model="learn.intent.block">
@@ -523,7 +529,7 @@
         <field name="sequence">30</field>
         <field name="capability">any</field>
         <field name="kind">warn</field>
-        <field name="body">Nothing is lost and nothing was paid, but a reason like "wrong" costs the officer a day of guessing. The written reason is the entire value of a rejection.</field>
+        <field name="body">Nothing was paid, but this is blunter than it looks: the batch is cancelled, not handed back, and it takes a second person at the {{gmTierName}} tier before the officer can even start. A reason like "wrong" costs all of that and a day of guessing.</field>
     </record>
 
     <record id="intent_reject_b040" model="learn.intent.block">
@@ -788,7 +794,7 @@
         <field name="sequence">20</field>
         <field name="capability">any</field>
         <field name="kind">p</field>
-        <field name="body">Safe: recomputing a draft, deleting a draft, importing again into an open period. Gated: everything after submission, which moves only through the approval chain or a rejection back to draft.</field>
+        <field name="body">Safe: recomputing a draft, deleting a draft, importing again into an open period. Gated: everything after submission, which moves only through the approval chain — or a rejection, which cancels the run outright.</field>
     </record>
 
     <record id="intent_affectrun_b030" model="learn.intent.block">
@@ -2554,7 +2560,7 @@
         <field name="sequence">20</field>
         <field name="capability">any</field>
         <field name="kind">warn</field>
-        <field name="body">"Wrong", "please recheck" and "the numbers look off" all send 48 payslips back to draft and leave the officer guessing at what you saw. They will probably resubmit the same thing, and the second rejection is the one that becomes an argument.</field>
+        <field name="body">"Wrong", "please recheck" and "the numbers look off" all cancel 48 payslips, need a {{gmTierName}} reset before anybody can start again, and leave the officer guessing at what you saw. They will probably rebuild the same thing, and the second rejection is the one that becomes an argument.</field>
     </record>
 
     <record id="intent_rejectright_b030" model="learn.intent.block">

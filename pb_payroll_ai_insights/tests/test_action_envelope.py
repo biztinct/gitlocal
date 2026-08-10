@@ -82,6 +82,47 @@ class TestActionEnvelope(TransactionCase):
             self.assertIsNone(self.engine._sanitize_action(bad),
                               "%r produced an action" % (bad,))
 
+    def test_07b_a_hostile_envelope_is_refused_and_never_raises(self):
+        """Everything here came out of a language model's JSON.
+
+        A list where a string was asked for is not a remote possibility. Two
+        shipped shapes could be made to RAISE rather than refuse: `dict.get`
+        with an unhashable key (TypeError), and `[:40]` on an int (TypeError) —
+        both inside a method whose whole job is to be the trust boundary. A
+        sanitizer that can be made to raise is not a sanitizer.
+        """
+        hostile = [
+            {'type': 'start_tour', 'tour': ['hero_path']},
+            {'type': 'start_tour', 'tour': {'id': 'hero_path'}},
+            {'type': 'start_tour', 'tour': 7},
+            {'type': 'start_tour', 'tour': True},
+            {'type': 'open_lesson', 'lesson': ['LW']},
+            {'type': 'open_lesson', 'lesson': {'key': 'LW'}},
+            {'type': 'open_lesson', 'lesson': 12},
+            {'type': ['open_lesson'], 'lesson': 'LW'},
+            {'type': 'open_lesson', 'lesson': None},
+        ]
+        for action in hostile:
+            try:
+                out = self.engine._sanitize_action(action)
+            except Exception as exc:                          # noqa: BLE001
+                self.fail("%r raised %s: %s" % (action, type(exc).__name__, exc))
+            self.assertIsNone(out, "%r produced an action" % (action,))
+
+    def test_07c_a_hostile_LABEL_never_raises_and_never_reaches_the_dom(self):
+        """The label is a button caption. A non-string one either raises on the
+        slice or slips through as a list and is rendered."""
+        for label in (42, ['Show me'], {'t': 'Show me'}, None, '', True, 0):
+            try:
+                out = self.engine._sanitize_action(
+                    {'type': 'open_lesson', 'lesson': 'LW', 'label': label})
+            except Exception as exc:                          # noqa: BLE001
+                self.fail("label %r raised %s: %s" % (label, type(exc).__name__, exc))
+            self.assertTrue(out, "a hostile label lost a valid lesson")
+            self.assertIsInstance(out['label'], str)
+            self.assertEqual(out['label'], 'Show me',
+                             "a non-string label reached the caption")
+
     def test_08_the_label_is_bounded(self):
         out = self.engine._sanitize_action(
             {'type': 'open_lesson', 'lesson': 'LW', 'label': 'x' * 300})
@@ -97,9 +138,16 @@ class TestActionEnvelope(TransactionCase):
         A whitelisted key with no lesson behind it is a "Show me" that opens the
         Journey map — the offer made and not kept.
         """
-        Lesson = self.env['learn.lesson'].sudo()
-        if not Lesson.search_count([]):
+        # Guarded like test_retirement::test_04: on a database without pb_learn
+        # the model does not exist at all, and env[...] raises KeyError rather
+        # than returning something empty — which would fail this test for the
+        # one reason it is not about.
+        try:
+            Lesson = self.env['learn.lesson'].sudo()
+        except KeyError:
             self.skipTest("pb_learn is not installed on this database")
+        if not Lesson.search_count([]):
+            self.skipTest("pb_learn ships no lessons on this database")
         missing = [k for k in self.engine._KNOWN_LESSONS
                    if not Lesson.search_count([('key', '=', k)])]
         self.assertFalse(missing, "PayAI offers lessons that do not exist: %s" % missing)

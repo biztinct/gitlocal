@@ -199,7 +199,7 @@ export const SCREENS = {
                 ${kpiTile("users", "", N(k.headcount), B("Headcount", "Nhân sự"))}
                 ${kpiTile("trending-up", "pos", M(k.monthlyNet), B("Monthly payroll", "Chi phí lương tháng"))}
                 ${kpiTile("clipboard-check", "warn", N(k.waiting), B("Pending approval", "Chờ phê duyệt"))}
-                ${kpiTile("calculator", "", N(k.configs), B("Active configurations", "Cấu hình đang chạy"))}
+                ${kpiTile("calculator", "", N(k.configs), B("Active configs", "Cấu hình đang chạy"))}
             </div>
             <div class="lrn-grid g2 top">
                 <div class="lrn-panel" data-coach="rep-dash-runs">

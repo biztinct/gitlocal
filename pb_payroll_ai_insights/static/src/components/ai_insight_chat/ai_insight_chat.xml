@@ -135,10 +135,10 @@
                             </t>
 
                             <!-- "Show me" (AI offers to open a pb_learn lesson).
-                                 `start_tour` is still accepted so a conversation
-                                 rendered from history, written before the Phase
-                                 C2 retarget, still draws its button. -->
-                            <t t-if="msg.action and (msg.action.type === 'open_lesson' or msg.action.type === 'start_tour')">
+                                 One shape only: the server converts a legacy
+                                 `start_tour` envelope and always emits
+                                 `open_lesson`, so nothing else can arrive. -->
+                            <t t-if="msg.action and msg.action.type === 'open_lesson'">
                                 <button class="payai-coach-action"
                                         t-on-click="() => this.runAction(msg.action)">
                                     <i class="fa fa-magic"/> <t t-esc="msg.action.label || 'Show me'"/>

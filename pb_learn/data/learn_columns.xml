@@ -469,11 +469,11 @@
         <field name="body">How many runs are waiting on a signature, at any gate, across the whole company. It is not your personal queue — how many are YOURS is a question the Approvals screen answers, and confusing the two means chasing work that was never yours.</field>
     </record>
 
-    <record id="col_dashboard_active_configurations" model="learn.column">
+    <record id="col_dashboard_active_configs" model="learn.column">
         <field name="screen">dashboard</field>
-        <field name="key">active_configurations</field>
+        <field name="key">active_configs</field>
         <field name="sequence">40</field>
-        <field name="label">Active configurations</field>
+        <field name="label">Active configs</field>
         <field name="body">How many formula configurations are switched on — normally one per division and cycle. A number that has grown without anybody adding a division is worth opening: an old configuration left active can still be selected by a run.</field>
     </record>
 
