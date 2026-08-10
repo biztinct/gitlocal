@@ -17,7 +17,7 @@
         </div>
 
         <!-- ============================= hero ============================ -->
-        <div class="pbin-hero">
+        <div class="pbin-hero" data-coach="in-hero">
           <div class="pbin-hero-main">
             <div class="eyebrow"><t t-out="ic('trending', 13)"/><span>Executive analytics</span></div>
             <h1>Insights</h1>
@@ -81,7 +81,7 @@
         </div>
 
         <!-- ========================== cost story ========================== -->
-        <div class="pbin-panel pbin-trend">
+        <div class="pbin-panel pbin-trend" data-coach="in-trend">
           <div class="pbin-panel-h">
             <div>
               <h2>Cost story</h2>
@@ -144,7 +144,7 @@
         </div>
 
         <!-- ================== departments + statutory ==================== -->
-        <div class="pbin-duo">
+        <div class="pbin-duo" data-coach="in-duo">
 
           <div class="pbin-panel">
             <div class="pbin-panel-h">
@@ -258,7 +258,7 @@
         </div>
 
         <!-- ========================= workforce pulse ====================== -->
-        <div class="pbin-pulse">
+        <div class="pbin-pulse" data-coach="in-pulse">
           <div class="pbin-pulse-h">
             <h2>Workforce pulse</h2>
             <span class="hint">this week · month to date</span>
@@ -402,7 +402,7 @@
              carried a duplicate menu while its actual numbers were inert.
              Now every figure above is its own door, and this is simply the
              way in when you have a question the board did not anticipate. -->
-        <div class="pbin-explore" t-if="explorerAvailable"
+        <div class="pbin-explore" data-coach="in-explore" t-if="explorerAvailable"
              t-on-click="() => this.openExplorer()">
           <span class="ei"><t t-out="ic('sparkles', 19)"/></span>
           <span class="et">

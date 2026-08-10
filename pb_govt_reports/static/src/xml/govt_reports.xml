@@ -7,7 +7,7 @@
 
       <div t-else="" class="pbim-wrap">
 
-        <div class="ppl-head">
+        <div class="ppl-head" data-coach="gr-head">
           <div>
             <h1 class="pbim-h1">Government Reports</h1>
             <p class="pbim-sub">Statutory filings for <b><t t-esc="state.data.company"/></b> · <t t-esc="state.data.country_label"/></p>
@@ -19,7 +19,7 @@
           </div>
         </div>
 
-        <div t-if="state.data.multi_country" class="gov-countries">
+        <div t-if="state.data.multi_country" class="gov-countries" data-coach="gr-countries">
           <span class="gov-clabel">Country</span>
           <t t-foreach="state.data.countries" t-as="c" t-key="c.code">
             <button class="pbim-chip" t-att-class="{'active': c.code === state.data.country_code}" t-on-click="() => this.selectCountry(c.code)">
@@ -31,7 +31,7 @@
         <t t-if="state.data.available">
           <div class="pbim-panel" t-foreach="state.data.groups" t-as="g" t-key="g.label">
             <div class="pbim-panel-h"><h2 class="pbim-h2"><t t-out="ic(g.icon or 'fileText',18)"/> <t t-esc="g.label"/></h2></div>
-            <div class="gov-grid">
+            <div class="gov-grid" data-coach="gr-grid">
               <div class="gov-tile" t-foreach="g.reports" t-as="r" t-key="r.key">
                 <span class="gov-tile-ic"><t t-out="ic('fileText',22)"/></span>
                 <div class="gov-tile-tx">
@@ -47,7 +47,7 @@
         </t>
 
         <div t-else="" class="pbim-panel">
-          <div class="pbim-empty">
+          <div class="pbim-empty" data-coach="gr-empty">
             <t t-out="ic('file',30)"/>
             <p>Government reports for <b><t t-esc="state.data.country_label"/></b> are coming soon.</p>
           </div>

@@ -7,7 +7,7 @@
 
       <div t-else="" class="pbim-wrap">
 
-        <div class="ppl-head">
+        <div class="ppl-head" data-coach="ct-head">
           <div>
             <h1 class="pbim-h1">Contracts</h1>
             <p class="pbim-sub">Active, expiring and historical contracts across your workforce.</p>
@@ -16,7 +16,7 @@
         </div>
 
         <!-- KPI band -->
-        <div class="ppl-kpis">
+        <div class="ppl-kpis" data-coach="ct-kpis">
           <div class="pbim-stat ok"><span class="pbim-stat-ic green"><t t-out="ic('checkCircle',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.running"/><span class="l">Running</span></div></div>
           <div t-attf-class="pbim-stat {{ state.kpis.expiring ? 'err' : '' }}"><span class="pbim-stat-ic amber"><t t-out="ic('alert',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.expiring"/><span class="l">Expiring ≤30d</span></div></div>
           <div class="pbim-stat"><span class="pbim-stat-ic"><t t-out="ic('file',21)"/></span><div class="pbim-stat-tx"><span class="n" t-esc="state.kpis.draft"/><span class="l">Draft</span></div></div>
@@ -26,7 +26,7 @@
         </div>
 
         <!-- filters -->
-        <div class="pbim-panel ppl-filters">
+        <div class="pbim-panel ppl-filters" data-coach="ct-filters">
           <div class="ppl-filter-row">
             <div class="pbim-chips">
               <button t-foreach="statusChips" t-as="c" t-key="c.id"
@@ -61,7 +61,7 @@
         </div>
 
         <!-- roster -->
-        <div t-if="filtered.length" class="ppl-roster">
+        <div t-if="filtered.length" class="ppl-roster" data-coach="ct-roster">
           <div t-foreach="filtered" t-as="c" t-key="c.id" class="ppl-card" t-on-click="() => this.openContract(c.id)">
             <div class="ppl-av" t-attf-style="background-image:url({{ c.avatar }})"/>
             <div class="ppl-id">

@@ -14,7 +14,7 @@
       <div t-else="" class="pbwi-wrap">
 
         <!-- ============================ header ========================== -->
-        <div class="pbwi-head">
+        <div class="pbwi-head" data-coach="wa-head">
           <div>
             <div class="eyebrow"><t t-out="ic('users', 13)"/><span>Workforce</span></div>
             <h1>Workforce Insights</h1>
@@ -42,7 +42,7 @@
         </div>
 
         <!-- =========================== filters ========================== -->
-        <div class="pbwi-filters">
+        <div class="pbwi-filters" data-coach="wa-filters">
           <div class="pbwi-picker" t-if="d.options and d.options.division.length">
             <button class="pbwi-fchip" t-att-class="{ on: state.division }"
                     t-on-click="() => this.togglePicker('division')">
@@ -75,7 +75,7 @@
         </div>
 
         <!-- ============================ hero ============================ -->
-        <div class="pbwi-kpis">
+        <div class="pbwi-kpis" data-coach="wa-kpis">
           <div class="pbwi-kpi">
             <span class="ico blue"><t t-out="ic('users', 18)"/></span>
             <span class="tx"><b t-esc="num(headcount.latest)"/><i>employees paid</i></span>
@@ -116,13 +116,13 @@
         </p>
 
         <!-- ========================== headcount ========================= -->
-        <div class="pbwi-panel">
+        <div class="pbwi-panel" data-coach="wa-chart">
           <div class="pbwi-ph"><h2>Headcount paid</h2>
             <span class="hint">month by month</span></div>
           <div class="pbwi-canvas"><canvas t-ref="hcChart"/></div>
         </div>
 
-        <div class="pbwi-duo">
+        <div class="pbwi-duo" data-coach="wa-duo">
           <!-- ======================== attendance ======================== -->
           <div class="pbwi-panel">
             <div class="pbwi-ph"><h2>Attendance exceptions</h2>
